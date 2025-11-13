@@ -1,14 +1,13 @@
 // js/src/molstar_plugin.ts
 
-// In the future we'll import Mol* here, e.g.:
-// import { PluginUIContext } from "molstar/lib/mol-plugin-ui/context";
-// import { DefaultPluginSpec } from "molstar/lib/mol-plugin-ui/spec";
-// etc.
+// @ts-ignore  -> por si los types no encajan al 100%
+import { Viewer } from "molstar/lib/apps/viewer/app";
 
- // @ts-ignore
-import { Viewer } from "molstar/build/viewer/molstar";
-
-export type BasicRepresentationType = "cartoon" | "sticks" | "surface" | string;
+export type BasicRepresentationType =
+  | "cartoon"
+  | "sticks"
+  | "surface"
+  | string;
 
 export interface MolstarControllerOptions {
   container: HTMLElement;
@@ -16,14 +15,16 @@ export interface MolstarControllerOptions {
 
 export class MolstarController {
   private container: HTMLElement;
-  private viewer: Viewer;
+  private viewer: any;
   private plugin: any;
 
   constructor(options: MolstarControllerOptions) {
     this.container = options.container;
 
-    // Crear un viewer de Mol*
-    this.viewer = new Viewer(this.container, {
+    console.log("[MolSysViewer] Molstar Viewer import:", Viewer);
+
+    const viewerOptions: any = {
+      target: this.container,
       layoutIsExpanded: false,
       layoutShowControls: false,
       layoutShowSequence: false,
@@ -34,15 +35,19 @@ export class MolstarController {
       viewportShowAnimation: false,
       pdbProvider: "rcsb",
       emdbProvider: "rcsb",
-    });
+    };
 
-    // Acceso bruto al plugin interno (por ahora lo dejamos como any)
-    // para usarlo más adelante con formas, cavidades, etc.
+    this.viewer = new Viewer(viewerOptions);
     this.plugin = (this.viewer as any).plugin;
+
+    console.log(
+      "[MolSysViewer] Molstar Viewer instance created:",
+      this.viewer,
+    );
   }
 
   // ------------------------------------------------------------------
-  // Cargar un PDB (más adelante lo usaremos con MolSysMT)
+  // Cargar un PDB desde string
   // ------------------------------------------------------------------
   async loadPdbString(pdb: string): Promise<void> {
     if (!pdb || !pdb.trim()) {
@@ -51,27 +56,38 @@ export class MolstarController {
     }
 
     console.log("[MolSysViewer] loadPdbString, length =", pdb.length);
-    await this.viewer.loadStructureFromData(pdb, "pdb");
+    const v: any = this.viewer;
+
+    if (typeof v.loadStructureFromData === "function") {
+      await v.loadStructureFromData(pdb, "pdb");
+    } else {
+      console.warn(
+        "[MolSysViewer] viewer.loadStructureFromData is not available.",
+        v,
+      );
+    }
   }
 
   setBasicRepresentation(type: BasicRepresentationType): void {
     console.log("[MolSysViewer] setBasicRepresentation:", type);
-    // Más adelante mapearemos aquí 'cartoon', 'sticks', etc. a presets de Mol*
   }
 
   resetCamera(): void {
     console.log("[MolSysViewer] resetCamera");
-    this.viewer.resetCamera();
+    const v: any = this.viewer;
+    if (typeof v.plugin?.canvas3d?.setProps === "function") {
+      v.plugin.canvas3d.setProps({ camera: { resetTimeMs: 0 } });
+    } else if (typeof v.resetCamera === "function") {
+      v.resetCamera();
+    } else {
+      console.warn("[MolSysViewer] No camera reset API found on viewer.", v);
+    }
   }
 
   setFrame(index: number): void {
     console.log("[MolSysViewer] setFrame:", index);
-    // Cuando tengamos trayectoria, hablaremos con el timeline de Mol*
   }
 
-  // ------------------------------------------------------------------
-  // Esfera de prueba (stub por ahora)
-  // ------------------------------------------------------------------
   async drawTestSphere(options: {
     center: number[];
     radius: number;
@@ -79,10 +95,6 @@ export class MolstarController {
     opacity: number;
   }): Promise<void> {
     console.log("[MolSysViewer] drawTestSphere (stub) called with:", options);
-
-    // Próximo paso: aquí crearemos un Shape con una esfera y lo añadiremos
-    // al estado de Mol* usando this.plugin. De momento solo confirmamos que
-    // el mensaje llega correctamente desde Python.
   }
 }
 

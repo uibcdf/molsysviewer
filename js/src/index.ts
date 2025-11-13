@@ -25,9 +25,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     console.log("[MolSysViewer] registering widget with IJupyterWidgetRegistry");
 
     registry.registerWidget({
-      // 👇 debe coincidir con _model_module / _view_module
       name: "molsysviewer",
-      // 👇 debe coincidir con MODULE_VERSION en widget.ts y con package.json
       version: "0.0.0",
       exports: {
         MolSysViewerModel,
