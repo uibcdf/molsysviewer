@@ -1,0 +1,88 @@
+# ==========================================================
+# Python
+# ==========================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.installed.cfg
+*.manifest
+*.spec
+
+# Build artifacts
+build/
+dist/
+wheels/
+*.egg-info/
+pip-wheel-metadata/
+
+# Virtual envs
+.env
+.venv
+env/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ==========================================================
+# JavaScript / TypeScript (frontend)
+# ==========================================================
+
+# Node dependencies
+js/node_modules/
+js/.npm/
+js/npm-debug.log*
+js/yarn-debug.log*
+js/yarn-error.log*
+
+# Build outputs
+js/lib/
+js/dist/
+js/.cache/
+
+# TS build artifacts
+js/*.js
+js/*.js.map
+js/*.d.ts
+js/src/*.js
+js/src/*.js.map
+
+# Webpack cache
+js/.webpack-cache/
+js/.parcel-cache/
+
+# ==========================================================
+# MolSysViewer build artifacts
+# ==========================================================
+
+# The compiled widget bundle that gets included in the Python package
+molsysviewer/labextension/*.map
+# (Keep molsysviewer/labextension/index.js tracked)
+# If you WANT the built widget tracked (recommended for JupyterLab 3/4 extensions),
+# do NOT ignore index.js — only ignore maps:
+# molsysviewer/labextension/index.js.map
+
+# ==========================================================
+# OS-specific + editor files
+# ==========================================================
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================================
+# Project-specific misc
+# ==========================================================
+# sandbox/
+# dev/
+#  devtools/

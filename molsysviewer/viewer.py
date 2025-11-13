@@ -14,6 +14,7 @@ from .messaging import (
     RESET_CAMERA,
     SET_FRAME,
     SET_REPRESENTATION_BASIC,
+    DRAW_TEST_SPHERE,
     send_command,
 )
 
@@ -30,6 +31,14 @@ class MolSysViewer:
     # ------------------------------------------------------------------
     # Constructors
     # ------------------------------------------------------------------
+
+    @classmethod
+    def from_empty(cls) -> "MolSysViewer":
+        """Create an empty viewer (no structure loaded)."""
+        widget = MolSysViewerWidget()
+        return cls(widget=widget)
+
+
     @classmethod
     def from_pdb_string(cls, pdb: str) -> "MolSysViewer":
         """Create a viewer from a PDB string."""
@@ -80,4 +89,24 @@ class MolSysViewer:
         """Set current trajectory frame."""
         self.widget.frame = index
         send_command(self.widget, Command(SET_FRAME, {"index": index}))
+
+
+    # ------------------- esfera de prueba en (0,0,0) -------------------
+
+    def show_test_sphere(
+        self,
+        center: tuple[float, float, float] = (0.0, 0.0, 0.0),
+        radius: float = 1.0,
+        color: tuple[float, float, float] = (1.0, 1.0, 1.0),
+        opacity: float = 0.4,
+    ) -> None:
+        """Draw a single white-ish transparent sphere for testing."""
+        payload = {
+            "center": list(center),
+            "radius": float(radius),
+            "color": list(color),   # RGB in [0, 1]
+            "opacity": float(opacity),
+        }
+        send_command(self.widget, Command(DRAW_TEST_SPHERE, payload))
+
 

@@ -1,4 +1,3 @@
-
 // js/src/molstar_plugin.ts
 
 // In the future we'll import Mol* here, e.g.:
@@ -6,7 +5,8 @@
 // import { DefaultPluginSpec } from "molstar/lib/mol-plugin-ui/spec";
 // etc.
 
-// For now, we just define a minimal controller with stubs.
+ // @ts-ignore
+import { Viewer } from "molstar/build/viewer/molstar";
 
 export type BasicRepresentationType = "cartoon" | "sticks" | "surface" | string;
 
@@ -16,70 +16,73 @@ export interface MolstarControllerOptions {
 
 export class MolstarController {
   private container: HTMLElement;
-  private pdbString: string | null = null;
-  private currentRep: BasicRepresentationType = "cartoon";
-  private currentFrame = 0;
-
-  // In the future, we will hold a Mol* plugin instance here:
-  // private plugin: PluginUIContext | null = null;
+  private viewer: Viewer;
+  private plugin: any;
 
   constructor(options: MolstarControllerOptions) {
     this.container = options.container;
 
-    // For now, just set a placeholder background and text
-    this.container.style.position = "relative";
-    this.container.style.width = "100%";
-    this.container.style.height = "400px";
-    this.container.style.background = "#111";
-    this.container.style.color = "#eee";
-    this.container.style.display = "flex";
-    this.container.style.alignItems = "center";
-    this.container.style.justifyContent = "center";
-    this.container.style.fontFamily = "sans-serif";
-    this.container.innerText = "MolSysViewer (Mol* placeholder)";
+    // Crear un viewer de Mol*
+    this.viewer = new Viewer(this.container, {
+      layoutIsExpanded: false,
+      layoutShowControls: false,
+      layoutShowSequence: false,
+      layoutShowLog: false,
+      layoutShowLeftPanel: false,
+      viewportShowExpand: false,
+      viewportShowSelectionMode: false,
+      viewportShowAnimation: false,
+      pdbProvider: "rcsb",
+      emdbProvider: "rcsb",
+    });
 
-    // TODO: initialize Mol* plugin here in the future.
-    // this.initMolstar();
+    // Acceso bruto al plugin interno (por ahora lo dejamos como any)
+    // para usarlo más adelante con formas, cavidades, etc.
+    this.plugin = (this.viewer as any).plugin;
   }
 
   // ------------------------------------------------------------------
-  // Future: real Mol* initialization
+  // Cargar un PDB (más adelante lo usaremos con MolSysMT)
   // ------------------------------------------------------------------
-  // private async initMolstar() {
-  //   this.plugin = await createPlugin(this.container, ...);
-  // }
+  async loadPdbString(pdb: string): Promise<void> {
+    if (!pdb || !pdb.trim()) {
+      console.warn("[MolSysViewer] Empty PDB string; nothing to load.");
+      return;
+    }
 
-  // ------------------------------------------------------------------
-  // Commands called from the widget
-  // ------------------------------------------------------------------
-  loadPdbString(pdb: string): void {
-    this.pdbString = pdb;
-    console.log("[MolSysViewer] loadPdbString called, length =", pdb.length);
-
-    // TODO: when Mol* is integrated:
-    // - create a data source from pdb string
-    // - load into the plugin
-    // - set default representation
+    console.log("[MolSysViewer] loadPdbString, length =", pdb.length);
+    await this.viewer.loadStructureFromData(pdb, "pdb");
   }
 
   setBasicRepresentation(type: BasicRepresentationType): void {
-    this.currentRep = type;
     console.log("[MolSysViewer] setBasicRepresentation:", type);
-
-    // TODO: change Mol* representation accordingly, e.g.
-    // plugin.managers.structure.component.updateRepresentations...
+    // Más adelante mapearemos aquí 'cartoon', 'sticks', etc. a presets de Mol*
   }
 
   resetCamera(): void {
     console.log("[MolSysViewer] resetCamera");
-    // TODO: plugin.camera.reset();
+    this.viewer.resetCamera();
   }
 
   setFrame(index: number): void {
-    this.currentFrame = index;
     console.log("[MolSysViewer] setFrame:", index);
+    // Cuando tengamos trayectoria, hablaremos con el timeline de Mol*
+  }
 
-    // TODO: when trajectory is wired:
-    // plugin.managers.structure.component.setFrame(index) or similar
+  // ------------------------------------------------------------------
+  // Esfera de prueba (stub por ahora)
+  // ------------------------------------------------------------------
+  async drawTestSphere(options: {
+    center: number[];
+    radius: number;
+    color: number[];
+    opacity: number;
+  }): Promise<void> {
+    console.log("[MolSysViewer] drawTestSphere (stub) called with:", options);
+
+    // Próximo paso: aquí crearemos un Shape con una esfera y lo añadiremos
+    // al estado de Mol* usando this.plugin. De momento solo confirmamos que
+    // el mensaje llega correctamente desde Python.
   }
 }
+

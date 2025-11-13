@@ -1,4 +1,3 @@
-
 // js/src/widget.ts
 
 import {
@@ -9,14 +8,9 @@ import {
 
 import { MolstarController } from "./molstar_plugin";
 
-// These constants must match the strings used in the Python widget
 const MODULE_NAME = "molsysviewer";
-const MODULE_VERSION = "^0.0.0"; // Adjust when you publish versions
+const MODULE_VERSION = "^0.0.0";
 
-
-// ---------------------------------------------------------------------------
-// Model
-// ---------------------------------------------------------------------------
 
 export class MolSysViewerModel extends DOMWidgetModel {
   defaults() {
@@ -28,8 +22,6 @@ export class MolSysViewerModel extends DOMWidgetModel {
       _view_module: MODULE_NAME,
       _model_module_version: MODULE_VERSION,
       _view_module_version: MODULE_VERSION,
-
-      // Custom sync attributes (mirroring Python traitlets)
       state: {},
       frame: 0,
     };
@@ -45,40 +37,26 @@ export class MolSysViewerModel extends DOMWidgetModel {
 
   static serializers: ISerializers = {
     ...DOMWidgetModel.serializers,
-    // Add any custom serializers here if needed later
   };
 }
-
-
-// ---------------------------------------------------------------------------
-// View
-// ---------------------------------------------------------------------------
 
 export class MolSysViewerView extends DOMWidgetView {
   private container: HTMLDivElement | null = null;
   private controller: MolstarController | null = null;
 
   render(): void {
-    // Create a container div for Mol*
     this.container = document.createElement("div");
     this.container.classList.add("molsysviewer-container");
     this.el.appendChild(this.container);
 
-    // Initialize Mol* controller (placeholder for now)
     this.controller = new MolstarController({
       container: this.container,
     });
 
-    // Listen to custom messages from the Python side
     this.model.on("msg:custom", this.onCustomMessage, this);
-
-    // Optionally, react to frame changes via synced attribute
     this.model.on("change:frame", this.onFrameChanged, this);
   }
 
-  // -----------------------------------------------------------------------
-  // Handling custom messages from Python
-  // -----------------------------------------------------------------------
   private onCustomMessage(msg: any): void {
     const op = msg?.op;
     const payload = msg?.payload ?? {};
@@ -102,12 +80,16 @@ export class MolSysViewerView extends DOMWidgetView {
         break;
 
       case "SET_FRAME":
-        // We both update controller and sync to model frame attr
         if (typeof payload.index === "number") {
           this.controller.setFrame(payload.index);
           this.model.set("frame", payload.index);
           this.touch();
         }
+        break;
+
+      // 👇 Nuevo caso: esfera de prueba
+      case "DRAW_TEST_SPHERE":
+        this.controller.drawTestSphere(payload);
         break;
 
       default:
@@ -116,9 +98,6 @@ export class MolSysViewerView extends DOMWidgetView {
     }
   }
 
-  // -----------------------------------------------------------------------
-  // React to traitlet changes (e.g., frame changed from Python)
-  // -----------------------------------------------------------------------
   private onFrameChanged(): void {
     if (!this.controller) return;
     const frame = this.model.get("frame");
@@ -127,3 +106,4 @@ export class MolSysViewerView extends DOMWidgetView {
     }
   }
 }
+
