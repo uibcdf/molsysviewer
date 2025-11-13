@@ -19,8 +19,8 @@ class MolSysViewerWidget(DOMWidget):
     _view_module = Unicode("molsysviewer").tag(sync=True)
 
     # Versionado del módulo JS (luego lo ajustaremos al publicarlo en npm)
-    _model_module_version = Unicode("^0.0.0").tag(sync=True)
-    _view_module_version = Unicode("^0.0.0").tag(sync=True)
+    _model_module_version = Unicode("0.0.0").tag(sync=True)
+    _view_module_version = Unicode("0.0.0").tag(sync=True)
 
     # Estado genérico que el frontend puede usar para guardar cosas
     state = TDict(default_value={}).tag(sync=True)

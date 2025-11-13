@@ -9,7 +9,7 @@ import {
 import { MolstarController } from "./molstar_plugin";
 
 const MODULE_NAME = "molsysviewer";
-const MODULE_VERSION = "^0.0.0";
+const MODULE_VERSION = "0.0.0";
 
 
 export class MolSysViewerModel extends DOMWidgetModel {
