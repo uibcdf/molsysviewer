@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@jupyter-widgets/base": "^6 || ^7 || ^8",
+    "@jupyterlab/application": "^4.0.0",
     "molstar": "^5.0.0"
   },
   "devDependencies": {
@@ -15,6 +16,9 @@
     "ts-loader": "^9.0.0",
     "webpack": "^5.0.0",
     "webpack-cli": "^4.0.0"
+  },
+  "jupyterlab": {
+    "extension": "lib/index.js"
   }
 }
 
