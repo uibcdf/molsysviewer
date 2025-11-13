@@ -1,0 +1,10 @@
+name: molsysviewer@uibcdf_3.12
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - nodejs>=18
+  - jupyterlab>=4
+  - ipywidgets>=8
+  - jupyterlab_widgets  # habilita widgets en Lab 3/4
+  - pip
