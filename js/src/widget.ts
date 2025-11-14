@@ -87,7 +87,6 @@ export class MolSysViewerView extends DOMWidgetView {
         }
         break;
 
-      // 👇 Nuevo caso: esfera de prueba
       case "DRAW_TEST_SPHERE":
         this.controller.drawTestSphere(payload);
         break;
