@@ -47,7 +47,7 @@ js/dist/
 js/.cache/
 
 # TS build artifacts
-js/*.js
+js/lib
 js/*.js.map
 js/*.d.ts
 js/src/*.js
