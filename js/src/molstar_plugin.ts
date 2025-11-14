@@ -2,6 +2,13 @@
 
 // @ts-ignore  -> por si los types no encajan al 100%
 import { Viewer } from "molstar/lib/apps/viewer/app";
+import { Color } from 'molstar/lib/mol-util/color';
+import { Vec3, Mat4 } from 'molstar/lib/mol-math/linear-algebra';
+import { MeshBuilder } from 'molstar/lib/mol-geo/geometry/mesh/mesh-builder';
+import { addSphere } from 'molstar/lib/mol-geo/geometry/mesh/builder/sphere';
+import { Mesh } from 'molstar/lib/mol-geo/geometry/mesh/mesh';
+import { Shape } from 'molstar/lib/mol-model/shape';
+import { StateTransforms } from 'molstar/lib/mol-plugin-state/transforms';
 
 export type BasicRepresentationType =
   | "cartoon"
@@ -88,13 +95,57 @@ export class MolstarController {
     console.log("[MolSysViewer] setFrame:", index);
   }
 
+  // ------------------------------------------------------------------
+  // Dibujar una esfera de prueba (test sphere)
+  // ------------------------------------------------------------------
   async drawTestSphere(options: {
-    center: number[];
-    radius: number;
-    color: number[];
-    opacity: number;
-  }): Promise<void> {
-    console.log("[MolSysViewer] drawTestSphere (stub) called with:", options);
+    center: number[],   // [x, y, z]
+    radius: number,
+    color: number[],    // [r, g, b] normalizado 0–1
+    opacity: number     // 0–1
+  }) {
+    console.log("[MolSysViewer] drawTestSphere called:", options);
+
+    const { center, radius, color, opacity } = options;
+
+    // 1. Construimos un Mesh esférico con MeshBuilder + addSphere
+    const meshState = MeshBuilder.createState(1, 1);
+    // un solo grupo para toda la esfera
+    meshState.currentGroup = 0;
+
+    const centerVec = Vec3.create(center[0], center[1], center[2]);
+    const detail = 2; // 0 = muy basto, 2–3 = más suave; ajustable
+
+    addSphere(meshState, centerVec, radius, detail);
+
+    const mesh: Mesh = MeshBuilder.getMesh(meshState);
+
+    // 2. Creamos un Shape a partir de ese Mesh
+    const c = Color.fromNormalizedRgb(color[0], color[1], color[2]);
+    const transforms = [Mat4.identity()];
+
+    const shape = Shape.create(
+      'test-sphere',        // id/nombre
+      {},                   // "source": puede ser cualquier objeto; aquí vacío
+      mesh,                 // geometría
+      () => c,              // getColor(groupId)
+      () => 1.0,            // getSize(groupId)
+      () => 'test-sphere',  // getLabel(groupId)
+      transforms
+    );
+
+    // 3. Insertamos el Shape en el plugin vía ShapeRepresentation3D
+    const plugin = this.plugin;
+    const state = plugin.state.data;
+
+    const update = state.build().toRoot()
+      .apply(StateTransforms.Representation.ShapeRepresentation3D, {
+        shape,
+        alpha: opacity,
+      });
+
+    await update.commit();
   }
+
 }
 

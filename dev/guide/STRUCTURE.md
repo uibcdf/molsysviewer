@@ -1,274 +1,361 @@
+# 📁 MolSysViewer — Repository Structure
 
-## Nombre y propósito
+## 0. Name, Purpose, and Vision
 
-* **Nombre del proyecto:** `MolSysViewer`
-* **Paquete Python:** `molsysviewer`
-* **Objetivo:** visor interactivo en Jupyter basado en **Mol*** para:
+**Project name:** `MolSysViewer`
+**Python package:** `molsysviewer`
+**Technologies:** Python 3.10+, TypeScript, ipywidgets, Mol*
 
-  * estructuras de **MolSysMT**,
-  * entidades de **TopoMT** (cavities, mouths, etc.),
-  * trayectorias de dinámica molecular,
-  * overlays dinámicos (puentes de hidrógeno, etc.).
+**Purpose:**
+MolSysViewer is the standard interactive viewer of the **MolSysMT / TopoMT** ecosystem. It provides:
 
-Piensa en MolSysViewer como el “front-end visual estándar” del ecosistema MolSysMT/TopoMT.
+* 3D molecular visualization using **Mol***,
+* integration with **MolSysMT** for systems and trajectories,
+* integration with **TopoMT** for cavities, mouths, rims, and interfaces,
+* dynamic overlays (H-bonds, distances, frame-dependent interactions),
+* smooth use from inside Jupyter notebooks.
 
-La librería es programadada en Python 3.10+ y TypeScript, usando **ipywidgets** para la integración con Jupyter y el plugin de **Mol*** para la visualización 3D.
----
-
-## Estructura lógica del repositorio
-
-### 1. Raíz del proyecto
-
-En la raíz del repo `MolSysViewer/` tendremos:
-
-* `pyproject.toml`
-  Configuración del paquete (nombre `molsysviewer`, dependencias, etc.).
-
-* `README.md`
-  Descripción general, instalación rápida, ejemplo mínimo.
-
-* `LICENSE`
-  Probablemente MIT, en línea con MolSysMT/TopoMT.
-
-* `CONTRIBUTING.md` (más adelante)
-  Guía para colaboraciones (issues, PRs, estilo de código, etc.).
-
-* Ficheros de utilidades:
-
-  * `.gitignore`
-  * `.pre-commit-config.yaml` (formateo, linters)
-  * `.github/workflows/` para CI (tests, docs, etc.).
+Think of MolSysViewer as the unified visual front-end of the UIBCDF molecular modeling ecosystem.
 
 ---
 
-### 2. Paquete Python: `molsysviewer/`
+# 1. Overall Repository Structure
 
-Este es el **núcleo Python** que usarás en los notebooks.
+```
+MolSysViewer/
+├── pyproject.toml
+├── README.md
+├── LICENSE
+├── CONTRIBUTING.md
+├── molsysviewer/
+├── js/
+├── docs/
+├── examples/
+└── tests/
+```
 
-#### 2.1. Ficheros de núcleo
+Meaning of each part:
 
-* `molsysviewer/__init__.py`
-  Exporta la API de alto nivel, por ejemplo:
-
-  ```python
-  from .viewer import MolSysViewer
-  ```
-
-* `molsysviewer/_version.py`
-  Versión del paquete.
-
-* `molsysviewer/viewer.py`
-  **API de alto nivel para el usuario**.
-  Aquí vive la clase principal:
-
-  ```python
-  class MolSysViewer:
-      @classmethod
-      def from_molysmt(cls, system): ...
-      @classmethod
-      def from_pdb_string(cls, pdb): ...
-      def add_trajectory(self, traj): ...
-      def show_cavity(self, cavity, mode="cloud", opacity=0.4): ...
-      def show_hbonds(self, hbonds_by_frame): ...
-      # y otros helpers de “usuario final”
-  ```
-
-* `molsysviewer/widget.py`
-  El **ipywidget** real:
-
-  ```python
-  from ipywidgets import DOMWidget
-  from traitlets import Unicode, Dict, Int
-
-  class MolSysViewerWidget(DOMWidget):
-      _model_name = Unicode("MolSysViewerModel").tag(sync=True)
-      _view_name = Unicode("MolSysViewerView").tag(sync=True)
-      _model_module = Unicode("molsysviewer").tag(sync=True)
-      _view_module = Unicode("molsysviewer").tag(sync=True)
-
-      state = Dict().tag(sync=True)
-      frame = Int(0).tag(sync=True)
-  ```
-
-  Este objeto es el que se muestra en el notebook (el canvas de Mol* vive en el front-end, pero está ligado a esta clase).
-
-* `molsysviewer/messaging.py`
-  Funciones auxiliares para enviar comandos:
-
-  ```python
-  def send_command(widget, op: str, payload: dict) -> None:
-      widget.send({"op": op, "payload": payload})
-  ```
-
-  con nombres de operaciones tipo:
-
-  * `"LOAD_PDB_STRING"`,
-  * `"SET_REPRESENTATION"`,
-  * `"SET_FRAME"`,
-  * `"SET_CAVITY_POINTCLOUD"`,
-  * `"SET_CAVITY_MESH"`,
-  * `"SET_DYNAMIC_LINES"`, etc.
-
-* `molsysviewer/data_models.py`
-  Modelos de datos (probablemente `dataclasses`) para empaquetar cosas antes de mandarlas al front-end:
-
-  * `CavityCloud` (positions, radii, color, opacity),
-  * `CavityMesh` (vertices, faces, color, opacity),
-  * `HbondSeries` (segmentos por frame),
-  * `TrajectoryData` (frames, topología),
-  * parámetros visuales (colores, estilos…).
+* **Root** → packaging, metadata, quick documentation.
+* **molsysviewer/** → Python backend.
+* **js/** → TypeScript frontend + Mol*.
+* **docs/** → user and developer documentation.
+* **examples/** → demonstration notebooks.
+* **tests/** → Python tests (and future JS smoke tests).
 
 ---
 
-#### 2.2. Integración con otras librerías
+# 2. Project Root
 
-* `molsysviewer/adapters/`
-
-  * `molysmt_adapter.py`
-    Funciones que toman objetos de MolSysMT y los transforman en:
-
-    * `TrajectoryData`,
-    * estructuras en formato PDB/mmCIF,
-    * selecciones lógicas, etc.
-
-  * `topomt_adapter.py`
-    Para entidades de TopoMT:
-
-    * `Topography`, `Cavity`, `Mouth`, `BaseRim`, etc.
-      → se convierten en `CavityCloud`, `CavityMesh`, etc.
-
-  La idea: **el visor no “sabe” de MolSysMT/TopoMT directamente**; habla con modelos genéricos. Los adapters son la capa que traduce.
+| File                                        | Purpose                                                         |
+| ------------------------------------------- | --------------------------------------------------------------- |
+| **pyproject.toml**                          | Python package configuration: name, dependencies, build system. |
+| **README.md**                               | Quick introduction, installation instructions, minimal example. |
+| **LICENSE**                                 | Likely MIT, consistent with MolSysMT/TopoMT.                    |
+| **CONTRIBUTING.md**                         | Guidelines on PRs, issues, style, development flow.             |
+| **.gitignore**, **.pre-commit-config.yaml** | Developer tooling (linting, formatting).                        |
+| **.github/workflows/**                      | GitHub Actions for CI, JS build, testing.                       |
 
 ---
 
-#### 2.3. Lado Python de las representaciones
+# 3. Python Package `molsysviewer/`
 
-* `molsysviewer/representations/`
+The Python backend provides the user API, the data transformation layer, the integration with MolSysMT/TopoMT, and communication with the frontend.
 
-  Aquí pones helpers que empaquetan “cosas científicas” en comandos de visualización.
-
-  * `cavities.py`
-
-    ```python
-    def show_cavity_cloud(viewer, cavity, **kwargs): ...
-    def show_cavity_mesh(viewer, cavity, **kwargs): ...
-    ```
-
-  * `hbonds.py`
-
-    ```python
-    def show_hbonds(viewer, hbonds_by_frame, **kwargs): ...
-    ```
-
-  * `trajectories.py`
-
-    ```python
-    def add_trajectory(viewer, traj, **kwargs): ...
-    ```
-
-  * `shapes.py`
-
-    ```python
-    def add_sphere_cloud(viewer, positions, radii, **kwargs): ...
-    def add_lines(viewer, segments, **kwargs): ...
-    ```
-
-  El fichero `viewer.py` usa estas funciones para ofrecer una API simple.
+```
+molsysviewer/
+├── __init__.py
+├── _version.py
+├── viewer.py
+├── widget.py
+├── messaging.py
+├── data_models.py
+├── adapters/
+│   ├── molysmt_adapter.py
+│   └── topomt_adapter.py
+└── representations/
+    ├── cavities.py
+    ├── hbonds.py
+    ├── trajectories.py
+    └── shapes.py
+```
 
 ---
 
-#### 2.4. Integración con Jupyter
+## 3.1 Core Python API
 
-* `molsysviewer/_jupyter/`
-  Aquí irá lo necesario para registrar la extensión como widget (labextension/nbextension), aunque muchos detalles los genera el tooling de ipywidgets. Es básicamente “pegamento” para que Jupyter reconozca el widget.
+### `viewer.py` — High-level user API
 
----
+This is the class users will interact with in notebooks:
 
-### 3. Front-end TypeScript: `js/`
+```python
+class MolSysViewer:
+    @classmethod
+    def from_molysmt(cls, system): ...
+    @classmethod
+    def from_pdb_string(cls, pdb): ...
 
-Esta carpeta es el mundo JS/TS:
+    def add_trajectory(self, traj): ...
+    def show_cavity(self, cavity, mode="cloud", opacity=0.4): ...
+    def show_hbonds(self, hbonds_by_frame): ...
+```
 
-* `js/package.json`, `js/tsconfig.json`, `js/webpack.config.js` (o equivalente)
-  Configuración del paquete y compilación.
-
-* `js/src/index.ts`
-  Punto de entrada que registra el widget para Jupyter (modelo y vista).
-
-* `js/src/widget.ts`
-  Implementación del modelo y vista del lado del navegador:
-
-  * crea el contenedor HTML,
-  * inicializa Mol*,
-  * escucha mensajes `this.model.on("msg:custom", ...)`,
-  * delega en el plugin de Mol*.
-
-* `js/src/molstar_plugin.ts`
-  Código que realmente:
-
-  * crea y configura el viewer Mol*,
-  * carga estructuras/trajectorias,
-  * define métodos como `updateCavityCloud`, `updateCavityMesh`, `updateDynamicLines`, etc.
-
-* `js/src/representations/`
-  Módulos TS con representaciones personalizadas en Mol*:
-
-  * `cavities-repr.ts`: nubes de puntos y mallas de cavidades,
-  * `hbonds-repr.ts`: líneas/cilindros dinámicos para H-bonds,
-  * `pointcloud-repr.ts`: nubes genéricas de puntos (reusable).
-
-* `js/src/utils/`
-
-  * `messaging.ts`: helpers para manejar los comandos entrantes.
-  * `molstar-helpers.ts`: funciones para construir geometría, aplicar colores, temas, etc.
+It orchestrates adapters, data models, the ipywidget, and representation helpers.
 
 ---
 
-### 4. Documentación: `docs/`
+### `widget.py` — The ipywidget
 
-Más adelante, cuando el proyecto avance:
+Defines the widget rendered inside Jupyter:
 
-* `docs/index.md` – portada de la doc.
-* `docs/architecture.md` – cómo se conectan Python, ipywidgets y Mol*.
-* `docs/user-guide.md` – uso básico para gente que solo quiere visualizar sus sistemas.
-* `docs/dev-guide.md` – cómo extender MolSysViewer con nuevas representaciones.
-* `docs/api-reference.md` – detalle de la API Python.
+```python
+class MolSysViewerWidget(DOMWidget):
+    _model_name = "MolSysViewerModel"
+    _view_name = "MolSysViewerView"
+    _model_module = "molsysviewer"
+    _view_module = "molsysviewer"
 
----
+    state = Dict().tag(sync=True)
+    frame = Int(0).tag(sync=True)
+```
 
-### 5. Ejemplos: `examples/`
-
-Notebooks demostrativos, por ejemplo:
-
-* `01_basic_viewer.ipynb` – cargar un PDB en bruto.
-* `02_molysmt_integration.ipynb` – usar MolSysMT como fuente de sistemas.
-* `03_topomt_cavities.ipynb` – mostrar cavidades, bocas, etc.
-* `04_dynamic_overlays.ipynb` – trayectorias + H-bonds dinámicos.
+This is the Python ↔ JavaScript synchronization layer.
 
 ---
 
-### 6. Tests: `tests/`
+### `messaging.py` — Commands to the frontend
 
-* Tests Python:
+A clean API to send operations:
 
-  * que `MolSysViewer` se instancia,
-  * que los adapters generan datos coherentes,
-  * que el `messaging` crea comandos con la estructura correcta.
+* `LOAD_PDB_STRING`
+* `SET_REPRESENTATION`
+* `SET_FRAME`
+* `SET_CAVITY_POINTCLOUD`
+* `SET_CAVITY_MESH`
+* `SET_DYNAMIC_LINES`
 
-* Más adelante podrían añadirse tests (aunque sean smoke tests) para el lado JS.
+Example:
+
+```python
+def send_command(widget, op: str, payload: dict):
+    widget.send({"op": op, "payload": payload})
+```
 
 ---
 
-## Mensaje clave para recordar
+### `data_models.py` — Visual data structures
 
-* **MolSysViewer** tiene dos almas:
+Typed structures (usually `dataclasses`) that package scientific data to be sent to the frontend:
 
-  * El **lado Python** (molsysviewer): integra MolSysMT/TopoMT, define la API de usuario y empaqueta datos.
-  * El **lado TypeScript** (js/): inicializa Mol*, define representaciones visuales y responde a mensajes.
+* `CavityCloud`
+* `CavityMesh`
+* `TrajectoryData`
+* `HbondSeries`
+* `ShapeData` (spheres, cylinders, lines)
 
-* La estructura está pensada para:
+The goal is to ensure clean, consistent graphics-ready data.
 
-  * crecer en funcionalidades (más representaciones, más overlays),
-  * no casarte solo con MolSysMT (los adapters aíslan esa dependencia),
-  * y, si un día quieres, poder reutilizar el “núcleo Mol* + representaciones” en una futura web.
+---
 
+## 3.2 Integration with MolSysMT and TopoMT — `adapters/`
+
+Adapters decouple the viewer from external library details.
+
+### `molysmt_adapter.py`
+
+Converts MolSysMT objects into:
+
+* PDB/mmCIF-like strings,
+* topology and selections,
+* trajectories → `TrajectoryData`.
+
+### `topomt_adapter.py`
+
+Converts TopoMT entities:
+
+* `Cavity`, `Mouth`, `BaseRim`, `Interface`, etc.
+* into `CavityCloud`, `CavityMesh`, and geometric shapes.
+
+The viewer only understands “clouds, meshes, shapes”.
+Adapters map scientific entities to these visual models.
+
+---
+
+## 3.3 Representation helpers (Python)
+
+### `representations/cavities.py`
+
+Handling cavity clouds, meshes, colors, opacities.
+
+### `representations/hbonds.py`
+
+Handling per-frame hydrogen-bond line overlays.
+
+### `representations/trajectories.py`
+
+Trajectory loading, frame stepping, visual styles.
+
+### `representations/shapes.py`
+
+Geometric primitives:
+
+* sphere clouds,
+* cylinders,
+* lines,
+* points.
+
+The viewer coordinates these helpers to expose a unified API.
+
+---
+
+# 4. TypeScript Frontend — `js/`
+
+```
+js/
+├── package.json
+├── tsconfig.json
+├── webpack.config.js
+└── src/
+    ├── index.ts
+    ├── widget.ts
+    ├── molstar_plugin.ts
+    ├── representations/
+    └── utils/
+```
+
+---
+
+## 4.1 Root JS files
+
+* `package.json` – JS dependencies, scripts.
+* `tsconfig.json` – TypeScript configuration.
+* `webpack.config.js` – Bundling and build pipeline.
+
+---
+
+## 4.2 Main TypeScript Components
+
+### `src/index.ts`
+
+Registers the widget (model + view) for Jupyter.
+
+---
+
+### `src/widget.ts`
+
+Defines the JS-side widget:
+
+* creates the HTML container,
+* initializes Mol*,
+* listens to messages from Python (`msg:custom`),
+* forwards actions to the Mol* plugin.
+
+---
+
+### `src/molstar_plugin.ts`
+
+The visualization engine:
+
+* instantiates and configures Mol*,
+* loads structures and trajectories,
+* updates cavity clouds and meshes,
+* renders dynamic overlays (H-bonds, shapes),
+* manages themes, clipping, advanced Mol* configuration.
+
+---
+
+## 4.3 Custom TS Representations
+
+Located in `js/src/representations/`:
+
+* `cavities-repr.ts`
+* `hbonds-repr.ts`
+* `pointcloud-repr.ts`
+
+These modules define the custom geometry, materials and rendering logic used for clouds, meshes, and dynamic lines.
+
+---
+
+## 4.4 Utilities
+
+Found in `js/src/utils/`:
+
+* `messaging.ts` — helpers to interpret Python commands.
+* `molstar-helpers.ts` — utilities for Mol* (geometry construction, color mapping, frame handling).
+
+---
+
+# 5. Documentation — `docs/`
+
+Suggested structure:
+
+```
+docs/
+├── index.md
+├── architecture.md
+├── user-guide.md
+├── dev-guide.md
+└── api-reference.md
+```
+
+Contents:
+
+* **architecture.md**: how Python, ipywidgets and Mol* work together.
+* **user-guide.md**: loading structures, cavities, trajectories, H-bonds, overlays.
+* **dev-guide.md**: extending the viewer with new representations or adapters.
+* **api-reference.md**: full Python API documentation.
+
+---
+
+# 6. Examples — `examples/`
+
+Demonstration notebooks:
+
+1. **Basic Usage** — load a PDB and display it.
+2. **MolSysMT Integration** — visualize systems and trajectories.
+3. **TopoMT Cavities** — display cavity clouds and meshes.
+4. **Dynamic Overlays** — frame-dependent H-bonds and contacts.
+
+---
+
+# 7. Tests — `tests/`
+
+Python tests include:
+
+* creation of the viewer,
+* validation of `data_models`,
+* adapters coherence,
+* structure of messages in `messaging`.
+
+Future additions:
+
+* JS smoke tests,
+* Python ↔ JS synchronization tests.
+
+---
+
+# 8. Key Idea (Final Summary)
+
+MolSysViewer is a **two-layer coordinated visualization system**:
+
+**A. Python layer:**
+
+* orchestrates scientific data,
+* builds visual data models,
+* controls state and user API,
+* communicates with Jupyter.
+
+**B. TypeScript/Mol* layer:**
+
+* renders molecules, trajectories, cavities, and overlays,
+* manages custom representations,
+* updates interactively based on Python events.
+
+The design is:
+
+* extensible (new representations and adapters),
+* decoupled (MolSysMT/TopoMT do not leak into the viewer core),
+* ready for a future **web-native** version.
+
+---
 
