@@ -1,112 +1,11 @@
-# molsysviewer/viewer.py
-
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any
-
-from IPython.display import display
-
 from .widget import MolSysViewerWidget
-from .messaging import (
-    Command,
-    LOAD_PDB_STRING,
-    RESET_CAMERA,
-    SET_FRAME,
-    SET_REPRESENTATION_BASIC,
-    DRAW_TEST_SPHERE,
-    send_command,
-)
 
-
-@dataclass
 class MolSysViewer:
-    """High-level viewer API for MolSysViewer.
+    def __init__(self):
+        self.widget = MolSysViewerWidget()
 
-    This is what end-users will mostly interact with in notebooks.
-    """
-
-    widget: MolSysViewerWidget
-
-    # ------------------------------------------------------------------
-    # Constructors
-    # ------------------------------------------------------------------
-
-    @classmethod
-    def from_empty(cls) -> "MolSysViewer":
-        """Create an empty viewer (no structure loaded)."""
-        widget = MolSysViewerWidget()
-        return cls(widget=widget)
-
-
-    @classmethod
-    def from_pdb_string(cls, pdb: str) -> "MolSysViewer":
-        """Create a viewer from a PDB string."""
-        widget = MolSysViewerWidget()
-        viewer = cls(widget=widget)
-        viewer.load_pdb_string(pdb)
-        return viewer
-
-    # Más adelante:
-    # @classmethod
-    # def from_molysmt(cls, system: Any) -> "MolSysViewer":
-    #     ...
-    #
-    # @classmethod
-    # def from_file(cls, filename: str) -> "MolSysViewer":
-    #     ...
-
-    # ------------------------------------------------------------------
-    # Notebook display
-    # ------------------------------------------------------------------
-    def show(self) -> MolSysViewerWidget:
-        """Display the widget in a Jupyter notebook."""
-        display(self.widget)
+    def show(self):
         return self.widget
 
-    # ------------------------------------------------------------------
-    # Basic operations
-    # ------------------------------------------------------------------
-    def load_pdb_string(self, pdb: str) -> None:
-        """Send a command to load a PDB string in the frontend."""
-        send_command(self.widget, Command(LOAD_PDB_STRING, {"pdb": pdb}))
-
-    def set_basic_representation(self, repr_type: str = "cartoon") -> None:
-        """Set a basic representation (cartoon, sticks, surface...) in the frontend."""
-        send_command(
-            self.widget,
-            Command(SET_REPRESENTATION_BASIC, {"type": repr_type}),
-        )
-
-    def reset_camera(self) -> None:
-        """Reset the camera in the frontend."""
-        send_command(self.widget, Command(RESET_CAMERA, {}))
-
-    # ------------------------------------------------------------------
-    # Trajectory frame control (future use)
-    # ------------------------------------------------------------------
-    def set_frame(self, index: int) -> None:
-        """Set current trajectory frame."""
-        self.widget.frame = index
-        send_command(self.widget, Command(SET_FRAME, {"index": index}))
-
-
-    # ------------------- esfera de prueba en (0,0,0) -------------------
-
-    def show_test_sphere(
-        self,
-        center: tuple[float, float, float] = (0.0, 0.0, 0.0),
-        radius: float = 1.0,
-        color: tuple[float, float, float] = (1.0, 1.0, 1.0),
-        opacity: float = 0.4,
-    ) -> None:
-        """Draw a single white-ish transparent sphere for testing."""
-        payload = {
-            "center": list(center),
-            "radius": float(radius),
-            "color": list(color),   # RGB in [0, 1]
-            "opacity": float(opacity),
-        }
-        send_command(self.widget, Command(DRAW_TEST_SPHERE, payload))
-
-
+    def show_test_sphere(self):
+        self.widget.send({"op": "test_sphere"})

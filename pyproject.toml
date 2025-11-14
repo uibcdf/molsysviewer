@@ -1,34 +1,14 @@
-[build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "molsysviewer"
-version = "0.0.0"
-description = "Interactive molecular viewer for MolSysMT/TopoMT based on Mol* and ipywidgets."
-readme = "README.md"
+version = "0.0.2"
+description = "MolSysViewer with Mol* prototype"
+authors = [{name = "UIBCDF"}]
 requires-python = ">=3.10"
-license = { text = "MIT" }
+dependencies = ["anywidget"]
 
-authors = [
-  { name = "Diego Prada", email = "you@example.com" }
-]
-
-dependencies = [
-  "ipywidgets>=8",
-  "traitlets>=5",
-]
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["molsysviewer*"]
-exclude = ["dev*", "sandbox*", "devtools*", "js*"]
-
-[tool.setuptools.package-data]
-molsysviewer = ["labextension/**"]
-
-[project.entry-points."jupyterlab.extension"]
-molsysviewer = "molsysviewer"
-
-[project.entry-points."jupyter_widgets.widget_model"]
-molsysviewer = "molsysviewer"
-
+include = ["molsysviewer"]

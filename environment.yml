@@ -5,6 +5,10 @@ dependencies:
   - python=3.12
   - nodejs>=18
   - jupyterlab>=4
-  - ipywidgets>=8
-  - jupyterlab_widgets  # habilita widgets en Lab 3/4
-  - pip
+  - ipywidgets
+  - anywidget
+  - watchdog        # autoreload para el desarrollo en JS (útil si usas vite)
+  - python-build           # para empaquetar el paquete Python
+  - pytest          # para tests
+  - black           # formateo
+  - flake8          # linting

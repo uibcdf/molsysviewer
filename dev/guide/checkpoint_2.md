@@ -211,4 +211,4 @@ Migrar a anywidget lo elimina por completo.
 ---
 
 
-👉 **Montamos el esqueleto de “MolSysViewer-anywidget” desde cero (o migramos lo que ya tienes).**
+Siguiente paso: **Montamos el nuevo esqueleto de “MolSysViewer” casi desde cero.**
