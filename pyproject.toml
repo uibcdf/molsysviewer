@@ -3,8 +3,11 @@ name = "molsysviewer"
 version = "0.0.2"
 description = "MolSysViewer with Mol* prototype"
 authors = [{name = "UIBCDF"}]
+readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["anywidget"]
+dependencies = [
+  "anywidget"
+]
 
 [build-system]
 requires = ["setuptools>=64", "wheel"]
@@ -12,3 +15,33 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["molsysviewer"]
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+# directorios a analizar (ajusta si quieres)
+src = ["molsysviewer", "tests"]
+
+# Reglas base (similar a flake8 + import order, etc.)
+select = [
+  "E",  # errores estilo (flake8)
+  "W",  # warnings estilo
+  "F",  # errores pyflakes
+  "I",  # isort (orden de imports)
+  "B",  # bugbear
+]
+ignore = [
+  "E203",  # compatible con black (espacios antes de ':')
+  "W503",  # compatible con black (line break before operator)
+]
+
+[tool.ruff.format]
+# Black sigue siendo el formateador principal, pero esto futura-prueba si usas `ruff format`
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+

@@ -11,4 +11,4 @@ dependencies:
   - python-build           # para empaquetar el paquete Python
   - pytest          # para tests
   - black           # formateo
-  - flake8          # linting
+  - ruff          # linting ultra-rápido
