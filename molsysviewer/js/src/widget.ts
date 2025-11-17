@@ -1,171 +1,128 @@
+// widget.ts — MolSysViewer stable version
+// --------------------------------------
+// This file restores a stable Mol* viewer setup that:
+//   ✔ shows axes
+//   ✔ loads and displays a PDB structure
+//   ✔ logs sphere parameters (placeholder)
+// without attempting to use Mol* APIs that are not yet verified
+// in this specific molstar@5.x build.
+//
+// A future branch will implement real shapes safely.
 
-// js/src/widget.ts
+import type { AnyModel } from "anywidget";
+import { PluginContext } from "molstar/lib/mol-plugin/context";
+import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 
-import type { AnyModel } from 'anywidget';
-import { PluginContext } from 'molstar/lib/mol-plugin/context';
-import { DefaultPluginSpec } from 'molstar/lib/mol-plugin/spec';
-import { addTransparentSphereToPlugin } from './shapes';
+import {
+    describeTransparentSphere,
+    TransparentSphereOptions,
+} from "./shapes";
 
 interface MolSysViewerModel extends AnyModel {
-  on(event: string, cb: (msg: any) => void): void;
-  send(msg: any): void;
+    on(event: string, cb: (msg: any) => void): void;
+    send(msg: any): void;
 }
 
-// Crea un PluginContext de Mol* con un canvas propio dentro de `container`
+// ---------------------------------------------------------
+// CREATE MOL* PLUGIN (viewer only, stable, minimal)
+// ---------------------------------------------------------
 async function createMolSysPlugin(container: HTMLElement): Promise<PluginContext> {
-  const canvas = document.createElement('canvas');
-  canvas.style.width = '100%';
-  canvas.style.height = '100%';
-  container.appendChild(canvas);
+    const canvas = document.createElement("canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    container.appendChild(canvas);
 
-  const spec = DefaultPluginSpec();
-  const plugin = new PluginContext(spec);
-  await plugin.init();
+    // Use DefaultPluginSpec() WITHOUT modifications.
+    // This matches the working setup where structures were visible.
+    const plugin = new PluginContext(DefaultPluginSpec());
 
-  // Mol* 5.x: método asíncrono para inicializar el viewer
-  const ok = await plugin.initViewerAsync(canvas, container);
-  if (!ok) {
-    console.error('MolSysViewer: Failed to init Mol* viewer');
-  }
+    // Initialize core plugin
+    await plugin.init();
 
-  return plugin;
+    // Initialize viewer (axes, interaction, etc.)
+    await plugin.initViewerAsync(canvas, container);
+
+    console.log("MolSysViewer: Plugin initialized.");
+
+    return plugin;
 }
 
-async function loadStructureFromString(
-  plugin: PluginContext,
-  params: { format: 'pdb' | 'mmcif'; data: string; label?: string },
-) {
-  const { format, data, label } = params;
+// ---------------------------------------------------------
+// LOAD STRUCTURE (this already worked correctly before)
+// ---------------------------------------------------------
+async function loadStructureFromString(plugin: PluginContext, msg: any) {
+    const raw = await plugin.builders.data.rawData({
+        data: msg.data,
+        label: msg.label,
+    });
 
-  const dataBuilder = plugin.builders.data;
-  const structureBuilder = plugin.builders.structure;
+    const traj = await plugin.builders.structure.parseTrajectory(
+        raw,
+        msg.format
+    );
 
-  // 1. Nodo de datos crudos
-  const dataState = await dataBuilder.rawData({
-    data,
-    label: label ?? `string-${format}`,
-  });
+    await plugin.builders.structure.hierarchy.applyPreset(traj, "default");
 
-  // 2. Parsear a trayectoria (OJO: parseTrajectory cuelga del structureBuilder)
-  const trajectory = await structureBuilder.parseTrajectory(dataState, format);
-
-  // 3. Aplicar preset por defecto para ver algo
-  await structureBuilder.hierarchy.applyPreset(trajectory, 'default');
-
-  plugin.canvas3d?.requestCameraReset();
+    plugin.canvas3d?.requestCameraReset();
+    console.log("MolSysViewer: structure loaded.");
 }
 
-async function loadStructureFromUrl(
-  plugin: PluginContext,
-  params: { url: string; format: 'pdb' | 'mmcif' | 'auto'; label?: string },
-) {
-  let { url, format, label } = params;
+// ---------------------------------------------------------
+// PLACEHOLDER FOR CUSTOM SHAPES
+// ---------------------------------------------------------
+async function placeholderTransparentSphere(plugin: PluginContext, options: any) {
+    const opts: TransparentSphereOptions = {
+        center: options?.center ?? [0, 0, 0],
+        radius: options?.radius ?? 1,
+        color: options?.color ?? 0x00ff00,
+        alpha: options?.alpha ?? 0.4,
+    };
 
-  if (!url || typeof url !== 'string') {
-    console.warn('MolSysViewer: url vacío o no-string en load_structure_from_url');
-    return;
-  }
+    console.log(
+        "MolSysViewer: test_transparent_sphere (placeholder)\n" +
+            describeTransparentSphere(opts)
+    );
 
-  if (format === 'auto' || !format) {
-    const lower = url.toLowerCase();
-    if (lower.endsWith('.cif') || lower.endsWith('.mmcif')) format = 'mmcif';
-    else format = 'pdb';
-  }
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    console.error(`MolSysViewer: error HTTP ${response.status} al descargar ${url}`);
-    return;
-  }
-  const text = await response.text();
-
-  await loadStructureFromString(plugin, {
-    format: (format === 'mmcif' ? 'mmcif' : 'pdb'),
-    data: text,
-    label: label ?? `From URL: ${url}`,
-  });
+    // IMPORTANT:
+    // We do NOT touch plugin.representation, transforms, or any
+    // Mol* internal shape APIs here. This is just a logging hook.
 }
 
-export async function render({ model, el }: { model: MolSysViewerModel; el: HTMLElement }) {
-  // limpiar contenedor
-  el.innerHTML = '';
+// ---------------------------------------------------------
+// RENDER ENTRY POINT
+// ---------------------------------------------------------
+function render({
+    model,
+    el,
+}: {
+    model: MolSysViewerModel;
+    el: HTMLElement;
+}) {
+    el.innerHTML = "";
 
-  const container = document.createElement('div');
-  container.style.position = 'relative';
-  container.style.width = '100%';
-  container.style.height = '500px';
-  container.style.border = '1px solid #ccc';
-  el.appendChild(container);
+    const container = document.createElement("div");
+    container.style.width = "100%";
+    container.style.height = "500px";
+    el.appendChild(container);
 
-  const plugin = await createMolSysPlugin(container);
+    createMolSysPlugin(container).then((plugin) => {
+        model.on("msg:custom", async (msg: any) => {
+            if (!msg || typeof msg.op !== "string") return;
 
-  // Mensajes desde Python
-  model.on('msg:custom', async (msg: any) => {
-    if (!msg || typeof msg.op !== 'string') return;
+            if (msg.op === "load_structure_from_string") {
+                await loadStructureFromString(plugin, msg);
+                return;
+            }
 
-    console.log('MolSysViewer: mensaje recibido', msg);
-
-    // --- cargar estructura desde string (PDB o mmCIF) ---
-    if (msg.op === 'load_structure_from_string') {
-      const format = (msg.format || 'pdb') as 'pdb' | 'mmcif';
-      const data = msg.data as string;
-      const label = msg.label || 'MolSysViewer structure';
-
-      if (!data || typeof data !== 'string') {
-        console.warn('MolSysViewer: data vacío o no-string en load_structure_from_string');
-        return;
-      }
-
-      try {
-        await loadStructureFromString(plugin, { format, data, label });
-      } catch (e) {
-        console.error('MolSysViewer: error cargando estructura desde string', e);
-      }
-      return;
-    }
-
-    // --- cargar estructura desde URL ---
-    if (msg.op === 'load_structure_from_url') {
-      try {
-        await loadStructureFromUrl(plugin, {
-          url: msg.url as string,
-          format: (msg.format || 'auto') as 'pdb' | 'mmcif' | 'auto',
-          label: msg.label as string | undefined,
+            if (msg.op === "test_transparent_sphere") {
+                await placeholderTransparentSphere(plugin, msg.options);
+                return;
+            }
         });
-      } catch (e) {
-        console.error('MolSysViewer: error cargando estructura desde URL', e);
-      }
-      return;
-    }
 
-    // --- esfera transparente de test ---
-    if (msg.op === 'test_transparent_sphere') {
-      try {
-        const options = msg.options || {};
-        await addTransparentSphereToPlugin(
-          plugin,
-          options.center as [number, number, number],
-          options.radius as number,
-          options.color as number,
-          options.alpha as number,
-        );
-      } catch (e) {
-        console.error('MolSysViewer: error en test_transparent_sphere', e);
-      }
-      return;
-    }
-
-    // --- limpiar escena ---
-    if (msg.op === 'clear') {
-      try {
-        await plugin.clear();
-      } catch (e) {
-        console.warn('MolSysViewer: error al limpiar la escena', e);
-      }
-      return;
-    }
-  });
-
-  // Notificar back-end: listo para recibir mensajes
-  model.send({ event: 'ready' });
+        model.send({ event: "ready" });
+    });
 }
+
+export default { render };
+
