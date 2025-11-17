@@ -1,128 +1,149 @@
-// widget.ts — MolSysViewer stable version
-// --------------------------------------
-// This file restores a stable Mol* viewer setup that:
-//   ✔ shows axes
-//   ✔ loads and displays a PDB structure
-//   ✔ logs sphere parameters (placeholder)
-// without attempting to use Mol* APIs that are not yet verified
-// in this specific molstar@5.x build.
-//
-// A future branch will implement real shapes safely.
+// src/widget.ts
+// Frontend de MolSysViewer para anywidget (Mol* 5.x, shapes incluidos)
 
-import type { AnyModel } from "anywidget";
-import { PluginContext } from "molstar/lib/mol-plugin/context";
-import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
+import { PluginContext } from 'molstar/lib/mol-plugin/context';
+import { DefaultPluginSpec } from 'molstar/lib/mol-plugin/spec';
+import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
 
 import {
-    describeTransparentSphere,
-    TransparentSphereOptions,
-} from "./shapes";
+    addTransparentSphereFromPython,
+    TransparentSphereSpec,
+} from './shapes';
 
-interface MolSysViewerModel extends AnyModel {
-    on(event: string, cb: (msg: any) => void): void;
-    send(msg: any): void;
+// ------------------------
+// Tipos de mensajes Python
+// ------------------------
+
+type TransparentSphereMessage = {
+    op: 'test_transparent_sphere';
+    options?: TransparentSphereSpec;
+};
+
+type LoadStructureMessage = {
+    op: 'load_pdb_string' | 'load_structure_from_string';
+    options?: {
+        pdb_string?: string;
+        pdb?: string;
+        pdb_text?: string;
+        data?: string;
+        text?: string;
+        label?: string;
+    };
+};
+
+type ViewerMessage =
+    | TransparentSphereMessage
+    | LoadStructureMessage
+    | { op?: string; [k: string]: any };
+
+// anywidget model (no lo tipamos fuerte para no pelear con versiones)
+type MolSysViewerModel = {
+    on: (event: string, cb: (arg?: any) => void) => void;
+};
+
+// ------------------------
+// Helpers Mol*
+// ------------------------
+
+async function loadStructureFromString(
+    plugin: PluginContext,
+    data: string,
+    label?: string
+) {
+    const raw = await plugin.builders.data.rawData({
+        data,
+        label: label ?? 'PDB string',
+    });
+
+    const trajectory = await plugin.builders.structure.parseTrajectory(raw, 'pdb');
+    await plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default');
 }
 
-// ---------------------------------------------------------
-// CREATE MOL* PLUGIN (viewer only, stable, minimal)
-// ---------------------------------------------------------
-async function createMolSysPlugin(container: HTMLElement): Promise<PluginContext> {
-    const canvas = document.createElement("canvas");
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    container.appendChild(canvas);
-
-    // Use DefaultPluginSpec() WITHOUT modifications.
-    // This matches the working setup where structures were visible.
+async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
     const plugin = new PluginContext(DefaultPluginSpec());
 
-    // Initialize core plugin
-    await plugin.init();
-
-    // Initialize viewer (axes, interaction, etc.)
-    await plugin.initViewerAsync(canvas, container);
-
-    console.log("MolSysViewer: Plugin initialized.");
+    await plugin.mountAsync(target as HTMLDivElement);
+    await plugin.canvas3dInitialized;
 
     return plugin;
 }
 
-// ---------------------------------------------------------
-// LOAD STRUCTURE (this already worked correctly before)
-// ---------------------------------------------------------
-async function loadStructureFromString(plugin: PluginContext, msg: any) {
-    const raw = await plugin.builders.data.rawData({
-        data: msg.data,
-        label: msg.label,
-    });
+// ------------------------
+// render() para anywidget
+// ------------------------
 
-    const traj = await plugin.builders.structure.parseTrajectory(
-        raw,
-        msg.format
-    );
+function renderImpl({ model, el }: { model: MolSysViewerModel; el: HTMLElement }) {
+    const container = el as HTMLDivElement;
 
-    await plugin.builders.structure.hierarchy.applyPreset(traj, "default");
+    // Aseguramos que el contenedor tenga tamaño visible
+    container.innerHTML = '';
+    container.style.position = 'relative';
+    container.style.width = '100%';
+    container.style.display = 'block';
+    container.style.height = '480px';   // ajusta este valor a tu gusto
+    container.style.minHeight = '400px';
 
-    plugin.canvas3d?.requestCameraReset();
-    console.log("MolSysViewer: structure loaded.");
-}
+    // Creamos el plugin una sola vez para este elemento
+    const pluginPromise = createMolSysViewer(container);
 
-// ---------------------------------------------------------
-// PLACEHOLDER FOR CUSTOM SHAPES
-// ---------------------------------------------------------
-async function placeholderTransparentSphere(plugin: PluginContext, options: any) {
-    const opts: TransparentSphereOptions = {
-        center: options?.center ?? [0, 0, 0],
-        radius: options?.radius ?? 1,
-        color: options?.color ?? 0x00ff00,
-        alpha: options?.alpha ?? 0.4,
-    };
+    // Escuchamos los mensajes que envía Python con `widget.send(...)`
+    (model as any).on('msg:custom', async (msg: ViewerMessage) => {
+        if (!msg || typeof msg !== 'object') return;
+        const plugin = await pluginPromise;
 
-    console.log(
-        "MolSysViewer: test_transparent_sphere (placeholder)\n" +
-            describeTransparentSphere(opts)
-    );
+        switch (msg.op) {
+            case 'load_pdb_string':
+            case 'load_structure_from_string': {
+                const opts = msg.options ?? {};
+                const pdb: string | undefined =
+                    opts.pdb_string ??
+                    opts.pdb ??
+                    opts.pdb_text ??
+                    opts.data ??
+                    opts.text;
 
-    // IMPORTANT:
-    // We do NOT touch plugin.representation, transforms, or any
-    // Mol* internal shape APIs here. This is just a logging hook.
-}
+                if (!pdb || typeof pdb !== 'string') {
+                    console.warn('[MolSysViewer] load_* sin cadena PDB válida', msg);
+                    return;
+                }
 
-// ---------------------------------------------------------
-// RENDER ENTRY POINT
-// ---------------------------------------------------------
-function render({
-    model,
-    el,
-}: {
-    model: MolSysViewerModel;
-    el: HTMLElement;
-}) {
-    el.innerHTML = "";
-
-    const container = document.createElement("div");
-    container.style.width = "100%";
-    container.style.height = "500px";
-    el.appendChild(container);
-
-    createMolSysPlugin(container).then((plugin) => {
-        model.on("msg:custom", async (msg: any) => {
-            if (!msg || typeof msg.op !== "string") return;
-
-            if (msg.op === "load_structure_from_string") {
-                await loadStructureFromString(plugin, msg);
-                return;
+                try {
+                    await loadStructureFromString(plugin, pdb, opts.label);
+                } catch (e) {
+                    console.error('[MolSysViewer] Error cargando estructura:', e);
+                }
+                break;
             }
 
-            if (msg.op === "test_transparent_sphere") {
-                await placeholderTransparentSphere(plugin, msg.options);
-                return;
+            case 'test_transparent_sphere': {
+                const opts = (msg as TransparentSphereMessage).options ?? {};
+                const spec: TransparentSphereSpec = {
+                    center: opts.center ?? [0, 0, 0],
+                    radius: opts.radius ?? 10,
+                    color: opts.color ?? 0x00ff00,
+                    alpha: opts.alpha ?? 0.4,
+                    id: opts.id ?? 'sphere-0',
+                };
+                try {
+                    await addTransparentSphereFromPython(plugin, spec);
+                } catch (e) {
+                    console.error('[MolSysViewer] Error añadiendo esfera:', e);
+                }
+                break;
             }
-        });
 
-        model.send({ event: "ready" });
+            default: {
+                if ((msg as any).op) {
+                    console.warn('[MolSysViewer] op desconocida', (msg as any).op, msg);
+                }
+                break;
+            }
+        }
     });
 }
 
-export default { render };
+// anywidget 0.9+ recomienda export default { render }
+export default {
+    render: renderImpl,
+};
 
