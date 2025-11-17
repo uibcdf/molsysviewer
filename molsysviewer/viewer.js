@@ -139892,49 +139892,12 @@ var DefaultPluginSpec = () => ({
 });
 
 // src/shapes.ts
-function createTransparentSphereShape(options) {
-  const {
-    center: center2 = [0, 0, 0],
-    radius = 10,
-    color = 65280,
-    alpha = 0.4,
-    label: label2 = "transparent-sphere"
-  } = options;
-  const builder = MeshBuilder.createState(128, 64);
-  const t5 = Mat4.identity();
-  const v4 = Vec3.zero();
-  const sphere = Sphere3D.create(Vec3.create(0, 0, 0), 1);
-  Vec3.set(v4, center2[0], center2[1], center2[2]);
-  Mat4.identity(t5);
-  Mat4.setTranslation(t5, v4);
-  Mat4.scaleUniformly(t5, t5, radius);
-  MeshBuilder.addSphere(builder, t5, sphere, 1);
-  const mesh = MeshBuilder.getMesh(builder);
-  const colorObj = Color(color);
-  const getColor = () => colorObj;
-  const getSize = () => 1;
-  const getLabel = () => label2;
-  const shape = Shape.create(label2, {}, mesh, getColor, getSize, getLabel);
-  shape.alpha = alpha;
-  return shape;
-}
-async function addTransparentSphereToPlugin(plugin, options) {
-  const canvas3d = plugin.canvas3d;
-  if (!canvas3d) {
-    console.warn("MolSysViewer: canvas3d no disponible en plugin.");
-    return;
-  }
-  const shape = createTransparentSphereShape(options);
-  const repr = ShapeRepresentation.create(
-    { webgl: canvas3d.webgl, renderer: canvas3d.renderer },
-    {}
-  );
-  const props = {
-    alpha: options.alpha ?? 0.4
-  };
-  await repr.createOrUpdate(props, shape).run();
-  canvas3d.add(repr);
-  canvas3d.requestCameraReset();
+function describeTransparentSphere(opts) {
+  return `Transparent sphere placeholder:
+    center = [${opts.center.join(", ")}]
+    radius = ${opts.radius}
+    color  = 0x${opts.color.toString(16)}
+    alpha  = ${opts.alpha}`;
 }
 
 // src/widget.ts
@@ -139943,100 +139906,63 @@ async function createMolSysPlugin(container) {
   canvas.style.width = "100%";
   canvas.style.height = "100%";
   container.appendChild(canvas);
-  const spec = DefaultPluginSpec();
-  const plugin = new PluginContext(spec);
+  const plugin = new PluginContext(DefaultPluginSpec());
   await plugin.init();
-  const ok = await plugin.initViewerAsync(canvas, container);
-  if (!ok) {
-    console.error("MolSysViewer: Failed to init Mol* viewer");
-  }
+  await plugin.initViewerAsync(canvas, container);
+  console.log("MolSysViewer: Plugin initialized.");
   return plugin;
 }
-async function render({ model, el }) {
+async function loadStructureFromString(plugin, msg) {
+  const raw = await plugin.builders.data.rawData({
+    data: msg.data,
+    label: msg.label
+  });
+  const traj = await plugin.builders.structure.parseTrajectory(
+    raw,
+    msg.format
+  );
+  await plugin.builders.structure.hierarchy.applyPreset(traj, "default");
+  plugin.canvas3d?.requestCameraReset();
+  console.log("MolSysViewer: structure loaded.");
+}
+async function placeholderTransparentSphere(plugin, options) {
+  const opts = {
+    center: options?.center ?? [0, 0, 0],
+    radius: options?.radius ?? 1,
+    color: options?.color ?? 65280,
+    alpha: options?.alpha ?? 0.4
+  };
+  console.log(
+    "MolSysViewer: test_transparent_sphere (placeholder)\n" + describeTransparentSphere(opts)
+  );
+}
+function render({
+  model,
+  el
+}) {
   el.innerHTML = "";
   const container = document.createElement("div");
-  container.style.position = "relative";
   container.style.width = "100%";
   container.style.height = "500px";
-  container.style.border = "1px solid #ccc";
   el.appendChild(container);
-  const plugin = await createMolSysPlugin(container);
-  async function loadStructureFromString(data, format, label2) {
-    const dataBuilder = plugin.builders.data;
-    const structureBuilder = plugin.builders.structure;
-    const dataState = dataBuilder.rawData({ data, label: label2 });
-    const parsed = await dataBuilder.parseTrajectory(dataState, format);
-    await structureBuilder.hierarchy.applyPreset(parsed, "default");
-    plugin.canvas3d?.requestCameraReset();
-  }
-  async function loadStructureFromUrl(url, format, label2) {
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error(`MolSysViewer: error HTTP ${response.status} al descargar ${url}`);
-      return;
-    }
-    const text = await response.text();
-    await loadStructureFromString(text, format, label2);
-  }
-  model.on("msg:custom", async (msg) => {
-    if (!msg || typeof msg.op !== "string") return;
-    console.log("MolSysViewer: mensaje recibido", msg);
-    if (msg.op === "load_structure_from_string") {
-      const format = msg.format || "pdb";
-      const data = msg.data;
-      const label2 = msg.label || "MolSysViewer structure";
-      if (!data || typeof data !== "string") {
-        console.warn("MolSysViewer: data vac\xEDo o no-string en load_structure_from_string");
+  createMolSysPlugin(container).then((plugin) => {
+    model.on("msg:custom", async (msg) => {
+      if (!msg || typeof msg.op !== "string") return;
+      if (msg.op === "load_structure_from_string") {
+        await loadStructureFromString(plugin, msg);
         return;
       }
-      try {
-        await loadStructureFromString(data, format, label2);
-      } catch (e) {
-        console.error("MolSysViewer: error cargando estructura desde string", e);
-      }
-      return;
-    }
-    if (msg.op === "load_structure_from_url") {
-      const url = msg.url;
-      if (!url || typeof url !== "string") {
-        console.warn("MolSysViewer: url vac\xEDo o no-string en load_structure_from_url");
+      if (msg.op === "test_transparent_sphere") {
+        await placeholderTransparentSphere(plugin, msg.options);
         return;
       }
-      let format = msg.format || "pdb";
-      const label2 = msg.label || `From URL: ${url}`;
-      if (format === "auto") {
-        const lower = url.toLowerCase();
-        if (lower.endsWith(".cif") || lower.endsWith(".mmcif")) format = "mmcif";
-        else format = "pdb";
-      }
-      try {
-        await loadStructureFromUrl(url, format, label2);
-      } catch (e) {
-        console.error("MolSysViewer: error cargando estructura desde URL", e);
-      }
-      return;
-    }
-    if (msg.op === "test_transparent_sphere") {
-      try {
-        await addTransparentSphereToPlugin(plugin, msg.options || {});
-      } catch (e) {
-        console.error("MolSysViewer: error en test_transparent_sphere", e);
-      }
-      return;
-    }
-    if (msg.op === "clear") {
-      try {
-        await plugin.clear();
-      } catch (e) {
-        console.warn("MolSysViewer: error al limpiar la escena", e);
-      }
-      return;
-    }
+    });
+    model.send({ event: "ready" });
   });
-  model.send({ event: "ready" });
 }
+var widget_default = { render };
 export {
-  render
+  widget_default as default
 };
 /*! Bundled license information:
 
