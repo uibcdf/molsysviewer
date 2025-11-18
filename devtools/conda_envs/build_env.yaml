@@ -1,5 +1,5 @@
-name: molsysviewer_build_env
 channels:
+  - uibcdf
   - conda-forge
 
 dependencies:
