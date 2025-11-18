@@ -1,0 +1,16 @@
+name: molsysviewer_build_env
+channels:
+  - conda-forge
+
+dependencies:
+  # Core tools for building and uploading conda packages
+  - python=3.12
+  - conda-build
+  - anaconda-client
+
+  # Needed to build the JS bundle (viewer.js) during conda build
+  - nodejs>=18
+
+  # Python packaging helpers
+  - pip
+  - python-build

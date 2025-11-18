@@ -1,0 +1,28 @@
+{% set name = "molsysviewer" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ../..   # raíz del repositorio (ajusta si tu estructura es otra)
+
+build:
+  noarch: python
+  script: bash build.sh
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - nodejs  # para npm y el build de viewer.js
+  run:
+    - python >=3.10
+    - anywidget
+
+about:
+  home: "https://github.com/uibcdf/molsysviewer"
+  license: "MIT"  # o lo que toque
+  summary: "Molecular viewer based on Mol* and anywidget."
+
