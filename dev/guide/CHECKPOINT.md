@@ -1,96 +1,88 @@
 # MolSysViewer — Development Checkpoint
-_Date: 2025-02 (Integrated Legacy Notes)_
+_Last updated: 2025-11_
 
-This checkpoint unifies the current state of the project with all valuable
-insights preserved from the older checkpoints.
+This checkpoint captures the **current stable state** of MolSysViewer after
+the successful integration of anywidget, the Mol* initialization fix, and the
+new Python mini-API for shapes. This replaces the older checkpoints
+(legacy content preserved where still relevant).
 
 ---
 
-# 1. Where We Stand Today
+# 1. Current Status (Stable)
 
-### ✔ Working Elements
-- Mol* PluginContext initializes cleanly.
-- Canvas, camera, and view controls operate correctly in Jupyter.
-- Python ↔ JS messaging system is stable.
-- TypeScript bundle compiles via esbuild.
-- The architecture supports complete control of Mol* internals.
+### ✔ Core Viewer
+- Mol* `PluginContext` initializes correctly using `init()` + `initViewerAsync()`.
+- Canvas is created once and rendered without flicker.
+- Default Mol* representation loads successfully.
+- Structure loading works from:
+  - PDB strings
+  - mmCIF strings
+  - remote URLs
 
-### ✔ Integrated Legacy Insights
-- A clean restart was the correct decision.
-- Custom shapes are essential for TopoMT/PharmacophoreMT.
-- MolSysViewer must serve as the visualization backbone for the uibcdf ecosystem.
-- The Python API must be simple, elegant, declarative where possible.
-- Internal shape logic must be isolated and testable.
+### ✔ Python ↔ JS Messaging
+- Message queueing works with `self._send()` until `"ready"` is emitted.
+- Commands for:
+  - `load_pdb_string`
+  - `load_structure_from_url`
+  are fully stable.
+
+### ✔ Shapes (Current Capabilities)
+- Transparent spheres now render correctly.
+- New Python API:
+  - `add_sphere(...)`
+  - `add_spheres(...)` (vectorized, uses `add_sphere` internally)
+- JS shape dispatcher is stable and easily extensible.
+
+### ✔ Architecture Fully Updated
+The modern architecture replaces the legacy labextension-based prototypes.
 
 ---
 
 # 2. What We Have Learned
 
-## Technical Lessons (Legacy + Modern)
-- Mol* CDN is insufficient for scientific visualization.
-- Mol* 5.x changed APIs (`initViewerAsync`, new builder patterns).
-- Custom geometry requires low-level access to geometry modules.
-- anywidget is more minimalistic and powerful than traditional labextensions.
-- The old labextension architecture was not sustainable.
+### Technical Insights
+- Mol* must be initialized with `plugin.init()` before using builders.
+- anywidget is dramatically simpler and more robust than JupyterLab extensions.
+- TypeScript + esbuild bundling avoids CDN limitations and gives full control.
+- Shape logic must be decoupled from widget initialization.
 
-## Architectural Insights
-- Clear separation between:
-  - Python API
-  - widget renderer
-  - shape utilities
-- Need for a stable internal contract for shapes:
-  - TopoMT surfaces → meshes
-  - PharmacophoreMT features → spheres/arrows/discs
+### Architectural Principles
+- Python API = user-facing abstraction.
+- JS API = rendering + geometric utilities.
+- Shapes must be handled in a dedicated module (currently `shapes.ts`).
+- Avoid re-render loops (fixed in the new widget.ts design).
 
 ---
 
-# 3. Pending Work (Critical Path)
+# 3. What Works Now (Guaranteed)
 
-### Molecule Loading
-- Finalize string → structure → representation pipeline.
-- Add MolSysMT integration layer.
-
-### Shape System
-- Implement working transparent sphere.
-- Implement points, arrows, cylinders.
-- Implement meshes for cavity surfaces.
-- Support 1D curves for mouths/rims.
-
-### High-Level Python API
-- `add_sphere()`
-- `add_mesh()`
-- `add_surface()`
-- `center_on()`
+| Feature                           | Status |
+|----------------------------------|--------|
+| Viewer display in Jupyter        | ✔ Stable |
+| Load PDB / mmCIF strings         | ✔ Stable |
+| Load from URL                    | ✔ Stable |
+| Transparent spheres              | ✔ Working |
+| Python message queue             | ✔ Working |
+| Mini-API: `add_sphere`           | ✔ Working |
+| Mini-API: `add_spheres`          | ✔ Working |
 
 ---
 
-# 4. Medium-Term Goals
+# 4. Immediate Focus
 
-### TopoMT
-- Cavity rendering (surfaces)
-- Cluster highlighting
-- Mouth/rim curves
-
-### PharmacophoreMT
-- Spheres, arrows, planes, discs
-- Group and label features
-
-### MolSysMT
-- Trajectories
-- Selections synchronised with viewer
+1. Add new shapes:
+   - cylinders  
+   - arrows  
+   - points (billboards)  
+   - labels  
+2. Add tags for groups of objects.
+3. Add `clear(tag=...)` to delete groups of shapes.
+4. Add camera utilities:
+   - `center_on(point)`  
+   - `fit_to_bbox(...)`  
 
 ---
 
-# 5. Long-Term Vision
+# 5. Summary
 
-MolSysViewer is evolving into a powerful, extensible, scientifically capable
-visualization engine tailored to the needs of molecular modeling, structural
-analysis, cavity exploration, pharmacophore modeling, and ML-driven annotation
-workflows.
-
-Its design philosophy is founded on:
-- simplicity in Python
-- power in TypeScript/Mol*
-- extensibility for research
-- long-term maintainability
-
+MolSysViewer is now **solid**, **predictable**, and ready to grow.
