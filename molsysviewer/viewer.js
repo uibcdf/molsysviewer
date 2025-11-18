@@ -140047,7 +140047,6 @@ var DefaultPluginSpec = () => ({
 
 // src/shapes.ts
 var MSVTransform = Transformer.builderFactory("molsysviewer");
-var TransparentSphereTag = "molsysviewer:spheres";
 var TransparentSphereParams = {
   ...Mesh.Params
 };
@@ -140057,12 +140056,7 @@ function buildSphereMesh(data, _props, prev) {
   for (let i = 0, il = data.spheres.length; i < il; i++) {
     const s = data.spheres[i];
     state.currentGroup = i;
-    addSphere(
-      state,
-      Vec3.create(s.center[0], s.center[1], s.center[2]),
-      s.radius,
-      detail
-    );
+    addSphere(state, Vec3.create(s.center[0], s.center[1], s.center[2]), s.radius, detail);
   }
   return MeshBuilder.getMesh(state);
 }
@@ -140133,7 +140127,9 @@ var TransparentSphere3D = MSVTransform({
         { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
         () => TransparentSphereShapeParams
       );
-      const props = ParamDefinition.getDefaultValues(TransparentSphereShapeParams);
+      const props = {
+        ...ParamDefinition.getDefaultValues(TransparentSphereShapeParams)
+      };
       await repr.createOrUpdate(props, data).runInContext(ctx);
       repr.setState({ alphaFactor: params.alpha });
       return new PluginStateObject.Shape.Representation3D(
@@ -140142,7 +140138,7 @@ var TransparentSphere3D = MSVTransform({
       );
     });
   },
-  update({ b: b8, newParams }) {
+  update({ b: b8, newParams }, _plugin) {
     return Task.create("Transparent Sphere", async (ctx) => {
       const data = {
         spheres: [
@@ -140178,7 +140174,7 @@ async function addTransparentSphereFromPython(plugin, spec) {
       color: spec.color,
       alpha: spec.alpha
     },
-    { tags: TransparentSphereTag }
+    { tags: "molsysviewer:spheres" }
   );
   await PluginCommands.State.Update(plugin, {
     state: plugin.state.data,
@@ -140188,78 +140184,69 @@ async function addTransparentSphereFromPython(plugin, spec) {
   return sphere.ref;
 }
 
-// src/widget.ts
-async function loadStructureFromString(plugin, data, label2) {
+// src/structure.ts
+async function loadStructureFromString(plugin, data, format = "pdb", label2) {
   const raw = await plugin.builders.data.rawData({
     data,
-    label: label2 ?? "PDB string"
+    label: label2 ?? "Structure from string",
+    // extension opcional; ayuda a algunos parsers
+    ext: format
   });
-  const trajectory = await plugin.builders.structure.parseTrajectory(raw, "pdb");
+  const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
   await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
 }
+
+// src/widget.ts
 async function createMolSysViewer(target) {
   const plugin = new PluginContext(DefaultPluginSpec());
   await plugin.mountAsync(target);
   await plugin.canvas3dInitialized;
   return plugin;
 }
-function renderImpl({ model, el }) {
-  const container = el;
-  container.innerHTML = "";
-  container.style.position = "relative";
-  container.style.width = "100%";
-  container.style.display = "block";
-  container.style.height = "480px";
-  container.style.minHeight = "400px";
-  const pluginPromise = createMolSysViewer(container);
-  model.on("msg:custom", async (msg) => {
-    if (!msg || typeof msg !== "object") return;
-    const plugin = await pluginPromise;
-    switch (msg.op) {
-      case "load_pdb_string":
-      case "load_structure_from_string": {
-        const opts = msg.options ?? {};
-        const pdb = opts.pdb_string ?? opts.pdb ?? opts.pdb_text ?? opts.data ?? opts.text;
-        if (!pdb || typeof pdb !== "string") {
-          console.warn("[MolSysViewer] load_* sin cadena PDB v\xE1lida", msg);
-          return;
-        }
-        try {
-          await loadStructureFromString(plugin, pdb, opts.label);
-        } catch (e) {
-          console.error("[MolSysViewer] Error cargando estructura:", e);
-        }
-        break;
-      }
-      case "test_transparent_sphere": {
-        const opts = msg.options ?? {};
-        const spec = {
-          center: opts.center ?? [0, 0, 0],
-          radius: opts.radius ?? 10,
-          color: opts.color ?? 65280,
-          alpha: opts.alpha ?? 0.4,
-          id: opts.id ?? "sphere-0"
-        };
-        try {
-          await addTransparentSphereFromPython(plugin, spec);
-        } catch (e) {
-          console.error("[MolSysViewer] Error a\xF1adiendo esfera:", e);
-        }
-        break;
-      }
-      default: {
-        if (msg.op) {
-          console.warn("[MolSysViewer] op desconocida", msg.op, msg);
-        }
-        break;
-      }
-    }
-  });
-}
 var widget_default = {
-  render: renderImpl
+  render({ model, el }) {
+    const pluginPromise = createMolSysViewer(el);
+    console.log("[MolSysViewer] widget render inicial");
+    model.on("msg:custom", async (msg) => {
+      if (!msg || typeof msg !== "object") return;
+      console.log("[MolSysViewer] mensaje desde Python:", msg);
+      const plugin = await pluginPromise;
+      switch (msg.op) {
+        case "load_structure_from_string":
+        case "load_pdb_string": {
+          const text = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
+          if (!text || typeof text !== "string") {
+            console.warn("[MolSysViewer] mensaje de carga sin data/pdb/pdb_text");
+            return;
+          }
+          const format = msg.format ?? "pdb";
+          const label2 = msg.label ?? "Structure";
+          try {
+            await loadStructureFromString(plugin, text, format, label2);
+          } catch (e) {
+            console.error("[MolSysViewer] Error al cargar estructura:", e);
+          }
+          break;
+        }
+        case "test_transparent_sphere": {
+          const options = msg.options ?? {};
+          await addTransparentSphereFromPython(plugin, {
+            center: options.center ?? [0, 0, 0],
+            radius: options.radius ?? 10,
+            color: options.color ?? 65280,
+            alpha: options.alpha ?? 0.4
+          });
+          break;
+        }
+        default:
+          console.warn("[MolSysViewer] op desconocida:", msg.op, msg);
+          break;
+      }
+    });
+  }
 };
 export {
+  createMolSysViewer,
   widget_default as default
 };
 /*! Bundled license information:

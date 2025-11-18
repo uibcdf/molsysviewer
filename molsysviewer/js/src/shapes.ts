@@ -1,35 +1,36 @@
 // src/shapes.ts
 
-import { PluginContext } from 'molstar/lib/mol-plugin/context';
-import { PluginCommands } from 'molstar/lib/mol-plugin/commands';
-import { PluginStateObject as SO } from 'molstar/lib/mol-plugin-state/objects';
-import { StateObjectRef, StateTransformer } from 'molstar/lib/mol-state';
-import { ParamDefinition as PD } from 'molstar/lib/mol-util/param-definition';
-import { Task, RuntimeContext } from 'molstar/lib/mol-task';
-import { Color } from 'molstar/lib/mol-util/color';
-import { ColorNames } from 'molstar/lib/mol-util/color/names';
-import { Vec3 } from 'molstar/lib/mol-math/linear-algebra';
-import { Mesh } from 'molstar/lib/mol-geo/geometry/mesh/mesh';
-import { MeshBuilder } from 'molstar/lib/mol-geo/geometry/mesh/mesh-builder';
-import { addSphere } from 'molstar/lib/mol-geo/geometry/mesh/builder/sphere';
-import { Shape } from 'molstar/lib/mol-model/shape';
-import { ShapeRepresentation } from 'molstar/lib/mol-repr/shape/representation';
+import { PluginContext } from "molstar/lib/mol-plugin/context";
+import { PluginCommands } from "molstar/lib/mol-plugin/commands";
+import { PluginStateObject as SO } from "molstar/lib/mol-plugin-state/objects";
+import { StateObjectRef, StateTransformer } from "molstar/lib/mol-state";
+import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
+import { Task, RuntimeContext } from "molstar/lib/mol-task";
+
+import { Color } from "molstar/lib/mol-util/color";
+import { ColorNames } from "molstar/lib/mol-util/color/names";
+
+import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
+
+import { Mesh } from "molstar/lib/mol-geo/geometry/mesh/mesh";
+import { MeshBuilder } from "molstar/lib/mol-geo/geometry/mesh/mesh-builder";
+import { addSphere } from "molstar/lib/mol-geo/geometry/mesh/builder/sphere";
+
+import { Shape } from "molstar/lib/mol-model/shape";
+import { ShapeRepresentation } from "molstar/lib/mol-repr/shape/representation";
 import {
     Representation,
     RepresentationContext,
     RepresentationParamsGetter,
-} from 'molstar/lib/mol-repr/representation';
+} from "molstar/lib/mol-repr/representation";
 
-const MSVTransform = StateTransformer.builderFactory('molsysviewer');
-
-// Tag para localizar todas las esferas de MolSysViewer en el árbol
-export const TransparentSphereTag = 'molsysviewer:spheres';
+const MSVTransform = StateTransformer.builderFactory("molsysviewer");
 
 export interface TransparentSphereSpec {
     center: [number, number, number];
     radius: number;
-    color: number;   // 0xRRGGBB
-    alpha: number;   // 0..1
+    color: number;
+    alpha: number;
     id?: string;
 }
 
@@ -54,22 +55,17 @@ function buildSphereMesh(
     for (let i = 0, il = data.spheres.length; i < il; i++) {
         const s = data.spheres[i];
         state.currentGroup = i;
-        addSphere(
-            state,
-            Vec3.create(s.center[0], s.center[1], s.center[2]),
-            s.radius,
-            detail
-        );
+        addSphere(state, Vec3.create(s.center[0], s.center[1], s.center[2]), s.radius, detail);
     }
 
     return MeshBuilder.getMesh(state);
 }
 
 function getTransparentSphereName(data: TransparentSphereData) {
-    if (data.spheres.length === 0) return 'Transparent Sphere (empty)';
+    if (data.spheres.length === 0) return "Transparent Sphere (empty)";
     if (data.spheres.length === 1) {
         const s = data.spheres[0];
-        return s.id ? `Sphere ${s.id}` : 'Transparent Sphere';
+        return s.id ? `Sphere ${s.id}` : "Transparent Sphere";
     }
     return `${data.spheres.length} Transparent Spheres`;
 }
@@ -97,10 +93,7 @@ function getTransparentSphereShape(
 const TransparentSphereVisuals = {
     mesh: (
         _ctx: RepresentationContext,
-        _getParams: RepresentationParamsGetter<
-            TransparentSphereData,
-            TransparentSphereParams
-        >
+        _getParams: RepresentationParamsGetter<TransparentSphereData, TransparentSphereParams>
     ) => ShapeRepresentation(getTransparentSphereShape, Mesh.Utils),
 };
 
@@ -117,13 +110,10 @@ export type TransparentSphereRepresentation = Representation<
 
 export function TransparentSphereRepresentation(
     ctx: RepresentationContext,
-    getParams: RepresentationParamsGetter<
-        TransparentSphereData,
-        TransparentSphereShapeParams
-    >
+    getParams: RepresentationParamsGetter<TransparentSphereData, TransparentSphereShapeParams>
 ): TransparentSphereRepresentation {
     return Representation.createMulti(
-        'TransparentSpheres',
+        "TransparentSpheres",
         ctx,
         getParams,
         Representation.StateBuilder,
@@ -135,8 +125,8 @@ export function TransparentSphereRepresentation(
 }
 
 export const TransparentSphere3D = MSVTransform({
-    name: 'molsysviewer-transparent-sphere-3d',
-    display: { name: 'Transparent Sphere' },
+    name: "molsysviewer-transparent-sphere-3d",
+    display: { name: "Transparent Sphere" },
     from: SO.Root,
     to: SO.Shape.Representation3D,
     params: {
@@ -150,7 +140,7 @@ export const TransparentSphere3D = MSVTransform({
         return true;
     },
     apply({ params }, plugin: PluginContext) {
-        return Task.create('Transparent Sphere', async ctx => {
+        return Task.create("Transparent Sphere", async ctx => {
             const data: TransparentSphereData = {
                 spheres: [
                     {
@@ -158,7 +148,7 @@ export const TransparentSphere3D = MSVTransform({
                         radius: params.radius,
                         color: params.color,
                         alpha: params.alpha,
-                        id: 'sphere-0',
+                        id: "sphere-0",
                     },
                 ],
             };
@@ -168,20 +158,22 @@ export const TransparentSphere3D = MSVTransform({
                 () => TransparentSphereShapeParams
             );
 
-            const props: TransparentSphereShapeProps =
-                PD.getDefaultValues(TransparentSphereShapeParams);
+            const props: TransparentSphereShapeProps = {
+                ...PD.getDefaultValues(TransparentSphereShapeParams),
+            };
 
             await repr.createOrUpdate(props, data).runInContext(ctx);
+
             repr.setState({ alphaFactor: params.alpha });
 
             return new SO.Shape.Representation3D(
                 { repr, sourceData: data },
-                { label: 'Transparent Sphere' }
+                { label: "Transparent Sphere" }
             );
         });
     },
-    update({ b, newParams }) {
-        return Task.create('Transparent Sphere', async ctx => {
+    update({ b, newParams }, _plugin: PluginContext) {
+        return Task.create("Transparent Sphere", async ctx => {
             const data: TransparentSphereData = {
                 spheres: [
                     {
@@ -193,7 +185,7 @@ export const TransparentSphere3D = MSVTransform({
                         radius: newParams.radius,
                         color: newParams.color,
                         alpha: newParams.alpha,
-                        id: 'sphere-0',
+                        id: "sphere-0",
                     },
                 ],
             };
@@ -222,7 +214,7 @@ export async function addTransparentSphereFromPython(
             color: spec.color,
             alpha: spec.alpha,
         } as any,
-        { tags: TransparentSphereTag }
+        { tags: "molsysviewer:spheres" }
     );
 
     await PluginCommands.State.Update(plugin, {
