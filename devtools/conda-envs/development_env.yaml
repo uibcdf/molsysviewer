@@ -6,6 +6,7 @@ dependencies:
   # --- Python base ---
   - python=3.12
   - pip
+  - versioningit
 
   # --- Jupyter / widget development ---
   - jupyterlab
