@@ -10,6 +10,11 @@ class MolSysView:
 
     def __init__(self) -> None:
         self.widget = MolSysViewerWidget()
+
+        self.widget.layout.width = "100%"
+        self.widget.layout.height = "480px"  # o "600px" si lo prefieres
+        self.widget.layout.min_height = "400px"
+
         self._ready = False
         self._pending_messages: list[dict] = []
 
@@ -50,24 +55,18 @@ class MolSysView:
         self,
         center=(0.0, 0.0, 0.0),
         radius=10.0,
-        color=0x00ff00,
+        color=0x00FF00,
         alpha=0.4,
     ):
-
-        """Placeholder for a future transparent sphere.
-
-        For now, this only logs the parameters on the Python side
-        and does NOT send anything to the JS viewer. This keeps the
-        main branch stable while we design a robust Mol* 5.x shape
-        pipeline in a dedicated branch.
-        """
-        options = {
-            "center": list(center),
-            "radius": float(radius),
-            "color": int(color),
-            "alpha": float(alpha),
-        }
-        print("[MolSysViewer] show_test_sphere_transparent (placeholder):", options)
+        self._send({
+            "op": "test_transparent_sphere",
+            "options": {
+                "center": list(center),
+                "radius": float(radius),
+                "color": int(color),
+                "alpha": float(alpha),
+            },
+        })
 
     # --- Carga desde strings ---
 
