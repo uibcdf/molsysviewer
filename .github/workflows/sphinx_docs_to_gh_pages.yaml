@@ -1,4 +1,4 @@
-name: Documentation
+name: Sphinx docs to gh-pages
 
 on:
   release:
@@ -13,21 +13,32 @@ jobs:
   sphinx_docs_to_gh-pages:
     runs-on: ubuntu-latest
     name: Sphinx docs to gh-pages
+
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Additional info about the build
-        shell: bash
-        run: |
-          uname -a
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build viewer.js
+        shell: bash -l {0}
+        run: |
+          echo "::group::Building viewer.js"
+          cd molsysviewer/js
+          npm install
+          npm run build
+          echo "::endgroup::"
 
       - name: Setup conda env
         uses: mamba-org/setup-micromamba@v1
