@@ -28,3 +28,16 @@ dependencies:
 
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
+
+  # --- Documentation with Sphinx and MyST ---
+  - jupyterlab
+  - jupyterlab-myst
+  - sphinx
+  - sphinxcontrib-bibtex
+  - sphinx-remove-toctrees
+  - sphinx-copybutton
+  - sphinx-design
+  - sphinx-favicon
+  - sphinx-tabs
+  - pydata-sphinx-theme
+  - myst-nb
