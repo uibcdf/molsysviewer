@@ -43,6 +43,17 @@ export default {
         // Crear el plugin una sola vez por elemento
         const pluginPromise = createMolSysViewer(el);
 
+        // Avisar al backend cuando el plugin esté inicializado para
+        // que pueda enviar los mensajes pendientes.
+        (async () => {
+            try {
+                await pluginPromise;
+                model.send({ event: "ready" });
+            } catch (error) {
+                console.error("[MolSysViewer] Error inicializando el plugin:", error);
+            }
+        })();
+
         // Logs de depuración por si acaso
         console.log("[MolSysViewer] widget render inicial");
 
