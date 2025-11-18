@@ -1,0 +1,30 @@
+name: molsysviewer_dev
+channels:
+  - conda-forge
+
+dependencies:
+  # --- Python base ---
+  - python=3.12
+  - pip
+
+  # --- Jupyter / widget development ---
+  - jupyterlab
+  - ipywidgets
+  - anywidget
+
+  # --- Scientific stack (lightweight) ---
+  - numpy
+  - pandas
+
+  # --- Dev tools: formatting, linting, testing ---
+  - black
+  - ruff
+  - pytest
+  - pytest-cov
+
+  # --- Optional but helpful for interactive debugging ---
+  - jupyterlab_code_formatter
+  - jupyterlab_git
+
+  # --- NodeJS for JS development and esbuild ---
+  - nodejs>=18
