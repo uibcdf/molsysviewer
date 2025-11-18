@@ -4,7 +4,8 @@ import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 
 import { addTransparentSphereFromPython } from "./shapes";
-import { loadStructureFromString } from "./structure";
+import { loadStructureFromString, loadStructureFromUrl } from "./structure";
+
 
 export async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
     // Crear canvas dentro del contenedor que anywidget nos da
@@ -49,11 +50,28 @@ type TransparentSphereMessage = {
     };
 };
 
+type AddSphereMessage = {
+    op: "add_sphere";
+    options?: {
+        center?: [number, number, number];
+        radius?: number;
+        color?: number;
+        alpha?: number;
+    };
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
     pdb?: string;
     pdb_text?: string;
+    format?: string;
+    label?: string;
+};
+
+type LoadStructureFromUrlMessage = {
+    op: "load_structure_from_url";
+    url: string;
     format?: string;
     label?: string;
 };
@@ -108,8 +126,38 @@ export default {
                     break;
                 }
 
+                case "load_structure_from_url": {
+                    const { url, format, label } = msg as LoadStructureFromUrlMessage;
+
+                    if (!url || typeof url !== "string") {
+                        console.warn("[MolSysViewer] mensaje load_structure_from_url sin url");
+                        return;
+                    }
+
+                    try {
+                        await loadStructureFromUrl(plugin, url, format, label);
+                    } catch (e) {
+                        console.error(
+                            "[MolSysViewer] Error al cargar estructura desde URL:",
+                            e
+                        );
+                    }
+                    break;
+                }
+
                 case "test_transparent_sphere": {
                     const options = (msg as TransparentSphereMessage).options ?? {};
+                    await addTransparentSphereFromPython(plugin, {
+                        center: options.center ?? [0, 0, 0],
+                        radius: options.radius ?? 10,
+                        color: options.color ?? 0x00ff00,
+                        alpha: options.alpha ?? 0.4,
+                    });
+                    break;
+                }
+
+                case "add_sphere": {
+                    const options = (msg as AddSphereMessage).options ?? {};
                     await addTransparentSphereFromPython(plugin, {
                         center: options.center ?? [0, 0, 0],
                         radius: options.radius ?? 10,

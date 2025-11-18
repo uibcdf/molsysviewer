@@ -1,118 +1,77 @@
 # MolSysViewer — Repository Structure
-_Last updated: 2025-02 (Integrated Legacy Notes)_
+_Last updated: 2025-11_
 
-This document describes the modern structure of MolSysViewer after the
-architecture reset, with all relevant lessons from the legacy design integrated
-into a stable and maintainable code layout.
+This document describes the stable layout of the MolSysViewer repository.
 
 ---
 
-## 📁 Directory Overview
+# 1. High-Level Layout
 
 ```
 molsysviewer/
 │
 ├── molsysviewer/
 │   ├── __init__.py
-│   ├── viewer.py            # Python public API + messaging
-│   ├── widget.py            # anywidget bridge, loads viewer.js
-│   └── viewer.js            # auto-generated TypeScript bundle (DO NOT EDIT)
+│   ├── viewer.py
+│   ├── widget.py
+│   └── viewer.js
 │
 └── js/
-    ├── package.json         # NPM dependencies (molstar, esbuild, ts)
-    ├── tsconfig.json        # TypeScript configuration
+    ├── package.json
+    ├── tsconfig.json
     └── src/
-        ├── widget.ts        # anywidget renderer
-        └── shapes.ts        # custom Mol* shapes (spheres, meshes, arrows...)
+        ├── widget.ts
+        ├── shapes.ts
+        └── structure.ts
 ```
 
 ---
 
-## 🐍 Python Layer
+# 2. Python Layer
 
 ### `viewer.py`
-- Exposes a clean Python API:
-  - `load_pdb_string(...)`
-  - `load_mmcif_string(...)`
-  - `load_from_url(...)`
-  - `show_test_sphere_transparent(...)`
-  - `clear()`
-- Queues messages until JS widget reports `"ready"`.
-- Responsible for user-facing behavior.
+- Public API (load, shapes, messaging)
+- Queues messages until JS side reports `"ready"`
 
 ### `widget.py`
-- Extremely thin:
-  - loads the generated javascript bundle
-  - defines `MolSysViewerWidget` class
+- Loads the JS bundle
+- Minimal anywidget wrapper
 
 ### `viewer.js`
-- Built automatically from TypeScript sources.
-- Bundles Mol\* internals.
-- Single source of truth for all JS behavior.
+- Bundled automatically from TypeScript
+- Contains Mol* runtime
 
 ---
 
-## 🟦 TypeScript Layer (`js/`)
+# 3. TypeScript Layer
 
-### `src/widget.ts`
-- Implements the anywidget `render()` function.
-- Creates the Mol* `PluginContext`.
-- Initializes canvas via `initViewerAsync`.
-- Receives messages from Python and dispatches operations:
-  - structure loading
-  - adding shapes
-  - clearing scene
-- Future home of picking events and Py callbacks.
+### `widget.ts`
+- Initializes Mol* only once
+- Handles messages
+- Calls shape/structure helpers
 
-### `src/shapes.ts`
-- Defines all custom shape logic.
-- Wraps Mol* geometry utilities:
-  - MeshBuilder
-  - Shape
-  - ShapeRepresentation
-  - Color utilities
-- Will map TopoMT & PharmacophoreMT objects → visual objects.
+### `shapes.ts`
+- Implements geometric primitives
+- Future home for meshes, arrows, cylinders
+
+### `structure.ts`
+- Wraps Mol* parsing & loading
+- Converts strings/URLs → structure + representation
 
 ---
 
-## 🧠 Legacy Knowledge Incorporated
-- Avoid global `window.molstar` patterns.
-- Avoid labextensions; anywidget is simpler and future-proof.
-- Avoid reuse of the old MolSysViewerModel/View system.
-- Full control of Mol* internals is mandatory for scientific visualization.
-- Separate shape logic (`shapes.ts`) from widget rendering (`widget.ts`).
+# 4. Data Flow
+
+### Structure Loading
+Python → JS → Mol* builders → default representation
+
+### Shape Rendering
+Python → JS dispatcher → shapes.ts → Mol* shape representation
 
 ---
 
-## 🔄 Data Flow (Python → JS)
-
-1. Python calls:
-   ```python
-   v.load_pdb_string(text)
-   ```
-2. `viewer.py` sends:
-   ```json
-   { "op": "load_structure_from_string", "format": "pdb", "data": "..." }
-   ```
-3. JS (`widget.ts`) receives and invokes `loadStructureFromString(...)`.
-4. Mol* builds trajectory and applies default representation.
-5. Viewer updates.
-
----
-
-## 🔄 Data Flow (Python → JS Shapes)
-
-1. Python calls:
-   ```python
-   v.show_test_sphere_transparent(center=(0,0,0), radius=10)
-   ```
-2. JS dispatches to `addTransparentSphereToPlugin(...)` in `shapes.ts`.
-3. The shape is added to Mol* scene graph.
-
----
-
-## 🎯 Architectural Goals
-- Clear separation of responsibilities.
-- Maintainability and readability.
-- Extensibility for complex scientific shapes.
-- Zero reliance on deprecated Jupyter technologies.
+# 5. Principles
+- Clear separation between Python API and JS rendering
+- No global objects
+- No JupyterLab extensions
+- All geometry generated in TS
