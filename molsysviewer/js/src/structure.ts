@@ -21,3 +21,28 @@ export async function loadStructureFromString(
     // Aplica el preset por defecto (representación bonita estándar)
     await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
 }
+
+export async function loadStructureFromUrl(
+    plugin: PluginContext,
+    url: string,
+    format?: string,
+    label?: string
+) {
+    // Descarga la estructura (texto) desde la URL
+    const data = await plugin.builders.data.download(
+        { url, isBinary: false },
+        { state: { isGhost: true } }
+    );
+
+    // Si no se especifica formato, intenta deducirlo de la extensión
+    const guessedFormat =
+        format ??
+        (url.split(".").pop() ?? "pdb"); // "pdb", "cif", "mmcif", etc.
+
+    const trajectory = await plugin.builders.structure.parseTrajectory(
+        data,
+        guessedFormat as any
+    );
+
+    await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+}
