@@ -49,6 +49,16 @@ type TransparentSphereMessage = {
     };
 };
 
+type AddSphereMessage = {
+    op: "add_sphere";
+    options?: {
+        center?: [number, number, number];
+        radius?: number;
+        color?: number;
+        alpha?: number;
+    };
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -110,6 +120,17 @@ export default {
 
                 case "test_transparent_sphere": {
                     const options = (msg as TransparentSphereMessage).options ?? {};
+                    await addTransparentSphereFromPython(plugin, {
+                        center: options.center ?? [0, 0, 0],
+                        radius: options.radius ?? 10,
+                        color: options.color ?? 0x00ff00,
+                        alpha: options.alpha ?? 0.4,
+                    });
+                    break;
+                }
+
+                case "add_sphere": {
+                    const options = (msg as AddSphereMessage).options ?? {};
                     await addTransparentSphereFromPython(plugin, {
                         center: options.center ?? [0, 0, 0],
                         radius: options.radius ?? 10,

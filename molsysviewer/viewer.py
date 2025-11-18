@@ -51,22 +51,39 @@ class MolSysView:
         """Test de vida -> carga una PDB de ejemplo en Mol*."""
         self._send({"op": "test_pdb_id"})
 
+    def add_sphere(
+        self,
+        center=(0.0, 0.0, 0.0),
+        radius: float = 10.0,
+        color: int = 0x00FF00,
+        alpha: float = 0.4,
+    ) -> None:
+        """Añade una esfera (posiblemente transparente) a la escena."""
+        self._send(
+            {
+                "op": "add_sphere",
+                "options": {
+                    "center": list(center),
+                    "radius": float(radius),
+                    "color": int(color),
+                    "alpha": float(alpha),
+                },
+            }
+        )
+
     def show_test_sphere_transparent(
         self,
         center=(0.0, 0.0, 0.0),
         radius=10.0,
-        color=0x00FF00,
+        color=0x00ff00,
         alpha=0.4,
     ):
-        self._send({
-            "op": "test_transparent_sphere",
-            "options": {
-                "center": list(center),
-                "radius": float(radius),
-                "color": int(color),
-                "alpha": float(alpha),
-            },
-        })
+        """Función de test que delega en add_sphere (se mantiene por compatibilidad)."""
+        # La comprobación extra de widget es opcional, pero no molesta
+        if self.widget is None:
+            raise RuntimeError("MolSysViewerWidget no inicializado; llama antes a show()")
+
+        self.add_sphere(center=center, radius=radius, color=color, alpha=alpha)
 
     # --- Carga desde strings ---
 
