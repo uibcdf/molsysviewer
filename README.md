@@ -1,11 +1,11 @@
 # MolSysViewer
 
-*A Mol*-powered interactive viewer for molecular systems and trajectories,
+*A Mol\*-powered interactive viewer for molecular systems and trajectories,
 designed for general use and for seamless integration with the MolSys
 ecosystem.*
 
 MolSysViewer is a modern molecular visualization tool built on top of the
-[Mol*](https://molstar.org) engine and exposed through a clean Python API.
+[Mol\*](https://molstar.org) engine and exposed through a clean Python API.
 It provides high-quality, interactive 3D rendering of molecular structures,
 custom shapes, trajectories, and scientific overlays — directly inside Jupyter
 notebooks and JupyterLab.
@@ -31,7 +31,7 @@ naturally with tools such as:
 ### ✔ Interactive molecular visualization
 - Load PDB and mmCIF strings directly (“in-memory structures”)
 - Load structures from remote URLs
-- High-quality Mol* rendering with cartoon, surface, and atomic styles
+- High-quality Mol\* rendering with cartoon, surface, and atomic styles
 - Smooth camera, lighting, and interactivity
 
 ### ✔ Python → Mol* shape API
@@ -140,7 +140,7 @@ pip install -e .
 
 MolSysViewer has reached a stable architectural foundation:
 
-- robust Mol* initialization  
+- robust Mol\* initialization  
 - reliable Python ↔ JS message handling  
 - stable sphere API  
 - clean separation of Python/TS codebases  
@@ -168,7 +168,7 @@ For the complete roadmap, see `ROADMAP.md`.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Whether you're interested in TypeScript/Mol* 
+Contributions are welcome! Whether you're interested in TypeScript/Mol\* 
 development, Python API design, scientific visualization, or improving 
 documentation, feel free to open an issue or pull request.
 
