@@ -57,6 +57,25 @@ js/src/*.js.map
 js/.webpack-cache/
 js/.parcel-cache/
 
+# =========================================================
+# Unit test / coverage reports
+# =========================================================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ==========================================================
+# Sphinx documentation
+# ==========================================================
+docs/_build/
+
 # ==========================================================
 # MolSysViewer build artifacts
 # ==========================================================
@@ -90,3 +109,17 @@ Thumbs.db
 # sandbox/
 # dev/
 #  devtools/
+
+# ==========================================================
+# Temp files
+# ==========================================================
+
+INSTALL.log
+record.txt
+/docs/api/_autosummary
+
+# ==========================================================
+# Files in this library that should or should NOT be ignored
+# ==========================================================
+molsysviewer/_version.py
+!*.nbconvert.log
