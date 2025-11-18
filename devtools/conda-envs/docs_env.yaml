@@ -16,16 +16,6 @@ dependencies:
   - numpy
   - pandas
 
-  # --- Dev tools: formatting, linting, testing ---
-  - black
-  - ruff
-  - pytest
-  - pytest-cov
-
-  # --- Optional but helpful for interactive debugging ---
-  - jupyterlab_code_formatter
-  - jupyterlab_git
-
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
 
