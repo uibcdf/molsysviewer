@@ -7,14 +7,36 @@ import { addTransparentSphereFromPython } from "./shapes";
 import { loadStructureFromString } from "./structure";
 
 export async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
+    // Crear canvas dentro del contenedor que anywidget nos da
+    const canvas = document.createElement("canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
+    target.appendChild(canvas);
+
     const plugin = new PluginContext(DefaultPluginSpec());
 
-    // monta el plugin dentro del elemento target
-    await plugin.mountAsync(target);
-    await plugin.canvas3dInitialized;
+    // 1) Inicializar el plugin (registra builders, formatos, etc.)
+    await plugin.init();
+
+    // 2) Inicializar el viewer sobre ese canvas
+    const ok = await plugin.initViewerAsync(canvas, target);
+    if (!ok) {
+        console.error("[MolSysViewer] Failed to init Mol* viewer");
+    }
 
     return plugin;
 }
+
+//export async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
+//    const plugin = new PluginContext(DefaultPluginSpec());
+//
+//    // monta el plugin dentro del elemento target
+//    await plugin.mountAsync(target);
+//    await plugin.canvas3dInitialized;
+//
+//    return plugin;
+//}
 
 // Tipos de mensajes
 type TransparentSphereMessage = {

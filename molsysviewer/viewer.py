@@ -58,10 +58,7 @@ class MolSysView:
         color=0x00FF00,
         alpha=0.4,
     ):
-        if self.widget is None:
-            raise RuntimeError("MolSysViewerWidget no inicializado; llama antes a show()")
-   
-        self.widget.send({
+        self._send({
             "op": "test_transparent_sphere",
             "options": {
                 "center": list(center),
