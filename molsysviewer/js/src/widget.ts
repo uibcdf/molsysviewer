@@ -4,7 +4,8 @@ import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 
 import { addTransparentSphereFromPython } from "./shapes";
-import { loadStructureFromString } from "./structure";
+import { loadStructureFromString, loadStructureFromUrl } from "./structure";
+
 
 export async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
     // Crear canvas dentro del contenedor que anywidget nos da
@@ -68,6 +69,13 @@ type LoadStructureMessage = {
     label?: string;
 };
 
+type LoadStructureFromUrlMessage = {
+    op: "load_structure_from_url";
+    url: string;
+    format?: string;
+    label?: string;
+};
+
 type ViewerMessage = TransparentSphereMessage | LoadStructureMessage | Record<string, unknown>;
 
 export default {
@@ -114,6 +122,25 @@ export default {
                         await loadStructureFromString(plugin, text, format, label);
                     } catch (e) {
                         console.error("[MolSysViewer] Error al cargar estructura:", e);
+                    }
+                    break;
+                }
+
+                case "load_structure_from_url": {
+                    const { url, format, label } = msg as LoadStructureFromUrlMessage;
+
+                    if (!url || typeof url !== "string") {
+                        console.warn("[MolSysViewer] mensaje load_structure_from_url sin url");
+                        return;
+                    }
+
+                    try {
+                        await loadStructureFromUrl(plugin, url, format, label);
+                    } catch (e) {
+                        console.error(
+                            "[MolSysViewer] Error al cargar estructura desde URL:",
+                            e
+                        );
                     }
                     break;
                 }
