@@ -7,6 +7,7 @@ dependencies:
   - python=3.12
   - conda-build
   - anaconda-client
+  - versioningit
 
   # Needed to build the JS bundle (viewer.js) during conda build
   - nodejs>=18
