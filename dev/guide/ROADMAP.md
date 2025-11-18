@@ -1,102 +1,90 @@
-# MolSysViewer — Development Roadmap
-_Last updated: 2025-02 (Integrated Legacy Notes)_
+# MolSysViewer — Roadmap
+_Last updated: 2025-11_
 
-This roadmap integrates all current architectural decisions (TypeScript + Mol*
-bundle + anywidget) with the valuable long-term insights extracted from the
-legacy checkpoints. It provides a consolidated, forward-looking plan aligned
-with the needs of MolSysMT, TopoMT, PharmacophoreMT, and future uibcdf tools.
+This roadmap reflects the **current stable foundation** as well as the next
+planned expansions across Python, TypeScript, Mol*, and future scientific
+integrations.
 
 ---
 
-## ✔ Phase 0 — Architecture Reset (Completed)
+# Phase 0 — Architecture Reset (Completed)
 
 ### Achievements
-- Fully dropped the old JupyterLab labextension prototype.
-- Adopted **anywidget** as the widget backbone.
-- Moved to **local TypeScript build system** using `esbuild`.
-- Installed **Mol\*** from NPM and built a custom viewer bundle.
-- Implemented clean `PluginContext` initialization via `initViewerAsync`.
-- Established a robust communication pipeline (Python ↔ JS).
-
-### Lessons Incorporated (Legacy)
-- A CDN-based Mol* viewer is insufficient: hides internals needed for scientific
-  visualization.
-- JupyterLab labextensions were over-complicated and fragile.
-- A clean restart provides long-term maintainability and reduces accidental complexity.
+- Replaced all legacy JupyterLab-extension code.
+- Adopted **anywidget** for rendering.
+- Adopted **TypeScript + esbuild** for bundling.
+- Full control of Mol* runtime using `initViewerAsync`.
+- Repaired the Mol* initialization path.
+- Implemented stable Python ↔ JS messaging.
 
 ---
 
-## 🚧 Phase 1 — Core Functionalities (In Progress)
+# Phase 1 — Core Features (Active)
 
-### 1. Molecule Loading
-- [x] Load structures from PDB/mmCIF strings.
-- [x] Load molecules from URLs.
-- [ ] Load MolSysMT molecular objects directly (atoms, frames, selections).
-- [ ] Multi-frame support with `setFrame(...)`.
+### 1. Molecule Input
+- [x] Load PDB/mmCIF strings
+- [x] Load from remote URLs
+- [ ] Load MolSysMT molecular systems
+- [ ] Load multi-frame trajectories
 
-### 2. Custom Shape Rendering (Critical)
-- [ ] Working implementation of:
-  - transparent spheres  
-  - points  
-  - arrows/vectors  
-  - cylinders  
-  - surfaces/meshes  
-- [ ] Stable internal shapes API (used by TopoMT & PharmacophoreMT).
-- [ ] Consistent color and opacity handling.
+### 2. Shape System
+- [x] Transparent sphere
+- [x] `add_sphere` Python API
+- [x] `add_spheres` Python API
+- [ ] Points
+- [ ] Arrows
+- [ ] Cylinders
+- [ ] Mesh surfaces
+- [ ] Labels
 
-### 3. Scene + API Improvements
-- [ ] `viewer.add_sphere(...)`
-- [ ] `viewer.add_mesh(vertices, faces, ...)`
-- [ ] `viewer.clear()`
-- [ ] `viewer.set_representation(type)`
-- [ ] `viewer.center_on(selection)`
+### 3. Scene Management
+- [ ] Object tagging system
+- [ ] `viewer.clear(tag=...)`
+- [ ] Camera utilities
+- [ ] Visibility toggles
 
 ---
 
-## 🔧 Phase 2 — Integration with uibcdf Ecosystem
+# Phase 2 — Integration with the uibcdf Ecosystem
 
-### 1. TopoMT Integration
-- [ ] Render cavity volumes (meshes)
-- [ ] Render alpha spheres and cluster groupings
-- [ ] Render mouths/rims (1D curves)
-- [ ] Camera focus on selected feature
-- [ ] Color schemes for concavity/convexity/mixed/boundary shapes
+### TopoMT
+- [ ] Alpha-sphere rendering
+- [ ] Pocket surfaces
+- [ ] Cavity mouths/rims
+- [ ] Feature-color schemes
 
-### 2. PharmacophoreMT Integration
-- [ ] Pharmacophoric spheres (hydrophobic)
+### PharmacophoreMT
+- [ ] Pharmacophoric spheres
 - [ ] Donor/acceptor arrows
 - [ ] Aromatic ring discs
 - [ ] Exclusion volumes
-- [ ] Feature grouping and labeling
 
-### 3. MolSysMT Integration
-- [ ] Display molecules from MolSysMT containers
-- [ ] Synchronize selections/highlights
-- [ ] Display trajectories
-- [ ] Plugin-like preset system
+### MolSysMT
+- [ ] Native view of molecular systems
+- [ ] Shared selections/highlights
+- [ ] Trajectory stepping controls
 
 ---
 
-## 🔍 Phase 3 — UX / UI Enhancements
-- [ ] Scene inspector panel (toggle shapes/structure visibility)
-- [ ] Color presets and themes
-- [ ] Text overlays for debug/status
+# Phase 3 — UX / UI Enhancements
+- [ ] Scene inspector panel
+- [ ] Color presets
+- [ ] Text overlays
 - [ ] Screenshot export
-- [ ] JSON-based scene serialization
+- [ ] JSON scene serialization
 
 ---
 
-## ✨ Phase 4 — Advanced Features
-- [ ] Time animations
-- [ ] Surface clipping planes
-- [ ] Fragment-based highlighting
-- [ ] Reactive JS-to-Python callbacks
+# Phase 4 — Advanced Features
+- [ ] Time-based animations
+- [ ] Clipping planes
+- [ ] Region-based highlighting
+- [ ] Reactive events (JS → Python callbacks)
 
 ---
 
-## 🚀 Vision
-MolSysViewer is the visualization pillar for the uibcdf ecosystem: a clean,
-modern, extensible molecular visualization backend that supports the whole
-range of scientific workflows — molecular structures, topographic cavities,
-pharmacophores, ML-driven annotations, and interactive exploration.
+# Vision
 
+MolSysViewer will serve as the **unified visualization engine** for all uibcdf
+projects—supporting cavities, pharmacophores, molecular editing, ML annotations,
+and interactive exploratory analysis.
