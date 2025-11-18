@@ -1,13 +1,15 @@
 {
   "name": "molsysviewer-js",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "npx esbuild src/widget.ts --bundle --format=esm --sourcemap --outfile=../viewer.js"
   },
   "dependencies": {
-    "molstar": "^5.4.1"
+    "molstar": "^5.4.1",
+    "immutable": "^4.3.0",
+    "rxjs": "6.6.7"
   },
   "devDependencies": {
     "esbuild": "^0.27.0",
