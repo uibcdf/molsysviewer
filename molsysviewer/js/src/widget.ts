@@ -17,7 +17,11 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
 import { addTransparentSphereFromPython } from "./shapes";
-import { loadStructureFromString, loadStructureFromUrl } from "./structure";
+import {
+    LoadedStructure,
+    loadStructureFromString,
+    loadStructureFromUrl,
+} from "./structure";
 
 
 // ------------------------------------------------------------------
@@ -42,6 +46,7 @@ class MolSysViewerController {
 
     private readonly shapeRefs = new Set<StateObjectRef<SO.Shape.Representation3D>>();
     private currentStructure?: StructureRef;
+    private loadedStructure?: LoadedStructure;
 
     private constructor(private readonly plugin: PluginContext) {}
 
@@ -124,12 +129,16 @@ class MolSysViewerController {
     }
 
     private async loadFromString(data: string, format: string, label?: string) {
-        await loadStructureFromString(this.plugin, data, format, label);
+        this.loadedStructure = await loadStructureFromString(this.plugin, data, format, label, {
+            previous: this.loadedStructure?.data,
+        });
         this.captureCurrentStructure();
     }
 
     private async loadFromUrl(url: string, format?: string, label?: string) {
-        await loadStructureFromUrl(this.plugin, url, format, label);
+        this.loadedStructure = await loadStructureFromUrl(this.plugin, url, format, label, {
+            previous: this.loadedStructure?.data,
+        });
         this.captureCurrentStructure();
     }
 
@@ -238,7 +247,16 @@ class MolSysViewerController {
         if (structures.length) {
             await this.plugin.managers.structure.hierarchy.remove(structures);
         }
+        await this.removeLoadedStructure();
         this.currentStructure = undefined;
+    }
+
+    private async removeLoadedStructure() {
+        if (!this.loadedStructure?.data) return;
+        const builder = this.plugin.build();
+        builder.delete(this.loadedStructure.data);
+        await builder.commit();
+        this.loadedStructure = undefined;
     }
 }
 
