@@ -1,0 +1,37 @@
+molsysviewer package
+====================
+
+Submodules
+----------
+
+molsysviewer.molsysmt\_integration module
+-----------------------------------------
+
+.. automodule:: molsysviewer.molsysmt_integration
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.viewer module
+--------------------------
+
+.. automodule:: molsysviewer.viewer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.widget module
+--------------------------
+
+.. automodule:: molsysviewer.widget
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer
+   :members:
+   :show-inheritance:
+   :undoc-members:

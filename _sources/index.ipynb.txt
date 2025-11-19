@@ -1,0 +1,311 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "aac56305-f44e-4a9f-8f25-4f77b203ae65",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "source": [
+    "```{eval-rst}\n",
+    ":html_theme.sidebar_secondary.remove:\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "7a985e1c-7d72-480d-969a-398cdda4cae0",
+   "metadata": {
+    "editable": true,
+    "execution": {
+     "iopub.execute_input": "2025-11-18T21:33:27.864539Z",
+     "iopub.status.busy": "2025-11-18T21:33:27.864232Z",
+     "iopub.status.idle": "2025-11-18T21:33:27.869813Z",
+     "shell.execute_reply": "2025-11-18T21:33:27.868416Z"
+    },
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# This cell is removed with the tag: \"remove-input\"\n",
+    "# As such, it will not be shown in documentation\n",
+    "\n",
+    "nglview_static_dir = '_static/nglview/'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6c9de210-0ac6-4ee9-9dad-7cfe0b988806",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "source": [
+    ":::{figure} _static/logo.svg\n",
+    ":width: 62%\n",
+    ":align: center\n",
+    "\n",
+    "A Mol*-powered interactive **mol**ecular **sys**tems **viewer** for structural analysis\n",
+    "\n",
+    "```{image} https://img.shields.io/badge/release-v0.1.0-white.svg\n",
+    ":target: https://github.com/uibcdf/molsysviewer\n",
+    "```\n",
+    "```{image} https://img.shields.io/badge/license-MIT-white.svg\n",
+    ":target: https://github.com/uibcdf/molsysviewer/blob/master/LICENSE\n",
+    "```\n",
+    "```{image} https://img.shields.io/badge/install%20with-conda-white.svg\n",
+    ":target: https://anaconda.org/uibcdf/molsysviewer\n",
+    "```\n",
+    "```{image} https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-white.svg\n",
+    ":target: https://www.python.org/downloads/\n",
+    "```\n",
+    "```{image} https://img.shields.io/badge/DOI-10.5281/8092688-white.svg\n",
+    ":target: https://zenodo.org/record/8092688\n",
+    "```\n",
+    "\n",
+    ":::\n",
+    "\n",
+    "<br/>\n",
+    "\n",
+    "\n",
+    "## Install it\n",
+    "\n",
+    "```bash\n",
+    "conda install -c uibcdf molsysviewer\n",
+    "```\n",
+    "\n",
+    "<br/>\n",
+    "\n",
+    "## Use it"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "1941eaa6-db2f-42e3-99f6-d4254beab727",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-11-18T21:33:27.874405Z",
+     "iopub.status.busy": "2025-11-18T21:33:27.874068Z",
+     "iopub.status.idle": "2025-11-18T21:33:32.462873Z",
+     "shell.execute_reply": "2025-11-18T21:33:32.461449Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "d5b524452db64461845062303a8255ce",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "import molsysviewer as viewer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "73eaeea9-8117-4d12-a436-36736567322b",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "source": [
+    "## Citation\n",
+    "\n",
+    "Coming soon..."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c391de1c-d805-4f9e-9ed7-be0dc3b51362",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "96727aaf-6fb1-4929-9dc5-d51fc8ff3cd0",
+   "metadata": {
+    "editable": true,
+    "slideshow": {
+     "slide_type": ""
+    },
+    "tags": []
+   },
+   "source": [
+    "```{eval-rst}\n",
+    "\n",
+    ".. toctree::\n",
+    "   :maxdepth: 2\n",
+    "   :hidden:\n",
+    "\n",
+    "   content/about/index.md\n",
+    "\n",
+    ".. toctree::\n",
+    "   :maxdepth: 2\n",
+    "   :hidden:\n",
+    "\n",
+    "   content/showcase/index.md\n",
+    "\n",
+    ".. toctree::\n",
+    "   :maxdepth: 2\n",
+    "   :hidden:\n",
+    "\n",
+    "   content/user/index.md\n",
+    "\n",
+    ".. toctree::\n",
+    "   :maxdepth: 2\n",
+    "   :hidden:\n",
+    "\n",
+    "   content/developer/index.md\n",
+    "   \n",
+    ".. toctree::\n",
+    "   :maxdepth: 2\n",
+    "   :hidden:\n",
+    "\n",
+    "   api/index.md\n",
+    "\n",
+    ".. toctree::\n",
+    "   :maxdepth: 2\n",
+    "   :hidden:\n",
+    "\n",
+    "   content/ai_assistants.md\n",
+    "\n",
+    "```"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  },
+  "widgets": {
+   "application/vnd.jupyter.widget-state+json": {
+    "state": {
+     "412c8919f76a49f6a357d7cde5172c01": {
+      "model_module": "@jupyter-widgets/base",
+      "model_module_version": "2.0.0",
+      "model_name": "LayoutModel",
+      "state": {
+       "_model_module": "@jupyter-widgets/base",
+       "_model_module_version": "2.0.0",
+       "_model_name": "LayoutModel",
+       "_view_count": null,
+       "_view_module": "@jupyter-widgets/base",
+       "_view_module_version": "2.0.0",
+       "_view_name": "LayoutView",
+       "align_content": null,
+       "align_items": null,
+       "align_self": null,
+       "border_bottom": null,
+       "border_left": null,
+       "border_right": null,
+       "border_top": null,
+       "bottom": null,
+       "display": null,
+       "flex": null,
+       "flex_flow": null,
+       "grid_area": null,
+       "grid_auto_columns": null,
+       "grid_auto_flow": null,
+       "grid_auto_rows": null,
+       "grid_column": null,
+       "grid_gap": null,
+       "grid_row": null,
+       "grid_template_areas": null,
+       "grid_template_columns": null,
+       "grid_template_rows": null,
+       "height": null,
+       "justify_content": null,
+       "justify_items": null,
+       "left": null,
+       "margin": null,
+       "max_height": null,
+       "max_width": null,
+       "min_height": null,
+       "min_width": null,
+       "object_fit": null,
+       "object_position": null,
+       "order": null,
+       "overflow": null,
+       "padding": null,
+       "right": null,
+       "top": null,
+       "visibility": null,
+       "width": null
+      }
+     },
+     "d5b524452db64461845062303a8255ce": {
+      "model_module": "nglview-js-widgets",
+      "model_module_version": "3.1.5",
+      "model_name": "ColormakerRegistryModel",
+      "state": {
+       "_dom_classes": [],
+       "_model_module": "nglview-js-widgets",
+       "_model_module_version": "3.1.5",
+       "_model_name": "ColormakerRegistryModel",
+       "_msg_ar": [],
+       "_msg_q": [],
+       "_ready": false,
+       "_view_count": null,
+       "_view_module": "nglview-js-widgets",
+       "_view_module_version": "3.1.5",
+       "_view_name": "ColormakerRegistryView",
+       "layout": "IPY_MODEL_412c8919f76a49f6a357d7cde5172c01",
+       "tabbable": null,
+       "tooltip": null
+      }
+     }
+    },
+    "version_major": 2,
+    "version_minor": 0
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
