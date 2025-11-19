@@ -13,7 +13,9 @@ import {
     setStructureTransparency,
 } from "molstar/lib/mol-plugin-state/helpers/structure-transparency";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
+import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
 import { addTransparentSphereFromPython } from "./shapes";
@@ -47,6 +49,7 @@ class MolSysViewerController {
     private readonly shapeRefs = new Set<StateObjectRef<SO.Shape.Representation3D>>();
     private currentStructure?: StructureRef;
     private loadedStructure?: LoadedStructure;
+    private readonly labelRefs = new Set<StateObjectRef>();
 
     private constructor(private readonly plugin: PluginContext) {}
 
@@ -60,48 +63,26 @@ class MolSysViewerController {
         try {
             switch (msg.op) {
                 case "load_structure_from_string":
-                case "load_pdb_string": {
-                    const text =
-                        (msg as any).data ?? (msg as any).pdb ?? (msg as any).pdb_text ?? "";
-                    if (!text || typeof text !== "string") {
-                        console.warn(
-                            "[MolSysViewer] mensaje de carga sin data/pdb/pdb_text"
-                        );
-                        return;
-                    }
-                    const format = (msg as LoadStructureMessage).format ?? "pdb";
-                    const label = (msg as LoadStructureMessage).label ?? "Structure";
-                    await this.loadFromString(text, format, label);
+                case "load_pdb_string":
+                    await this.handleLoadFromString(msg as LoadStructureMessage);
                     break;
-                }
 
-                case "load_structure_from_url": {
-                    const { url, format, label } = msg as LoadStructureFromUrlMessage;
-                    if (!url || typeof url !== "string") {
-                        console.warn("[MolSysViewer] load_structure_from_url sin url");
-                        return;
-                    }
-                    await this.loadFromUrl(url, format, label);
+                case "load_structure_from_url":
+                    await this.handleLoadFromUrl(msg as LoadStructureFromUrlMessage);
                     break;
-                }
+
+                case "load_pdb_id":
+                    await this.handleLoadPdbId(msg as LoadPdbIdMessage);
+                    break;
 
                 case "test_transparent_sphere":
-                case "add_sphere": {
-                    const options = (msg as AddSphereMessage).options ?? {};
-                    await this.addSphere({
-                        center: options.center ?? [0, 0, 0],
-                        radius: options.radius ?? 10,
-                        color: options.color ?? 0x00ff00,
-                        alpha: options.alpha ?? 0.4,
-                    });
+                case "add_sphere":
+                    await this.handleAddSphere(msg as AddSphereMessage);
                     break;
-                }
 
-                case "update_visibility": {
-                    const options = (msg as UpdateVisibilityMessage).options;
-                    await this.updateVisibility(options?.visible_atom_indices);
+                case "update_visibility":
+                    await this.handleUpdateVisibility(msg as UpdateVisibilityMessage);
                     break;
-                }
 
                 case "reset_view":
                     await this.resetView();
@@ -115,10 +96,6 @@ class MolSysViewerController {
                     await this.clearAll();
                     break;
 
-                case "test_pdb_id":
-                    console.warn("[MolSysViewer] test_pdb_id aún no implementado");
-                    break;
-
                 default:
                     console.warn("[MolSysViewer] op desconocida:", (msg as any).op, msg);
                     break;
@@ -126,6 +103,49 @@ class MolSysViewerController {
         } catch (error) {
             console.error("[MolSysViewer] Error procesando mensaje:", msg, error);
         }
+    }
+
+    private async handleLoadFromString(msg: LoadStructureMessage) {
+        const text = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
+        if (!text || typeof text !== "string") {
+            console.warn("[MolSysViewer] mensaje de carga sin data/pdb/pdb_text");
+            return;
+        }
+        const format = msg.format ?? "pdb";
+        const label = msg.label ?? "Structure";
+        await this.loadFromString(text, format, label);
+    }
+
+    private async handleLoadFromUrl(msg: LoadStructureFromUrlMessage) {
+        if (!msg.url || typeof msg.url !== "string") {
+            console.warn("[MolSysViewer] load_structure_from_url sin url");
+            return;
+        }
+        await this.loadFromUrl(msg.url, msg.format, msg.label);
+    }
+
+    private async handleLoadPdbId(msg: LoadPdbIdMessage) {
+        const pdbId = msg.pdb_id?.trim();
+        if (!pdbId) {
+            console.warn("[MolSysViewer] load_pdb_id sin pdb_id");
+            return;
+        }
+        await this.loadPdbId(pdbId);
+    }
+
+    private async handleAddSphere(msg: AddSphereMessage) {
+        const options = msg.options ?? {};
+        await this.addSphere({
+            center: options.center ?? [0, 0, 0],
+            radius: options.radius ?? 10,
+            color: options.color ?? 0x00ff00,
+            alpha: options.alpha ?? 0.4,
+        });
+    }
+
+    private async handleUpdateVisibility(msg: UpdateVisibilityMessage) {
+        const indices = msg.options?.visible_atom_indices;
+        await this.updateVisibility(indices);
     }
 
     private async loadFromString(data: string, format: string, label?: string) {
@@ -176,38 +196,43 @@ class MolSysViewerController {
 
         await clearStructureTransparency(this.plugin, components);
 
-        if (!Array.isArray(visibleAtomIndices)) return;
+        if (!Array.isArray(visibleAtomIndices) || visibleAtomIndices.length === 0) return;
 
+        const selectionBuilder = StructureSelection.LinearBuilder(structure);
         const visibleSet = new Set(visibleAtomIndices);
-        const lociElements: { unit: Unit; indices: OrderedSet<number> }[] = [];
+        let hasHidden = false;
+
         for (const unit of structure.units) {
             if (!Unit.isAtomic(unit)) continue;
             const elementCount = OrderedSet.size(unit.elements);
-            if (visibleSet.size === 0) {
-                if (elementCount === 0) continue;
-                lociElements.push({
-                    unit,
-                    indices: OrderedSet.ofBounds(0, elementCount),
-                });
-                continue;
-            }
+            if (elementCount === 0) continue;
 
-            const hiddenOrdinals: number[] = [];
+            const hiddenElements: number[] = [];
             for (let ordinal = 0; ordinal < elementCount; ordinal++) {
                 const elementIndex = OrderedSet.getAt(unit.elements, ordinal);
-                if (!visibleSet.has(elementIndex)) hiddenOrdinals.push(ordinal);
+                if (!visibleSet.has(elementIndex)) {
+                    hiddenElements.push(elementIndex);
+                }
             }
-            if (hiddenOrdinals.length === 0) continue;
-            const indices =
-                hiddenOrdinals.length === elementCount
-                    ? OrderedSet.ofBounds(0, elementCount)
-                    : OrderedSet.ofSortedArray(hiddenOrdinals);
-            lociElements.push({ unit, indices });
+
+            if (hiddenElements.length === 0) continue;
+            hasHidden = true;
+
+            const elementSubset =
+                hiddenElements.length === elementCount
+                    ? unit.elements
+                    : (SortedArray.ofSortedArray(hiddenElements) as StructureElement.Set);
+            const childUnit = unit.getChild(elementSubset);
+            const hiddenStructure = Structure.create([childUnit], { parent: structure });
+            selectionBuilder.add(hiddenStructure);
         }
 
-        if (lociElements.length === 0) return;
+        if (!hasHidden) return;
 
-        const loci = StructureElement.Loci(structure, lociElements as any);
+        const selection = selectionBuilder.getSelection();
+        if (StructureSelection.isEmpty(selection)) return;
+
+        const loci = StructureSelection.toLociWithSourceUnits(selection);
         await setStructureTransparency(this.plugin, components, 1, async () => loci);
     }
 
@@ -218,21 +243,23 @@ class MolSysViewerController {
     private async clearScene(options?: ClearSceneMessage["options"]) {
         const shapes = options?.shapes ?? true;
         const styles = options?.styles ?? true;
+        const labels = options?.labels ?? false;
 
         if (shapes) await this.clearShapes();
         if (styles) await this.resetStructureDecorations();
+        if (labels) await this.clearLabels();
     }
 
     private async clearShapes() {
         if (this.shapeRefs.size === 0) return;
-        const builder = this.plugin.state.data.build();
-        for (const ref of this.shapeRefs) builder.delete(ref);
-        await PluginCommands.State.Update(this.plugin, {
-            state: this.plugin.state.data,
-            tree: builder,
-            options: { doNotLogTiming: true },
-        });
+        await Promise.all(Array.from(this.shapeRefs).map(ref => this.removeStateObject(ref)));
         this.shapeRefs.clear();
+    }
+
+    private async clearLabels() {
+        if (this.labelRefs.size === 0) return;
+        await Promise.all(Array.from(this.labelRefs).map(ref => this.removeStateObject(ref)));
+        this.labelRefs.clear();
     }
 
     private async resetStructureDecorations() {
@@ -243,20 +270,34 @@ class MolSysViewerController {
 
     private async clearAll() {
         await this.clearScene({ shapes: true, styles: true, labels: true });
-        const structures = this.plugin.managers.structure.hierarchy.current.structures;
-        if (structures.length) {
-            await this.plugin.managers.structure.hierarchy.remove(structures);
-        }
         await this.removeLoadedStructure();
         this.currentStructure = undefined;
     }
 
     private async removeLoadedStructure() {
-        if (!this.loadedStructure?.data) return;
-        const builder = this.plugin.build();
-        builder.delete(this.loadedStructure.data);
-        await builder.commit();
+        if (!this.loadedStructure) return;
+        const refs: Array<StateObjectRef | undefined> = [
+            this.loadedStructure.structure,
+            this.loadedStructure.trajectory,
+            this.loadedStructure.data,
+        ];
+        for (const ref of refs) await this.removeStateObject(ref);
         this.loadedStructure = undefined;
+    }
+
+    private async loadPdbId(pdbId: string) {
+        const normalized = pdbId.trim().toUpperCase();
+        const url = `https://files.rcsb.org/download/${normalized}.pdb`;
+        await this.loadFromUrl(url, "pdb", `PDB ${normalized}`);
+    }
+
+    private async removeStateObject(ref?: StateObjectRef) {
+        if (!ref) return;
+        await PluginCommands.State.RemoveObject(this.plugin, {
+            state: this.plugin.state.data,
+            ref,
+            removeParentGhosts: true,
+        });
     }
 }
 
@@ -320,11 +361,17 @@ type ClearAllMessage = {
     op: "clear_all";
 };
 
+type LoadPdbIdMessage = {
+    op: "load_pdb_id";
+    pdb_id: string;
+};
+
 type ViewerMessage =
     TransparentSphereMessage |
     AddSphereMessage |
     LoadStructureMessage |
     LoadStructureFromUrlMessage |
+    LoadPdbIdMessage |
     UpdateVisibilityMessage |
     ClearSceneMessage |
     ClearAllMessage |
