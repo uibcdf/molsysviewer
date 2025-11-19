@@ -16,6 +16,8 @@ dependencies:
   # --- Scientific stack (lightweight) ---
   - numpy
   - pandas
+  - molsysmt
+  - pyunitwizard
 
   # --- Dev tools: formatting, linting, testing ---
   - black
