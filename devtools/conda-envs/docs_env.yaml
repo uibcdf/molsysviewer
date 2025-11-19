@@ -16,9 +16,6 @@ dependencies:
   - numpy
   - pandas
 
-  # --- NodeJS for JS development and esbuild ---
-  - nodejs>=18
-
   # --- Documentation with Sphinx and MyST ---
   - jupyterlab
   - jupyterlab-myst

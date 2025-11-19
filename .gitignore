@@ -88,8 +88,8 @@ molsysviewer/labextension/*.map
 # molsysviewer/labextension/index.js.map
 
 # Bundles generados por esbuild/rollup/webpack
-molsysviewer/viewer.js
-molsysviewer/viewer.js.map
+#molsysviewer/viewer.js
+#molsysviewer/viewer.js.map
 
 # ==========================================================
 # OS-specific + editor files

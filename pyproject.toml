@@ -27,7 +27,7 @@ dev = [
 include = ["molsysviewer"]
 
 [tool.setuptools.package-data]
-"molsysviewer" = ["viewer.js"]
+"molsysviewer" = ["viewer.js", "viewer.js.map"]
 
 [tool.black]
 line-length = 120

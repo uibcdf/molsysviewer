@@ -21,16 +21,6 @@ jobs:
         with:
           fetch-depth: 0
 
-            #      - name: Set up Python
-            #        uses: actions/setup-python@v6
-            #        with:
-            #          python-version: 3.12
-            #
-            #      - name: Set up Node.js
-            #        uses: actions/setup-node@v6
-            #        with:
-            #          node-version: "20"
-
       - name: Setup conda env
         uses: mamba-org/setup-micromamba@v1
         with:
@@ -52,15 +42,6 @@ jobs:
           micromamba activate docs
           micromamba info
           micromamba list
-
-      - name: Build viewer.js
-        shell: bash -l {0}
-        run: |
-          echo "::group::Building viewer.js"
-          cd molsysviewer/js
-          npm install
-          npm run build
-          echo "::endgroup::"
 
       - name: Install package
         shell: bash -l {0}
