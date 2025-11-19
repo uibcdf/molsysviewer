@@ -28,3 +28,4 @@ dependencies:
   - sphinx-tabs
   - pydata-sphinx-theme
   - myst-nb
+  - molsysmt
