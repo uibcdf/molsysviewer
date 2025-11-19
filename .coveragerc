@@ -1,0 +1,10 @@
+# .coveragerc
+
+[run]
+branch = True
+source = molsysviewer
+
+[report]
+show_missing = True
+omit =
+    molsysviewer/_private/**
