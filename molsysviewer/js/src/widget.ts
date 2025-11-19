@@ -23,8 +23,10 @@ import { StateObjectRef } from "molstar/lib/mol-state";
 import { addTransparentSphereFromPython } from "./shapes";
 import {
     LoadedStructure,
+    MolSysPayload,
     loadStructureFromString,
     loadStructureFromUrl,
+    loadStructureFromMolSysPayload,
 } from "./structure";
 
 
@@ -93,6 +95,10 @@ class MolSysViewerController {
                     await this.handleLoadFromString(msg as LoadStructureMessage);
                     break;
 
+                case "load_molsys_payload":
+                    await this.handleLoadMolSysPayload(msg as LoadMolSysPayloadMessage);
+                    break;
+
                 case "load_structure_from_url":
                     await this.handleLoadFromUrl(msg as LoadStructureFromUrlMessage);
                     break;
@@ -142,6 +148,14 @@ class MolSysViewerController {
         await this.loadFromString(text, format, label);
     }
 
+    private async handleLoadMolSysPayload(msg: LoadMolSysPayloadMessage) {
+        if (!msg.payload) {
+            console.warn("[MolSysViewer] load_molsys_payload sin payload");
+            return;
+        }
+        await this.loadFromMolSysPayload(msg.payload, msg.label);
+    }
+
     private async handleLoadFromUrl(msg: LoadStructureFromUrlMessage) {
         if (!msg.url || typeof msg.url !== "string") {
             console.warn("[MolSysViewer] load_structure_from_url sin url");
@@ -175,15 +189,25 @@ class MolSysViewerController {
     }
 
     private async loadFromString(data: string, format: string, label?: string) {
+        const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
         this.loadedStructure = await loadStructureFromString(this.plugin, data, format, label, {
-            previous: this.loadedStructure?.data,
+            previous,
         });
         this.captureCurrentStructure();
     }
 
     private async loadFromUrl(url: string, format?: string, label?: string) {
+        const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
         this.loadedStructure = await loadStructureFromUrl(this.plugin, url, format, label, {
-            previous: this.loadedStructure?.data,
+            previous,
+        });
+        this.captureCurrentStructure();
+    }
+
+    private async loadFromMolSysPayload(payload: MolSysPayload, label?: string) {
+        const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
+        this.loadedStructure = await loadStructureFromMolSysPayload(this.plugin, payload, label, {
+            previous,
         });
         this.captureCurrentStructure();
     }
@@ -360,6 +384,12 @@ type LoadStructureMessage = {
     label?: string;
 };
 
+type LoadMolSysPayloadMessage = {
+    op: "load_molsys_payload";
+    payload: MolSysPayload;
+    label?: string;
+};
+
 type LoadStructureFromUrlMessage = {
     op: "load_structure_from_url";
     url: string;
@@ -396,6 +426,7 @@ type ViewerMessage =
     TransparentSphereMessage |
     AddSphereMessage |
     LoadStructureMessage |
+    LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |
     LoadPdbIdMessage |
     UpdateVisibilityMessage |
