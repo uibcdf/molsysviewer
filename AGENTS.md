@@ -54,3 +54,16 @@ Editing generated files breaks:
 * debugging and maintenance workflows.
 
 Follow these rules to ensure the viewer remains stable and maintainable.
+
+## Mol* Source Context
+
+When working on MolSysViewer, you MUST assume that the full Mol* (molstar) source tree is available locally under: `src_molstar`
+This means:
+
+- You should NOT treat Mol* as a black box.
+- You may reason about internal Mol* APIs, viewer behaviors, render pipelines, geometry builders, representation logic,
+  and state updates by referencing the local source code.
+- When planning, debugging, or proposing refactors in JavaScript/TypeScript, refer to the Mol* source when clarity or
+  correctness depends on understanding internal implementations.
+- This context applies ONLY to work inside the MolSysViewer repository.
+
