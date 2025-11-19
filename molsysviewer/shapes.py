@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Sequence
 
 class ShapesModule:
 
@@ -72,4 +72,3 @@ class ShapesModule:
 
         for c, r, col, a in zip(centers_list, radii, colors, alphas):
             self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=tag)
-
