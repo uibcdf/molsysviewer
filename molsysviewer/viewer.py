@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import logging
+from typing import Any
+
 import molsysmt as msm
 import numpy as np
-from typing import Any
+
+from molsysmt import pyunitwizard as puw
 
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .shapes import ShapesModule
+
+
+logger = logging.getLogger(__name__)
 
 
 class MolSysView:
@@ -102,6 +109,8 @@ class MolSysView:
                                    syntax=syntax)
         n_atoms = msm.get(self._molsys, element='atom', n_atoms=True)
         self.atom_mask = np.ones(n_atoms, dtype=bool)
+        if self._try_load_native_molsys(label=label):
+            return
         _temp_pdb_string = msm.convert(self._molsys, to_form='string:pdb')
         self._load_pdb_string(_temp_pdb_string, label=label)
 
@@ -274,6 +283,223 @@ class MolSysView:
         self._send({"op": "test_pdb_id"})
 
     # --- Mol* Inner loaders to test ---
+
+    def _try_load_native_molsys(self, label: str | None = None) -> bool:
+        if self._molsys is None:
+            return False
+        try:
+            payload = self._serialize_molsys_payload(self._molsys)
+        except Exception as exc:  # pragma: no cover - defensive, MolSysMT internals
+            logger.debug("MolSys payload serialization failed: %s", exc, exc_info=True)
+            return False
+        if payload is None:
+            return False
+        self._load_molsys_payload(payload, label=label)
+        return True
+
+    def _serialize_molsys_payload(self, molsys: Any) -> dict[str, Any] | None:
+        n_atoms = msm.get(molsys, element="atom", n_atoms=True)
+        if not n_atoms:
+            return None
+
+        atom_ids = self._prepare_atom_field(self._safe_atom_get(molsys, atom_id=True), n_atoms, lambda i: i + 1)
+        atom_names = self._prepare_atom_field(
+            self._safe_atom_get(molsys, atom_name=True), n_atoms, lambda i: f"A{i + 1}"
+        )
+        residue_ids = self._prepare_atom_field(
+            self._first_available(
+                [
+                    self._safe_atom_get(molsys, group_id=True),
+                    self._safe_atom_get(molsys, component_id=True),
+                ]
+            ),
+            n_atoms,
+            lambda _i: 1,
+        )
+        residue_names = self._prepare_atom_field(
+            self._first_available(
+                [
+                    self._safe_atom_get(molsys, group_name=True),
+                    self._safe_atom_get(molsys, component_name=True),
+                ]
+            ),
+            n_atoms,
+            lambda _i: "RES",
+        )
+        chain_ids = self._prepare_atom_field(self._safe_atom_get(molsys, chain_id=True), n_atoms, lambda _i: "A")
+        entity_ids = self._prepare_atom_field(
+            self._first_available(
+                [
+                    self._safe_atom_get(molsys, entity_id=True),
+                    self._safe_atom_get(molsys, molecule_id=True),
+                ]
+            ),
+            n_atoms,
+            lambda _i: "1",
+        )
+        element_symbols = self._prepare_atom_field(
+            self._first_available(
+                [
+                    self._safe_atom_get(molsys, element_symbol=True),
+                    self._safe_atom_get(molsys, atom_type=True),
+                ]
+            ),
+            n_atoms,
+            lambda _i: "C",
+        )
+        formal_charges = self._prepare_atom_field(self._safe_atom_get(molsys, formal_charge=True), n_atoms, lambda _i: 0)
+
+        coordinates_quantity = self._safe_atom_get(molsys, coordinates=True, structure_indices="all")
+        if coordinates_quantity is None:
+            return None
+        coordinates_array = self._coordinates_to_angstroms(coordinates_quantity)
+        if coordinates_array is None:
+            return None
+
+        if coordinates_array.ndim == 2 and coordinates_array.shape[1] == 3:
+            coordinates_array = coordinates_array[np.newaxis, ...]
+        if coordinates_array.ndim != 3 or coordinates_array.shape[1] != n_atoms:
+            return None
+
+        box_lengths = self._safe_structure_get(molsys, box_lengths=True, structure_indices="all")
+        box_angles = self._safe_structure_get(molsys, box_angles=True, structure_indices="all")
+        lengths_array = self._to_plain_array(box_lengths, to_unit="angstrom")
+        angles_array = self._to_plain_array(box_angles, to_unit="degree")
+
+        frames: list[dict[str, Any]] = []
+        for frame_index, frame in enumerate(coordinates_array):
+            frame_payload: dict[str, Any] = {
+                "positions": frame.tolist(),
+                "time": frame_index,
+            }
+            if lengths_array is not None and angles_array is not None:
+                if frame_index < len(lengths_array) and frame_index < len(angles_array):
+                    cell_lengths = lengths_array[frame_index]
+                    cell_angles = angles_array[frame_index]
+                    if len(cell_lengths) >= 3 and len(cell_angles) >= 3:
+                        frame_payload["cell"] = {
+                            "a": float(cell_lengths[0]),
+                            "b": float(cell_lengths[1]),
+                            "c": float(cell_lengths[2]),
+                            "alpha": float(cell_angles[0]),
+                            "beta": float(cell_angles[1]),
+                            "gamma": float(cell_angles[2]),
+                        }
+            frames.append(frame_payload)
+
+        bonds_payload = None
+        bond_indices = self._first_available(
+            [
+                self._safe_bond_get(molsys, atom_indices=True),
+                self._safe_bond_get(molsys, atoms_indices=True),
+                self._safe_bond_get(molsys, atom_index=True),
+            ]
+        )
+        if bond_indices is not None:
+            bond_array = np.asarray(bond_indices, dtype=int)
+            if bond_array.ndim == 2 and bond_array.shape[1] == 2:
+                orders = self._first_available(
+                    [
+                        self._safe_bond_get(molsys, order=True),
+                        self._safe_bond_get(molsys, bond_order=True),
+                    ]
+                )
+                order_array = np.asarray(orders, dtype=int) if orders is not None else None
+                bonds_payload = {
+                    "indexA": bond_array[:, 0].tolist(),
+                    "indexB": bond_array[:, 1].tolist(),
+                }
+                if order_array is not None and order_array.shape[0] == bond_array.shape[0]:
+                    bonds_payload["order"] = order_array.tolist()
+
+        payload: dict[str, Any] = {
+            "atoms": {
+                "atom_id": atom_ids,
+                "atom_name": atom_names,
+                "residue_id": residue_ids,
+                "residue_name": residue_names,
+                "chain_id": chain_ids,
+                "entity_id": entity_ids,
+                "element_symbol": element_symbols,
+                "formal_charge": formal_charges,
+            },
+            "coordinates": frames,
+        }
+        if bonds_payload is not None:
+            payload["bonds"] = bonds_payload
+        return payload
+
+    def _safe_atom_get(self, molsys: Any, **kwargs):
+        try:
+            return msm.get(molsys, element="atom", **kwargs)
+        except Exception:  # pragma: no cover - MolSysMT runtime guard
+            logger.debug("MolSys payload: atom get failed for %s", kwargs, exc_info=True)
+            return None
+
+    def _safe_structure_get(self, molsys: Any, **kwargs):
+        try:
+            return msm.get(molsys, element="structure", **kwargs)
+        except Exception:  # pragma: no cover
+            logger.debug("MolSys payload: structure get failed for %s", kwargs, exc_info=True)
+            return None
+
+    def _safe_bond_get(self, molsys: Any, **kwargs):
+        try:
+            return msm.get(molsys, element="bond", **kwargs)
+        except Exception:  # pragma: no cover
+            logger.debug("MolSys payload: bond get failed for %s", kwargs, exc_info=True)
+            return None
+
+    def _first_available(self, candidates: list[Any | None]) -> Any | None:
+        for candidate in candidates:
+            if candidate is not None:
+                return candidate
+        return None
+
+    def _prepare_atom_field(self, values: Any | None, length: int, fallback) -> list[Any]:
+        if values is None:
+            return [fallback(i) for i in range(length)]
+        array = np.asarray(values)
+        if array.shape[0] != length:
+            return [fallback(i) for i in range(length)]
+        return array.tolist()
+
+    def _coordinates_to_angstroms(self, coordinates: Any) -> np.ndarray | None:
+        if coordinates is None:
+            return None
+        try:
+            converted = puw.convert(coordinates, to_unit="angstrom")
+            values = puw.get_value(converted)
+        except Exception:  # pragma: no cover - fallback path
+            values = puw.get_value(coordinates) if puw.is_quantity(coordinates) else coordinates
+        try:
+            return np.asarray(values, dtype=float)
+        except Exception:
+            logger.debug("MolSys payload: unable to convert coordinates to ndarray", exc_info=True)
+            return None
+
+    def _to_plain_array(self, data: Any, to_unit: str | None = None) -> np.ndarray | None:
+        if data is None:
+            return None
+        try:
+            if puw.is_quantity(data):
+                converted = puw.convert(data, to_unit=to_unit) if to_unit is not None else data
+                values = puw.get_value(converted)
+            else:
+                values = data
+            return np.asarray(values)
+        except Exception:
+            logger.debug("MolSys payload: unable to convert %s to array", to_unit or "values", exc_info=True)
+            return None
+
+    def _load_molsys_payload(self, payload: dict[str, Any], *, label: str | None = None) -> None:
+        self._send(
+            {
+                "op": "load_molsys_payload",
+                "payload": payload,
+                "label": label,
+            }
+        )
 
     def _load_pdb_string(self, pdb_string: str, *, label: str | None = None) -> None:
         """Cargar una estructura PDB desde un string en el viewer."""
