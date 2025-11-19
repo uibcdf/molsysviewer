@@ -7,8 +7,11 @@ import { addTransparentSphereFromPython } from "./shapes";
 import { loadStructureFromString, loadStructureFromUrl } from "./structure";
 
 
+// ------------------------------------------------------------------
+// Crear e inicializar el plugin Mol*
+// ------------------------------------------------------------------
 export async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
-    // Crear canvas dentro del contenedor que anywidget nos da
+
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
@@ -17,29 +20,18 @@ export async function createMolSysViewer(target: HTMLElement): Promise<PluginCon
 
     const plugin = new PluginContext(DefaultPluginSpec());
 
-    // 1) Inicializar el plugin (registra builders, formatos, etc.)
     await plugin.init();
 
-    // 2) Inicializar el viewer sobre ese canvas
     const ok = await plugin.initViewerAsync(canvas, target);
-    if (!ok) {
-        console.error("[MolSysViewer] Failed to init Mol* viewer");
-    }
+    if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
 
     return plugin;
 }
 
-//export async function createMolSysViewer(target: HTMLElement): Promise<PluginContext> {
-//    const plugin = new PluginContext(DefaultPluginSpec());
-//
-//    // monta el plugin dentro del elemento target
-//    await plugin.mountAsync(target);
-//    await plugin.canvas3dInitialized;
-//
-//    return plugin;
-//}
 
+// ------------------------------------------------------------------
 // Tipos de mensajes
+// ------------------------------------------------------------------
 type TransparentSphereMessage = {
     op: "test_transparent_sphere";
     options?: {
@@ -76,25 +68,32 @@ type LoadStructureFromUrlMessage = {
     label?: string;
 };
 
-type ViewerMessage = TransparentSphereMessage | LoadStructureMessage | Record<string, unknown>;
+type ViewerMessage =
+    TransparentSphereMessage |
+    AddSphereMessage |
+    LoadStructureMessage |
+    LoadStructureFromUrlMessage |
+    Record<string, unknown>;
 
+
+// ------------------------------------------------------------------
+// AnyWidget entry point
+// ------------------------------------------------------------------
 export default {
     render({ model, el }: { model: any; el: HTMLElement }) {
-        // Crear el plugin una sola vez por elemento
+
         const pluginPromise = createMolSysViewer(el);
 
-        // Avisar al backend cuando el plugin esté inicializado para
-        // que pueda enviar los mensajes pendientes.
+        // Avisar a Python cuando esté listo
         (async () => {
             try {
                 await pluginPromise;
                 model.send({ event: "ready" });
-            } catch (error) {
-                console.error("[MolSysViewer] Error inicializando el plugin:", error);
+            } catch (err) {
+                console.error("[MolSysViewer] Error inicializando plugin:", err);
             }
         })();
 
-        // Logs de depuración por si acaso
         console.log("[MolSysViewer] widget render inicial");
 
         model.on("msg:custom", async (msg: ViewerMessage) => {
@@ -104,6 +103,10 @@ export default {
             const plugin = await pluginPromise;
 
             switch (msg.op) {
+
+                // ------------------------------------------------------------
+                // CARGA DESDE STRING
+                // ------------------------------------------------------------
                 case "load_structure_from_string":
                 case "load_pdb_string": {
                     const text =
@@ -111,10 +114,12 @@ export default {
                         (msg as any).pdb ??
                         (msg as any).pdb_text ??
                         "";
+
                     if (!text || typeof text !== "string") {
                         console.warn("[MolSysViewer] mensaje de carga sin data/pdb/pdb_text");
                         return;
                     }
+
                     const format = (msg as LoadStructureMessage).format ?? "pdb";
                     const label = (msg as LoadStructureMessage).label ?? "Structure";
 
@@ -126,25 +131,27 @@ export default {
                     break;
                 }
 
+                // ------------------------------------------------------------
+                // CARGA DESDE URL
+                // ------------------------------------------------------------
                 case "load_structure_from_url": {
                     const { url, format, label } = msg as LoadStructureFromUrlMessage;
-
                     if (!url || typeof url !== "string") {
-                        console.warn("[MolSysViewer] mensaje load_structure_from_url sin url");
+                        console.warn("[MolSysViewer] load_structure_from_url sin url");
                         return;
                     }
 
                     try {
                         await loadStructureFromUrl(plugin, url, format, label);
                     } catch (e) {
-                        console.error(
-                            "[MolSysViewer] Error al cargar estructura desde URL:",
-                            e
-                        );
+                        console.error("[MolSysViewer] Error al cargar estructura desde URL:", e);
                     }
                     break;
                 }
 
+                // ------------------------------------------------------------
+                // ESFERAS (actual)
+                // ------------------------------------------------------------
                 case "test_transparent_sphere": {
                     const options = (msg as TransparentSphereMessage).options ?? {};
                     await addTransparentSphereFromPython(plugin, {
@@ -167,6 +174,30 @@ export default {
                     break;
                 }
 
+                // ------------------------------------------------------------
+                // NOPs (todavía no implementados)
+                // ------------------------------------------------------------
+                case "update_visibility":
+                    console.warn("[MolSysViewer] update_visibility aún no implementado");
+                    break;
+
+                case "reset_view":
+                    console.warn("[MolSysViewer] reset_view aún no implementado");
+                    break;
+
+                case "clear_scene":
+                    console.warn("[MolSysViewer] clear_scene aún no implementado");
+                    break;
+
+                case "clear_all":
+                    console.warn("[MolSysViewer] clear_all aún no implementado");
+                    break;
+
+                case "test_pdb_id":
+                    console.warn("[MolSysViewer] test_pdb_id aún no implementado");
+                    break;
+
+                // ------------------------------------------------------------
                 default:
                     console.warn("[MolSysViewer] op desconocida:", (msg as any).op, msg);
                     break;
