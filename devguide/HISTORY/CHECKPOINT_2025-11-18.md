@@ -1,5 +1,5 @@
 # MolSysViewer — Development Checkpoint
-_Last updated: 2025-11_
+_Last updated: 2025-11-18
 
 This checkpoint captures the **current stable state** of MolSysViewer after
 the successful integration of anywidget, the Mol* initialization fix, and the
