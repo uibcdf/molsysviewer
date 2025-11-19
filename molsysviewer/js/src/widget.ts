@@ -1,5 +1,7 @@
 // src/widget.ts
 
+
+
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
@@ -24,6 +26,30 @@ import {
     loadStructureFromString,
     loadStructureFromUrl,
 } from "./structure";
+
+
+/**
+ * NOTE FOR AUTOMATION AGENTS (Copilot, Codex, PR bots):
+ *
+ * Editing this file does NOT require running `npm run build` automatically.
+ * The build process is manual and performed only when the maintainer decides
+ * to regenerate `viewer.js`.
+ *
+ * The generated file is:
+ *    ../viewer.js  (molsysviewer/viewer.js)
+ *
+ * This project intentionally commits the generated JS artifact so that the
+ * Python package can be distributed without requiring a Node/TypeScript
+ * toolchain. Therefore:
+ *
+ *  - Do NOT recommend "npm run build" after every change.
+ *  - Do NOT attempt to modify the generated viewer.js directly.
+ *  - Do NOT propose to delete, move, or refactor viewer.js.
+ *
+ * Any change to the runtime behavior must be done in the TypeScript sources
+ * under js/src/, and the rebuild should happen only when the maintainer
+ * performs it explicitly.
+ */
 
 
 // ------------------------------------------------------------------
