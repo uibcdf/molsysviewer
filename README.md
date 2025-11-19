@@ -30,6 +30,7 @@ naturally with tools such as:
 
 ### ✔ Interactive molecular visualization
 - Load PDB and mmCIF strings directly (“in-memory structures”)
+- Load native MolSysMT systems without intermediate PDB conversion
 - Load structures from remote URLs
 - High-quality Mol\* rendering with cartoon, surface, and atomic styles
 - Smooth camera, lighting, and interactivity
