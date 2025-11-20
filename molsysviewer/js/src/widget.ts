@@ -107,7 +107,6 @@ class MolSysViewerController {
                     await this.handleLoadPdbId(msg as LoadPdbIdMessage);
                     break;
 
-                case "test_transparent_sphere":
                 case "add_sphere":
                     await this.handleAddSphere(msg as AddSphereMessage);
                     break;
@@ -355,16 +354,6 @@ class MolSysViewerController {
 // ------------------------------------------------------------------
 // Tipos de mensajes
 // ------------------------------------------------------------------
-type TransparentSphereMessage = {
-    op: "test_transparent_sphere";
-    options?: {
-        center?: [number, number, number];
-        radius?: number;
-        color?: number;
-        alpha?: number;
-    };
-};
-
 type AddSphereMessage = {
     op: "add_sphere";
     options?: {
