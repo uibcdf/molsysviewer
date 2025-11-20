@@ -49,8 +49,6 @@ class MolSysView:
         self._molsys = None
         self.atom_mask = None
         self.structure_mask = None
-        self.visible_atom_indices = None
-        self.visible_structure_indices = None
 
         self.shapes = ShapesModule(self)
 
@@ -78,14 +76,6 @@ class MolSysView:
             self.widget.send(msg)
         else:
             self._pending_messages.append(msg)
-
-    def _ensure_widget(self):
-        """Crear el widget una sola vez y devolverlo."""
-        if self.widget is None:
-            from .widget import MolSysViewerWidget
-            self.widget = MolSysViewerWidget()
-            self.widget.set_callback(self._receive)
-        return self.widget
 
     def _update_visibility_in_frontend(self):
         if self.atom_mask is None:
@@ -217,8 +207,6 @@ class MolSysView:
                 "op": "reset_view",
                 "options": {},
             })
-
-        return self._ensure_widget()
 
     def clear(
         self,
@@ -497,6 +485,34 @@ class MolSysView:
             {
                 "op": "load_molsys_payload",
                 "payload": payload,
+                "label": label,
+            }
+        )
+
+    def _load_pdb_id(self, pdb_id: str, label: str | None = None) -> None:
+        """Carga una estructura remota a partir de un PDB ID usando el frontend.
+    
+        Parameters
+        ----------
+        pdb_id : str
+            Identificador de la estructura en el PDB (por ejemplo, '1aki' o '1AKI').
+        label : str, optional
+            Etiqueta opcional para identificar la estructura en el viewer.
+        """
+        if pdb_id is None:
+            raise ValueError("pdb_id must be a non-empty string.")
+    
+        pdb_id_str = str(pdb_id).strip()
+        if not pdb_id_str:
+            raise ValueError("pdb_id must be a non-empty string.")
+    
+        # Normalizamos a minúsculas por consistencia, aunque Mol* suele ser case-insensitive.
+        pdb_id_str = pdb_id_str.lower()
+    
+        self._send(
+            {
+                "op": "load_pdb_id",
+                "pdb_id": pdb_id_str,
                 "label": label,
             }
         )
