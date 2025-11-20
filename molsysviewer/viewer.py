@@ -489,7 +489,7 @@ class MolSysView:
             }
         )
 
-    def _load_pdb_id(self, pdb_id: str, label: str | None = None) -> None:
+    def load_pdb_id(self, pdb_id: str, label: str | None = None) -> None:
         """Carga una estructura remota a partir de un PDB ID usando el frontend.
     
         Parameters
@@ -505,7 +505,17 @@ class MolSysView:
         pdb_id_str = str(pdb_id).strip()
         if not pdb_id_str:
             raise ValueError("pdb_id must be a non-empty string.")
-    
+ 
+        self.molecular_system = pdb_id
+        self.selection = 'all'
+        self.structure_indices = 'all'
+        self._molsys = msm.convert(pdb_id, to_form='molsysmt.MolSys',
+                                   selection='all',
+                                   structure_indices='all',
+                                   syntax='MolSysMT')
+        n_atoms = msm.get(self._molsys, element='atom', n_atoms=True)
+        self.atom_mask = np.ones(n_atoms, dtype=bool)
+   
         # Normalizamos a minúsculas por consistencia, aunque Mol* suele ser case-insensitive.
         pdb_id_str = pdb_id_str.lower()
     
@@ -517,8 +527,19 @@ class MolSysView:
             }
         )
 
-    def _load_pdb_string(self, pdb_string: str, *, label: str | None = None) -> None:
+    def load_pdb_string(self, pdb_string: str, *, label: str | None = None) -> None:
         """Cargar una estructura PDB desde un string en el viewer."""
+
+        self.molecular_system = pdb_string
+        self.selection = 'all'
+        self.structure_indices = 'all'
+        self._molsys = msm.convert(pdb_string, to_form='molsysmt.MolSys',
+                                   selection='all',
+                                   structure_indices='all',
+                                   syntax='MolSysMT')
+        n_atoms = msm.get(self._molsys, element='atom', n_atoms=True)
+        self.atom_mask = np.ones(n_atoms, dtype=bool)
+
         self._send(
             {
                 "op": "load_structure_from_string",
@@ -528,8 +549,19 @@ class MolSysView:
             },
         )
 
-    def _load_mmcif_string(self, mmcif_string: str, *, label: str | None = None) -> None:
+    def load_mmcif_string(self, mmcif_string: str, *, label: str | None = None) -> None:
         """Cargar una estructura mmCIF desde un string en el viewer."""
+
+        self.molecular_system = mmcif_string
+        self.selection = 'all'
+        self.structure_indices = 'all'
+        self._molsys = msm.convert(mmcif_string, to_form='molsysmt.MolSys',
+                                   selection='all',
+                                   structure_indices='all',
+                                   syntax='MolSysMT')
+        n_atoms = msm.get(self._molsys, element='atom', n_atoms=True)
+        self.atom_mask = np.ones(n_atoms, dtype=bool)
+
         self._send(
             {
                 "op": "load_structure_from_string",
@@ -539,7 +571,7 @@ class MolSysView:
             },
         )
 
-    def _load_from_url(
+    def load_from_url(
         self,
         url: str,
         *,
@@ -547,6 +579,17 @@ class MolSysView:
         label: str | None = None,
     ) -> None:
         """Cargar una estructura remota desde una URL."""
+
+        self.molecular_system = mmcif_string
+        self.selection = 'all'
+        self.structure_indices = 'all'
+        self._molsys = msm.convert(mmcif_string, to_form='molsysmt.MolSys',
+                                   selection='all',
+                                   structure_indices='all',
+                                   syntax='MolSysMT')
+        n_atoms = msm.get(self._molsys, element='atom', n_atoms=True)
+        self.atom_mask = np.ones(n_atoms, dtype=bool)
+
         self._send(
             {
                 "op": "load_structure_from_url",

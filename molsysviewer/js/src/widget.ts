@@ -68,7 +68,15 @@ class MolSysViewerController {
         const plugin = new PluginContext(DefaultPluginSpec());
         await plugin.init();
 
-        const ok = await plugin.initViewerAsync(canvas, target);
+        // Mol* exposed `initViewerAsync` in newer versions; older bundles expose only `initViewer`.
+        const init = (plugin as any).initViewerAsync ?? (plugin as any).initViewer;
+        let ok = false;
+        if (typeof init === "function") {
+            const result = init.call(plugin, canvas, target);
+            ok = typeof result?.then === "function" ? await result : !!result;
+        } else {
+            console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
+        }
         if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
 
         return new MolSysViewerController(plugin);
@@ -456,4 +464,3 @@ export default {
         });
     },
 };
-

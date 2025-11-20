@@ -31,9 +31,9 @@ class ShapesModule:
         self,
         centers: Sequence[Sequence[float]],
         radii: float | Sequence[float] = 1.0,
-        color: int | Sequence[int] = 0x00FF00,
-        alpha: float | Sequence[float] = 0.4,
-        tag: str = None,
+        colors: int | Sequence[int] = 0x00FF00,
+        alphas: float | Sequence[float] = 0.4,
+        tags: str = None,
     ) -> None:
         """Añade muchas esferas a la escena.
 
@@ -43,7 +43,7 @@ class ShapesModule:
             Secuencia de centros, cada uno (x, y, z).
         radius
             Radio (escalar para todas) o lista de radios (uno por esfera).
-        color
+        colors
             Color en 0xRRGGBB (escalar o lista).
         alpha
             Transparencia (0.0-1.0), escalar o lista.
@@ -67,8 +67,9 @@ class ShapesModule:
                 return [cast(value)] * n
 
         radii = _as_list(radii, n, float)
-        colors = _as_list(color, n, int)
-        alphas = _as_list(alpha, n, float)
+        colors = _as_list(colors, n, int)
+        alphas = _as_list(alphas, n, float)
+        tags = _as_list(tags, n, str)
 
-        for c, r, col, a in zip(centers_list, radii, colors, alphas):
-            self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=tag)
+        for c, r, col, a, t in zip(centers_list, radii, colors, alphas, tags):
+            self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t)
