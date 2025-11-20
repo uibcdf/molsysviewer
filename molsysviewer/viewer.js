@@ -127846,7 +127846,14 @@ var MolSysViewerController = class _MolSysViewerController {
     target.appendChild(canvas);
     const plugin = new PluginContext(DefaultPluginSpec());
     await plugin.init();
-    const ok = await plugin.initViewerAsync(canvas, target);
+    const init = plugin.initViewerAsync ?? plugin.initViewer;
+    let ok = false;
+    if (typeof init === "function") {
+      const result2 = init.call(plugin, canvas, target);
+      ok = typeof result2?.then === "function" ? await result2 : !!result2;
+    } else {
+      console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
+    }
     if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
     return new _MolSysViewerController(plugin);
   }
