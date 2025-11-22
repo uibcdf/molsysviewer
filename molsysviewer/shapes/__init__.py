@@ -2,6 +2,7 @@
 
 from .spheres import SphereShapes
 from .pocket_surfaces import PocketSurfaces
+from .links import LinkShapes
 
 
 class ShapesManager:
@@ -17,6 +18,7 @@ class ShapesManager:
         # Submódulos especializados
         self.spheres = SphereShapes(view)
         self.pockets = PocketSurfaces(view)
+        self.links = LinkShapes(view)
 
     # Atajos de conveniencia para mantener la API actual:
     #
@@ -54,5 +56,12 @@ class ShapesManager:
     ):
         return self.spheres.add_set_alpha_spheres(*args, **kwargs)
 
+    def add_links(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.links.add_links(*args, **kwargs)
 
-__all__ = ["ShapesManager", "SphereShapes", "PocketSurfaces"]
+
+__all__ = ["ShapesManager", "SphereShapes", "PocketSurfaces", "LinkShapes"]
