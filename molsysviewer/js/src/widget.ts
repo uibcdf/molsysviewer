@@ -21,6 +21,8 @@ import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
 import {
+    DisplacementVectorOptions,
+    addDisplacementVectorsFromPython,
     addNetworkLinksFromPython,
     addTransparentSphereFromPython,
     addTransparentSpheresFromPython,
@@ -135,6 +137,9 @@ class MolSysViewerController {
                     break;
                 case "add_network_links":
                     await this.handleAddNetworkLinks(msg as AddNetworkLinksMessage);
+                    break;
+                case "add_displacement_vectors":
+                    await this.handleAddDisplacementVectors(msg as AddDisplacementVectorsMessage);
                     break;
 
                 case "update_visibility":
@@ -267,6 +272,19 @@ class MolSysViewerController {
             await addNetworkLinksFromPython(this.plugin, options);
         } catch (err) {
             console.error("[MolSysViewer] Error creando network links", err);
+        }
+    }
+
+    private async handleAddDisplacementVectors(msg: AddDisplacementVectorsMessage) {
+        const options = msg.options ?? {};
+        if (!options.vectors || options.vectors.length === 0) {
+            console.warn("[MolSysViewer] add_displacement_vectors sin vectores");
+            return;
+        }
+        try {
+            await addDisplacementVectorsFromPython(this.plugin, options);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando displacement vectors", err);
         }
     }
 
@@ -481,6 +499,11 @@ type AddNetworkLinksMessage = {
     options?: NetworkLinkOptions;
 };
 
+type AddDisplacementVectorsMessage = {
+    op: "add_displacement_vectors";
+    options?: DisplacementVectorOptions;
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -534,6 +557,7 @@ type ViewerMessage =
     AddAlphaSphereSetMessage |
     AddPocketSurfaceMessage |
     AddNetworkLinksMessage |
+    AddDisplacementVectorsMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |

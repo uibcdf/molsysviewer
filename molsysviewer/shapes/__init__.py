@@ -3,6 +3,7 @@
 from .spheres import SphereShapes
 from .pocket_surfaces import PocketSurfaces
 from .links import LinkShapes
+from .displacements import DisplacementVectors
 
 
 class ShapesManager:
@@ -19,6 +20,7 @@ class ShapesManager:
         self.spheres = SphereShapes(view)
         self.pockets = PocketSurfaces(view)
         self.links = LinkShapes(view)
+        self.vectors = DisplacementVectors(view)
 
     # Atajos de conveniencia para mantener la API actual:
     #
@@ -63,5 +65,18 @@ class ShapesManager:
     ):
         return self.links.add_links(*args, **kwargs)
 
+    def add_displacement_vectors(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.vectors.add_displacement_vectors(*args, **kwargs)
 
-__all__ = ["ShapesManager", "SphereShapes", "PocketSurfaces", "LinkShapes"]
+
+__all__ = [
+    "ShapesManager",
+    "SphereShapes",
+    "PocketSurfaces",
+    "LinkShapes",
+    "DisplacementVectors",
+]
