@@ -15,12 +15,19 @@ import {
     setStructureTransparency,
 } from "molstar/lib/mol-plugin-state/helpers/structure-transparency";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
+import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
-import { addTransparentSphereFromPython, addTransparentSpheresFromPython, TransparentSphereSpec } from "./shapes";
+import {
+    addDisplacementVectorsFromPython,
+    addTransparentSphereFromPython,
+    addTransparentSpheresFromPython,
+    DisplacementVectorSpec,
+    TransparentSphereSpec,
+} from "./shapes";
 import { addPocketSurfaceFromPython, PocketSurfaceOptions } from "./pocket-surface";
 import {
     LoadedStructure,
@@ -122,6 +129,10 @@ class MolSysViewerController {
 
                 case "add_alpha_sphere_set":
                     await this.handleAddAlphaSphereSet(msg as AddAlphaSphereSetMessage);
+                    break;
+
+                case "add_displacement_vectors":
+                    await this.handleAddDisplacementVectors(msg as AddDisplacementVectorsMessage);
                     break;
 
                 case "add_pocket_surface":
@@ -239,6 +250,68 @@ class MolSysViewerController {
         }
     }
 
+    private async handleAddDisplacementVectors(msg: AddDisplacementVectorsMessage) {
+        const options = msg.options;
+        const displacements = options?.displacements ?? [];
+        if (!Array.isArray(displacements) || displacements.length === 0) {
+            console.warn("[MolSysViewer] add_displacement_vectors sin 'displacements'");
+            return;
+        }
+
+        let origins = options.origins ?? [];
+        if ((!origins || origins.length === 0) && Array.isArray(options?.atom_indices)) {
+            origins = this.getAtomPositions(options.atom_indices);
+            if (origins.length === 0) {
+                console.warn("[MolSysViewer] add_displacement_vectors sin coordenadas válidas");
+                return;
+            }
+        }
+
+        if (!Array.isArray(origins) || origins.length === 0) {
+            console.warn("[MolSysViewer] add_displacement_vectors sin 'origins'");
+            return;
+        }
+
+        const count = Math.min(origins.length, displacements.length);
+        if (count === 0) {
+            console.warn("[MolSysViewer] add_displacement_vectors sin pares origen/desplazamiento");
+            return;
+        }
+
+        const vectors: DisplacementVectorSpec[] = [];
+        for (let i = 0; i < count; i++) {
+            const origin = origins[i];
+            const disp = displacements[i];
+            if (!origin || !disp || origin.length < 3 || disp.length < 3) continue;
+            vectors.push({
+                origin: [Number(origin[0]), Number(origin[1]), Number(origin[2])],
+                displacement: [Number(disp[0]), Number(disp[1]), Number(disp[2])],
+            });
+        }
+
+        if (vectors.length === 0) {
+            console.warn("[MolSysViewer] add_displacement_vectors sin vectores válidos");
+            return;
+        }
+
+        const ref = await addDisplacementVectorsFromPython(this.plugin, {
+            vectors,
+            lengthScale: options.length_scale,
+            maxLength: options.max_length,
+            minLength: options.min_length,
+            radius: options.radius,
+            headLengthRatio: options.head_length_ratio,
+            headRadiusFactor: options.head_radius_factor,
+            colorMode: options.color_mode as any,
+            colorMap: options.color_map,
+            alpha: options.alpha,
+            name: options.name,
+            tag: options.tag ?? "molsysviewer:displacement-vectors",
+        });
+
+        this.shapeRefs.add(ref);
+    }
+
     private async handleAddPocketSurface(msg: AddPocketSurfaceMessage) {
         const options = msg.options ?? ({} as PocketSurfaceOptions);
         if (!Array.isArray(options.atom_indices) || options.atom_indices.length === 0) {
@@ -292,6 +365,30 @@ class MolSysViewerController {
 
     private getComponents(): StructureComponentRef[] {
         return this.currentStructure?.components ?? [];
+    }
+
+    private getAtomPositions(atomIndices: number[]): [number, number, number][] {
+        const structure = this.getStructure();
+        if (!structure || atomIndices.length === 0) return [];
+
+        const wanted = new Set(atomIndices.map(v => Math.trunc(v)));
+        const coords = new Map<number, [number, number, number]>();
+        const pos = Vec3();
+
+        for (const unit of structure.units) {
+            const elements = unit.elements;
+            const count = OrderedSet.size(elements);
+            for (let i = 0; i < count; i++) {
+                const element = OrderedSet.getAt(elements, i);
+                if (!wanted.has(element)) continue;
+                unit.conformation.position(element, pos);
+                coords.set(element, [pos[0], pos[1], pos[2]]);
+            }
+        }
+
+        return atomIndices
+            .map(idx => coords.get(Math.trunc(idx)))
+            .filter((c): c is [number, number, number] => !!c);
     }
 
     private async addSphere(options: AddSphereMessage["options"]) {
@@ -453,6 +550,26 @@ type AddAlphaSphereSetMessage = {
     };
 };
 
+type AddDisplacementVectorsMessage = {
+    op: "add_displacement_vectors";
+    options?: {
+        origins?: [number, number, number][];
+        atom_indices?: number[];
+        displacements?: [number, number, number][];
+        length_scale?: number;
+        max_length?: number;
+        min_length?: number;
+        radius?: number;
+        head_length_ratio?: number;
+        head_radius_factor?: number;
+        color_mode?: "norm" | "x" | "y" | "z";
+        color_map?: number[] | string;
+        alpha?: number;
+        name?: string;
+        tag?: string;
+    };
+};
+
 type AddPocketSurfaceMessage = {
     op: "add_pocket_surface";
     options?: PocketSurfaceOptions;
@@ -509,6 +626,7 @@ type ViewerMessage =
     TransparentSphereMessage |
     AddSphereMessage |
     AddAlphaSphereSetMessage |
+    AddDisplacementVectorsMessage |
     AddPocketSurfaceMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
