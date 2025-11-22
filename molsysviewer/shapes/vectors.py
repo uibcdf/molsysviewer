@@ -15,9 +15,10 @@ class VectorShapes:
 
     def add_displacement_vectors(
         self,
-        origins: Sequence[Sequence[float]] | np.ndarray,
+        origins: Sequence[Sequence[float]] | np.ndarray | None = None,
         displacements: Sequence[Sequence[float]] | np.ndarray,
         *,
+        atom_indices: Sequence[int] | np.ndarray | None = None,
         length_scale: float = 1.0,
         max_length: float | None = None,
         min_length: float = 0.0,
@@ -34,8 +35,14 @@ class VectorShapes:
 
         Parameters
         ----------
-        origins, displacements
-            Arrays (n, 3) con los puntos de origen y los vectores de desplazamiento.
+        origins
+            Array (n, 3) con los puntos de origen. Opcional si se proporcionan
+            `atom_indices`.
+        displacements
+            Array (n, 3) con los vectores de desplazamiento.
+        atom_indices
+            Índices de átomos de la estructura cargada desde los que se tomarán
+            las coordenadas de origen. Si se indican, `origins` es opcional.
         length_scale
             Escala multiplicativa aplicada a las longitudes de las flechas.
         max_length
@@ -62,18 +69,27 @@ class VectorShapes:
             Etiqueta legible en el árbol de estado.
         """
 
-        origins_arr = np.asarray(origins, dtype=float)
         displacements_arr = np.asarray(displacements, dtype=float)
-
-        if origins_arr.shape != displacements_arr.shape:
-            raise ValueError("origins y displacements deben tener la misma forma")
-        if origins_arr.ndim != 2 or origins_arr.shape[1] != 3:
-            raise ValueError("origins y displacements deben tener forma (n, 3)")
-        if origins_arr.shape[0] == 0:
+        if displacements_arr.ndim != 2 or displacements_arr.shape[1] != 3:
+            raise ValueError("displacements debe tener forma (n, 3)")
+        if displacements_arr.shape[0] == 0:
             return
 
+        origins_list: list[list[float]] | None = None
+        if origins is not None:
+            origins_arr = np.asarray(origins, dtype=float)
+            if origins_arr.shape != displacements_arr.shape:
+                raise ValueError("origins y displacements deben tener la misma forma")
+            origins_list = origins_arr.tolist()
+        elif atom_indices is None:
+            raise ValueError("Debe indicarse origins o atom_indices para las flechas")
+        else:
+            atom_indices = np.asarray(atom_indices, dtype=int)
+            if atom_indices.ndim != 1:
+                raise ValueError("atom_indices debe ser un vector 1D")
+            if atom_indices.size != displacements_arr.shape[0]:
+                raise ValueError("atom_indices debe tener la misma longitud que displacements")
         options: dict[str, object] = {
-            "origins": origins_arr.tolist(),
             "displacements": displacements_arr.tolist(),
             "length_scale": float(length_scale),
             "min_length": float(min_length),
@@ -82,6 +98,11 @@ class VectorShapes:
             "head_radius_factor": float(head_radius_factor),
             "alpha": float(alpha),
         }
+
+        if origins_list is not None:
+            options["origins"] = origins_list
+        if atom_indices is not None:
+            options["atom_indices"] = [int(v) for v in np.asarray(atom_indices).ravel()]
 
         if max_length is not None:
             options["max_length"] = float(max_length)
