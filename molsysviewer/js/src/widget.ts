@@ -20,7 +20,13 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
-import { addTransparentSphereFromPython, addTransparentSpheresFromPython, TransparentSphereSpec } from "./shapes";
+import {
+    addNetworkLinksFromPython,
+    addTransparentSphereFromPython,
+    addTransparentSpheresFromPython,
+    NetworkLinkOptions,
+    TransparentSphereSpec,
+} from "./shapes";
 import { addPocketSurfaceFromPython, PocketSurfaceOptions } from "./pocket-surface";
 import {
     LoadedStructure,
@@ -126,6 +132,9 @@ class MolSysViewerController {
 
                 case "add_pocket_surface":
                     await this.handleAddPocketSurface(msg as AddPocketSurfaceMessage);
+                    break;
+                case "add_network_links":
+                    await this.handleAddNetworkLinks(msg as AddNetworkLinksMessage);
                     break;
 
                 case "update_visibility":
@@ -249,6 +258,15 @@ class MolSysViewerController {
             await addPocketSurfaceFromPython(this.plugin, options);
         } catch (err) {
             console.error("[MolSysViewer] Error creando pocket surface", err);
+        }
+    }
+
+    private async handleAddNetworkLinks(msg: AddNetworkLinksMessage) {
+        const options = msg.options ?? {};
+        try {
+            await addNetworkLinksFromPython(this.plugin, options);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando network links", err);
         }
     }
 
@@ -458,6 +476,11 @@ type AddPocketSurfaceMessage = {
     options?: PocketSurfaceOptions;
 };
 
+type AddNetworkLinksMessage = {
+    op: "add_network_links";
+    options?: NetworkLinkOptions;
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -510,6 +533,7 @@ type ViewerMessage =
     AddSphereMessage |
     AddAlphaSphereSetMessage |
     AddPocketSurfaceMessage |
+    AddNetworkLinksMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |
