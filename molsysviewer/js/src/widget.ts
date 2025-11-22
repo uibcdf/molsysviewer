@@ -20,7 +20,8 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
-import { addTransparentSphereFromPython } from "./shapes";
+import { addTransparentSphereFromPython, addTransparentSpheresFromPython, TransparentSphereSpec } from "./shapes";
+import { addPocketSurfaceFromPython, PocketSurfaceOptions } from "./pocket-surface";
 import {
     LoadedStructure,
     MolSysPayload,
@@ -119,6 +120,14 @@ class MolSysViewerController {
                     await this.handleAddSphere(msg as AddSphereMessage);
                     break;
 
+                case "add_alpha_sphere_set":
+                    await this.handleAddAlphaSphereSet(msg as AddAlphaSphereSetMessage);
+                    break;
+
+                case "add_pocket_surface":
+                    await this.handleAddPocketSurface(msg as AddPocketSurfaceMessage);
+                    break;
+
                 case "update_visibility":
                     await this.handleUpdateVisibility(msg as UpdateVisibilityMessage);
                     break;
@@ -188,6 +197,59 @@ class MolSysViewerController {
             color: options.color ?? 0x00ff00,
             alpha: options.alpha ?? 0.4,
         });
+    }
+
+    private async handleAddAlphaSphereSet(msg: AddAlphaSphereSetMessage) {
+        const options = msg.options;
+        if (!options?.alpha_spheres?.centers || !options.alpha_spheres.radii) {
+            console.warn("[MolSysViewer] add_alpha_sphere_set sin datos de alpha_spheres");
+            return;
+        }
+
+        const centers = options.alpha_spheres.centers;
+        const radii = options.alpha_spheres.radii;
+        if (!Array.isArray(centers) || !Array.isArray(radii) || centers.length !== radii.length || centers.length === 0) {
+            console.warn("[MolSysViewer] add_alpha_sphere_set datos inconsistentes");
+            return;
+        }
+
+        const alphaColor = options.alpha_spheres.color ?? 0x00ff00;
+        const alphaAlpha = options.alpha_spheres.alpha ?? 0.3;
+        const alphaSpecs: TransparentSphereSpec[] = centers.map((c, i) => ({
+            center: [c[0], c[1], c[2]],
+            radius: radii[i],
+            color: alphaColor,
+            alpha: alphaAlpha,
+        }));
+
+        const tag = options.tag ?? "molsysviewer:alpha-spheres";
+        await addTransparentSpheresFromPython(this.plugin, alphaSpecs, alphaAlpha, tag);
+
+        if (options.atom_spheres?.centers && options.atom_spheres.centers.length > 0) {
+            const atomRadius = options.atom_spheres.radius ?? 1.0;
+            const atomColor = options.atom_spheres.color ?? 0x0000ff;
+            const atomAlpha = options.atom_spheres.alpha ?? 0.5;
+            const atomSpecs: TransparentSphereSpec[] = options.atom_spheres.centers.map(c => ({
+                center: [c[0], c[1], c[2]],
+                radius: atomRadius,
+                color: atomColor,
+                alpha: atomAlpha,
+            }));
+            await addTransparentSpheresFromPython(this.plugin, atomSpecs, atomAlpha, tag);
+        }
+    }
+
+    private async handleAddPocketSurface(msg: AddPocketSurfaceMessage) {
+        const options = msg.options ?? ({} as PocketSurfaceOptions);
+        if (!Array.isArray(options.atom_indices) || options.atom_indices.length === 0) {
+            console.warn("[MolSysViewer] add_pocket_surface sin atom_indices");
+            return;
+        }
+        try {
+            await addPocketSurfaceFromPython(this.plugin, options);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando pocket surface", err);
+        }
     }
 
     private async handleUpdateVisibility(msg: UpdateVisibilityMessage) {
@@ -372,6 +434,30 @@ type AddSphereMessage = {
     };
 };
 
+type AddAlphaSphereSetMessage = {
+    op: "add_alpha_sphere_set";
+    options?: {
+        alpha_spheres?: {
+            centers: [number, number, number][];
+            radii: number[];
+            color?: number;
+            alpha?: number;
+        };
+        atom_spheres?: {
+            centers: [number, number, number][];
+            radius?: number;
+            color?: number;
+            alpha?: number;
+        };
+        tag?: string;
+    };
+};
+
+type AddPocketSurfaceMessage = {
+    op: "add_pocket_surface";
+    options?: PocketSurfaceOptions;
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -422,6 +508,8 @@ type LoadPdbIdMessage = {
 type ViewerMessage =
     TransparentSphereMessage |
     AddSphereMessage |
+    AddAlphaSphereSetMessage |
+    AddPocketSurfaceMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |

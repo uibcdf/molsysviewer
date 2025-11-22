@@ -226,3 +226,86 @@ export async function addTransparentSphereFromPython(
     return sphere.ref;
 }
 
+// ------------------------------------------------------------------
+// Batch of transparent spheres in a single representation
+// ------------------------------------------------------------------
+
+const TransparentSpheresParams = {
+    spheres: PD.Value<TransparentSphereSpec[]>([]),
+    alpha: PD.Numeric(0.4, { min: 0, max: 1, step: 0.01 }, { isEssential: true }),
+};
+type TransparentSpheresParams = typeof TransparentSpheresParams;
+
+export const TransparentSpheres3D = MSVTransform({
+    name: "molsysviewer-transparent-spheres-3d",
+    display: { name: "Transparent Spheres" },
+    from: SO.Root,
+    to: SO.Shape.Representation3D,
+    params: TransparentSpheresParams,
+})({
+    canAutoUpdate() {
+        return true;
+    },
+    apply({ params }, plugin: PluginContext) {
+        return Task.create("Transparent Spheres", async ctx => {
+            const data: TransparentSphereData = {
+                spheres: params.spheres ?? [],
+            };
+
+            const repr = TransparentSphereRepresentation(
+                { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+                () => TransparentSphereShapeParams
+            );
+
+            const props: TransparentSphereShapeProps = {
+                ...PD.getDefaultValues(TransparentSphereShapeParams),
+            };
+
+            await repr.createOrUpdate(props, data).runInContext(ctx);
+            repr.setState({ alphaFactor: params.alpha });
+
+            return new SO.Shape.Representation3D(
+                { repr, sourceData: data },
+                { label: "Transparent Spheres" }
+            );
+        });
+    },
+    update({ b, newParams }, _plugin: PluginContext) {
+        return Task.create("Transparent Spheres", async ctx => {
+            const data: TransparentSphereData = {
+                spheres: newParams.spheres ?? [],
+            };
+
+            const props = { ...b.data.repr.props };
+            await b.data.repr.createOrUpdate(props, data).runInContext(ctx);
+            b.data.repr.setState({ alphaFactor: newParams.alpha });
+            b.data.sourceData = data;
+            return StateTransformer.UpdateResult.Updated;
+        });
+    },
+});
+
+export async function addTransparentSpheresFromPython(
+    plugin: PluginContext,
+    spheres: TransparentSphereSpec[],
+    alpha: number,
+    tag?: string
+): Promise<StateObjectRef<SO.Shape.Representation3D>> {
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+        TransparentSpheres3D,
+        {
+            spheres,
+            alpha,
+        } as any,
+        { tags: tag ?? "molsysviewer:spheres" }
+    );
+
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
+
+    return node.ref;
+}
