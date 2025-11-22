@@ -5,8 +5,10 @@ def __print_version__():
 
 from .viewer import MolSysView
 from .load import load
+from .demo import demo
 
 __all__ = [
     "MolSysView",
     "load",
+    "demo",
 ]
