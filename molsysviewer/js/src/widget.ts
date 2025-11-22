@@ -24,9 +24,11 @@ import {
     DisplacementVectorOptions,
     addDisplacementVectorsFromPython,
     addNetworkLinksFromPython,
+    addTriangleFacesFromPython,
     addTransparentSphereFromPython,
     addTransparentSpheresFromPython,
     NetworkLinkOptions,
+    TriangleFacesOptions,
     TransparentSphereSpec,
 } from "./shapes";
 import { addPocketSurfaceFromPython, PocketSurfaceOptions } from "./pocket-surface";
@@ -140,6 +142,9 @@ class MolSysViewerController {
                     break;
                 case "add_displacement_vectors":
                     await this.handleAddDisplacementVectors(msg as AddDisplacementVectorsMessage);
+                    break;
+                case "add_triangle_faces":
+                    await this.handleAddTriangleFaces(msg as AddTriangleFacesMessage);
                     break;
 
                 case "update_visibility":
@@ -285,6 +290,20 @@ class MolSysViewerController {
             await addDisplacementVectorsFromPython(this.plugin, options);
         } catch (err) {
             console.error("[MolSysViewer] Error creando displacement vectors", err);
+        }
+    }
+
+    private async handleAddTriangleFaces(msg: AddTriangleFacesMessage) {
+        const options = msg.options ?? {};
+        if (!options.vertices && !options.atom_triplets && !options.atomTriplets) {
+            console.warn("[MolSysViewer] add_triangle_faces sin vertices ni atom_triplets");
+            return;
+        }
+        try {
+            const ref = await addTriangleFacesFromPython(this.plugin, options);
+            if (ref) this.shapeRefs.add(ref);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando triangle faces", err);
         }
     }
 
@@ -504,6 +523,11 @@ type AddDisplacementVectorsMessage = {
     options?: DisplacementVectorOptions;
 };
 
+type AddTriangleFacesMessage = {
+    op: "add_triangle_faces";
+    options?: TriangleFacesOptions;
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -558,6 +582,7 @@ type ViewerMessage =
     AddPocketSurfaceMessage |
     AddNetworkLinksMessage |
     AddDisplacementVectorsMessage |
+    AddTriangleFacesMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |

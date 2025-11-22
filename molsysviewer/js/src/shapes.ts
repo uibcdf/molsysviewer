@@ -693,6 +693,297 @@ export async function addNetworkLinksFromPython(plugin: PluginContext, options: 
 }
 
 // ------------------------------------------------------------------
+// Triangle faces (custom meshes)
+// ------------------------------------------------------------------
+
+interface TriangleFaceSpec {
+    vertices: [[number, number, number], [number, number, number], [number, number, number]];
+    color: number;
+    label?: string;
+}
+
+interface TriangleFacesData {
+    triangles: TriangleFaceSpec[];
+    alpha: number;
+    name: string;
+}
+
+const TriangleFacesParams = {
+    ...Mesh.Params,
+};
+
+type TriangleFacesParams = typeof TriangleFacesParams;
+type TriangleFacesProps = PD.Values<TriangleFacesParams>;
+
+function buildTriangleFacesMesh(data: TriangleFacesData, _props: TriangleFacesProps, prev?: Mesh): Mesh {
+    const state = MeshBuilder.createState(256, 128, prev);
+    const a = Vec3();
+    const b = Vec3();
+    const c = Vec3();
+
+    for (let i = 0, il = data.triangles.length; i < il; i++) {
+        const tri = data.triangles[i];
+        state.currentGroup = i;
+        Vec3.set(a, tri.vertices[0][0], tri.vertices[0][1], tri.vertices[0][2]);
+        Vec3.set(b, tri.vertices[1][0], tri.vertices[1][1], tri.vertices[1][2]);
+        Vec3.set(c, tri.vertices[2][0], tri.vertices[2][1], tri.vertices[2][2]);
+        MeshBuilder.addTriangle(state, a, b, c);
+    }
+
+    return MeshBuilder.getMesh(state);
+}
+
+function getTriangleFacesShape(
+    _ctx: RuntimeContext,
+    data: TriangleFacesData,
+    _props: TriangleFacesProps,
+    shape?: Shape<Mesh>
+) {
+    const mesh = buildTriangleFacesMesh(data, _props, shape?.geometry);
+    const getColor = (groupId: number) => Color(data.triangles[groupId].color);
+    const getSize = () => 1;
+    const getLabel = (groupId: number) => data.triangles[groupId].label ?? `Triangle ${groupId}`;
+
+    return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
+}
+
+const TriangleFacesVisuals = {
+    mesh: (
+        _ctx: RepresentationContext,
+        _getParams: RepresentationParamsGetter<TriangleFacesData, TriangleFacesParams>
+    ) => ShapeRepresentation(getTriangleFacesShape, Mesh.Utils),
+};
+
+type TriangleFacesRepresentation = Representation<TriangleFacesData, TriangleFacesParams>;
+
+function TriangleFacesRepresentation(
+    ctx: RepresentationContext,
+    getParams: RepresentationParamsGetter<TriangleFacesData, TriangleFacesParams>
+): TriangleFacesRepresentation {
+    return Representation.createMulti(
+        "TriangleFaces",
+        ctx,
+        getParams,
+        Representation.StateBuilder,
+        TriangleFacesVisuals as unknown as Representation.Def<TriangleFacesData, TriangleFacesParams>
+    );
+}
+
+const TriangleFacesTransformParams = {
+    data: PD.Value<TriangleFacesData>(undefined as any),
+    props: PD.Value<TriangleFacesProps>(undefined as any),
+};
+
+type TriangleFacesTransformParams = typeof TriangleFacesTransformParams;
+
+export const TriangleFaces3D = MSVTransform({
+    name: "molsysviewer-triangle-faces-3d",
+    display: { name: "Triangle Faces" },
+    from: SO.Root,
+    to: SO.Shape.Representation3D,
+    params: TriangleFacesTransformParams,
+})({
+    canAutoUpdate() {
+        return true;
+    },
+    apply({ params }, plugin: PluginContext) {
+        return Task.create("Triangle Faces", async ctx => {
+            const repr = TriangleFacesRepresentation(
+                { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+                () => TriangleFacesParams
+            );
+
+            await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+            repr.setState({ alphaFactor: params.data.alpha });
+
+            return new SO.Shape.Representation3D(
+                { repr, sourceData: params.data },
+                { label: params.data.name }
+            );
+        });
+    },
+    update({ b, newParams }, _plugin: PluginContext) {
+        return Task.create("Triangle Faces", async ctx => {
+            await b.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+            b.data.repr.setState({ alphaFactor: newParams.data.alpha });
+            b.data.sourceData = newParams.data;
+            return StateTransformer.UpdateResult.Updated;
+        });
+    },
+});
+
+type TriangleVerticesInput =
+    | [number, number, number, number, number, number, number, number, number]
+    | [[number, number, number], [number, number, number], [number, number, number]];
+
+export interface TriangleFacesOptions {
+    vertices?: TriangleVerticesInput[];
+    atom_triplets?: number[][];
+    atomTriplets?: number[][];
+    colors?: number | number[];
+    alpha?: number;
+    labels?: string | string[];
+    tag?: string;
+}
+
+function normalizeTriangle(entry: TriangleVerticesInput): TriangleFaceSpec["vertices"] | null {
+    if (Array.isArray(entry) && entry.length === 3 && Array.isArray(entry[0])) {
+        const verts = entry as [number[], number[], number[]];
+        if (verts.every(v => Array.isArray(v) && v.length === 3)) {
+            return verts.map(v => [Number(v[0]), Number(v[1]), Number(v[2])]) as TriangleFaceSpec["vertices"];
+        }
+    }
+
+    if (Array.isArray(entry) && entry.length === 9) {
+        return [
+            [Number(entry[0]), Number(entry[1]), Number(entry[2])],
+            [Number(entry[3]), Number(entry[4]), Number(entry[5])],
+            [Number(entry[6]), Number(entry[7]), Number(entry[8])],
+        ];
+    }
+
+    return null;
+}
+
+function expandOptionalToList<T>(value: T | T[] | undefined, count: number, cast: (v: T) => T): (T | undefined)[] {
+    if (value === undefined) return Array(count).fill(undefined);
+    if (Array.isArray(value)) {
+        if (value.length === count) return value.map(cast);
+        console.warn(`[MolSysViewer] Esperaba ${count} valores pero recibí ${value.length}. Se reutilizará el primero.`);
+        return Array(count).fill(cast(value[0] as T));
+    }
+    return Array(count).fill(cast(value));
+}
+
+function buildTrianglesFromVertices(options: TriangleFacesOptions): TriangleFaceSpec[] {
+    const input = options.vertices ?? [];
+    const normalized = input
+        .map(normalizeTriangle)
+        .filter((v): v is TriangleFaceSpec["vertices"] => v !== null);
+
+    const count = normalized.length;
+    if (count === 0) return [];
+
+    const colors = expandToList<number>(options.colors, count, Number, ColorNames.orange);
+    const labels = expandOptionalToList<string>(options.labels, count, String);
+
+    return normalized.map((verts, idx) => ({
+        vertices: verts,
+        color: colors[idx],
+        label: labels[idx],
+    }));
+}
+
+function buildTrianglesFromAtoms(structure: Structure, options: TriangleFacesOptions): TriangleFaceSpec[] {
+    const triplets = options.atom_triplets ?? options.atomTriplets ?? [];
+    if (triplets.length === 0) return [];
+
+    const lookup = buildUnitLookup(structure);
+    const a = Vec3();
+    const b = Vec3();
+    const c = Vec3();
+
+    const colors = expandToList<number>(options.colors, triplets.length, Number, ColorNames.orange);
+    const labels = expandOptionalToList<string>(options.labels, triplets.length, String);
+
+    const triangles: TriangleFaceSpec[] = [];
+
+    for (let i = 0; i < triplets.length; i++) {
+        const triplet = triplets[i];
+        if (!Array.isArray(triplet) || triplet.length !== 3) {
+            console.warn(`[MolSysViewer] atom_triplets[${i}] no es un triplete válido`);
+            continue;
+        }
+
+        const locA = lookup.get(triplet[0] as ElementIndex);
+        const locB = lookup.get(triplet[1] as ElementIndex);
+        const locC = lookup.get(triplet[2] as ElementIndex);
+        if (!locA || !locB || !locC) {
+            console.warn(`[MolSysViewer] atom_triplets[${i}] no coincide con átomos de la estructura`);
+            continue;
+        }
+
+        locA.unit.conformation.position(locA.elementIndex, a);
+        locB.unit.conformation.position(locB.elementIndex, b);
+        locC.unit.conformation.position(locC.elementIndex, c);
+
+        triangles.push({
+            vertices: [
+                [a[0], a[1], a[2]],
+                [b[0], b[1], b[2]],
+                [c[0], c[1], c[2]],
+            ],
+            color: colors[i],
+            label: labels[i],
+        });
+    }
+
+    return triangles;
+}
+
+function prepareTriangleFacesData(plugin: PluginContext, options: TriangleFacesOptions): TriangleFacesData | undefined {
+    const alpha = options.alpha ?? 1.0;
+    let triangles: TriangleFaceSpec[] = [];
+
+    const atomTriplets = options.atom_triplets ?? options.atomTriplets;
+
+    if (atomTriplets && atomTriplets.length > 0) {
+        const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+        const structure = structureRef?.cell.obj?.data as Structure | undefined;
+        if (!structure) {
+            console.warn("[MolSysViewer] add_triangle_faces con atom_triplets pero sin estructura cargada");
+            return undefined;
+        }
+        triangles = buildTrianglesFromAtoms(structure, options);
+    } else {
+        triangles = buildTrianglesFromVertices(options);
+    }
+
+    if (triangles.length === 0) {
+        console.warn("[MolSysViewer] add_triangle_faces sin triángulos válidos");
+        return undefined;
+    }
+
+    const name = triangles.length === 1 ? "Triangle Face" : `${triangles.length} Triangle Faces`;
+
+    return {
+        triangles,
+        alpha,
+        name,
+    };
+}
+
+export async function addTriangleFacesFromPython(
+    plugin: PluginContext,
+    options: TriangleFacesOptions
+): Promise<StateObjectRef<SO.Shape.Representation3D> | undefined> {
+    const data = prepareTriangleFacesData(plugin, options);
+    if (!data) return undefined;
+
+    const props: TriangleFacesProps = {
+        ...PD.getDefaultValues(TriangleFacesParams),
+    };
+
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+        TriangleFaces3D,
+        {
+            data,
+            props,
+        } as any,
+        { tags: options.tag ?? "molsysviewer:triangle-faces" }
+    );
+
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
+
+    return node.ref;
+}
+
+// ------------------------------------------------------------------
 // Displacement vectors (arrows)
 // ------------------------------------------------------------------
 
