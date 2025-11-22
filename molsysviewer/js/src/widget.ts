@@ -21,10 +21,16 @@ import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { StateObjectRef } from "molstar/lib/mol-state";
 
 import {
+    DisplacementVectorOptions,
+    addDisplacementVectorsFromPython,
     addNetworkLinksFromPython,
+    addTetrahedraFromPython,
+    addTriangleFacesFromPython,
     addTransparentSphereFromPython,
     addTransparentSpheresFromPython,
     NetworkLinkOptions,
+    TetrahedraOptions,
+    TriangleFacesOptions,
     TransparentSphereSpec,
 } from "./shapes";
 import { addPocketSurfaceFromPython, PocketSurfaceOptions } from "./pocket-surface";
@@ -135,6 +141,15 @@ class MolSysViewerController {
                     break;
                 case "add_network_links":
                     await this.handleAddNetworkLinks(msg as AddNetworkLinksMessage);
+                    break;
+                case "add_displacement_vectors":
+                    await this.handleAddDisplacementVectors(msg as AddDisplacementVectorsMessage);
+                    break;
+                case "add_tetrahedra":
+                    await this.handleAddTetrahedra(msg as AddTetrahedraMessage);
+                    break;
+                case "add_triangle_faces":
+                    await this.handleAddTriangleFaces(msg as AddTriangleFacesMessage);
                     break;
 
                 case "update_visibility":
@@ -267,6 +282,47 @@ class MolSysViewerController {
             await addNetworkLinksFromPython(this.plugin, options);
         } catch (err) {
             console.error("[MolSysViewer] Error creando network links", err);
+        }
+    }
+
+    private async handleAddDisplacementVectors(msg: AddDisplacementVectorsMessage) {
+        const options = msg.options ?? {};
+        if (!options.vectors || options.vectors.length === 0) {
+            console.warn("[MolSysViewer] add_displacement_vectors sin vectores");
+            return;
+        }
+        try {
+            await addDisplacementVectorsFromPython(this.plugin, options);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando displacement vectors", err);
+        }
+    }
+
+    private async handleAddTetrahedra(msg: AddTetrahedraMessage) {
+        const options = msg.options ?? {};
+        if (!options.tetraCoords && !options.tetra_coords && !options.atomQuads && !options.atom_quads) {
+            console.warn("[MolSysViewer] add_tetrahedra sin tetraCoords ni atom_quads");
+            return;
+        }
+        try {
+            const ref = await addTetrahedraFromPython(this.plugin, options);
+            if (ref) this.shapeRefs.add(ref);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando tetrahedra", err);
+        }
+    }
+
+    private async handleAddTriangleFaces(msg: AddTriangleFacesMessage) {
+        const options = msg.options ?? {};
+        if (!options.vertices && !options.atom_triplets && !options.atomTriplets) {
+            console.warn("[MolSysViewer] add_triangle_faces sin vertices ni atom_triplets");
+            return;
+        }
+        try {
+            const ref = await addTriangleFacesFromPython(this.plugin, options);
+            if (ref) this.shapeRefs.add(ref);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando triangle faces", err);
         }
     }
 
@@ -481,6 +537,21 @@ type AddNetworkLinksMessage = {
     options?: NetworkLinkOptions;
 };
 
+type AddDisplacementVectorsMessage = {
+    op: "add_displacement_vectors";
+    options?: DisplacementVectorOptions;
+};
+
+type AddTetrahedraMessage = {
+    op: "add_tetrahedra";
+    options?: TetrahedraOptions;
+};
+
+type AddTriangleFacesMessage = {
+    op: "add_triangle_faces";
+    options?: TriangleFacesOptions;
+};
+
 type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -534,6 +605,9 @@ type ViewerMessage =
     AddAlphaSphereSetMessage |
     AddPocketSurfaceMessage |
     AddNetworkLinksMessage |
+    AddDisplacementVectorsMessage |
+    AddTetrahedraMessage |
+    AddTriangleFacesMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |
