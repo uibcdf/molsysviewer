@@ -1,0 +1,8 @@
+# ==== Generated JS bundle for MolSysViewer ====
+molsysviewer/viewer.js      linguist-generated=true
+molsysviewer/viewer.js.map  linguist-generated=true
+
+# Opcional: evita diffs enormes y ruidosos en estos archivos
+molsysviewer/viewer.js      -diff
+molsysviewer/viewer.js.map  -diff
+

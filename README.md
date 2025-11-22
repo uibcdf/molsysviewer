@@ -30,6 +30,7 @@ naturally with tools such as:
 
 ### ✔ Interactive molecular visualization
 - Load PDB and mmCIF strings directly (“in-memory structures”)
+- Load native MolSysMT systems without intermediate PDB conversion
 - Load structures from remote URLs
 - High-quality Mol\* rendering with cartoon, surface, and atomic styles
 - Smooth camera, lighting, and interactivity
@@ -114,11 +115,14 @@ MolSysViewer uses:
 
 - **Python** for the API and widget interface  
 - **TypeScript + Mol\*** for rendering  
-- **esbuild** for bundling the widget  
-- **anywidget** as the Jupyter integration layer  
+- **esbuild** for bundling the widget
+- **anywidget** as the Jupyter integration layer
 
 The JS bundle (`viewer.js`) is generated automatically during packaging and is
-not committed to the repository.
+tracked in the repository (it carries the `@generated` banner) so that users of
+the published wheels/conda packages never need a Node.js toolchain. The bundle
+should not be edited by hand; rebuild it from the TypeScript sources under
+`js/src/` instead.
 
 Build the JS bundle manually for development:
 
