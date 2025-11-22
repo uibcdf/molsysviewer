@@ -256,6 +256,13 @@ class MolSysView:
 
     # --- Tests de vida / demos ---
 
+    def _life_test(self) -> None:
+        """Test de vida -> carga una PDB de ejemplo en Mol*."""
+        from .loader import load_pdb_id
+        load_pdb_id(self, pdb_id="1crn", label="Demo: 1CRN")
+        self.show()
+
     def demo(self) -> None:
         """Test de vida -> carga una PDB de ejemplo en Mol*."""
-        self._send({"op": "test_pdb_id"})
+        self.load(pdb_id="1TCD")
+        self.show()
