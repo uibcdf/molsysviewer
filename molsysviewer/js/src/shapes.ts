@@ -9,6 +9,7 @@ import { Task, RuntimeContext } from "molstar/lib/mol-task";
 
 import { Color } from "molstar/lib/mol-util/color";
 import { ColorNames } from "molstar/lib/mol-util/color/names";
+import { ColorScale } from "molstar/lib/mol-util/color/scale";
 
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 
@@ -680,6 +681,343 @@ export async function addNetworkLinksFromPython(plugin: PluginContext, options: 
             props,
         } as any,
         { tags: options.tag ?? "molsysviewer:network-links" }
+    );
+
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
+
+    return node.ref;
+}
+
+// ------------------------------------------------------------------
+// Displacement vectors (arrows)
+// ------------------------------------------------------------------
+
+interface DisplacementArrowSpec {
+    start: [number, number, number];
+    end: [number, number, number];
+    length: number;
+    value: number;
+    color: number;
+}
+
+interface DisplacementVectorData {
+    arrows: DisplacementArrowSpec[];
+    radiusScale: number;
+    radialSegments: number;
+    name: string;
+}
+
+const DisplacementVectorParams = {
+    ...Mesh.Params,
+};
+
+type DisplacementVectorParams = typeof DisplacementVectorParams;
+type DisplacementVectorProps = PD.Values<DisplacementVectorParams>;
+
+function buildDisplacementVectorMesh(
+    data: DisplacementVectorData,
+    _props: DisplacementVectorProps,
+    prev?: Mesh
+): Mesh {
+    const state = MeshBuilder.createState(256, 128, prev);
+    const start = Vec3();
+    const end = Vec3();
+    const dir = Vec3();
+    const tipBase = Vec3();
+
+    for (let i = 0, il = data.arrows.length; i < il; i++) {
+        const arrow = data.arrows[i];
+        state.currentGroup = i;
+
+        Vec3.set(start, arrow.start[0], arrow.start[1], arrow.start[2]);
+        Vec3.set(end, arrow.end[0], arrow.end[1], arrow.end[2]);
+        Vec3.sub(dir, end, start);
+
+        const length = arrow.length;
+        if (length < 1e-4) continue;
+
+        const radialSegments = Math.max(3, Math.floor(data.radialSegments));
+        const shaftRadius = Math.max(0.01, length * data.radiusScale);
+        const headRadius = shaftRadius * 1.8;
+        const headLength = Math.max(length * 0.2, headRadius * 2.5);
+        const shaftLength = Math.max(0, length - headLength);
+
+        Vec3.scale(dir, dir, 1 / length);
+        Vec3.scaleAndAdd(tipBase, start, dir, shaftLength);
+
+        addCylinder(state, start, tipBase, 1, {
+            radiusTop: shaftRadius,
+            radiusBottom: shaftRadius,
+            radialSegments,
+        });
+
+        addCylinder(state, tipBase, end, 1, {
+            radiusTop: 0.0001,
+            radiusBottom: headRadius,
+            radialSegments,
+        });
+    }
+
+    return MeshBuilder.getMesh(state);
+}
+
+function getDisplacementVectorShape(
+    _ctx: RuntimeContext,
+    data: DisplacementVectorData,
+    _props: DisplacementVectorProps,
+    shape?: Shape<Mesh>
+) {
+    const mesh = buildDisplacementVectorMesh(data, _props, shape?.geometry);
+    const getColor = (groupId: number) => Color(data.arrows[groupId].color);
+    const getSize = (groupId: number) => data.arrows[groupId].length;
+    const getLabel = (groupId: number) => {
+        const arrow = data.arrows[groupId];
+        return `Vector ${groupId}: |v|=${arrow.length.toFixed(2)}, value=${arrow.value.toFixed(2)}`;
+    };
+
+    return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
+}
+
+const DisplacementVectorVisuals = {
+    mesh: (
+        _ctx: RepresentationContext,
+        _getParams: RepresentationParamsGetter<DisplacementVectorData, DisplacementVectorParams>
+    ) => ShapeRepresentation(getDisplacementVectorShape, Mesh.Utils),
+};
+
+type DisplacementVectorRepresentation = Representation<DisplacementVectorData, DisplacementVectorParams>;
+
+function DisplacementVectorRepresentation(
+    ctx: RepresentationContext,
+    getParams: RepresentationParamsGetter<DisplacementVectorData, DisplacementVectorParams>
+): DisplacementVectorRepresentation {
+    return Representation.createMulti(
+        "DisplacementVectors",
+        ctx,
+        getParams,
+        Representation.StateBuilder,
+        DisplacementVectorVisuals as unknown as Representation.Def<
+            DisplacementVectorData,
+            DisplacementVectorParams
+        >
+    );
+}
+
+const DisplacementVectorTransformParams = {
+    data: PD.Value<DisplacementVectorData>(undefined as any),
+    props: PD.Value<DisplacementVectorProps>(undefined as any),
+};
+
+type DisplacementVectorTransformParams = typeof DisplacementVectorTransformParams;
+
+export const DisplacementVectors3D = MSVTransform({
+    name: "molsysviewer-displacement-vectors-3d",
+    display: { name: "Displacement Vectors" },
+    from: SO.Root,
+    to: SO.Shape.Representation3D,
+    params: DisplacementVectorTransformParams,
+})({
+    canAutoUpdate() {
+        return true;
+    },
+    apply({ params }, plugin: PluginContext) {
+        return Task.create("Displacement Vectors", async ctx => {
+            const repr = DisplacementVectorRepresentation(
+                { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+                () => DisplacementVectorParams
+            );
+
+            await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+
+            return new SO.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+        });
+    },
+    update({ b, newParams }, _plugin: PluginContext) {
+        return Task.create("Displacement Vectors", async ctx => {
+            await b.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+            b.data.sourceData = newParams.data;
+            return StateTransformer.UpdateResult.Updated;
+        });
+    },
+});
+
+export interface DisplacementVectorOptions {
+    origins?: Array<[number, number, number]>;
+    atom_indices?: number[];
+    vectors?: Array<[number, number, number]>;
+    length_scale?: number;
+    min_length?: number;
+    max_length?: number;
+    color_mode?: "norm" | "component";
+    color_component?: number;
+    color_map?: number[] | string;
+    radius_scale?: number;
+    radial_segments?: number;
+    tag?: string;
+}
+
+function resolveOriginsFromAtoms(
+    plugin: PluginContext,
+    atomIndices: number[]
+): Array<[number, number, number] | undefined> {
+    const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+    const structure = structureRef?.cell.obj?.data as Structure | undefined;
+    if (!structure) {
+        console.warn("[MolSysViewer] add_displacement_vectors sin estructura cargada");
+        return [];
+    }
+
+    const lookup = buildUnitLookup(structure);
+    const position = Vec3();
+    const origins: Array<[number, number, number] | undefined> = [];
+
+    atomIndices.forEach((idx, pos) => {
+        const loc = lookup.get(idx as ElementIndex);
+        if (!loc) {
+            console.warn(`[MolSysViewer] atom_indices[${pos}] no coincide con átomos de la estructura`);
+            origins.push(undefined);
+            return;
+        }
+        loc.unit.conformation.position(loc.elementIndex, position);
+        origins.push([position[0], position[1], position[2]]);
+    });
+
+    return origins;
+}
+
+function prepareDisplacementVectorData(
+    plugin: PluginContext,
+    options: DisplacementVectorOptions
+): DisplacementVectorData | undefined {
+    const vectors = options.vectors ?? [];
+    if (!vectors || vectors.length === 0) {
+        console.warn("[MolSysViewer] add_displacement_vectors sin vectores");
+        return undefined;
+    }
+
+    const origins = options.atom_indices && options.atom_indices.length > 0
+        ? resolveOriginsFromAtoms(plugin, options.atom_indices)
+        : options.origins ?? [];
+
+    if (!origins || origins.length === 0) {
+        console.warn("[MolSysViewer] add_displacement_vectors sin orígenes válidos");
+        return undefined;
+    }
+
+    const count = Math.min(origins.length, vectors.length);
+    if (count === 0) {
+        console.warn("[MolSysViewer] add_displacement_vectors con longitudes incompatibles");
+        return undefined;
+    }
+
+    const lengthScale = options.length_scale ?? 1;
+    const minLength = options.min_length ?? 0;
+    const maxLength = options.max_length ?? 0;
+    const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 12));
+    const radiusScale = options.radius_scale ?? 0.05;
+    const colorMode: "norm" | "component" = options.color_mode ?? "norm";
+    const colorComponent = Math.max(0, Math.min(2, Math.floor(options.color_component ?? 2)));
+
+    const processed: { start: [number, number, number]; vector: Vec3; magnitude: number }[] = [];
+
+    for (let i = 0; i < count; i++) {
+        const origin = origins[i];
+        const vec = vectors[i];
+        if (!origin || !vec || origin.length !== 3 || vec.length !== 3) continue;
+
+        const vector = Vec3.create(vec[0], vec[1], vec[2]);
+        const magnitude = Vec3.magnitude(vector);
+        if (magnitude < 1e-6) continue;
+
+        processed.push({
+            start: [Number(origin[0]), Number(origin[1]), Number(origin[2])],
+            vector,
+            magnitude,
+        });
+    }
+
+    if (processed.length === 0) {
+        console.warn("[MolSysViewer] add_displacement_vectors sin entradas utilizables");
+        return undefined;
+    }
+
+    const scaledMax = Math.max(...processed.map(p => p.magnitude * lengthScale));
+    const normalization = maxLength > 0 && scaledMax > maxLength ? maxLength / scaledMax : 1;
+
+    const arrows: DisplacementArrowSpec[] = [];
+    const colorValues: number[] = [];
+
+    for (const entry of processed) {
+        const scaledLength = entry.magnitude * lengthScale * normalization;
+        if (scaledLength < minLength) continue;
+
+        const direction = Vec3.scale(Vec3(), entry.vector, (lengthScale * normalization) / entry.magnitude);
+        const start = Vec3.create(entry.start[0], entry.start[1], entry.start[2]);
+        const end = Vec3.create(entry.start[0], entry.start[1], entry.start[2]);
+        Vec3.add(end, end, direction);
+
+        const value = colorMode === "component" ? entry.vector[colorComponent] : entry.magnitude;
+
+        arrows.push({
+            start: entry.start,
+            end: [end[0], end[1], end[2]],
+            length: scaledLength,
+            value,
+            color: ColorNames.gray,
+        });
+        colorValues.push(value);
+    }
+
+    if (arrows.length === 0) {
+        console.warn("[MolSysViewer] add_displacement_vectors sin flechas tras filtrado");
+        return undefined;
+    }
+
+    const minValue = Math.min(...colorValues);
+    const maxValue = Math.max(...colorValues);
+    const domain = minValue === maxValue ? [minValue, minValue + 1] : [minValue, maxValue];
+    const palette = options.color_map && Array.isArray(options.color_map) && options.color_map.length === 0
+        ? undefined
+        : options.color_map;
+    const scale = ColorScale.create({ domain, listOrName: palette ?? "turbo", minLabel: "min", maxLabel: "max" });
+
+    arrows.forEach((arrow, idx) => {
+        arrow.color = scale.color(colorValues[idx]);
+    });
+
+    const name = arrows.length === 1 ? "Displacement Vector" : `${arrows.length} Displacement Vectors`;
+
+    return {
+        arrows,
+        radiusScale,
+        radialSegments,
+        name,
+    };
+}
+
+export async function addDisplacementVectorsFromPython(
+    plugin: PluginContext,
+    options: DisplacementVectorOptions
+): Promise<StateObjectRef<SO.Shape.Representation3D> | undefined> {
+    const data = prepareDisplacementVectorData(plugin, options);
+    if (!data) return undefined;
+
+    const props: DisplacementVectorProps = {
+        ...PD.getDefaultValues(DisplacementVectorParams),
+    };
+
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+        DisplacementVectors3D,
+        {
+            data,
+            props,
+        } as any,
+        { tags: options.tag ?? "molsysviewer:displacement-vectors" }
     );
 
     await PluginCommands.State.Update(plugin, {
