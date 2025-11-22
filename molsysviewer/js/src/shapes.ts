@@ -22,13 +22,14 @@ import { MeshBuilder } from "molstar/lib/mol-geo/geometry/mesh/mesh-builder";
 import { addSphere } from "molstar/lib/mol-geo/geometry/mesh/builder/sphere";
 import { addCylinder, BasicCylinderProps } from "molstar/lib/mol-geo/geometry/mesh/builder/cylinder";
 
-import { Shape } from "molstar/lib/mol-model/shape";
+import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { ShapeRepresentation } from "molstar/lib/mol-repr/shape/representation";
 import {
     Representation,
     RepresentationContext,
     RepresentationParamsGetter,
 } from "molstar/lib/mol-repr/representation";
+import { Transparency } from "molstar/lib/mol-theme/transparency";
 
 const MSVTransform = StateTransformer.builderFactory("molsysviewer");
 
@@ -972,6 +973,368 @@ export async function addTriangleFacesFromPython(
             props,
         } as any,
         { tags: options.tag ?? "molsysviewer:triangle-faces" }
+    );
+
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
+
+    return node.ref;
+}
+
+// ------------------------------------------------------------------
+// Tetrahedra (tetrahedral meshes)
+// ------------------------------------------------------------------
+
+type TetrahedronVertices = [
+    [number, number, number],
+    [number, number, number],
+    [number, number, number],
+    [number, number, number],
+];
+
+interface TetrahedronSpec {
+    vertices: TetrahedronVertices;
+    color: number;
+    alpha: number;
+    label?: string;
+}
+
+interface TetrahedraData {
+    tetrahedra: TetrahedronSpec[];
+    name: string;
+    exteriorOnly: boolean;
+}
+
+const TetrahedraParams = {
+    ...Mesh.Params,
+};
+
+type TetrahedraParams = typeof TetrahedraParams;
+type TetrahedraProps = PD.Values<TetrahedraParams>;
+
+type FaceVertices = [
+    [number, number, number],
+    [number, number, number],
+    [number, number, number]
+];
+
+interface TetraFaceInfo {
+    tetraIndex: number;
+    vertices: FaceVertices;
+}
+
+function faceKey(vertices: FaceVertices) {
+    return vertices
+        .map(v => v.map(n => Number(n)).join(","))
+        .sort()
+        .join("|");
+}
+
+function collectTetraFaces(data: TetrahedraData): TetraFaceInfo[] {
+    const combos: Array<[number, number, number]> = [
+        [0, 1, 2],
+        [0, 1, 3],
+        [0, 2, 3],
+        [1, 2, 3],
+    ];
+
+    const faceMap = new Map<string, TetraFaceInfo & { count: number }>();
+
+    for (let i = 0; i < data.tetrahedra.length; i++) {
+        const tetra = data.tetrahedra[i];
+        for (const [a, b, c] of combos) {
+            const vertices: FaceVertices = [tetra.vertices[a], tetra.vertices[b], tetra.vertices[c]];
+            const key = faceKey(vertices);
+            const entry = faceMap.get(key);
+            if (entry) {
+                entry.count += 1;
+            } else {
+                faceMap.set(key, { tetraIndex: i, vertices, count: 1 });
+            }
+        }
+    }
+
+    if (!data.exteriorOnly) {
+        return Array.from(faceMap.values()).map(({ tetraIndex, vertices }) => ({ tetraIndex, vertices }));
+    }
+
+    const exterior: TetraFaceInfo[] = [];
+    faceMap.forEach(face => {
+        if (face.count === 1) {
+            exterior.push({ tetraIndex: face.tetraIndex, vertices: face.vertices });
+        }
+    });
+    return exterior;
+}
+
+function buildTetrahedraMesh(data: TetrahedraData, _props: TetrahedraProps, prev?: Mesh): Mesh {
+    const state = MeshBuilder.createState(512, 256, prev);
+    const faces = collectTetraFaces(data);
+
+    for (let i = 0, il = faces.length; i < il; i++) {
+        const face = faces[i];
+        state.currentGroup = face.tetraIndex;
+        const [a, b, c] = face.vertices;
+        MeshBuilder.addTriangle(
+            state,
+            Vec3.set(Vec3(), a[0], a[1], a[2]),
+            Vec3.set(Vec3(), b[0], b[1], b[2]),
+            Vec3.set(Vec3(), c[0], c[1], c[2])
+        );
+    }
+
+    return MeshBuilder.getMesh(state);
+}
+
+function applyTetrahedraTransparency(
+    repr: Representation<TetrahedraData, TetrahedraParams>,
+    data: TetrahedraData
+) {
+    const loci = repr.getAllLoci().find(Shape.isLoci);
+    if (!loci) return;
+
+    const layers = data.tetrahedra
+        .map((tetra, idx) => ({ tetra, idx }))
+        .filter(({ tetra }) => tetra.alpha < 1)
+        .map(({ tetra, idx }) => ({
+            loci: ShapeGroup.Loci(loci.shape, [{ ids: OrderedSet.ofSingleton(idx), instance: 0 }]),
+            value: 1 - Math.max(0, Math.min(1, tetra.alpha)),
+        }));
+
+    const transparency = layers.length > 0 ? Transparency("group-loci", layers) : Transparency.Empty;
+    repr.setState({ transparency, alphaFactor: 1 });
+}
+
+function getTetrahedraShape(
+    _ctx: RuntimeContext,
+    data: TetrahedraData,
+    _props: TetrahedraProps,
+    shape?: Shape<Mesh>
+) {
+    const mesh = buildTetrahedraMesh(data, _props, shape?.geometry);
+    const getColor = (groupId: number) => Color(data.tetrahedra[groupId].color);
+    const getSize = () => 1;
+    const getLabel = (groupId: number) => data.tetrahedra[groupId].label ?? `Tetrahedron ${groupId}`;
+
+    return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
+}
+
+const TetrahedraVisuals = {
+    mesh: (
+        _ctx: RepresentationContext,
+        _getParams: RepresentationParamsGetter<TetrahedraData, TetrahedraParams>
+    ) => ShapeRepresentation(getTetrahedraShape, Mesh.Utils),
+};
+
+type TetrahedraRepresentation = Representation<TetrahedraData, TetrahedraParams>;
+
+function TetrahedraRepresentation(
+    ctx: RepresentationContext,
+    getParams: RepresentationParamsGetter<TetrahedraData, TetrahedraParams>
+): TetrahedraRepresentation {
+    return Representation.createMulti(
+        "Tetrahedra",
+        ctx,
+        getParams,
+        Representation.StateBuilder,
+        TetrahedraVisuals as unknown as Representation.Def<TetrahedraData, TetrahedraParams>
+    );
+}
+
+const TetrahedraTransformParams = {
+    data: PD.Value<TetrahedraData>(undefined as any),
+    props: PD.Value<TetrahedraProps>(undefined as any),
+};
+
+type TetrahedraTransformParams = typeof TetrahedraTransformParams;
+
+export const Tetrahedra3D = MSVTransform({
+    name: "molsysviewer-tetrahedra-3d",
+    display: { name: "Tetrahedra" },
+    from: SO.Root,
+    to: SO.Shape.Representation3D,
+    params: TetrahedraTransformParams,
+})({
+    canAutoUpdate() {
+        return true;
+    },
+    apply({ params }, plugin: PluginContext) {
+        return Task.create("Tetrahedra", async ctx => {
+            const repr = TetrahedraRepresentation(
+                { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+                () => TetrahedraParams
+            );
+
+            await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+            applyTetrahedraTransparency(repr, params.data);
+
+            return new SO.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+        });
+    },
+    update({ b, newParams }, _plugin: PluginContext) {
+        return Task.create("Tetrahedra", async ctx => {
+            await b.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+            applyTetrahedraTransparency(b.data.repr, newParams.data);
+            b.data.sourceData = newParams.data;
+            return StateTransformer.UpdateResult.Updated;
+        });
+    },
+});
+
+type TetraCoordsInput = number[] | [number, number, number];
+
+export interface TetrahedraOptions {
+    tetraCoords?: TetraCoordsInput[][][];
+    tetra_coords?: TetraCoordsInput[][][];
+    atomQuads?: number[][];
+    atom_quads?: number[][];
+    colors?: number | number[];
+    alphas?: number | number[];
+    labels?: string | string[];
+    exterior_only?: boolean;
+    show_all_faces?: boolean;
+    tag?: string;
+    name?: string;
+}
+
+function normalizeTetraVertices(entry: TetraCoordsInput[][]): TetrahedronVertices | null {
+    if (!Array.isArray(entry) || entry.length !== 4) return null;
+    const verts = entry.map(v => {
+        if (!Array.isArray(v) || v.length !== 3) return null;
+        return [Number(v[0]), Number(v[1]), Number(v[2])] as [number, number, number];
+    }) as Array<[number, number, number] | null>;
+    if (verts.some(v => v === null)) return null;
+    return verts as TetrahedronVertices;
+}
+
+function buildTetrahedraFromCoords(options: TetrahedraOptions): TetrahedronSpec[] {
+    const coords = options.tetraCoords ?? options.tetra_coords ?? [];
+    const normalized = coords
+        .map(normalizeTetraVertices)
+        .filter((v): v is TetrahedronVertices => v !== null);
+
+    const count = normalized.length;
+    if (count === 0) return [];
+
+    const colors = expandToList<number>(options.colors, count, Number, ColorNames.orange);
+    const alphas = expandToList<number>(options.alphas, count, v => Math.max(0, Math.min(1, Number(v))), 0.6);
+    const labels = expandOptionalToList<string>(options.labels, count, String);
+
+    return normalized.map((verts, idx) => ({
+        vertices: verts,
+        color: colors[idx],
+        alpha: alphas[idx],
+        label: labels[idx],
+    }));
+}
+
+function normalizeQuad(quad: number[]): number[] | null {
+    if (!Array.isArray(quad) || quad.length !== 4) return null;
+    return quad.map(q => Number(q));
+}
+
+function buildTetrahedraFromAtoms(structure: Structure, options: TetrahedraOptions): TetrahedronSpec[] {
+    const quads = (options.atomQuads ?? options.atom_quads ?? []).map(normalizeQuad).filter((q): q is number[] => q !== null);
+    if (quads.length === 0) return [];
+
+    const lookup = buildUnitLookup(structure);
+    const a = Vec3();
+    const b = Vec3();
+    const c = Vec3();
+    const d = Vec3();
+
+    const colors = expandToList<number>(options.colors, quads.length, Number, ColorNames.orange);
+    const alphas = expandToList<number>(options.alphas, quads.length, v => Math.max(0, Math.min(1, Number(v))), 0.6);
+    const labels = expandOptionalToList<string>(options.labels, quads.length, String);
+
+    const tetrahedra: TetrahedronSpec[] = [];
+
+    for (let i = 0; i < quads.length; i++) {
+        const quad = quads[i];
+        const locA = lookup.get(quad[0] as ElementIndex);
+        const locB = lookup.get(quad[1] as ElementIndex);
+        const locC = lookup.get(quad[2] as ElementIndex);
+        const locD = lookup.get(quad[3] as ElementIndex);
+        if (!locA || !locB || !locC || !locD) {
+            console.warn(`[MolSysViewer] atom_quads[${i}] no coincide con átomos de la estructura`);
+            continue;
+        }
+
+        locA.unit.conformation.position(locA.elementIndex, a);
+        locB.unit.conformation.position(locB.elementIndex, b);
+        locC.unit.conformation.position(locC.elementIndex, c);
+        locD.unit.conformation.position(locD.elementIndex, d);
+
+        tetrahedra.push({
+            vertices: [
+                [a[0], a[1], a[2]],
+                [b[0], b[1], b[2]],
+                [c[0], c[1], c[2]],
+                [d[0], d[1], d[2]],
+            ],
+            color: colors[i],
+            alpha: alphas[i],
+            label: labels[i],
+        });
+    }
+
+    return tetrahedra;
+}
+
+function prepareTetrahedraData(plugin: PluginContext, options: TetrahedraOptions): TetrahedraData | undefined {
+    const exteriorOnly = options.exterior_only ?? !options.show_all_faces;
+    let tetrahedra: TetrahedronSpec[] = [];
+
+    const atomQuads = options.atomQuads ?? options.atom_quads;
+    if (atomQuads && atomQuads.length > 0) {
+        const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+        const structure = structureRef?.cell.obj?.data as Structure | undefined;
+        if (!structure) {
+            console.warn("[MolSysViewer] add_tetrahedra con atom_quads pero sin estructura cargada");
+            return undefined;
+        }
+        tetrahedra = buildTetrahedraFromAtoms(structure, options);
+    } else {
+        tetrahedra = buildTetrahedraFromCoords(options);
+    }
+
+    if (tetrahedra.length === 0) {
+        console.warn("[MolSysViewer] add_tetrahedra sin tetraedros válidos");
+        return undefined;
+    }
+
+    const name = options.name ?? (tetrahedra.length === 1 ? "Tetrahedron" : `${tetrahedra.length} Tetrahedra`);
+
+    return {
+        tetrahedra,
+        name,
+        exteriorOnly: !!exteriorOnly,
+    };
+}
+
+export async function addTetrahedraFromPython(
+    plugin: PluginContext,
+    options: TetrahedraOptions
+): Promise<StateObjectRef<SO.Shape.Representation3D> | undefined> {
+    const data = prepareTetrahedraData(plugin, options);
+    if (!data) return undefined;
+
+    const props: TetrahedraProps = {
+        ...PD.getDefaultValues(TetrahedraParams),
+        doubleSided: true,
+    };
+
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+        Tetrahedra3D,
+        {
+            data,
+            props,
+        } as any,
+        { tags: options.tag ?? "molsysviewer:tetrahedra" }
     );
 
     await PluginCommands.State.Update(plugin, {
