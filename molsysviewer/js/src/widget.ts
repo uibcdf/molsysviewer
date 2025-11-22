@@ -24,10 +24,12 @@ import {
     DisplacementVectorOptions,
     addDisplacementVectorsFromPython,
     addNetworkLinksFromPython,
+    addTetrahedraFromPython,
     addTriangleFacesFromPython,
     addTransparentSphereFromPython,
     addTransparentSpheresFromPython,
     NetworkLinkOptions,
+    TetrahedraOptions,
     TriangleFacesOptions,
     TransparentSphereSpec,
 } from "./shapes";
@@ -142,6 +144,9 @@ class MolSysViewerController {
                     break;
                 case "add_displacement_vectors":
                     await this.handleAddDisplacementVectors(msg as AddDisplacementVectorsMessage);
+                    break;
+                case "add_tetrahedra":
+                    await this.handleAddTetrahedra(msg as AddTetrahedraMessage);
                     break;
                 case "add_triangle_faces":
                     await this.handleAddTriangleFaces(msg as AddTriangleFacesMessage);
@@ -290,6 +295,20 @@ class MolSysViewerController {
             await addDisplacementVectorsFromPython(this.plugin, options);
         } catch (err) {
             console.error("[MolSysViewer] Error creando displacement vectors", err);
+        }
+    }
+
+    private async handleAddTetrahedra(msg: AddTetrahedraMessage) {
+        const options = msg.options ?? {};
+        if (!options.tetraCoords && !options.tetra_coords && !options.atomQuads && !options.atom_quads) {
+            console.warn("[MolSysViewer] add_tetrahedra sin tetraCoords ni atom_quads");
+            return;
+        }
+        try {
+            const ref = await addTetrahedraFromPython(this.plugin, options);
+            if (ref) this.shapeRefs.add(ref);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando tetrahedra", err);
         }
     }
 
@@ -523,6 +542,11 @@ type AddDisplacementVectorsMessage = {
     options?: DisplacementVectorOptions;
 };
 
+type AddTetrahedraMessage = {
+    op: "add_tetrahedra";
+    options?: TetrahedraOptions;
+};
+
 type AddTriangleFacesMessage = {
     op: "add_triangle_faces";
     options?: TriangleFacesOptions;
@@ -582,6 +606,7 @@ type ViewerMessage =
     AddPocketSurfaceMessage |
     AddNetworkLinksMessage |
     AddDisplacementVectorsMessage |
+    AddTetrahedraMessage |
     AddTriangleFacesMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |

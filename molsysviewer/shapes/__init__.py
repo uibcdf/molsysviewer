@@ -5,6 +5,7 @@ from .pocket_surfaces import PocketSurfaces
 from .links import LinkShapes
 from .displacements import DisplacementVectors
 from .triangle_faces import TriangleFaces
+from .tetrahedra import Tetrahedra
 
 
 class ShapesManager:
@@ -23,6 +24,7 @@ class ShapesManager:
         self.links = LinkShapes(view)
         self.vectors = DisplacementVectors(view)
         self.triangles = TriangleFaces(view)
+        self.tetrahedra = Tetrahedra(view)
 
     # Atajos de conveniencia para mantener la API actual:
     #
@@ -81,6 +83,13 @@ class ShapesManager:
     ):
         return self.triangles.add_triangle_faces(*args, **kwargs)
 
+    def add_tetrahedra(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.tetrahedra.add_tetrahedra(*args, **kwargs)
+
 
 __all__ = [
     "ShapesManager",
@@ -89,4 +98,5 @@ __all__ = [
     "LinkShapes",
     "DisplacementVectors",
     "TriangleFaces",
+    "Tetrahedra",
 ]
