@@ -26,14 +26,6 @@ class ShapesManager:
         self.triangles = TriangleFaces(view)
         self.tetrahedra = Tetrahedra(view)
 
-    # Atajos de conveniencia para mantener la API actual:
-    #
-    # v.shapes.add_sphere(...)
-    # v.shapes.add_spheres(...)
-    # v.shapes.add_pocket_surface(...)
-    #
-    # pero internamente delegamos en `self.spheres`.
-
     def add_sphere(
         self,
         *args,
