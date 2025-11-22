@@ -272,6 +272,14 @@ class MolSysViewerController {
             return;
         }
 
+        if (origins.length !== displacements.length) {
+            console.warn(
+                "[MolSysViewer] add_displacement_vectors longitud de origins/displacements no coincide",
+                origins.length,
+                displacements.length,
+            );
+        }
+
         const count = Math.min(origins.length, displacements.length);
         if (count === 0) {
             console.warn("[MolSysViewer] add_displacement_vectors sin pares origen/desplazamiento");

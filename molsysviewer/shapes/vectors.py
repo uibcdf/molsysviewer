@@ -78,8 +78,10 @@ class VectorShapes:
         origins_list: list[list[float]] | None = None
         if origins is not None:
             origins_arr = np.asarray(origins, dtype=float)
-            if origins_arr.shape != displacements_arr.shape:
-                raise ValueError("origins y displacements deben tener la misma forma")
+            if origins_arr.ndim != 2 or origins_arr.shape[1] != 3:
+                raise ValueError("origins debe tener forma (n, 3)")
+            if origins_arr.shape[0] != displacements_arr.shape[0]:
+                raise ValueError("origins y displacements deben tener la misma longitud")
             origins_list = origins_arr.tolist()
         elif atom_indices is None:
             raise ValueError("Debe indicarse origins o atom_indices para las flechas")
