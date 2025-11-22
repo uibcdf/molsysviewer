@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from typing import Any
+
 import molsysmt as msm
 import numpy as np
-from typing import Any
 
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
-from .shapes import ShapesModule
+from .loaders import load_from_molsysmt as _load_from_molsysmt
+from .shapes import ShapesManager
 
 
 class MolSysView:
@@ -42,10 +44,8 @@ class MolSysView:
         self._molsys = None
         self.atom_mask = None
         self.structure_mask = None
-        self.visible_atom_indices = None
-        self.visible_structure_indices = None
 
-        self.shapes = ShapesModule(self)
+        self.shapes = ShapesManager(self)
 
     @property
     def visible_atom_indices(self):
@@ -57,7 +57,7 @@ class MolSysView:
 
     @property
     def visible_structure_indices(self):
-        """Return the indices of currently visible atoms."""
+        """Return the indices of currently visible structures."""
         if self.structure_mask is None:
             return None
         # lista para que sea JSON-serializable sin problemas
@@ -72,14 +72,6 @@ class MolSysView:
         else:
             self._pending_messages.append(msg)
 
-    def _ensure_widget(self):
-        """Crear el widget una sola vez y devolverlo."""
-        if self.widget is None:
-            from .widget import MolSysViewerWidget
-            self.widget = MolSysViewerWidget()
-            self.widget.set_callback(self._receive)
-        return self.widget
-
     def _update_visibility_in_frontend(self):
         if self.atom_mask is None:
             return
@@ -90,20 +82,22 @@ class MolSysView:
 
     # --- Public loading API ---
 
-    def load(self, molecular_system: Any, selection="all", structure_indices='all', syntax="MolSysMT",
-             label: str | None = None) -> None:
-
-        self.molecular_system = molecular_system
-        self.selection = selection
-        self.structure_indices = structure_indices
-        self._molsys = msm.convert(molecular_system, to_form='molsysmt.MolSys',
-                                   selection=selection,
-                                   structure_indices=structure_indices,
-                                   syntax=syntax)
-        n_atoms = msm.get(self._molsys, element='atom', n_atoms=True)
-        self.atom_mask = np.ones(n_atoms, dtype=bool)
-        _temp_pdb_string = msm.convert(self._molsys, to_form='string:pdb')
-        self._load_pdb_string(_temp_pdb_string, label=label)
+    def load(
+        self,
+        molecular_system: Any,
+        selection="all",
+        structure_indices="all",
+        syntax="MolSysMT",
+        label: str | None = None,
+    ) -> None:
+        _load_from_molsysmt(
+            self,
+            molecular_system=molecular_system,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            label=label,
+        )
 
     def hide(self, selection='all', structure_indices='all', syntax="MolSysMT"):
         """Hide atoms matching the given MolSysMT selection.
@@ -133,8 +127,9 @@ class MolSysView:
         Parameters
         ----------
         selection : str or sequence of indices, default 'all'
-            MolSysMT-style selection used to make atoms visible
-            (only applied if not 'all').
+            MolSysMT-style selection used to make atoms visible:
+            - 'all' → show all atoms (reset visibility),
+            - other → show only the selected atoms (in addition to whatever is already visible).
         structure_indices : str or sequence, default 'all'
             Currently unused for visibility (only meaningful in load()).
         syntax : str, default 'MolSysMT'
@@ -148,14 +143,19 @@ class MolSysView:
         The viewer widget if appropriate, otherwise None.
         """
     
-        # (1) Apply visibility changes if selection ≠ 'all' and a system is loaded
-        if not (is_all(selection) and is_all(structure_indices)):
-            if self._molsys is not None and self.atom_mask is not None:
+        # (1) Apply visibility changes if a system is loaded
+        if self._molsys is not None and self.atom_mask is not None:
+            if is_all(selection) and is_all(structure_indices):
+                # Reset visibility: show all atoms
+                self.atom_mask[:] = True
+                self._update_visibility_in_frontend()
+            elif not (is_all(selection) and is_all(structure_indices)):
+                # Partial "show": turn on only the requested selection
                 atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
                 self.atom_mask[atom_indices] = True
                 self._update_visibility_in_frontend()
     
-        # (2) Handle first-time or forced visualization
+        # (2) Handle first-time or forced visualisation
         if force or not self._already_shown:
             self._already_shown = True
             return self.widget
@@ -175,7 +175,8 @@ class MolSysView:
 
         if is_all(selection):
             # Isolating "all" → same as reset visibility
-            self.reset(what="visibility")
+            self.atom_mask[:] = True
+            self._update_visibility_in_frontend()
             return
 
         atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
@@ -183,52 +184,32 @@ class MolSysView:
         self.atom_mask[atom_indices] = True
         self._update_visibility_in_frontend()
 
-    def reset(self, what="visibility"):
-        """
-        Reset viewer state.
-
-        Parameters
-        ----------
-        what : {'visibility', 'view', 'all'}, default 'visibility'
-            - 'visibility': reset atom visibility (show all atoms).
-            - 'view': reset camera / view.
-            - 'all': reset both visibility and view.
-        """
-        if what not in {"visibility", "view", "all"}:
-            raise ValueError(f"Invalid value for `what`: {what}")
-
-        # 1) Reset visibility
-        if what in {"visibility", "all"} and self.atom_mask is not None:
-            self.atom_mask[:] = True
-            self._update_visibility_in_frontend()
-
-        # 2) Reset camera / view
-        if what in {"view", "all"}:
-            self._send({
-                "op": "reset_view",
-                "options": {},
-            })
-
-        return self._ensure_widget()
-
-    def clear(
+    def clear_decorations(
         self,
         *,
         shapes: bool = True,
         styles: bool = True,
         labels: bool = True,
     ) -> None:
-        """Clear transient visual elements but keep the loaded molecule.
-
-        This is intended to:
-        - remove shapes (spheres, arrows, etc.),
-        - reset/custom styles,
-        - remove labels,
-
-        WITHOUT:
-        - unloading the molecular structure,
-        - touching `atom_mask`,
-        - changing the camera.
+        """
+        Clear all *decorative* visual elements from the scene, without touching:
+    
+        - the loaded molecular system,
+        - atom visibility or masks,
+        - the camera view.
+    
+        Parameters
+        ----------
+        shapes : bool, default True
+            Remove user-added shapes (spheres, arrows, surfaces, etc.).
+        styles : bool, default True
+            Remove transient styling or coloring decorations.
+        labels : bool, default True
+            Remove text labels.
+    
+        Notes
+        -----
+        This does not unload or modify the molecular system itself.
         """
         self._send(
             {
@@ -241,13 +222,19 @@ class MolSysView:
             }
         )
 
-    def clear_all(self) -> None:
+    def reset_camera(self) -> None:
+        """Reset the camera / view in the frontend."""
+        self._send({
+            "op": "reset_view",
+            "options": {},
+        })
+
+    def reset_viewer(self) -> None:
         """Fully clear the viewer and reset internal state.
 
         After calling this, a new `load(...)` is required to display a
         molecular system again.
 
-        This is more drastic than `clear()`:
         - removes molecule, shapes, styles and labels on the JS side,
         - resets masks and cached MolSysMT objects on the Python side.
         """
@@ -272,44 +259,3 @@ class MolSysView:
     def demo(self) -> None:
         """Test de vida -> carga una PDB de ejemplo en Mol*."""
         self._send({"op": "test_pdb_id"})
-
-    # --- Mol* Inner loaders to test ---
-
-    def _load_pdb_string(self, pdb_string: str, *, label: str | None = None) -> None:
-        """Cargar una estructura PDB desde un string en el viewer."""
-        self._send(
-            {
-                "op": "load_structure_from_string",
-                "format": "pdb",
-                "data": pdb_string,
-                "label": label,
-            },
-        )
-
-    def _load_mmcif_string(self, mmcif_string: str, *, label: str | None = None) -> None:
-        """Cargar una estructura mmCIF desde un string en el viewer."""
-        self._send(
-            {
-                "op": "load_structure_from_string",
-                "format": "mmcif",
-                "data": mmcif_string,
-                "label": label,
-            },
-        )
-
-    def _load_from_url(
-        self,
-        url: str,
-        *,
-        format: str | None = None,
-        label: str | None = None,
-    ) -> None:
-        """Cargar una estructura remota desde una URL."""
-        self._send(
-            {
-                "op": "load_structure_from_url",
-                "url": url,
-                "format": format,
-                "label": label,
-            },
-        )

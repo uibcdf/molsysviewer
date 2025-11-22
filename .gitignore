@@ -35,27 +35,27 @@ venv/
 # ==========================================================
 
 # Node dependencies
-js/node_modules/
-js/.npm/
-js/npm-debug.log*
-js/yarn-debug.log*
-js/yarn-error.log*
+molsysviewer/js/node_modules/
+molsysviewer/js/.npm/
+molsysviewer/js/npm-debug.log*
+molsysviewer/js/yarn-debug.log*
+molsysviewer/js/yarn-error.log*
 
 # Build outputs
-js/lib/
-js/dist/
-js/.cache/
+molsysviewer/js/lib/
+molsysviewer/js/dist/
+molsysviewer/js/.cache/
 
 # TS build artifacts
-js/lib
-js/*.js.map
-js/*.d.ts
-js/src/*.js
-js/src/*.js.map
+molsysviewer/js/lib
+molsysviewer/js/*.js.map
+molsysviewer/js/*.d.ts
+molsysviewer/js/src/*.js
+molsysviewer/js/src/*.js.map
 
 # Webpack cache
-js/.webpack-cache/
-js/.parcel-cache/
+molsysviewer/js/.webpack-cache/
+molsysviewer/js/.parcel-cache/
 
 # =========================================================
 # Unit test / coverage reports
