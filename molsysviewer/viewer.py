@@ -5,6 +5,8 @@ from typing import Any
 import molsysmt as msm
 import numpy as np
 
+from ipywidgets.embed import embed_minimal_html
+
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
@@ -12,7 +14,11 @@ from .shapes import ShapesManager
 
 
 class MolSysView:
-    """Widget de visualización basado en Mol* para sistemas de MolSysMT."""
+    """Mol* viewer widget with a Python-facing API.
+
+    Provides structure loading, visibility control, shape management, and
+    utilities to export static HTML views for documentation or sharing.
+    """
 
     def __init__(self) -> None:
         self.widget = MolSysViewerWidget()
@@ -85,11 +91,12 @@ class MolSysView:
     def load(
         self,
         molecular_system: Any,
-        selection="all",
-        structure_indices="all",
-        syntax="MolSysMT",
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
         label: str | None = None,
     ) -> None:
+        """Load a molecular system (MolSysMT-compatible) into the viewer."""
         _load_from_molsysmt(
             self,
             molecular_system=molecular_system,
@@ -99,15 +106,8 @@ class MolSysView:
             label=label,
         )
 
-    def hide(self, selection='all', structure_indices='all', syntax="MolSysMT"):
-        """Hide atoms matching the given MolSysMT selection.
-
-        Notes
-        -----
-        - `structure_indices` is currently ignored for visibility control.
-          It only matters at load time when deciding which structures/frames
-          are present in `self._molsys`.
-        """
+    def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
+        """Hide atoms matching the given selection (MolSysMT syntax by default)."""
         if self.atom_mask is None or self._molsys is None:
             return
 
@@ -120,29 +120,8 @@ class MolSysView:
 
         self._update_visibility_in_frontend()
 
-    def show(self, selection='all', structure_indices='all', syntax="MolSysMT", *, force=False):
-        """
-        Display the MolSysViewer widget the *first time* or whenever force=True.
-    
-        Parameters
-        ----------
-        selection : str or sequence of indices, default 'all'
-            MolSysMT-style selection used to make atoms visible:
-            - 'all' → show all atoms (reset visibility),
-            - other → show only the selected atoms (in addition to whatever is already visible).
-        structure_indices : str or sequence, default 'all'
-            Currently unused for visibility (only meaningful in load()).
-        syntax : str, default 'MolSysMT'
-            Syntax for the selection language.
-        force : bool, default False
-            - False → return the widget only the first time this method is called.
-            - True  → always return the widget and set _already_shown=True.
-    
-        Returns
-        -------
-        The viewer widget if appropriate, otherwise None.
-        """
-    
+    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False):
+        """Show the widget (first call or if `force=True`) and optionally adjust visibility."""
         # (1) Apply visibility changes if a system is loaded
         if self._molsys is not None and self.atom_mask is not None:
             if is_all(selection) and is_all(structure_indices):
@@ -163,13 +142,8 @@ class MolSysView:
         # (3) Subsequent calls without force do not return the widget
         return None
 
-    def isolate(self, selection='all', structure_indices='all', syntax="MolSysMT"):
-        """Show only the atoms in `selection`; hide everything else.
-
-        Notes
-        -----
-        - If `selection == 'all'` this is equivalent to a visibility reset.
-        """
+    def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
+        """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""
         if self.atom_mask is None or self._molsys is None:
             return
 
@@ -191,26 +165,7 @@ class MolSysView:
         styles: bool = True,
         labels: bool = True,
     ) -> None:
-        """
-        Clear all *decorative* visual elements from the scene, without touching:
-    
-        - the loaded molecular system,
-        - atom visibility or masks,
-        - the camera view.
-    
-        Parameters
-        ----------
-        shapes : bool, default True
-            Remove user-added shapes (spheres, arrows, surfaces, etc.).
-        styles : bool, default True
-            Remove transient styling or coloring decorations.
-        labels : bool, default True
-            Remove text labels.
-    
-        Notes
-        -----
-        This does not unload or modify the molecular system itself.
-        """
+        """Clear decorative elements (shapes/styles/labels) without touching the loaded structure or camera."""
         self._send(
             {
                 "op": "clear_scene",
@@ -230,14 +185,7 @@ class MolSysView:
         })
 
     def reset_viewer(self) -> None:
-        """Fully clear the viewer and reset internal state.
-
-        After calling this, a new `load(...)` is required to display a
-        molecular system again.
-
-        - removes molecule, shapes, styles and labels on the JS side,
-        - resets masks and cached MolSysMT objects on the Python side.
-        """
+        """Fully clear the viewer and reset internal state (requires a new `load(...)`)."""
         # Reset Python-side state
         self.molecular_system = None
         self.selection = None
@@ -253,6 +201,12 @@ class MolSysView:
                 "options": {},
             }
         )
+
+    # --- Export helpers for docs/notebooks ---
+
+    def write_html(self, output_filename: str, *, title: str = "MolSysViewer") -> None:
+        """Export this viewer widget to a standalone HTML file (for docs embedding)."""
+        embed_minimal_html(output_filename, views=[self.widget], title=title, drop_defaults=True)
 
     # --- Tests de vida / demos ---
 

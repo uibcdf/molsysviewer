@@ -6,13 +6,18 @@ from .links import LinkShapes
 from .displacements import DisplacementVectors
 from .triangle_faces import TriangleFaces
 from .tetrahedra import Tetrahedra
+from .pocket_blobs import PocketBlobs
+from .channel_tubes import ChannelTubes
+from .anisotropy_ellipsoids import AnisotropyEllipsoids
+from .pharmacophore import PharmacophoreShapes
 
 
 class ShapesManager:
-    """Gestor de formas (shapes) asociadas a un MolSysView.
+    """Shape manager bound to a MolSysView.
 
-    Expone atajos de alto nivel (add_sphere, add_spheres) y agrupa
-    submódulos específicos (por ahora sólo `spheres`).
+    Provides high-level shortcuts (`add_sphere`, `add_pocket_surface`, etc.)
+    and exposes specialized submodules (spheres, pockets, tubes, ellipsoids,
+    pharmacophore, etc.).
     """
 
     def __init__(self, view) -> None:
@@ -25,6 +30,10 @@ class ShapesManager:
         self.vectors = DisplacementVectors(view)
         self.triangles = TriangleFaces(view)
         self.tetrahedra = Tetrahedra(view)
+        self.blobs = PocketBlobs(view)
+        self.tubes = ChannelTubes(view)
+        self.ellipsoids = AnisotropyEllipsoids(view)
+        self.ph4 = PharmacophoreShapes(view)
 
     def add_sphere(
         self,
@@ -82,6 +91,38 @@ class ShapesManager:
     ):
         return self.tetrahedra.add_tetrahedra(*args, **kwargs)
 
+    def add_pocket_blob(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.blobs.add_pocket_blob(*args, **kwargs)
+
+    def add_channel_tube(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.tubes.add_channel_tube(*args, **kwargs)
+
+    def add_anisotropy_ellipsoids(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.ellipsoids.add_anisotropy_ellipsoids(*args, **kwargs)
+
+    def add_pharmacophore_features(
+        self,
+        *args,
+        **kwargs,
+    ):
+        return self.ph4.add_pharmacophore_features(*args, **kwargs)
+
+    def clear(self, tag: str | None = None):
+        """Eliminar shapes (todas si tag es None, o por tag)."""
+        self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
+
 
 __all__ = [
     "ShapesManager",
@@ -91,4 +132,8 @@ __all__ = [
     "DisplacementVectors",
     "TriangleFaces",
     "Tetrahedra",
+    "PocketBlobs",
+    "ChannelTubes",
+    "AnisotropyEllipsoids",
+    "PharmacophoreShapes",
 ]

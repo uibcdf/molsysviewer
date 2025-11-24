@@ -125,3 +125,7 @@ class SphereShapes:
             options["tag"] = tag
 
         self._view._send({"op": "add_alpha_sphere_set", "options": options})
+
+    def clear(self, tag: str | None = None):
+        """Eliminar shapes (todas o por tag) en el frontend."""
+        self._view._send({"op": "clear_shapes_by_tag", "tag": tag})

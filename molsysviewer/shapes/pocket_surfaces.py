@@ -40,6 +40,9 @@ class PocketSurfaces:
         scalars: Sequence[float] | None = None,
         grid: dict | None = None,
         alpha: float | None = None,
+        iso_levels: Sequence[float] | None = None,
+        iso_colors: Sequence[int] | None = None,
+        iso_alphas: Sequence[float] | None = None,
         color_map: str | Sequence[int] | None = None,
         mouth_atom_indices: Sequence[int] | Sequence[Sequence[int]] | None = None,
         clip_plane: dict | None = None,
@@ -59,6 +62,12 @@ class PocketSurfaces:
             options["grid"] = dict(grid)
         if alpha is not None:
             options["alpha"] = float(alpha)
+        if iso_levels is not None:
+            options["iso_levels"] = [float(v) for v in iso_levels]
+        if iso_colors is not None:
+            options["iso_colors"] = [int(c) for c in iso_colors]
+        if iso_alphas is not None:
+            options["iso_alphas"] = [float(a) for a in iso_alphas]
         if color_map is not None:
             options["color_map"] = color_map
 

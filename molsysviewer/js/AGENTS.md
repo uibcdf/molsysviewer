@@ -16,7 +16,7 @@ js/src/*.ts
 
 The TypeScript files define:
 
-- the widget entry point (`widget.ts`)
+- the widget entry point (`index.ts`)
 - all Mol* integration logic
 - all message handlers and shape management
 

@@ -3,6 +3,10 @@
     "target": "ES2019",
     "module": "ESNext",
     "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "molstar/lib/*": ["../src_molstar/src/*"]
+    },
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,4 +16,3 @@
   },
   "include": ["src"]
 }
-
