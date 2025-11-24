@@ -65,10 +65,21 @@ class Tetrahedra:
         labels: Sequence[str] | str | None = None,
         exterior_only: bool = True,
         show_all_faces: bool | None = None,
+        draw_edges: bool | None = None,
+        edge_radius: float | None = None,
+        edge_color: int | None = None,
+        show_normals: bool | None = None,
+        normal_length: float | None = None,
+        normal_color: int | None = None,
         tag: str | None = None,
         name: str | None = None,
     ) -> None:
-        """Añade tetraedros como malla triangular, usando coordenadas o índices atómicos."""
+        """Añade tetraedros como malla triangular, usando coordenadas o índices atómicos.
+
+        Flags opcionales:
+        - draw_edges: contornos con cilindros (edge_radius/edge_color).
+        - show_normals: flechas de normales de cara (normal_length/normal_color).
+        """
 
         coords_list = self._normalize_vertices(tetra_coords)
         atom_quads_list = self._normalize_quads(atom_quads)
@@ -98,8 +109,19 @@ class Tetrahedra:
             options["alphas"] = alphas_list
         if labels_list is not None:
             options["labels"] = labels_list
+        if draw_edges is not None:
+            options["draw_edges"] = bool(draw_edges)
+        if edge_radius is not None:
+            options["edge_radius"] = float(edge_radius)
+        if edge_color is not None:
+            options["edge_color"] = int(edge_color)
+        if show_normals is not None:
+            options["show_normals"] = bool(show_normals)
+        if normal_length is not None:
+            options["normal_length"] = float(normal_length)
+        if normal_color is not None:
+            options["normal_color"] = int(normal_color)
         if tag is not None:
             options["tag"] = tag
 
         self._view._send({"op": "add_tetrahedra", "options": options})
-

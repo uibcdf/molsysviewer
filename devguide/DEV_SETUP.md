@@ -115,6 +115,10 @@ This produces:
 
 which are loaded by the Python widget via AnyWidget.
 
+Notes:
+- The generated bundle is tracked so notebooks run without Node. Do **not** edit `viewer.js`/`.map` directly.
+- Rebuild manually only when you need to test TS changes locally or intentionally refresh the bundle.
+
 ---
 
 # 5. Development Workflow
@@ -149,6 +153,8 @@ npm run build
 ```
 
 Reload the Jupyter environment to see the effect.
+
+Tip: keep rebuilds manual (avoid auto-builds in tests/CI). TS changes for unit tests rarely require a rebuild.
 
 ---
 
@@ -264,4 +270,3 @@ Please ensure your PRs include:
 # 11. Contact / Maintainer Notes
 
 For architecture discussions, cross-library integration (MolSysMT, TopoMT), or roadmap questions, contact the maintainers or open an issue on GitHub.
-

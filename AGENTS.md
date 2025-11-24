@@ -6,8 +6,8 @@ This document provides critical instructions for all AI assistants or automation
 
 The following files **must not be edited manually**:
 
-* `viewer.js`
-* `viewer.js.map`
+* `molsysviewer/viewer.js`
+* `molsysviewer/viewer.js.map`
 
 These files are **build artifacts** generated automatically from the TypeScript sources located in the `js/` directory. Any manual edits will be overwritten and may corrupt the build process.
 
@@ -17,10 +17,11 @@ The authoritative JavaScript/TypeScript sources live here:
 
 ```
 js/src/
-    widget.ts
-    shapes.ts
-    structure.ts
-    ...
+    index.ts
+    managers/
+    shapes/
+    plugin/
+    messages/
 ```
 
 **Only these files should be edited** when modifying frontend logic. After changes, the build system must be executed to regenerate `viewer.js` and `viewer.js.map`.
@@ -42,7 +43,8 @@ AI agents must never write directly to these generated outputs.
 2. Do not create duplicate build outputs.
 3. Preserve the structure of the `molsysviewer/` package.
 4. Maintain consistency with the project's devguide (`devguide/`).
-5. When in doubt, **ask before modifying files outside `js/src/`**.
+5. Docs: follow `docs/Provisional_Docs_Guidelines.md`; use static views in `_static/views/` for embeds.
+6. When in doubt, **ask before modifying files outside `js/src/`**.
 
 ## 📌 Why This Matters
 
@@ -66,4 +68,3 @@ This means:
 - When planning, debugging, or proposing refactors in JavaScript/TypeScript, refer to the Mol* source when clarity or
   correctness depends on understanding internal implementations.
 - This context applies ONLY to work inside the MolSysViewer repository.
-

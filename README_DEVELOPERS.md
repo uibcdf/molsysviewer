@@ -14,9 +14,10 @@ MolSysViewer is split into two main layers:
   - Message queue and high-level behavior
 
 - **TypeScript / Mol\* layer** (`js/src/`):
-  - `widget.ts`: anywidget renderer + Mol* plugin initialization
-  - `shapes.ts`: custom shapes (spheres, future primitives)
-  - `structure.ts`: structure loading utilities
+  - `index.ts`: anywidget entrypoint
+  - `managers/viewer-controller.ts`: Mol* plugin init + message routing/state
+  - `shapes/`: custom shapes, surfaces, and helpers
+  - `plugin/structure.ts`: structure loading utilities
 
 The JavaScript bundle (`molsysviewer/viewer.js`) is generated from the
 TypeScript sources and is **not committed** to the repository. It is built
@@ -53,8 +54,12 @@ conda activate molsysviewer_dev
 
 ## 3. JavaScript / TypeScript build
 
-The JS bundle is built from `js/src/*.ts` using `esbuild`. All configuration is
-in `js/package.json`.
+The JS bundle is built from `js/src/*.ts` using `esbuild` (see `js/package.json`).
+
+Notes:
+- The generated bundle (`molsysviewer/viewer.js` and `.map`) is tracked so notebooks can run without Node.
+- Do **not** edit the generated files directly.
+- Rebuild manually **only** when you need to test TS changes locally or refresh the bundle intentionally.
 
 From the repository root:
 
@@ -64,8 +69,6 @@ npm install        # or npm ci if you prefer
 npm run build      # generates ../molsysviewer/viewer.js
 cd ..
 ```
-
-You should rerun `npm run build` whenever you change the TypeScript sources.
 
 ---
 
@@ -125,6 +128,10 @@ ruff check molsysviewer js
 ```
 
 (Adjust the paths as your test and lint configuration evolves.)
+
+Integration tests
+- Some tests rely on MolSysMT; ensure it is installed in the dev environment.
+- TS/JS changes generally do not require rebuilding the bundle for unit tests; keep rebuilds manual.
 
 ---
 
