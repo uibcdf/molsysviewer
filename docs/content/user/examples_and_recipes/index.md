@@ -1,4 +1,4 @@
-# Cookbook
+# Examples and Recipes
 
 Recipes for common tasks (to be filled with concrete examples):
 

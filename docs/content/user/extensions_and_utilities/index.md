@@ -1,4 +1,4 @@
-# Tools
+# Extensions and Utilities
 
 Hands-on guides for core operations:
 

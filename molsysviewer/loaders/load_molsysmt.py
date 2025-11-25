@@ -46,6 +46,7 @@ def load_from_molsysmt(
 
     # Intentar camino nativo MolSysMT -> payload Mol* (vía ViewerJSON)
     try:
+        viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
         payload = _serialize_molsys_payload(view._molsys)
     except Exception as exc:  # pragma: no cover - defensive, MolSysMT internals
         logger.debug("MolSys payload serialization failed: %s", exc, exc_info=True)
