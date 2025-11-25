@@ -202,6 +202,9 @@ class MolSysView:
             }
         )
 
+    def info(self):
+        msm.info(self._molsys)
+
     # --- Export helpers for docs/notebooks ---
 
     def write_html(self, output_filename: str, *, title: str = "MolSysViewer") -> None:
