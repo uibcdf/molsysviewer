@@ -2,22 +2,29 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..viewer import MolSysView
 
 
-def load_url(
-    view: Any,
-    *,
+def load_from_url(
     url: str,
+    *,
     format: str | None = None,
     label: str | None = None,
-) -> None:
+    view: "MolSysView | None" = None,
+) -> "MolSysView":
     """Backend interno para MolSysView.load_from_url(...).
 
     De momento:
     - delega totalmente el parseo de la URL al frontend (Mol*),
     - deja `_molsys` y `atom_mask` a None (no hay operaciones de selección).
     """
+
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
 
     view.molecular_system = url
     view.selection = "all"
@@ -35,3 +42,8 @@ def load_url(
         }
     )
 
+    return view
+
+
+# Compatibilidad hacia atrás
+load_url = load_from_url

@@ -130064,11 +130064,14 @@ function createBondColumns(bonds) {
 
 // src/managers/viewer-controller.ts
 var MolSysViewerController = class _MolSysViewerController {
-  constructor(plugin) {
+  constructor(plugin, host) {
     this.plugin = plugin;
+    this.host = host;
     this.shapeRefs = /* @__PURE__ */ new Set();
     this.tagIndex = /* @__PURE__ */ new Map();
     this.labelRefs = /* @__PURE__ */ new Set();
+    this.swingActive = false;
+    this.spinActive = false;
   }
   static async create(target) {
     const canvas = document.createElement("canvas");
@@ -130087,7 +130090,7 @@ var MolSysViewerController = class _MolSysViewerController {
       console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
     }
     if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
-    return new _MolSysViewerController(plugin);
+    return new _MolSysViewerController(plugin, target);
   }
   registerShapeRef(ref, tag) {
     if (!ref) return;
@@ -130164,6 +130167,21 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "clear_shapes_by_tag":
           await this.clearShapesByTag(msg.tag);
+          break;
+        case "reset_camera":
+          await this.resetView();
+          break;
+        case "toggle_fullscreen":
+          await this.toggleFullscreen(msg.enable);
+          break;
+        case "toggle_background":
+          await this.toggleBackground(msg.mode);
+          break;
+        case "toggle_swing":
+          await this.toggleSwing(msg.enable);
+          break;
+        case "toggle_spin":
+          await this.toggleSpin(msg.enable);
           break;
         default:
           console.warn("[MolSysViewer] op desconocida:", msg.op, msg);
@@ -130456,6 +130474,65 @@ var MolSysViewerController = class _MolSysViewerController {
   async resetView() {
     await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
   }
+  async toggleFullscreen(enable) {
+    const root = this.plugin.canvas3d?.props.parent;
+    const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
+    const target = this.host ?? root?.parentElement ?? root ?? canvas?.parentElement ?? canvas ?? document.documentElement;
+    if (!target || !target.requestFullscreen) return;
+    const shouldEnable = enable ?? !document.fullscreenElement;
+    try {
+      if (shouldEnable) {
+        if (!document.fullscreenElement) await target.requestFullscreen();
+      } else if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.warn("[MolSysViewer] fullscreen toggle failed", err);
+    }
+  }
+  async toggleBackground(mode) {
+    const canvas3d = this.plugin.canvas3d;
+    if (!canvas3d) return;
+    const current2 = canvas3d.props?.renderer?.backgroundColor;
+    const isDark = typeof current2 === "number" ? current2 === 1052688 : false;
+    const makeDark = mode ? mode === "dark" : !isDark;
+    const bg = makeDark ? 1052688 : 16777215;
+    const fg = makeDark ? 16777215 : 0;
+    canvas3d.setProps({
+      renderer: {
+        ...canvas3d.props?.renderer || {},
+        backgroundColor: bg,
+        lightColor: fg,
+        ambientColor: fg
+      }
+    });
+  }
+  async toggleSwing(enable) {
+    const canvas3d = this.plugin.canvas3d;
+    if (!canvas3d) return;
+    const shouldEnable = enable ?? !this.swingActive;
+    this.swingActive = shouldEnable;
+    this.spinActive = false;
+    canvas3d.setProps({
+      trackball: {
+        ...canvas3d.props?.trackball || {},
+        animate: shouldEnable ? { name: "rock", params: { speed: 0.25, angle: 20 } } : { name: "off", params: {} }
+      }
+    });
+  }
+  async toggleSpin(enable) {
+    const canvas3d = this.plugin.canvas3d;
+    if (!canvas3d) return;
+    const shouldEnable = enable ?? !this.spinActive;
+    this.spinActive = shouldEnable;
+    this.swingActive = false;
+    canvas3d.setProps({
+      trackball: {
+        ...canvas3d.props?.trackball || {},
+        animate: shouldEnable ? { name: "spin", params: { speed: 0.1 } } : { name: "off", params: {} }
+      }
+    });
+  }
   async clearScene(options) {
     const shapes = options?.shapes ?? true;
     const styles = options?.styles ?? true;
@@ -130524,11 +130601,60 @@ var MolSysViewerController = class _MolSysViewerController {
 // src/index.ts
 var index_default = {
   render({ model, el }) {
-    const controllerPromise = MolSysViewerController.create(el);
+    const target = document.createElement("div");
+    target.style.width = "100%";
+    target.style.height = "100%";
+    target.style.minHeight = "400px";
+    target.style.position = "relative";
+    el.appendChild(target);
+    const controllerPromise = MolSysViewerController.create(target);
+    const makeButton = (label2, onClick) => {
+      const btn = document.createElement("button");
+      btn.textContent = label2;
+      btn.style.padding = "2px 6px";
+      btn.style.fontSize = "11px";
+      btn.style.border = "1px solid rgba(255,255,255,0.5)";
+      btn.style.borderRadius = "4px";
+      btn.style.background = "rgba(0,0,0,0.5)";
+      btn.style.color = "#fff";
+      btn.style.cursor = "pointer";
+      btn.addEventListener("click", onClick);
+      return btn;
+    };
+    const send = (msg) => model.send(msg);
+    const controllerReady = controllerPromise.then((c9) => {
+      const overlay = document.createElement("div");
+      overlay.style.position = "absolute";
+      overlay.style.top = "8px";
+      overlay.style.left = "8px";
+      overlay.style.display = "flex";
+      overlay.style.gap = "6px";
+      overlay.style.zIndex = "10";
+      overlay.style.pointerEvents = "none";
+      const mk = (label2, handler) => {
+        const b9 = makeButton(label2, handler);
+        b9.style.pointerEvents = "auto";
+        overlay.appendChild(b9);
+      };
+      mk("Reset", () => c9.resetView());
+      mk("Full", () => c9.toggleFullscreen());
+      mk("Bg", () => c9.toggleBackground());
+      mk("Spin", () => c9.toggleSpin());
+      mk("Swing", () => c9.toggleSwing());
+      target.appendChild(overlay);
+      return c9;
+    });
     (async () => {
       try {
-        await controllerPromise;
+        await controllerReady;
         model.send({ event: "ready" });
+        const initialMessages = model.get("initial_messages");
+        if (Array.isArray(initialMessages) && initialMessages.length) {
+          const controller = await controllerReady;
+          for (const msg of initialMessages) {
+            await controller.handleMessage(msg);
+          }
+        }
       } catch (err) {
         console.error("[MolSysViewer] Error inicializando plugin:", err);
       }
@@ -130538,7 +130664,7 @@ var index_default = {
       if (!msg || typeof msg !== "object") return;
       console.log("[MolSysViewer] mensaje desde Python:", msg);
       try {
-        const controller = await controllerPromise;
+        const controller = await controllerReady;
         await controller.handleMessage(msg);
       } catch (error2) {
         console.error("[MolSysViewer] Error manejando mensaje:", msg, error2);

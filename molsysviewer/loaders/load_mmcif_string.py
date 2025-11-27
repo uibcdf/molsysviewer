@@ -2,19 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import molsysmt as msm
 import numpy as np
 
+if TYPE_CHECKING:
+    from ..viewer import MolSysView
+
 
 def load_mmcif_string(
-    view: Any,
-    *,
     mmcif_string: str,
+    *,
     label: str | None = None,
-) -> None:
+    view: "MolSysView | None" = None,
+) -> "MolSysView":
     """Backend interno para MolSysView.load_mmcif_string(...)."""
+
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
 
     view.molecular_system = mmcif_string
     view.selection = "all"
@@ -38,3 +45,5 @@ def load_mmcif_string(
             "label": label,
         }
     )
+
+    return view

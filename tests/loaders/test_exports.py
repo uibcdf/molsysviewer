@@ -8,6 +8,7 @@ def test_loaders_exports():
         "load_pdb_string",
         "load_mmcif_string",
         "load_pdb_id",
+        "load_url",
         "load_from_url",
     }
     assert exported == expected

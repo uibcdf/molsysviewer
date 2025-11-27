@@ -10,7 +10,8 @@ authors = [{name = "UIBCDF"}]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "anywidget"
+  "anywidget>=0.9.15",
+  "traitlets>=5"
 ]
 license = { text = "MIT" }  # o la que uses
 urls = { "Homepage" = "https://github.com/uibcdf/molsysviewer" }
@@ -75,4 +76,3 @@ default-tag = "0.0.0"
 
 [tool.versioningit.write]
 file = "molsysviewer/_version.py"
-

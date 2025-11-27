@@ -2,19 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import molsysmt as msm
 import numpy as np
 
+if TYPE_CHECKING:
+    from ..viewer import MolSysView
+
 
 def load_pdb_id(
-    view: Any,
-    *,
     pdb_id: str,
+    *,
     label: str | None = None,
-) -> None:
+    view: "MolSysView | None" = None,
+) -> "MolSysView":
     """Backend interno para MolSysView.load_pdb_id(...)."""
+
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
 
     if pdb_id is None:
         raise ValueError("pdb_id must be a non-empty string.")
@@ -49,3 +56,4 @@ def load_pdb_id(
         }
     )
 
+    return view

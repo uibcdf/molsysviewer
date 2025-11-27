@@ -30,8 +30,9 @@ def test_load_pdb_string_sends_message(monkeypatch):
     monkeypatch.setattr(pdb_mod.msm, "convert", fake_convert)
     monkeypatch.setattr(pdb_mod.msm, "get", fake_get)
 
-    load_pdb_string(view, pdb_string="PDBDATA", label="pdb")
+    result = load_pdb_string(pdb_string="PDBDATA", label="pdb", view=view)
 
+    assert result is view
     assert view.messages == [
         {
             "op": "load_structure_from_string",
@@ -40,3 +41,26 @@ def test_load_pdb_string_sends_message(monkeypatch):
             "label": "pdb",
         }
     ]
+
+
+def test_load_pdb_string_creates_view_when_missing(monkeypatch):
+    def fake_convert(item, *, to_form=None, **_kwargs):
+        return f"converted:{to_form}"
+
+    def fake_get(_item, *, element=None, n_atoms=False, **_kwargs):
+        if element == "atom" and n_atoms:
+            return 2
+        return None
+
+    import molsysviewer.loaders.load_pdb_string as pdb_mod
+
+    created_view = DummyView()
+
+    monkeypatch.setattr(pdb_mod, "ensure_view", lambda view=None: created_view if view is None else view)
+    monkeypatch.setattr(pdb_mod.msm, "convert", fake_convert)
+    monkeypatch.setattr(pdb_mod.msm, "get", fake_get)
+
+    result = load_pdb_string(pdb_string="PDBDATA", label="pdb")
+
+    assert result is created_view
+    assert created_view.messages

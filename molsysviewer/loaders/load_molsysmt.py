@@ -3,23 +3,26 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import molsysmt as msm
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
+if TYPE_CHECKING:
+    from ..viewer import MolSysView
+
 
 def load_from_molsysmt(
-    view: Any,
-    *,
     molecular_system: Any,
+    *,
     selection: str | Any = "all",
     structure_indices: str | Any = "all",
     syntax: str = "MolSysMT",
     label: str | None = None,
-) -> None:
+    view: "MolSysView | None" = None,
+) -> "MolSysView":
     """Backend interno para MolSysView.load(...).
 
     - Convierte cualquier `molecular_system` a MolSysMT.MolSys.
@@ -27,6 +30,10 @@ def load_from_molsysmt(
     - Intenta el camino nativo (payload MolSysMT → Mol*).
     - Si falla, hace fallback a PDB string.
     """
+
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
 
     # Guardar en el estado del viewer
     view.molecular_system = molecular_system
@@ -41,45 +48,50 @@ def load_from_molsysmt(
         structure_indices=structure_indices,
         syntax=syntax,
     )
-    n_atoms = msm.get(view._molsys, element="atom", n_atoms=True)
+    n_atoms = view._molsys.get(element="atom", n_atoms=True)
     view.atom_mask = np.ones(n_atoms, dtype=bool)
 
-    # Intentar camino nativo MolSysMT -> payload Mol* (vía ViewerJSON)
-    try:
-        viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
-        payload = _serialize_molsys_payload(view._molsys)
-    except Exception as exc:  # pragma: no cover - defensive, MolSysMT internals
-        logger.debug("MolSys payload serialization failed: %s", exc, exc_info=True)
-        payload = None
+    viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
 
-    if payload is not None:
-        # Enviar payload al frontend
-        _load_molsys_payload(view, payload, label=label)
-        return
+    payload = {"atom_id": None,
+               "atom_name": None,
+               "residue_id": None,
+               "residue_name": None,
+               "chain_id": None,
+               "entity_id": None,
+               "element_symbol": None,
+               "formal_charge": None,
+               "bonds": None,
+               "structures": None}
 
-    # Fallback: PDB string
-    pdb_string = msm.convert(view._molsys, to_form="string:pdb")
+    payload["atom_id"] = viewer_json.get("atoms").get("atom_id")
+    payload["atom_name"] = viewer_json.get("atoms").get("atom_name")
+    payload["residue_id"] = viewer_json.get("atoms").get("group_id")
+    payload["residue_name"] = viewer_json.get("atoms").get("group_name")
+    payload["chain_id"] = viewer_json.get("atoms").get("chain_id")
+    payload["entity_id"] = viewer_json.get("atoms").get("molecule_id")
+    payload["element_symbol"] = viewer_json.get("atoms").get("atom_type")
+    payload["formal_charge"] = viewer_json.get("atoms").get("formal_charge")
+    payload["bonds"] = viewer_json.get("bonds").get("atom_pairs")
+    payload["structures"] = viewer_json.get("structures")
+    for structure in payload["structures"]:
+        structure["coordinates"] = structure["coordinates"] * 10.0
+
     view._send(
         {
-            "op": "load_structure_from_string",
-            "format": "pdb",
-            "data": pdb_string,
+            "op": "load_molsys_payload",
+            "payload": viewer_json,
             "label": label,
         }
     )
+
+    return view
+
 
 
 # ---------------------------------------------------------------------------
 #  Infraestructura de serialización MolSysMT -> payload para Mol*
 # ---------------------------------------------------------------------------
-
-def _serialize_molsys_payload(molsys: Any) -> dict[str, Any] | None:
-    """Convierte un MolSysMT.MolSys en el payload esperado por el frontend usando ViewerJSON."""
-    viewer_json = _molsys_to_viewer_json(molsys)
-    if viewer_json is None:
-        return None
-    return _viewer_json_to_payload(viewer_json)
-
 
 def _first_available(candidates: list[Any | None]) -> Any | None:
     for candidate in candidates:
@@ -96,26 +108,6 @@ def _prepare_atom_field(values: Any | None, length: int, fallback) -> list[Any]:
         return [fallback(i) for i in range(length)]
     return array.tolist()
 
-
-def _molsys_to_viewer_json(molsys: Any) -> dict[str, Any] | None:
-    try:
-        viewer = msm.convert(molsys, to_form="molsysmt.ViewerJSON")
-    except Exception:  # pragma: no cover - defensive
-        logger.debug("MolSys payload: convert to ViewerJSON failed", exc_info=True)
-        return None
-
-    if hasattr(viewer, "to_dict"):
-        try:
-            return viewer.to_dict()
-        except Exception:  # pragma: no cover
-            logger.debug("MolSys payload: ViewerJSON.to_dict() failed", exc_info=True)
-            return None
-
-    if isinstance(viewer, dict):
-        return viewer
-
-    logger.debug("MolSys payload: unexpected ViewerJSON type %s", type(viewer))
-    return None
 
 
 def _viewer_json_to_payload(viewer_json: dict[str, Any]) -> dict[str, Any] | None:
@@ -286,19 +278,3 @@ def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
         payload["order"] = order_array.tolist()
 
     return payload
-
-
-def _load_molsys_payload(
-    view: Any,
-    payload: dict[str, Any],
-    *,
-    label: str | None = None,
-) -> None:
-    """Enviar un payload ya construido al frontend."""
-    view._send(
-        {
-            "op": "load_molsys_payload",
-            "payload": payload,
-            "label": label,
-        }
-    )
