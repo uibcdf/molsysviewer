@@ -1,16 +1,19 @@
 from __future__ import annotations
 
 from typing import Any
+import json
+import re
 
 import molsysmt as msm
 import numpy as np
-
-from ipywidgets.embed import embed_minimal_html
 
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .shapes import ShapesManager
+
+_HTML_MANAGER_VERSION = "1.0.1"
+_WIDGETS_BASE_VERSION = "2.0.0"
 
 
 class MolSysView:
@@ -31,6 +34,7 @@ class MolSysView:
 
         self._ready = False
         self._pending_messages: list[dict] = []
+        self._message_history: list[dict] = []
 
         # Registrar callback para mensajes JS->Python
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
@@ -73,6 +77,7 @@ class MolSysView:
 
     def _send(self, msg: dict) -> None:
         """Enviar un mensaje al frontend o encolarlo si aún no está listo."""
+        self._message_history.append(msg)
         if self._ready:
             self.widget.send(msg)
         else:
@@ -98,12 +103,12 @@ class MolSysView:
     ) -> None:
         """Load a molecular system (MolSysMT-compatible) into the viewer."""
         _load_from_molsysmt(
-            self,
             molecular_system=molecular_system,
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
             label=label,
+            view=self,
         )
 
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
@@ -209,14 +214,135 @@ class MolSysView:
 
     def write_html(self, output_filename: str, *, title: str = "MolSysViewer") -> None:
         """Export this viewer widget to a standalone HTML file (for docs embedding)."""
-        embed_minimal_html(output_filename, views=[self.widget], title=title, drop_defaults=True)
+        # Serialize the message history so the exported HTML can replay all
+        # actions (loads/shapes/visibility) without needing a live Python kernel.
+        self.widget.initial_messages = self._clean_message_history()
+        html = self._build_standalone_html(title=title)
+        with open(output_filename, "w", encoding="utf-8") as f:
+            f.write(html)
+
+    def _load_anywidget_bundle(self) -> str:
+        """Return the JS bundle for anywidget if available to inline in exports."""
+        try:
+            import anywidget  # type: ignore
+        except Exception:
+            return ""
+
+        from pathlib import Path
+
+        locations = [
+            Path(anywidget.__file__).parent / "nbextension" / "index.js",
+            Path(anywidget.__file__).parent / "labextension" / "index.js",
+        ]
+
+        sources: list[str] = []
+        for path in locations:
+            if path.exists():
+                try:
+                    src = path.read_text(encoding="utf-8")
+                    # If this bundle ends with an anonymous AMD define, give it a name
+                    # so requirejs can register it when inlined.
+                    src = src.replace(
+                        'define(["@jupyter-widgets/base"], widget_default);',
+                        'define("anywidget-inline", ["@jupyter-widgets/base"], widget_default);\n'
+                        'define("anywidget", ["anywidget-inline"], function(m){return m;});',
+                    )
+                    sources.append(src)
+                except Exception:
+                    continue
+
+        return "\n".join(sources)
+
+    def _build_standalone_html(self, title: str) -> str:
+        """Create a minimal standalone HTML embedding only this widget."""
+        # Ensure initial_messages is in sync before exporting
+        self.widget.initial_messages = self._clean_message_history()
+
+        layout_state = self.widget.layout.get_state(drop_defaults=False)
+        widget_state = self.widget.get_state(drop_defaults=False)
+        widget_state["layout"] = f"IPY_MODEL_{self.widget.layout.model_id}"
+
+        state_json = {
+            "version_major": 2,
+            "version_minor": 0,
+            "state": {
+                self.widget.layout.model_id: {
+                    "model_name": "LayoutModel",
+                    "model_module": "@jupyter-widgets/base",
+                    "model_module_version": _WIDGETS_BASE_VERSION,
+                    "state": layout_state,
+                },
+                self.widget.model_id: {
+                    "model_name": self.widget._model_name,  # type: ignore[attr-defined]
+                    "model_module": self.widget._model_module,  # type: ignore[attr-defined]
+                    "model_module_version": self.widget._model_module_version,  # type: ignore[attr-defined]
+                    "state": widget_state,
+                },
+            },
+        }
+        view_spec = {
+            "version_major": 2,
+            "version_minor": 0,
+            "model_id": self.widget.model_id,
+        }
+
+        inline_anywidget = self._load_anywidget_bundle()
+        anywidget_script = ""
+        if inline_anywidget:
+            anywidget_script = (
+                "<script>\n"
+                "requirejs.config({\n"
+                "  map: {'*': {'anywidget': 'anywidget-inline'}},\n"
+                f"  paths: {{'@jupyter-widgets/base': 'https://cdn.jsdelivr.net/npm/@jupyter-widgets/base@{_WIDGETS_BASE_VERSION}/dist/index'}}\n"
+                "});\n"
+                "</script>\n"
+                f"<script>\n{inline_anywidget}\n</script>\n"
+            )
+
+        template = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{title}</title>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@{_HTML_MANAGER_VERSION}/dist/embed-amd.js" crossorigin="anonymous"></script>
+{anywidget_script}
+<script type="application/vnd.jupyter.widget-state+json">
+{json.dumps(state_json, separators=(',', ':'))}
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{json.dumps(view_spec, separators=(',', ':'))}
+</script>
+
+</body>
+</html>
+"""
+        return template
+
+    def _clean_message_history(self) -> list[dict]:
+        """Remove redundant messages to keep exports lean."""
+        cleaned: list[dict] = []
+        for msg in self._message_history:
+            if msg.get("op") == "update_visibility":
+                opts = msg.get("options") or {}
+                vis = opts.get("visible_atom_indices")
+                if vis is None or vis == []:
+                    continue
+                if isinstance(vis, list) and vis == list(range(len(vis))):
+                    # Default "show all" is redundant
+                    continue
+            cleaned.append(msg)
+        return cleaned
 
     # --- Tests de vida / demos ---
 
     def _life_test(self) -> None:
         """Test de vida -> carga una PDB de ejemplo en Mol*."""
         from .loader import load_pdb_id
-        load_pdb_id(self, pdb_id="1crn", label="Demo: 1CRN")
+        load_pdb_id(pdb_id="1crn", label="Demo: 1CRN", view=self)
         self.show()
 
     def demo(self) -> None:

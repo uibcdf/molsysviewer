@@ -2,19 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import molsysmt as msm
 import numpy as np
 
+if TYPE_CHECKING:
+    from ..viewer import MolSysView
+
 
 def load_pdb_string(
-    view: Any,
-    *,
     pdb_string: str,
+    *,
     label: str | None = None,
-) -> None:
+    view: "MolSysView | None" = None,
+) -> "MolSysView":
     """Backend interno para MolSysView.load_pdb_string(...)."""
+
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
 
     view.molecular_system = pdb_string
     view.selection = "all"
@@ -38,3 +45,5 @@ def load_pdb_string(
             "label": label,
         }
     )
+
+    return view

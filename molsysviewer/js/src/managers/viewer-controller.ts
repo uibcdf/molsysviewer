@@ -59,6 +59,11 @@ import {
     LoadPdbIdMessage,
     LoadStructureFromUrlMessage,
     LoadStructureMessage,
+    ResetCameraMessage,
+    ToggleBackgroundMessage,
+    ToggleFullscreenMessage,
+    ToggleSpinMessage,
+    ToggleSwingMessage,
     UpdateVisibilityMessage,
     ViewerMessage,
 } from "../messages/viewer-messages";
@@ -94,7 +99,7 @@ export class MolSysViewerController {
         }
         if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
 
-        return new MolSysViewerController(plugin);
+        return new MolSysViewerController(plugin, target);
     }
 
     private readonly shapeRefs = new Set<StateObjectRef<SO.Shape.Representation3D>>();
@@ -102,8 +107,10 @@ export class MolSysViewerController {
     private currentStructure?: StructureRef;
     private loadedStructure?: LoadedStructure;
     private readonly labelRefs = new Set<StateObjectRef>();
+    private swingActive = false;
+    private spinActive = false;
 
-    private constructor(private readonly plugin: PluginContext) {}
+    private constructor(private readonly plugin: PluginContext, private readonly host: HTMLElement) {}
 
     private registerShapeRef(ref?: StateObjectRef, tag?: string) {
         if (!ref) return;
@@ -192,6 +199,21 @@ export class MolSysViewerController {
                     break;
                 case "clear_shapes_by_tag":
                     await this.clearShapesByTag((msg as ClearByTagMessage).tag);
+                    break;
+                case "reset_camera":
+                    await this.resetView();
+                    break;
+                case "toggle_fullscreen":
+                    await this.toggleFullscreen((msg as ToggleFullscreenMessage).enable);
+                    break;
+                case "toggle_background":
+                    await this.toggleBackground((msg as ToggleBackgroundMessage).mode);
+                    break;
+                case "toggle_swing":
+                    await this.toggleSwing((msg as ToggleSwingMessage).enable);
+                    break;
+                case "toggle_spin":
+                    await this.toggleSpin((msg as ToggleSpinMessage).enable);
                     break;
 
                 default:
@@ -524,8 +546,79 @@ export class MolSysViewerController {
         await setStructureTransparency(this.plugin, components, 1, async () => loci);
     }
 
-    private async resetView() {
+    async resetView() {
         await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+    }
+
+    async toggleFullscreen(enable?: boolean) {
+        const root = this.plugin.canvas3d?.props.parent;
+        const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
+        const target =
+            this.host ??
+            root?.parentElement ??
+            root ??
+            canvas?.parentElement ??
+            canvas ??
+            document.documentElement;
+        if (!target || !(target as any).requestFullscreen) return;
+        const shouldEnable = enable ?? !document.fullscreenElement;
+        try {
+            if (shouldEnable) {
+                if (!document.fullscreenElement) await target.requestFullscreen();
+            } else if (document.fullscreenElement) {
+                await document.exitFullscreen();
+            }
+        } catch (err) {
+            console.warn("[MolSysViewer] fullscreen toggle failed", err);
+        }
+    }
+
+    async toggleBackground(mode?: "light" | "dark") {
+        const canvas3d = this.plugin.canvas3d;
+        if (!canvas3d) return;
+        const current = canvas3d.props?.renderer?.backgroundColor;
+        const isDark = typeof current === "number" ? current === 0x101010 : false;
+        const makeDark = mode ? mode === "dark" : !isDark;
+        const bg = makeDark ? 0x101010 : 0xffffff;
+        const fg = makeDark ? 0xffffff : 0x000000;
+        canvas3d.setProps({
+            renderer: {
+                ...(canvas3d.props?.renderer || {}),
+                backgroundColor: bg,
+                lightColor: fg,
+                ambientColor: fg,
+            },
+        });
+    }
+
+    async toggleSwing(enable?: boolean) {
+        const canvas3d = this.plugin.canvas3d;
+        if (!canvas3d) return;
+        const shouldEnable = enable ?? !this.swingActive;
+        this.swingActive = shouldEnable;
+        this.spinActive = false;
+        canvas3d.setProps({
+            trackball: {
+                ...(canvas3d.props?.trackball || {}),
+                animate: shouldEnable
+                    ? { name: "rock", params: { speed: 0.25, angle: 20 } }
+                    : { name: "off", params: {} },
+            },
+        });
+    }
+
+    async toggleSpin(enable?: boolean) {
+        const canvas3d = this.plugin.canvas3d;
+        if (!canvas3d) return;
+        const shouldEnable = enable ?? !this.spinActive;
+        this.spinActive = shouldEnable;
+        this.swingActive = false;
+        canvas3d.setProps({
+            trackball: {
+                ...(canvas3d.props?.trackball || {}),
+                animate: shouldEnable ? { name: "spin", params: { speed: 0.1 } } : { name: "off", params: {} },
+            },
+        });
     }
 
     private async clearScene(options?: ClearSceneMessage["options"]) {

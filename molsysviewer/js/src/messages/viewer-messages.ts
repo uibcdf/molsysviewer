@@ -134,6 +134,30 @@ export type ClearByTagMessage = {
     tag?: string;
 };
 
+export type ResetCameraMessage = {
+    op: "reset_camera";
+};
+
+export type ToggleFullscreenMessage = {
+    op: "toggle_fullscreen";
+    enable?: boolean;
+};
+
+export type ToggleBackgroundMessage = {
+    op: "toggle_background";
+    mode?: "light" | "dark";
+};
+
+export type ToggleSwingMessage = {
+    op: "toggle_swing";
+    enable?: boolean;
+};
+
+export type ToggleSpinMessage = {
+    op: "toggle_spin";
+    enable?: boolean;
+};
+
 export type LoadPdbIdMessage = {
     op: "load_pdb_id";
     pdb_id: string;
@@ -159,4 +183,9 @@ export type ViewerMessage =
     ClearSceneMessage |
     ClearAllMessage |
     ClearByTagMessage |
+    ResetCameraMessage |
+    ToggleFullscreenMessage |
+    ToggleBackgroundMessage |
+    ToggleSwingMessage |
+    ToggleSpinMessage |
     Record<string, unknown>;
