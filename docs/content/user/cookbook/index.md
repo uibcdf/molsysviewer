@@ -1,4 +1,4 @@
-# Examples and Recipes
+# Cookbook
 
 Recipes for common tasks (to be filled with concrete examples):
 
@@ -19,4 +19,6 @@ pocket_blob
 channel_tube
 pharmacophore_overlay
 anisotropy_ellipsoids
+html_export
+sphinx_html_embedding
 ```

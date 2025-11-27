@@ -10,5 +10,5 @@ Welcome to MolSysViewer.
 introduction/index.md
 using_the_viewer/index.md
 extensions_and_utilities/index.md
-examples_and_recipes/index.md
+cookbook/index.md
 ```

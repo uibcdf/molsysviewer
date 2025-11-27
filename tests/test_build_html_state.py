@@ -29,7 +29,7 @@ def test_build_html_filters_visibility(monkeypatch):
     # Avoid inlining huge bundle in this test
     monkeypatch.setattr(view, "_load_anywidget_bundle", lambda: "")
 
-    html = view._build_standalone_html("Test")
+    html = view._build_standalone_html("Test", include_controls=True)
     state = _extract_state_json(html)
     widget_state = state["state"][view.widget.model_id]["state"]
     assert widget_state["initial_messages"] == [{"op": "dummy"}]
@@ -45,7 +45,7 @@ def test_build_html_includes_anywidget(monkeypatch, include_bundle):
         lambda: "define('anywidget-inline', [], function(){return {};});" if include_bundle else "",
     )
 
-    html = view._build_standalone_html("Test")
+    html = view._build_standalone_html("Test", include_controls=True)
     if include_bundle:
         assert "anywidget-inline" in html
         assert "requirejs.config" in html
