@@ -212,12 +212,32 @@ class MolSysView:
 
     # --- Export helpers for docs/notebooks ---
 
-    def write_html(self, output_filename: str, *, title: str = "MolSysViewer") -> None:
-        """Export this viewer widget to a standalone HTML file (for docs embedding)."""
+    def write_html(
+        self,
+        output_filename: str,
+        *,
+        title: str = "MolSysViewer",
+        include_controls: bool = True,
+    ) -> None:
+        """Export this viewer widget to a standalone HTML file (for docs embedding).
+
+        Parameters
+        ----------
+        output_filename:
+            Path to the HTML file to create.
+        title:
+            Optional title for the exported HTML page.
+        include_controls:
+            If ``True`` (default), include the on-canvas control buttons
+            (Reset, Fullscreen, background toggle, Spin, Swing) in the exported view.
+            Set this to ``False`` if you prefer a minimal viewer without these controls,
+            for example when embedding inside another application that already provides
+            its own UI.
+        """
         # Serialize the message history so the exported HTML can replay all
         # actions (loads/shapes/visibility) without needing a live Python kernel.
         self.widget.initial_messages = self._clean_message_history()
-        html = self._build_standalone_html(title=title)
+        html = self._build_standalone_html(title=title, include_controls=include_controls)
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
 
@@ -253,13 +273,16 @@ class MolSysView:
 
         return "\n".join(sources)
 
-    def _build_standalone_html(self, title: str) -> str:
+    def _build_standalone_html(self, title: str, include_controls: bool = True) -> str:
         """Create a minimal standalone HTML embedding only this widget."""
         # Ensure initial_messages is in sync before exporting
         self.widget.initial_messages = self._clean_message_history()
 
         layout_state = self.widget.layout.get_state(drop_defaults=False)
         widget_state = self.widget.get_state(drop_defaults=False)
+        # Override toolbar visibility for the exported HTML without mutating
+        # the live widget trait in notebooks.
+        widget_state["show_controls"] = bool(include_controls)
         widget_state["layout"] = f"IPY_MODEL_{self.widget.layout.model_id}"
 
         state_json = {

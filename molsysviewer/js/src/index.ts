@@ -37,28 +37,31 @@ export default {
         const send = (msg: ViewerMessage) => model.send(msg);
 
         const controllerReady = controllerPromise.then(c => {
-            const overlay = document.createElement("div");
-            overlay.style.position = "absolute";
-            overlay.style.top = "8px";
-            overlay.style.left = "8px";
-            overlay.style.display = "flex";
-            overlay.style.gap = "6px";
-            overlay.style.zIndex = "10";
-            overlay.style.pointerEvents = "none";
+            const showControls = !!model.get("show_controls");
+            if (showControls) {
+                const overlay = document.createElement("div");
+                overlay.style.position = "absolute";
+                overlay.style.top = "8px";
+                overlay.style.left = "8px";
+                overlay.style.display = "flex";
+                overlay.style.gap = "6px";
+                overlay.style.zIndex = "10";
+                overlay.style.pointerEvents = "none";
 
-            const mk = (label: string, handler: () => void) => {
-                const b = makeButton(label, handler);
-                b.style.pointerEvents = "auto";
-                overlay.appendChild(b);
-            };
+                const mk = (label: string, handler: () => void) => {
+                    const b = makeButton(label, handler);
+                    b.style.pointerEvents = "auto";
+                    overlay.appendChild(b);
+                };
 
-            mk("Reset", () => c.resetView());
-            mk("Full", () => c.toggleFullscreen());
-            mk("Bg", () => c.toggleBackground());
-            mk("Spin", () => c.toggleSpin());
-            mk("Swing", () => c.toggleSwing());
+                mk("Reset", () => c.resetView());
+                mk("Full", () => c.toggleFullscreen());
+                mk("Bg", () => c.toggleBackground());
+                mk("Spin", () => c.toggleSpin());
+                mk("Swing", () => c.toggleSwing());
 
-            target.appendChild(overlay);
+                target.appendChild(overlay);
+            }
             return c;
         });
 
