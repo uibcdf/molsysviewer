@@ -11,11 +11,16 @@ if TYPE_CHECKING:
     from ..viewer import MolSysView
 
 
+def ensure_view(view: "MolSysView" | None = None) -> "MolSysView":
+    view = ensure_view(view)
+    return view
+
+
 def load_pdb_id(
     pdb_id: str,
     *,
     label: str | None = None,
-    view: "MolSysView | None" = None,
+    view: "MolSysView" | None = None,
 ) -> "MolSysView":
     """Backend interno para MolSysView.load_pdb_id(...)."""
 

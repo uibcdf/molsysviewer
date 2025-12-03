@@ -1,3 +1,5 @@
+import math
+
 from molsysviewer.loaders import load_from_molsysmt
 
 
@@ -33,12 +35,26 @@ def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
             raise AssertionError("Unexpected to_form target")
 
     viewer_json = {
-        "atoms": {"atom_id": [1]},
-        "frames": [
+        "atoms": {
+            "atom_id": [1],
+            "atom_name": ["CA"],
+            "group_id": [10],
+            "group_name": ["MET"],
+            "chain_id": ["A"],
+            "entity_id": ["1"],
+            "element_symbol": ["C"],
+            "formal_charge": [0],
+        },
+        "bonds": {"atom_pairs": [[0, 0]], "order": [1]},
+        "structures": [
             {
-                "positions": [[1.0, 2.0, 3.0]],
+                "coordinates": [[1.0, 2.0, 3.0]],
                 "time": 5,
-                "cell": {"a": 1, "b": 2, "c": 3, "alpha": 90, "beta": 90, "gamma": 90},
+                "box": {
+                    "v0": [1.0, 0.0, 0.0],
+                    "v1": [0.0, 2.0, 0.0],
+                    "v2": [0.0, 0.0, 3.0],
+                },
             }
         ],
     }
@@ -60,16 +76,20 @@ def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
     assert message["op"] == "load_molsys_payload"
     payload = message["payload"]
     assert payload["atoms"]["atom_id"] == [1]
+    assert payload["atoms"]["atom_name"] == ["CA"]
+    assert payload["atoms"]["residue_id"] == [10]
+    assert payload["atoms"]["residue_name"] == ["MET"]
+    assert payload["atoms"]["chain_id"] == ["A"]
+    assert payload["atoms"]["entity_id"] == ["1"]
+    assert payload["atoms"]["element_symbol"] == ["C"]
     # Coordinates arrive in angstroms (ViewerJSON provides nm)
-    assert payload["coordinates"][0]["positions"] == [[10.0, 20.0, 30.0]]
-    assert payload["coordinates"][0]["cell"] == {
-        "a": 10.0,
-        "b": 20.0,
-        "c": 30.0,
-        "alpha": 90.0,
-        "beta": 90.0,
-        "gamma": 90.0,
-    }
+    assert payload["structures"][0]["coordinates"] == [[10.0, 20.0, 30.0]]
+    assert payload["structures"][0]["box"] == [
+        [10.0, 0.0, 0.0],
+        [0.0, 20.0, 0.0],
+        [0.0, 0.0, 30.0],
+    ]
+    assert payload["bonds"] == {"indexA": [0], "indexB": [0], "order": [1]}
 
 
 def test_load_from_molsysmt_creates_view_when_missing(monkeypatch):
@@ -89,9 +109,9 @@ def test_load_from_molsysmt_creates_view_when_missing(monkeypatch):
 
     viewer_json = {
         "atoms": {"atom_id": [1]},
-        "frames": [
+        "structures": [
             {
-                "positions": [[1.0, 2.0, 3.0]],
+                "coordinates": [[1.0, 2.0, 3.0]],
             }
         ],
     }

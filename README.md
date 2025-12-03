@@ -128,6 +128,11 @@ MolSysViewer uses:
 - **esbuild** for bundling the widget
 - **anywidget** as the Jupyter integration layer
 
+**MolSysMT payload schema (Python → TS)**  
+- Top-level `structures` list.  
+- Each structure includes `coordinates` (Å), optional `box` as three vectors (Å), and optional `time`.  
+- Legacy names (`positions`, `frames`) are not used in the viewer pipeline.
+
 The JS bundle (`viewer.js`) is generated automatically during packaging and is
 tracked in the repository (it carries the `@generated` banner) so that users of
 the published wheels/conda packages never need a Node.js toolchain. The bundle

@@ -1,14 +1,19 @@
 // src/plugin/structure.ts
 import { PluginContext } from "molstar/lib/mol-plugin/context";
-import { PluginStateObject as SO } from "molstar/lib/mol-plugin-state/objects";
+import { PluginCommands } from "molstar/lib/mol-plugin/commands";
+import { PluginStateObject as SO, PluginStateTransform } from "molstar/lib/mol-plugin-state/objects";
+import { Task } from "molstar/lib/mol-task";
 import { StateObjectRef } from "molstar/lib/mol-state";
 import { Column } from "molstar/lib/mol-data/db/column";
 import { Table } from "molstar/lib/mol-data/db/table";
+import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
 import { BasicSchema, createBasic } from "molstar/lib/mol-model-formats/structure/basic/schema";
 import { Topology } from "molstar/lib/mol-model/structure/topology";
 import { Coordinates } from "molstar/lib/mol-model/structure/coordinates";
 import { Model } from "molstar/lib/mol-model/structure/model";
+import { Trajectory } from "molstar/lib/mol-model/structure/trajectory";
 import { Cell } from "molstar/lib/mol-math/geometry/spacegroup/cell";
+import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 
 export interface LoadStructureOptions {
     /** Referencia al nodo anterior que se debe eliminar antes de cargar. */
@@ -35,18 +40,18 @@ export interface MolSysAtomPayload {
     formal_charge?: number[];
 }
 
-export interface MolSysFramePayload {
+export interface MolSysStructurePayload {
     /** Lista de coordenadas [[x,y,z], ...] en Å. */
-    positions: number[][];
-    /** Parámetros de celda opcionales. */
-    cell?: { a: number; b: number; c: number; alpha: number; beta: number; gamma: number };
+    coordinates: number[][];
+    /** Caja opcional como tres vectores en Å. */
+    box?: number[][];
     /** Tiempo opcional del frame. */
     time?: number;
 }
 
 export interface MolSysPayload {
     atoms: MolSysAtomPayload;
-    coordinates: MolSysFramePayload[];
+    structures: MolSysStructurePayload[];
     bonds?: {
         indexA: number[];
         indexB: number[];
@@ -66,6 +71,23 @@ async function recyclePreviousNode(plugin: PluginContext, previous?: StateObject
     builder.delete(previous);
     await builder.commit();
 }
+
+const InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
+    name: "molsysviewer-molsys-trajectory",
+    display: { name: "MolSys payload trajectory", description: "Insert trajectory created from MolSys payload" },
+    from: SO.Root,
+    to: SO.Molecule.Trajectory,
+    params: {
+        trajectory: PD.Value<Trajectory>(void 0),
+        props: PD.Value<{ label?: string; description?: string }>(void 0),
+    },
+})({
+    apply({ params }) {
+        return Task.create("Insert MolSys payload trajectory", async () => {
+            return new SO.Molecule.Trajectory(params.trajectory!, params.props);
+        });
+    },
+});
 
 export async function loadStructureFromString(
     plugin: PluginContext,
@@ -138,8 +160,8 @@ export async function loadStructureFromMolSysPayload(
 ): Promise<LoadedStructure> {
     await recyclePreviousNode(plugin, options?.previous);
 
-    if (!payload?.atoms || !payload.coordinates || payload.coordinates.length === 0) {
-        throw new Error("MolSys payload requires atoms and at least one coordinate frame");
+    if (!payload?.atoms || !payload.structures || payload.structures.length === 0) {
+        throw new Error("MolSys payload requires atoms and at least one structure");
     }
 
     const atomCount = payload.atoms.atom_id.length;
@@ -147,8 +169,8 @@ export async function loadStructureFromMolSysPayload(
         throw new Error("MolSys payload did not include atom identifiers");
     }
 
-    const firstFrame = payload.coordinates[0];
-    const atomSite = createAtomSiteTable(payload, atomCount, firstFrame);
+    const firstStructure = payload.structures[0];
+    const atomSite = createAtomSiteTable(payload, atomCount, firstStructure);
     const basic = createBasic({ atom_site: atomSite }, true);
     const topology = Topology.create(
         label ?? "MolSysMT",
@@ -161,7 +183,7 @@ export async function loadStructureFromMolSysPayload(
         }
     );
 
-    const frames = payload.coordinates.map((frame, index) => createFrame(frame, atomCount, index));
+    const frames = payload.structures.map((structure, index) => createFrameFromStructure(structure, atomCount, index));
     const delta = payload.time?.delta ?? 1;
     const unit = payload.time?.unit ?? "ps";
     const offset = payload.time?.offset ?? 0;
@@ -179,13 +201,18 @@ export async function loadStructureFromMolSysPayload(
     const builder = plugin.build();
     const trajectoryNode = builder
         .toRoot()
-        .insert(
-            new SO.Molecule.Trajectory(trajectory, {
+        .insert(InsertMolSysTrajectory, {
+            trajectory,
+            props: {
                 label: label ?? "MolSysMT Trajectory",
                 description: `${trajectory.frameCount} model${trajectory.frameCount === 1 ? "" : "s"}`,
-            })
-        );
-    await builder.commit();
+            },
+        });
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
 
     const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
 
@@ -195,7 +222,7 @@ export async function loadStructureFromMolSysPayload(
     };
 }
 
-function createAtomSiteTable(payload: MolSysPayload, atomCount: number, frame: MolSysFramePayload) {
+function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structure: MolSysStructurePayload) {
     const atoms = payload.atoms;
     const ids = ensureNumericArray(atoms.atom_id, atomCount, i => i + 1);
     const names = ensureStringArray(atoms.atom_name, atomCount, i => `A${i + 1}`);
@@ -206,7 +233,7 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, frame: M
     const entityIds = ensureStringArray(atoms.entity_id, atomCount, () => "1");
     const charges = ensureNumericArray(atoms.formal_charge, atomCount, () => 0);
 
-    const { x, y, z } = splitPositions(frame, atomCount);
+    const { x, y, z } = splitPositions(structure, atomCount);
 
     return Table.ofPartialColumns(BasicSchema.atom_site, {
         id: Column.ofIntArray(ids),
@@ -233,18 +260,21 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, frame: M
     }, atomCount);
 }
 
-function splitPositions(frame: MolSysFramePayload, atomCount: number) {
-    if (!Array.isArray(frame.positions) || frame.positions.length !== atomCount) {
+function splitPositions(frame: MolSysStructurePayload, atomCount: number) {
+    if (!Array.isArray(frame.coordinates) || frame.coordinates.length !== atomCount) {
         throw new Error("MolSys payload coordinates do not match atom count");
     }
     const x = new Float32Array(atomCount);
     const y = new Float32Array(atomCount);
     const z = new Float32Array(atomCount);
     for (let i = 0; i < atomCount; i++) {
-        const coords = frame.positions[i];
-        x[i] = coords?.[0] ?? 0;
-        y[i] = coords?.[1] ?? 0;
-        z[i] = coords?.[2] ?? 0;
+        const coords = frame.coordinates[i];
+        const cx = coords?.[0];
+        const cy = coords?.[1];
+        const cz = coords?.[2];
+        x[i] = Number.isFinite(cx as number) ? Number(cx) : 0;
+        y[i] = Number.isFinite(cy as number) ? Number(cy) : 0;
+        z[i] = Number.isFinite(cz as number) ? Number(cz) : 0;
     }
     return { x, y, z };
 }
@@ -257,20 +287,44 @@ function ensureStringArray(values: string[] | undefined, length: number, fallbac
 }
 
 function ensureNumericArray(values: number[] | undefined, length: number, fallback: (index: number) => number) {
-    if (Array.isArray(values) && values.length === length) return values;
+    if (Array.isArray(values) && values.length === length) {
+        // Coerce to numbers in case ViewerJSON carries strings
+        const out = new Array<number>(length);
+        for (let i = 0; i < length; i++) {
+            const v = values[i];
+            const n = typeof v === "number" ? v : Number(v);
+            out[i] = Number.isFinite(n) ? n : fallback(i);
+        }
+        return out;
+    }
     const output = new Array<number>(length);
     for (let i = 0; i < length; i++) output[i] = fallback(i);
     return output;
 }
 
-function createFrame(frame: MolSysFramePayload, atomCount: number, index: number): Coordinates.Frame {
-    const { x, y, z } = splitPositions(frame, atomCount);
-    const cell = frame.cell
-        ? Cell.create(frame.cell.a, frame.cell.b, frame.cell.c, frame.cell.alpha, frame.cell.beta, frame.cell.gamma)
-        : void 0;
+function createFrameFromStructure(structure: MolSysStructurePayload, atomCount: number, index: number): Coordinates.Frame {
+    const { x, y, z } = splitPositions(structure, atomCount);
+
+    let cell: Cell | undefined = void 0;
+    if (structure.box && structure.box.length === 3) {
+        const [v0, v1, v2] = structure.box;
+        if (Array.isArray(v0) && Array.isArray(v1) && Array.isArray(v2) && v0.length === 3 && v1.length === 3 && v2.length === 3) {
+            const a = Vec3.create(v0[0], v0[1], v0[2]);
+            const b = Vec3.create(v1[0], v1[1], v1[2]);
+            const c = Vec3.create(v2[0], v2[1], v2[2]);
+            const candidate = Cell.fromBasis(a, b, c);
+            // Cell.empty() gives size = (0,0,0); treat it as invalid
+            if (candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0) {
+                cell = candidate;
+            } else {
+                console.warn("[MolSysViewer] box vectors provided but Mol* could not build a valid cell (degenerate basis)");
+            }
+        }
+    }
+
     return {
         elementCount: atomCount,
-        time: { value: frame.time ?? index, unit: "ps" },
+        time: { value: structure.time ?? index, unit: "ps" },
         x,
         y,
         z,

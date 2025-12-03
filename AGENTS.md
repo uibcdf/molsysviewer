@@ -45,6 +45,7 @@ AI agents must never write directly to these generated outputs.
 4. Maintain consistency with the project's devguide (`devguide/`).
 5. Docs: follow `docs/Provisional_Docs_Guidelines.md`; use static views in `_static/views/` for embeds.
 6. When in doubt, **ask before modifying files outside `js/src/`**.
+7. MolSys payload schema (Python → TS): top-level `structures` list, each with `coordinates` (Å), optional `box` as three vectors (Å), and `time`. Do not reintroduce legacy names like `positions` or `frames`.
 
 ## 📌 Why This Matters
 

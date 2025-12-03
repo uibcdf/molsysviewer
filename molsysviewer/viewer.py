@@ -11,6 +11,7 @@ from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .shapes import ShapesManager
+from . import config
 
 _HTML_MANAGER_VERSION = "1.0.1"
 _WIDGETS_BASE_VERSION = "2.0.0"
@@ -25,6 +26,11 @@ class MolSysView:
 
     def __init__(self) -> None:
         self.widget = MolSysViewerWidget()
+        try:
+            self.widget.show_controls = bool(config.show_controls)
+        except Exception:
+            # If config is missing or misconfigured, fall back to defaults.
+            self.widget.show_controls = True
 
         self.widget.layout.width = "100%"
         self.widget.layout.height = "480px"  # o "600px" si lo prefieres
@@ -56,6 +62,42 @@ class MolSysView:
         self.structure_mask = None
 
         self.shapes = ShapesManager(self)
+        try:
+            self.widget.autohide_controls = bool(config.autohide_controls)
+        except Exception:
+            self.widget.autohide_controls = False
+
+        try:
+            pos = list(config.controls_position)
+            self.widget.controls_position = pos
+        except Exception:
+            self.widget.controls_position = ["top", "right"]
+
+        try:
+            pos_fs = list(config.controls_position_fullscreen)
+            self.widget.controls_position_fullscreen = pos_fs
+        except Exception:
+            self.widget.controls_position_fullscreen = ["bottom", "right"]
+
+    def set_controls_visible(
+        self,
+        visible: bool,
+        *,
+        autohide: bool | None = None,
+        position: list[str] | tuple[str, str] | None = None,
+        position_fullscreen: list[str] | tuple[str, str] | None = None,
+    ) -> None:
+        """Show or hide the on-canvas controls (reset/full/bg/spin/swing + trajectory bar). Optionally toggle autohide and positions."""
+        try:
+            self.widget.show_controls = bool(visible)
+            if autohide is not None:
+                self.widget.autohide_controls = bool(autohide)
+            if position is not None:
+                self.widget.controls_position = list(position)
+            if position_fullscreen is not None:
+                self.widget.controls_position_fullscreen = list(position_fullscreen)
+        except Exception:
+            pass
 
     @property
     def visible_atom_indices(self):
@@ -110,6 +152,47 @@ class MolSysView:
             label=label,
             view=self,
         )
+
+    def load_pdb_string(
+        self,
+        pdb_string: str,
+        *,
+        label: str | None = None,
+    ) -> "MolSysView":
+        """Carga una cadena PDB directamente en el widget."""
+        from .loaders.load_pdb_string import load_pdb_string as _load_pdb_string
+        return _load_pdb_string(pdb_string=pdb_string, label=label, view=self)
+
+    def load_mmcif_string(
+        self,
+        mmcif_string: str,
+        *,
+        label: str | None = None,
+    ) -> "MolSysView":
+        """Carga una cadena MMCIF directamente en el widget."""
+        from .loaders.load_mmcif_string import load_mmcif_string as _load_mmcif_string
+        return _load_mmcif_string(mmcif_string=mmcif_string, label=label, view=self)
+
+    def load_pdb_id(
+        self,
+        pdb_id: str,
+        *,
+        label: str | None = None,
+    ) -> "MolSysView":
+        """Carga una estructura desde el identificador PDB."""
+        from .loaders.load_pdb_id import load_pdb_id as _load_pdb_id
+        return _load_pdb_id(pdb_id=pdb_id, label=label, view=self)
+
+    def load_from_url(
+        self,
+        url: str,
+        *,
+        format: str | None = None,
+        label: str | None = None,
+    ) -> "MolSysView":
+        """Carga una estructura desde una URL."""
+        from .loaders.load_url import load_from_url as _load_from_url
+        return _load_from_url(url=url, format=format, label=label, view=self)
 
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""

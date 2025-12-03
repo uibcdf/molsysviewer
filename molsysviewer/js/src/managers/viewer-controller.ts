@@ -60,6 +60,9 @@ import {
     LoadStructureFromUrlMessage,
     LoadStructureMessage,
     ResetCameraMessage,
+    SetTrajectoryFrameMessage,
+    SetTrajectoryPlaybackMessage,
+    StepTrajectoryMessage,
     ToggleBackgroundMessage,
     ToggleFullscreenMessage,
     ToggleSpinMessage,
@@ -74,6 +77,9 @@ import {
     loadStructureFromString,
     loadStructureFromUrl,
 } from "../plugin/structure";
+import { UpdateTrajectory } from "molstar/lib/mol-plugin-state/actions/structure";
+import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
+import { AnimateModelIndex } from "molstar/lib/mol-plugin-state/animation/built-in/model-index";
 
 /**
  * Controller that translates Python messages into Mol* actions and manages state refs.
@@ -109,6 +115,15 @@ export class MolSysViewerController {
     private readonly labelRefs = new Set<StateObjectRef>();
     private swingActive = false;
     private spinActive = false;
+    private pendingVisibility?: number[];
+    private trajectoryListeners = new Set<(state: TrajectoryState) => void>();
+    private trajectoryPoll?: ReturnType<typeof setInterval>;
+    private playbackTimer?: ReturnType<typeof setInterval>;
+    private savedLightRenderer?: any;
+    private savedDarkRenderer?: any;
+    private savedLightCamera?: any;
+    private savedDarkCamera?: any;
+    private darkMode = false;
 
     private constructor(private readonly plugin: PluginContext, private readonly host: HTMLElement) {}
 
@@ -123,7 +138,7 @@ export class MolSysViewerController {
     async handleMessage(msg: ViewerMessage) {
         if (!msg || typeof msg !== "object") return;
         if (!("op" in msg)) {
-            console.warn("[MolSysViewer] mensaje sin 'op'", msg);
+            console.warn("[MolSysViewer] message missing 'op'", msg);
             return;
         }
 
@@ -215,20 +230,29 @@ export class MolSysViewerController {
                 case "toggle_spin":
                     await this.toggleSpin((msg as ToggleSpinMessage).enable);
                     break;
+                case "step_trajectory":
+                    await this.handleStepTrajectory(msg as StepTrajectoryMessage);
+                    break;
+                case "set_trajectory_frame":
+                    await this.handleSetTrajectoryFrame(msg as SetTrajectoryFrameMessage);
+                    break;
+                case "set_trajectory_playback":
+                    await this.handleSetTrajectoryPlayback(msg as SetTrajectoryPlaybackMessage);
+                    break;
 
                 default:
-                    console.warn("[MolSysViewer] op desconocida:", (msg as any).op, msg);
+                    console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
                     break;
             }
         } catch (error) {
-            console.error("[MolSysViewer] Error procesando mensaje:", msg, error);
+            console.error("[MolSysViewer] Error handling message:", msg, error);
         }
     }
 
     private async handleLoadFromString(msg: LoadStructureMessage) {
         const text = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
         if (!text || typeof text !== "string") {
-            console.warn("[MolSysViewer] mensaje de carga sin data/pdb/pdb_text");
+            console.warn("[MolSysViewer] load message without data/pdb/pdb_text");
             return;
         }
         const format = msg.format ?? "pdb";
@@ -238,7 +262,7 @@ export class MolSysViewerController {
 
     private async handleLoadMolSysPayload(msg: LoadMolSysPayloadMessage) {
         if (!msg.payload) {
-            console.warn("[MolSysViewer] load_molsys_payload sin payload");
+            console.warn("[MolSysViewer] load_molsys_payload without payload");
             return;
         }
         await this.loadFromMolSysPayload(msg.payload, msg.label);
@@ -246,7 +270,7 @@ export class MolSysViewerController {
 
     private async handleLoadFromUrl(msg: LoadStructureFromUrlMessage) {
         if (!msg.url || typeof msg.url !== "string") {
-            console.warn("[MolSysViewer] load_structure_from_url sin url");
+            console.warn("[MolSysViewer] load_structure_from_url without url");
             return;
         }
         await this.loadFromUrl(msg.url, msg.format, msg.label);
@@ -255,7 +279,7 @@ export class MolSysViewerController {
     private async handleLoadPdbId(msg: LoadPdbIdMessage) {
         const pdbId = msg.pdb_id?.trim();
         if (!pdbId) {
-            console.warn("[MolSysViewer] load_pdb_id sin pdb_id");
+            console.warn("[MolSysViewer] load_pdb_id without pdb_id");
             return;
         }
         await this.loadPdbId(pdbId);
@@ -274,14 +298,14 @@ export class MolSysViewerController {
     private async handleAddAlphaSphereSet(msg: AddAlphaSphereSetMessage) {
         const options = msg.options;
         if (!options?.alpha_spheres?.centers || !options.alpha_spheres.radii) {
-            console.warn("[MolSysViewer] add_alpha_sphere_set sin datos de alpha_spheres");
+            console.warn("[MolSysViewer] add_alpha_sphere_set missing alpha_spheres");
             return;
         }
 
         const centers = options.alpha_spheres.centers;
         const radii = options.alpha_spheres.radii;
         if (!Array.isArray(centers) || !Array.isArray(radii) || centers.length !== radii.length || centers.length === 0) {
-            console.warn("[MolSysViewer] add_alpha_sphere_set datos inconsistentes");
+            console.warn("[MolSysViewer] add_alpha_sphere_set inconsistent data");
             return;
         }
 
@@ -316,7 +340,7 @@ export class MolSysViewerController {
     private async handleAddPocketSurface(msg: AddPocketSurfaceMessage) {
         const options = msg.options ?? ({} as PocketSurfaceOptions);
         if (!Array.isArray(options.atom_indices) || options.atom_indices.length === 0) {
-            console.warn("[MolSysViewer] add_pocket_surface sin atom_indices");
+            console.warn("[MolSysViewer] add_pocket_surface without atom_indices");
             return;
         }
         try {
@@ -334,7 +358,7 @@ export class MolSysViewerController {
     private async handleAddPocketBlob(msg: AddPocketBlobMessage) {
         const options = msg.options ?? {};
         if (!options.centers || !options.radii || options.centers.length === 0 || options.radii.length === 0) {
-            console.warn("[MolSysViewer] add_pocket_blob sin centers o radii");
+            console.warn("[MolSysViewer] add_pocket_blob without centers or radii");
             return;
         }
         try {
@@ -352,7 +376,7 @@ export class MolSysViewerController {
     private async handleAddChannelTube(msg: AddChannelTubeMessage) {
         const options = msg.options ?? {};
         if (!options.centers || !options.radii || options.centers.length < 2 || options.radii.length < 2) {
-            console.warn("[MolSysViewer] add_channel_tube requiere al menos dos centers y radii");
+            console.warn("[MolSysViewer] add_channel_tube requires at least two centers and radii");
             return;
         }
         try {
@@ -366,7 +390,7 @@ export class MolSysViewerController {
     private async handleAddAnisotropyEllipsoids(msg: AddAnisotropyEllipsoidsMessage) {
         const options = msg.options ?? {};
         if (!options.centers && !options.atom_indices) {
-            console.warn("[MolSysViewer] add_anisotropy_ellipsoids requiere centers o atom_indices");
+            console.warn("[MolSysViewer] add_anisotropy_ellipsoids requires centers or atom_indices");
             return;
         }
         try {
@@ -380,7 +404,7 @@ export class MolSysViewerController {
     private async handleAddPharmacophore(msg: AddPharmacophoreMessage) {
         const options = msg.options ?? {};
         if (!options.centers || !options.kinds || options.centers.length === 0 || options.kinds.length !== options.centers.length) {
-            console.warn("[MolSysViewer] add_pharmacophore_features requiere centers y kinds del mismo tamaño");
+            console.warn("[MolSysViewer] add_pharmacophore_features requires centers and kinds of same length");
             return;
         }
         try {
@@ -404,7 +428,7 @@ export class MolSysViewerController {
     private async handleAddDisplacementVectors(msg: AddDisplacementVectorsMessage) {
         const options = msg.options ?? {};
         if (!options.vectors || options.vectors.length === 0) {
-            console.warn("[MolSysViewer] add_displacement_vectors sin vectores");
+            console.warn("[MolSysViewer] add_displacement_vectors without vectors");
             return;
         }
         try {
@@ -418,7 +442,7 @@ export class MolSysViewerController {
     private async handleAddTetrahedra(msg: AddTetrahedraMessage) {
         const options = msg.options ?? {};
         if (!options.tetraCoords && !options.tetra_coords && !options.atomQuads && !options.atom_quads) {
-            console.warn("[MolSysViewer] add_tetrahedra sin tetraCoords ni atom_quads");
+            console.warn("[MolSysViewer] add_tetrahedra without tetraCoords or atom_quads");
             return;
         }
         try {
@@ -432,7 +456,7 @@ export class MolSysViewerController {
     private async handleAddTriangleFaces(msg: AddTriangleFacesMessage) {
         const options = msg.options ?? {};
         if (!options.vertices && !options.atom_triplets && !options.atomTriplets) {
-            console.warn("[MolSysViewer] add_triangle_faces sin vertices ni atom_triplets");
+            console.warn("[MolSysViewer] add_triangle_faces without vertices or atom_triplets");
             return;
         }
         try {
@@ -446,6 +470,29 @@ export class MolSysViewerController {
     private async handleUpdateVisibility(msg: UpdateVisibilityMessage) {
         const indices = msg.options?.visible_atom_indices;
         await this.updateVisibility(indices);
+    }
+
+    private async handleStepTrajectory(msg: StepTrajectoryMessage) {
+        const by = msg.by ?? 1;
+        await this.stepTrajectory(by);
+    }
+
+    private async handleSetTrajectoryFrame(msg: SetTrajectoryFrameMessage) {
+        const index = msg.index ?? 0;
+        await this.setTrajectoryFrame(index);
+    }
+
+    private async handleSetTrajectoryPlayback(msg: SetTrajectoryPlaybackMessage) {
+        const action = msg.action ?? "stop";
+        const fps = msg.fps ?? 30;
+        const step = msg.step ?? 1;
+        const mode = msg.mode ?? "loop";
+        const direction = msg.direction ?? "forward";
+        if (action === "play") {
+            await this.playTrajectory({ fps, mode, direction, step });
+        } else {
+            await this.stopTrajectoryPlayback();
+        }
     }
 
     private async loadFromString(data: string, format: string, label?: string) {
@@ -475,6 +522,14 @@ export class MolSysViewerController {
     private captureCurrentStructure() {
         const structures = this.plugin.managers.structure.hierarchy.current.structures;
         this.currentStructure = structures.length ? structures[structures.length - 1] : undefined;
+
+        // Apply pending visibility once structure exists
+        if (this.pendingVisibility) {
+            const pending = this.pendingVisibility;
+            this.pendingVisibility = void 0;
+            void this.updateVisibility(pending);
+        }
+        this.updateTrajectoryState();
     }
 
     private getStructure(): Structure | undefined {
@@ -498,7 +553,10 @@ export class MolSysViewerController {
     private async updateVisibility(visibleAtomIndices?: number[]) {
         const structure = this.getStructure();
         if (!structure) {
-            console.warn("[MolSysViewer] update_visibility sin estructura cargada");
+            if (Array.isArray(visibleAtomIndices)) {
+                this.pendingVisibility = visibleAtomIndices;
+            }
+            // Structure not ready yet; visibility will be applied later.
             return;
         }
         const components = this.getComponents();
@@ -576,19 +634,44 @@ export class MolSysViewerController {
     async toggleBackground(mode?: "light" | "dark") {
         const canvas3d = this.plugin.canvas3d;
         if (!canvas3d) return;
-        const current = canvas3d.props?.renderer?.backgroundColor;
-        const isDark = typeof current === "number" ? current === 0x101010 : false;
-        const makeDark = mode ? mode === "dark" : !isDark;
-        const bg = makeDark ? 0x101010 : 0xffffff;
-        const fg = makeDark ? 0xffffff : 0x000000;
-        canvas3d.setProps({
-            renderer: {
-                ...(canvas3d.props?.renderer || {}),
-                backgroundColor: bg,
-                lightColor: fg,
-                ambientColor: fg,
-            },
-        });
+        const renderer = canvas3d.props?.renderer ?? {};
+        const camera = canvas3d.props?.camera ?? {};
+
+        // Snapshot the initial light mode once.
+        if (!this.savedLightRenderer) this.savedLightRenderer = { ...renderer };
+        if (!this.savedLightCamera) this.savedLightCamera = { ...camera };
+
+        const makeDark = mode ? mode === "dark" : !this.darkMode;
+
+        if (makeDark) {
+            if (!this.savedDarkRenderer) {
+                this.savedDarkRenderer = {
+                    ...renderer,
+                    backgroundColor: 0x101010,
+                    lightColor: 0xffffff,
+                    ambientColor: 0xffffff,
+                    exposure: renderer.exposure ?? 1,
+                    lightIntensity: renderer.lightIntensity ?? 1,
+                    ambientIntensity: renderer.ambientIntensity ?? 1,
+                };
+            }
+            if (!this.savedDarkCamera) {
+                this.savedDarkCamera = { ...camera };
+            }
+            canvas3d.setProps({
+                renderer: { ...this.savedDarkRenderer },
+                camera: { ...this.savedDarkCamera },
+            });
+            this.darkMode = true;
+        } else {
+            const lightRenderer = this.savedLightRenderer ?? renderer;
+            const lightCamera = this.savedLightCamera ?? camera;
+            canvas3d.setProps({
+                renderer: { ...lightRenderer },
+                camera: { ...lightCamera },
+            });
+            this.darkMode = false;
+        }
     }
 
     async toggleSwing(enable?: boolean) {
@@ -619,6 +702,123 @@ export class MolSysViewerController {
                 animate: shouldEnable ? { name: "spin", params: { speed: 0.1 } } : { name: "off", params: {} },
             },
         });
+    }
+
+    /**
+     * Trajectory helpers
+     */
+    getTrajectoryState(): TrajectoryState {
+        const frameCount = this.getFrameCount();
+        const currentFrame = this.getCurrentFrameIndex();
+        const isPlaying = this.plugin.managers.animation.isAnimating;
+        return { frameCount, currentFrame, isPlaying };
+    }
+
+    onTrajectoryState(cb: (state: TrajectoryState) => void): () => void {
+        this.trajectoryListeners.add(cb);
+        cb(this.getTrajectoryState());
+        return () => this.trajectoryListeners.delete(cb);
+    }
+
+    private notifyTrajectoryState() {
+        const state = this.getTrajectoryState();
+        for (const cb of this.trajectoryListeners) cb(state);
+    }
+
+    private getTrajectoryRef(): StateObjectRef | undefined {
+        return this.loadedStructure?.trajectory;
+    }
+
+    private getTrajectoryModels(trajRef: StateObjectRef) {
+        const all = this.plugin.state.data.selectQ(q => q.ofTransformer(StateTransforms.Model.ModelFromTrajectory));
+        return all.filter(cell => cell.transform.parent === trajRef);
+    }
+
+    private getFrameCount(): number {
+        const trajRef = this.getTrajectoryRef();
+        if (!trajRef) return 0;
+        const cell = this.plugin.state.data.cells.get(trajRef);
+        const traj = cell?.obj?.data as any;
+        return traj?.frameCount ?? 0;
+    }
+
+    private getCurrentFrameIndex(): number {
+        const trajRef = this.getTrajectoryRef();
+        if (!trajRef) return 0;
+        const models = this.getTrajectoryModels(trajRef);
+        const first = models[0];
+        const params = first?.transform.params as any;
+        const idx = params?.modelIndex ?? 0;
+        return typeof idx === "number" ? idx : 0;
+    }
+
+    async setTrajectoryFrame(index: number) {
+        const frameCount = this.getFrameCount();
+        if (frameCount < 1) return;
+        const clamped = Math.max(0, Math.min(frameCount - 1, Math.floor(index)));
+        const trajRef = this.getTrajectoryRef();
+        if (!trajRef) return;
+        const models = this.getTrajectoryModels(trajRef);
+        if (!models.length) return;
+        const update = this.plugin.state.data.build();
+        for (const m of models) {
+            update.to(m).update({ modelIndex: clamped });
+        }
+        await this.plugin.runTask(this.plugin.state.data.updateTree(update));
+        this.updateTrajectoryState();
+    }
+
+    async stepTrajectory(by: number) {
+        const trajRef = this.getTrajectoryRef();
+        if (!trajRef) return;
+        await PluginCommands.State.ApplyAction(this.plugin, {
+            state: this.plugin.state.data,
+            action: UpdateTrajectory.create({ action: "advance", by }),
+        });
+        this.updateTrajectoryState();
+    }
+
+    async playTrajectory(options: { fps?: number; mode?: "loop" | "palindrome" | "once"; direction?: "forward" | "backward"; step?: number } = {}) {
+        const frameCount = this.getFrameCount();
+        if (frameCount < 2) {
+            console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
+            return;
+        }
+
+        const fps = options.fps ?? 30;
+        const step = Math.max(1, Math.floor(options.step ?? 1));
+        const direction = options.direction ?? "forward";
+
+        // Stop any existing animation/timer first
+        await this.stopTrajectoryPlayback();
+
+        const intervalMs = Math.max(1, Math.floor(1000 / Math.max(fps, 1)));
+        const delta = direction === "backward" ? -step : step;
+
+        this.playbackTimer = setInterval(() => {
+            void this.stepTrajectory(delta);
+        }, intervalMs);
+
+        if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
+        this.trajectoryPoll = setInterval(() => this.notifyTrajectoryState(), 200);
+        this.updateTrajectoryState();
+    }
+
+    async stopTrajectoryPlayback() {
+        this.plugin.managers.animation.stop();
+        if (this.playbackTimer) {
+            clearInterval(this.playbackTimer);
+            this.playbackTimer = void 0;
+        }
+        if (this.trajectoryPoll) {
+            clearInterval(this.trajectoryPoll);
+            this.trajectoryPoll = void 0;
+        }
+        this.updateTrajectoryState();
+    }
+
+    private updateTrajectoryState() {
+        this.notifyTrajectoryState();
     }
 
     private async clearScene(options?: ClearSceneMessage["options"]) {
@@ -693,4 +893,10 @@ export class MolSysViewerController {
             removeParentGhosts: true,
         });
     }
+}
+
+export interface TrajectoryState {
+    frameCount: number;
+    currentFrame: number;
+    isPlaying: boolean;
 }

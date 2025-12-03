@@ -158,6 +158,25 @@ export type ToggleSpinMessage = {
     enable?: boolean;
 };
 
+export type StepTrajectoryMessage = {
+    op: "step_trajectory";
+    by?: number;
+};
+
+export type SetTrajectoryFrameMessage = {
+    op: "set_trajectory_frame";
+    index?: number;
+};
+
+export type SetTrajectoryPlaybackMessage = {
+    op: "set_trajectory_playback";
+    action?: "play" | "stop";
+    fps?: number;
+    step?: number;
+    mode?: "loop" | "palindrome" | "once";
+    direction?: "forward" | "backward";
+};
+
 export type LoadPdbIdMessage = {
     op: "load_pdb_id";
     pdb_id: string;
@@ -188,4 +207,7 @@ export type ViewerMessage =
     ToggleBackgroundMessage |
     ToggleSwingMessage |
     ToggleSpinMessage |
+    StepTrajectoryMessage |
+    SetTrajectoryFrameMessage |
+    SetTrajectoryPlaybackMessage |
     Record<string, unknown>;
