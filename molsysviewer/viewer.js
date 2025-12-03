@@ -143361,6 +143361,7 @@ var index_default = {
     const controllerPromise = MolSysViewerController.create(target);
     const makeButton = (label2, onClick) => {
       const btn = document.createElement("button");
+      btn.type = "button";
       btn.textContent = label2;
       btn.style.padding = "2px 6px";
       btn.style.fontSize = "11px";
@@ -143376,12 +143377,14 @@ var index_default = {
       btn.style.background = "rgba(0,0,0,0.5)";
       btn.style.color = "#fff";
       btn.style.cursor = "pointer";
+      btn.style.userSelect = "none";
       btn.addEventListener("click", onClick);
       return btn;
     };
     const send = (msg) => model.send(msg);
     const controllerReady = controllerPromise.then((c8) => {
       const overlay = document.createElement("div");
+      overlay.className = "molsysviewer-controls";
       overlay.style.position = "absolute";
       overlay.style.display = "flex";
       overlay.style.gap = "6px";
@@ -143598,101 +143601,99 @@ var index_default = {
           disableAutohide();
         }
       });
-      {
-        const css = `
-                    .molsysviewer-traj-input::-webkit-inner-spin-button,
-                    .molsysviewer-traj-input::-webkit-outer-spin-button {
-                        -webkit-appearance: none !important;
-                        appearance: none !important;
-                        -moz-appearance: none !important;
-                        margin: 0 !important;
-                    }
-                    .molsysviewer-traj-input {
-                        -moz-appearance: textfield !important;
-                        appearance: none !important;
-                        -webkit-appearance: none !important;
-                        color: rgba(255,255,255,0.9);
-                        background: rgba(40,40,40,0.6);
-                    }
-                    .molsysviewer-slider {
-                        background: transparent;
-                        height: 16px;
-                        border-radius: 999px;
-                        overflow: visible;
-                    }
-                    .molsysviewer-slider::-webkit-slider-runnable-track {
-                        background: rgba(200,200,200,0.35) !important;
-                        height: 16px;
-                        border-radius: 999px;
-                    }
-                    .molsysviewer-slider::-moz-range-track {
-                        background: rgba(200,200,200,0.35) !important;
-                        height: 16px;
-                        border-radius: 999px;
-                    }
-                    .molsysviewer-slider::-ms-track {
-                        background: rgba(200,200,200,0.35) !important;
-                        height: 16px;
-                        border-radius: 999px;
-                        border: none;
-                        color: transparent;
-                    }
-                    .molsysviewer-slider::-webkit-slider-thumb {
-                        -webkit-appearance: none !important;
-                        appearance: none !important;
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50% !important;
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                        box-shadow: none !important;
-                        margin-top: 0px;
-                    }
-                    .molsysviewer-slider::-webkit-slider-thumb:hover,
-                    .molsysviewer-slider::-webkit-slider-thumb:active,
-                    .molsysviewer-slider::-webkit-slider-thumb:focus {
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                        box-shadow: none !important;
-                    }
-                    .molsysviewer-slider::-moz-range-thumb {
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50% !important;
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                    }
-                    .molsysviewer-slider::-moz-range-thumb:hover,
-                    .molsysviewer-slider::-moz-range-thumb:active,
-                    .molsysviewer-slider::-moz-range-thumb:focus {
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                    }
-                    .molsysviewer-slider::-ms-thumb {
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50% !important;
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                    }
-                `;
-        const style = document.getElementById("molsysviewer-traj-style");
-        if (style) {
-          style.textContent = css;
-        } else {
-          const el2 = document.createElement("style");
-          el2.id = "molsysviewer-traj-style";
-          el2.textContent = css;
-          document.head.appendChild(el2);
-        }
+      const css = `
+                .molsysviewer-controls,
+                .molsysviewer-controls * {
+                    user-select: none;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                }
+                .molsysviewer-traj-input::-webkit-inner-spin-button,
+                .molsysviewer-traj-input::-webkit-outer-spin-button {
+                    -webkit-appearance: none !important;
+                    appearance: none !important;
+                    -moz-appearance: none !important;
+                    margin: 0 !important;
+                }
+                .molsysviewer-traj-input {
+                    -moz-appearance: textfield !important;
+                    appearance: none !important;
+                    -webkit-appearance: none !important;
+                    color: rgba(255,255,255,0.9);
+                    background: rgba(40,40,40,0.6);
+                    caret-color: transparent;
+                }
+                .molsysviewer-slider {
+                    background: transparent;
+                    height: 16px;
+                    border-radius: 999px;
+                    overflow: visible;
+                }
+                .molsysviewer-slider::-webkit-slider-runnable-track {
+                    background: rgba(200,200,200,0.35) !important;
+                    height: 16px;
+                    border-radius: 999px;
+                }
+                .molsysviewer-slider::-moz-range-track {
+                    background: rgba(200,200,200,0.35) !important;
+                    height: 16px;
+                    border-radius: 999px;
+                }
+                .molsysviewer-slider::-ms-track {
+                    background: rgba(200,200,200,0.35) !important;
+                    height: 16px;
+                    border-radius: 999px;
+                    border: none;
+                    color: transparent;
+                }
+                .molsysviewer-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none !important;
+                    appearance: none !important;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50% !important;
+                    background: rgba(0,0,0,0.5) !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    margin-top: 0px;
+                }
+                .molsysviewer-slider::-webkit-slider-thumb:hover,
+                .molsysviewer-slider::-webkit-slider-thumb:active,
+                .molsysviewer-slider::-webkit-slider-thumb:focus {
+                    background: rgba(0,0,0,0.5) !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                }
+                .molsysviewer-slider::-moz-range-thumb {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50% !important;
+                    background: rgba(0,0,0,0.5) !important;
+                    border: none !important;
+                }
+                .molsysviewer-slider::-moz-range-thumb:hover,
+                .molsysviewer-slider::-moz-range-thumb:active,
+                .molsysviewer-slider::-moz-range-thumb:focus {
+                    background: rgba(0,0,0,0.5) !important;
+                    border: none !important;
+                }
+                .molsysviewer-slider::-ms-thumb {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50% !important;
+                    background: rgba(0,0,0,0.5) !important;
+                    border: none !important;
+                }
+            `;
+      const style = document.getElementById("molsysviewer-traj-style");
+      if (style) {
+        style.textContent = css;
+      } else {
+        const el2 = document.createElement("style");
+        el2.id = "molsysviewer-traj-style";
+        el2.textContent = css;
+        document.head.appendChild(el2);
       }
-      const applyControlsVisibility = (visible) => {
-        overlay.style.display = visible ? "flex" : "none";
-      };
-      applyControlsVisibility(!!model.get("show_controls"));
-      model.on("change:show_controls", () => {
-        applyControlsVisibility(!!model.get("show_controls"));
-      });
       c8.onTrajectoryState((state) => {
         const frameCount = state.frameCount;
         const current2 = state.currentFrame;

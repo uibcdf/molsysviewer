@@ -340,7 +340,7 @@ export default {
                     width: 16px;
                     height: 16px;
                     border-radius: 50% !important;
-                    background: rgba(140,140,140,0.9) !important;
+                    background: rgba(0,0,0,0.5) !important;
                     border: none !important;
                     box-shadow: none !important;
                     margin-top: 0px;
@@ -348,7 +348,7 @@ export default {
                 .molsysviewer-slider::-webkit-slider-thumb:hover,
                 .molsysviewer-slider::-webkit-slider-thumb:active,
                 .molsysviewer-slider::-webkit-slider-thumb:focus {
-                    background: rgba(140,140,140,0.9) !important;
+                    background: rgba(0,0,0,0.5) !important;
                     border: none !important;
                     box-shadow: none !important;
                 }
@@ -356,20 +356,20 @@ export default {
                     width: 16px;
                     height: 16px;
                     border-radius: 50% !important;
-                    background: rgba(140,140,140,0.9) !important;
+                    background: rgba(0,0,0,0.5) !important;
                     border: none !important;
                 }
                 .molsysviewer-slider::-moz-range-thumb:hover,
                 .molsysviewer-slider::-moz-range-thumb:active,
                 .molsysviewer-slider::-moz-range-thumb:focus {
-                    background: rgba(140,140,140,0.9) !important;
+                    background: rgba(0,0,0,0.5) !important;
                     border: none !important;
                 }
                 .molsysviewer-slider::-ms-thumb {
                     width: 16px;
                     height: 16px;
                     border-radius: 50% !important;
-                    background: rgba(140,140,140,0.9) !important;
+                    background: rgba(0,0,0,0.5) !important;
                     border: none !important;
                 }
             `;
@@ -382,148 +382,6 @@ export default {
                 el.textContent = css;
                 document.head.appendChild(el);
             }
-
-            c.onTrajectoryState(state => {
-                const frameCount = state.frameCount;
-                const current = state.currentFrame;
-                slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
-                slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
-                updateSliderBg();
-                label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
-                const disabled = frameCount <= 1;
-                [btnPrev, btnNext, slider, btnPlay, btnPause].forEach(el => {
-                    (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
-                });
-            });
-
-            return c;
-        });
-
-        (async () => {
-            try {
-                await controllerReady;
-                model.send({ event: "ready" });
-                const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
-                if (Array.isArray(initialMessages) && initialMessages.length) {
-                    const controller = await controllerReady;
-                    for (const msg of initialMessages) {
-                        await controller.handleMessage(msg);
-                    }
-                }
-            } catch (err) {
-                console.error("[MolSysViewer] Error inicializando plugin:", err);
-            }
-        })();
-
-        console.log("[MolSysViewer] widget render init");
-
-        model.on("msg:custom", async (msg: ViewerMessage) => {
-            if (!msg || typeof msg !== "object") return;
-            console.log("[MolSysViewer] message from Python:", msg);
-            try {
-                const controller = await controllerReady;
-                await controller.handleMessage(msg);
-            } catch (error) {
-                console.error("[MolSysViewer] Error manejando mensaje:", msg, error);
-            }
-        });
-    },
-};
-                    .molsysviewer-traj-input::-webkit-inner-spin-button,
-                    .molsysviewer-traj-input::-webkit-outer-spin-button {
-                        -webkit-appearance: none !important;
-                        appearance: none !important;
-                        -moz-appearance: none !important;
-                        margin: 0 !important;
-                    }
-                    .molsysviewer-traj-input {
-                        -moz-appearance: textfield !important;
-                        appearance: none !important;
-                        -webkit-appearance: none !important;
-                        color: rgba(255,255,255,0.9);
-                        background: rgba(40,40,40,0.6);
-                    }
-                    .molsysviewer-slider {
-                        background: transparent;
-                        height: 16px;
-                        border-radius: 999px;
-                        overflow: visible;
-                    }
-                    .molsysviewer-slider::-webkit-slider-runnable-track {
-                        background: rgba(200,200,200,0.35) !important;
-                        height: 16px;
-                        border-radius: 999px;
-                    }
-                    .molsysviewer-slider::-moz-range-track {
-                        background: rgba(200,200,200,0.35) !important;
-                        height: 16px;
-                        border-radius: 999px;
-                    }
-                    .molsysviewer-slider::-ms-track {
-                        background: rgba(200,200,200,0.35) !important;
-                        height: 16px;
-                        border-radius: 999px;
-                        border: none;
-                        color: transparent;
-                    }
-                    .molsysviewer-slider::-webkit-slider-thumb {
-                        -webkit-appearance: none !important;
-                        appearance: none !important;
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50% !important;
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                        box-shadow: none !important;
-                        margin-top: 0px;
-                    }
-                    .molsysviewer-slider::-webkit-slider-thumb:hover,
-                    .molsysviewer-slider::-webkit-slider-thumb:active,
-                    .molsysviewer-slider::-webkit-slider-thumb:focus {
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                        box-shadow: none !important;
-                    }
-                    .molsysviewer-slider::-moz-range-thumb {
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50% !important;
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                    }
-                    .molsysviewer-slider::-moz-range-thumb:hover,
-                    .molsysviewer-slider::-moz-range-thumb:active,
-                    .molsysviewer-slider::-moz-range-thumb:focus {
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                    }
-                    .molsysviewer-slider::-ms-thumb {
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50% !important;
-                        background: rgba(140,140,140,0.9) !important;
-                        border: none !important;
-                    }
-                `;
-                const style = document.getElementById("molsysviewer-traj-style") as HTMLStyleElement | null;
-                if (style) {
-                    style.textContent = css;
-                } else {
-                    const el = document.createElement("style");
-                    el.id = "molsysviewer-traj-style";
-                    el.textContent = css;
-                    document.head.appendChild(el);
-                }
-            }
-
-            const applyControlsVisibility = (visible: boolean) => {
-                overlay.style.display = visible ? "flex" : "none";
-            };
-            applyControlsVisibility(!!model.get("show_controls"));
-
-            model.on("change:show_controls", () => {
-                applyControlsVisibility(!!model.get("show_controls"));
-            });
 
             c.onTrajectoryState(state => {
                 const frameCount = state.frameCount;
