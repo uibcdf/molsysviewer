@@ -19,6 +19,10 @@ MolSysViewer is split into two main layers:
   - `shapes/`: custom shapes, surfaces, and helpers
   - `plugin/structure.ts`: structure loading utilities
 
+### MolSys payload conventions
+- Payload key is `structures` (not `frames`), each with `coordinates` (Å), optional `box` (three vectors in Å) and optional `time`.
+- Avoid legacy names `positions`; the TS side maps each structure to a Mol* frame internally. In the TS/Mol* layer the term “frame” is kept for trajectory snapshots for consistency with Mol*, even though the payload uses `structures`.
+
 The JavaScript bundle (`molsysviewer/viewer.js`) is generated from the
 TypeScript sources and is **not committed** to the repository. It is built
 automatically during packaging (conda build) and manually during development.

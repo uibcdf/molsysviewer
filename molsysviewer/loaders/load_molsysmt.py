@@ -7,11 +7,19 @@ from typing import TYPE_CHECKING, Any
 
 import molsysmt as msm
 import numpy as np
+import math
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from ..viewer import MolSysView
+
+
+def ensure_view(view: "MolSysView" | None = None) -> "MolSysView":
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
+    return view
 
 
 def load_from_molsysmt(
@@ -31,9 +39,7 @@ def load_from_molsysmt(
     - Si falla, hace fallback a PDB string.
     """
 
-    if view is None:
-        from ..viewer import MolSysView
-        view = MolSysView()
+    view = ensure_view(view)
 
     # Guardar en el estado del viewer
     view.molecular_system = molecular_system
@@ -53,34 +59,14 @@ def load_from_molsysmt(
 
     viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
 
-    payload = {"atom_id": None,
-               "atom_name": None,
-               "residue_id": None,
-               "residue_name": None,
-               "chain_id": None,
-               "entity_id": None,
-               "element_symbol": None,
-               "formal_charge": None,
-               "bonds": None,
-               "structures": None}
-
-    payload["atom_id"] = viewer_json.get("atoms").get("atom_id")
-    payload["atom_name"] = viewer_json.get("atoms").get("atom_name")
-    payload["residue_id"] = viewer_json.get("atoms").get("group_id")
-    payload["residue_name"] = viewer_json.get("atoms").get("group_name")
-    payload["chain_id"] = viewer_json.get("atoms").get("chain_id")
-    payload["entity_id"] = viewer_json.get("atoms").get("molecule_id")
-    payload["element_symbol"] = viewer_json.get("atoms").get("atom_type")
-    payload["formal_charge"] = viewer_json.get("atoms").get("formal_charge")
-    payload["bonds"] = viewer_json.get("bonds").get("atom_pairs")
-    payload["structures"] = viewer_json.get("structures")
-    for structure in payload["structures"]:
-        structure["coordinates"] = structure["coordinates"] * 10.0
+    payload = _serialize_molsys_payload(viewer_json)
+    if payload is None:
+        raise ValueError("Unable to serialize MolSysMT viewer payload")
 
     view._send(
         {
             "op": "load_molsys_payload",
-            "payload": viewer_json,
+            "payload": payload,
             "label": label,
         }
     )
@@ -88,90 +74,71 @@ def load_from_molsysmt(
     return view
 
 
+def _serialize_molsys_payload(viewer_json: Any) -> dict[str, Any] | None:
+    """Convert MolSysMT ViewerJSON (new schema) into the MolSysPayload expected by the JS layer."""
+    # Accept ViewerJSON object or plain dict
+    data: dict[str, Any]
+    if hasattr(viewer_json, "to_dict"):
+        data = viewer_json.to_dict()
+    else:
+        data = dict(viewer_json)
 
-# ---------------------------------------------------------------------------
-#  Infraestructura de serialización MolSysMT -> payload para Mol*
-# ---------------------------------------------------------------------------
+    atoms_block = data.get("atoms") or {}
+    bonds_block = data.get("bonds") or {}
+    structures = data.get("structures") or []
 
-def _first_available(candidates: list[Any | None]) -> Any | None:
-    for candidate in candidates:
-        if candidate is not None:
-            return candidate
-    return None
-
-
-def _prepare_atom_field(values: Any | None, length: int, fallback) -> list[Any]:
-    if values is None:
-        return [fallback(i) for i in range(length)]
-    array = np.asarray(values)
-    if array.shape[0] != length:
-        return [fallback(i) for i in range(length)]
-    return array.tolist()
-
-
-
-def _viewer_json_to_payload(viewer_json: dict[str, Any]) -> dict[str, Any] | None:
-    atoms_block = viewer_json.get("atoms") or {}
-    atom_ids = atoms_block.get("atom_id")
-    n_atoms = len(atom_ids) if atom_ids is not None else 0
-    if n_atoms == 0:
+    atom_ids = atoms_block.get("atom_id") or []
+    n_atoms = len(atom_ids)
+    if n_atoms == 0 or not structures:
         return None
 
-    atom_names = _prepare_atom_field(atoms_block.get("atom_name"), n_atoms, lambda i: f"A{i + 1}")
-    residue_ids = _prepare_atom_field(
-        _first_available(
-            [
-                atoms_block.get("residue_id"),
-                atoms_block.get("group_id"),
-                atoms_block.get("group_ig"),  # typo fallback in schema
-                atoms_block.get("component_id"),
-            ]
-        ),
-        n_atoms,
-        lambda _i: 1,
-    )
-    residue_names = _prepare_atom_field(
-        _first_available(
-            [
-                atoms_block.get("residue_name"),
-                atoms_block.get("group_name"),
-                atoms_block.get("component_name"),
-            ]
-        ),
-        n_atoms,
-        lambda _i: "RES",
-    )
-    chain_ids = _prepare_atom_field(atoms_block.get("chain_id"), n_atoms, lambda _i: "A")
-    entity_ids = _prepare_atom_field(
-        _first_available([atoms_block.get("entity_id"), atoms_block.get("molecule_id")]),
-        n_atoms,
-        lambda _i: "1",
-    )
-    element_symbols = _prepare_atom_field(
-        _first_available([atoms_block.get("element_symbol"), atoms_block.get("atom_type")]),
-        n_atoms,
-        lambda _i: "C",
-    )
-    formal_charges = _prepare_atom_field(atoms_block.get("formal_charge"), n_atoms, lambda _i: 0)
+    def _column(values, fallback, cast):
+        if values is None:
+            return [fallback(i) for i in range(n_atoms)]
+        try:
+            array = np.asarray(values)
+        except Exception:
+            return [fallback(i) for i in range(n_atoms)]
+        if array.ndim == 0 or array.shape[0] != n_atoms:
+            return [fallback(i) for i in range(n_atoms)]
+        out: list[Any] = []
+        for i, v in enumerate(array.tolist()):
+            try:
+                val = cast(v)
+                if isinstance(val, float) and not math.isfinite(val):
+                    val = fallback(i)
+            except Exception:
+                val = fallback(i)
+            out.append(val)
+        return out
 
-    coordinates_payload = _extract_frames(viewer_json.get("frames") or viewer_json.get("coordinates"), n_atoms)
-    if not coordinates_payload:
+    atom_id = _column(atom_ids, lambda i: i + 1, int)
+    atom_name = _column(atoms_block.get("atom_name"), lambda i: f"A{i+1}", str)
+    residue_id = _column(atoms_block.get("group_id"), lambda _i: 1, int)
+    residue_name = _column(atoms_block.get("group_name"), lambda _i: "RES", str)
+    chain_id = _column(atoms_block.get("chain_id"), lambda _i: "A", str)
+    entity_id = _column(atoms_block.get("entity_id"), lambda _i: "1", str)
+    element_symbol = _column(atoms_block.get("element_symbol"), lambda _i: "C", str)
+    formal_charge = _column(atoms_block.get("formal_charge"), lambda _i: 0, int)
+
+    structures_payload = _extract_structures(structures, n_atoms)
+    if not structures_payload:
         return None
 
-    bonds_payload = _normalize_bonds(viewer_json.get("bonds"))
+    bonds_payload = _normalize_bonds(bonds_block)
 
     payload: dict[str, Any] = {
         "atoms": {
-            "atom_id": _prepare_atom_field(atom_ids, n_atoms, lambda i: i + 1),
-            "atom_name": atom_names,
-            "residue_id": residue_ids,
-            "residue_name": residue_names,
-            "chain_id": chain_ids,
-            "entity_id": entity_ids,
-            "element_symbol": element_symbols,
-            "formal_charge": formal_charges,
+            "atom_id": atom_id,
+            "atom_name": atom_name,
+            "residue_id": residue_id,
+            "residue_name": residue_name,
+            "chain_id": chain_id,
+            "entity_id": entity_id,
+            "element_symbol": element_symbol,
+            "formal_charge": formal_charge,
         },
-        "coordinates": coordinates_payload,
+        "structures": structures_payload,
     }
     if bonds_payload is not None:
         payload["bonds"] = bonds_payload
@@ -179,27 +146,28 @@ def _viewer_json_to_payload(viewer_json: dict[str, Any]) -> dict[str, Any] | Non
     return payload
 
 
-def _extract_frames(frames: Any, n_atoms: int) -> list[dict[str, Any]]:
-    if not isinstance(frames, list):
+def _extract_structures(structures: Any, n_atoms: int) -> list[dict[str, Any]]:
+    if not isinstance(structures, list):
         return []
 
     payload_frames: list[dict[str, Any]] = []
-    for index, frame in enumerate(frames):
-        if not isinstance(frame, dict):
+    for index, structure in enumerate(structures):
+        if not isinstance(structure, dict):
             continue
 
-        positions = _positions_to_angstroms(frame.get("positions"), n_atoms)
-        if positions is None:
+        coords = _positions_to_angstroms(structure.get("coordinates"), n_atoms)
+        if coords is None:
             continue
 
         frame_payload: dict[str, Any] = {
-            "positions": positions,
-            "time": frame.get("time", index),
+            "coordinates": coords,
+            "time": structure.get("time", index),
         }
 
-        cell = _cell_to_angstroms(frame.get("cell"))
-        if cell is not None:
-            frame_payload["cell"] = cell
+        # Box information is optional; omit if invalid to avoid Mol* issues
+        box = _box_vectors(structure.get("box"))
+        if box is not None:
+            frame_payload["box"] = box
 
         payload_frames.append(frame_payload)
 
@@ -210,48 +178,68 @@ def _positions_to_angstroms(positions: Any, n_atoms: int) -> list[list[float]] |
     try:
         array = np.asarray(positions, dtype=float)
     except Exception:  # pragma: no cover - runtime guard
-        logger.debug("MolSys payload: unable to convert positions to ndarray", exc_info=True)
+        logger.debug("MolSys payload: unable to convert coordinates to ndarray", exc_info=True)
         return None
 
     if array.shape != (n_atoms, 3):
         return None
 
-    # ViewerJSON usa nanómetros; el viewer espera Å.
-    return (array * 10.0).tolist()
-
-
-def _cell_to_angstroms(cell: Any) -> dict[str, float] | None:
-    if not isinstance(cell, dict):
+    array = array * 10.0
+    if not np.isfinite(array).all():
         return None
+    return array.tolist()
+
+
+def _box_vectors(box: Any) -> list[list[float]] | None:
+    """Convert ViewerJSON box vectors (nm) to Å for Mol*."""
+    if not isinstance(box, dict):
+        return None
+
     try:
-        a = float(cell["a"]) * 10.0
-        b = float(cell["b"]) * 10.0
-        c = float(cell["c"]) * 10.0
-        alpha = float(cell["alpha"])
-        beta = float(cell["beta"])
-        gamma = float(cell["gamma"])
+        v0 = np.asarray(box["v0"], dtype=float)
+        v1 = np.asarray(box["v1"], dtype=float)
+        v2 = np.asarray(box["v2"], dtype=float)
     except Exception:
-        logger.debug("MolSys payload: invalid cell in ViewerJSON", exc_info=True)
+        logger.debug("MolSys payload: invalid box vectors in ViewerJSON", exc_info=True)
         return None
-    return {
-        "a": a,
-        "b": b,
-        "c": c,
-        "alpha": alpha,
-        "beta": beta,
-        "gamma": gamma,
-    }
+
+    if v0.shape != (3,) or v1.shape != (3,) or v2.shape != (3,):
+        return None
+
+    vectors = np.vstack([v0, v1, v2]) * 10.0  # nm -> Å
+
+    norms = np.linalg.norm(vectors, axis=1)
+    if np.any(norms < 1e-6):
+        return None
+    volume = np.dot(vectors[0], np.cross(vectors[1], vectors[2]))
+    if abs(volume) < 1e-6:
+        return None
+
+    return vectors.tolist()
 
 
 def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
     if not isinstance(bonds, dict):
         return None
 
+    # Prefer explicit indexA/indexB if present
     index_a = bonds.get("indexA")
     index_b = bonds.get("indexB")
-    if index_a is None or index_b is None:
-        return None
 
+    if index_a is None or index_b is None:
+        # Fallback to atom_pairs [[a,b], ...]
+        pairs = bonds.get("atom_pairs")
+        if not isinstance(pairs, list) or len(pairs) == 0:
+            return None
+        try:
+            array = np.asarray(pairs, dtype=int)
+        except Exception:
+            logger.debug("MolSys payload: invalid bond pairs", exc_info=True)
+            return None
+        if array.ndim != 2 or array.shape[1] != 2:
+            return None
+        index_a = array[:, 0]
+        index_b = array[:, 1]
     try:
         array_a = np.asarray(index_a, dtype=int).ravel()
         array_b = np.asarray(index_b, dtype=int).ravel()
@@ -266,7 +254,9 @@ def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
     order_array = None
     if order is not None:
         try:
-            order_array = np.asarray(order, dtype=int).ravel()
+            oa = np.asarray(order, dtype=int).ravel()
+            if oa.shape == array_a.shape:
+                order_array = oa.tolist()
         except Exception:
             order_array = None
 
@@ -274,7 +264,7 @@ def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
         "indexA": array_a.tolist(),
         "indexB": array_b.tolist(),
     }
-    if order_array is not None and order_array.shape == array_a.shape:
-        payload["order"] = order_array.tolist()
+    if order_array is not None:
+        payload["order"] = order_array
 
     return payload

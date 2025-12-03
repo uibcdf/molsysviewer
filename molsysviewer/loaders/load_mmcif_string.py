@@ -11,17 +11,22 @@ if TYPE_CHECKING:
     from ..viewer import MolSysView
 
 
+def ensure_view(view: "MolSysView" | None = None) -> "MolSysView":
+    if view is None:
+        from ..viewer import MolSysView
+        view = MolSysView()
+    return view
+
+
 def load_mmcif_string(
     mmcif_string: str,
     *,
     label: str | None = None,
-    view: "MolSysView | None" = None,
+    view: "MolSysView" | None = None,
 ) -> "MolSysView":
     """Backend interno para MolSysView.load_mmcif_string(...)."""
 
-    if view is None:
-        from ..viewer import MolSysView
-        view = MolSysView()
+    view = ensure_view(view)
 
     view.molecular_system = mmcif_string
     view.selection = "all"

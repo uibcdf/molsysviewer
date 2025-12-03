@@ -19,6 +19,7 @@ The TypeScript files define:
 - the widget entry point (`index.ts`)
 - all Mol* integration logic
 - all message handlers and shape management
+- payload handling: `structures` list with `coordinates` (Å), optional `box` (three vectors in Å), optional `time` (no `positions` naming). Internally, Mol* still calls each snapshot a “frame” for trajectory handling; keep that term on the TS side for consistency.
 
 Agents **may safely edit, refactor, or improve** these files.
 

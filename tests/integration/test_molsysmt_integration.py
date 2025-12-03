@@ -27,7 +27,8 @@ def test_load_pdb_string_uses_molsysmt():
 
 def test_load_molsys_payload_or_fallback():
     molsys = msm.convert(PDB_TEXT, to_form="molsysmt.MolSys")
-    payload = _serialize_molsys_payload(molsys)
+    viewer_json = molsys.to_form("molsysmt.ViewerJSON")
+    payload = _serialize_molsys_payload(viewer_json)
     assert payload is not None
 
     view = MolSysView()
