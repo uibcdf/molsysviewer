@@ -18,7 +18,7 @@ export default {
 
         el.appendChild(target);
 
-        const controllerPromise = MolSysViewerController.create(target);
+        const controllerPromise = MolSysViewerController.create(target, msg => model.send(msg));
 
         const makeButton = (label: string, onClick: () => void) => {
             const btn = document.createElement("button");
@@ -42,8 +42,6 @@ export default {
             btn.addEventListener("click", onClick);
             return btn;
         };
-
-        const send = (msg: ViewerMessage) => model.send(msg);
 
         const controllerReady = controllerPromise.then(c => {
             const overlay = document.createElement("div");

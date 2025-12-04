@@ -182,6 +182,79 @@ export type LoadPdbIdMessage = {
     pdb_id: string;
 };
 
+export type CreateRegionMessage = {
+    op: "create_region";
+    tag?: string;
+    selection?: string;
+    atom_indices?: number[];
+    representation?: string;
+    params?: Record<string, unknown>;
+};
+
+export type SetRegionRepresentationMessage = {
+    op: "set_region_representation";
+    tag?: string;
+    representation?: string;
+    params?: Record<string, unknown>;
+};
+
+export type ShowRegionMessage = {
+    op: "show_region";
+    tag?: string;
+};
+
+export type HideRegionMessage = {
+    op: "hide_region";
+    tag?: string;
+};
+
+export type DeleteRegionMessage = {
+    op: "delete_region";
+    tag?: string;
+};
+
+export type CreateLayerMessage = {
+    op: "create_layer";
+    tag?: string;
+    kind?: string;
+    meta?: Record<string, unknown>;
+};
+
+export type ShowLayerMessage = {
+    op: "show_layer";
+    tag?: string;
+};
+
+export type HideLayerMessage = {
+    op: "hide_layer";
+    tag?: string;
+};
+
+export type DeleteLayerMessage = {
+    op: "delete_layer";
+    tag?: string;
+};
+
+export type SetLayerTagMessage = {
+    op: "set_layer_tag";
+    tag?: string;
+    new_tag: string;
+};
+
+export type SetGlobalRepresentationMessage = {
+    op: "set_global_representation";
+    representation?: string;
+    params?: Record<string, unknown>;
+};
+
+export type ShowGlobalMessage = {
+    op: "show_global";
+};
+
+export type HideGlobalMessage = {
+    op: "hide_global";
+};
+
 export type ViewerMessage =
     AddSphereMessage |
     AddAlphaSphereSetMessage |
@@ -210,4 +283,17 @@ export type ViewerMessage =
     StepTrajectoryMessage |
     SetTrajectoryFrameMessage |
     SetTrajectoryPlaybackMessage |
+    CreateRegionMessage |
+    SetRegionRepresentationMessage |
+    ShowRegionMessage |
+    HideRegionMessage |
+    DeleteRegionMessage |
+    CreateLayerMessage |
+    ShowLayerMessage |
+    HideLayerMessage |
+    DeleteLayerMessage |
+    SetLayerTagMessage |
+    SetGlobalRepresentationMessage |
+    ShowGlobalMessage |
+    HideGlobalMessage |
     Record<string, unknown>;
