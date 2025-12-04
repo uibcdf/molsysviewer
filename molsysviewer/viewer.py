@@ -12,7 +12,7 @@ from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .shapes import ShapesManager
 from .regions import Region
-from .global_view import GlobalView
+from .main_view import MainView
 from .layers import Layer
 from . import config
 
@@ -81,7 +81,7 @@ class MolSysView:
         self._region_counter = 0
         self._layer_counter = 0
 
-        self.global = GlobalView(self)
+        self.main = MainView(self)
 
         # Registrar callback para mensajes JS->Python
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
@@ -122,7 +122,7 @@ class MolSysView:
                 self._layers.clear()
                 self._region_counter = 0
                 self._layer_counter = 0
-                self.global = GlobalView(self)
+                self.main = MainView(self)
 
         self.widget.on_msg(_handle_msg)
 
@@ -487,7 +487,7 @@ class MolSysView:
         self._layers.clear()
         self._region_counter = 0
         self._layer_counter = 0
-        self.global = GlobalView(self)
+        self.main = MainView(self)
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
