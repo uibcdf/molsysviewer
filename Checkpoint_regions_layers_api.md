@@ -12,7 +12,7 @@
 - Helpers: `view.get_region(tag)`, `view.get_layer(tag)`, `view.list_regions()`, `view.list_layers()`.
 - `Region` methods: `set_representation(type, **params)`, `hide()`, `show()`, `delete()`, selection ops (`extract_subregion`, `add_atoms`, `remove_atoms`), `new_complementary_region()`.
 - `Layer` methods: `hide()`, `show()`, `delete()`, `relabel(new_tag)`, `merge(other_layer)`.
-- `Global`: `view.global.set_representation(...)`, `view.global.show()/hide()` for whole-structure control (no tag, non-deletable).
+- `Main`: `view.main` provides `set_representation(...)`, `show()/hide()` for whole-structure control (no tag, non-deletable). (Named `main` to avoid the `global` keyword.)
 - Complements: `new_region(..., complement_of_regions=["tagA", ...] | "all")` builds complement on Python side; requires a loaded system and known `atom_indices` from regions/acks.
 
 ## JS Side Responsibilities

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
-class GlobalView:
+class MainView:
     """Wrapper for operations on the whole structure (non-deletable, non-retaggable)."""
 
     def __init__(self, view: Any) -> None:
         self._view = view
-        self._representation: Optional[str] = None
+        self._representation: str | None = None
         self._repr_params: dict[str, Any] = {}
 
     def set_representation(self, representation: str, **params: Any) -> None:
