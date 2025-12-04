@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Dict, Mapping
 import json
 import re
 
@@ -11,10 +11,44 @@ from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .shapes import ShapesManager
+from .regions import Region
+from .global_view import GlobalView
+from .layers import Layer
 from . import config
 
 _HTML_MANAGER_VERSION = "1.0.1"
 _WIDGETS_BASE_VERSION = "2.0.0"
+
+_REPR_ALIASES = {
+    "sticks": "ball-and-stick",
+    "ball_and_stick": "ball-and-stick",
+    "ballstick": "ball-and-stick",
+    "licorice": "line",
+    "lines": "line",
+    "wire": "line",
+    "wireframe": "line",
+    "ribbon": "backbone",
+    "surface": "molecular-surface",
+    "vdw": "spacefill",
+}
+
+_ALLOWED_REPRS = {
+    "cartoon",
+    "backbone",
+    "ball-and-stick",
+    "carbohydrate",
+    "ellipsoid",
+    "gaussian-surface",
+    "gaussian-volume",
+    "label",
+    "line",
+    "molecular-surface",
+    "orientation",
+    "plane",
+    "point",
+    "putty",
+    "spacefill",
+}
 
 
 class MolSysView:
@@ -42,6 +76,13 @@ class MolSysView:
         self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
 
+        self._regions: Dict[str, Region] = {}
+        self._layers: Dict[str, Layer] = {}
+        self._region_counter = 0
+        self._layer_counter = 0
+
+        self.global = GlobalView(self)
+
         # Registrar callback para mensajes JS->Python
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
             event = content.get("event")
@@ -51,6 +92,37 @@ class MolSysView:
                 for msg in self._pending_messages:
                     self.widget.send(msg)
                 self._pending_messages.clear()
+            elif event == "region_ack":
+                tag = content.get("tag")
+                if tag and tag in self._regions:
+                    region = self._regions[tag]
+                    region.atom_indices = content.get("atom_indices") or region.atom_indices
+                    if content.get("selection") is not None:
+                        region.selection = content.get("selection")
+            elif event == "region_deleted":
+                tag = content.get("tag")
+                if tag:
+                    self._unregister_region(tag)
+            elif event == "layer_ack":
+                tag = content.get("tag")
+                if tag and tag not in self._layers:
+                    layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
+                    self._layers[tag] = layer
+                elif tag and tag in self._layers:
+                    layer = self._layers[tag]
+                    layer.kind = content.get("kind", layer.kind)
+                    if content.get("meta"):
+                        layer.meta.update(content.get("meta"))
+            elif event == "layer_deleted":
+                tag = content.get("tag")
+                if tag:
+                    self._unregister_layer(tag)
+            elif event == "registry_cleared":
+                self._regions.clear()
+                self._layers.clear()
+                self._region_counter = 0
+                self._layer_counter = 0
+                self.global = GlobalView(self)
 
         self.widget.on_msg(_handle_msg)
 
@@ -78,6 +150,136 @@ class MolSysView:
             self.widget.controls_position_fullscreen = pos_fs
         except Exception:
             self.widget.controls_position_fullscreen = ["bottom", "right"]
+
+    # --- Regions / Layers registry ---
+
+    @property
+    def regions(self) -> Mapping[str, Region]:
+        """Public registry of regions (structural selections)."""
+        return self._regions
+
+    @property
+    def layers(self) -> Mapping[str, Layer]:
+        """Public registry of layers (non-structural visuals)."""
+        return self._layers
+
+    def _next_region_tag(self) -> str:
+        self._region_counter += 1
+        return f"region{self._region_counter}"
+
+    def _next_layer_tag(self) -> str:
+        self._layer_counter += 1
+        return f"layer{self._layer_counter}"
+
+    def _normalize_representation_type(self, value: str | None) -> str | None:
+        if value is None:
+            return None
+        key = value.replace("_", "-").lower().strip()
+        key = _REPR_ALIASES.get(key, key)
+        if key not in _ALLOWED_REPRS:
+            raise ValueError(f"Unsupported representation type '{value}'. Allowed: {sorted(_ALLOWED_REPRS)}")
+        return key
+
+    def _unregister_region(self, tag: str) -> None:
+        self._regions.pop(tag, None)
+
+    def _unregister_layer(self, tag: str) -> None:
+        self._layers.pop(tag, None)
+
+    def _reregister_layer(self, old_tag: str, new_tag: str, layer: Layer) -> None:
+        if old_tag in self._layers:
+            self._layers.pop(old_tag, None)
+        self._layers[new_tag] = layer
+
+    def new_region(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: list[int] | None = None,
+        tag: str | None = None,
+        representation: str | None = None,
+        complement_of_regions: str | list[str] | None = None,
+        **repr_params: Any,
+    ) -> Region:
+        """Create a new region (structural subset) with an optional representation.
+
+        Parameters
+        ----------
+        selection
+            MolSysMT selection string/expression. Ignored if ``atom_indices`` is provided.
+        atom_indices
+            Explicit atom indices for the region (bypasses selection). If not provided,
+            they are computed from ``selection`` when possible.
+        tag
+            Optional tag for the region. Auto-generated if omitted.
+        representation
+            Optional representation type (normalized and validated).
+        complement_of_regions
+            Tags of regions to exclude. If "all"/"All"/"ALL", the region covers the
+            complement of all existing regions. Ignored if ``atom_indices`` is set.
+
+        Notes
+        -----
+        Requires a loaded molecular system. Call ``load(...)`` before creating regions.
+        When using ``complement_of_regions``, the union of those regions' atom indices
+        is removed from the full system to build the new region. Region indices are
+        taken from their stored `atom_indices` (acks) when available.
+        """
+        tag = tag or self._next_region_tag()
+        representation = self._normalize_representation_type(representation)
+
+        # Compute atom_indices if not provided
+        if atom_indices is None and complement_of_regions is not None:
+            region_tags = []
+            if isinstance(complement_of_regions, str):
+                if complement_of_regions.lower() == "all":
+                    region_tags = list(self._regions.keys())
+                else:
+                    region_tags = [complement_of_regions]
+            else:
+                region_tags = list(complement_of_regions)
+            exclude: set[int] = set()
+            for rt in region_tags:
+                r = self._regions.get(rt)
+                if r and r.atom_indices is not None:
+                    exclude.update(r.atom_indices)
+            if self._molsys is None:
+                raise ValueError("Cannot build complement: no molecular system loaded.")
+            total = int(self._molsys._get_n_atoms())  # type: ignore[attr-defined]
+            atom_indices = [i for i in range(total) if i not in exclude]
+        elif atom_indices is None and self._molsys is not None:
+            try:
+                atom_indices = msm.select(self._molsys, selection=selection, syntax="MolSysMT").tolist()
+            except Exception:
+                atom_indices = None
+        elif atom_indices is None and self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before creating regions.")
+
+        region = Region(
+            self,
+            tag,
+            selection,
+            atom_indices=atom_indices,
+            representation=representation,
+            repr_params=repr_params,
+        )
+        self._regions[tag] = region
+        region._send_create()  # noqa: SLF001
+        return region
+
+    def new_layer(
+        self,
+        *,
+        tag: str | None = None,
+        kind: str | None = None,
+        **meta: Any,
+    ) -> Layer:
+        """Create a new layer (non-structural visual group)."""
+        tag = tag or self._next_layer_tag()
+        layer = Layer(self, tag, kind=kind, meta=meta)
+        self._layers[tag] = layer
+        layer._send_create()  # noqa: SLF001
+        return layer
 
     def set_controls_visible(
         self,
@@ -281,6 +483,11 @@ class MolSysView:
         self._molsys = None
         self.atom_mask = None
         self.structure_mask = None
+        self._regions.clear()
+        self._layers.clear()
+        self._region_counter = 0
+        self._layer_counter = 0
+        self.global = GlobalView(self)
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
