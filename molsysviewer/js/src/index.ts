@@ -10,6 +10,46 @@ import { ViewerMessage } from "./messages/viewer-messages";
  */
 export default {
     render({ model, el }: { model: any; el: HTMLElement }) {
+        const debug = !!model.get("debug_js");
+        const formatArg = (v: any) => {
+            if (v instanceof Error) return v.stack || v.message || String(v);
+            if (typeof v === "object") {
+                try {
+                    return JSON.stringify(v);
+                } catch {
+                    return String(v);
+                }
+            }
+            return String(v);
+        };
+        const sendLog = (level: "info" | "warn" | "error" | "log", ...args: any[]) => {
+            if (!debug) return;
+            try {
+                model.send({
+                    event: "js_log",
+                    level,
+                    message: args.map(formatArg).join(" "),
+                });
+            } catch {
+                /* no-op */
+            }
+        };
+        if (debug) {
+            ["error", "warn"].forEach(level => {
+                const orig = (console as any)[level] as ((...xs: any[]) => void) | undefined;
+                (console as any)[level] = (...args: any[]) => {
+                    if (orig) {
+                        try {
+                            orig.apply(console, args);
+                        } catch {
+                            /* ignore */
+                        }
+                    }
+                    sendLog(level as any, ...args);
+                };
+            });
+        }
+
         const target = document.createElement("div");
         target.style.width = "100%";
         target.style.height = "100%";
@@ -410,19 +450,23 @@ export default {
                 }
             } catch (err) {
                 console.error("[MolSysViewer] Error inicializando plugin:", err);
+                sendLog("error", "[MolSysViewer] Error inicializando plugin:", err);
             }
         })();
 
         console.log("[MolSysViewer] widget render init");
+        sendLog("info", "[MolSysViewer] widget render init");
 
         model.on("msg:custom", async (msg: ViewerMessage) => {
             if (!msg || typeof msg !== "object") return;
             console.log("[MolSysViewer] message from Python:", msg);
+            if (debug) sendLog("info", "[MolSysViewer] message from Python:", msg);
             try {
                 const controller = await controllerReady;
                 await controller.handleMessage(msg);
             } catch (error) {
                 console.error("[MolSysViewer] Error manejando mensaje:", msg, error);
+                sendLog("error", "[MolSysViewer] Error manejando mensaje:", msg, error);
             }
         });
     },

@@ -46,6 +46,8 @@ AI agents must never write directly to these generated outputs.
 5. Docs: follow `docs/Provisional_Docs_Guidelines.md`; use static views in `_static/views/` for embeds.
 6. When in doubt, **ask before modifying files outside `js/src/`**.
 7. MolSys payload schema (Python → TS): top-level `structures` list, each with `coordinates` (Å), optional `box` as three vectors (Å), and `time`. Do not reintroduce legacy names like `positions` or `frames`.
+8. Tests should avoid mocks: use the real demo viewers in `molsysviewer.demo` (`dialanine`, `pentalanine`, `tctim`, `chicken_villin_HP35`) to build regression/unit tests.
+9. When importing/running molsysviewer (and molsysmt), set `NUMBA_CACHE_DIR=/tmp/numba_cache` in your session to avoid numba cache errors when molsysmt is used from a local checkout.
 
 ## 📌 Why This Matters
 

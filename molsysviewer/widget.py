@@ -8,5 +8,6 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     initial_messages = T.List(default_value=[]).tag(sync=True)
     show_controls = T.Bool(default_value=True).tag(sync=True)
     autohide_controls = T.Bool(default_value=True).tag(sync=True)
+    debug_js = T.Bool(default_value=False).tag(sync=True)
     controls_position = T.List(T.Unicode(), default_value=["top", "right"]).tag(sync=True)
     controls_position_fullscreen = T.List(T.Unicode(), default_value=["bottom", "right"]).tag(sync=True)

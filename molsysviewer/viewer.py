@@ -12,9 +12,10 @@ from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .shapes import ShapesManager
 from .regions import Region
-from .main_view import MainView
+from .global_view import GlobalView
 from .layers import Layer
 from . import config
+from .config.user_presets import user_presets
 
 _HTML_MANAGER_VERSION = "1.0.1"
 _WIDGETS_BASE_VERSION = "2.0.0"
@@ -50,6 +51,19 @@ _ALLOWED_REPRS = {
     "spacefill",
 }
 
+_PRESET_ALIASES = {
+    "automatic": "auto",
+}
+
+_ALLOWED_PRESETS = {
+    "auto",
+    "atomic-detail",
+    "polymer-and-ligand",
+    "polymer-cartoon",
+    "coarse-surface",
+    "empty",
+}
+
 
 class MolSysView:
     """Mol* viewer widget with a Python-facing API.
@@ -58,8 +72,11 @@ class MolSysView:
     utilities to export static HTML views for documentation or sharing.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, debug_js: bool | None = None) -> None:
         self.widget = MolSysViewerWidget()
+        self._debug_js = bool(debug_js) if debug_js is not None else False
+        self.widget.debug_js = self._debug_js
+        self._js_logs: list[dict[str, str]] = []
         try:
             self.widget.show_controls = bool(config.show_controls)
         except Exception:
@@ -81,7 +98,7 @@ class MolSysView:
         self._region_counter = 0
         self._layer_counter = 0
 
-        self.main = MainView(self)
+        self.global_view = GlobalView(self)
 
         # Registrar callback para mensajes JS->Python
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
@@ -122,7 +139,13 @@ class MolSysView:
                 self._layers.clear()
                 self._region_counter = 0
                 self._layer_counter = 0
-                self.main = MainView(self)
+                self.global_view = GlobalView(self)
+            elif event == "js_log" and self._debug_js:
+                level = str(content.get("level", "info")).upper()
+                message = content.get("message", "")
+                entry = {"level": level, "message": message}
+                self._js_logs.append(entry)
+                print(f"[JS {level}] {message}")
 
         self.widget.on_msg(_handle_msg)
 
@@ -159,6 +182,11 @@ class MolSysView:
         return self._regions
 
     @property
+    def js_logs(self) -> list[dict[str, str]]:
+        """Logs received desde el frontend cuando debug_js está activado."""
+        return list(self._js_logs)
+
+    @property
     def layers(self) -> Mapping[str, Layer]:
         """Public registry of layers (non-structural visuals)."""
         return self._layers
@@ -180,6 +208,17 @@ class MolSysView:
             raise ValueError(f"Unsupported representation type '{value}'. Allowed: {sorted(_ALLOWED_REPRS)}")
         return key
 
+    def _normalize_representation_preset(self, value: str | None) -> str | None:
+        if value is None:
+            return None
+        key = value.replace("_", "-").lower().strip()
+        key = _PRESET_ALIASES.get(key, key)
+        if key in _ALLOWED_PRESETS:
+            return key
+        if key in user_presets:
+            return key
+        raise ValueError(f"Unsupported preset '{value}'. Allowed: {sorted(_ALLOWED_PRESETS)} + user presets {list(user_presets)}")
+
     def _unregister_region(self, tag: str) -> None:
         self._regions.pop(tag, None)
 
@@ -190,6 +229,35 @@ class MolSysView:
         if old_tag in self._layers:
             self._layers.pop(old_tag, None)
         self._layers[new_tag] = layer
+
+    def _resolve_user_preset(self, preset: str | None):
+        if preset is None:
+            return None
+        key = preset.replace("_", "-").lower().strip()
+        cfg = user_presets.get(key)
+        if cfg is None:
+            return None
+        if self._molsys is None:
+            raise ValueError("User presets require a loaded molecular system to resolve selections.")
+        rules = []
+        for rule in cfg.get("rules", []) or []:
+            if not isinstance(rule, dict):
+                continue
+            new_rule = dict(rule)
+            if "atom_indices" not in new_rule:
+                sel = new_rule.get("selection")
+                if sel is not None:
+                    try:
+                        new_rule["atom_indices"] = list(msm.select(self._molsys, selection=sel, syntax="MolSysMT"))
+                    except Exception:
+                        raise ValueError(f"Unable to resolve selection '{sel}' for user preset '{preset}'")
+            rules.append(new_rule)
+        return {
+            "name": key,
+            "base": cfg.get("base"),
+            "options": cfg.get("options") or {},
+            "rules": rules,
+        }
 
     def new_region(
         self,
@@ -248,12 +316,12 @@ class MolSysView:
             total = int(self._molsys._get_n_atoms())  # type: ignore[attr-defined]
             atom_indices = [i for i in range(total) if i not in exclude]
         elif atom_indices is None and self._molsys is not None:
-            try:
-                atom_indices = msm.select(self._molsys, selection=selection, syntax="MolSysMT").tolist()
-            except Exception:
-                atom_indices = None
+            atom_indices = list(msm.select(self._molsys, selection=selection, syntax="MolSysMT"))
         elif atom_indices is None and self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before creating regions.")
+
+        if atom_indices is None or len(atom_indices) == 0:
+            raise ValueError("Cannot create region: empty atom_indices for selection.")
 
         region = Region(
             self,
@@ -487,7 +555,7 @@ class MolSysView:
         self._layers.clear()
         self._region_counter = 0
         self._layer_counter = 0
-        self.main = MainView(self)
+        self.global_view = GlobalView(self)
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
@@ -649,16 +717,3 @@ class MolSysView:
                     continue
             cleaned.append(msg)
         return cleaned
-
-    # --- Tests de vida / demos ---
-
-    def _life_test(self) -> None:
-        """Test de vida -> carga una PDB de ejemplo en Mol*."""
-        from .loader import load_pdb_id
-        load_pdb_id(pdb_id="1crn", label="Demo: 1CRN", view=self)
-        self.show()
-
-    def demo(self) -> None:
-        """Test de vida -> carga una PDB de ejemplo en Mol*."""
-        self.load(pdb_id="1TCD")
-        self.show()
