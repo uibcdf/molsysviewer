@@ -39,7 +39,7 @@ def test_load_uses_molsysmt_payload():
     msm = _import_molsysmt()
     molsys = msm.convert(PDB_TEXT, to_form="molsysmt.MolSys")
 
-    view = MolSysView()
+    view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     result = load(molsys, view=view)
@@ -72,4 +72,3 @@ def test_load_uses_molsysmt_payload():
     assert coords[0][0] == pytest.approx(11.104)
     assert coords[0][1] == pytest.approx(13.207)
     assert coords[0][2] == pytest.approx(8.551)
-

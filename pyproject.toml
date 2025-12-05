@@ -24,11 +24,14 @@ dev = [
   "pytest-cov",
 ]
 
+include-package-data = false
 [tool.setuptools.packages.find]
-include = ["molsysviewer"]
+namespaces = true
+include = ["molsysviewer", "molsysviewer.*"]
 
 [tool.setuptools.package-data]
 "molsysviewer" = ["viewer.js", "viewer.js.map"]
+"molsysviewer.data" = ["**"]
 
 [tool.black]
 line-length = 120

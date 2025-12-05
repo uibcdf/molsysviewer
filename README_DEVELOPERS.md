@@ -135,6 +135,7 @@ ruff check molsysviewer js
 
 Integration tests
 - Some tests rely on MolSysMT; ensure it is installed in the dev environment.
+- Prefer real demo viewers over mocks: `molsysviewer.demo` exposes lazy-loaded viewers (`dialanine`, `pentalanine`, `tctim`, `chicken_villin_HP35`) that can be used directly in tests (e.g., `demo.dialanine.show()` or `demo.dialanine()`).
 - TS/JS changes generally do not require rebuilding the bundle for unit tests; keep rebuilds manual.
 
 ---

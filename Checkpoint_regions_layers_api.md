@@ -12,7 +12,7 @@
 - Helpers: `view.get_region(tag)`, `view.get_layer(tag)`, `view.list_regions()`, `view.list_layers()`.
 - `Region` methods: `set_representation(type, **params)`, `hide()`, `show()`, `delete()`, selection ops (`extract_subregion`, `add_atoms`, `remove_atoms`), `new_complementary_region()`.
 - `Layer` methods: `hide()`, `show()`, `delete()`, `relabel(new_tag)`, `merge(other_layer)`.
-- `Main`: `view.main` provides `set_representation(...)`, `show()/hide()` for whole-structure control (no tag, non-deletable). (Named `main` to avoid the `global` keyword.)
+- `Global`: `view.global_view` provides `set_representation(...)`, `show()/hide()` for whole-structure control (no tag, non-deletable).
 - Complements: `new_region(..., complement_of_regions=["tagA", ...] | "all")` builds complement on Python side; requires a loaded system and known `atom_indices` from regions/acks.
 
 ## JS Side Responsibilities
@@ -68,6 +68,12 @@
 - Optional: persist global style across reload (reapply after load).
 - Optional: JS handler for selection strings (if we want region creation without precomputed indices).
 - Tests: add unit coverage for complement logic, tag generation, and message construction; manual/auto smoke test with Mol* frontend.
+
+## Smoke test to run
+- `view = molsysviewer.demo.dialanine; view.show()` to render the demo.
+- Create a region (e.g., `r = view.new_region("chain_id == 'A'", representation="cartoon")`).
+- `r.hide()` should hide only that region; `r.show()` restores it.
+- `view.global_view.hide()`/`show()` should toggle everything (global + regiones) visible in the scene.
 
 ## Considerations / Future Improvements
 - Coexistencia de representaciones: hoy las regiones añaden reps sin remover las previas, y global es independiente. Podría ser útil ofrecer modos “replace” (elimina reps globales/preset antes de aplicar región) o “exclusive” (desactiva otras reps solapadas) para evitar solapes visuales confusos.

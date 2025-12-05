@@ -16,7 +16,7 @@ END
 
 
 def test_load_pdb_string_uses_molsysmt():
-    view = MolSysView()
+    view = MolSysView(debug_js=True)
     view.load_pdb_string(PDB_TEXT)
     assert view._molsys is not None
     assert view.atom_mask is not None
@@ -31,7 +31,7 @@ def test_load_molsys_payload_or_fallback():
     payload = _serialize_molsys_payload(viewer_json)
     assert payload is not None
 
-    view = MolSysView()
+    view = MolSysView(debug_js=True)
     view.load(molsys)
     assert view._molsys is not None
     assert view.atom_mask is not None

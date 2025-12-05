@@ -43,18 +43,29 @@ class Region:
 
     # --- public API ---
 
-    def set_representation(self, representation: str, **params: Any) -> None:
+    def set_representation(self, representation: str | None = None, *, preset: str | None = None, **params: Any) -> None:
         """Apply or update a representation for this region.
 
         Allowed Mol* types (normalized, case-insensitive): cartoon, backbone,
         ball-and-stick (aliases: sticks, ballstick), carbohydrate, ellipsoid,
         gaussian-surface, gaussian-volume, label, line (aliases: licorice, wire),
         molecular-surface (alias: surface), orientation, plane, point, putty, spacefill (alias: vdw).
+
+        If ``preset`` is provided, it supersedes ``representation`` and applies a Mol* preset
+        (auto, atomic-detail, polymer-and-ligand, polymer-cartoon, coarse-surface, empty).
         """
-        normalized = self._view._normalize_representation_type(representation)  # noqa: SLF001
+        normalized_preset = self._view._normalize_representation_preset(preset)  # noqa: SLF001
+        user_preset_payload = self._view._resolve_user_preset(normalized_preset)  # noqa: SLF001
+        normalized = None if normalized_preset else self._view._normalize_representation_type(representation)  # noqa: SLF001
         self.representation = normalized
         self.repr_params = params or {}
-        self._send("set_region_representation", representation=normalized, params=self.repr_params)
+        self._send(
+            "set_region_representation",
+            representation=normalized,
+            preset=normalized_preset if user_preset_payload is None else None,
+            user_preset=user_preset_payload,
+            params=self.repr_params,
+        )
 
     def new_complementary_region(self, tag: str | None = None, **kwargs: Any) -> "Region":
         """Create a new region with the complement of this region's atoms.

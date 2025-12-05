@@ -195,6 +195,8 @@ export type SetRegionRepresentationMessage = {
     op: "set_region_representation";
     tag?: string;
     representation?: string;
+    preset?: string;
+    user_preset?: any;
     params?: Record<string, unknown>;
 };
 
@@ -244,15 +246,19 @@ export type SetLayerTagMessage = {
 export type SetGlobalRepresentationMessage = {
     op: "set_global_representation";
     representation?: string;
+    preset?: string;
+    user_preset?: any;
     params?: Record<string, unknown>;
 };
 
 export type ShowGlobalMessage = {
     op: "show_global";
+    target?: "global" | "all";
 };
 
 export type HideGlobalMessage = {
     op: "hide_global";
+    target?: "global" | "all";
 };
 
 export type ViewerMessage =
