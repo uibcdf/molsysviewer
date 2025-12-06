@@ -97,6 +97,7 @@ class MolSysView:
         self._layers: Dict[str, Layer] = {}
         self._region_counter = 0
         self._layer_counter = 0
+        self._global_hidden = False
 
         self.global_view = GlobalView(self)
 
@@ -139,6 +140,7 @@ class MolSysView:
                 self._layers.clear()
                 self._region_counter = 0
                 self._layer_counter = 0
+                self._global_hidden = False
                 self.global_view = GlobalView(self)
             elif event == "js_log" and self._debug_js:
                 level = str(content.get("level", "info")).upper()
@@ -470,8 +472,11 @@ class MolSysView:
             return
 
         if is_all(selection):
-            # Hide everything
+            # Hide everything: atoms + all reps (global + regions)
             self.atom_mask[:] = False
+            self._update_visibility_in_frontend()
+            # Hide all representations in the frontend
+            self._send({"op": "hide_global", "target": "all"})  # noqa: SLF001
         else:
             atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
             self.atom_mask[atom_indices] = False
@@ -486,6 +491,10 @@ class MolSysView:
                 # Reset visibility: show all atoms
                 self.atom_mask[:] = True
                 self._update_visibility_in_frontend()
+                # Show all representations in the frontend (global + regions)
+                self._send({"op": "show_global", "target": "all"})  # noqa: SLF001
+                # Re-apply the user's intent about the baseline/global view
+                self._send({"op": "hide_global" if self._global_hidden else "show_global", "target": "global"})  # noqa: SLF001
             elif not (is_all(selection) and is_all(structure_indices)):
                 # Partial "show": turn on only the requested selection
                 atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
@@ -555,6 +564,7 @@ class MolSysView:
         self._layers.clear()
         self._region_counter = 0
         self._layer_counter = 0
+        self._global_hidden = False
         self.global_view = GlobalView(self)
 
         # Ask frontend to clear everything (molecule + shapes + view)

@@ -33,6 +33,8 @@ class GlobalView:
         self._preset = normalized_preset
         self._representation = normalized_repr
         self._repr_params = params or {}
+        # Changing the representation implies showing the global view again.
+        self._view._global_hidden = False  # noqa: SLF001
         payload = {
             "op": "set_global_representation",
             "representation": normalized_repr,
@@ -45,8 +47,10 @@ class GlobalView:
 
     def show(self) -> None:
         """Show the global representation(s)."""
-        self._view._send({"op": "show_global", "target": "all"})  # noqa: SLF001
+        self._view._global_hidden = False  # noqa: SLF001
+        self._view._send({"op": "show_global", "target": "global"})  # noqa: SLF001
 
     def hide(self) -> None:
         """Hide the global representation(s)."""
-        self._view._send({"op": "hide_global", "target": "all"})  # noqa: SLF001
+        self._view._global_hidden = True  # noqa: SLF001
+        self._view._send({"op": "hide_global", "target": "global"})  # noqa: SLF001

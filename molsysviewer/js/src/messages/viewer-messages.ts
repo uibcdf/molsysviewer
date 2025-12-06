@@ -15,11 +15,13 @@ import { MolSysPayload } from "../plugin/structure";
 
 export type AddSphereMessage = {
     op: "add_sphere";
+    tag?: string;
     options?: {
         center?: [number, number, number];
         radius?: number;
         color?: number;
         alpha?: number;
+        tag?: string;
     };
 };
 

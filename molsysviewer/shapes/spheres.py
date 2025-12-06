@@ -2,6 +2,7 @@
 
 from typing import Sequence
 
+from ..layers import Layer
 
 class SphereShapes:
     """Colección de utilidades para esferas en la escena."""
@@ -30,6 +31,10 @@ class SphereShapes:
                 },
             }
         )
+        # Asegura que el layer esté disponible inmediatamente en el registro Python
+        if tag:
+            if tag not in self._view._layers:  # noqa: SLF001
+                self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
 
     def add_spheres(
         self,

@@ -69,11 +69,31 @@
 - Optional: JS handler for selection strings (if we want region creation without precomputed indices).
 - Tests: add unit coverage for complement logic, tag generation, and message construction; manual/auto smoke test with Mol* frontend.
 
-## Smoke test to run
-- `view = molsysviewer.demo.dialanine; view.show()` to render the demo.
-- Create a region (e.g., `r = view.new_region("chain_id == 'A'", representation="cartoon")`).
-- `r.hide()` should hide only that region; `r.show()` restores it.
-- `view.global_view.hide()`/`show()` should toggle everything (global + regiones) visible in the scene.
+## Visibilidad (global vs regiones vs viewer)
+- `region.hide()/show()`: sólo afecta a esa región. El estado `hidden` se recuerda; `viewer.show()` no reactivará regiones ocultas.
+- `global_view.hide()/show()`: afecta sólo a la representación base/global (auto/preset/cartoon cargada al `load`). No toca regiones. Si se invoca antes del primer `show()`, la intención se memoriza y se aplica al cargar la estructura.
+- `viewer.hide()/show()` con `selection="all"`: ajusta la máscara de átomos y envía `hide_global/show_global target=all`. Respeta regiones ocultas y re-oculta la vista global si estaba marcada como oculta.
+
+### Flujos de referencia (manual/UI)
+1) **Ocultar global antes de mostrar**
+```python
+view = viewer.demo.tctim
+view.global_view.hide()
+view.show()  # se muestran sólo las regiones creadas; la base/global permanece oculta
+```
+2) **Ocultar región y mantenerla oculta tras hide/show general**
+```python
+view = viewer.demo.tctim
+r1 = view.new_region("chain_id == 'A'", representation="sticks")
+r2 = view.new_region("chain_id == 'B'", representation="sticks")
+r2.hide()
+view.hide(); view.show()  # r1 visible, r2 sigue oculta; global según su estado previo
+```
+3) **Ocultar todo y reactivar sólo lo visible**
+```python
+view.hide()  # oculta global + regiones + máscara de átomos
+view.show()  # reactiva máscara; regiones ocultas permanecen ocultas; global según flag
+```
 
 ## Considerations / Future Improvements
 - Coexistencia de representaciones: hoy las regiones añaden reps sin remover las previas, y global es independiente. Podría ser útil ofrecer modos “replace” (elimina reps globales/preset antes de aplicar región) o “exclusive” (desactiva otras reps solapadas) para evitar solapes visuales confusos.
