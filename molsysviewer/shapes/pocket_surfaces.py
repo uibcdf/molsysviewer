@@ -46,7 +46,8 @@ class PocketSurfaces:
         color_map: str | Sequence[int] | None = None,
         mouth_atom_indices: Sequence[int] | Sequence[Sequence[int]] | None = None,
         clip_plane: dict | None = None,
-    ) -> None:
+        tag: str | None = None,
+    ):
         """Envía al frontend la petición de una superficie tipo pocket/void."""
 
         if not atom_indices:
@@ -76,9 +77,16 @@ class PocketSurfaces:
         elif clip_plane is not None:
             options["clip_plane"] = dict(clip_plane)
 
+        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
+        options["tag"] = tag
+
         self._view._send(
             {
                 "op": "add_pocket_surface",
                 "options": options,
             }
         )
+        if tag not in self._view._layers:  # noqa: SLF001
+            from ..layers import Layer
+            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        return self._view._layers[tag]  # noqa: SLF001
