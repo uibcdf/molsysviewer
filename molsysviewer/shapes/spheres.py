@@ -17,8 +17,9 @@ class SphereShapes:
         color: int = 0x00FF00,
         alpha: float = 0.4,
         tag: str | None = None,
-    ) -> None:
+    ) -> Layer:
         """Añade una esfera (posiblemente transparente) a la escena."""
+        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
         self._view._send(
             {
                 "op": "add_sphere",
@@ -32,9 +33,9 @@ class SphereShapes:
             }
         )
         # Asegura que el layer esté disponible inmediatamente en el registro Python
-        if tag:
-            if tag not in self._view._layers:  # noqa: SLF001
-                self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        if tag not in self._view._layers:  # noqa: SLF001
+            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        return self._view._layers[tag]  # noqa: SLF001
 
     def add_spheres(
         self,
@@ -43,7 +44,7 @@ class SphereShapes:
         colors: int | Sequence[int] = 0x00FF00,
         alphas: float | Sequence[float] = 0.4,
         tags: str | Sequence[str] | None = None,
-    ) -> None:
+    ):
         """Añade muchas esferas a la escena.
 
         Parámetros
@@ -80,8 +81,10 @@ class SphereShapes:
         alphas = _as_list(alphas, n, float)
         tags = _as_list(tags, n, str) if tags is not None else [None] * n
 
+        layers = []
         for c, r, col, a, t in zip(centers_list, radii, colors, alphas, tags):
-            self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t)
+            layers.append(self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t))
+        return layers
 
     def add_set_alpha_spheres(
         self,
@@ -95,7 +98,7 @@ class SphereShapes:
         alpha_alpha_spheres: float = 0.3,
         alpha_atoms: float = 0.5,
         tag: str | None = None,
-    ) -> None:
+    ) -> Layer:
         """Representa un conjunto de alpha-spheres (y opcionalmente los átomos en contacto) en un solo envío.
 
         - `centers`, `radii`: posiciones y radios de las alpha-spheres.
@@ -126,10 +129,13 @@ class SphereShapes:
                 "alpha": float(alpha_atoms),
             }
 
-        if tag is not None:
-            options["tag"] = tag
+        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
+        options["tag"] = tag
 
         self._view._send({"op": "add_alpha_sphere_set", "options": options})
+        if tag not in self._view._layers:  # noqa: SLF001
+            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        return self._view._layers[tag]  # noqa: SLF001
 
     def clear(self, tag: str | None = None):
         """Eliminar shapes (todas o por tag) en el frontend."""
