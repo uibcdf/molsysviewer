@@ -142665,6 +142665,10 @@ var MolSysViewerController = class _MolSysViewerController {
     this.regionIndex = /* @__PURE__ */ new Map();
     this.layerMeta = /* @__PURE__ */ new Map();
     this.globalReprs = /* @__PURE__ */ new Set();
+    this.pendingGlobalOps = [];
+    this.pendingLayerVisibility = /* @__PURE__ */ new Map();
+    // Remember the last requested baseline-global visibility so we can apply it once the structure exists
+    this.requestedGlobalHidden = null;
     this.pendingRegions = [];
     this.labelRefs = /* @__PURE__ */ new Set();
     this.swingActive = false;
@@ -142694,12 +142698,19 @@ var MolSysViewerController = class _MolSysViewerController {
   registerShapeRef(ref, tag) {
     if (!ref) return;
     this.shapeRefs.add(ref);
+    console.log("[MolSysViewer] registerShapeRef", { tag, hasRef: !!ref });
     if (!tag) return;
     if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, /* @__PURE__ */ new Set());
     this.tagIndex.get(tag).add(ref);
     if (!this.layerMeta.has(tag)) {
       this.layerMeta.set(tag, { kind: "shape", meta: {} });
       this.notify?.({ event: "layer_ack", tag, kind: "shape", meta: {} });
+    }
+    if (this.pendingLayerVisibility.has(tag)) {
+      const hide = this.pendingLayerVisibility.get(tag);
+      this.pendingLayerVisibility.delete(tag);
+      console.log("[MolSysViewer] apply pending layer visibility", tag, "hide:", hide);
+      setSubtreeVisibility(this.plugin.state.data, ref, hide);
     }
   }
   async handleMessage(msg) {
@@ -142905,7 +142916,8 @@ var MolSysViewerController = class _MolSysViewerController {
       center: options.center ?? [0, 0, 0],
       radius: options.radius ?? 10,
       color: options.color ?? 65280,
-      alpha: options.alpha ?? 0.4
+      alpha: options.alpha ?? 0.4,
+      tag: options.tag ?? msg.tag
     });
   }
   async handleAddAlphaSphereSet(msg) {
@@ -143117,7 +143129,8 @@ var MolSysViewerController = class _MolSysViewerController {
         component: componentRef,
         representations: reprRef ? [reprRef] : [],
         atomIndices,
-        selection: msg.selection
+        selection: msg.selection,
+        hidden: false
       });
       console.log("[MolSysViewer] create_region: done", tag, "compCount", compCount, "repr", reprRef);
       this.notify?.({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
@@ -143188,14 +143201,8 @@ var MolSysViewerController = class _MolSysViewerController {
     const tag = msg.tag ?? "region";
     const entry = this.regionIndex.get(tag);
     if (!entry || entry.representations.length === 0) return;
-    const update10 = this.plugin.state.data.build();
-    entry.representations.forEach(
-      (ref) => update10.to(ref).update((old) => ({
-        ...old,
-        state: { ...old?.state ?? {}, isHidden: hide }
-      }))
-    );
-    await update10.commit({ revertOnError: false });
+    entry.hidden = hide;
+    entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
   }
   async handleDeleteRegion(msg) {
     const tag = msg.tag ?? "region";
@@ -143217,15 +143224,14 @@ var MolSysViewerController = class _MolSysViewerController {
   async handleShowHideLayer(msg, hide) {
     const tag = msg.tag ?? "layer";
     const refs = this.tagIndex.get(tag);
-    if (!refs || refs.size === 0) return;
-    const update10 = this.plugin.state.data.build();
-    refs.forEach(
-      (ref) => update10.to(ref).update((old) => ({
-        ...old,
-        state: { ...old?.state ?? {}, isHidden: hide }
-      }))
-    );
-    await update10.commit({ revertOnError: false });
+    if (!refs || refs.size === 0) {
+      this.pendingLayerVisibility.set(tag, hide);
+      console.log("[MolSysViewer] queue layer visibility", tag, "hide:", hide);
+      return;
+    }
+    this.pendingLayerVisibility.delete(tag);
+    console.log("[MolSysViewer] set layer visibility", tag, "hide:", hide, "refs:", refs.size);
+    refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
   }
   async handleDeleteLayer(msg) {
     const tag = msg.tag ?? "layer";
@@ -143335,18 +143341,89 @@ var MolSysViewerController = class _MolSysViewerController {
     await this.handleShowHideGlobal(false);
   }
   async handleShowHideGlobal(hide, target = "global") {
+    if (target === "global") {
+      this.requestedGlobalHidden = hide;
+    }
+    if (!this.loadedStructure?.structure || !this.currentStructure) {
+      this.pendingGlobalOps.push({ hide, target });
+      return;
+    }
     const refs = [];
-    this.globalReprs.forEach((ref) => refs.push(ref));
-    if (target === "all") {
-      const allReprs = this.plugin.state.data.select(PluginStateObject.Molecule.Structure.Representation3D);
-      for (const r of allReprs) {
-        refs.push(r.transform.ref);
+    const baselineRefs = [];
+    const hierarchy = this.plugin.managers.structure.hierarchy.current;
+    const structures = hierarchy?.structures ?? [];
+    const regionReprRefs = /* @__PURE__ */ new Set();
+    const hiddenRegionReprRefs = /* @__PURE__ */ new Set();
+    this.regionIndex.forEach((entry) => entry.representations.forEach((ref) => {
+      regionReprRefs.add(ref);
+      if (entry.hidden) hiddenRegionReprRefs.add(ref);
+    }));
+    if (target === "global") {
+      this.globalReprs.forEach((ref) => {
+        refs.push(ref);
+        baselineRefs.push(ref);
+      });
+      structures.forEach((s) => {
+        (s.representations ?? []).forEach((r) => {
+          if (!regionReprRefs.has(r.cell.transform.ref)) {
+            refs.push(r.cell.transform.ref);
+            baselineRefs.push(r.cell.transform.ref);
+          }
+        });
+        (s.components ?? []).forEach(
+          (c8) => (c8.representations ?? []).forEach((r) => {
+            if (!regionReprRefs.has(r.cell.transform.ref)) {
+              refs.push(r.cell.transform.ref);
+              baselineRefs.push(r.cell.transform.ref);
+            }
+          })
+        );
+      });
+      if (refs.length === 0) {
+        await this.ensureDefaultGlobalRepresentation();
+        this.globalReprs.forEach((ref) => {
+          refs.push(ref);
+          baselineRefs.push(ref);
+        });
       }
+    } else {
+      structures.forEach((s) => {
+        (s.representations ?? []).forEach((r) => {
+          if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
+          refs.push(r.cell.transform.ref);
+        });
+        (s.components ?? []).forEach((c8) => (c8.representations ?? []).forEach((r) => {
+          if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
+          refs.push(r.cell.transform.ref);
+        }));
+      });
+      this.globalReprs.forEach((ref) => refs.push(ref));
+      this.tagIndex.forEach((set4) => set4.forEach((ref) => refs.push(ref)));
+      this.globalReprs.forEach((ref) => baselineRefs.push(ref));
+      structures.forEach((s) => {
+        (s.representations ?? []).forEach((r) => {
+          if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
+        });
+        (s.components ?? []).forEach(
+          (c8) => (c8.representations ?? []).forEach((r) => {
+            if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
+          })
+        );
+      });
     }
     if (refs.length === 0) return;
-    const update10 = this.plugin.state.data.build();
-    refs.forEach((ref) => update10.to(ref).setState({ isHidden: hide }));
-    await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
+    refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
+    if (target === "all" && !hide && this.requestedGlobalHidden) {
+      if (baselineRefs.length === 0) {
+        await this.ensureDefaultGlobalRepresentation();
+        this.globalReprs.forEach((ref) => baselineRefs.push(ref));
+      }
+      if (baselineRefs.length) {
+        baselineRefs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
+      } else {
+        this.pendingGlobalOps.push({ hide: true, target: "global" });
+      }
+    }
   }
   async handleStepTrajectory(msg) {
     const by = msg.by ?? 1;
@@ -143405,6 +143482,11 @@ var MolSysViewerController = class _MolSysViewerController {
       this.pendingVisibility = void 0;
       void this.updateVisibility(pending);
     }
+    if (this.pendingGlobalOps.length && this.currentStructure) {
+      const ops = [...this.pendingGlobalOps];
+      this.pendingGlobalOps.length = 0;
+      ops.forEach((op4) => void this.handleShowHideGlobal(op4.hide, op4.target));
+    }
     if (this.pendingRegions.length && this.currentStructure) {
       const queued = [...this.pendingRegions];
       this.pendingRegions.length = 0;
@@ -143415,21 +143497,33 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.currentStructure && this.globalReprs.size === 0) {
       void this.ensureDefaultGlobalRepresentation();
     }
+    if (this.requestedGlobalHidden !== null) {
+      void this.handleShowHideGlobal(this.requestedGlobalHidden, "global");
+    }
     this.updateTrajectoryState();
   }
   async ensureDefaultGlobalRepresentation() {
     const structureRef = this.loadedStructure?.structure;
     if (!structureRef || this.globalReprs.size > 0) return;
-    const update10 = this.plugin.state.data.build();
     try {
-      const repr = this.plugin.builders.structure.representation.buildRepresentation(
-        update10,
+      const applied = await this.plugin.builders.structure.representation.applyPreset(
         { ref: structureRef },
-        { type: "cartoon" },
-        { tag: "global" }
+        "auto",
+        {}
       );
-      await update10.commit({ revertOnError: false });
-      if (repr?.ref) this.globalReprs.add(repr.ref);
+      const refs = this.collectRefsFromPreset(applied);
+      refs.forEach((ref) => this.globalReprs.add(ref));
+      if (this.globalReprs.size === 0) {
+        const repr = await this.plugin.builders.structure.representation.addRepresentation(
+          structureRef,
+          { type: "cartoon" },
+          { tag: "global" }
+        );
+        if (repr?.ref) this.globalReprs.add(repr.ref);
+      }
+      if (this.requestedGlobalHidden) {
+        this.globalReprs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
+      }
     } catch (err) {
       console.warn("[MolSysViewer] default global representation failed", err);
     }
@@ -143441,13 +143535,15 @@ var MolSysViewerController = class _MolSysViewerController {
     return this.currentStructure?.components ?? [];
   }
   async addSphere(options) {
+    console.log("[MolSysViewer] addSphere options", options);
+    const tag = options?.tag;
     const ref = await addTransparentSphereFromPython(this.plugin, {
       center: options?.center ?? [0, 0, 0],
       radius: options?.radius ?? 10,
       color: options?.color ?? 65280,
       alpha: options?.alpha ?? 0.4
     });
-    this.registerShapeRef(ref);
+    this.registerShapeRef(ref, tag);
   }
   async updateVisibility(visibleAtomIndices) {
     const structure = this.getStructure();

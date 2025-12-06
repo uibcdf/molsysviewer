@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import test from "node:test";
-import { MolSysViewerController } from "../src/managers/viewer-controller";
+import { MolSysViewerController } from "../../src/managers/viewer-controller";
 
 function makeBuilder() {
     const updates: Array<{ ref: any; next: any }> = [];
