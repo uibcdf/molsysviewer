@@ -58,6 +58,14 @@ export default {
 
         el.appendChild(target);
 
+        // Expose controller for popout usage
+        (window as any).MolSysViewerController = MolSysViewerController;
+
+        // Log of all messages applied to the controller (load + actions)
+        const messageLog: ViewerMessage[] = [];
+        let popoutWin: Window | null = null;
+        let popoutReady = false;
+
         const controllerPromise = MolSysViewerController.create(target, msg => model.send(msg));
 
         const makeButton = (label: string, onClick: () => void) => {
@@ -83,7 +91,7 @@ export default {
             return btn;
         };
 
-        const controllerReady = controllerPromise.then(c => {
+        const buildControls = (c: any, addPop?: () => void) => {
             const overlay = document.createElement("div");
             overlay.className = "molsysviewer-controls";
             overlay.style.position = "absolute";
@@ -104,6 +112,130 @@ export default {
             mk("Bg", () => c.toggleBackground());
             mk("Spin", () => c.toggleSpin());
             mk("Swing", () => c.toggleSwing());
+            if (addPop) mk("Pop", addPop);
+            return overlay;
+        };
+
+        const openPopout = async () => {
+            if (popoutWin && !popoutWin.closed) {
+                popoutWin.close();
+                popoutWin = null;
+                popoutReady = false;
+                return;
+            }
+            popoutWin = window.open("", "_blank", "width=960,height=720");
+            if (!popoutWin) return;
+            popoutReady = false;
+            const doc = popoutWin.document;
+            doc.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MolSysViewer Popout</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
+    .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+  </style>
+</head>
+<body>
+  <div id="molsysviewer-pop"></div>
+  <script type="module">
+    const openerWin = window.opener;
+    const Controller = openerWin?.MolSysViewerController;
+    if (!Controller) {
+      console.error("MolSysViewer: no controller available in opener");
+    } else {
+      const container = document.getElementById("molsysviewer-pop");
+      const notify = (msg) => {
+        try { openerWin?.postMessage({ type: "molsysviewer-pop-log", msg }, "*"); } catch (e) {}
+      };
+      Controller.create(container, notify).then(ctrl => {
+        const makeButton = (label, onClick) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = label;
+          btn.style.padding = "2px 6px";
+          btn.style.fontSize = "11px";
+          btn.style.lineHeight = "16px";
+          btn.style.height = "22px";
+          btn.style.minHeight = "22px";
+          btn.style.boxSizing = "border-box";
+          btn.style.display = "inline-flex";
+          btn.style.alignItems = "center";
+          btn.style.justifyContent = "center";
+          btn.style.border = "1px solid rgba(255,255,255,0.5)";
+          btn.style.borderRadius = "4px";
+          btn.style.background = "rgba(0,0,0,0.5)";
+          btn.style.color = "#fff";
+          btn.style.cursor = "pointer";
+          btn.style.userSelect = "none";
+          btn.addEventListener("click", onClick);
+          return btn;
+        };
+        const overlay = document.createElement("div");
+        overlay.className = "molsysviewer-controls";
+        overlay.style.position = "absolute";
+        overlay.style.top = "8px";
+        overlay.style.right = "8px";
+        overlay.style.display = "flex";
+        overlay.style.gap = "6px";
+        overlay.style.zIndex = "10";
+        overlay.style.pointerEvents = "auto";
+        overlay.style.flexWrap = "nowrap";
+        const addBtn = (label, handler) => {
+          const b = makeButton(label, handler);
+          overlay.appendChild(b);
+        };
+        addBtn("Reset", () => ctrl.resetView());
+        addBtn("Full", () => ctrl.toggleFullscreen());
+        addBtn("Bg", () => ctrl.toggleBackground());
+        addBtn("Spin", () => ctrl.toggleSpin());
+        addBtn("Swing", () => ctrl.toggleSwing());
+        container.appendChild(overlay);
+
+        window.addEventListener("message", async ev => {
+          if (!ev.data) return;
+          if (ev.data.type === "molsysviewer-pop-apply" && Array.isArray(ev.data.messages)) {
+            for (const m of ev.data.messages) {
+              try { await ctrl.handleMessage(m); } catch (err) { console.error("Popout apply error", err); }
+            }
+          }
+        });
+        try { openerWin?.postMessage({ type: "molsysviewer-pop-ready" }, "*"); } catch (e) {}
+      });
+    }
+  </script>
+</body>
+</html>
+            `);
+            doc.close();
+            const interval = window.setInterval(() => {
+                if (!popoutWin || popoutWin.closed) {
+                    popoutWin = null;
+                    popoutReady = false;
+                    window.clearInterval(interval);
+                }
+            }, 2000);
+        };
+
+        window.addEventListener("message", ev => {
+            if (!ev.data) return;
+            if (ev.data.type === "molsysviewer-pop-ready") {
+                popoutReady = true;
+                if (popoutWin && !popoutWin.closed) {
+                    try {
+                        popoutWin.postMessage({ type: "molsysviewer-pop-apply", messages: [...messageLog] }, "*");
+                    } catch (e) {
+                        console.warn("[MolSysViewer] popout sync failed", e);
+                    }
+                }
+            }
+        });
+
+        const controllerReady = controllerPromise.then(c => {
+            const overlay = buildControls(c, openPopout);
 
             // Trajectory controls (aligned with the top-left overlay)
             const traj = document.createElement("div");
@@ -439,13 +571,13 @@ export default {
 
         (async () => {
             try {
-                await controllerReady;
+                const controller = await controllerReady;
                 model.send({ event: "ready" });
                 const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
                 if (Array.isArray(initialMessages) && initialMessages.length) {
-                    const controller = await controllerReady;
                     for (const msg of initialMessages) {
                         await controller.handleMessage(msg);
+                        messageLog.push(msg);
                     }
                 }
             } catch (err) {
@@ -457,17 +589,25 @@ export default {
         console.log("[MolSysViewer] widget render init");
         sendLog("info", "[MolSysViewer] widget render init");
 
-        model.on("msg:custom", async (msg: ViewerMessage) => {
-            if (!msg || typeof msg !== "object") return;
-            console.log("[MolSysViewer] message from Python:", msg);
-            if (debug) sendLog("info", "[MolSysViewer] message from Python:", msg);
-            try {
-                const controller = await controllerReady;
-                await controller.handleMessage(msg);
-            } catch (error) {
-                console.error("[MolSysViewer] Error manejando mensaje:", msg, error);
-                sendLog("error", "[MolSysViewer] Error manejando mensaje:", msg, error);
-            }
-        });
+            model.on("msg:custom", async (msg: ViewerMessage) => {
+                if (!msg || typeof msg !== "object") return;
+                console.log("[MolSysViewer] message from Python:", msg);
+                if (debug) sendLog("info", "[MolSysViewer] message from Python:", msg);
+                try {
+                    const controller = await controllerReady;
+                    await controller.handleMessage(msg);
+                    messageLog.push(msg);
+                    if (popoutReady && popoutWin && !popoutWin.closed) {
+                        try {
+                            popoutWin.postMessage({ type: "molsysviewer-pop-apply", messages: [msg] }, "*");
+                        } catch (e) {
+                            console.warn("[MolSysViewer] popout forward failed", e);
+                        }
+                    }
+                } catch (error) {
+                    console.error("[MolSysViewer] Error manejando mensaje:", msg, error);
+                    sendLog("error", "[MolSysViewer] Error manejando mensaje:", msg, error);
+                }
+            });
     },
 };
