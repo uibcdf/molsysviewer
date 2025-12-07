@@ -69,8 +69,8 @@ Use **nvm-windows**:
 Create and activate the development environment:
 
 ```bash
-conda create -n molsysviewer-dev python=3.12
-conda activate molsysviewer-dev
+conda create -n molsysviewer_dev python=3.12
+conda activate molsysviewer_dev
 ```
 
 Install development dependencies:
@@ -88,11 +88,10 @@ This includes testing tools, formatting, anywidget dependencies, etc.
 All JS/TS development occurs inside the `js/` directory:
 
 ```
-molsysviewer/
-    js/
-        package.json
-        src/
-        ...
+molsysviewer/js/
+    package.json
+    src/
+    ...
 ```
 
 Install JS dependencies:
@@ -130,7 +129,7 @@ Make changes anywhere in the Python package:
 ```
 molsysviewer/
     widget.py
-    view.py
+    viewer.py
     ...
 ```
 
@@ -184,11 +183,11 @@ Codex will read and operate on the entire repository.
 ```
 molsysviewer/
 │
-├── js/                     # TypeScript sources
+├── molsysviewer/js/        # TypeScript sources and build artifacts
 │   ├── src/
 │   ├── package.json
 │   ├── tsconfig.json
-│   └── ... (build artifacts)
+│   └── ...
 │
 ├── molsysviewer/           # Python package
 │   ├── viewer.py
@@ -197,8 +196,9 @@ molsysviewer/
 │   └── ...
 │
 ├── tests/
-├── examples/
-└── setup.cfg / pyproject.toml
+├── devguide/
+├── docs/
+└── pyproject.toml
 ```
 
 ---
@@ -246,7 +246,7 @@ Then restart the Jupyter kernel and refresh the browser.
 Ensure your environment is active:
 
 ```bash
-conda activate molsysviewer-dev
+conda activate molsysviewer_dev
 ```
 
 And reinstall editable mode:

@@ -2,6 +2,14 @@
 
 import { MolSysViewerController } from "./managers/viewer-controller";
 import { ViewerMessage } from "./messages/viewer-messages";
+import { bootPopup } from "./popup/popup-logic";
+import { PopupHostManager } from "./managers/popup-host";
+import { buildControls } from "./ui/controls";
+import { createLogger } from "./utils/logger";
+
+// Re-export bootPopup so it is available in the bundle's public interface
+export { bootPopup };
+export { MolSysViewerController }; // Export Controller for Popup context usage
 
 /**
  * NOTE FOR AUTOMATION AGENTS:
@@ -11,463 +19,221 @@ import { ViewerMessage } from "./messages/viewer-messages";
 export default {
     render({ model, el }: { model: any; el: HTMLElement }) {
         const debug = !!model.get("debug_js");
-        const formatArg = (v: any) => {
-            if (v instanceof Error) return v.stack || v.message || String(v);
-            if (typeof v === "object") {
-                try {
-                    return JSON.stringify(v);
-                } catch {
-                    return String(v);
-                }
-            }
-            return String(v);
-        };
-        const sendLog = (level: "info" | "warn" | "error" | "log", ...args: any[]) => {
-            if (!debug) return;
-            try {
-                model.send({
-                    event: "js_log",
-                    level,
-                    message: args.map(formatArg).join(" "),
-                });
-            } catch {
-                /* no-op */
-            }
-        };
-        if (debug) {
-            ["error", "warn"].forEach(level => {
-                const orig = (console as any)[level] as ((...xs: any[]) => void) | undefined;
-                (console as any)[level] = (...args: any[]) => {
-                    if (orig) {
-                        try {
-                            orig.apply(console, args);
-                        } catch {
-                            /* ignore */
-                        }
-                    }
-                    sendLog(level as any, ...args);
-                };
-            });
-        }
+        const sendLog = createLogger(model, debug);
 
+        // Store commands from Python to replay them in the popout
+        const commandLog: ViewerMessage[] = [];
+
+        // 1. Setup DOM
         const target = document.createElement("div");
-        target.style.width = "100%";
-        target.style.height = "100%";
-        target.style.minHeight = "400px";
-        target.style.position = "relative";
+        Object.assign(target.style, {
+            width: "100%", height: "100%", minHeight: "400px", position: "relative",
+            touchAction: "none", cursor: "default" // Default cursor
+        });
+        
+        // Track user interaction for "Master/Slave" camera sync logic
+        let isUserInteracting = false;
+        let wheelTimeout: ReturnType<typeof window.setTimeout> | null = null;
 
+        const onPointerDown = () => { 
+            // target.style.cursor = "grabbing"; // No change, keep default
+            isUserInteracting = true;
+        };
+        const onPointerUpOrCancel = () => { 
+            // target.style.cursor = "grab"; // No change, keep default
+            isUserInteracting = false;
+        };
+        const onWheel = () => {
+            isUserInteracting = true;
+            if (wheelTimeout) clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(() => { isUserInteracting = false; }, 200);
+        };
+
+        target.addEventListener("pointerdown", onPointerDown);
+        window.addEventListener("pointerup", onPointerUpOrCancel);
+        window.addEventListener("pointercancel", onPointerUpOrCancel);
+        target.addEventListener("wheel", onWheel, { passive: true }); // Make sure this line is not cut off
+        
         el.appendChild(target);
 
+        // 2. Initialize Controller
         const controllerPromise = MolSysViewerController.create(target, msg => model.send(msg));
 
-        const makeButton = (label: string, onClick: () => void) => {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.textContent = label;
-            btn.style.padding = "2px 6px";
-            btn.style.fontSize = "11px";
-            btn.style.lineHeight = "16px";
-            btn.style.height = "22px";
-            btn.style.minHeight = "22px";
-            btn.style.boxSizing = "border-box";
-            btn.style.display = "inline-flex";
-            btn.style.alignItems = "center";
-            btn.style.justifyContent = "center";
-            btn.style.border = "1px solid rgba(255,255,255,0.5)";
-            btn.style.borderRadius = "4px";
-            btn.style.background = "rgba(0,0,0,0.5)";
-            btn.style.color = "#fff";
-            btn.style.cursor = "pointer";
-            btn.style.userSelect = "none";
-            btn.addEventListener("click", onClick);
-            return btn;
-        };
+        // 3. Initialize Popup Manager with Payload
+        const viewerJsSource = model.get("popup_js_source");
+        if (!viewerJsSource) {
+            console.warn("[MolSysViewer] 'popup_js_source' not found in model. Popout might fail.");
+        } else {
+            console.log("[MolSysViewer] Initialized with payload source length:", viewerJsSource.length);
+        }
+        
+        const popupMgr = new PopupHostManager(viewerJsSource || "");
 
-        const controllerReady = controllerPromise.then(c => {
-            const overlay = document.createElement("div");
-            overlay.className = "molsysviewer-controls";
-            overlay.style.position = "absolute";
-            overlay.style.display = "flex";
-            overlay.style.gap = "6px";
-            overlay.style.zIndex = "10";
-            overlay.style.pointerEvents = "none";
-            overlay.style.flexWrap = "nowrap";
-
-            const mk = (label: string, handler: () => void) => {
-                const b = makeButton(label, handler);
-                b.style.pointerEvents = "auto";
-                overlay.appendChild(b);
-            };
-
-            mk("Reset", () => c.resetView());
-            mk("Full", () => c.toggleFullscreen());
-            mk("Bg", () => c.toggleBackground());
-            mk("Spin", () => c.toggleSpin());
-            mk("Swing", () => c.toggleSwing());
-
-            // Trajectory controls (aligned with the top-left overlay)
-            const traj = document.createElement("div");
-            traj.style.display = "flex";
-            traj.style.alignItems = "center";
-            traj.style.gap = "6px";
-            traj.style.pointerEvents = "auto";
-            traj.style.marginLeft = "6px";
-            traj.style.paddingLeft = "0px";
-            traj.style.borderLeft = "0px";
-
-            let currentStep = 1;
-            let currentFps = 30;
-
-            const btnPrev = makeButton("−", () => c.stepTrajectory(-currentStep));
-            const btnPlay = makeButton("▶", () => c.playTrajectory({ fps: currentFps, step: currentStep }));
-            btnPlay.style.paddingTop = "0px";
-            btnPlay.style.paddingBottom = "0px";
-            btnPlay.style.lineHeight = "18px";
-            const btnPause = makeButton("⏸", () => c.stopTrajectoryPlayback());
-            btnPause.style.paddingTop = "0px";
-            btnPause.style.paddingBottom = "0px";
-            btnPause.style.lineHeight = "18px";
-            const btnNext = makeButton("+", () => c.stepTrajectory(currentStep));
-            [btnPrev, btnPlay, btnPause, btnNext].forEach(b => {
-                b.style.pointerEvents = "auto";
-            });
-
-            const slider = document.createElement("input");
-            slider.type = "range";
-            slider.min = "0";
-            slider.max = "0";
-            slider.value = "0";
-            slider.className = "molsysviewer-slider";
-            slider.style.width = "160px";
-            slider.style.flex = "0 0 160px";
-            slider.style.background = "transparent";
-            slider.style.appearance = "none";
-            (slider.style as any).WebkitAppearance = "none";
-            (slider.style as any).MozAppearance = "none";
-            slider.style.setProperty("accent-color", "transparent");
-            slider.style.borderRadius = "999px";
-            slider.style.overflow = "visible";
-            const updateSliderBg = () => {
-                const min = Number(slider.min) || 0;
-                const max = Number(slider.max) || 0;
-                const val = Number(slider.value) || 0;
-                const pct = max > min ? Math.min(100, Math.max(0, ((val - min) * 100) / (max - min))) : 0;
-                const fill = "rgba(128,128,128,0.8)";
-                const track = "rgba(200,200,200,0.35)";
-                slider.style.background = `linear-gradient(to right, ${fill} 0%, ${fill} ${pct}%, ${track} ${pct}%, ${track} 100%)`;
-            };
-            slider.oninput = () => {
-                const val = Number(slider.value);
-                if (!Number.isFinite(val)) return;
-                void c.setTrajectoryFrame(val);
-                updateSliderBg();
-            };
-            updateSliderBg();
-
-            const label = document.createElement("span");
-            label.style.color = "rgba(0,0,0,0.5)";
-            label.style.fontSize = "11px";
-            label.style.minWidth = "60px";
-            label.style.textAlign = "center";
-            label.textContent = "0 / 0";
-
-            const makeNumberControl = (
-                initial: number,
-                onChange: (n: number) => void,
-                title: string
-            ) => {
-                const wrapper = document.createElement("div");
-                wrapper.style.position = "relative";
-                wrapper.style.display = "inline-block";
-                wrapper.style.width = "52px";
-                wrapper.style.height = "22px";
-
-                const input = document.createElement("input");
-                input.type = "text";
-                input.value = String(initial);
-                input.style.width = "52px";
-                input.style.height = "22px";
-                input.style.fontSize = "11px";
-                input.style.boxSizing = "border-box";
-                input.style.color = "rgba(255,255,255,0.9)";
-                input.style.background = "rgba(40,40,40,0.6)";
-                input.style.border = "1px solid rgba(255,255,255,0.55)";
-                input.style.borderRadius = "4px";
-                input.style.padding = "0 18px 0 4px";
-                input.style.appearance = "none";
-                (input.style as any).MozAppearance = "textfield";
-                (input.style as any).WebkitAppearance = "none";
-                input.className = "molsysviewer-traj-input";
-                input.title = title;
-                input.setAttribute("inputmode", "numeric");
-                input.setAttribute("pattern", "[0-9]*");
-                input.onchange = () => {
-                    const val = Number(input.value);
-                    const n = Number.isFinite(val) && val > 0 ? Math.floor(val) : initial;
-                    onChange(n);
-                    input.value = String(n);
-                };
-
-                const spinner = document.createElement("div");
-                spinner.style.position = "absolute";
-                spinner.style.top = "1px";
-                spinner.style.right = "2px";
-                spinner.style.width = "14px";
-                spinner.style.height = "18px";
-                spinner.style.display = "flex";
-                spinner.style.flexDirection = "column";
-                spinner.style.alignItems = "center";
-
-                const mkArrow = (char: string, delta: number, extraTop: string = "0px") => {
-                    const btn = document.createElement("div");
-                    btn.textContent = char;
-                    btn.style.fontSize = "10px";
-                    btn.style.lineHeight = "10px";
-                    btn.style.height = "9px";
-                    btn.style.color = "#ffffff";
-                    btn.style.background = "transparent";
-                    btn.style.border = "none";
-                    btn.style.textAlign = "center";
-                    btn.style.cursor = "pointer";
-                    btn.style.marginTop = extraTop;
-                    btn.onclick = () => {
-                        const val = Number(input.value);
-                        const next = Number.isFinite(val) ? val + delta : delta;
-                        const n = next > 0 ? Math.floor(next) : 1;
-                        onChange(n);
-                        input.value = String(n);
-                    };
-                    return btn;
-                };
-
-                const upBtn = mkArrow("▲", 1, "0px");
-                const downBtn = mkArrow("▼", -1, "1px");
-                spinner.appendChild(upBtn);
-                spinner.appendChild(downBtn);
-
-                wrapper.appendChild(input);
-                wrapper.appendChild(spinner);
-                return { wrapper, input };
-            };
-
-            const stepControl = makeNumberControl(1, n => {
-                currentStep = n;
-            }, "Step size");
-            const fpsControl = makeNumberControl(5, n => {
-                currentFps = n;
-            }, "FPS");
-
-            traj.appendChild(btnPrev);
-            traj.appendChild(btnPlay);
-            traj.appendChild(btnPause);
-            traj.appendChild(btnNext);
-            traj.appendChild(slider);
-            traj.appendChild(label);
-            traj.appendChild(stepControl.wrapper);
-            traj.appendChild(fpsControl.wrapper);
-
-            overlay.appendChild(traj);
+        // 4. Build UI Controls & Setup Sync
+        controllerPromise.then(c => {
+            const overlay = buildControls(c, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), target, () => popupMgr.open());
             target.appendChild(overlay);
 
-            const placeOverlay = () => {
-                const pos = model.get("controls_position") as string[] | undefined;
-                const posFs = model.get("controls_position_fullscreen") as string[] | undefined;
-                const isFs = !!document.fullscreenElement;
-                const use = isFs && Array.isArray(posFs) ? posFs : Array.isArray(pos) ? pos : ["top", "right"];
-                overlay.style.top = use?.includes("top") ? "8px" : "";
-                overlay.style.bottom = use?.includes("bottom") ? "8px" : "";
-                overlay.style.left = use?.includes("left") ? "8px" : "";
-                overlay.style.right = use?.includes("right") ? "8px" : "";
-            };
-            placeOverlay();
-            document.addEventListener("fullscreenchange", placeOverlay);
-            model.on("change:controls_position", placeOverlay);
-            model.on("change:controls_position_fullscreen", placeOverlay);
+            // 5. Setup Camera Sync (Host -> Popup)
+            if (c.plugin.canvas3d) {
+                let hostCameraSyncTimer: ReturnType<typeof window.setTimeout> | null = null;
+                const c3d = c.plugin.canvas3d;
 
-            let autohide = !!model.get("autohide_controls");
-            const applyShow = (visible: boolean) => {
-                if (autohide) {
-                    overlay.style.opacity = visible ? "1" : "0";
-                    overlay.style.pointerEvents = visible ? "auto" : "none";
+                const syncCamera = () => {
+                    // Only sync if popout is open AND user is actively interacting with this viewer
+                    if (!popupMgr.isReady || !isUserInteracting) return;
+                    
+                    if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
+                    hostCameraSyncTimer = setTimeout(() => {
+                        popupMgr.send("molsysviewer-sync-camera", c.getCameraSnapshot());
+                        hostCameraSyncTimer = null;
+                    }, 20); // Fast debounce
+                };
+
+                // Force usage of didDraw for reliable interactive sync, matching the popup's working logic
+                if (c3d.didDraw) {
+                    c3d.didDraw.subscribe(syncCamera);
+                    console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
+                } else if (c3d.camera.events?.changed) {
+                    c3d.camera.events.changed.subscribe(syncCamera);
+                    console.log("[MolSysViewer] Host: Sync via camera.events.changed (fallback).");
                 } else {
-                    overlay.style.display = visible ? "flex" : "none";
+                    console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
                 }
-            };
-            const enableAutohide = () => {
-                overlay.style.transition = "opacity 150ms ease";
-                applyShow(!!model.get("show_controls"));
-                target.addEventListener("mouseenter", onEnter);
-                target.addEventListener("mouseleave", onLeave);
-            };
-            const disableAutohide = () => {
-                target.removeEventListener("mouseenter", onEnter);
-                target.removeEventListener("mouseleave", onLeave);
-                overlay.style.opacity = "1";
-                overlay.style.pointerEvents = "auto";
-                applyShow(!!model.get("show_controls"));
-            };
-            const onEnter = () => applyShow(!!model.get("show_controls"));
-            const onLeave = () => applyShow(false);
-            if (autohide) {
-                enableAutohide();
             } else {
-                applyShow(!!model.get("show_controls"));
+                console.warn("[MolSysViewer] Host: plugin.canvas3d is undefined. Camera sync disabled.");
             }
-            model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
-            model.on("change:autohide_controls", () => {
-                const next = !!model.get("autohide_controls");
-                if (next === autohide) return;
-                autohide = next;
-                if (autohide) {
-                    enableAutohide();
-                    // Start hidden; will show on next mouse enter.
-                    applyShow(false);
-                } else {
-                    disableAutohide();
-                }
-            });
-
-            const css = `
-                .molsysviewer-controls,
-                .molsysviewer-controls * {
-                    user-select: none;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                }
-                .molsysviewer-traj-input::-webkit-inner-spin-button,
-                .molsysviewer-traj-input::-webkit-outer-spin-button {
-                    -webkit-appearance: none !important;
-                    appearance: none !important;
-                    -moz-appearance: none !important;
-                    margin: 0 !important;
-                }
-                .molsysviewer-traj-input {
-                    -moz-appearance: textfield !important;
-                    appearance: none !important;
-                    -webkit-appearance: none !important;
-                    color: rgba(255,255,255,0.9);
-                    background: rgba(40,40,40,0.6);
-                    caret-color: transparent;
-                }
-                .molsysviewer-slider {
-                    background: transparent;
-                    height: 16px;
-                    border-radius: 999px;
-                    overflow: visible;
-                }
-                .molsysviewer-slider::-webkit-slider-runnable-track {
-                    background: rgba(200,200,200,0.35) !important;
-                    height: 16px;
-                    border-radius: 999px;
-                }
-                .molsysviewer-slider::-moz-range-track {
-                    background: rgba(200,200,200,0.35) !important;
-                    height: 16px;
-                    border-radius: 999px;
-                }
-                .molsysviewer-slider::-ms-track {
-                    background: rgba(200,200,200,0.35) !important;
-                    height: 16px;
-                    border-radius: 999px;
-                    border: none;
-                    color: transparent;
-                }
-                .molsysviewer-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none !important;
-                    appearance: none !important;
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50% !important;
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                    margin-top: 0px;
-                }
-                .molsysviewer-slider::-webkit-slider-thumb:hover,
-                .molsysviewer-slider::-webkit-slider-thumb:active,
-                .molsysviewer-slider::-webkit-slider-thumb:focus {
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                }
-                .molsysviewer-slider::-moz-range-thumb {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50% !important;
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                }
-                .molsysviewer-slider::-moz-range-thumb:hover,
-                .molsysviewer-slider::-moz-range-thumb:active,
-                .molsysviewer-slider::-moz-range-thumb:focus {
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                }
-                .molsysviewer-slider::-ms-thumb {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50% !important;
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                }
-            `;
-            const style = document.getElementById("molsysviewer-traj-style") as HTMLStyleElement | null;
-            if (style) {
-                style.textContent = css;
-            } else {
-                const el = document.createElement("style");
-                el.id = "molsysviewer-traj-style";
-                el.textContent = css;
-                document.head.appendChild(el);
-            }
-
-            c.onTrajectoryState(state => {
-                const frameCount = state.frameCount;
-                const current = state.currentFrame;
-                slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
-                slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
-                updateSliderBg();
-                label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
-                const disabled = frameCount <= 1;
-                [btnPrev, btnNext, slider, btnPlay, btnPause].forEach(el => {
-                    (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
-                });
-            });
-
-            return c;
         });
 
+        // 6. Handle Incoming Messages (Popup -> Host)
+        const messageHandler = async (ev: MessageEvent) => {
+            // Self-cleaning: remove listener if widget is removed from DOM
+            if (!document.body.contains(el)) {
+                window.removeEventListener("message", messageHandler);
+                return;
+            }
+
+            if (!ev.data || ev.data.from === "host") return;
+            
+            const { type, data } = ev.data;
+            // Filter out internal or unknown messages to reduce log spam
+            if (!type || typeof type !== 'string' || !type.startsWith("molsysviewer-")) return;
+
+            const controller = await controllerPromise;
+
+            try {
+                switch (type) {
+                    case "molsysviewer-pop-ready":
+                        popupMgr.isReady = true;
+                        // Sync initial state to popup
+                        popupMgr.send("molsysviewer-initial-sync", {
+                            messages: [...commandLog], // Sending sanitized copy
+                            cameraSnapshot: controller.getCameraSnapshot(),
+                            isSpinActive: controller.isSpinActive,
+                            isSwingActive: controller.isSwingActive,
+                            isDarkMode: controller.isDarkMode,
+                            autohide: !!model.get("autohide_controls")
+                        });
+                        break;
+
+                    case "molsysviewer-sync-op":
+                        // Operations (style, color) are always applied
+                        console.log("[MolSysViewer Host] Received sync-op:", data);
+                        if (data) await controller.handleMessage(data as ViewerMessage);
+                        break;
+
+                    case "molsysviewer-sync-camera":
+                        // Apply camera from popup ONLY if user is NOT interacting with host
+                        if (data && !isUserInteracting) {
+                            controller.setCameraSnapshot(data, 0);
+                        }
+                        break;
+
+                    case "molsysviewer-log-from-popout":
+                        if (debug) sendLog("info", "[Popout Log]:", data?.msg);
+                        break;
+                }
+            } catch (e) {
+                console.error("[MolSysViewer Host] Error handling popout message:", e);
+            }
+        };
+        
+        window.addEventListener("message", messageHandler);
+
+        // 7. Handle Python Messages
         (async () => {
             try {
-                await controllerReady;
+                const controller = await controllerPromise;
                 model.send({ event: "ready" });
                 const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
                 if (Array.isArray(initialMessages) && initialMessages.length) {
-                    const controller = await controllerReady;
                     for (const msg of initialMessages) {
-                        await controller.handleMessage(msg);
+                        if (msg) {
+                            await controller.handleMessage(msg);
+                            commandLog.push(msg);
+                        }
                     }
                 }
             } catch (err) {
-                console.error("[MolSysViewer] Error inicializando plugin:", err);
-                sendLog("error", "[MolSysViewer] Error inicializando plugin:", err);
+                console.error("[MolSysViewer] Init error:", err);
+                sendLog("error", "[MolSysViewer] Init error:", err);
             }
         })();
 
         console.log("[MolSysViewer] widget render init");
         sendLog("info", "[MolSysViewer] widget render init");
 
-        model.on("msg:custom", async (msg: ViewerMessage) => {
+        const onCustomMsg = async (msg: ViewerMessage) => {
             if (!msg || typeof msg !== "object") return;
-            console.log("[MolSysViewer] message from Python:", msg);
-            if (debug) sendLog("info", "[MolSysViewer] message from Python:", msg);
+            if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
             try {
-                const controller = await controllerReady;
+                const controller = await controllerPromise;
                 await controller.handleMessage(msg);
+                
+                // Sanitize log
+                if (msg && typeof msg === 'object') {
+                    commandLog.push(msg);
+                    popupMgr.send("molsysviewer-sync-op", msg);
+                }
             } catch (error) {
-                console.error("[MolSysViewer] Error manejando mensaje:", msg, error);
-                sendLog("error", "[MolSysViewer] Error manejando mensaje:", msg, error);
+                console.error("[MolSysViewer] Error handling message:", msg, error);
+                sendLog("error", "[MolSysViewer] Error handling message:", msg, error);
             }
+        };
+
+        model.on("msg:custom", onCustomMsg);
+        
+        // Sync autohide setting to popup
+        model.on("change:autohide_controls", () => {
+            popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
         });
+
+        // RETURN CLEANUP FUNCTION (supported by anywidget)
+        return () => {
+            console.log("[MolSysViewer] Disposing widget...");
+            
+            // 1. Remove global listeners
+            window.removeEventListener("message", messageHandler);
+            window.removeEventListener("pointerup", onPointerUpOrCancel);
+            window.removeEventListener("pointercancel", onPointerUpOrCancel);
+            target.removeEventListener("pointerdown", onPointerDown);
+            target.removeEventListener("wheel", onWheel);
+
+            // 2. Remove model listeners
+            model.off("msg:custom", onCustomMsg);
+
+            // 3. Dispose Mol* plugin to free WebGL context
+            controllerPromise.then(c => {
+                try {
+                    c.plugin.dispose();
+                    console.log("[MolSysViewer] Mol* plugin disposed.");
+                } catch (e) {
+                    console.error("[MolSysViewer] Error disposing plugin:", e);
+                }
+            });
+
+            // 4. Close popup if open
+            popupMgr.close();
+        };
     },
 };
