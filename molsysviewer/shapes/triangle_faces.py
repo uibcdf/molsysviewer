@@ -80,7 +80,7 @@ class TriangleFaces:
         normal_length: float | None = None,
         normal_color: int | None = None,
         tag: str | None = None,
-    ) -> None:
+    ):
         """Añade caras triangulares personalizadas usando coordenadas o índices atómicos.
 
         Parámetros adicionales:
@@ -121,7 +121,11 @@ class TriangleFaces:
             options["normal_length"] = float(normal_length)
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
-        if tag is not None:
-            options["tag"] = tag
+        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
+        options["tag"] = tag
 
         self._view._send({"op": "add_triangle_faces", "options": options})
+        if tag not in self._view._layers:  # noqa: SLF001
+            from ..layers import Layer
+            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        return self._view._layers[tag]  # noqa: SLF001

@@ -63,7 +63,7 @@ class LinkShapes:
         alpha: float = 1.0,
         radial_segments: int | None = None,
         tag: str | None = None,
-    ) -> None:
+    ):
         """Añade cilindros/barras conectando pares de puntos o de átomos.
 
         Parameters
@@ -120,7 +120,11 @@ class LinkShapes:
             options["chain_ids"] = chain_ids_list
         if radial_segments is not None:
             options["radial_segments"] = int(radial_segments)
-        if tag is not None:
-            options["tag"] = tag
+        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
+        options["tag"] = tag
 
         self._view._send({"op": "add_network_links", "options": options})
+        if tag not in self._view._layers:  # noqa: SLF001
+            from ..layers import Layer
+            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        return self._view._layers[tag]  # noqa: SLF001

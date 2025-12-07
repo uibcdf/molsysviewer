@@ -17,7 +17,7 @@ def _extract_state_json(html: str) -> dict:
 
 
 def test_build_html_filters_visibility(monkeypatch):
-    view = MolSysView()
+    view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
 
     # Add redundant visibility message (full range) that should be stripped
@@ -37,7 +37,7 @@ def test_build_html_filters_visibility(monkeypatch):
 
 @pytest.mark.parametrize("include_bundle", [True, False])
 def test_build_html_includes_anywidget(monkeypatch, include_bundle):
-    view = MolSysView()
+    view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
     monkeypatch.setattr(
         view,

@@ -213,6 +213,8 @@ molsysviewer/
 pytest
 ```
 
+* Prefer real demo viewers over mocks: `molsysviewer.demo` exposes lazy-loaded viewers (`dialanine`, `pentalanine`, `tctim`, `chicken_villin_HP35`) that you can use directly in tests (e.g., `demo.dialanine.show()` or `demo.dialanine()`).
+
 * Stick to a clean branch structure (`dev`, feature branches, etc.)
 * When modifying JS, always rebuild before testing in Jupyter.
 

@@ -15,3 +15,14 @@ controls_position = ["top", "right"]
 
 # Overlay position when fullscreen is active.
 controls_position_fullscreen = ["bottom", "right"]
+
+from .user_presets import user_presets, load_user_presets
+
+__all__ = [
+    "show_controls",
+    "autohide_controls",
+    "controls_position",
+    "controls_position_fullscreen",
+    "user_presets",
+    "load_user_presets",
+]

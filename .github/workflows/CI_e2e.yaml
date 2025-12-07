@@ -1,0 +1,48 @@
+name: CI_e2e
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    if: >
+      !(
+        (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip ci]'))
+        ||
+        (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[skip ci]'))
+        ||
+        (github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'skip-ci'))
+      )
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS deps
+        working-directory: molsysviewer/js
+        run: npm ci
+
+      - name: Build harness and bundle
+        working-directory: molsysviewer/js
+        run: |
+          npm run build
+          npm run build:harness
+          npm run build:e2e
+
+      - name: Install Playwright browsers
+        working-directory: molsysviewer/js
+        run: npx playwright install chromium
+
+      - name: Run E2E tests
+        working-directory: molsysviewer/js
+        run: npm run test:e2e
