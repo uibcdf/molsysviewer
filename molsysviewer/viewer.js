@@ -142942,7 +142942,7 @@ var SceneHandlers = class {
     }
   }
   async toggleBackground(msg) {
-    const mode = typeof msg === "string" ? msg : msg.mode;
+    const mode = typeof msg === "string" ? msg : msg?.mode;
     const canvas3d = this.plugin.canvas3d;
     if (!canvas3d) return;
     const renderer = canvas3d.props?.renderer ?? {};
@@ -143953,9 +143953,9 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   // default true for direct call
   async toggleBackground(mode) {
-    await this.scene.toggleBackground(mode ?? "light");
+    await this.scene.toggleBackground(mode);
   }
-  // default to toggle handled in scene? no, msg handles it. Direct call needs mode or toggle logic. 
+  // Pass mode directly (undefined triggers toggle)
   // Actually, direct calls from UI buttons might not pass msg. Scene handler handles boolean or msg.
   async toggleSpin(enable) {
     await this.scene.toggleSpin(enable ?? !this.scene.isSpinActive);
@@ -144044,30 +144044,70 @@ var bootPopup = async (loadedModule) => {
     }
   };
   const container = document.getElementById("molsysviewer-pop");
-  let popIsUpdatingFromPeer = false;
+  let isUserInteracting = false;
+  let wheelTimeout = null;
+  container?.addEventListener("pointerdown", () => {
+    isUserInteracting = true;
+  });
+  window.addEventListener("pointerup", () => {
+    isUserInteracting = false;
+  });
+  window.addEventListener("pointercancel", () => {
+    isUserInteracting = false;
+  });
+  container?.addEventListener("wheel", () => {
+    isUserInteracting = true;
+    if (wheelTimeout) clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(() => {
+      isUserInteracting = false;
+    }, 200);
+  }, { passive: true });
   const popControllerPromise = (async () => {
     await new Promise((r) => setTimeout(r, 100));
     const ctrl2 = await MolSysViewerController2.create(container, (msg) => {
       sendToHost("molsysviewer-log-from-popout", msg);
     });
-    let popCameraSyncTimer = null;
-    if (ctrl2.plugin && ctrl2.plugin.canvas3d) {
-      ctrl2.plugin.canvas3d.camera.events.changed.subscribe(() => {
-        if (popIsUpdatingFromPeer) return;
+    const waitForCanvas3d = async (retries = 50) => {
+      for (let i = 0; i < retries; i++) {
+        if (ctrl2.plugin?.canvas3d) return true;
+        if (i % 10 === 0) {
+          console.log(`[Popout] Waiting for Canvas3D... (${i}/${retries})`, {
+            plugin: !!ctrl2.plugin,
+            canvas3d: !!ctrl2.plugin?.canvas3d
+          });
+        }
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
+    };
+    waitForCanvas3d().then((ready) => {
+      if (!ready) {
+        console.warn("MolSysViewer Popout: Canvas3D failed to initialize after timeout (visuals may work but sync won't).");
+        return;
+      }
+      const c3d = ctrl2.plugin.canvas3d;
+      let popCameraSyncTimer = null;
+      const syncCamera = () => {
+        if (!isUserInteracting) return;
         if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
         popCameraSyncTimer = setTimeout(() => {
           sendToHost("molsysviewer-sync-camera", ctrl2.getCameraSnapshot());
           popCameraSyncTimer = null;
-        }, 50);
-      });
-    }
+        }, 20);
+      };
+      if (c3d.didDraw) {
+        c3d.didDraw.subscribe(syncCamera);
+        console.log("MolSysViewer Popout: Sync via didDraw (interactive camera movements).");
+      } else {
+        console.warn("MolSysViewer Popout: didDraw event not found for sync.");
+      }
+    });
     return ctrl2;
   })();
   window.addEventListener("message", async (ev) => {
     if (!ev.data || ev.data.from === "popup") return;
     const { type: type3, data } = ev.data;
     const ctrl2 = await popControllerPromise;
-    popIsUpdatingFromPeer = true;
     try {
       switch (type3) {
         case "molsysviewer-initial-sync":
@@ -144082,32 +144122,18 @@ var bootPopup = async (loadedModule) => {
           if (data.isSpinActive) await ctrl2.toggleSpin(true);
           if (data.isSwingActive) await ctrl2.toggleSwing(true);
           if (data.isDarkMode) await ctrl2.toggleBackground("dark");
-          setTimeout(() => {
-            popIsUpdatingFromPeer = false;
-          }, 200);
-          return;
-        // Return early, reset handled by timeout
+          break;
         case "molsysviewer-sync-op":
           await ctrl2.handleMessage(data);
-          popIsUpdatingFromPeer = false;
           break;
         case "molsysviewer-sync-camera":
-          if (data) {
+          if (data && !isUserInteracting) {
             ctrl2.setCameraSnapshot(data, 0);
-            setTimeout(() => {
-              popIsUpdatingFromPeer = false;
-            }, 100);
-          } else {
-            popIsUpdatingFromPeer = false;
           }
-          break;
-        default:
-          popIsUpdatingFromPeer = false;
           break;
       }
     } catch (e) {
       console.error("Popout sync error", e);
-      popIsUpdatingFromPeer = false;
     }
   });
   const makeBtn = (label3, onClick) => {
@@ -144257,15 +144283,15 @@ var bootPopup = async (loadedModule) => {
 
 // src/managers/popup-host.ts
 var PopupHostManager = class {
-  constructor(viewerJsPath) {
-    this.viewerJsPath = viewerJsPath;
+  constructor(viewerJsSource) {
+    this.viewerJsSource = viewerJsSource;
     this.popoutWin = null;
     this.isReady = false;
   }
   get isOpen() {
     return this.popoutWin && !this.popoutWin.closed;
   }
-  open() {
+  async open() {
     if (this.isOpen) {
       this.close();
       return;
@@ -144284,83 +144310,14 @@ var PopupHostManager = class {
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
+    /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
     .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
     .molsysviewer-traj-input::-webkit-inner-spin-button,
-    .molsysviewer-traj-input::-webkit-outer-spin-button {
-        -webkit-appearance: none !important;
-        appearance: none !important;
-        -moz-appearance: none !important;
-        margin: 0 !important;
-    }
-    .molsysviewer-traj-input {
-        -moz-appearance: textfield !important;
-        appearance: none !important;
-        -webkit-appearance: none !important;
-        color: rgba(255,255,255,0.9);
-        background: rgba(40,40,40,0.6);
-        caret-color: transparent;
-    }
-    .molsysviewer-slider {
-        background: transparent;
-        height: 16px;
-        border-radius: 999px;
-        overflow: visible;
-    }
-    .molsysviewer-slider::-webkit-slider-runnable-track {
-        background: rgba(200,200,200,0.35) !important;
-        height: 16px;
-        border-radius: 999px;
-    }
-    .molsysviewer-slider::-moz-range-track {
-        background: rgba(200,200,200,0.35) !important;
-        height: 16px;
-        border-radius: 999px;
-    }
-    .molsysviewer-slider::-ms-track {
-        background: rgba(200,200,200,0.35) !important;
-        height: 16px;
-        border-radius: 999px;
-        border: none;
-        color: transparent;
-    }
-    .molsysviewer-slider::-webkit-slider-thumb {
-        -webkit-appearance: none !important;
-        appearance: none !important;
-        width: 16px;
-        height: 16px;
-        border-radius: 50% !important;
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-        box-shadow: none !important;
-        margin-top: 0px;
-    }
-    .molsysviewer-slider::-webkit-slider-thumb:hover,
-    .molsysviewer-slider::-webkit-slider-thumb:active,
-    .molsysviewer-slider::-webkit-slider-thumb:focus {
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    .molsysviewer-slider::-moz-range-thumb {
-        width: 16px;
-        height: 16px;
-        border-radius: 50% !important;
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-    }
-    .molsysviewer-slider::-moz-range-thumb:hover,
-    .molsysviewer-slider::-moz-range-thumb:active,
-    .molsysviewer-slider::-moz-range-thumb:focus {
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-    }
-    .molsysviewer-slider::-ms-thumb {
-        width: 16px;
-        height: 16px;
-        border-radius: 50% !important;
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-    }
+    .molsysviewer-traj-input::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0 !important; }
+    .molsysviewer-traj-input { -moz-appearance: textfield !important; appearance: none !important; color: rgba(255,255,255,0.9); background: rgba(40,40,40,0.6); }
+    .molsysviewer-slider { background: transparent; height: 16px; border-radius: 999px; overflow: visible; }
+    .molsysviewer-slider::-webkit-slider-runnable-track { background: rgba(200,200,200,0.35) !important; height: 16px; border-radius: 999px; }
+    .molsysviewer-slider::-webkit-slider-thumb { -webkit-appearance: none !important; width: 16px; height: 16px; border-radius: 50% !important; background: rgba(0,0,0,0.5) !important; margin-top: 0px; }
   </style>
 </head>
 <body>
@@ -144369,26 +144326,38 @@ var PopupHostManager = class {
 </html>
         `);
     doc.close();
-    Object.assign(this.popoutWin, { molsysviewer_path: this.viewerJsPath });
-    const scriptEl = doc.createElement("script");
-    scriptEl.type = "module";
-    scriptEl.textContent = `
-            (async () => {
-                try {
-                    const path = window.molsysviewer_path;
-                    const module = await import(path);
-                    const boot = module.bootPopup || (module.default && module.default.bootPopup);
-                    if (boot) {
-                        boot(module);
-                    } else {
-                        console.error("MolSysViewer Popout: bootPopup not found in module", module);
+    try {
+      if (!this.viewerJsSource) {
+        throw new Error("No viewer source code provided to PopupHostManager");
+      }
+      const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+      const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+      console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
+      const scriptEl = doc.createElement("script");
+      scriptEl.type = "module";
+      scriptEl.textContent = `
+                (async () => {
+                    try {
+                        // Import the cloned blob
+                        const module = await import("${popBlobUrl}");
+                        const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                        if (boot) {
+                            boot(module);
+                        } else {
+                            console.error("MolSysViewer Popout: bootPopup not found in module");
+                        }
+                    } catch (e) {
+                        console.error("MolSysViewer Popout: Boot failed", e);
+                    } finally {
+                        // Clean up the blob URL to free memory
+                        URL.revokeObjectURL("${popBlobUrl}");
                     }
-                } catch (e) {
-                    console.error("MolSysViewer Popout: Boot failed", e);
-                }
-            })();
-        `;
-    doc.body.appendChild(scriptEl);
+                })();
+            `;
+      doc.body.appendChild(scriptEl);
+    } catch (err) {
+      console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
+    }
     const interval = window.setInterval(() => {
       if (!this.popoutWin || this.popoutWin.closed) {
         this.popoutWin = null;
@@ -144838,7 +144807,6 @@ var index_default = {
     const debug = !!model.get("debug_js");
     const sendLog = createLogger(model, debug);
     const commandLog = [];
-    let isUpdatingFromPeer = false;
     const target = document.createElement("div");
     Object.assign(target.style, {
       width: "100%",
@@ -144848,72 +144816,103 @@ var index_default = {
       touchAction: "none",
       cursor: "grab"
     });
-    target.addEventListener("pointerdown", () => target.style.cursor = "grabbing");
-    target.addEventListener("pointerup", () => target.style.cursor = "grab");
-    target.addEventListener("pointerleave", () => target.style.cursor = "grab");
+    let isUserInteracting = false;
+    let wheelTimeout = null;
+    const onPointerDown = () => {
+      target.style.cursor = "grabbing";
+      isUserInteracting = true;
+    };
+    const onPointerUpOrCancel = () => {
+      target.style.cursor = "grab";
+      isUserInteracting = false;
+    };
+    const onWheel = () => {
+      isUserInteracting = true;
+      if (wheelTimeout) clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(() => {
+        isUserInteracting = false;
+      }, 200);
+    };
+    target.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointerup", onPointerUpOrCancel);
+    window.addEventListener("pointercancel", onPointerUpOrCancel);
+    target.addEventListener("wheel", onWheel, { passive: true });
     el.appendChild(target);
     const controllerPromise = MolSysViewerController.create(target, (msg) => model.send(msg));
-    const viewerJsPath = import.meta.url;
-    console.log("[MolSysViewer] Using bundle path:", viewerJsPath);
-    const popupMgr = new PopupHostManager(viewerJsPath);
+    const viewerJsSource = model.get("popup_js_source");
+    if (!viewerJsSource) {
+      console.warn("[MolSysViewer] 'popup_js_source' not found in model. Popout might fail.");
+    } else {
+      console.log("[MolSysViewer] Initialized with payload source length:", viewerJsSource.length);
+    }
+    const popupMgr = new PopupHostManager(viewerJsSource || "");
     controllerPromise.then((c8) => {
       const overlay = buildControls(c8, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), () => popupMgr.open());
       target.appendChild(overlay);
-      let hostCameraSyncTimer = null;
-      c8.plugin.canvas3d?.camera.events.changed.subscribe(() => {
-        if (isUpdatingFromPeer) return;
-        if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
-        hostCameraSyncTimer = setTimeout(() => {
-          popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
-          hostCameraSyncTimer = null;
-        }, 50);
-      });
+      if (c8.plugin.canvas3d) {
+        let hostCameraSyncTimer = null;
+        const c3d = c8.plugin.canvas3d;
+        const syncCamera = () => {
+          if (!popupMgr.isReady || !isUserInteracting) return;
+          if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
+          hostCameraSyncTimer = setTimeout(() => {
+            popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
+            hostCameraSyncTimer = null;
+          }, 20);
+        };
+        if (c3d.didDraw) {
+          c3d.didDraw.subscribe(syncCamera);
+          console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
+        } else if (c3d.camera.events?.changed) {
+          c3d.camera.events.changed.subscribe(syncCamera);
+          console.log("[MolSysViewer] Host: Sync via camera.events.changed (fallback).");
+        } else {
+          console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
+        }
+      } else {
+        console.warn("[MolSysViewer] Host: plugin.canvas3d is undefined. Camera sync disabled.");
+      }
     });
-    window.addEventListener("message", async (ev) => {
+    const messageHandler = async (ev) => {
+      if (!document.body.contains(el)) {
+        window.removeEventListener("message", messageHandler);
+        return;
+      }
       if (!ev.data || ev.data.from === "host") return;
       const { type: type3, data } = ev.data;
+      if (!type3 || typeof type3 !== "string" || !type3.startsWith("molsysviewer-")) return;
       const controller = await controllerPromise;
-      isUpdatingFromPeer = true;
       try {
         switch (type3) {
           case "molsysviewer-pop-ready":
             popupMgr.isReady = true;
             popupMgr.send("molsysviewer-initial-sync", {
               messages: [...commandLog],
+              // Sending sanitized copy
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
               isDarkMode: controller.isDarkMode
             });
-            isUpdatingFromPeer = false;
             break;
           case "molsysviewer-sync-op":
-            await controller.handleMessage(data);
-            isUpdatingFromPeer = false;
+            console.log("[MolSysViewer Host] Received sync-op:", data);
+            if (data) await controller.handleMessage(data);
             break;
           case "molsysviewer-sync-camera":
-            if (data) {
+            if (data && !isUserInteracting) {
               controller.setCameraSnapshot(data, 0);
-              setTimeout(() => {
-                isUpdatingFromPeer = false;
-              }, 100);
-            } else {
-              isUpdatingFromPeer = false;
             }
             break;
           case "molsysviewer-log-from-popout":
-            if (debug) sendLog("info", "[Popout Log]:", data.msg);
-            isUpdatingFromPeer = false;
-            break;
-          default:
-            isUpdatingFromPeer = false;
+            if (debug) sendLog("info", "[Popout Log]:", data?.msg);
             break;
         }
       } catch (e) {
         console.error("[MolSysViewer Host] Error handling popout message:", e);
-        isUpdatingFromPeer = false;
       }
-    });
+    };
+    window.addEventListener("message", messageHandler);
     (async () => {
       try {
         const controller = await controllerPromise;
@@ -144921,8 +144920,10 @@ var index_default = {
         const initialMessages = model.get("initial_messages");
         if (Array.isArray(initialMessages) && initialMessages.length) {
           for (const msg of initialMessages) {
-            await controller.handleMessage(msg);
-            commandLog.push(msg);
+            if (msg) {
+              await controller.handleMessage(msg);
+              commandLog.push(msg);
+            }
           }
         }
       } catch (err) {
@@ -144932,22 +144933,44 @@ var index_default = {
     })();
     console.log("[MolSysViewer] widget render init");
     sendLog("info", "[MolSysViewer] widget render init");
-    model.on("msg:custom", async (msg) => {
+    const onCustomMsg = async (msg) => {
       if (!msg || typeof msg !== "object") return;
       if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
       try {
         const controller = await controllerPromise;
         await controller.handleMessage(msg);
-        commandLog.push(msg);
-        popupMgr.send("molsysviewer-sync-op", msg);
+        if (msg && typeof msg === "object") {
+          commandLog.push(msg);
+          popupMgr.send("molsysviewer-sync-op", msg);
+        }
       } catch (error2) {
         console.error("[MolSysViewer] Error handling message:", msg, error2);
         sendLog("error", "[MolSysViewer] Error handling message:", msg, error2);
       }
-    });
+    };
+    model.on("msg:custom", onCustomMsg);
+    return () => {
+      console.log("[MolSysViewer] Disposing widget...");
+      window.removeEventListener("message", messageHandler);
+      window.removeEventListener("pointerup", onPointerUpOrCancel);
+      window.removeEventListener("pointercancel", onPointerUpOrCancel);
+      target.removeEventListener("pointerdown", onPointerDown);
+      target.removeEventListener("wheel", onWheel);
+      model.off("msg:custom", onCustomMsg);
+      controllerPromise.then((c8) => {
+        try {
+          c8.plugin.dispose();
+          console.log("[MolSysViewer] Mol* plugin disposed.");
+        } catch (e) {
+          console.error("[MolSysViewer] Error disposing plugin:", e);
+        }
+      });
+      popupMgr.close();
+    };
   }
 };
 export {
+  MolSysViewerController,
   bootPopup,
   index_default as default
 };
