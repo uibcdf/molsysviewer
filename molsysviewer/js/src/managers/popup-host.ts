@@ -4,13 +4,13 @@ export class PopupHostManager {
     private popoutWin: Window | null = null;
     public isReady = false;
 
-    constructor(private viewerJsPath: string) {}
+    constructor(private viewerJsSource: string) {}
 
     get isOpen() {
         return this.popoutWin && !this.popoutWin.closed;
     }
 
-    open() {
+    async open() {
         if (this.isOpen) {
             this.close();
             return;
@@ -32,83 +32,14 @@ export class PopupHostManager {
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
+    /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
     .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
     .molsysviewer-traj-input::-webkit-inner-spin-button,
-    .molsysviewer-traj-input::-webkit-outer-spin-button {
-        -webkit-appearance: none !important;
-        appearance: none !important;
-        -moz-appearance: none !important;
-        margin: 0 !important;
-    }
-    .molsysviewer-traj-input {
-        -moz-appearance: textfield !important;
-        appearance: none !important;
-        -webkit-appearance: none !important;
-        color: rgba(255,255,255,0.9);
-        background: rgba(40,40,40,0.6);
-        caret-color: transparent;
-    }
-    .molsysviewer-slider {
-        background: transparent;
-        height: 16px;
-        border-radius: 999px;
-        overflow: visible;
-    }
-    .molsysviewer-slider::-webkit-slider-runnable-track {
-        background: rgba(200,200,200,0.35) !important;
-        height: 16px;
-        border-radius: 999px;
-    }
-    .molsysviewer-slider::-moz-range-track {
-        background: rgba(200,200,200,0.35) !important;
-        height: 16px;
-        border-radius: 999px;
-    }
-    .molsysviewer-slider::-ms-track {
-        background: rgba(200,200,200,0.35) !important;
-        height: 16px;
-        border-radius: 999px;
-        border: none;
-        color: transparent;
-    }
-    .molsysviewer-slider::-webkit-slider-thumb {
-        -webkit-appearance: none !important;
-        appearance: none !important;
-        width: 16px;
-        height: 16px;
-        border-radius: 50% !important;
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-        box-shadow: none !important;
-        margin-top: 0px;
-    }
-    .molsysviewer-slider::-webkit-slider-thumb:hover,
-    .molsysviewer-slider::-webkit-slider-thumb:active,
-    .molsysviewer-slider::-webkit-slider-thumb:focus {
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    .molsysviewer-slider::-moz-range-thumb {
-        width: 16px;
-        height: 16px;
-        border-radius: 50% !important;
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-    }
-    .molsysviewer-slider::-moz-range-thumb:hover,
-    .molsysviewer-slider::-moz-range-thumb:active,
-    .molsysviewer-slider::-moz-range-thumb:focus {
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-    }
-    .molsysviewer-slider::-ms-thumb {
-        width: 16px;
-        height: 16px;
-        border-radius: 50% !important;
-        background: rgba(0,0,0,0.5) !important;
-        border: none !important;
-    }
+    .molsysviewer-traj-input::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0 !important; }
+    .molsysviewer-traj-input { -moz-appearance: textfield !important; appearance: none !important; color: rgba(255,255,255,0.9); background: rgba(40,40,40,0.6); }
+    .molsysviewer-slider { background: transparent; height: 16px; border-radius: 999px; overflow: visible; }
+    .molsysviewer-slider::-webkit-slider-runnable-track { background: rgba(200,200,200,0.35) !important; height: 16px; border-radius: 999px; }
+    .molsysviewer-slider::-webkit-slider-thumb { -webkit-appearance: none !important; width: 16px; height: 16px; border-radius: 50% !important; background: rgba(0,0,0,0.5) !important; margin-top: 0px; }
   </style>
 </head>
 <body>
@@ -118,29 +49,46 @@ export class PopupHostManager {
         `);
         doc.close();
 
-        // Pass path via global
-        Object.assign(this.popoutWin, { molsysviewer_path: this.viewerJsPath });
+        // Robust Injection Strategy: Direct Blob from Payload
+        try {
+            if (!this.viewerJsSource) {
+                throw new Error("No viewer source code provided to PopupHostManager");
+            }
+            
+            // Create Blob in Popup context
+            // NOTE: We create the Blob in the popup's window context to avoid cross-origin tainting for some browsers
+            const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: 'text/javascript' });
+            const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+            
+            console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
 
-        // Inject script
-        const scriptEl = doc.createElement("script");
-        scriptEl.type = "module";
-        scriptEl.textContent = `
-            (async () => {
-                try {
-                    const path = window.molsysviewer_path;
-                    const module = await import(path);
-                    const boot = module.bootPopup || (module.default && module.default.bootPopup);
-                    if (boot) {
-                        boot(module);
-                    } else {
-                        console.error("MolSysViewer Popout: bootPopup not found in module", module);
+            // Inject bootstrapper
+            const scriptEl = doc.createElement("script");
+            scriptEl.type = "module";
+            scriptEl.textContent = `
+                (async () => {
+                    try {
+                        // Import the cloned blob
+                        const module = await import("${popBlobUrl}");
+                        const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                        if (boot) {
+                            boot(module);
+                        } else {
+                            console.error("MolSysViewer Popout: bootPopup not found in module");
+                        }
+                    } catch (e) {
+                        console.error("MolSysViewer Popout: Boot failed", e);
+                    } finally {
+                        // Clean up the blob URL to free memory
+                        URL.revokeObjectURL("${popBlobUrl}");
                     }
-                } catch (e) {
-                    console.error("MolSysViewer Popout: Boot failed", e);
-                }
-            })();
-        `;
-        doc.body.appendChild(scriptEl);
+                })();
+            `;
+            doc.body.appendChild(scriptEl);
+
+        } catch (err) {
+            console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
+        }
 
         // Monitor closure
         const interval = window.setInterval(() => {

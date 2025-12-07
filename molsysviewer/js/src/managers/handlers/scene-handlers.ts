@@ -68,10 +68,11 @@ export class SceneHandlers {
         }
     }
 
-    async toggleBackground(msg: ToggleBackgroundMessage | "light" | "dark") {
-        const mode = typeof msg === 'string' ? msg : msg.mode;
+    async toggleBackground(msg?: ToggleBackgroundMessage | "light" | "dark") {
+        const mode = typeof msg === 'string' ? msg : msg?.mode;
         const canvas3d = this.plugin.canvas3d;
         if (!canvas3d) return;
+
         const renderer = canvas3d.props?.renderer ?? {};
         const camera = canvas3d.props?.camera ?? {};
 

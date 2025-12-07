@@ -65,7 +65,20 @@ export const bootPopup = async (loadedModule?: any) => {
     };
 
     const container = document.getElementById("molsysviewer-pop");
-    let popIsUpdatingFromPeer = false; 
+    let isUserInteracting = false; // Only send camera updates when user is interacting
+    let wheelTimeout: any = null;
+
+    // Track user interaction state
+    container?.addEventListener("pointerdown", () => { isUserInteracting = true; });
+    window.addEventListener("pointerup", () => { isUserInteracting = false; });
+    window.addEventListener("pointercancel", () => { isUserInteracting = false; });
+    
+    // Track wheel (zoom) interaction
+    container?.addEventListener("wheel", () => {
+        isUserInteracting = true;
+        if (wheelTimeout) clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => { isUserInteracting = false; }, 200);
+    }, { passive: true });
     
     // Create a new instance of MolSysViewerController for the popout
     const popControllerPromise = (async () => {
@@ -76,18 +89,53 @@ export const bootPopup = async (loadedModule?: any) => {
             sendToHost("molsysviewer-log-from-popout", msg);
         });
 
-        // Listen for camera changes on the popout and send to host
-        let popCameraSyncTimer: any = null;
-        if (ctrl.plugin && ctrl.plugin.canvas3d) {
-            ctrl.plugin.canvas3d.camera.events.changed.subscribe(() => {
-                if (popIsUpdatingFromPeer) return;
+        // Helper to wait for canvas3d to be ready (async init)
+        const waitForCanvas3d = async (retries = 50): Promise<boolean> => {
+            for (let i = 0; i < retries; i++) {
+                if (ctrl.plugin?.canvas3d) return true; // Only need canvas3d to exist for didDraw
+                
+                if (i % 10 === 0) {
+                    console.log(`[Popout] Waiting for Canvas3D... (${i}/${retries})`, {
+                        plugin: !!ctrl.plugin,
+                        canvas3d: !!ctrl.plugin?.canvas3d
+                    });
+                }
+                await new Promise(r => setTimeout(r, 100));
+            }
+            return false;
+        };
+
+        // Initialize sync logic once canvas is ready
+        waitForCanvas3d().then((ready) => {
+            if (!ready) {
+                console.warn("MolSysViewer Popout: Canvas3D failed to initialize after timeout (visuals may work but sync won't).");
+                return;
+            }
+
+            const c3d = ctrl.plugin.canvas3d!;
+            let popCameraSyncTimer: any = null;
+
+            // Define the sync function
+            const syncCamera = () => {
+                // Crucial: Only sync if the change comes from USER INTERACTION
+                if (!isUserInteracting) return;
+                
                 if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
                 popCameraSyncTimer = setTimeout(() => {
                     sendToHost("molsysviewer-sync-camera", ctrl.getCameraSnapshot());
                     popCameraSyncTimer = null;
-                }, 50);
-            });
-        }
+                }, 20);
+            };
+
+            // Use didDraw for interactive camera synchronization as it's directly tied to rendering updates.
+            if (c3d.didDraw) {
+                c3d.didDraw.subscribe(syncCamera);
+                console.log("MolSysViewer Popout: Sync via didDraw (interactive camera movements).");
+            } else {
+                console.warn("MolSysViewer Popout: didDraw event not found for sync.");
+            }
+        });
+
         return ctrl;
     })();
 
@@ -98,7 +146,6 @@ export const bootPopup = async (loadedModule?: any) => {
         // We need to await the controller promise created above
         const ctrl = await popControllerPromise;
 
-        popIsUpdatingFromPeer = true;
         try {
             switch (type) {
                 case "molsysviewer-initial-sync":
@@ -108,39 +155,26 @@ export const bootPopup = async (loadedModule?: any) => {
                         }
                     }
                     if (data.cameraSnapshot) {
-                        // Delay release of lock for camera sync
                         ctrl.setCameraSnapshot(data.cameraSnapshot, 0);
                     }
                     if (data.isSpinActive) await ctrl.toggleSpin(true);
                     if (data.isSwingActive) await ctrl.toggleSwing(true);
                     if (data.isDarkMode) await ctrl.toggleBackground("dark");
-                    
-                    // Initial sync is heavy, keep locked for a moment
-                    setTimeout(() => { popIsUpdatingFromPeer = false; }, 200);
-                    return; // Return early, reset handled by timeout
+                    break;
 
                 case "molsysviewer-sync-op":
                     await ctrl.handleMessage(data);
-                    popIsUpdatingFromPeer = false;
                     break;
 
                 case "molsysviewer-sync-camera":
-                    if (data) {
+                    // Apply host camera update only if user is NOT fighting it
+                    if (data && !isUserInteracting) {
                         ctrl.setCameraSnapshot(data, 0);
-                        // Keep locked briefly to absorb the 'changed' event generated by this update
-                        setTimeout(() => { popIsUpdatingFromPeer = false; }, 100);
-                    } else {
-                        popIsUpdatingFromPeer = false;
                     }
-                    break;
-                    
-                default:
-                    popIsUpdatingFromPeer = false;
                     break;
             }
         } catch (e) {
             console.error("Popout sync error", e);
-            popIsUpdatingFromPeer = false;
         }
     });
 

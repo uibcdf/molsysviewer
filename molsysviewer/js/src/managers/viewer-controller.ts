@@ -218,7 +218,7 @@ export class MolSysViewerController {
     
     async resetView() { await this.scene.resetView(); }
     async toggleFullscreen() { await this.scene.toggleFullscreen(true); } // default true for direct call
-    async toggleBackground(mode?: "light" | "dark") { await this.scene.toggleBackground(mode ?? "light"); } // default to toggle handled in scene? no, msg handles it. Direct call needs mode or toggle logic. 
+    async toggleBackground(mode?: "light" | "dark") { await this.scene.toggleBackground(mode); } // Pass mode directly (undefined triggers toggle)
     // Actually, direct calls from UI buttons might not pass msg. Scene handler handles boolean or msg.
     async toggleSpin(enable?: boolean) { await this.scene.toggleSpin(enable ?? !this.scene.isSpinActive); }
     async toggleSwing(enable?: boolean) { await this.scene.toggleSwing(enable ?? !this.scene.isSwingActive); }
