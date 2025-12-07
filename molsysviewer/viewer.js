@@ -144401,7 +144401,7 @@ var makeButton = (label2, onClick) => {
   btn.style.borderRadius = "4px";
   btn.style.background = "rgba(0,0,0,0.5)";
   btn.style.color = "#fff";
-  btn.style.cursor = "pointer";
+  btn.style.cursor = "default";
   btn.style.userSelect = "none";
   btn.addEventListener("click", onClick);
   return btn;
@@ -144547,7 +144547,7 @@ var makeNumberControl = (initial, onChange, title) => {
     btn.style.background = "transparent";
     btn.style.border = "none";
     btn.style.textAlign = "center";
-    btn.style.cursor = "pointer";
+    btn.style.cursor = "default";
     btn.style.marginTop = extraTop;
     btn.onclick = () => {
       const val = Number(input.value);
@@ -144814,16 +144814,15 @@ var index_default = {
       minHeight: "400px",
       position: "relative",
       touchAction: "none",
-      cursor: "grab"
+      cursor: "default"
+      // Default cursor
     });
     let isUserInteracting = false;
     let wheelTimeout = null;
     const onPointerDown = () => {
-      target.style.cursor = "grabbing";
       isUserInteracting = true;
     };
     const onPointerUpOrCancel = () => {
-      target.style.cursor = "grab";
       isUserInteracting = false;
     };
     const onWheel = () => {
