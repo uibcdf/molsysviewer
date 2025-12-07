@@ -34,28 +34,36 @@
 - Dictionaries are public, functional registries for user access; mutations happen through Region/Layer methods (send messages to JS).
 
 ## Pending Implementation
-- Message schema Python→JS for creating/updating regions and layers, with tag and selection/indices.
-- Ack path JS→Python carrying finalized atom indices (for regions) and object metadata (for layers).
-- Reset/clear hooks to invalidate both registries.
+- (Histórico) El esquema de mensajes Python→JS y los acks JS→Python ya están implementados en la rama principal:
+  - Ops `create_region/set_region_representation/show_region/hide_region/delete_region`.
+  - Ops `create_layer/show_layer/hide_layer/delete_layer/set_layer_tag`.
+  - Acks `region_ack`, `layer_ack` y `registry_cleared`.
+- Los hooks de reset/clear (`clear_all`) ya invalidan ambos registros en JS y Python.
 
 ## Implementation Plan (proposed)
+The high-level plan below describes how the system was designed; it has been
+implemented in the main branch with small variations:
+
 1. **Python skeleton**
-   - Add `Region`/`Layer` wrappers.
-   - Add `view.new_region(...)`, `view.new_layer(...)`, and `view.regions`/`view.layers` mappings with auto tags.
-   - Stub methods on Region/Layer (`show/hide/delete/set_representation`, `relabel/merge`, etc.) that emit messages (no backend logic yet).
+   - `Region`/`Layer` wrappers ya existen (`molsysviewer/regions.py`,
+     `molsysviewer/layers.py`).
+   - `view.new_region(...)`, `view.new_layer(...)` y los registros
+     `view.regions`/`view.layers` están disponibles con tags auto.
+   - Los métodos de Region/Layer (`show/hide/delete/set_representation`,
+     `set_tag`, complementos) emiten mensajes reales y se integran con los
+     handlers JS.
 2. **Messaging contract**
-   - Define new ops Python→JS: create/update/delete/hide/show for regions and layers; set representation for a region.
-   - Define acks JS→Python: region/layer creation with indices/meta, registry cleared on reset/load.
+   - Los ops Python→JS y acks JS→Python están definidos en
+     `js/src/messages/viewer-messages.ts` y en los handlers TS.
 3. **JS controller**
-   - Maintain registries: regions (`tag -> componentRef, reprRefs, atomIndices, selection`) and layers (`tag -> refs, types, count`).
-   - Implement handlers for the new ops using `component.fromSelection`, representation builder, and existing shape tagging for layers.
-   - Tie into `clear_all/reset/load` to purge registries and notify Python.
+   - `StateHandlers` mantiene los registros de regiones/layers/global y
+     aplica las operaciones sobre el árbol de estado Mol\*.
 4. **Sync & state in Python**
-   - On acks, populate `view.regions`/`view.layers` mirrors (selection, atom_indices, types, counts).
-   - Invalidate mirrors on reset/load.
+   - Los acks actualizan `view.regions`/`view.layers`; `clear_all` y cargas
+     nuevas invalidan los espejos.
 5. **Tests**
-   - Python: API/tag generation, registry updates, message construction.
-   - JS/manual: new message handlers create/show/hide/delete as expected in Mol*.
+   - Hay cobertura Python de la API básica y de complementos; la ampliación
+     de tests JS/E2E sigue en la lista de mejoras.
 
 ## Current Status (this branch)
 - Python API: `new_region` (supports complements via `complement_of_regions` or `Region.new_complementary_region`), `new_layer`, `view.global` wrapper (`set_representation` re-shows if hidden), public registries `regions`/`layers`. Regions store `atom_indices` from ack or selection; complement logic computed in Python (requires loaded system).
