@@ -16,7 +16,9 @@ import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structu
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
-import { StateObjectRef } from "molstar/lib/mol-state";
+import { StateObjectRef, StateObjectSelector } from "molstar/lib/mol-state";
+import { PresetStructureRepresentations } from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
+import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 
 import {
     addAnisotropyEllipsoidsFromPython,
@@ -59,6 +61,19 @@ import {
     LoadPdbIdMessage,
     LoadStructureFromUrlMessage,
     LoadStructureMessage,
+    CreateRegionMessage,
+    SetRegionRepresentationMessage,
+    ShowRegionMessage,
+    HideRegionMessage,
+    DeleteRegionMessage,
+    CreateLayerMessage,
+    ShowLayerMessage,
+    HideLayerMessage,
+    DeleteLayerMessage,
+    SetLayerTagMessage,
+    SetGlobalRepresentationMessage,
+    ShowGlobalMessage,
+    HideGlobalMessage,
     ResetCameraMessage,
     SetTrajectoryFrameMessage,
     SetTrajectoryPlaybackMessage,
@@ -81,11 +96,18 @@ import { UpdateTrajectory } from "molstar/lib/mol-plugin-state/actions/structure
 import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
 import { AnimateModelIndex } from "molstar/lib/mol-plugin-state/animation/built-in/model-index";
 
+interface RegionEntry {
+    component?: StateObjectRef;
+    representations: StateObjectRef[];
+    atomIndices: number[];
+    selection?: string;
+}
+
 /**
  * Controller that translates Python messages into Mol* actions and manages state refs.
  */
 export class MolSysViewerController {
-    static async create(target: HTMLElement): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void): Promise<MolSysViewerController> {
         const canvas = document.createElement("canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
@@ -105,11 +127,19 @@ export class MolSysViewerController {
         }
         if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
 
-        return new MolSysViewerController(plugin, target);
+        return new MolSysViewerController(plugin, target, notify);
     }
 
     private readonly shapeRefs = new Set<StateObjectRef<SO.Shape.Representation3D>>();
     private readonly tagIndex = new Map<string, Set<StateObjectRef>>();
+    private readonly regionIndex = new Map<string, RegionEntry & { hidden?: boolean }>();
+    private readonly layerMeta = new Map<string, { kind?: string; meta?: Record<string, unknown> }>();
+    private readonly globalReprs = new Set<StateObjectRef>();
+    private readonly pendingGlobalOps: Array<{ hide: boolean; target: "global" | "all" }> = [];
+    private readonly pendingLayerVisibility = new Map<string, boolean>();
+    // Remember the last requested baseline-global visibility so we can apply it once the structure exists
+    private requestedGlobalHidden: boolean | null = null;
+    private readonly pendingRegions: CreateRegionMessage[] = [];
     private currentStructure?: StructureRef;
     private loadedStructure?: LoadedStructure;
     private readonly labelRefs = new Set<StateObjectRef>();
@@ -125,14 +155,25 @@ export class MolSysViewerController {
     private savedDarkCamera?: any;
     private darkMode = false;
 
-    private constructor(private readonly plugin: PluginContext, private readonly host: HTMLElement) {}
+    private constructor(private readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void) {}
 
     private registerShapeRef(ref?: StateObjectRef, tag?: string) {
         if (!ref) return;
         this.shapeRefs.add(ref as any);
+        console.log("[MolSysViewer] registerShapeRef", { tag, hasRef: !!ref });
         if (!tag) return;
         if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, new Set());
         this.tagIndex.get(tag)!.add(ref as any);
+        if (!this.layerMeta.has(tag)) {
+            this.layerMeta.set(tag, { kind: "shape", meta: {} });
+            this.notify?.({ event: "layer_ack", tag, kind: "shape", meta: {} });
+        }
+        if (this.pendingLayerVisibility.has(tag)) {
+            const hide = this.pendingLayerVisibility.get(tag)!;
+            this.pendingLayerVisibility.delete(tag);
+            console.log("[MolSysViewer] apply pending layer visibility", tag, "hide:", hide);
+            setSubtreeVisibility(this.plugin.state.data, ref as any, hide);
+        }
     }
 
     async handleMessage(msg: ViewerMessage) {
@@ -239,6 +280,45 @@ export class MolSysViewerController {
                 case "set_trajectory_playback":
                     await this.handleSetTrajectoryPlayback(msg as SetTrajectoryPlaybackMessage);
                     break;
+                case "create_region":
+                    await this.handleCreateRegion(msg as CreateRegionMessage);
+                    break;
+                case "set_region_representation":
+                    await this.handleSetRegionRepresentation(msg as SetRegionRepresentationMessage);
+                    break;
+                case "show_region":
+                    await this.handleShowHideRegion(msg as ShowRegionMessage, false);
+                    break;
+                case "hide_region":
+                    await this.handleShowHideRegion(msg as HideRegionMessage, true);
+                    break;
+                case "delete_region":
+                    await this.handleDeleteRegion(msg as DeleteRegionMessage);
+                    break;
+                case "create_layer":
+                    await this.handleCreateLayer(msg as CreateLayerMessage);
+                    break;
+                case "show_layer":
+                    await this.handleShowHideLayer(msg as ShowLayerMessage, false);
+                    break;
+                case "hide_layer":
+                    await this.handleShowHideLayer(msg as HideLayerMessage, true);
+                    break;
+                case "delete_layer":
+                    await this.handleDeleteLayer(msg as DeleteLayerMessage);
+                    break;
+                case "set_layer_tag":
+                    await this.handleSetLayerTag(msg as SetLayerTagMessage);
+                    break;
+                case "set_global_representation":
+                    await this.handleSetGlobalRepresentation(msg as SetGlobalRepresentationMessage);
+                    break;
+                case "show_global":
+                    await this.handleShowHideGlobal(false, (msg as ShowGlobalMessage).target ?? "global");
+                    break;
+                case "hide_global":
+                    await this.handleShowHideGlobal(true, (msg as HideGlobalMessage).target ?? "global");
+                    break;
 
                 default:
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
@@ -247,6 +327,39 @@ export class MolSysViewerController {
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
         }
+    }
+
+    private buildSelectionFromAtomIndices(structure: Structure, atomIndices: number[]) {
+        if (!Array.isArray(atomIndices) || atomIndices.length === 0) return void 0;
+        const selectionBuilder = StructureSelection.LinearBuilder(structure);
+        const set = new Set(atomIndices);
+        let added = false;
+
+        for (const unit of structure.units) {
+            if (!Unit.isAtomic(unit)) continue;
+            const elements = unit.elements;
+            const elementCount = OrderedSet.size(elements);
+            if (elementCount === 0) continue;
+
+            const matched: number[] = [];
+            for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+                const elementIndex = OrderedSet.getAt(elements, ordinal);
+                if (set.has(elementIndex)) matched.push(elementIndex);
+            }
+            if (matched.length === 0) continue;
+            added = true;
+            matched.sort((a, b) => a - b);
+
+            const subset =
+                matched.length === elementCount
+                    ? elements
+                    : (SortedArray.ofSortedArray(matched) as StructureElement.Set);
+            const childUnit = unit.getChild(subset);
+            const subStructure = Structure.create([childUnit], { parent: structure });
+            selectionBuilder.add(subStructure);
+        }
+
+        return added ? selectionBuilder.getSelection() : void 0;
     }
 
     private async handleLoadFromString(msg: LoadStructureMessage) {
@@ -292,6 +405,7 @@ export class MolSysViewerController {
             radius: options.radius ?? 10,
             color: options.color ?? 0x00ff00,
             alpha: options.alpha ?? 0.4,
+            tag: options.tag ?? (msg as any).tag,
         });
     }
 
@@ -472,6 +586,384 @@ export class MolSysViewerController {
         await this.updateVisibility(indices);
     }
 
+    private async handleCreateRegion(msg: CreateRegionMessage) {
+        const structure = this.getStructure();
+        if (!structure || !this.currentStructure) {
+            // Defer until structure is captured
+            this.pendingRegions.push(msg);
+            return;
+        }
+        const tag = msg.tag ?? "region";
+        const atomIndices = Array.isArray(msg.atom_indices)
+            ? msg.atom_indices.map(i => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter(i => Number.isFinite(i))
+            : [];
+        const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
+        if (!selection) {
+            console.warn("[MolSysViewer] create_region missing valid atom indices");
+            return;
+        }
+
+        try {
+            const structureRef = this.loadedStructure?.structure;
+            if (!structureRef) {
+                console.warn("[MolSysViewer] create_region: no structure ref");
+                return;
+            }
+            console.log("[MolSysViewer] create_region: building component", tag, "atoms", atomIndices.length);
+            const bundle = StructureElement.Bundle.fromSelection(selection);
+            const root = this.plugin.state.data.build().to(structureRef);
+            const component = root.apply(StateTransforms.Model.StructureComponent, {
+                type: { name: "bundle", params: bundle },
+                nullIfEmpty: true,
+                label: tag,
+            });
+            const commitRes = await component.commit({ revertOnError: false });
+            const selector = component.selector;
+            const componentRef = selector?.ref;
+            const compCount = selector?.cell?.obj?.data?.elementCount ?? 0;
+            if (!selector?.isOk || !componentRef || compCount === 0) {
+                console.warn("[MolSysViewer] create_region: empty component for", tag, "commit", commitRes, "count", compCount);
+                return;
+            }
+            const reprType = msg.representation ?? "cartoon";
+            const repr = await this.plugin.builders.structure.representation.addRepresentation(
+                componentRef as any,
+                { type: reprType as any, typeParams: (msg.params ?? {}) as any },
+                { tag }
+            );
+            const reprRef = repr?.ref;
+            if (!reprRef) console.warn("[MolSysViewer] create_region: representation missing ref", tag, "repr", repr);
+            this.regionIndex.set(tag, {
+                component: componentRef,
+                representations: reprRef ? [reprRef] : [],
+                atomIndices,
+                selection: msg.selection,
+                hidden: false,
+            });
+            console.log("[MolSysViewer] create_region: done", tag, "compCount", compCount, "repr", reprRef);
+            this.notify?.({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
+        } catch (err) {
+            console.error("[MolSysViewer] Error creating region", err);
+        }
+    }
+
+    private async handleSetRegionRepresentation(msg: SetRegionRepresentationMessage) {
+        const tag = msg.tag ?? "region";
+        const entry = this.regionIndex.get(tag);
+        if (!entry || !entry.component || !this.loadedStructure?.structure) {
+            console.warn("[MolSysViewer] set_region_representation: unknown tag", tag);
+            return;
+        }
+        // Remove existing representations
+        if (entry.representations.length) {
+            await Promise.all(entry.representations.map(ref => this.removeStateObject(ref)));
+            entry.representations = [];
+        }
+        if (msg.user_preset) {
+            const { base, rules } = msg.user_preset || {};
+            if (base) {
+                const applied = await this.plugin.builders.structure.representation.applyPreset(
+                    { ref: entry.component } as any,
+                    base as any,
+                    (msg.params ?? {}) as any
+                );
+                const refs = this.collectRefsFromPreset(applied as any);
+                entry.representations.push(...refs);
+            }
+            if (Array.isArray(rules)) {
+                const update = this.plugin.state.data.build();
+                for (const rule of rules) {
+                    const type = rule?.representation ?? "cartoon";
+                    const params = (rule?.params ?? msg.params ?? {}) as any;
+                    const repr = this.plugin.builders.structure.representation.buildRepresentation(
+                        update,
+                        { ref: entry.component } as any,
+                        { type: type as any, typeParams: params },
+                        { tag }
+                    );
+                    if (repr?.ref) entry.representations.push(repr.ref);
+                }
+                await update.commit({ revertOnError: false });
+            }
+        } else if (msg.preset) {
+            const applied = await this.plugin.builders.structure.representation.applyPreset(
+                { ref: entry.component } as any,
+                msg.preset as any,
+                (msg.params ?? {}) as any
+            );
+            const refs = this.collectRefsFromPreset(applied as any);
+            entry.representations.push(...refs);
+        } else {
+            // Add new representation
+            const update = this.plugin.state.data.build();
+            const reprType = msg.representation ?? "cartoon";
+            const repr = this.plugin.builders.structure.representation.buildRepresentation(
+                update,
+                { ref: entry.component } as any,
+                { type: reprType as any, typeParams: (msg.params ?? {}) as any },
+                { tag }
+            );
+            await update.commit({ revertOnError: false });
+            const reprRef = repr?.ref;
+            if (reprRef) entry.representations.push(reprRef);
+        }
+    }
+
+    private async handleShowHideRegion(msg: ShowRegionMessage | HideRegionMessage, hide: boolean) {
+        const tag = (msg.tag ?? "region") as string;
+        const entry = this.regionIndex.get(tag);
+        if (!entry || entry.representations.length === 0) return;
+        entry.hidden = hide;
+        entry.representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref as any, hide));
+    }
+
+    private async handleDeleteRegion(msg: DeleteRegionMessage) {
+        const tag = msg.tag ?? "region";
+        const entry = this.regionIndex.get(tag);
+        if (!entry) return;
+        const refs: Array<StateObjectRef | undefined> = [
+            ...entry.representations,
+            entry.component,
+        ];
+        await Promise.all(refs.map(ref => this.removeStateObject(ref)));
+        this.regionIndex.delete(tag);
+        this.notify?.({ event: "region_deleted", tag });
+    }
+
+    private async handleCreateLayer(msg: CreateLayerMessage) {
+        const tag = msg.tag ?? "layer";
+        this.layerMeta.set(tag, { kind: msg.kind, meta: msg.meta });
+        this.notify?.({ event: "layer_ack", tag, kind: msg.kind, meta: msg.meta });
+    }
+
+    private async handleShowHideLayer(msg: ShowLayerMessage | HideLayerMessage, hide: boolean) {
+        const tag = msg.tag ?? "layer";
+        const refs = this.tagIndex.get(tag);
+        if (!refs || refs.size === 0) {
+            this.pendingLayerVisibility.set(tag, hide);
+            console.log("[MolSysViewer] queue layer visibility", tag, "hide:", hide);
+            return;
+        }
+        this.pendingLayerVisibility.delete(tag);
+        console.log("[MolSysViewer] set layer visibility", tag, "hide:", hide, "refs:", refs.size);
+        refs.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref as any, hide));
+    }
+
+    private async handleDeleteLayer(msg: DeleteLayerMessage) {
+        const tag = msg.tag ?? "layer";
+        const refs = this.tagIndex.get(tag);
+        if (refs && refs.size) {
+            await Promise.all(Array.from(refs).map(ref => this.removeStateObject(ref)));
+            this.tagIndex.delete(tag);
+        }
+        this.layerMeta.delete(tag);
+        this.notify?.({ event: "layer_deleted", tag });
+    }
+
+    private async handleSetLayerTag(msg: SetLayerTagMessage) {
+        const oldTag = msg.tag ?? "layer";
+        const newTag = msg.new_tag;
+        if (!newTag || oldTag === newTag) return;
+        const refs = this.tagIndex.get(oldTag);
+        if (refs) {
+            this.tagIndex.delete(oldTag);
+            this.tagIndex.set(newTag, refs);
+        }
+        const meta = this.layerMeta.get(oldTag);
+        if (meta) {
+            this.layerMeta.delete(oldTag);
+            this.layerMeta.set(newTag, meta);
+        }
+    }
+
+    private collectRefsFromPreset(result?: { representations?: { [name: string]: StateObjectSelector | undefined } }) {
+        const refs: StateObjectRef[] = [];
+        if (!result?.representations) return refs;
+        Object.values(result.representations).forEach(sel => {
+            if (sel?.ref) refs.push(sel.ref);
+        });
+        return refs;
+    }
+
+    private async handleSetGlobalRepresentation(msg: SetGlobalRepresentationMessage) {
+        const structureRef = this.loadedStructure?.structure;
+        if (!structureRef) {
+            console.warn("[MolSysViewer] set_global_representation: no structure loaded");
+            return;
+        }
+        // Ensure we are using the latest structure data object
+        const structureData = this.getStructure();
+        // Remove existing global reps
+        if (this.globalReprs.size) {
+            await Promise.all(Array.from(this.globalReprs).map(ref => this.removeStateObject(ref)));
+            this.globalReprs.clear();
+        }
+        if (msg.user_preset) {
+            const userPreset = msg.user_preset || {};
+            const base = userPreset.base as string | undefined;
+            const rules = Array.isArray(userPreset.rules) ? userPreset.rules : [];
+            if (base) {
+                const applied = await this.plugin.builders.structure.representation.applyPreset(
+                    { ref: structureRef } as any,
+                    base as any,
+                    (msg.params ?? {}) as any
+                );
+                const refs = this.collectRefsFromPreset(applied as any);
+                refs.forEach(ref => this.globalReprs.add(ref));
+            }
+            for (const rule of rules) {
+                const atomIndices = Array.isArray(rule?.atom_indices)
+                    ? rule.atom_indices.map(i => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter(i => Number.isFinite(i))
+                    : [];
+                if (atomIndices.length === 0) continue;
+                if (!structureData) continue;
+                const selection = this.buildSelectionFromAtomIndices(structureData, atomIndices);
+                if (!selection) continue;
+                const bundle = StructureElement.Bundle.fromSelection(selection);
+                const root = this.plugin.state.data.build().to(structureRef);
+                const component = root.apply(StateTransforms.Model.StructureComponent, {
+                    type: { name: "bundle", params: bundle },
+                    nullIfEmpty: true,
+                    label: msg.user_preset?.name ?? "global-rule",
+                });
+                await component.commit({ revertOnError: false });
+                const componentRef = component.selector?.ref;
+                if (!component.selector?.isOk || !componentRef) continue;
+                const update = this.plugin.state.data.build();
+                const reprType = rule?.representation ?? "cartoon";
+                const repr = this.plugin.builders.structure.representation.buildRepresentation(
+                    update,
+                    { ref: componentRef } as any,
+                    { type: reprType as any, typeParams: (rule?.params ?? {}) as any },
+                    { tag: "global" }
+                );
+                await update.commit({ revertOnError: false });
+                if (repr?.ref) this.globalReprs.add(repr.ref);
+            }
+        } else if (msg.preset) {
+            const presetId = (msg.preset as any) in PresetStructureRepresentations ? msg.preset : msg.preset;
+            const applied = await this.plugin.builders.structure.representation.applyPreset(
+                { ref: structureRef } as any,
+                presetId as any,
+                (msg.params ?? {}) as any
+            );
+            const refs = this.collectRefsFromPreset(applied as any);
+            refs.forEach(ref => this.globalReprs.add(ref));
+        } else {
+            const update = this.plugin.state.data.build();
+            const reprType = msg.representation ?? "cartoon";
+            const repr = this.plugin.builders.structure.representation.buildRepresentation(
+                update,
+                { ref: structureRef } as any,
+                { type: reprType as any, typeParams: (msg.params ?? {}) as any },
+                { tag: "global" }
+            );
+            await update.commit({ revertOnError: false });
+            if (repr?.ref) this.globalReprs.add(repr.ref);
+        }
+        await this.handleShowHideGlobal(false);
+    }
+
+    private async handleShowHideGlobal(hide: boolean, target: "global" | "all" = "global") {
+        if (target === "global") {
+            this.requestedGlobalHidden = hide;
+        }
+        if (!this.loadedStructure?.structure || !this.currentStructure) {
+            this.pendingGlobalOps.push({ hide, target });
+            return;
+        }
+        const refs: StateObjectRef[] = [];
+        const baselineRefs: StateObjectRef[] = [];
+        const hierarchy = this.plugin.managers.structure.hierarchy.current;
+        const structures = hierarchy?.structures ?? [];
+
+        // Collect region representation refs to exclude them from "global"
+        const regionReprRefs = new Set<string>();
+        const hiddenRegionReprRefs = new Set<string>();
+        this.regionIndex.forEach(entry => entry.representations.forEach(ref => {
+            regionReprRefs.add(ref as any);
+            if (entry.hidden) hiddenRegionReprRefs.add(ref as any);
+        }));
+
+        if (target === "global") {
+            // Use tracked globals if present
+            this.globalReprs.forEach(ref => {
+                refs.push(ref);
+                baselineRefs.push(ref);
+            });
+            // Add any structure reps not belonging to regions (baseline/global)
+            structures.forEach(s => {
+                (s.representations ?? []).forEach(r => {
+                    if (!regionReprRefs.has(r.cell.transform.ref)) {
+                        refs.push(r.cell.transform.ref);
+                        baselineRefs.push(r.cell.transform.ref);
+                    }
+                });
+                (s.components ?? []).forEach(c =>
+                    (c.representations ?? []).forEach(r => {
+                        if (!regionReprRefs.has(r.cell.transform.ref)) {
+                            refs.push(r.cell.transform.ref);
+                            baselineRefs.push(r.cell.transform.ref);
+                        }
+                    })
+                );
+            });
+            if (refs.length === 0) {
+                await this.ensureDefaultGlobalRepresentation();
+                this.globalReprs.forEach(ref => {
+                    refs.push(ref);
+                    baselineRefs.push(ref);
+                });
+            }
+        } else {
+            // target === "all": include everything
+            structures.forEach(s => {
+                (s.representations ?? []).forEach(r => {
+                    // Skip region reps that are currently hidden
+                    if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
+                    refs.push(r.cell.transform.ref);
+                });
+                (s.components ?? []).forEach(c => (c.representations ?? []).forEach(r => {
+                    if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
+                    refs.push(r.cell.transform.ref);
+                }));
+            });
+            this.globalReprs.forEach(ref => refs.push(ref));
+            // include all shape/layer refs
+            this.tagIndex.forEach(set => set.forEach(ref => refs.push(ref as any)));
+            // Also compute baseline refs (non-region) for potential re-hide
+            this.globalReprs.forEach(ref => baselineRefs.push(ref));
+            structures.forEach(s => {
+                (s.representations ?? []).forEach(r => {
+                    if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
+                });
+                (s.components ?? []).forEach(c =>
+                    (c.representations ?? []).forEach(r => {
+                        if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
+                    })
+                );
+            });
+        }
+
+        if (refs.length === 0) return;
+        refs.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref as any, hide));
+
+        // If we just showed everything but the user had requested the baseline/global to stay hidden, re-hide it.
+        if (target === "all" && !hide && this.requestedGlobalHidden) {
+            if (baselineRefs.length === 0) {
+                await this.ensureDefaultGlobalRepresentation();
+                this.globalReprs.forEach(ref => baselineRefs.push(ref));
+                // If still empty, nothing to hide
+            }
+            if (baselineRefs.length) {
+                baselineRefs.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref as any, true));
+            } else {
+                // Fallback: schedule hiding once we have refs
+                this.pendingGlobalOps.push({ hide: true, target: "global" });
+            }
+        }
+    }
+
     private async handleStepTrajectory(msg: StepTrajectoryMessage) {
         const by = msg.by ?? 1;
         await this.stepTrajectory(by);
@@ -495,7 +987,14 @@ export class MolSysViewerController {
         }
     }
 
+    private async clearGlobalRepresentations() {
+        if (this.globalReprs.size === 0) return;
+        await Promise.all(Array.from(this.globalReprs).map(ref => this.removeStateObject(ref)));
+        this.globalReprs.clear();
+    }
+
     private async loadFromString(data: string, format: string, label?: string) {
+        await this.clearGlobalRepresentations();
         const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
         this.loadedStructure = await loadStructureFromString(this.plugin, data, format, label, {
             previous,
@@ -504,6 +1003,7 @@ export class MolSysViewerController {
     }
 
     private async loadFromUrl(url: string, format?: string, label?: string) {
+        await this.clearGlobalRepresentations();
         const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
         this.loadedStructure = await loadStructureFromUrl(this.plugin, url, format, label, {
             previous,
@@ -512,6 +1012,7 @@ export class MolSysViewerController {
     }
 
     private async loadFromMolSysPayload(payload: MolSysPayload, label?: string) {
+        await this.clearGlobalRepresentations();
         const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
         this.loadedStructure = await loadStructureFromMolSysPayload(this.plugin, payload, label, {
             previous,
@@ -529,7 +1030,60 @@ export class MolSysViewerController {
             this.pendingVisibility = void 0;
             void this.updateVisibility(pending);
         }
+        // Apply any pending global show/hide requests now that structure exists
+        if (this.pendingGlobalOps.length && this.currentStructure) {
+            const ops = [...this.pendingGlobalOps];
+            this.pendingGlobalOps.length = 0;
+            ops.forEach(op => void this.handleShowHideGlobal(op.hide, op.target));
+        }
+        // Process any pending regions queued before structure was ready
+        if (this.pendingRegions.length && this.currentStructure) {
+            const queued = [...this.pendingRegions];
+            this.pendingRegions.length = 0;
+            for (const msg of queued) {
+                void this.handleCreateRegion(msg);
+            }
+        }
+        // Ensure a default global representation exists after load
+        if (this.currentStructure && this.globalReprs.size === 0) {
+            void this.ensureDefaultGlobalRepresentation();
+        }
+        // Apply any requested baseline-global visibility that may have arrived before the structure existed.
+        if (this.requestedGlobalHidden !== null) {
+            void this.handleShowHideGlobal(this.requestedGlobalHidden, "global");
+        }
         this.updateTrajectoryState();
+    }
+
+    private async ensureDefaultGlobalRepresentation() {
+        const structureRef = this.loadedStructure?.structure;
+        if (!structureRef || this.globalReprs.size > 0) return;
+        try {
+            // Prefer Mol* auto preset for the initial global style
+            const applied = await this.plugin.builders.structure.representation.applyPreset(
+                { ref: structureRef } as any,
+                "auto" as any,
+                {}
+            );
+            const refs = this.collectRefsFromPreset(applied as any);
+            refs.forEach(ref => this.globalReprs.add(ref));
+
+            // If preset returned nothing, fall back to a simple cartoon
+            if (this.globalReprs.size === 0) {
+                const repr = await this.plugin.builders.structure.representation.addRepresentation(
+                    structureRef as any,
+                    { type: "cartoon" as any },
+                    { tag: "global" }
+                );
+                if (repr?.ref) this.globalReprs.add(repr.ref);
+            }
+            // If the user requested hiding the baseline/global view, apply it immediately.
+            if (this.requestedGlobalHidden) {
+                this.globalReprs.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref as any, true));
+            }
+        } catch (err) {
+            console.warn("[MolSysViewer] default global representation failed", err);
+        }
     }
 
     private getStructure(): Structure | undefined {
@@ -541,13 +1095,15 @@ export class MolSysViewerController {
     }
 
     private async addSphere(options: AddSphereMessage["options"]) {
+        console.log("[MolSysViewer] addSphere options", options);
+        const tag = options?.tag;
         const ref = await addTransparentSphereFromPython(this.plugin, {
             center: options?.center ?? [0, 0, 0],
             radius: options?.radius ?? 10,
             color: options?.color ?? 0x00ff00,
             alpha: options?.alpha ?? 0.4,
         });
-        this.registerShapeRef(ref);
+        this.registerShapeRef(ref, tag);
     }
 
     private async updateVisibility(visibleAtomIndices?: number[]) {
@@ -564,21 +1120,30 @@ export class MolSysViewerController {
 
         await clearStructureTransparency(this.plugin, components);
 
-        if (!Array.isArray(visibleAtomIndices) || visibleAtomIndices.length === 0) return;
+        if (!Array.isArray(visibleAtomIndices)) return;
+
+        const hideAll = visibleAtomIndices.length === 0;
 
         const selectionBuilder = StructureSelection.LinearBuilder(structure);
-        const visibleSet = new Set(visibleAtomIndices);
-        let hasHidden = false;
+        const visibleSet = hideAll ? void 0 : new Set(visibleAtomIndices);
+        let hasHidden = hideAll;
 
         for (const unit of structure.units) {
             if (!Unit.isAtomic(unit)) continue;
             const elementCount = OrderedSet.size(unit.elements);
             if (elementCount === 0) continue;
 
+            if (hideAll) {
+                const childUnit = unit.getChild(unit.elements);
+                const hiddenStructure = Structure.create([childUnit], { parent: structure });
+                selectionBuilder.add(hiddenStructure);
+                continue;
+            }
+
             const hiddenElements: number[] = [];
             for (let ordinal = 0; ordinal < elementCount; ordinal++) {
                 const elementIndex = OrderedSet.getAt(unit.elements, ordinal);
-                if (!visibleSet.has(elementIndex)) {
+                if (!visibleSet?.has(elementIndex)) {
                     hiddenElements.push(elementIndex);
                 }
             }
@@ -854,6 +1419,10 @@ export class MolSysViewerController {
         await this.clearScene({ shapes: true, styles: true, labels: true });
         await this.removeLoadedStructure();
         this.currentStructure = undefined;
+        this.regionIndex.clear();
+        this.layerMeta.clear();
+        this.globalReprs.clear();
+        this.notify?.({ event: "registry_cleared" });
     }
 
     private async clearShapesByTag(tag?: string) {

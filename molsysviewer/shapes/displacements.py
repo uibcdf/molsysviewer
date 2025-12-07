@@ -45,7 +45,7 @@ class DisplacementVectors:
         radius_scale: float = 0.05,
         radial_segments: int | None = None,
         tag: str | None = None,
-    ) -> None:
+    ):
         """Añade flechas (cilindro + cono) para vectores de desplazamiento.
 
         Parameters
@@ -104,7 +104,11 @@ class DisplacementVectors:
             options["color_map"] = self._to_list(color_map)
         if radial_segments is not None:
             options["radial_segments"] = int(radial_segments)
-        if tag is not None:
-            options["tag"] = tag
+        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
+        options["tag"] = tag
 
         self._view._send({"op": "add_displacement_vectors", "options": options})
+        if tag not in self._view._layers:  # noqa: SLF001
+            from ..layers import Layer
+            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
+        return self._view._layers[tag]  # noqa: SLF001

@@ -7,7 +7,7 @@ from molsysviewer import MolSysView
 
 
 def test_write_html_prefers_anywidget_embed(monkeypatch, tmp_path):
-    view = MolSysView()
+    view = MolSysView(debug_js=True)
     # Capture outgoing widget sends to avoid side effects
     view.widget.send = lambda _msg: None  # type: ignore
 

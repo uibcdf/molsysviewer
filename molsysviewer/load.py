@@ -12,15 +12,16 @@ def load(
     molecular_system: Any,
     selection: Selection = "all",
     structure_indices: StructureIndices = "all",
+    *,
+    debug_js: bool | None = None,
     view: MolSysView | None = None,
 ) -> MolSysView:
 
-    view = MolSysView() if view is None else view
+    view = MolSysView(debug_js=debug_js) if view is None else view
     view.load(
         molecular_system,
         selection=selection,
         structure_indices=structure_indices,
     )
     return view
-
 

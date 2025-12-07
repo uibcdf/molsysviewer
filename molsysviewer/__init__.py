@@ -1,11 +1,12 @@
 from ._version import __version__
+from .viewer import MolSysView
+from .load import load
+from . import demo
+
 
 def __print_version__():
     print("MolSysViewer version " + __version__)
 
-from .viewer import MolSysView
-from .load import load
-from .demo import demo
 
 __all__ = [
     "MolSysView",
