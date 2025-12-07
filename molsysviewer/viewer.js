@@ -140055,6 +140055,308 @@ var DefaultPluginSpec = () => ({
   ]
 });
 
+// src/plugin/structure.ts
+async function recyclePreviousNode(plugin, previous) {
+  if (!previous) return;
+  const builder = plugin.build();
+  builder.delete(previous);
+  await builder.commit();
+}
+var InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
+  name: "molsysviewer-molsys-trajectory",
+  display: { name: "MolSys payload trajectory", description: "Insert trajectory created from MolSys payload" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Molecule.Trajectory,
+  params: {
+    trajectory: ParamDefinition.Value(void 0),
+    props: ParamDefinition.Value(void 0)
+  }
+})({
+  apply({ params }) {
+    return Task.create("Insert MolSys payload trajectory", async () => {
+      return new PluginStateObject.Molecule.Trajectory(params.trajectory, params.props);
+    });
+  }
+});
+async function loadStructureFromString(plugin, data, format = "pdb", label2, options) {
+  await recyclePreviousNode(plugin, options?.previous);
+  const raw = await plugin.builders.data.rawData({
+    data,
+    label: label2 ?? "Structure from string",
+    // extension opcional; ayuda a algunos parsers
+    ext: format
+  });
+  const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+  return {
+    data: raw.ref,
+    trajectory: trajectory.ref,
+    structure: preset?.structure?.ref
+  };
+}
+async function loadStructureFromUrl(plugin, url, format, label2, options) {
+  await recyclePreviousNode(plugin, options?.previous);
+  const dataNode = await plugin.builders.data.download(
+    { url, isBinary: false, label: label2 },
+    { state: { isGhost: true } }
+  );
+  const guessedFormat = format ?? (url.split(".").pop() ?? "pdb");
+  const trajectory = await plugin.builders.structure.parseTrajectory(
+    dataNode,
+    guessedFormat
+  );
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+  return {
+    data: dataNode.ref,
+    trajectory: trajectory.ref,
+    structure: preset?.structure?.ref
+  };
+}
+async function loadStructureFromMolSysPayload(plugin, payload, label2, options) {
+  await recyclePreviousNode(plugin, options?.previous);
+  if (!payload?.atoms || !payload.structures || payload.structures.length === 0) {
+    throw new Error("MolSys payload requires atoms and at least one structure");
+  }
+  const atomCount2 = payload.atoms.atom_id.length;
+  if (atomCount2 === 0) {
+    throw new Error("MolSys payload did not include atom identifiers");
+  }
+  const firstStructure = payload.structures[0];
+  const atomSite = createAtomSiteTable(payload, atomCount2, firstStructure);
+  const basic = createBasic({ atom_site: atomSite }, true);
+  const topology = Topology.create(
+    label2 ?? "MolSysMT",
+    basic,
+    createBondColumns(payload.bonds),
+    {
+      kind: "mol-viewer:molsysmt",
+      name: label2 ?? "MolSysMT",
+      data: payload.meta ?? {}
+    }
+  );
+  const frames = payload.structures.map((structure, index) => createFrameFromStructure(structure, atomCount2, index));
+  const delta2 = payload.time?.delta ?? 1;
+  const unit2 = payload.time?.unit ?? "ps";
+  const offset3 = payload.time?.offset ?? 0;
+  const coordinates = Coordinates.create(
+    frames,
+    { value: delta2, unit: unit2 },
+    { value: offset3, unit: unit2 }
+  );
+  const trajectory = await plugin.runTask(
+    Model.trajectoryFromTopologyAndCoordinates(topology, coordinates),
+    { useOverlay: false }
+  );
+  const builder = plugin.build();
+  const trajectoryNode = builder.toRoot().insert(InsertMolSysTrajectory, {
+    trajectory,
+    props: {
+      label: label2 ?? "MolSysMT Trajectory",
+      description: `${trajectory.frameCount} model${trajectory.frameCount === 1 ? "" : "s"}`
+    }
+  });
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+  return {
+    trajectory: trajectoryNode.ref,
+    structure: preset?.structure?.ref
+  };
+}
+function createAtomSiteTable(payload, atomCount2, structure) {
+  const atoms2 = payload.atoms;
+  const ids = ensureNumericArray(atoms2.atom_id, atomCount2, (i) => i + 1);
+  const names = ensureStringArray(atoms2.atom_name, atomCount2, (i) => `A${i + 1}`);
+  const elements = ensureStringArray(atoms2.element_symbol, atomCount2, () => "C");
+  const residueIds = ensureNumericArray(atoms2.residue_id, atomCount2, () => 1);
+  const residueNames = ensureStringArray(atoms2.residue_name, atomCount2, () => "RES");
+  const chainIds = ensureStringArray(atoms2.chain_id, atomCount2, () => "A");
+  const entityIds = ensureStringArray(atoms2.entity_id, atomCount2, () => "1");
+  const charges = ensureNumericArray(atoms2.formal_charge, atomCount2, () => 0);
+  const { x, y, z } = splitPositions(structure, atomCount2);
+  return Table.ofPartialColumns(BasicSchema.atom_site, {
+    id: Column.ofIntArray(ids),
+    label_atom_id: Column.ofStringArray(names),
+    auth_atom_id: Column.ofStringArray(names),
+    type_symbol: Column.ofStringArray(elements),
+    label_alt_id: Column.ofConst("", atomCount2, Column.Schema.str),
+    label_comp_id: Column.ofStringArray(residueNames),
+    auth_comp_id: Column.ofStringArray(residueNames),
+    label_asym_id: Column.ofStringArray(chainIds),
+    auth_asym_id: Column.ofStringArray(chainIds),
+    label_entity_id: Column.ofStringArray(entityIds),
+    label_seq_id: Column.ofIntArray(residueIds),
+    auth_seq_id: Column.ofIntArray(residueIds),
+    pdbx_PDB_model_num: Column.ofConst(1, atomCount2, Column.Schema.int),
+    pdbx_PDB_ins_code: Column.ofConst("", atomCount2, Column.Schema.str),
+    pdbx_formal_charge: Column.ofIntArray(charges),
+    occupancy: Column.ofConst(1, atomCount2, Column.Schema.float),
+    B_iso_or_equiv: Column.ofConst(0, atomCount2, Column.Schema.float),
+    Cartn_x: Column.ofFloatArray(x),
+    Cartn_y: Column.ofFloatArray(y),
+    Cartn_z: Column.ofFloatArray(z),
+    group_PDB: Column.ofConst("HETATM", atomCount2, Column.Schema.str)
+  }, atomCount2);
+}
+function splitPositions(frame, atomCount2) {
+  if (!Array.isArray(frame.coordinates) || frame.coordinates.length !== atomCount2) {
+    throw new Error("MolSys payload coordinates do not match atom count");
+  }
+  const x = new Float32Array(atomCount2);
+  const y = new Float32Array(atomCount2);
+  const z = new Float32Array(atomCount2);
+  for (let i = 0; i < atomCount2; i++) {
+    const coords = frame.coordinates[i];
+    const cx = coords?.[0];
+    const cy = coords?.[1];
+    const cz = coords?.[2];
+    x[i] = Number.isFinite(cx) ? Number(cx) : 0;
+    y[i] = Number.isFinite(cy) ? Number(cy) : 0;
+    z[i] = Number.isFinite(cz) ? Number(cz) : 0;
+  }
+  return { x, y, z };
+}
+function ensureStringArray(values2, length, fallback) {
+  if (Array.isArray(values2) && values2.length === length) return values2;
+  const output = new Array(length);
+  for (let i = 0; i < length; i++) output[i] = fallback(i);
+  return output;
+}
+function ensureNumericArray(values2, length, fallback) {
+  if (Array.isArray(values2) && values2.length === length) {
+    const out = new Array(length);
+    for (let i = 0; i < length; i++) {
+      const v4 = values2[i];
+      const n = typeof v4 === "number" ? v4 : Number(v4);
+      out[i] = Number.isFinite(n) ? n : fallback(i);
+    }
+    return out;
+  }
+  const output = new Array(length);
+  for (let i = 0; i < length; i++) output[i] = fallback(i);
+  return output;
+}
+function createFrameFromStructure(structure, atomCount2, index) {
+  const { x, y, z } = splitPositions(structure, atomCount2);
+  let cell = void 0;
+  if (structure.box && structure.box.length === 3) {
+    const [v0, v1, v22] = structure.box;
+    if (Array.isArray(v0) && Array.isArray(v1) && Array.isArray(v22) && v0.length === 3 && v1.length === 3 && v22.length === 3) {
+      const a8 = Vec3.create(v0[0], v0[1], v0[2]);
+      const b8 = Vec3.create(v1[0], v1[1], v1[2]);
+      const c8 = Vec3.create(v22[0], v22[1], v22[2]);
+      const candidate = Cell.fromBasis(a8, b8, c8);
+      if (candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0) {
+        cell = candidate;
+      } else {
+        console.warn("[MolSysViewer] box vectors provided but Mol* could not build a valid cell (degenerate basis)");
+      }
+    }
+  }
+  return {
+    elementCount: atomCount2,
+    time: { value: structure.time ?? index, unit: "ps" },
+    x,
+    y,
+    z,
+    cell,
+    xyzOrdering: { isIdentity: true }
+  };
+}
+function createBondColumns(bonds) {
+  if (!bonds || bonds.indexA.length === 0) {
+    return {
+      indexA: Column.ofConst(0, 0, Column.Schema.int),
+      indexB: Column.ofConst(0, 0, Column.Schema.int),
+      order: Column.ofConst(1, 0, Column.Schema.int)
+    };
+  }
+  if (bonds.indexA.length !== bonds.indexB.length) {
+    throw new Error("MolSys payload bonds must have matching index arrays");
+  }
+  const orderValues = bonds.order && bonds.order.length === bonds.indexA.length ? bonds.order : new Array(bonds.indexA.length).fill(1);
+  return {
+    indexA: Column.ofIntArray(bonds.indexA),
+    indexB: Column.ofIntArray(bonds.indexB),
+    order: Column.ofIntArray(orderValues)
+  };
+}
+
+// src/managers/handlers/loader-handlers.ts
+var LoaderHandlers = class {
+  constructor(plugin, callbacks) {
+    this.plugin = plugin;
+    this.callbacks = callbacks;
+  }
+  async loadFromString(msg) {
+    const text = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
+    if (!text || typeof text !== "string") {
+      console.warn("[MolSysViewer] load message without data/pdb/pdb_text");
+      return;
+    }
+    const format = msg.format ?? "pdb";
+    const label2 = msg.label ?? "Structure";
+    await this.loadFromStringInternal(text, format, label2);
+  }
+  async loadMolSysPayload(msg) {
+    if (!msg.payload) {
+      console.warn("[MolSysViewer] load_molsys_payload without payload");
+      return;
+    }
+    await this.loadFromMolSysPayloadInternal(msg.payload, msg.label);
+  }
+  async loadFromUrl(msg) {
+    if (!msg.url || typeof msg.url !== "string") {
+      console.warn("[MolSysViewer] load_structure_from_url without url");
+      return;
+    }
+    await this.loadFromUrlInternal(msg.url, msg.format, msg.label);
+  }
+  async loadPdbId(msg) {
+    const pdbId = msg.pdb_id?.trim();
+    if (!pdbId) {
+      console.warn("[MolSysViewer] load_pdb_id without pdb_id");
+      return;
+    }
+    await this.loadPdbIdInternal(pdbId);
+  }
+  async loadFromStringInternal(data, format, label2) {
+    await this.callbacks.clearGlobalRepresentations();
+    const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
+    const ls = await loadStructureFromString(this.plugin, data, format, label2, {
+      previous
+    });
+    this.callbacks.setLoadedStructure(ls);
+    this.callbacks.captureCurrentStructure();
+  }
+  async loadFromUrlInternal(url, format, label2) {
+    await this.callbacks.clearGlobalRepresentations();
+    const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
+    const ls = await loadStructureFromUrl(this.plugin, url, format, label2, {
+      previous
+    });
+    this.callbacks.setLoadedStructure(ls);
+    this.callbacks.captureCurrentStructure();
+  }
+  async loadFromMolSysPayloadInternal(payload, label2) {
+    await this.callbacks.clearGlobalRepresentations();
+    const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
+    const ls = await loadStructureFromMolSysPayload(this.plugin, payload, label2, {
+      previous
+    });
+    this.callbacks.setLoadedStructure(ls);
+    this.callbacks.captureCurrentStructure();
+  }
+  async loadPdbIdInternal(pdbId) {
+    const normalized2 = pdbId.trim().toUpperCase();
+    const url = `https://files.rcsb.org/download/${normalized2}.pdb`;
+    await this.loadFromUrlInternal(url, "pdb", `PDB ${normalized2}`);
+  }
+};
+
 // src/shapes/index.ts
 var MSVTransform = Transformer.builderFactory("molsysviewer");
 var TransparentSphereParams = {
@@ -142424,503 +142726,23 @@ function PocketSurfaceRepresentation(ctx, getParams) {
   );
 }
 
-// src/plugin/structure.ts
-async function recyclePreviousNode(plugin, previous) {
-  if (!previous) return;
-  const builder = plugin.build();
-  builder.delete(previous);
-  await builder.commit();
-}
-var InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
-  name: "molsysviewer-molsys-trajectory",
-  display: { name: "MolSys payload trajectory", description: "Insert trajectory created from MolSys payload" },
-  from: PluginStateObject.Root,
-  to: PluginStateObject.Molecule.Trajectory,
-  params: {
-    trajectory: ParamDefinition.Value(void 0),
-    props: ParamDefinition.Value(void 0)
-  }
-})({
-  apply({ params }) {
-    return Task.create("Insert MolSys payload trajectory", async () => {
-      return new PluginStateObject.Molecule.Trajectory(params.trajectory, params.props);
-    });
-  }
-});
-async function loadStructureFromString(plugin, data, format = "pdb", label2, options) {
-  await recyclePreviousNode(plugin, options?.previous);
-  const raw = await plugin.builders.data.rawData({
-    data,
-    label: label2 ?? "Structure from string",
-    // extension opcional; ayuda a algunos parsers
-    ext: format
-  });
-  const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
-  return {
-    data: raw.ref,
-    trajectory: trajectory.ref,
-    structure: preset?.structure?.ref
-  };
-}
-async function loadStructureFromUrl(plugin, url, format, label2, options) {
-  await recyclePreviousNode(plugin, options?.previous);
-  const dataNode = await plugin.builders.data.download(
-    { url, isBinary: false, label: label2 },
-    { state: { isGhost: true } }
-  );
-  const guessedFormat = format ?? (url.split(".").pop() ?? "pdb");
-  const trajectory = await plugin.builders.structure.parseTrajectory(
-    dataNode,
-    guessedFormat
-  );
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
-  return {
-    data: dataNode.ref,
-    trajectory: trajectory.ref,
-    structure: preset?.structure?.ref
-  };
-}
-async function loadStructureFromMolSysPayload(plugin, payload, label2, options) {
-  await recyclePreviousNode(plugin, options?.previous);
-  if (!payload?.atoms || !payload.structures || payload.structures.length === 0) {
-    throw new Error("MolSys payload requires atoms and at least one structure");
-  }
-  const atomCount2 = payload.atoms.atom_id.length;
-  if (atomCount2 === 0) {
-    throw new Error("MolSys payload did not include atom identifiers");
-  }
-  const firstStructure = payload.structures[0];
-  const atomSite = createAtomSiteTable(payload, atomCount2, firstStructure);
-  const basic = createBasic({ atom_site: atomSite }, true);
-  const topology = Topology.create(
-    label2 ?? "MolSysMT",
-    basic,
-    createBondColumns(payload.bonds),
-    {
-      kind: "mol-viewer:molsysmt",
-      name: label2 ?? "MolSysMT",
-      data: payload.meta ?? {}
-    }
-  );
-  const frames = payload.structures.map((structure, index) => createFrameFromStructure(structure, atomCount2, index));
-  const delta2 = payload.time?.delta ?? 1;
-  const unit2 = payload.time?.unit ?? "ps";
-  const offset3 = payload.time?.offset ?? 0;
-  const coordinates = Coordinates.create(
-    frames,
-    { value: delta2, unit: unit2 },
-    { value: offset3, unit: unit2 }
-  );
-  const trajectory = await plugin.runTask(
-    Model.trajectoryFromTopologyAndCoordinates(topology, coordinates),
-    { useOverlay: false }
-  );
-  const builder = plugin.build();
-  const trajectoryNode = builder.toRoot().insert(InsertMolSysTrajectory, {
-    trajectory,
-    props: {
-      label: label2 ?? "MolSysMT Trajectory",
-      description: `${trajectory.frameCount} model${trajectory.frameCount === 1 ? "" : "s"}`
-    }
-  });
-  await PluginCommands.State.Update(plugin, {
-    state: plugin.state.data,
-    tree: builder,
-    options: { doNotLogTiming: true }
-  });
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
-  return {
-    trajectory: trajectoryNode.ref,
-    structure: preset?.structure?.ref
-  };
-}
-function createAtomSiteTable(payload, atomCount2, structure) {
-  const atoms2 = payload.atoms;
-  const ids = ensureNumericArray(atoms2.atom_id, atomCount2, (i) => i + 1);
-  const names = ensureStringArray(atoms2.atom_name, atomCount2, (i) => `A${i + 1}`);
-  const elements = ensureStringArray(atoms2.element_symbol, atomCount2, () => "C");
-  const residueIds = ensureNumericArray(atoms2.residue_id, atomCount2, () => 1);
-  const residueNames = ensureStringArray(atoms2.residue_name, atomCount2, () => "RES");
-  const chainIds = ensureStringArray(atoms2.chain_id, atomCount2, () => "A");
-  const entityIds = ensureStringArray(atoms2.entity_id, atomCount2, () => "1");
-  const charges = ensureNumericArray(atoms2.formal_charge, atomCount2, () => 0);
-  const { x, y, z } = splitPositions(structure, atomCount2);
-  return Table.ofPartialColumns(BasicSchema.atom_site, {
-    id: Column.ofIntArray(ids),
-    label_atom_id: Column.ofStringArray(names),
-    auth_atom_id: Column.ofStringArray(names),
-    type_symbol: Column.ofStringArray(elements),
-    label_alt_id: Column.ofConst("", atomCount2, Column.Schema.str),
-    label_comp_id: Column.ofStringArray(residueNames),
-    auth_comp_id: Column.ofStringArray(residueNames),
-    label_asym_id: Column.ofStringArray(chainIds),
-    auth_asym_id: Column.ofStringArray(chainIds),
-    label_entity_id: Column.ofStringArray(entityIds),
-    label_seq_id: Column.ofIntArray(residueIds),
-    auth_seq_id: Column.ofIntArray(residueIds),
-    pdbx_PDB_model_num: Column.ofConst(1, atomCount2, Column.Schema.int),
-    pdbx_PDB_ins_code: Column.ofConst("", atomCount2, Column.Schema.str),
-    pdbx_formal_charge: Column.ofIntArray(charges),
-    occupancy: Column.ofConst(1, atomCount2, Column.Schema.float),
-    B_iso_or_equiv: Column.ofConst(0, atomCount2, Column.Schema.float),
-    Cartn_x: Column.ofFloatArray(x),
-    Cartn_y: Column.ofFloatArray(y),
-    Cartn_z: Column.ofFloatArray(z),
-    group_PDB: Column.ofConst("HETATM", atomCount2, Column.Schema.str)
-  }, atomCount2);
-}
-function splitPositions(frame, atomCount2) {
-  if (!Array.isArray(frame.coordinates) || frame.coordinates.length !== atomCount2) {
-    throw new Error("MolSys payload coordinates do not match atom count");
-  }
-  const x = new Float32Array(atomCount2);
-  const y = new Float32Array(atomCount2);
-  const z = new Float32Array(atomCount2);
-  for (let i = 0; i < atomCount2; i++) {
-    const coords = frame.coordinates[i];
-    const cx = coords?.[0];
-    const cy = coords?.[1];
-    const cz = coords?.[2];
-    x[i] = Number.isFinite(cx) ? Number(cx) : 0;
-    y[i] = Number.isFinite(cy) ? Number(cy) : 0;
-    z[i] = Number.isFinite(cz) ? Number(cz) : 0;
-  }
-  return { x, y, z };
-}
-function ensureStringArray(values2, length, fallback) {
-  if (Array.isArray(values2) && values2.length === length) return values2;
-  const output = new Array(length);
-  for (let i = 0; i < length; i++) output[i] = fallback(i);
-  return output;
-}
-function ensureNumericArray(values2, length, fallback) {
-  if (Array.isArray(values2) && values2.length === length) {
-    const out = new Array(length);
-    for (let i = 0; i < length; i++) {
-      const v4 = values2[i];
-      const n = typeof v4 === "number" ? v4 : Number(v4);
-      out[i] = Number.isFinite(n) ? n : fallback(i);
-    }
-    return out;
-  }
-  const output = new Array(length);
-  for (let i = 0; i < length; i++) output[i] = fallback(i);
-  return output;
-}
-function createFrameFromStructure(structure, atomCount2, index) {
-  const { x, y, z } = splitPositions(structure, atomCount2);
-  let cell = void 0;
-  if (structure.box && structure.box.length === 3) {
-    const [v0, v1, v22] = structure.box;
-    if (Array.isArray(v0) && Array.isArray(v1) && Array.isArray(v22) && v0.length === 3 && v1.length === 3 && v22.length === 3) {
-      const a8 = Vec3.create(v0[0], v0[1], v0[2]);
-      const b8 = Vec3.create(v1[0], v1[1], v1[2]);
-      const c8 = Vec3.create(v22[0], v22[1], v22[2]);
-      const candidate = Cell.fromBasis(a8, b8, c8);
-      if (candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0) {
-        cell = candidate;
-      } else {
-        console.warn("[MolSysViewer] box vectors provided but Mol* could not build a valid cell (degenerate basis)");
-      }
-    }
-  }
-  return {
-    elementCount: atomCount2,
-    time: { value: structure.time ?? index, unit: "ps" },
-    x,
-    y,
-    z,
-    cell,
-    xyzOrdering: { isIdentity: true }
-  };
-}
-function createBondColumns(bonds) {
-  if (!bonds || bonds.indexA.length === 0) {
-    return {
-      indexA: Column.ofConst(0, 0, Column.Schema.int),
-      indexB: Column.ofConst(0, 0, Column.Schema.int),
-      order: Column.ofConst(1, 0, Column.Schema.int)
-    };
-  }
-  if (bonds.indexA.length !== bonds.indexB.length) {
-    throw new Error("MolSys payload bonds must have matching index arrays");
-  }
-  const orderValues = bonds.order && bonds.order.length === bonds.indexA.length ? bonds.order : new Array(bonds.indexA.length).fill(1);
-  return {
-    indexA: Column.ofIntArray(bonds.indexA),
-    indexB: Column.ofIntArray(bonds.indexB),
-    order: Column.ofIntArray(orderValues)
-  };
-}
-
-// src/managers/viewer-controller.ts
-var MolSysViewerController = class _MolSysViewerController {
-  constructor(plugin, host, notify) {
+// src/managers/handlers/shape-handlers.ts
+var ShapeHandlers = class {
+  constructor(plugin, registerRef) {
     this.plugin = plugin;
-    this.host = host;
-    this.notify = notify;
-    this.shapeRefs = /* @__PURE__ */ new Set();
-    this.tagIndex = /* @__PURE__ */ new Map();
-    this.regionIndex = /* @__PURE__ */ new Map();
-    this.layerMeta = /* @__PURE__ */ new Map();
-    this.globalReprs = /* @__PURE__ */ new Set();
-    this.pendingGlobalOps = [];
-    this.pendingLayerVisibility = /* @__PURE__ */ new Map();
-    // Remember the last requested baseline-global visibility so we can apply it once the structure exists
-    this.requestedGlobalHidden = null;
-    this.pendingRegions = [];
-    this.labelRefs = /* @__PURE__ */ new Set();
-    this.swingActive = false;
-    this.spinActive = false;
-    this.trajectoryListeners = /* @__PURE__ */ new Set();
-    this.darkMode = false;
+    this.registerRef = registerRef;
   }
-  static async create(target, notify) {
-    const canvas = document.createElement("canvas");
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-    canvas.style.display = "block";
-    target.appendChild(canvas);
-    const plugin = new PluginContext(DefaultPluginSpec());
-    await plugin.init();
-    const init = plugin.initViewerAsync ?? plugin.initViewer;
-    let ok = false;
-    if (typeof init === "function") {
-      const result2 = init.call(plugin, canvas, target);
-      ok = typeof result2?.then === "function" ? await result2 : !!result2;
-    } else {
-      console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
-    }
-    if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
-    return new _MolSysViewerController(plugin, target, notify);
-  }
-  registerShapeRef(ref, tag) {
-    if (!ref) return;
-    this.shapeRefs.add(ref);
-    console.log("[MolSysViewer] registerShapeRef", { tag, hasRef: !!ref });
-    if (!tag) return;
-    if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, /* @__PURE__ */ new Set());
-    this.tagIndex.get(tag).add(ref);
-    if (!this.layerMeta.has(tag)) {
-      this.layerMeta.set(tag, { kind: "shape", meta: {} });
-      this.notify?.({ event: "layer_ack", tag, kind: "shape", meta: {} });
-    }
-    if (this.pendingLayerVisibility.has(tag)) {
-      const hide = this.pendingLayerVisibility.get(tag);
-      this.pendingLayerVisibility.delete(tag);
-      console.log("[MolSysViewer] apply pending layer visibility", tag, "hide:", hide);
-      setSubtreeVisibility(this.plugin.state.data, ref, hide);
-    }
-  }
-  async handleMessage(msg) {
-    if (!msg || typeof msg !== "object") return;
-    if (!("op" in msg)) {
-      console.warn("[MolSysViewer] message missing 'op'", msg);
-      return;
-    }
-    try {
-      switch (msg.op) {
-        case "load_structure_from_string":
-        case "load_pdb_string":
-          await this.handleLoadFromString(msg);
-          break;
-        case "load_molsys_payload":
-          await this.handleLoadMolSysPayload(msg);
-          break;
-        case "load_structure_from_url":
-          await this.handleLoadFromUrl(msg);
-          break;
-        case "load_pdb_id":
-          await this.handleLoadPdbId(msg);
-          break;
-        case "add_sphere":
-          await this.handleAddSphere(msg);
-          break;
-        case "add_alpha_sphere_set":
-          await this.handleAddAlphaSphereSet(msg);
-          break;
-        case "add_pocket_surface":
-          await this.handleAddPocketSurface(msg);
-          break;
-        case "add_pocket_blob":
-          await this.handleAddPocketBlob(msg);
-          break;
-        case "add_channel_tube":
-          await this.handleAddChannelTube(msg);
-          break;
-        case "add_anisotropy_ellipsoids":
-          await this.handleAddAnisotropyEllipsoids(msg);
-          break;
-        case "add_pharmacophore_features":
-          await this.handleAddPharmacophore(msg);
-          break;
-        case "add_network_links":
-          await this.handleAddNetworkLinks(msg);
-          break;
-        case "add_displacement_vectors":
-          await this.handleAddDisplacementVectors(msg);
-          break;
-        case "add_tetrahedra":
-          await this.handleAddTetrahedra(msg);
-          break;
-        case "add_triangle_faces":
-          await this.handleAddTriangleFaces(msg);
-          break;
-        case "update_visibility":
-          await this.handleUpdateVisibility(msg);
-          break;
-        case "reset_view":
-          await this.resetView();
-          break;
-        case "clear_scene":
-          await this.clearScene(msg.options);
-          break;
-        case "clear_all":
-          await this.clearAll();
-          break;
-        case "clear_shapes_by_tag":
-          await this.clearShapesByTag(msg.tag);
-          break;
-        case "reset_camera":
-          await this.resetView();
-          break;
-        case "toggle_fullscreen":
-          await this.toggleFullscreen(msg.enable);
-          break;
-        case "toggle_background":
-          await this.toggleBackground(msg.mode);
-          break;
-        case "toggle_swing":
-          await this.toggleSwing(msg.enable);
-          break;
-        case "toggle_spin":
-          await this.toggleSpin(msg.enable);
-          break;
-        case "step_trajectory":
-          await this.handleStepTrajectory(msg);
-          break;
-        case "set_trajectory_frame":
-          await this.handleSetTrajectoryFrame(msg);
-          break;
-        case "set_trajectory_playback":
-          await this.handleSetTrajectoryPlayback(msg);
-          break;
-        case "create_region":
-          await this.handleCreateRegion(msg);
-          break;
-        case "set_region_representation":
-          await this.handleSetRegionRepresentation(msg);
-          break;
-        case "show_region":
-          await this.handleShowHideRegion(msg, false);
-          break;
-        case "hide_region":
-          await this.handleShowHideRegion(msg, true);
-          break;
-        case "delete_region":
-          await this.handleDeleteRegion(msg);
-          break;
-        case "create_layer":
-          await this.handleCreateLayer(msg);
-          break;
-        case "show_layer":
-          await this.handleShowHideLayer(msg, false);
-          break;
-        case "hide_layer":
-          await this.handleShowHideLayer(msg, true);
-          break;
-        case "delete_layer":
-          await this.handleDeleteLayer(msg);
-          break;
-        case "set_layer_tag":
-          await this.handleSetLayerTag(msg);
-          break;
-        case "set_global_representation":
-          await this.handleSetGlobalRepresentation(msg);
-          break;
-        case "show_global":
-          await this.handleShowHideGlobal(false, msg.target ?? "global");
-          break;
-        case "hide_global":
-          await this.handleShowHideGlobal(true, msg.target ?? "global");
-          break;
-        default:
-          console.warn("[MolSysViewer] unknown op:", msg.op, msg);
-          break;
-      }
-    } catch (error2) {
-      console.error("[MolSysViewer] Error handling message:", msg, error2);
-    }
-  }
-  buildSelectionFromAtomIndices(structure, atomIndices) {
-    if (!Array.isArray(atomIndices) || atomIndices.length === 0) return void 0;
-    const selectionBuilder = StructureSelection.LinearBuilder(structure);
-    const set4 = new Set(atomIndices);
-    let added = false;
-    for (const unit2 of structure.units) {
-      if (!Unit.isAtomic(unit2)) continue;
-      const elements = unit2.elements;
-      const elementCount = OrderedSet2.size(elements);
-      if (elementCount === 0) continue;
-      const matched = [];
-      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
-        const elementIndex = OrderedSet2.getAt(elements, ordinal);
-        if (set4.has(elementIndex)) matched.push(elementIndex);
-      }
-      if (matched.length === 0) continue;
-      added = true;
-      matched.sort((a8, b8) => a8 - b8);
-      const subset = matched.length === elementCount ? elements : SortedArray.ofSortedArray(matched);
-      const childUnit = unit2.getChild(subset);
-      const subStructure = Structure.create([childUnit], { parent: structure });
-      selectionBuilder.add(subStructure);
-    }
-    return added ? selectionBuilder.getSelection() : void 0;
-  }
-  async handleLoadFromString(msg) {
-    const text = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
-    if (!text || typeof text !== "string") {
-      console.warn("[MolSysViewer] load message without data/pdb/pdb_text");
-      return;
-    }
-    const format = msg.format ?? "pdb";
-    const label2 = msg.label ?? "Structure";
-    await this.loadFromString(text, format, label2);
-  }
-  async handleLoadMolSysPayload(msg) {
-    if (!msg.payload) {
-      console.warn("[MolSysViewer] load_molsys_payload without payload");
-      return;
-    }
-    await this.loadFromMolSysPayload(msg.payload, msg.label);
-  }
-  async handleLoadFromUrl(msg) {
-    if (!msg.url || typeof msg.url !== "string") {
-      console.warn("[MolSysViewer] load_structure_from_url without url");
-      return;
-    }
-    await this.loadFromUrl(msg.url, msg.format, msg.label);
-  }
-  async handleLoadPdbId(msg) {
-    const pdbId = msg.pdb_id?.trim();
-    if (!pdbId) {
-      console.warn("[MolSysViewer] load_pdb_id without pdb_id");
-      return;
-    }
-    await this.loadPdbId(pdbId);
-  }
-  async handleAddSphere(msg) {
+  async addSphere(msg) {
     const options = msg.options ?? {};
-    await this.addSphere({
+    const ref = await addTransparentSphereFromPython(this.plugin, {
       center: options.center ?? [0, 0, 0],
       radius: options.radius ?? 10,
       color: options.color ?? 65280,
-      alpha: options.alpha ?? 0.4,
-      tag: options.tag ?? msg.tag
+      alpha: options.alpha ?? 0.4
     });
+    this.registerRef(ref, options.tag ?? msg.tag);
   }
-  async handleAddAlphaSphereSet(msg) {
+  async addAlphaSphereSet(msg) {
     const options = msg.options;
     if (!options?.alpha_spheres?.centers || !options.alpha_spheres.radii) {
       console.warn("[MolSysViewer] add_alpha_sphere_set missing alpha_spheres");
@@ -142942,7 +142764,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }));
     const tag = options.tag ?? "molsysviewer:alpha-spheres";
     const alphaRef = await addTransparentSpheresFromPython(this.plugin, alphaSpecs, alphaAlpha, tag);
-    this.registerShapeRef(alphaRef, tag);
+    this.registerRef(alphaRef, tag);
     if (options.atom_spheres?.centers && options.atom_spheres.centers.length > 0) {
       const atomRadius = options.atom_spheres.radius ?? 1;
       const atomColor = options.atom_spheres.color ?? 255;
@@ -142954,10 +142776,10 @@ var MolSysViewerController = class _MolSysViewerController {
         alpha: atomAlpha
       }));
       const atomRef = await addTransparentSpheresFromPython(this.plugin, atomSpecs, atomAlpha, tag);
-      this.registerShapeRef(atomRef, tag);
+      this.registerRef(atomRef, tag);
     }
   }
-  async handleAddPocketSurface(msg) {
+  async addPocketSurface(msg) {
     const options = msg.options ?? {};
     if (!Array.isArray(options.atom_indices) || options.atom_indices.length === 0) {
       console.warn("[MolSysViewer] add_pocket_surface without atom_indices");
@@ -142966,15 +142788,15 @@ var MolSysViewerController = class _MolSysViewerController {
     try {
       const ref = await addPocketSurfaceFromPython(this.plugin, options);
       if (Array.isArray(ref)) {
-        ref.forEach((r) => this.registerShapeRef(r, options.tag));
+        ref.forEach((r) => this.registerRef(r, options.tag));
       } else {
-        this.registerShapeRef(ref, options.tag);
+        this.registerRef(ref, options.tag);
       }
     } catch (err) {
       console.error("[MolSysViewer] Error creando pocket surface", err);
     }
   }
-  async handleAddPocketBlob(msg) {
+  async addPocketBlob(msg) {
     const options = msg.options ?? {};
     if (!options.centers || !options.radii || options.centers.length === 0 || options.radii.length === 0) {
       console.warn("[MolSysViewer] add_pocket_blob without centers or radii");
@@ -142983,15 +142805,15 @@ var MolSysViewerController = class _MolSysViewerController {
     try {
       const ref = await addPocketBlobFromPython(this.plugin, options);
       if (Array.isArray(ref)) {
-        ref.forEach((r) => this.registerShapeRef(r, options.tag));
+        ref.forEach((r) => this.registerRef(r, options.tag));
       } else {
-        this.registerShapeRef(ref, options.tag);
+        this.registerRef(ref, options.tag);
       }
     } catch (err) {
       console.error("[MolSysViewer] Error creando pocket blob", err);
     }
   }
-  async handleAddChannelTube(msg) {
+  async addChannelTube(msg) {
     const options = msg.options ?? {};
     if (!options.centers || !options.radii || options.centers.length < 2 || options.radii.length < 2) {
       console.warn("[MolSysViewer] add_channel_tube requires at least two centers and radii");
@@ -142999,12 +142821,12 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     try {
       const ref = await addChannelTubeFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando channel tube", err);
     }
   }
-  async handleAddAnisotropyEllipsoids(msg) {
+  async addAnisotropyEllipsoids(msg) {
     const options = msg.options ?? {};
     if (!options.centers && !options.atom_indices) {
       console.warn("[MolSysViewer] add_anisotropy_ellipsoids requires centers or atom_indices");
@@ -143012,12 +142834,12 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     try {
       const ref = await addAnisotropyEllipsoidsFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando anisotropy ellipsoids", err);
     }
   }
-  async handleAddPharmacophore(msg) {
+  async addPharmacophore(msg) {
     const options = msg.options ?? {};
     if (!options.centers || !options.kinds || options.centers.length === 0 || options.kinds.length !== options.centers.length) {
       console.warn("[MolSysViewer] add_pharmacophore_features requires centers and kinds of same length");
@@ -143025,21 +142847,21 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     try {
       const ref = await addPharmacophoreFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando pharmacophore features", err);
     }
   }
-  async handleAddNetworkLinks(msg) {
+  async addNetworkLinks(msg) {
     const options = msg.options ?? {};
     try {
       const ref = await addNetworkLinksFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando network links", err);
     }
   }
-  async handleAddDisplacementVectors(msg) {
+  async addDisplacementVectors(msg) {
     const options = msg.options ?? {};
     if (!options.vectors || options.vectors.length === 0) {
       console.warn("[MolSysViewer] add_displacement_vectors without vectors");
@@ -143047,12 +142869,12 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     try {
       const ref = await addDisplacementVectorsFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando displacement vectors", err);
     }
   }
-  async handleAddTetrahedra(msg) {
+  async addTetrahedra(msg) {
     const options = msg.options ?? {};
     if (!options.tetraCoords && !options.tetra_coords && !options.atomQuads && !options.atom_quads) {
       console.warn("[MolSysViewer] add_tetrahedra without tetraCoords or atom_quads");
@@ -143060,12 +142882,12 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     try {
       const ref = await addTetrahedraFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando tetrahedra", err);
     }
   }
-  async handleAddTriangleFaces(msg) {
+  async addTriangleFaces(msg) {
     const options = msg.options ?? {};
     if (!options.vertices && !options.atom_triplets && !options.atomTriplets) {
       console.warn("[MolSysViewer] add_triangle_faces without vertices or atom_triplets");
@@ -143073,18 +142895,222 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     try {
       const ref = await addTriangleFacesFromPython(this.plugin, options);
-      this.registerShapeRef(ref, options.tag);
+      this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando triangle faces", err);
     }
   }
-  async handleUpdateVisibility(msg) {
-    const indices2 = msg.options?.visible_atom_indices;
-    await this.updateVisibility(indices2);
+};
+
+// src/managers/handlers/scene-handlers.ts
+var SceneHandlers = class {
+  constructor(plugin, host, callbacks) {
+    this.plugin = plugin;
+    this.host = host;
+    this.callbacks = callbacks;
+    this.swingActive = false;
+    this.spinActive = false;
+    this.darkMode = false;
   }
-  async handleCreateRegion(msg) {
-    const structure = this.getStructure();
-    if (!structure || !this.currentStructure) {
+  get isSpinActive() {
+    return this.spinActive;
+  }
+  get isSwingActive() {
+    return this.swingActive;
+  }
+  get isDarkMode() {
+    return this.darkMode;
+  }
+  async resetView() {
+    await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+  }
+  async toggleFullscreen(msg) {
+    const enable = typeof msg === "boolean" ? msg : msg.enable;
+    const root = this.plugin.canvas3d?.props.parent;
+    const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
+    const target = this.host ?? root?.parentElement ?? root ?? canvas?.parentElement ?? canvas ?? document.documentElement;
+    if (!target || !target.requestFullscreen) return;
+    const shouldEnable = enable ?? !document.fullscreenElement;
+    try {
+      if (shouldEnable) {
+        if (!document.fullscreenElement) await target.requestFullscreen();
+      } else if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.warn("[MolSysViewer] fullscreen toggle failed", err);
+    }
+  }
+  async toggleBackground(msg) {
+    const mode = typeof msg === "string" ? msg : msg.mode;
+    const canvas3d = this.plugin.canvas3d;
+    if (!canvas3d) return;
+    const renderer = canvas3d.props?.renderer ?? {};
+    const camera = canvas3d.props?.camera ?? {};
+    if (!this.savedLightRenderer) this.savedLightRenderer = { ...renderer };
+    if (!this.savedLightCamera) this.savedLightCamera = { ...camera };
+    const makeDark = mode ? mode === "dark" : !this.darkMode;
+    if (makeDark) {
+      if (!this.savedDarkRenderer) {
+        this.savedDarkRenderer = {
+          ...renderer,
+          backgroundColor: 1052688,
+          lightColor: 16777215,
+          ambientColor: 16777215,
+          exposure: renderer.exposure ?? 1,
+          lightIntensity: renderer.lightIntensity ?? 1,
+          ambientIntensity: renderer.ambientIntensity ?? 1
+        };
+      }
+      if (!this.savedDarkCamera) {
+        this.savedDarkCamera = { ...camera };
+      }
+      canvas3d.setProps({
+        renderer: { ...this.savedDarkRenderer },
+        camera: { ...this.savedDarkCamera }
+      });
+      this.darkMode = true;
+    } else {
+      const lightRenderer = this.savedLightRenderer ?? renderer;
+      const lightCamera = this.savedLightCamera ?? camera;
+      canvas3d.setProps({
+        renderer: { ...lightRenderer },
+        camera: { ...lightCamera }
+      });
+      this.darkMode = false;
+    }
+  }
+  async toggleSwing(msg) {
+    const enable = typeof msg === "boolean" ? msg : msg.enable;
+    const canvas3d = this.plugin.canvas3d;
+    if (!canvas3d) return;
+    const shouldEnable = enable ?? !this.swingActive;
+    this.swingActive = shouldEnable;
+    this.spinActive = false;
+    canvas3d.setProps({
+      trackball: {
+        ...canvas3d.props?.trackball || {},
+        animate: shouldEnable ? { name: "rock", params: { speed: 0.25, angle: 20 } } : { name: "off", params: {} }
+      }
+    });
+  }
+  async toggleSpin(msg) {
+    const enable = typeof msg === "boolean" ? msg : msg.enable;
+    const canvas3d = this.plugin.canvas3d;
+    if (!canvas3d) return;
+    const shouldEnable = enable ?? !this.spinActive;
+    this.spinActive = shouldEnable;
+    this.swingActive = false;
+    canvas3d.setProps({
+      trackball: {
+        ...canvas3d.props?.trackball || {},
+        animate: shouldEnable ? { name: "spin", params: { speed: 0.1 } } : { name: "off", params: {} }
+      }
+    });
+  }
+  async clearScene(msg) {
+    const options = msg.options;
+    const shapes = options?.shapes ?? true;
+    const styles = options?.styles ?? true;
+    const labels = options?.labels ?? false;
+    if (shapes) await this.callbacks.clearShapes();
+    if (styles) await this.resetStructureDecorations();
+    if (labels) await this.callbacks.clearLabels();
+  }
+  async clearShapesByTag(msg) {
+    await this.callbacks.clearShapesByTag(msg.tag);
+  }
+  async clearAll() {
+    await this.clearScene({ op: "clear_scene", options: { shapes: true, styles: true, labels: true } });
+    await this.callbacks.removeLoadedStructure();
+    this.callbacks.notify({ event: "registry_cleared" });
+  }
+  async resetStructureDecorations() {
+    const components = this.callbacks.getComponents();
+    if (components.length === 0) return;
+    await clearStructureTransparency(this.plugin, components);
+  }
+};
+
+// src/managers/handlers/state-handlers.ts
+var StateHandlers = class {
+  constructor(plugin, callbacks) {
+    this.plugin = plugin;
+    this.callbacks = callbacks;
+    this.regionIndex = /* @__PURE__ */ new Map();
+    this.layerMeta = /* @__PURE__ */ new Map();
+    this.tagIndex = /* @__PURE__ */ new Map();
+    this.globalReprs = /* @__PURE__ */ new Set();
+    this.pendingGlobalOps = [];
+    this.pendingLayerVisibility = /* @__PURE__ */ new Map();
+    this.pendingRegions = [];
+    this.requestedGlobalHidden = null;
+  }
+  registerShapeRef(ref, tag) {
+    if (!ref) return;
+    if (!tag) return;
+    if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, /* @__PURE__ */ new Set());
+    this.tagIndex.get(tag).add(ref);
+    if (!this.layerMeta.has(tag)) {
+      this.layerMeta.set(tag, { kind: "shape", meta: {} });
+      this.callbacks.notify({ event: "layer_ack", tag, kind: "shape", meta: {} });
+    }
+    if (this.pendingLayerVisibility.has(tag)) {
+      const hide = this.pendingLayerVisibility.get(tag);
+      this.pendingLayerVisibility.delete(tag);
+      setSubtreeVisibility(this.plugin.state.data, ref, hide);
+    }
+  }
+  async updateVisibility(msg) {
+    const indices2 = Array.isArray(msg) || msg === void 0 ? msg : msg.options?.visible_atom_indices;
+    const structure = this.callbacks.getStructure();
+    if (!structure) {
+      if (Array.isArray(indices2)) {
+        this.pendingVisibility = indices2;
+      }
+      return;
+    }
+    const components = this.callbacks.getComponents();
+    if (components.length === 0) return;
+    await clearStructureTransparency(this.plugin, components);
+    if (!Array.isArray(indices2)) return;
+    const hideAll = indices2.length === 0;
+    const selectionBuilder = StructureSelection.LinearBuilder(structure);
+    const visibleSet = hideAll ? void 0 : new Set(indices2);
+    let hasHidden = hideAll;
+    for (const unit2 of structure.units) {
+      if (!Unit.isAtomic(unit2)) continue;
+      const elementCount = OrderedSet2.size(unit2.elements);
+      if (elementCount === 0) continue;
+      if (hideAll) {
+        const childUnit2 = unit2.getChild(unit2.elements);
+        const hiddenStructure2 = Structure.create([childUnit2], { parent: structure });
+        selectionBuilder.add(hiddenStructure2);
+        continue;
+      }
+      const hiddenElements = [];
+      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+        const elementIndex = OrderedSet2.getAt(unit2.elements, ordinal);
+        if (!visibleSet?.has(elementIndex)) {
+          hiddenElements.push(elementIndex);
+        }
+      }
+      if (hiddenElements.length === 0) continue;
+      hasHidden = true;
+      const elementSubset = hiddenElements.length === elementCount ? unit2.elements : SortedArray.ofSortedArray(hiddenElements);
+      const childUnit = unit2.getChild(elementSubset);
+      const hiddenStructure = Structure.create([childUnit], { parent: structure });
+      selectionBuilder.add(hiddenStructure);
+    }
+    if (!hasHidden) return;
+    const selection = selectionBuilder.getSelection();
+    if (StructureSelection.isEmpty(selection)) return;
+    const loci = StructureSelection.toLociWithSourceUnits(selection);
+    await setStructureTransparency(this.plugin, components, 1, async () => loci);
+  }
+  async createRegion(msg) {
+    const structure = this.callbacks.getStructure();
+    if (!structure) {
       this.pendingRegions.push(msg);
       return;
     }
@@ -143096,12 +143122,8 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     try {
-      const structureRef = this.loadedStructure?.structure;
-      if (!structureRef) {
-        console.warn("[MolSysViewer] create_region: no structure ref");
-        return;
-      }
-      console.log("[MolSysViewer] create_region: building component", tag, "atoms", atomIndices.length);
+      const structureRef = this.callbacks.getLoadedStructure()?.structure;
+      if (!structureRef) return;
       const bundle = element_exports.Bundle.fromSelection(selection);
       const root = this.plugin.state.data.build().to(structureRef);
       const component = root.apply(StateTransforms.Model.StructureComponent, {
@@ -143109,12 +143131,10 @@ var MolSysViewerController = class _MolSysViewerController {
         nullIfEmpty: true,
         label: tag
       });
-      const commitRes = await component.commit({ revertOnError: false });
-      const selector = component.selector;
-      const componentRef = selector?.ref;
-      const compCount = selector?.cell?.obj?.data?.elementCount ?? 0;
-      if (!selector?.isOk || !componentRef || compCount === 0) {
-        console.warn("[MolSysViewer] create_region: empty component for", tag, "commit", commitRes, "count", compCount);
+      await component.commit({ revertOnError: false });
+      const componentRef = component.selector.ref;
+      if (!component.selector.isOk || !componentRef) {
+        console.warn("[MolSysViewer] create_region: empty component for", tag);
         return;
       }
       const reprType = msg.representation ?? "cartoon";
@@ -143124,7 +143144,6 @@ var MolSysViewerController = class _MolSysViewerController {
         { tag }
       );
       const reprRef = repr?.ref;
-      if (!reprRef) console.warn("[MolSysViewer] create_region: representation missing ref", tag, "repr", repr);
       this.regionIndex.set(tag, {
         component: componentRef,
         representations: reprRef ? [reprRef] : [],
@@ -143132,19 +143151,15 @@ var MolSysViewerController = class _MolSysViewerController {
         selection: msg.selection,
         hidden: false
       });
-      console.log("[MolSysViewer] create_region: done", tag, "compCount", compCount, "repr", reprRef);
-      this.notify?.({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
+      this.callbacks.notify({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
     } catch (err) {
       console.error("[MolSysViewer] Error creating region", err);
     }
   }
-  async handleSetRegionRepresentation(msg) {
+  async setRegionRepresentation(msg) {
     const tag = msg.tag ?? "region";
     const entry = this.regionIndex.get(tag);
-    if (!entry || !entry.component || !this.loadedStructure?.structure) {
-      console.warn("[MolSysViewer] set_region_representation: unknown tag", tag);
-      return;
-    }
+    if (!entry || !entry.component) return;
     if (entry.representations.length) {
       await Promise.all(entry.representations.map((ref) => this.removeStateObject(ref)));
       entry.representations = [];
@@ -143197,14 +143212,13 @@ var MolSysViewerController = class _MolSysViewerController {
       if (reprRef) entry.representations.push(reprRef);
     }
   }
-  async handleShowHideRegion(msg, hide) {
-    const tag = msg.tag ?? "region";
-    const entry = this.regionIndex.get(tag);
-    if (!entry || entry.representations.length === 0) return;
-    entry.hidden = hide;
-    entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
+  async showRegion(msg) {
+    await this.toggleRegionVisibility(msg.tag, false);
   }
-  async handleDeleteRegion(msg) {
+  async hideRegion(msg) {
+    await this.toggleRegionVisibility(msg.tag, true);
+  }
+  async deleteRegion(msg) {
     const tag = msg.tag ?? "region";
     const entry = this.regionIndex.get(tag);
     if (!entry) return;
@@ -143214,26 +143228,20 @@ var MolSysViewerController = class _MolSysViewerController {
     ];
     await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
     this.regionIndex.delete(tag);
-    this.notify?.({ event: "region_deleted", tag });
+    this.callbacks.notify({ event: "region_deleted", tag });
   }
-  async handleCreateLayer(msg) {
+  async createLayer(msg) {
     const tag = msg.tag ?? "layer";
     this.layerMeta.set(tag, { kind: msg.kind, meta: msg.meta });
-    this.notify?.({ event: "layer_ack", tag, kind: msg.kind, meta: msg.meta });
+    this.callbacks.notify({ event: "layer_ack", tag, kind: msg.kind, meta: msg.meta });
   }
-  async handleShowHideLayer(msg, hide) {
-    const tag = msg.tag ?? "layer";
-    const refs = this.tagIndex.get(tag);
-    if (!refs || refs.size === 0) {
-      this.pendingLayerVisibility.set(tag, hide);
-      console.log("[MolSysViewer] queue layer visibility", tag, "hide:", hide);
-      return;
-    }
-    this.pendingLayerVisibility.delete(tag);
-    console.log("[MolSysViewer] set layer visibility", tag, "hide:", hide, "refs:", refs.size);
-    refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
+  async showLayer(msg) {
+    await this.toggleLayerVisibility(msg.tag, false);
   }
-  async handleDeleteLayer(msg) {
+  async hideLayer(msg) {
+    await this.toggleLayerVisibility(msg.tag, true);
+  }
+  async deleteLayer(msg) {
     const tag = msg.tag ?? "layer";
     const refs = this.tagIndex.get(tag);
     if (refs && refs.size) {
@@ -143241,9 +143249,9 @@ var MolSysViewerController = class _MolSysViewerController {
       this.tagIndex.delete(tag);
     }
     this.layerMeta.delete(tag);
-    this.notify?.({ event: "layer_deleted", tag });
+    this.callbacks.notify({ event: "layer_deleted", tag });
   }
-  async handleSetLayerTag(msg) {
+  async setLayerTag(msg) {
     const oldTag = msg.tag ?? "layer";
     const newTag = msg.new_tag;
     if (!newTag || oldTag === newTag) return;
@@ -143258,21 +143266,9 @@ var MolSysViewerController = class _MolSysViewerController {
       this.layerMeta.set(newTag, meta);
     }
   }
-  collectRefsFromPreset(result2) {
-    const refs = [];
-    if (!result2?.representations) return refs;
-    Object.values(result2.representations).forEach((sel) => {
-      if (sel?.ref) refs.push(sel.ref);
-    });
-    return refs;
-  }
-  async handleSetGlobalRepresentation(msg) {
-    const structureRef = this.loadedStructure?.structure;
-    if (!structureRef) {
-      console.warn("[MolSysViewer] set_global_representation: no structure loaded");
-      return;
-    }
-    const structureData = this.getStructure();
+  async setGlobalRepresentation(msg) {
+    const structureRef = this.callbacks.getLoadedStructure()?.structure;
+    if (!structureRef) return;
     if (this.globalReprs.size) {
       await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
       this.globalReprs.clear();
@@ -143293,6 +143289,7 @@ var MolSysViewerController = class _MolSysViewerController {
       for (const rule of rules) {
         const atomIndices = Array.isArray(rule?.atom_indices) ? rule.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
         if (atomIndices.length === 0) continue;
+        const structureData = this.callbacks.getStructure();
         if (!structureData) continue;
         const selection = this.buildSelectionFromAtomIndices(structureData, atomIndices);
         if (!selection) continue;
@@ -143340,11 +143337,69 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     await this.handleShowHideGlobal(false);
   }
+  async showGlobal(msg) {
+    await this.handleShowHideGlobal(false, msg.target ?? "global");
+  }
+  async hideGlobal(msg) {
+    await this.handleShowHideGlobal(true, msg.target ?? "global");
+  }
+  // Public method to be called by Loader/Controller when structure is ready
+  async onStructureLoaded() {
+    if (this.pendingVisibility) {
+      const pending = this.pendingVisibility;
+      this.pendingVisibility = void 0;
+      await this.updateVisibility(pending);
+    }
+    if (this.pendingGlobalOps.length) {
+      const ops = [...this.pendingGlobalOps];
+      this.pendingGlobalOps.length = 0;
+      ops.forEach((op4) => void this.handleShowHideGlobal(op4.hide, op4.target));
+    }
+    if (this.pendingRegions.length) {
+      const queued = [...this.pendingRegions];
+      this.pendingRegions.length = 0;
+      for (const msg of queued) {
+        await this.createRegion(msg);
+      }
+    }
+    if (this.globalReprs.size === 0) {
+      await this.ensureDefaultGlobalRepresentation();
+    }
+    if (this.requestedGlobalHidden !== null) {
+      await this.handleShowHideGlobal(this.requestedGlobalHidden, "global");
+    }
+  }
+  async clearState() {
+    if (this.tagIndex.size > 0) {
+      await Promise.all(Array.from(this.tagIndex.values()).flatMap((set4) => Array.from(set4)).map((ref) => this.removeStateObject(ref)));
+      this.tagIndex.clear();
+    }
+    this.regionIndex.clear();
+    this.layerMeta.clear();
+    if (this.globalReprs.size > 0) {
+      await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
+      this.globalReprs.clear();
+    }
+  }
+  async clearShapesByTag(tag) {
+    if (!tag) {
+      if (this.tagIndex.size > 0) {
+        const allRefs = Array.from(this.tagIndex.values()).flatMap((set4) => Array.from(set4));
+        await Promise.all(allRefs.map((ref) => this.removeStateObject(ref)));
+        this.tagIndex.clear();
+      }
+      return;
+    }
+    const refs = this.tagIndex.get(tag);
+    if (!refs || refs.size === 0) return;
+    await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
+    this.tagIndex.delete(tag);
+  }
   async handleShowHideGlobal(hide, target = "global") {
     if (target === "global") {
       this.requestedGlobalHidden = hide;
     }
-    if (!this.loadedStructure?.structure || !this.currentStructure) {
+    if (!this.callbacks.getStructure()) {
       this.pendingGlobalOps.push({ hide, target });
       return;
     }
@@ -143425,85 +143480,25 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     }
   }
-  async handleStepTrajectory(msg) {
-    const by = msg.by ?? 1;
-    await this.stepTrajectory(by);
+  async toggleRegionVisibility(tag, hide) {
+    const regionTag = tag ?? "region";
+    const entry = this.regionIndex.get(regionTag);
+    if (!entry || entry.representations.length === 0) return;
+    entry.hidden = hide;
+    entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
   }
-  async handleSetTrajectoryFrame(msg) {
-    const index = msg.index ?? 0;
-    await this.setTrajectoryFrame(index);
-  }
-  async handleSetTrajectoryPlayback(msg) {
-    const action = msg.action ?? "stop";
-    const fps = msg.fps ?? 30;
-    const step = msg.step ?? 1;
-    const mode = msg.mode ?? "loop";
-    const direction = msg.direction ?? "forward";
-    if (action === "play") {
-      await this.playTrajectory({ fps, mode, direction, step });
-    } else {
-      await this.stopTrajectoryPlayback();
+  async toggleLayerVisibility(tag, hide) {
+    const layerTag = tag ?? "layer";
+    const refs = this.tagIndex.get(layerTag);
+    if (!refs || refs.size === 0) {
+      this.pendingLayerVisibility.set(layerTag, hide);
+      return;
     }
-  }
-  async clearGlobalRepresentations() {
-    if (this.globalReprs.size === 0) return;
-    await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
-    this.globalReprs.clear();
-  }
-  async loadFromString(data, format, label2) {
-    await this.clearGlobalRepresentations();
-    const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
-    this.loadedStructure = await loadStructureFromString(this.plugin, data, format, label2, {
-      previous
-    });
-    this.captureCurrentStructure();
-  }
-  async loadFromUrl(url, format, label2) {
-    await this.clearGlobalRepresentations();
-    const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
-    this.loadedStructure = await loadStructureFromUrl(this.plugin, url, format, label2, {
-      previous
-    });
-    this.captureCurrentStructure();
-  }
-  async loadFromMolSysPayload(payload, label2) {
-    await this.clearGlobalRepresentations();
-    const previous = this.loadedStructure?.data ?? this.loadedStructure?.trajectory;
-    this.loadedStructure = await loadStructureFromMolSysPayload(this.plugin, payload, label2, {
-      previous
-    });
-    this.captureCurrentStructure();
-  }
-  captureCurrentStructure() {
-    const structures = this.plugin.managers.structure.hierarchy.current.structures;
-    this.currentStructure = structures.length ? structures[structures.length - 1] : void 0;
-    if (this.pendingVisibility) {
-      const pending = this.pendingVisibility;
-      this.pendingVisibility = void 0;
-      void this.updateVisibility(pending);
-    }
-    if (this.pendingGlobalOps.length && this.currentStructure) {
-      const ops = [...this.pendingGlobalOps];
-      this.pendingGlobalOps.length = 0;
-      ops.forEach((op4) => void this.handleShowHideGlobal(op4.hide, op4.target));
-    }
-    if (this.pendingRegions.length && this.currentStructure) {
-      const queued = [...this.pendingRegions];
-      this.pendingRegions.length = 0;
-      for (const msg of queued) {
-        void this.handleCreateRegion(msg);
-      }
-    }
-    if (this.currentStructure && this.globalReprs.size === 0) {
-      void this.ensureDefaultGlobalRepresentation();
-    }
-    if (this.requestedGlobalHidden !== null) {
-      void this.handleShowHideGlobal(this.requestedGlobalHidden, "global");
-    }
-    this.updateTrajectoryState();
+    this.pendingLayerVisibility.delete(layerTag);
+    refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
   }
   async ensureDefaultGlobalRepresentation() {
-    const structureRef = this.loadedStructure?.structure;
+    const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structureRef || this.globalReprs.size > 0) return;
     try {
       const applied = await this.plugin.builders.structure.representation.applyPreset(
@@ -143528,155 +143523,125 @@ var MolSysViewerController = class _MolSysViewerController {
       console.warn("[MolSysViewer] default global representation failed", err);
     }
   }
-  getStructure() {
-    return this.currentStructure?.cell.obj?.data;
-  }
-  getComponents() {
-    return this.currentStructure?.components ?? [];
-  }
-  async addSphere(options) {
-    console.log("[MolSysViewer] addSphere options", options);
-    const tag = options?.tag;
-    const ref = await addTransparentSphereFromPython(this.plugin, {
-      center: options?.center ?? [0, 0, 0],
-      radius: options?.radius ?? 10,
-      color: options?.color ?? 65280,
-      alpha: options?.alpha ?? 0.4
-    });
-    this.registerShapeRef(ref, tag);
-  }
-  async updateVisibility(visibleAtomIndices) {
-    const structure = this.getStructure();
-    if (!structure) {
-      if (Array.isArray(visibleAtomIndices)) {
-        this.pendingVisibility = visibleAtomIndices;
-      }
-      return;
-    }
-    const components = this.getComponents();
-    if (components.length === 0) return;
-    await clearStructureTransparency(this.plugin, components);
-    if (!Array.isArray(visibleAtomIndices)) return;
-    const hideAll = visibleAtomIndices.length === 0;
+  buildSelectionFromAtomIndices(structure, atomIndices) {
+    if (!Array.isArray(atomIndices) || atomIndices.length === 0) return void 0;
     const selectionBuilder = StructureSelection.LinearBuilder(structure);
-    const visibleSet = hideAll ? void 0 : new Set(visibleAtomIndices);
-    let hasHidden = hideAll;
+    const set4 = new Set(atomIndices);
+    let added = false;
     for (const unit2 of structure.units) {
       if (!Unit.isAtomic(unit2)) continue;
-      const elementCount = OrderedSet2.size(unit2.elements);
+      const elements = unit2.elements;
+      const elementCount = OrderedSet2.size(elements);
       if (elementCount === 0) continue;
-      if (hideAll) {
-        const childUnit2 = unit2.getChild(unit2.elements);
-        const hiddenStructure2 = Structure.create([childUnit2], { parent: structure });
-        selectionBuilder.add(hiddenStructure2);
-        continue;
-      }
-      const hiddenElements = [];
+      const matched = [];
       for (let ordinal = 0; ordinal < elementCount; ordinal++) {
-        const elementIndex = OrderedSet2.getAt(unit2.elements, ordinal);
-        if (!visibleSet?.has(elementIndex)) {
-          hiddenElements.push(elementIndex);
-        }
+        const elementIndex = OrderedSet2.getAt(elements, ordinal);
+        if (set4.has(elementIndex)) matched.push(elementIndex);
       }
-      if (hiddenElements.length === 0) continue;
-      hasHidden = true;
-      const elementSubset = hiddenElements.length === elementCount ? unit2.elements : SortedArray.ofSortedArray(hiddenElements);
-      const childUnit = unit2.getChild(elementSubset);
-      const hiddenStructure = Structure.create([childUnit], { parent: structure });
-      selectionBuilder.add(hiddenStructure);
+      if (matched.length === 0) continue;
+      added = true;
+      matched.sort((a8, b8) => a8 - b8);
+      const subset = matched.length === elementCount ? elements : SortedArray.ofSortedArray(matched);
+      const childUnit = unit2.getChild(subset);
+      const subStructure = Structure.create([childUnit], { parent: structure });
+      selectionBuilder.add(subStructure);
     }
-    if (!hasHidden) return;
-    const selection = selectionBuilder.getSelection();
-    if (StructureSelection.isEmpty(selection)) return;
-    const loci = StructureSelection.toLociWithSourceUnits(selection);
-    await setStructureTransparency(this.plugin, components, 1, async () => loci);
+    return added ? selectionBuilder.getSelection() : void 0;
   }
-  async resetView() {
-    await PluginCommands.Camera.Reset(this.plugin, { durationMs: 250 });
+  collectRefsFromPreset(result2) {
+    const refs = [];
+    if (!result2?.representations) return refs;
+    Object.values(result2.representations).forEach((sel) => {
+      if (sel?.ref) refs.push(sel.ref);
+    });
+    return refs;
   }
-  async toggleFullscreen(enable) {
-    const root = this.plugin.canvas3d?.props.parent;
-    const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
-    const target = this.host ?? root?.parentElement ?? root ?? canvas?.parentElement ?? canvas ?? document.documentElement;
-    if (!target || !target.requestFullscreen) return;
-    const shouldEnable = enable ?? !document.fullscreenElement;
-    try {
-      if (shouldEnable) {
-        if (!document.fullscreenElement) await target.requestFullscreen();
-      } else if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-    } catch (err) {
-      console.warn("[MolSysViewer] fullscreen toggle failed", err);
+  async removeStateObject(ref) {
+    if (!ref) return;
+    await PluginCommands.State.RemoveObject(this.plugin, {
+      state: this.plugin.state.data,
+      ref,
+      removeParentGhosts: true
+    });
+  }
+};
+
+// src/managers/handlers/trajectory-handlers.ts
+var TrajectoryHandlers = class {
+  constructor(plugin, context2) {
+    this.plugin = plugin;
+    this.context = context2;
+    this.trajectoryListeners = /* @__PURE__ */ new Set();
+  }
+  async stepTrajectory(msg) {
+    const by = typeof msg === "number" ? msg : msg.by ?? 1;
+    const trajRef = this.getTrajectoryRef();
+    if (!trajRef) return;
+    await PluginCommands.State.ApplyAction(this.plugin, {
+      state: this.plugin.state.data,
+      action: UpdateTrajectory.create({ action: "advance", by })
+    });
+    this.updateTrajectoryState();
+  }
+  async setTrajectoryFrame(msg) {
+    const index = typeof msg === "number" ? msg : msg.index ?? 0;
+    const frameCount = this.getFrameCount();
+    if (frameCount < 1) return;
+    const clamped = Math.max(0, Math.min(frameCount - 1, Math.floor(index)));
+    const trajRef = this.getTrajectoryRef();
+    if (!trajRef) return;
+    const models = this.getTrajectoryModels(trajRef);
+    if (!models.length) return;
+    const update10 = this.plugin.state.data.build();
+    for (const m of models) {
+      update10.to(m).update({ modelIndex: clamped });
     }
+    await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
+    this.updateTrajectoryState();
   }
-  async toggleBackground(mode) {
-    const canvas3d = this.plugin.canvas3d;
-    if (!canvas3d) return;
-    const renderer = canvas3d.props?.renderer ?? {};
-    const camera = canvas3d.props?.camera ?? {};
-    if (!this.savedLightRenderer) this.savedLightRenderer = { ...renderer };
-    if (!this.savedLightCamera) this.savedLightCamera = { ...camera };
-    const makeDark = mode ? mode === "dark" : !this.darkMode;
-    if (makeDark) {
-      if (!this.savedDarkRenderer) {
-        this.savedDarkRenderer = {
-          ...renderer,
-          backgroundColor: 1052688,
-          lightColor: 16777215,
-          ambientColor: 16777215,
-          exposure: renderer.exposure ?? 1,
-          lightIntensity: renderer.lightIntensity ?? 1,
-          ambientIntensity: renderer.ambientIntensity ?? 1
-        };
-      }
-      if (!this.savedDarkCamera) {
-        this.savedDarkCamera = { ...camera };
-      }
-      canvas3d.setProps({
-        renderer: { ...this.savedDarkRenderer },
-        camera: { ...this.savedDarkCamera }
-      });
-      this.darkMode = true;
+  async setTrajectoryPlayback(msg) {
+    const action = msg.action ?? "stop";
+    const fps = msg.fps ?? 30;
+    const step = msg.step ?? 1;
+    const mode = msg.mode ?? "loop";
+    const direction = msg.direction ?? "forward";
+    if (action === "play") {
+      await this.playTrajectory({ fps, mode, direction, step });
     } else {
-      const lightRenderer = this.savedLightRenderer ?? renderer;
-      const lightCamera = this.savedLightCamera ?? camera;
-      canvas3d.setProps({
-        renderer: { ...lightRenderer },
-        camera: { ...lightCamera }
-      });
-      this.darkMode = false;
+      await this.stopTrajectoryPlayback();
     }
   }
-  async toggleSwing(enable) {
-    const canvas3d = this.plugin.canvas3d;
-    if (!canvas3d) return;
-    const shouldEnable = enable ?? !this.swingActive;
-    this.swingActive = shouldEnable;
-    this.spinActive = false;
-    canvas3d.setProps({
-      trackball: {
-        ...canvas3d.props?.trackball || {},
-        animate: shouldEnable ? { name: "rock", params: { speed: 0.25, angle: 20 } } : { name: "off", params: {} }
-      }
-    });
+  async playTrajectory(options = {}) {
+    const frameCount = this.getFrameCount();
+    if (frameCount < 2) {
+      console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
+      return;
+    }
+    const fps = options.fps ?? 30;
+    const step = Math.max(1, Math.floor(options.step ?? 1));
+    const direction = options.direction ?? "forward";
+    await this.stopTrajectoryPlayback();
+    const intervalMs = Math.max(1, Math.floor(1e3 / Math.max(fps, 1)));
+    const delta2 = direction === "backward" ? -step : step;
+    this.playbackTimer = setInterval(() => {
+      void this.stepTrajectory(delta2);
+    }, intervalMs);
+    if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
+    this.trajectoryPoll = setInterval(() => this.context.notifyTrajectoryState(), 200);
+    this.updateTrajectoryState();
   }
-  async toggleSpin(enable) {
-    const canvas3d = this.plugin.canvas3d;
-    if (!canvas3d) return;
-    const shouldEnable = enable ?? !this.spinActive;
-    this.spinActive = shouldEnable;
-    this.swingActive = false;
-    canvas3d.setProps({
-      trackball: {
-        ...canvas3d.props?.trackball || {},
-        animate: shouldEnable ? { name: "spin", params: { speed: 0.1 } } : { name: "off", params: {} }
-      }
-    });
+  async stopTrajectoryPlayback() {
+    this.plugin.managers.animation.stop();
+    if (this.playbackTimer) {
+      clearInterval(this.playbackTimer);
+      this.playbackTimer = void 0;
+    }
+    if (this.trajectoryPoll) {
+      clearInterval(this.trajectoryPoll);
+      this.trajectoryPoll = void 0;
+    }
+    this.updateTrajectoryState();
   }
-  /**
-   * Trajectory helpers
-   */
   getTrajectoryState() {
     const frameCount = this.getFrameCount();
     const currentFrame = this.getCurrentFrameIndex();
@@ -143688,12 +143653,16 @@ var MolSysViewerController = class _MolSysViewerController {
     cb2(this.getTrajectoryState());
     return () => this.trajectoryListeners.delete(cb2);
   }
-  notifyTrajectoryState() {
+  notifyListeners() {
     const state = this.getTrajectoryState();
     for (const cb2 of this.trajectoryListeners) cb2(state);
   }
+  updateTrajectoryState() {
+    this.context.notifyTrajectoryState();
+    this.notifyListeners();
+  }
   getTrajectoryRef() {
-    return this.loadedStructure?.trajectory;
+    return this.context.getLoadedStructure()?.trajectory;
   }
   getTrajectoryModels(trajRef) {
     const all3 = this.plugin.state.data.selectQ((q) => q.ofTransformer(StateTransforms.Model.ModelFromTrajectory));
@@ -143715,240 +143684,598 @@ var MolSysViewerController = class _MolSysViewerController {
     const idx = params?.modelIndex ?? 0;
     return typeof idx === "number" ? idx : 0;
   }
-  async setTrajectoryFrame(index) {
-    const frameCount = this.getFrameCount();
-    if (frameCount < 1) return;
-    const clamped = Math.max(0, Math.min(frameCount - 1, Math.floor(index)));
-    const trajRef = this.getTrajectoryRef();
-    if (!trajRef) return;
-    const models = this.getTrajectoryModels(trajRef);
-    if (!models.length) return;
-    const update10 = this.plugin.state.data.build();
-    for (const m of models) {
-      update10.to(m).update({ modelIndex: clamped });
-    }
-    await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
-    this.updateTrajectoryState();
-  }
-  async stepTrajectory(by) {
-    const trajRef = this.getTrajectoryRef();
-    if (!trajRef) return;
-    await PluginCommands.State.ApplyAction(this.plugin, {
-      state: this.plugin.state.data,
-      action: UpdateTrajectory.create({ action: "advance", by })
+};
+
+// src/managers/viewer-controller.ts
+var MolSysViewerController = class _MolSysViewerController {
+  constructor(plugin, host, notify) {
+    this.plugin = plugin;
+    this.host = host;
+    this.notify = notify;
+    this.state = new StateHandlers(plugin, {
+      getStructure: () => this.getStructureData(),
+      getLoadedStructure: () => this.loadedStructure,
+      getCurrentStructureRef: () => this.currentStructure,
+      getComponents: () => this.getComponents(),
+      notify: (msg) => this.notify?.(msg)
     });
-    this.updateTrajectoryState();
+    this.shapes = new ShapeHandlers(plugin, (ref, tag) => this.state.registerShapeRef(ref, tag));
+    this.scene = new SceneHandlers(plugin, host, {
+      clearShapes: () => this.state.clearShapesByTag(),
+      // clear all shapes
+      clearLabels: async () => {
+      },
+      getComponents: () => this.getComponents(),
+      clearShapesByTag: (tag) => this.state.clearShapesByTag(tag),
+      removeLoadedStructure: () => this.removeLoadedStructure(),
+      notify: (msg) => this.notify?.(msg)
+    });
+    this.loader = new LoaderHandlers(plugin, {
+      clearGlobalRepresentations: async () => {
+      },
+      captureCurrentStructure: () => this.captureCurrentStructure(),
+      setLoadedStructure: (ls) => {
+        this.loadedStructure = ls;
+      },
+      getLoadedStructure: () => this.loadedStructure
+    });
+    this.trajectory = new TrajectoryHandlers(plugin, {
+      getLoadedStructure: () => this.loadedStructure,
+      notifyTrajectoryState: () => this.notifyTrajectoryState()
+    });
   }
-  async playTrajectory(options = {}) {
-    const frameCount = this.getFrameCount();
-    if (frameCount < 2) {
-      console.warn("[MolSysViewer] playTrajectory ignored: trajectory has less than 2 frames");
+  static async create(target, notify, existingCanvas) {
+    const canvas = existingCanvas ?? document.createElement("canvas");
+    if (!existingCanvas) {
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      canvas.style.display = "block";
+      target.appendChild(canvas);
+    } else if (existingCanvas.parentElement !== target) {
+      target.appendChild(existingCanvas);
+    }
+    const plugin = new PluginContext(DefaultPluginSpec());
+    await plugin.init();
+    const init = plugin.initViewerAsync ?? plugin.initViewer;
+    let ok = false;
+    if (typeof init === "function") {
+      const result2 = init.call(plugin, canvas, target);
+      ok = typeof result2?.then === "function" ? await result2 : !!result2;
+    } else {
+      console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
+    }
+    if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
+    return new _MolSysViewerController(plugin, target, notify);
+  }
+  // Loaded structure bundle
+  // Getters for scene state delegated to scene handler
+  get isSpinActive() {
+    return this.scene.isSpinActive;
+  }
+  get isSwingActive() {
+    return this.scene.isSwingActive;
+  }
+  get isDarkMode() {
+    return this.scene.isDarkMode;
+  }
+  // Message Dispatcher
+  async handleMessage(msg) {
+    if (!msg || typeof msg !== "object") return;
+    if (!("op" in msg)) {
+      console.warn("[MolSysViewer] message missing 'op'", msg);
       return;
     }
-    const fps = options.fps ?? 30;
-    const step = Math.max(1, Math.floor(options.step ?? 1));
-    const direction = options.direction ?? "forward";
-    await this.stopTrajectoryPlayback();
-    const intervalMs = Math.max(1, Math.floor(1e3 / Math.max(fps, 1)));
-    const delta2 = direction === "backward" ? -step : step;
-    this.playbackTimer = setInterval(() => {
-      void this.stepTrajectory(delta2);
-    }, intervalMs);
-    if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
-    this.trajectoryPoll = setInterval(() => this.notifyTrajectoryState(), 200);
-    this.updateTrajectoryState();
-  }
-  async stopTrajectoryPlayback() {
-    this.plugin.managers.animation.stop();
-    if (this.playbackTimer) {
-      clearInterval(this.playbackTimer);
-      this.playbackTimer = void 0;
+    try {
+      switch (msg.op) {
+        // Loader Ops
+        case "load_structure_from_string":
+        case "load_pdb_string":
+          await this.loader.loadFromString(msg);
+          break;
+        case "load_molsys_payload":
+          await this.loader.loadMolSysPayload(msg);
+          break;
+        case "load_structure_from_url":
+          await this.loader.loadFromUrl(msg);
+          break;
+        case "load_pdb_id":
+          await this.loader.loadPdbId(msg);
+          break;
+        // Shape Ops
+        case "add_sphere":
+          await this.shapes.addSphere(msg);
+          break;
+        case "add_alpha_sphere_set":
+          await this.shapes.addAlphaSphereSet(msg);
+          break;
+        case "add_pocket_surface":
+          await this.shapes.addPocketSurface(msg);
+          break;
+        case "add_pocket_blob":
+          await this.shapes.addPocketBlob(msg);
+          break;
+        case "add_channel_tube":
+          await this.shapes.addChannelTube(msg);
+          break;
+        case "add_anisotropy_ellipsoids":
+          await this.shapes.addAnisotropyEllipsoids(msg);
+          break;
+        case "add_pharmacophore_features":
+          await this.shapes.addPharmacophore(msg);
+          break;
+        case "add_network_links":
+          await this.shapes.addNetworkLinks(msg);
+          break;
+        case "add_displacement_vectors":
+          await this.shapes.addDisplacementVectors(msg);
+          break;
+        case "add_tetrahedra":
+          await this.shapes.addTetrahedra(msg);
+          break;
+        case "add_triangle_faces":
+          await this.shapes.addTriangleFaces(msg);
+          break;
+        // Scene Ops
+        case "reset_view":
+        case "reset_camera":
+          await this.scene.resetView();
+          break;
+        case "toggle_fullscreen":
+          await this.scene.toggleFullscreen(msg);
+          break;
+        case "toggle_background":
+          await this.scene.toggleBackground(msg);
+          break;
+        case "toggle_swing":
+          await this.scene.toggleSwing(msg);
+          break;
+        case "toggle_spin":
+          await this.scene.toggleSpin(msg);
+          break;
+        case "clear_scene":
+          await this.scene.clearScene(msg);
+          break;
+        case "clear_all":
+          await this.scene.clearAll();
+          break;
+        case "clear_shapes_by_tag":
+          await this.scene.clearShapesByTag(msg);
+          break;
+        // State/Region Ops
+        case "update_visibility":
+          await this.state.updateVisibility(msg);
+          break;
+        case "create_region":
+          await this.state.createRegion(msg);
+          break;
+        case "set_region_representation":
+          await this.state.setRegionRepresentation(msg);
+          break;
+        case "show_region":
+          await this.state.showRegion(msg);
+          break;
+        case "hide_region":
+          await this.state.hideRegion(msg);
+          break;
+        case "delete_region":
+          await this.state.deleteRegion(msg);
+          break;
+        case "create_layer":
+          await this.state.createLayer(msg);
+          break;
+        case "show_layer":
+          await this.state.showLayer(msg);
+          break;
+        case "hide_layer":
+          await this.state.hideLayer(msg);
+          break;
+        case "delete_layer":
+          await this.state.deleteLayer(msg);
+          break;
+        case "set_layer_tag":
+          await this.state.setLayerTag(msg);
+          break;
+        case "set_global_representation":
+          await this.state.setGlobalRepresentation(msg);
+          break;
+        case "show_global":
+          await this.state.showGlobal(msg);
+          break;
+        case "hide_global":
+          await this.state.hideGlobal(msg);
+          break;
+        // Trajectory Ops
+        case "step_trajectory":
+          await this.trajectory.stepTrajectory(msg);
+          break;
+        case "set_trajectory_frame":
+          await this.trajectory.setTrajectoryFrame(msg);
+          break;
+        case "set_trajectory_playback":
+          await this.trajectory.setTrajectoryPlayback(msg);
+          break;
+        default:
+          console.warn("[MolSysViewer] unknown op:", msg.op, msg);
+          break;
+      }
+    } catch (error2) {
+      console.error("[MolSysViewer] Error handling message:", msg, error2);
     }
-    if (this.trajectoryPoll) {
-      clearInterval(this.trajectoryPoll);
-      this.trajectoryPoll = void 0;
+  }
+  // Helper accessors for internal state management
+  getStructureData() {
+    const structures = this.plugin.managers.structure.hierarchy.current.structures;
+    const last4 = structures.length ? structures[structures.length - 1] : void 0;
+    return last4?.cell.obj?.data;
+  }
+  getComponents() {
+    const structures = this.plugin.managers.structure.hierarchy.current.structures;
+    const last4 = structures.length ? structures[structures.length - 1] : void 0;
+    return last4?.components ?? [];
+  }
+  captureCurrentStructure() {
+    const structures = this.plugin.managers.structure.hierarchy.current.structures;
+    const last4 = structures.length ? structures[structures.length - 1] : void 0;
+    if (last4) {
+      this.currentStructure = last4.cell.transform.ref;
+      this.state.onStructureLoaded();
+      this.trajectory.notifyListeners();
+    } else {
+      this.currentStructure = void 0;
     }
-    this.updateTrajectoryState();
-  }
-  updateTrajectoryState() {
-    this.notifyTrajectoryState();
-  }
-  async clearScene(options) {
-    const shapes = options?.shapes ?? true;
-    const styles = options?.styles ?? true;
-    const labels = options?.labels ?? false;
-    if (shapes) await this.clearShapes();
-    if (styles) await this.resetStructureDecorations();
-    if (labels) await this.clearLabels();
-  }
-  async clearShapes() {
-    if (this.shapeRefs.size === 0) return;
-    await Promise.all(Array.from(this.shapeRefs).map((ref) => this.removeStateObject(ref)));
-    this.shapeRefs.clear();
-    this.tagIndex.clear();
-  }
-  async clearLabels() {
-    if (this.labelRefs.size === 0) return;
-    await Promise.all(Array.from(this.labelRefs).map((ref) => this.removeStateObject(ref)));
-    this.labelRefs.clear();
-  }
-  async resetStructureDecorations() {
-    const components = this.getComponents();
-    if (components.length === 0) return;
-    await clearStructureTransparency(this.plugin, components);
-  }
-  async clearAll() {
-    await this.clearScene({ shapes: true, styles: true, labels: true });
-    await this.removeLoadedStructure();
-    this.currentStructure = void 0;
-    this.regionIndex.clear();
-    this.layerMeta.clear();
-    this.globalReprs.clear();
-    this.notify?.({ event: "registry_cleared" });
-  }
-  async clearShapesByTag(tag) {
-    if (!tag) {
-      await this.clearShapes();
-      return;
-    }
-    const refs = this.tagIndex.get(tag);
-    if (!refs || refs.size === 0) return;
-    await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
-    refs.forEach((ref) => this.shapeRefs.delete(ref));
-    this.tagIndex.delete(tag);
   }
   async removeLoadedStructure() {
     if (!this.loadedStructure) return;
+    await this.state.clearState();
     const refs = [
       this.loadedStructure.structure,
       this.loadedStructure.trajectory,
       this.loadedStructure.data
     ];
-    for (const ref of refs) await this.removeStateObject(ref);
+    for (const ref of refs) {
+      if (ref) {
+        await PluginCommands.State.RemoveObject(this.plugin, {
+          state: this.plugin.state.data,
+          ref,
+          removeParentGhosts: true
+        });
+      }
+    }
     this.loadedStructure = void 0;
+    this.currentStructure = void 0;
   }
-  async loadPdbId(pdbId) {
-    const normalized2 = pdbId.trim().toUpperCase();
-    const url = `https://files.rcsb.org/download/${normalized2}.pdb`;
-    await this.loadFromUrl(url, "pdb", `PDB ${normalized2}`);
+  // Facades for external access (e.g. from Index or Popout)
+  async resetView() {
+    await this.scene.resetView();
   }
-  async removeStateObject(ref) {
-    if (!ref) return;
-    await PluginCommands.State.RemoveObject(this.plugin, {
-      state: this.plugin.state.data,
-      ref,
-      removeParentGhosts: true
-    });
+  async toggleFullscreen() {
+    await this.scene.toggleFullscreen(true);
+  }
+  // default true for direct call
+  async toggleBackground(mode) {
+    await this.scene.toggleBackground(mode ?? "light");
+  }
+  // default to toggle handled in scene? no, msg handles it. Direct call needs mode or toggle logic. 
+  // Actually, direct calls from UI buttons might not pass msg. Scene handler handles boolean or msg.
+  async toggleSpin(enable) {
+    await this.scene.toggleSpin(enable ?? !this.scene.isSpinActive);
+  }
+  async toggleSwing(enable) {
+    await this.scene.toggleSwing(enable ?? !this.scene.isSwingActive);
+  }
+  stepTrajectory(by) {
+    return this.trajectory.stepTrajectory(by);
+  }
+  playTrajectory(opts) {
+    return this.trajectory.playTrajectory(opts);
+  }
+  stopTrajectoryPlayback() {
+    return this.trajectory.stopTrajectoryPlayback();
+  }
+  setTrajectoryFrame(index) {
+    return this.trajectory.setTrajectoryFrame(index);
+  }
+  onTrajectoryState(cb2) {
+    return this.trajectory.onTrajectoryState(cb2);
+  }
+  getCameraSnapshot() {
+    return this.plugin.canvas3d?.camera.getSnapshot?.();
+  }
+  async setCameraSnapshot(snapshot, durationMs) {
+    if (!snapshot) return;
+    try {
+      await PluginCommands.Camera.SetSnapshot(this.plugin, {
+        snapshot,
+        durationMs: Math.max(0, Number(durationMs ?? 0))
+      });
+    } catch (err) {
+      console.warn("[MolSysViewer] setCameraSnapshot failed", err);
+    }
+  }
+  notifyTrajectoryState() {
   }
 };
 
-// src/index.ts
-var index_default = {
-  render({ model, el }) {
-    const debug = !!model.get("debug_js");
-    const formatArg = (v4) => {
-      if (v4 instanceof Error) return v4.stack || v4.message || String(v4);
-      if (typeof v4 === "object") {
-        try {
-          return JSON.stringify(v4);
-        } catch {
-          return String(v4);
+// src/popup/popup-logic.ts
+var bootPopup = async (loadedModule) => {
+  const openerWin = window.opener;
+  if (!openerWin) {
+    console.error("MolSysViewer Popout: Opened without opener");
+    return;
+  }
+  let MolSysViewerController2;
+  if (loadedModule) {
+    if (loadedModule.MolSysViewerController) {
+      MolSysViewerController2 = loadedModule.MolSysViewerController;
+    } else if (loadedModule.default && loadedModule.default.MolSysViewerController) {
+      MolSysViewerController2 = loadedModule.default.MolSysViewerController;
+    }
+  }
+  if (!MolSysViewerController2) {
+    try {
+      const path = window.molsysviewer_path;
+      if (path) {
+        const module = await import(path);
+        if (module.MolSysViewerController) {
+          MolSysViewerController2 = module.MolSysViewerController;
+        } else if (module.default && module.default.MolSysViewerController) {
+          MolSysViewerController2 = module.default.MolSysViewerController;
+        } else if (window.MolSysViewerController) {
+          MolSysViewerController2 = window.MolSysViewerController;
         }
       }
-      return String(v4);
-    };
-    const sendLog = (level, ...args) => {
-      if (!debug) return;
-      try {
-        model.send({
-          event: "js_log",
-          level,
-          message: args.map(formatArg).join(" ")
-        });
-      } catch {
-      }
-    };
-    if (debug) {
-      ["error", "warn"].forEach((level) => {
-        const orig = console[level];
-        console[level] = (...args) => {
-          if (orig) {
-            try {
-              orig.apply(console, args);
-            } catch {
-            }
-          }
-          sendLog(level, ...args);
-        };
+    } catch (err) {
+      console.error("MolSysViewer Popout: Failed to load viewer module", err);
+      return;
+    }
+  }
+  if (!MolSysViewerController2) {
+    MolSysViewerController2 = window.MolSysViewerController;
+  }
+  if (!MolSysViewerController2) {
+    console.error("MolSysViewer Popout: MolSysViewerController not found");
+    return;
+  }
+  const sendToHost = (type3, data) => {
+    if (!openerWin || openerWin.closed) return;
+    try {
+      openerWin.postMessage({ type: type3, data, from: "popup" }, "*");
+    } catch (e) {
+    }
+  };
+  const container = document.getElementById("molsysviewer-pop");
+  let popIsUpdatingFromPeer = false;
+  const popControllerPromise = (async () => {
+    await new Promise((r) => setTimeout(r, 100));
+    const ctrl2 = await MolSysViewerController2.create(container, (msg) => {
+      sendToHost("molsysviewer-log-from-popout", msg);
+    });
+    let popCameraSyncTimer = null;
+    if (ctrl2.plugin && ctrl2.plugin.canvas3d) {
+      ctrl2.plugin.canvas3d.camera.events.changed.subscribe(() => {
+        if (popIsUpdatingFromPeer) return;
+        if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
+        popCameraSyncTimer = setTimeout(() => {
+          sendToHost("molsysviewer-sync-camera", ctrl2.getCameraSnapshot());
+          popCameraSyncTimer = null;
+        }, 50);
       });
     }
-    const target = document.createElement("div");
-    target.style.width = "100%";
-    target.style.height = "100%";
-    target.style.minHeight = "400px";
-    target.style.position = "relative";
-    el.appendChild(target);
-    window.MolSysViewerController = MolSysViewerController;
-    const messageLog = [];
-    let popoutWin = null;
-    let popoutReady = false;
-    const controllerPromise = MolSysViewerController.create(target, (msg) => model.send(msg));
-    const makeButton = (label2, onClick) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = label2;
-      btn.style.padding = "2px 6px";
-      btn.style.fontSize = "11px";
-      btn.style.lineHeight = "16px";
-      btn.style.height = "22px";
-      btn.style.minHeight = "22px";
-      btn.style.boxSizing = "border-box";
-      btn.style.display = "inline-flex";
-      btn.style.alignItems = "center";
-      btn.style.justifyContent = "center";
-      btn.style.border = "1px solid rgba(255,255,255,0.5)";
-      btn.style.borderRadius = "4px";
-      btn.style.background = "rgba(0,0,0,0.5)";
-      btn.style.color = "#fff";
-      btn.style.cursor = "pointer";
-      btn.style.userSelect = "none";
-      btn.addEventListener("click", onClick);
-      return btn;
-    };
-    const buildControls = (c8, addPop) => {
-      const overlay = document.createElement("div");
-      overlay.className = "molsysviewer-controls";
-      overlay.style.position = "absolute";
-      overlay.style.display = "flex";
-      overlay.style.gap = "6px";
-      overlay.style.zIndex = "10";
-      overlay.style.pointerEvents = "none";
-      overlay.style.flexWrap = "nowrap";
-      const mk = (label2, handler) => {
-        const b8 = makeButton(label2, handler);
-        b8.style.pointerEvents = "auto";
-        overlay.appendChild(b8);
-      };
-      mk("Reset", () => c8.resetView());
-      mk("Full", () => c8.toggleFullscreen());
-      mk("Bg", () => c8.toggleBackground());
-      mk("Spin", () => c8.toggleSpin());
-      mk("Swing", () => c8.toggleSwing());
-      if (addPop) mk("Pop", addPop);
-      return overlay;
-    };
-    const openPopout = async () => {
-      if (popoutWin && !popoutWin.closed) {
-        popoutWin.close();
-        popoutWin = null;
-        popoutReady = false;
-        return;
+    return ctrl2;
+  })();
+  window.addEventListener("message", async (ev) => {
+    if (!ev.data || ev.data.from === "popup") return;
+    const { type: type3, data } = ev.data;
+    const ctrl2 = await popControllerPromise;
+    popIsUpdatingFromPeer = true;
+    try {
+      switch (type3) {
+        case "molsysviewer-initial-sync":
+          if (Array.isArray(data.messages)) {
+            for (const msg of data.messages) {
+              await ctrl2.handleMessage(msg);
+            }
+          }
+          if (data.cameraSnapshot) {
+            ctrl2.setCameraSnapshot(data.cameraSnapshot, 0);
+          }
+          if (data.isSpinActive) await ctrl2.toggleSpin(true);
+          if (data.isSwingActive) await ctrl2.toggleSwing(true);
+          if (data.isDarkMode) await ctrl2.toggleBackground("dark");
+          setTimeout(() => {
+            popIsUpdatingFromPeer = false;
+          }, 200);
+          return;
+        // Return early, reset handled by timeout
+        case "molsysviewer-sync-op":
+          await ctrl2.handleMessage(data);
+          popIsUpdatingFromPeer = false;
+          break;
+        case "molsysviewer-sync-camera":
+          if (data) {
+            ctrl2.setCameraSnapshot(data, 0);
+            setTimeout(() => {
+              popIsUpdatingFromPeer = false;
+            }, 100);
+          } else {
+            popIsUpdatingFromPeer = false;
+          }
+          break;
+        default:
+          popIsUpdatingFromPeer = false;
+          break;
       }
-      popoutWin = window.open("", "_blank", "width=960,height=720");
-      if (!popoutWin) return;
-      popoutReady = false;
-      const doc = popoutWin.document;
-      doc.write(`
+    } catch (e) {
+      console.error("Popout sync error", e);
+      popIsUpdatingFromPeer = false;
+    }
+  });
+  const makeBtn = (label3, onClick) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = label3;
+    btn.style.padding = "2px 6px";
+    btn.style.fontSize = "11px";
+    btn.style.lineHeight = "16px";
+    btn.style.height = "22px";
+    btn.style.minHeight = "22px";
+    btn.style.boxSizing = "border-box";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.border = "1px solid rgba(255,255,255,0.5)";
+    btn.style.borderRadius = "4px";
+    btn.style.background = "rgba(0,0,0,0.5)";
+    btn.style.color = "#fff";
+    btn.style.cursor = "pointer";
+    btn.addEventListener("click", onClick);
+    return btn;
+  };
+  const overlay = document.createElement("div");
+  overlay.className = "molsysviewer-controls";
+  overlay.style.position = "absolute";
+  overlay.style.top = "8px";
+  overlay.style.right = "8px";
+  overlay.style.display = "flex";
+  overlay.style.gap = "6px";
+  overlay.style.zIndex = "10";
+  overlay.style.pointerEvents = "none";
+  overlay.style.flexWrap = "nowrap";
+  const addBtn = (label3, handler) => {
+    const b8 = makeBtn(label3, handler);
+    b8.style.pointerEvents = "auto";
+    overlay.appendChild(b8);
+  };
+  addBtn("Reset", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.resetView();
+    sendToHost("molsysviewer-sync-op", { op: "reset_view" });
+  });
+  addBtn("Full", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.toggleFullscreen();
+  });
+  addBtn("Bg", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.toggleBackground();
+    sendToHost("molsysviewer-sync-op", { op: "toggle_background", mode: ctrl2.isDarkMode ? "dark" : "light" });
+  });
+  addBtn("Spin", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.toggleSpin();
+    sendToHost("molsysviewer-sync-op", { op: "toggle_spin", enable: ctrl2.isSpinActive });
+  });
+  addBtn("Swing", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.toggleSwing();
+    sendToHost("molsysviewer-sync-op", { op: "toggle_swing", enable: ctrl2.isSwingActive });
+  });
+  addBtn("Pop", () => {
+    try {
+      window.close();
+    } catch (e) {
+    }
+  });
+  container.appendChild(overlay);
+  const traj = document.createElement("div");
+  traj.style.position = "absolute";
+  traj.style.left = "8px";
+  traj.style.bottom = "8px";
+  traj.style.display = "flex";
+  traj.style.alignItems = "center";
+  traj.style.gap = "6px";
+  traj.style.pointerEvents = "auto";
+  let currentStep = 1;
+  let currentFps = 30;
+  const btnPrev = makeBtn("\u2212", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.stepTrajectory(-currentStep);
+    sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
+  });
+  const btnPlay = makeBtn("\u25B6", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.playTrajectory({ fps: currentFps, step: currentStep });
+    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
+  });
+  const btnPause = makeBtn("\u23F8", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.stopTrajectoryPlayback();
+    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
+  });
+  const btnNext = makeBtn("+", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.stepTrajectory(currentStep);
+    sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
+  });
+  [btnPrev, btnPlay, btnPause, btnNext].forEach((b8) => {
+    b8.style.pointerEvents = "auto";
+  });
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "0";
+  slider.value = "0";
+  slider.className = "molsysviewer-slider";
+  slider.style.width = "160px";
+  slider.style.flex = "0 0 160px";
+  slider.style.pointerEvents = "auto";
+  slider.oninput = async () => {
+    const val = Number(slider.value);
+    if (!Number.isFinite(val)) return;
+    const ctrl2 = await popControllerPromise;
+    ctrl2.setTrajectoryFrame(val);
+    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
+  };
+  const label2 = document.createElement("span");
+  label2.style.color = "rgba(255,255,255,0.8)";
+  label2.style.fontSize = "11px";
+  label2.style.minWidth = "60px";
+  label2.style.textAlign = "center";
+  label2.textContent = "0 / 0";
+  traj.appendChild(btnPrev);
+  traj.appendChild(btnPlay);
+  traj.appendChild(btnPause);
+  traj.appendChild(btnNext);
+  traj.appendChild(slider);
+  traj.appendChild(label2);
+  container.appendChild(traj);
+  popControllerPromise.then((c8) => {
+    c8.onTrajectoryState((state) => {
+      var frameCount = state && typeof state.frameCount === "number" ? state.frameCount : 0;
+      var current2 = state && typeof state.currentFrame === "number" ? state.currentFrame : 0;
+      slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
+      slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
+      label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
+      var disabled = frameCount <= 1;
+      [btnPrev, btnNext, slider, btnPlay, btnPause].forEach(function(el) {
+        el.disabled = disabled;
+      });
+    });
+  });
+  sendToHost("molsysviewer-pop-ready", null);
+};
+
+// src/managers/popup-host.ts
+var PopupHostManager = class {
+  constructor(viewerJsPath) {
+    this.viewerJsPath = viewerJsPath;
+    this.popoutWin = null;
+    this.isReady = false;
+  }
+  get isOpen() {
+    return this.popoutWin && !this.popoutWin.closed;
+  }
+  open() {
+    if (this.isOpen) {
+      this.close();
+      return;
+    }
+    this.popoutWin = window.open("", "_blank", "width=960,height=720");
+    if (!this.popoutWin) return;
+    this.isReady = false;
+    const doc = this.popoutWin.document;
+    doc.open();
+    doc.write(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143958,451 +144285,670 @@ var index_default = {
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
     .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+    .molsysviewer-traj-input::-webkit-inner-spin-button,
+    .molsysviewer-traj-input::-webkit-outer-spin-button {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        -moz-appearance: none !important;
+        margin: 0 !important;
+    }
+    .molsysviewer-traj-input {
+        -moz-appearance: textfield !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        color: rgba(255,255,255,0.9);
+        background: rgba(40,40,40,0.6);
+        caret-color: transparent;
+    }
+    .molsysviewer-slider {
+        background: transparent;
+        height: 16px;
+        border-radius: 999px;
+        overflow: visible;
+    }
+    .molsysviewer-slider::-webkit-slider-runnable-track {
+        background: rgba(200,200,200,0.35) !important;
+        height: 16px;
+        border-radius: 999px;
+    }
+    .molsysviewer-slider::-moz-range-track {
+        background: rgba(200,200,200,0.35) !important;
+        height: 16px;
+        border-radius: 999px;
+    }
+    .molsysviewer-slider::-ms-track {
+        background: rgba(200,200,200,0.35) !important;
+        height: 16px;
+        border-radius: 999px;
+        border: none;
+        color: transparent;
+    }
+    .molsysviewer-slider::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        width: 16px;
+        height: 16px;
+        border-radius: 50% !important;
+        background: rgba(0,0,0,0.5) !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin-top: 0px;
+    }
+    .molsysviewer-slider::-webkit-slider-thumb:hover,
+    .molsysviewer-slider::-webkit-slider-thumb:active,
+    .molsysviewer-slider::-webkit-slider-thumb:focus {
+        background: rgba(0,0,0,0.5) !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .molsysviewer-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50% !important;
+        background: rgba(0,0,0,0.5) !important;
+        border: none !important;
+    }
+    .molsysviewer-slider::-moz-range-thumb:hover,
+    .molsysviewer-slider::-moz-range-thumb:active,
+    .molsysviewer-slider::-moz-range-thumb:focus {
+        background: rgba(0,0,0,0.5) !important;
+        border: none !important;
+    }
+    .molsysviewer-slider::-ms-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50% !important;
+        background: rgba(0,0,0,0.5) !important;
+        border: none !important;
+    }
   </style>
 </head>
 <body>
   <div id="molsysviewer-pop"></div>
-  <script type="module">
-    const openerWin = window.opener;
-    const Controller = openerWin?.MolSysViewerController;
-    if (!Controller) {
-      console.error("MolSysViewer: no controller available in opener");
-    } else {
-      const container = document.getElementById("molsysviewer-pop");
-      const notify = (msg) => {
-        try { openerWin?.postMessage({ type: "molsysviewer-pop-log", msg }, "*"); } catch (e) {}
-      };
-      Controller.create(container, notify).then(ctrl => {
-        const makeButton = (label, onClick) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.textContent = label;
-          btn.style.padding = "2px 6px";
-          btn.style.fontSize = "11px";
-          btn.style.lineHeight = "16px";
-          btn.style.height = "22px";
-          btn.style.minHeight = "22px";
-          btn.style.boxSizing = "border-box";
-          btn.style.display = "inline-flex";
-          btn.style.alignItems = "center";
-          btn.style.justifyContent = "center";
-          btn.style.border = "1px solid rgba(255,255,255,0.5)";
-          btn.style.borderRadius = "4px";
-          btn.style.background = "rgba(0,0,0,0.5)";
-          btn.style.color = "#fff";
-          btn.style.cursor = "pointer";
-          btn.style.userSelect = "none";
-          btn.addEventListener("click", onClick);
-          return btn;
-        };
-        const overlay = document.createElement("div");
-        overlay.className = "molsysviewer-controls";
-        overlay.style.position = "absolute";
-        overlay.style.top = "8px";
-        overlay.style.right = "8px";
-        overlay.style.display = "flex";
-        overlay.style.gap = "6px";
-        overlay.style.zIndex = "10";
-        overlay.style.pointerEvents = "auto";
-        overlay.style.flexWrap = "nowrap";
-        const addBtn = (label, handler) => {
-          const b = makeButton(label, handler);
-          overlay.appendChild(b);
-        };
-        addBtn("Reset", () => ctrl.resetView());
-        addBtn("Full", () => ctrl.toggleFullscreen());
-        addBtn("Bg", () => ctrl.toggleBackground());
-        addBtn("Spin", () => ctrl.toggleSpin());
-        addBtn("Swing", () => ctrl.toggleSwing());
-        container.appendChild(overlay);
-
-        window.addEventListener("message", async ev => {
-          if (!ev.data) return;
-          if (ev.data.type === "molsysviewer-pop-apply" && Array.isArray(ev.data.messages)) {
-            for (const m of ev.data.messages) {
-              try { await ctrl.handleMessage(m); } catch (err) { console.error("Popout apply error", err); }
-            }
-          }
-        });
-        try { openerWin?.postMessage({ type: "molsysviewer-pop-ready" }, "*"); } catch (e) {}
-      });
-    }
-  <\/script>
 </body>
 </html>
-            `);
-      doc.close();
-      const interval = window.setInterval(() => {
-        if (!popoutWin || popoutWin.closed) {
-          popoutWin = null;
-          popoutReady = false;
-          window.clearInterval(interval);
+        `);
+    doc.close();
+    Object.assign(this.popoutWin, { molsysviewer_path: this.viewerJsPath });
+    const scriptEl = doc.createElement("script");
+    scriptEl.type = "module";
+    scriptEl.textContent = `
+            (async () => {
+                try {
+                    const path = window.molsysviewer_path;
+                    const module = await import(path);
+                    const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                    if (boot) {
+                        boot(module);
+                    } else {
+                        console.error("MolSysViewer Popout: bootPopup not found in module", module);
+                    }
+                } catch (e) {
+                    console.error("MolSysViewer Popout: Boot failed", e);
+                }
+            })();
+        `;
+    doc.body.appendChild(scriptEl);
+    const interval = window.setInterval(() => {
+      if (!this.popoutWin || this.popoutWin.closed) {
+        this.popoutWin = null;
+        this.isReady = false;
+        window.clearInterval(interval);
+      }
+    }, 2e3);
+  }
+  close() {
+    if (this.popoutWin) {
+      this.popoutWin.close();
+      this.popoutWin = null;
+      this.isReady = false;
+    }
+  }
+  send(type3, data) {
+    if (!this.isReady || !this.popoutWin || this.popoutWin.closed) return;
+    try {
+      this.popoutWin.postMessage({ type: type3, data, from: "host" }, "*");
+    } catch (e) {
+      console.warn("[MolSysViewer Host] Popout message failed", e);
+    }
+  }
+};
+
+// src/ui/controls.ts
+var makeButton = (label2, onClick) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = label2;
+  btn.style.padding = "2px 6px";
+  btn.style.fontSize = "11px";
+  btn.style.lineHeight = "16px";
+  btn.style.height = "22px";
+  btn.style.minHeight = "22px";
+  btn.style.boxSizing = "border-box";
+  btn.style.display = "inline-flex";
+  btn.style.alignItems = "center";
+  btn.style.justifyContent = "center";
+  btn.style.border = "1px solid rgba(255,255,255,0.5)";
+  btn.style.borderRadius = "4px";
+  btn.style.background = "rgba(0,0,0,0.5)";
+  btn.style.color = "#fff";
+  btn.style.cursor = "pointer";
+  btn.style.userSelect = "none";
+  btn.addEventListener("click", onClick);
+  return btn;
+};
+var injectStyles = () => {
+  if (document.getElementById("molsysviewer-traj-style")) return;
+  const css = `
+        .molsysviewer-controls,
+        .molsysviewer-controls * {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
         }
-      }, 2e3);
+        .molsysviewer-traj-input::-webkit-inner-spin-button,
+        .molsysviewer-traj-input::-webkit-outer-spin-button {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            -moz-appearance: none !important;
+            margin: 0 !important;
+        }
+        .molsysviewer-traj-input {
+            -moz-appearance: textfield !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            color: rgba(255,255,255,0.9);
+            background: rgba(40,40,40,0.6);
+            caret-color: transparent;
+        }
+        .molsysviewer-slider {
+            background: transparent;
+            height: 16px;
+            border-radius: 999px;
+            overflow: visible;
+        }
+        .molsysviewer-slider::-webkit-slider-runnable-track {
+            background: rgba(200,200,200,0.35) !important;
+            height: 16px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider::-moz-range-track {
+            background: rgba(200,200,200,0.35) !important;
+            height: 16px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider::-ms-track {
+            background: rgba(200,200,200,0.35) !important;
+            height: 16px;
+            border-radius: 999px;
+            border: none;
+            color: transparent;
+        }
+        .molsysviewer-slider::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            width: 16px;
+            height: 16px;
+            border-radius: 50% !important;
+            background: rgba(0,0,0,0.5) !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin-top: 0px;
+        }
+        .molsysviewer-slider::-webkit-slider-thumb:hover,
+        .molsysviewer-slider::-webkit-slider-thumb:active,
+        .molsysviewer-slider::-webkit-slider-thumb:focus {
+            background: rgba(0,0,0,0.5) !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .molsysviewer-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50% !important;
+            background: rgba(0,0,0,0.5) !important;
+            border: none !important;
+        }
+        .molsysviewer-slider::-moz-range-thumb:hover,
+        .molsysviewer-slider::-moz-range-thumb:active,
+        .molsysviewer-slider::-moz-range-thumb:focus {
+            background: rgba(0,0,0,0.5) !important;
+            border: none !important;
+        }
+        .molsysviewer-slider::-ms-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50% !important;
+            background: rgba(0,0,0,0.5) !important;
+            border: none !important;
+        }
+    `;
+  const el = document.createElement("style");
+  el.id = "molsysviewer-traj-style";
+  el.textContent = css;
+  document.head.appendChild(el);
+};
+var makeNumberControl = (initial, onChange, title) => {
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "relative";
+  wrapper.style.display = "inline-block";
+  wrapper.style.width = "52px";
+  wrapper.style.height = "22px";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = String(initial);
+  input.style.width = "52px";
+  input.style.height = "22px";
+  input.style.fontSize = "11px";
+  input.style.boxSizing = "border-box";
+  input.style.color = "rgba(255,255,255,0.9)";
+  input.style.background = "rgba(40,40,40,0.6)";
+  input.style.border = "1px solid rgba(255,255,255,0.55)";
+  input.style.borderRadius = "4px";
+  input.style.padding = "0 18px 0 4px";
+  input.style.appearance = "none";
+  input.style.MozAppearance = "textfield";
+  input.style.WebkitAppearance = "none";
+  input.className = "molsysviewer-traj-input";
+  input.title = title;
+  input.setAttribute("inputmode", "numeric");
+  input.setAttribute("pattern", "[0-9]*");
+  input.onchange = () => {
+    const val = Number(input.value);
+    const n = Number.isFinite(val) && val > 0 ? Math.floor(val) : initial;
+    onChange(n);
+    input.value = String(n);
+  };
+  const spinner = document.createElement("div");
+  spinner.style.position = "absolute";
+  spinner.style.top = "1px";
+  spinner.style.right = "2px";
+  spinner.style.width = "14px";
+  spinner.style.height = "18px";
+  spinner.style.display = "flex";
+  spinner.style.flexDirection = "column";
+  spinner.style.alignItems = "center";
+  const mkArrow = (char, delta2, extraTop = "0px") => {
+    const btn = document.createElement("div");
+    btn.textContent = char;
+    btn.style.fontSize = "10px";
+    btn.style.lineHeight = "10px";
+    btn.style.height = "9px";
+    btn.style.color = "#ffffff";
+    btn.style.background = "transparent";
+    btn.style.border = "none";
+    btn.style.textAlign = "center";
+    btn.style.cursor = "pointer";
+    btn.style.marginTop = extraTop;
+    btn.onclick = () => {
+      const val = Number(input.value);
+      const next = Number.isFinite(val) ? val + delta2 : delta2;
+      const n = next > 0 ? Math.floor(next) : 1;
+      onChange(n);
+      input.value = String(n);
     };
-    window.addEventListener("message", (ev) => {
-      if (!ev.data) return;
-      if (ev.data.type === "molsysviewer-pop-ready") {
-        popoutReady = true;
-        if (popoutWin && !popoutWin.closed) {
+    return btn;
+  };
+  const upBtn = mkArrow("\u25B2", 1, "0px");
+  const downBtn = mkArrow("\u25BC", -1, "1px");
+  spinner.appendChild(upBtn);
+  spinner.appendChild(downBtn);
+  wrapper.appendChild(input);
+  wrapper.appendChild(spinner);
+  return { wrapper, input };
+};
+var buildControls = (c8, model, sendSync, onPopClick) => {
+  injectStyles();
+  const overlay = document.createElement("div");
+  overlay.className = "molsysviewer-controls";
+  overlay.style.position = "absolute";
+  overlay.style.display = "flex";
+  overlay.style.gap = "6px";
+  overlay.style.zIndex = "10";
+  overlay.style.pointerEvents = "none";
+  overlay.style.flexWrap = "nowrap";
+  const mk = (label3, handler) => {
+    const b8 = makeButton(label3, handler);
+    b8.style.pointerEvents = "auto";
+    overlay.appendChild(b8);
+  };
+  mk("Reset", async () => {
+    await c8.resetView();
+    sendSync({ op: "reset_view" });
+  });
+  mk("Full", () => c8.toggleFullscreen());
+  mk("Bg", async () => {
+    await c8.toggleBackground();
+    sendSync({ op: "toggle_background", mode: c8.isDarkMode ? "dark" : "light" });
+  });
+  mk("Spin", async () => {
+    await c8.toggleSpin();
+    sendSync({ op: "toggle_spin", enable: c8.isSpinActive });
+  });
+  mk("Swing", async () => {
+    await c8.toggleSwing();
+    sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
+  });
+  if (onPopClick) mk("Pop", onPopClick);
+  const traj = document.createElement("div");
+  traj.style.display = "flex";
+  traj.style.alignItems = "center";
+  traj.style.gap = "6px";
+  traj.style.pointerEvents = "auto";
+  traj.style.marginLeft = "6px";
+  traj.style.paddingLeft = "0px";
+  traj.style.borderLeft = "0px";
+  let currentStep = 1;
+  let currentFps = 30;
+  const btnPrev = makeButton("\u2212", () => {
+    c8.stepTrajectory(-currentStep);
+    sendSync({ op: "step_trajectory", by: -currentStep });
+  });
+  const btnPlay = makeButton("\u25B6", () => {
+    c8.playTrajectory({ fps: currentFps, step: currentStep });
+    sendSync({
+      op: "set_trajectory_playback",
+      action: "play",
+      fps: currentFps,
+      step: currentStep
+    });
+  });
+  btnPlay.style.paddingTop = "0px";
+  btnPlay.style.paddingBottom = "0px";
+  btnPlay.style.lineHeight = "18px";
+  const btnPause = makeButton("\u23F8", () => {
+    c8.stopTrajectoryPlayback();
+    sendSync({ op: "set_trajectory_playback", action: "stop" });
+  });
+  btnPause.style.paddingTop = "0px";
+  btnPause.style.paddingBottom = "0px";
+  btnPause.style.lineHeight = "18px";
+  const btnNext = makeButton("+", () => {
+    c8.stepTrajectory(currentStep);
+    sendSync({ op: "step_trajectory", by: currentStep });
+  });
+  [btnPrev, btnPlay, btnPause, btnNext].forEach((b8) => {
+    b8.style.pointerEvents = "auto";
+  });
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "0";
+  slider.value = "0";
+  slider.className = "molsysviewer-slider";
+  slider.style.width = "160px";
+  slider.style.flex = "0 0 160px";
+  slider.style.background = "transparent";
+  slider.style.appearance = "none";
+  slider.style.WebkitAppearance = "none";
+  slider.style.MozAppearance = "none";
+  slider.style.setProperty("accent-color", "transparent");
+  slider.style.borderRadius = "999px";
+  slider.style.overflow = "visible";
+  const updateSliderBg = () => {
+    const min5 = Number(slider.min) || 0;
+    const max5 = Number(slider.max) || 0;
+    const val = Number(slider.value) || 0;
+    const pct = max5 > min5 ? Math.min(100, Math.max(0, (val - min5) * 100 / (max5 - min5))) : 0;
+    const fill = "rgba(128,128,128,0.8)";
+    const track = "rgba(200,200,200,0.35)";
+    slider.style.background = `linear-gradient(to right, ${fill} 0%, ${fill} ${pct}%, ${track} ${pct}%, ${track} 100%)`;
+  };
+  slider.oninput = () => {
+    const val = Number(slider.value);
+    if (!Number.isFinite(val)) return;
+    void c8.setTrajectoryFrame(val);
+    sendSync({ op: "set_trajectory_frame", index: val });
+    updateSliderBg();
+  };
+  updateSliderBg();
+  const label2 = document.createElement("span");
+  label2.style.color = "rgba(0,0,0,0.5)";
+  label2.style.fontSize = "11px";
+  label2.style.minWidth = "60px";
+  label2.style.textAlign = "center";
+  label2.textContent = "0 / 0";
+  const stepControl = makeNumberControl(1, (n) => {
+    currentStep = n;
+  }, "Step size");
+  const fpsControl = makeNumberControl(5, (n) => {
+    currentFps = n;
+  }, "FPS");
+  traj.appendChild(btnPrev);
+  traj.appendChild(btnPlay);
+  traj.appendChild(btnPause);
+  traj.appendChild(btnNext);
+  traj.appendChild(slider);
+  traj.appendChild(label2);
+  traj.appendChild(stepControl.wrapper);
+  traj.appendChild(fpsControl.wrapper);
+  overlay.appendChild(traj);
+  c8.onTrajectoryState((state) => {
+    const frameCount = state.frameCount;
+    const current2 = state.currentFrame;
+    slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
+    slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
+    updateSliderBg();
+    label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
+    const disabled = frameCount <= 1;
+    [btnPrev, btnNext, slider, btnPlay, btnPause].forEach((el) => {
+      el.disabled = disabled;
+    });
+  });
+  const placeOverlay = () => {
+    const pos = model.get("controls_position");
+    const posFs = model.get("controls_position_fullscreen");
+    const isFs = !!document.fullscreenElement;
+    const use = isFs && Array.isArray(posFs) ? posFs : Array.isArray(pos) ? pos : ["top", "right"];
+    overlay.style.top = use?.includes("top") ? "8px" : "";
+    overlay.style.bottom = use?.includes("bottom") ? "8px" : "";
+    overlay.style.left = use?.includes("left") ? "8px" : "";
+    overlay.style.right = use?.includes("right") ? "8px" : "";
+  };
+  placeOverlay();
+  document.addEventListener("fullscreenchange", placeOverlay);
+  model.on("change:controls_position", placeOverlay);
+  model.on("change:controls_position_fullscreen", placeOverlay);
+  let autohide = !!model.get("autohide_controls");
+  const target = c8.plugin.canvas3d?.props.canvas?.parentElement ?? document.body;
+  const applyShow = (visible) => {
+    if (autohide) {
+      overlay.style.opacity = visible ? "1" : "0";
+      overlay.style.pointerEvents = visible ? "auto" : "none";
+    } else {
+      overlay.style.display = visible ? "flex" : "none";
+    }
+  };
+  const onEnter = () => applyShow(!!model.get("show_controls"));
+  const onLeave = () => applyShow(false);
+  const enableAutohide = () => {
+    overlay.style.transition = "opacity 150ms ease";
+    applyShow(!!model.get("show_controls"));
+    target.addEventListener("mouseenter", onEnter);
+    target.addEventListener("mouseleave", onLeave);
+  };
+  const disableAutohide = () => {
+    target.removeEventListener("mouseenter", onEnter);
+    target.removeEventListener("mouseleave", onLeave);
+    overlay.style.opacity = "1";
+    overlay.style.pointerEvents = "auto";
+    applyShow(!!model.get("show_controls"));
+  };
+  if (autohide) enableAutohide();
+  else applyShow(!!model.get("show_controls"));
+  model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
+  model.on("change:autohide_controls", () => {
+    const next = !!model.get("autohide_controls");
+    if (next === autohide) return;
+    autohide = next;
+    if (autohide) {
+      enableAutohide();
+      applyShow(false);
+    } else {
+      disableAutohide();
+    }
+  });
+  return overlay;
+};
+
+// src/utils/logger.ts
+var formatArg = (v4) => {
+  if (v4 instanceof Error) return v4.stack || v4.message || String(v4);
+  if (typeof v4 === "object") {
+    try {
+      return JSON.stringify(v4);
+    } catch {
+      return String(v4);
+    }
+  }
+  return String(v4);
+};
+var createLogger = (model, debug) => {
+  const sendLog = (level, ...args) => {
+    if (!debug) return;
+    try {
+      model.send({
+        event: "js_log",
+        level,
+        message: args.map(formatArg).join(" ")
+      });
+    } catch {
+    }
+  };
+  if (debug) {
+    ["error", "warn"].forEach((level) => {
+      const orig = console[level];
+      console[level] = (...args) => {
+        if (orig) {
           try {
-            popoutWin.postMessage({ type: "molsysviewer-pop-apply", messages: [...messageLog] }, "*");
-          } catch (e) {
-            console.warn("[MolSysViewer] popout sync failed", e);
+            orig.apply(console, args);
+          } catch {
           }
         }
-      }
+        sendLog(level, ...args);
+      };
     });
-    const controllerReady = controllerPromise.then((c8) => {
-      const overlay = buildControls(c8, openPopout);
-      const traj = document.createElement("div");
-      traj.style.display = "flex";
-      traj.style.alignItems = "center";
-      traj.style.gap = "6px";
-      traj.style.pointerEvents = "auto";
-      traj.style.marginLeft = "6px";
-      traj.style.paddingLeft = "0px";
-      traj.style.borderLeft = "0px";
-      let currentStep = 1;
-      let currentFps = 30;
-      const btnPrev = makeButton("\u2212", () => c8.stepTrajectory(-currentStep));
-      const btnPlay = makeButton("\u25B6", () => c8.playTrajectory({ fps: currentFps, step: currentStep }));
-      btnPlay.style.paddingTop = "0px";
-      btnPlay.style.paddingBottom = "0px";
-      btnPlay.style.lineHeight = "18px";
-      const btnPause = makeButton("\u23F8", () => c8.stopTrajectoryPlayback());
-      btnPause.style.paddingTop = "0px";
-      btnPause.style.paddingBottom = "0px";
-      btnPause.style.lineHeight = "18px";
-      const btnNext = makeButton("+", () => c8.stepTrajectory(currentStep));
-      [btnPrev, btnPlay, btnPause, btnNext].forEach((b8) => {
-        b8.style.pointerEvents = "auto";
-      });
-      const slider = document.createElement("input");
-      slider.type = "range";
-      slider.min = "0";
-      slider.max = "0";
-      slider.value = "0";
-      slider.className = "molsysviewer-slider";
-      slider.style.width = "160px";
-      slider.style.flex = "0 0 160px";
-      slider.style.background = "transparent";
-      slider.style.appearance = "none";
-      slider.style.WebkitAppearance = "none";
-      slider.style.MozAppearance = "none";
-      slider.style.setProperty("accent-color", "transparent");
-      slider.style.borderRadius = "999px";
-      slider.style.overflow = "visible";
-      const updateSliderBg = () => {
-        const min5 = Number(slider.min) || 0;
-        const max5 = Number(slider.max) || 0;
-        const val = Number(slider.value) || 0;
-        const pct = max5 > min5 ? Math.min(100, Math.max(0, (val - min5) * 100 / (max5 - min5))) : 0;
-        const fill = "rgba(128,128,128,0.8)";
-        const track = "rgba(200,200,200,0.35)";
-        slider.style.background = `linear-gradient(to right, ${fill} 0%, ${fill} ${pct}%, ${track} ${pct}%, ${track} 100%)`;
-      };
-      slider.oninput = () => {
-        const val = Number(slider.value);
-        if (!Number.isFinite(val)) return;
-        void c8.setTrajectoryFrame(val);
-        updateSliderBg();
-      };
-      updateSliderBg();
-      const label2 = document.createElement("span");
-      label2.style.color = "rgba(0,0,0,0.5)";
-      label2.style.fontSize = "11px";
-      label2.style.minWidth = "60px";
-      label2.style.textAlign = "center";
-      label2.textContent = "0 / 0";
-      const makeNumberControl = (initial, onChange, title) => {
-        const wrapper = document.createElement("div");
-        wrapper.style.position = "relative";
-        wrapper.style.display = "inline-block";
-        wrapper.style.width = "52px";
-        wrapper.style.height = "22px";
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = String(initial);
-        input.style.width = "52px";
-        input.style.height = "22px";
-        input.style.fontSize = "11px";
-        input.style.boxSizing = "border-box";
-        input.style.color = "rgba(255,255,255,0.9)";
-        input.style.background = "rgba(40,40,40,0.6)";
-        input.style.border = "1px solid rgba(255,255,255,0.55)";
-        input.style.borderRadius = "4px";
-        input.style.padding = "0 18px 0 4px";
-        input.style.appearance = "none";
-        input.style.MozAppearance = "textfield";
-        input.style.WebkitAppearance = "none";
-        input.className = "molsysviewer-traj-input";
-        input.title = title;
-        input.setAttribute("inputmode", "numeric");
-        input.setAttribute("pattern", "[0-9]*");
-        input.onchange = () => {
-          const val = Number(input.value);
-          const n = Number.isFinite(val) && val > 0 ? Math.floor(val) : initial;
-          onChange(n);
-          input.value = String(n);
-        };
-        const spinner = document.createElement("div");
-        spinner.style.position = "absolute";
-        spinner.style.top = "1px";
-        spinner.style.right = "2px";
-        spinner.style.width = "14px";
-        spinner.style.height = "18px";
-        spinner.style.display = "flex";
-        spinner.style.flexDirection = "column";
-        spinner.style.alignItems = "center";
-        const mkArrow = (char, delta2, extraTop = "0px") => {
-          const btn = document.createElement("div");
-          btn.textContent = char;
-          btn.style.fontSize = "10px";
-          btn.style.lineHeight = "10px";
-          btn.style.height = "9px";
-          btn.style.color = "#ffffff";
-          btn.style.background = "transparent";
-          btn.style.border = "none";
-          btn.style.textAlign = "center";
-          btn.style.cursor = "pointer";
-          btn.style.marginTop = extraTop;
-          btn.onclick = () => {
-            const val = Number(input.value);
-            const next = Number.isFinite(val) ? val + delta2 : delta2;
-            const n = next > 0 ? Math.floor(next) : 1;
-            onChange(n);
-            input.value = String(n);
-          };
-          return btn;
-        };
-        const upBtn = mkArrow("\u25B2", 1, "0px");
-        const downBtn = mkArrow("\u25BC", -1, "1px");
-        spinner.appendChild(upBtn);
-        spinner.appendChild(downBtn);
-        wrapper.appendChild(input);
-        wrapper.appendChild(spinner);
-        return { wrapper, input };
-      };
-      const stepControl = makeNumberControl(1, (n) => {
-        currentStep = n;
-      }, "Step size");
-      const fpsControl = makeNumberControl(5, (n) => {
-        currentFps = n;
-      }, "FPS");
-      traj.appendChild(btnPrev);
-      traj.appendChild(btnPlay);
-      traj.appendChild(btnPause);
-      traj.appendChild(btnNext);
-      traj.appendChild(slider);
-      traj.appendChild(label2);
-      traj.appendChild(stepControl.wrapper);
-      traj.appendChild(fpsControl.wrapper);
-      overlay.appendChild(traj);
+  }
+  return sendLog;
+};
+
+// src/index.ts
+var index_default = {
+  render({ model, el }) {
+    const debug = !!model.get("debug_js");
+    const sendLog = createLogger(model, debug);
+    const commandLog = [];
+    let isUpdatingFromPeer = false;
+    const target = document.createElement("div");
+    Object.assign(target.style, {
+      width: "100%",
+      height: "100%",
+      minHeight: "400px",
+      position: "relative",
+      touchAction: "none",
+      cursor: "grab"
+    });
+    target.addEventListener("pointerdown", () => target.style.cursor = "grabbing");
+    target.addEventListener("pointerup", () => target.style.cursor = "grab");
+    target.addEventListener("pointerleave", () => target.style.cursor = "grab");
+    el.appendChild(target);
+    const controllerPromise = MolSysViewerController.create(target, (msg) => model.send(msg));
+    const viewerJsPath = import.meta.url;
+    console.log("[MolSysViewer] Using bundle path:", viewerJsPath);
+    const popupMgr = new PopupHostManager(viewerJsPath);
+    controllerPromise.then((c8) => {
+      const overlay = buildControls(c8, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), () => popupMgr.open());
       target.appendChild(overlay);
-      const placeOverlay = () => {
-        const pos = model.get("controls_position");
-        const posFs = model.get("controls_position_fullscreen");
-        const isFs = !!document.fullscreenElement;
-        const use = isFs && Array.isArray(posFs) ? posFs : Array.isArray(pos) ? pos : ["top", "right"];
-        overlay.style.top = use?.includes("top") ? "8px" : "";
-        overlay.style.bottom = use?.includes("bottom") ? "8px" : "";
-        overlay.style.left = use?.includes("left") ? "8px" : "";
-        overlay.style.right = use?.includes("right") ? "8px" : "";
-      };
-      placeOverlay();
-      document.addEventListener("fullscreenchange", placeOverlay);
-      model.on("change:controls_position", placeOverlay);
-      model.on("change:controls_position_fullscreen", placeOverlay);
-      let autohide = !!model.get("autohide_controls");
-      const applyShow = (visible) => {
-        if (autohide) {
-          overlay.style.opacity = visible ? "1" : "0";
-          overlay.style.pointerEvents = visible ? "auto" : "none";
-        } else {
-          overlay.style.display = visible ? "flex" : "none";
-        }
-      };
-      const enableAutohide = () => {
-        overlay.style.transition = "opacity 150ms ease";
-        applyShow(!!model.get("show_controls"));
-        target.addEventListener("mouseenter", onEnter);
-        target.addEventListener("mouseleave", onLeave);
-      };
-      const disableAutohide = () => {
-        target.removeEventListener("mouseenter", onEnter);
-        target.removeEventListener("mouseleave", onLeave);
-        overlay.style.opacity = "1";
-        overlay.style.pointerEvents = "auto";
-        applyShow(!!model.get("show_controls"));
-      };
-      const onEnter = () => applyShow(!!model.get("show_controls"));
-      const onLeave = () => applyShow(false);
-      if (autohide) {
-        enableAutohide();
-      } else {
-        applyShow(!!model.get("show_controls"));
-      }
-      model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
-      model.on("change:autohide_controls", () => {
-        const next = !!model.get("autohide_controls");
-        if (next === autohide) return;
-        autohide = next;
-        if (autohide) {
-          enableAutohide();
-          applyShow(false);
-        } else {
-          disableAutohide();
-        }
+      let hostCameraSyncTimer = null;
+      c8.plugin.canvas3d?.camera.events.changed.subscribe(() => {
+        if (isUpdatingFromPeer) return;
+        if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
+        hostCameraSyncTimer = setTimeout(() => {
+          popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
+          hostCameraSyncTimer = null;
+        }, 50);
       });
-      const css = `
-                .molsysviewer-controls,
-                .molsysviewer-controls * {
-                    user-select: none;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                }
-                .molsysviewer-traj-input::-webkit-inner-spin-button,
-                .molsysviewer-traj-input::-webkit-outer-spin-button {
-                    -webkit-appearance: none !important;
-                    appearance: none !important;
-                    -moz-appearance: none !important;
-                    margin: 0 !important;
-                }
-                .molsysviewer-traj-input {
-                    -moz-appearance: textfield !important;
-                    appearance: none !important;
-                    -webkit-appearance: none !important;
-                    color: rgba(255,255,255,0.9);
-                    background: rgba(40,40,40,0.6);
-                    caret-color: transparent;
-                }
-                .molsysviewer-slider {
-                    background: transparent;
-                    height: 16px;
-                    border-radius: 999px;
-                    overflow: visible;
-                }
-                .molsysviewer-slider::-webkit-slider-runnable-track {
-                    background: rgba(200,200,200,0.35) !important;
-                    height: 16px;
-                    border-radius: 999px;
-                }
-                .molsysviewer-slider::-moz-range-track {
-                    background: rgba(200,200,200,0.35) !important;
-                    height: 16px;
-                    border-radius: 999px;
-                }
-                .molsysviewer-slider::-ms-track {
-                    background: rgba(200,200,200,0.35) !important;
-                    height: 16px;
-                    border-radius: 999px;
-                    border: none;
-                    color: transparent;
-                }
-                .molsysviewer-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none !important;
-                    appearance: none !important;
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50% !important;
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                    margin-top: 0px;
-                }
-                .molsysviewer-slider::-webkit-slider-thumb:hover,
-                .molsysviewer-slider::-webkit-slider-thumb:active,
-                .molsysviewer-slider::-webkit-slider-thumb:focus {
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                }
-                .molsysviewer-slider::-moz-range-thumb {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50% !important;
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                }
-                .molsysviewer-slider::-moz-range-thumb:hover,
-                .molsysviewer-slider::-moz-range-thumb:active,
-                .molsysviewer-slider::-moz-range-thumb:focus {
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                }
-                .molsysviewer-slider::-ms-thumb {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50% !important;
-                    background: rgba(0,0,0,0.5) !important;
-                    border: none !important;
-                }
-            `;
-      const style = document.getElementById("molsysviewer-traj-style");
-      if (style) {
-        style.textContent = css;
-      } else {
-        const el2 = document.createElement("style");
-        el2.id = "molsysviewer-traj-style";
-        el2.textContent = css;
-        document.head.appendChild(el2);
+    });
+    window.addEventListener("message", async (ev) => {
+      if (!ev.data || ev.data.from === "host") return;
+      const { type: type3, data } = ev.data;
+      const controller = await controllerPromise;
+      isUpdatingFromPeer = true;
+      try {
+        switch (type3) {
+          case "molsysviewer-pop-ready":
+            popupMgr.isReady = true;
+            popupMgr.send("molsysviewer-initial-sync", {
+              messages: [...commandLog],
+              cameraSnapshot: controller.getCameraSnapshot(),
+              isSpinActive: controller.isSpinActive,
+              isSwingActive: controller.isSwingActive,
+              isDarkMode: controller.isDarkMode
+            });
+            isUpdatingFromPeer = false;
+            break;
+          case "molsysviewer-sync-op":
+            await controller.handleMessage(data);
+            isUpdatingFromPeer = false;
+            break;
+          case "molsysviewer-sync-camera":
+            if (data) {
+              controller.setCameraSnapshot(data, 0);
+              setTimeout(() => {
+                isUpdatingFromPeer = false;
+              }, 100);
+            } else {
+              isUpdatingFromPeer = false;
+            }
+            break;
+          case "molsysviewer-log-from-popout":
+            if (debug) sendLog("info", "[Popout Log]:", data.msg);
+            isUpdatingFromPeer = false;
+            break;
+          default:
+            isUpdatingFromPeer = false;
+            break;
+        }
+      } catch (e) {
+        console.error("[MolSysViewer Host] Error handling popout message:", e);
+        isUpdatingFromPeer = false;
       }
-      c8.onTrajectoryState((state) => {
-        const frameCount = state.frameCount;
-        const current2 = state.currentFrame;
-        slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
-        slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
-        updateSliderBg();
-        label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
-        const disabled = frameCount <= 1;
-        [btnPrev, btnNext, slider, btnPlay, btnPause].forEach((el2) => {
-          el2.disabled = disabled;
-        });
-      });
-      return c8;
     });
     (async () => {
       try {
-        const controller = await controllerReady;
+        const controller = await controllerPromise;
         model.send({ event: "ready" });
         const initialMessages = model.get("initial_messages");
         if (Array.isArray(initialMessages) && initialMessages.length) {
           for (const msg of initialMessages) {
             await controller.handleMessage(msg);
-            messageLog.push(msg);
+            commandLog.push(msg);
           }
         }
       } catch (err) {
-        console.error("[MolSysViewer] Error inicializando plugin:", err);
-        sendLog("error", "[MolSysViewer] Error inicializando plugin:", err);
+        console.error("[MolSysViewer] Init error:", err);
+        sendLog("error", "[MolSysViewer] Init error:", err);
       }
     })();
     console.log("[MolSysViewer] widget render init");
     sendLog("info", "[MolSysViewer] widget render init");
     model.on("msg:custom", async (msg) => {
       if (!msg || typeof msg !== "object") return;
-      console.log("[MolSysViewer] message from Python:", msg);
-      if (debug) sendLog("info", "[MolSysViewer] message from Python:", msg);
+      if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
       try {
-        const controller = await controllerReady;
+        const controller = await controllerPromise;
         await controller.handleMessage(msg);
-        messageLog.push(msg);
-        if (popoutReady && popoutWin && !popoutWin.closed) {
-          try {
-            popoutWin.postMessage({ type: "molsysviewer-pop-apply", messages: [msg] }, "*");
-          } catch (e) {
-            console.warn("[MolSysViewer] popout forward failed", e);
-          }
-        }
+        commandLog.push(msg);
+        popupMgr.send("molsysviewer-sync-op", msg);
       } catch (error2) {
-        console.error("[MolSysViewer] Error manejando mensaje:", msg, error2);
-        sendLog("error", "[MolSysViewer] Error manejando mensaje:", msg, error2);
+        console.error("[MolSysViewer] Error handling message:", msg, error2);
+        sendLog("error", "[MolSysViewer] Error handling message:", msg, error2);
       }
     });
   }
 };
 export {
+  bootPopup,
   index_default as default
 };
 /*! Bundled license information:
