@@ -111,7 +111,8 @@ export class TrajectoryHandlers {
     getTrajectoryState(): TrajectoryState {
         const frameCount = this.getFrameCount();
         const currentFrame = this.getCurrentFrameIndex();
-        const isPlaying = this.plugin.managers.animation.isAnimating;
+        // Check our custom timer or Mol*'s built-in manager as a fallback
+        const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
         return { frameCount, currentFrame, isPlaying };
     }
 

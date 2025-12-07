@@ -198,11 +198,13 @@ export const buildControls = (
     c: MolSysViewerController, 
     model: any, 
     sendSync: SyncCallback,
+    container: HTMLElement,
     onPopClick?: () => void
 ) => {
     injectStyles();
 
     const overlay = document.createElement("div");
+    // ... (rest of the overlay creation code remains same until Autohide logic) ...
     overlay.className = "molsysviewer-controls";
     overlay.style.position = "absolute";
     overlay.style.display = "flex";
@@ -253,30 +255,31 @@ export const buildControls = (
         c.stepTrajectory(-currentStep);
         sendSync({ op: "step_trajectory", by: -currentStep });
     });
-    const btnPlay = makeButton("▶", () => {
-        c.playTrajectory({ fps: currentFps, step: currentStep });
-        sendSync({
-            op: "set_trajectory_playback",
-            action: "play",
-            fps: currentFps,
-            step: currentStep,
-        });
+    
+    const btnPlayPause = makeButton("▶ / ⏸", () => {
+        const isPlaying = c.trajectory.getTrajectoryState().isPlaying;
+        if (isPlaying) {
+            c.stopTrajectoryPlayback();
+            sendSync({ op: "set_trajectory_playback", action: "stop" });
+        } else {
+            c.playTrajectory({ fps: currentFps, step: currentStep });
+            sendSync({
+                op: "set_trajectory_playback",
+                action: "play",
+                fps: currentFps,
+                step: currentStep,
+            });
+        }
     });
-    btnPlay.style.paddingTop = "0px";
-    btnPlay.style.paddingBottom = "0px";
-    btnPlay.style.lineHeight = "18px";
-    const btnPause = makeButton("⏸", () => {
-        c.stopTrajectoryPlayback();
-        sendSync({ op: "set_trajectory_playback", action: "stop" });
-    });
-    btnPause.style.paddingTop = "0px";
-    btnPause.style.paddingBottom = "0px";
-    btnPause.style.lineHeight = "18px";
+    btnPlayPause.style.paddingTop = "0px";
+    btnPlayPause.style.paddingBottom = "0px";
+    btnPlayPause.style.lineHeight = "18px";
+
     const btnNext = makeButton("+", () => {
         c.stepTrajectory(currentStep);
         sendSync({ op: "step_trajectory", by: currentStep });
     });
-    [btnPrev, btnPlay, btnPause, btnNext].forEach(b => {
+    [btnPrev, btnPlayPause, btnNext].forEach(b => {
         b.style.pointerEvents = "auto";
     });
 
@@ -325,8 +328,7 @@ export const buildControls = (
     const fpsControl = makeNumberControl(5, n => { currentFps = n; }, "FPS");
 
     traj.appendChild(btnPrev);
-    traj.appendChild(btnPlay);
-    traj.appendChild(btnPause);
+    traj.appendChild(btnPlayPause);
     traj.appendChild(btnNext);
     traj.appendChild(slider);
     traj.appendChild(label);
@@ -344,9 +346,18 @@ export const buildControls = (
         updateSliderBg();
         label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
         const disabled = frameCount <= 1;
-        [btnPrev, btnNext, slider, btnPlay, btnPause].forEach(el => {
+        [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
             (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
         });
+
+        // Update button appearance based on playback state
+        if (state.isPlaying) {
+            btnPlayPause.textContent = "⏸";
+            btnPlayPause.title = "Pause Trajectory";
+        } else {
+            btnPlayPause.textContent = "▶";
+            btnPlayPause.title = "Play Trajectory";
+        }
     });
 
     // Placement and Autohide logic
@@ -366,7 +377,7 @@ export const buildControls = (
     model.on("change:controls_position_fullscreen", placeOverlay);
 
     let autohide = !!model.get("autohide_controls");
-    const target = c.plugin.canvas3d?.props.canvas?.parentElement ?? document.body; // Best guess for interaction target
+    const target = container; // Use passed container
 
     const applyShow = (visible: boolean) => {
         if (autohide) {
@@ -382,12 +393,12 @@ export const buildControls = (
     const enableAutohide = () => {
         overlay.style.transition = "opacity 150ms ease";
         applyShow(!!model.get("show_controls"));
-        target.addEventListener("mouseenter", onEnter);
-        target.addEventListener("mouseleave", onLeave);
+        target.addEventListener("pointerenter", onEnter); // Changed to pointerenter
+        target.addEventListener("pointerleave", onLeave); // Changed to pointerleave
     };
     const disableAutohide = () => {
-        target.removeEventListener("mouseenter", onEnter);
-        target.removeEventListener("mouseleave", onLeave);
+        target.removeEventListener("pointerenter", onEnter);
+        target.removeEventListener("pointerleave", onLeave);
         overlay.style.opacity = "1";
         overlay.style.pointerEvents = "auto";
         applyShow(!!model.get("show_controls"));

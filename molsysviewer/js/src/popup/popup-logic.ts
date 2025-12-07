@@ -160,6 +160,13 @@ export const bootPopup = async (loadedModule?: any) => {
                     if (data.isSpinActive) await ctrl.toggleSpin(true);
                     if (data.isSwingActive) await ctrl.toggleSwing(true);
                     if (data.isDarkMode) await ctrl.toggleBackground("dark");
+                    
+                    // Sync autohide state
+                    if (data.autohide !== undefined) updateAutohide(!!data.autohide);
+                    break;
+
+                case "molsysviewer-sync-autohide":
+                    updateAutohide(!!data.enabled);
                     break;
 
                 case "molsysviewer-sync-op":
@@ -211,6 +218,8 @@ export const bootPopup = async (loadedModule?: any) => {
     overlay.style.zIndex = "10";
     overlay.style.pointerEvents = "none";
     overlay.style.flexWrap = "nowrap";
+    // Add transition for smooth autohide
+    overlay.style.transition = "opacity 150ms ease";
 
     const addBtn = (label: string, handler: () => void) => {
         const b = makeBtn(label, handler);
@@ -218,6 +227,59 @@ export const bootPopup = async (loadedModule?: any) => {
         overlay.appendChild(b);
     };
 
+    // ... (Button definitions remain same) ...
+
+    // Autohide Logic for Popup
+    let autohide = false; // Default state, will be synced from host
+    
+    const applyShow = (visible: boolean) => {
+        if (autohide) {
+            overlay.style.opacity = visible ? "1" : "0";
+            overlay.style.pointerEvents = visible ? "auto" : "none";
+            traj.style.opacity = visible ? "1" : "0"; // Apply to trajectory controls
+            traj.style.pointerEvents = visible ? "auto" : "none"; // Apply to trajectory controls
+        } else {
+            overlay.style.opacity = "1";
+            overlay.style.pointerEvents = "auto";
+            traj.style.opacity = "1"; // Always show trajectory controls
+            traj.style.pointerEvents = "auto"; // Always show trajectory controls
+        }
+    };
+
+    const onEnter = () => applyShow(true);
+    const onLeave = () => applyShow(false);
+
+    const updateAutohide = (enabled: boolean) => {
+        if (enabled === autohide) return;
+        autohide = enabled;
+        
+        if (autohide) {
+            // Enable listeners
+            container?.addEventListener("pointerenter", onEnter);
+            container?.addEventListener("pointerleave", onLeave);
+            applyShow(false); // Initially hide until enter
+        } else {
+            // Disable listeners
+            container?.removeEventListener("pointerenter", onEnter);
+            container?.removeEventListener("pointerleave", onLeave);
+            applyShow(true); // Always show
+        }
+    };
+
+    // ... (Logic to handle incoming messages - update switch) ...
+    // Insert this case into the existing switch(type) block in the message listener:
+    /*
+                case "molsysviewer-sync-autohide":
+                    updateAutohide(!!data.enabled);
+                    break;
+                
+                case "molsysviewer-initial-sync":
+                    // ... (existing sync logic) ...
+                    if (data.autohide !== undefined) updateAutohide(!!data.autohide);
+                    break;
+    */
+    // I will apply the changes to the message listener below in a separate replacement block or merge logic.
+    
     addBtn("Reset", async () => {
         const ctrl = await popControllerPromise;
         await ctrl.resetView();
@@ -247,6 +309,9 @@ export const bootPopup = async (loadedModule?: any) => {
     });
     container.appendChild(overlay);
 
+    // ... (Trajectory controls creation) ...
+
+
     // Trajectory controls
     const traj = document.createElement("div");
     traj.style.position = "absolute";
@@ -265,23 +330,30 @@ export const bootPopup = async (loadedModule?: any) => {
         ctrl.stepTrajectory(-currentStep);
         sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
     });
-    const btnPlay = makeBtn("▶", async () => {
+    
+    const btnPlayPause = makeBtn("▶", async () => {
         const ctrl = await popControllerPromise;
-        ctrl.playTrajectory({ fps: currentFps, step: currentStep });
-        sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
+        const isPlaying = ctrl.trajectory.getTrajectoryState().isPlaying; // Get current state
+        if (isPlaying) {
+            ctrl.stopTrajectoryPlayback();
+            sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
+        } else {
+            ctrl.playTrajectory({ fps: currentFps, step: currentStep });
+            sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
+        }
     });
-    const btnPause = makeBtn("⏸", async () => {
-        const ctrl = await popControllerPromise;
-        ctrl.stopTrajectoryPlayback();
-        sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
-    });
+    btnPlayPause.style.paddingTop = "0px";
+    btnPlayPause.style.paddingBottom = "0px";
+    btnPlayPause.style.lineHeight = "18px";
+    btnPlayPause.title = "Play/Pause Trajectory";
+
     const btnNext = makeBtn("+", async () => {
         const ctrl = await popControllerPromise;
         ctrl.stepTrajectory(currentStep);
         sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
     });
 
-    [btnPrev, btnPlay, btnPause, btnNext].forEach(b => {
+    [btnPrev, btnPlayPause, btnNext].forEach(b => {
         b.style.pointerEvents = "auto";
     });
 
@@ -310,8 +382,7 @@ export const bootPopup = async (loadedModule?: any) => {
     label.textContent = "0 / 0";
 
     traj.appendChild(btnPrev);
-    traj.appendChild(btnPlay);
-    traj.appendChild(btnPause);
+    traj.appendChild(btnPlayPause);
     traj.appendChild(btnNext);
     traj.appendChild(slider);
     traj.appendChild(label);
@@ -319,15 +390,21 @@ export const bootPopup = async (loadedModule?: any) => {
 
     popControllerPromise.then(c => {
         c.onTrajectoryState(state => {
-            var frameCount = state && typeof state.frameCount === "number" ? state.frameCount : 0;
-            var current = state && typeof state.currentFrame === "number" ? state.currentFrame : 0;
+            const frameCount = state.frameCount;
+            const current = state.currentFrame;
+            const isPlaying = state.isPlaying;
+
             slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
             slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
             label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
-            var disabled = frameCount <= 1;
-            [btnPrev, btnNext, slider, btnPlay, btnPause].forEach(function (el) {
-              el.disabled = disabled;
+            const disabled = frameCount <= 1;
+            [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
+                (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
             });
+            
+            // Update Play/Pause button text
+            btnPlayPause.textContent = isPlaying ? "⏸" : "▶";
+            btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
         });
     });
 

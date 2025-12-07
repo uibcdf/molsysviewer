@@ -143645,7 +143645,7 @@ var TrajectoryHandlers = class {
   getTrajectoryState() {
     const frameCount = this.getFrameCount();
     const currentFrame = this.getCurrentFrameIndex();
-    const isPlaying = this.plugin.managers.animation.isAnimating;
+    const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
     return { frameCount, currentFrame, isPlaying };
   }
   onTrajectoryState(cb2) {
@@ -144122,6 +144122,10 @@ var bootPopup = async (loadedModule) => {
           if (data.isSpinActive) await ctrl2.toggleSpin(true);
           if (data.isSwingActive) await ctrl2.toggleSwing(true);
           if (data.isDarkMode) await ctrl2.toggleBackground("dark");
+          if (data.autohide !== void 0) updateAutohide(!!data.autohide);
+          break;
+        case "molsysviewer-sync-autohide":
+          updateAutohide(!!data.enabled);
           break;
         case "molsysviewer-sync-op":
           await ctrl2.handleMessage(data);
@@ -144167,10 +144171,40 @@ var bootPopup = async (loadedModule) => {
   overlay.style.zIndex = "10";
   overlay.style.pointerEvents = "none";
   overlay.style.flexWrap = "nowrap";
+  overlay.style.transition = "opacity 150ms ease";
   const addBtn = (label3, handler) => {
     const b8 = makeBtn(label3, handler);
     b8.style.pointerEvents = "auto";
     overlay.appendChild(b8);
+  };
+  let autohide = false;
+  const applyShow = (visible) => {
+    if (autohide) {
+      overlay.style.opacity = visible ? "1" : "0";
+      overlay.style.pointerEvents = visible ? "auto" : "none";
+      traj.style.opacity = visible ? "1" : "0";
+      traj.style.pointerEvents = visible ? "auto" : "none";
+    } else {
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "auto";
+      traj.style.opacity = "1";
+      traj.style.pointerEvents = "auto";
+    }
+  };
+  const onEnter = () => applyShow(true);
+  const onLeave = () => applyShow(false);
+  const updateAutohide = (enabled) => {
+    if (enabled === autohide) return;
+    autohide = enabled;
+    if (autohide) {
+      container?.addEventListener("pointerenter", onEnter);
+      container?.addEventListener("pointerleave", onLeave);
+      applyShow(false);
+    } else {
+      container?.removeEventListener("pointerenter", onEnter);
+      container?.removeEventListener("pointerleave", onLeave);
+      applyShow(true);
+    }
   };
   addBtn("Reset", async () => {
     const ctrl2 = await popControllerPromise;
@@ -144218,22 +144252,27 @@ var bootPopup = async (loadedModule) => {
     ctrl2.stepTrajectory(-currentStep);
     sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
   });
-  const btnPlay = makeBtn("\u25B6", async () => {
+  const btnPlayPause = makeBtn("\u25B6", async () => {
     const ctrl2 = await popControllerPromise;
-    ctrl2.playTrajectory({ fps: currentFps, step: currentStep });
-    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
+    const isPlaying = ctrl2.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      ctrl2.stopTrajectoryPlayback();
+      sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
+    } else {
+      ctrl2.playTrajectory({ fps: currentFps, step: currentStep });
+      sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
+    }
   });
-  const btnPause = makeBtn("\u23F8", async () => {
-    const ctrl2 = await popControllerPromise;
-    ctrl2.stopTrajectoryPlayback();
-    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
-  });
+  btnPlayPause.style.paddingTop = "0px";
+  btnPlayPause.style.paddingBottom = "0px";
+  btnPlayPause.style.lineHeight = "18px";
+  btnPlayPause.title = "Play/Pause Trajectory";
   const btnNext = makeBtn("+", async () => {
     const ctrl2 = await popControllerPromise;
     ctrl2.stepTrajectory(currentStep);
     sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
   });
-  [btnPrev, btnPlay, btnPause, btnNext].forEach((b8) => {
+  [btnPrev, btnPlayPause, btnNext].forEach((b8) => {
     b8.style.pointerEvents = "auto";
   });
   const slider = document.createElement("input");
@@ -144259,23 +144298,25 @@ var bootPopup = async (loadedModule) => {
   label2.style.textAlign = "center";
   label2.textContent = "0 / 0";
   traj.appendChild(btnPrev);
-  traj.appendChild(btnPlay);
-  traj.appendChild(btnPause);
+  traj.appendChild(btnPlayPause);
   traj.appendChild(btnNext);
   traj.appendChild(slider);
   traj.appendChild(label2);
   container.appendChild(traj);
   popControllerPromise.then((c8) => {
     c8.onTrajectoryState((state) => {
-      var frameCount = state && typeof state.frameCount === "number" ? state.frameCount : 0;
-      var current2 = state && typeof state.currentFrame === "number" ? state.currentFrame : 0;
+      const frameCount = state.frameCount;
+      const current2 = state.currentFrame;
+      const isPlaying = state.isPlaying;
       slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
       slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
       label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
-      var disabled = frameCount <= 1;
-      [btnPrev, btnNext, slider, btnPlay, btnPause].forEach(function(el) {
+      const disabled = frameCount <= 1;
+      [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
         el.disabled = disabled;
       });
+      btnPlayPause.textContent = isPlaying ? "\u23F8" : "\u25B6";
+      btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
     });
   });
   sendToHost("molsysviewer-pop-ready", null);
@@ -144566,7 +144607,7 @@ var makeNumberControl = (initial, onChange, title) => {
   wrapper.appendChild(spinner);
   return { wrapper, input };
 };
-var buildControls = (c8, model, sendSync, onPopClick) => {
+var buildControls = (c8, model, sendSync, container, onPopClick) => {
   injectStyles();
   const overlay = document.createElement("div");
   overlay.className = "molsysviewer-controls";
@@ -144613,30 +144654,29 @@ var buildControls = (c8, model, sendSync, onPopClick) => {
     c8.stepTrajectory(-currentStep);
     sendSync({ op: "step_trajectory", by: -currentStep });
   });
-  const btnPlay = makeButton("\u25B6", () => {
-    c8.playTrajectory({ fps: currentFps, step: currentStep });
-    sendSync({
-      op: "set_trajectory_playback",
-      action: "play",
-      fps: currentFps,
-      step: currentStep
-    });
+  const btnPlayPause = makeButton("\u25B6 / \u23F8", () => {
+    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      c8.stopTrajectoryPlayback();
+      sendSync({ op: "set_trajectory_playback", action: "stop" });
+    } else {
+      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      sendSync({
+        op: "set_trajectory_playback",
+        action: "play",
+        fps: currentFps,
+        step: currentStep
+      });
+    }
   });
-  btnPlay.style.paddingTop = "0px";
-  btnPlay.style.paddingBottom = "0px";
-  btnPlay.style.lineHeight = "18px";
-  const btnPause = makeButton("\u23F8", () => {
-    c8.stopTrajectoryPlayback();
-    sendSync({ op: "set_trajectory_playback", action: "stop" });
-  });
-  btnPause.style.paddingTop = "0px";
-  btnPause.style.paddingBottom = "0px";
-  btnPause.style.lineHeight = "18px";
+  btnPlayPause.style.paddingTop = "0px";
+  btnPlayPause.style.paddingBottom = "0px";
+  btnPlayPause.style.lineHeight = "18px";
   const btnNext = makeButton("+", () => {
     c8.stepTrajectory(currentStep);
     sendSync({ op: "step_trajectory", by: currentStep });
   });
-  [btnPrev, btnPlay, btnPause, btnNext].forEach((b8) => {
+  [btnPrev, btnPlayPause, btnNext].forEach((b8) => {
     b8.style.pointerEvents = "auto";
   });
   const slider = document.createElement("input");
@@ -144684,8 +144724,7 @@ var buildControls = (c8, model, sendSync, onPopClick) => {
     currentFps = n;
   }, "FPS");
   traj.appendChild(btnPrev);
-  traj.appendChild(btnPlay);
-  traj.appendChild(btnPause);
+  traj.appendChild(btnPlayPause);
   traj.appendChild(btnNext);
   traj.appendChild(slider);
   traj.appendChild(label2);
@@ -144700,9 +144739,16 @@ var buildControls = (c8, model, sendSync, onPopClick) => {
     updateSliderBg();
     label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
     const disabled = frameCount <= 1;
-    [btnPrev, btnNext, slider, btnPlay, btnPause].forEach((el) => {
+    [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
       el.disabled = disabled;
     });
+    if (state.isPlaying) {
+      btnPlayPause.textContent = "\u23F8";
+      btnPlayPause.title = "Pause Trajectory";
+    } else {
+      btnPlayPause.textContent = "\u25B6";
+      btnPlayPause.title = "Play Trajectory";
+    }
   });
   const placeOverlay = () => {
     const pos = model.get("controls_position");
@@ -144719,7 +144765,7 @@ var buildControls = (c8, model, sendSync, onPopClick) => {
   model.on("change:controls_position", placeOverlay);
   model.on("change:controls_position_fullscreen", placeOverlay);
   let autohide = !!model.get("autohide_controls");
-  const target = c8.plugin.canvas3d?.props.canvas?.parentElement ?? document.body;
+  const target = container;
   const applyShow = (visible) => {
     if (autohide) {
       overlay.style.opacity = visible ? "1" : "0";
@@ -144733,12 +144779,12 @@ var buildControls = (c8, model, sendSync, onPopClick) => {
   const enableAutohide = () => {
     overlay.style.transition = "opacity 150ms ease";
     applyShow(!!model.get("show_controls"));
-    target.addEventListener("mouseenter", onEnter);
-    target.addEventListener("mouseleave", onLeave);
+    target.addEventListener("pointerenter", onEnter);
+    target.addEventListener("pointerleave", onLeave);
   };
   const disableAutohide = () => {
-    target.removeEventListener("mouseenter", onEnter);
-    target.removeEventListener("mouseleave", onLeave);
+    target.removeEventListener("pointerenter", onEnter);
+    target.removeEventListener("pointerleave", onLeave);
     overlay.style.opacity = "1";
     overlay.style.pointerEvents = "auto";
     applyShow(!!model.get("show_controls"));
@@ -144846,7 +144892,7 @@ var index_default = {
     }
     const popupMgr = new PopupHostManager(viewerJsSource || "");
     controllerPromise.then((c8) => {
-      const overlay = buildControls(c8, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), () => popupMgr.open());
+      const overlay = buildControls(c8, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), target, () => popupMgr.open());
       target.appendChild(overlay);
       if (c8.plugin.canvas3d) {
         let hostCameraSyncTimer = null;
@@ -144891,7 +144937,8 @@ var index_default = {
               cameraSnapshot: controller.getCameraSnapshot(),
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
-              isDarkMode: controller.isDarkMode
+              isDarkMode: controller.isDarkMode,
+              autohide: !!model.get("autohide_controls")
             });
             break;
           case "molsysviewer-sync-op":
@@ -144948,6 +144995,9 @@ var index_default = {
       }
     };
     model.on("msg:custom", onCustomMsg);
+    model.on("change:autohide_controls", () => {
+      popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
+    });
     return () => {
       console.log("[MolSysViewer] Disposing widget...");
       window.removeEventListener("message", messageHandler);

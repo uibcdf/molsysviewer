@@ -71,7 +71,7 @@ export default {
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
-            const overlay = buildControls(c, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), () => popupMgr.open());
+            const overlay = buildControls(c, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), target, () => popupMgr.open());
             target.appendChild(overlay);
 
             // 5. Setup Camera Sync (Host -> Popup)
@@ -132,6 +132,7 @@ export default {
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
                             isDarkMode: controller.isDarkMode,
+                            autohide: !!model.get("autohide_controls")
                         });
                         break;
 
@@ -201,6 +202,11 @@ export default {
         };
 
         model.on("msg:custom", onCustomMsg);
+        
+        // Sync autohide setting to popup
+        model.on("change:autohide_controls", () => {
+            popupMgr.send("molsysviewer-sync-autohide", { enabled: !!model.get("autohide_controls") });
+        });
 
         // RETURN CLEANUP FUNCTION (supported by anywidget)
         return () => {
