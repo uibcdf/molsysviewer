@@ -28,7 +28,7 @@ export default {
         const target = document.createElement("div");
         Object.assign(target.style, {
             width: "100%", height: "100%", minHeight: "400px", position: "relative",
-            touchAction: "none", cursor: "grab"
+            touchAction: "none", cursor: "default" // Default cursor
         });
         
         // Track user interaction for "Master/Slave" camera sync logic
@@ -36,11 +36,11 @@ export default {
         let wheelTimeout: ReturnType<typeof window.setTimeout> | null = null;
 
         const onPointerDown = () => { 
-            target.style.cursor = "grabbing";
+            // target.style.cursor = "grabbing"; // No change, keep default
             isUserInteracting = true;
         };
         const onPointerUpOrCancel = () => { 
-            target.style.cursor = "grab";
+            // target.style.cursor = "grab"; // No change, keep default
             isUserInteracting = false;
         };
         const onWheel = () => {
@@ -52,7 +52,7 @@ export default {
         target.addEventListener("pointerdown", onPointerDown);
         window.addEventListener("pointerup", onPointerUpOrCancel);
         window.addEventListener("pointercancel", onPointerUpOrCancel);
-        target.addEventListener("wheel", onWheel, { passive: true });
+        target.addEventListener("wheel", onWheel, { passive: true }); // Make sure this line is not cut off
         
         el.appendChild(target);
 

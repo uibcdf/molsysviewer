@@ -21,7 +21,7 @@ const makeButton = (label: string, onClick: () => void) => {
     btn.style.borderRadius = "4px";
     btn.style.background = "rgba(0,0,0,0.5)";
     btn.style.color = "#fff";
-    btn.style.cursor = "pointer";
+    btn.style.cursor = "default"; // Reverted from !important
     btn.style.userSelect = "none";
     btn.addEventListener("click", onClick);
     return btn;
@@ -172,7 +172,7 @@ const makeNumberControl = (initial: number, onChange: (n: number) => void, title
         btn.style.background = "transparent";
         btn.style.border = "none";
         btn.style.textAlign = "center";
-        btn.style.cursor = "pointer";
+        btn.style.cursor = "default"; // Changed from pointer
         btn.style.marginTop = extraTop;
         btn.onclick = () => {
             const val = Number(input.value);
