@@ -21,5 +21,5 @@ The structure is designed to be reusable across the MolSys ecosystem
 3. Follow `PLANNING/ROADMAP.md` to understand where the project is going.
 4. Use `HISTORY/` to revisit past states or major transitions.
 
-Replace the project-specific placeholders in these files with the actual
-information for each repository.
+These documents are now filled with MolSysViewer-specific information and are
+kept in sync with the current state of the project.

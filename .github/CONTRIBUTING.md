@@ -9,7 +9,7 @@ We welcome contributions! Please follow these guidelines:
 
 ## Making changes
 - Keep changes scoped and focused; prefer small PRs.
-- If you touch TypeScript, do **not** edit `molsysviewer/viewer.js` directly; rebuild from `js/src/` only when needed.
+- If you touch TypeScript, do **not** edit `molsysviewer/viewer.js` directly; rebuild from `molsysviewer/js/src/` only when needed.
 - Add or update tests for new features (Python unit tests; JS/TS logic tests where applicable).
 - Update documentation (docs pages, docstrings) when user-facing behavior changes.
 

@@ -24,8 +24,10 @@ MolSysViewer is split into two main layers:
 - Avoid legacy names `positions`; the TS side maps each structure to a Mol* frame internally. In the TS/Mol* layer the term “frame” is kept for trajectory snapshots for consistency with Mol*, even though the payload uses `structures`.
 
 The JavaScript bundle (`molsysviewer/viewer.js`) is generated from the
-TypeScript sources and is **not committed** to the repository. It is built
-automatically during packaging (conda build) and manually during development.
+TypeScript sources and is **tracked in the repository** so that users of the
+Python package do not need a Node/TypeScript toolchain. It is built
+automatically during packaging (conda build) and manually during development
+when TypeScript changes need to be propagated.
 
 ---
 
@@ -34,7 +36,7 @@ automatically during packaging (conda build) and manually during development.
 A dedicated conda environment is defined in:
 
 ```text
-devtools/conda_envs/development_env.yaml
+devtools/conda-envs/development_env.yaml
 ```
 
 To create or update it, run from the repository root:
@@ -171,4 +173,5 @@ and test it again in JupyterLab.
 - Whenever you change TypeScript, rebuild the bundle (`npm run build`).
 - Prefer the conda package for “user-level” environments; reserve the editable
   install for development.
-- Update `CHECKPOINT.md` and `ROADMAP.md` when you reach meaningful milestones.
+- Update relevant checkpoints in `devguide/HISTORY/` and the `ROADMAP.md`
+  in `devguide/PLANNING/` when you reach meaningful milestones.
