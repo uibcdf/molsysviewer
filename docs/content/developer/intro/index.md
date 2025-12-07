@@ -2,7 +2,7 @@
 
 - Clone or fork the repository.
 - Set up the dev environment (conda + Node for TypeScript), per `README_DEVELOPERS.md`.
-- Build JS once: `cd js && npm install && npm run build` (produces `molsysviewer/viewer.js`; do not edit it manually).
+- Build JS once: `cd molsysviewer/js && npm install && npm run build` (produces `molsysviewer/viewer.js`; do not edit it manually).
 - Editable install: `pip install -e .` in the repo root.
 - Iterate in notebooks with anywidget (the bundle is already present).
 - When touching TS/JS, you may rebuild manually if needed; never auto-rebuild in tests/CI.
