@@ -1,3 +1,180 @@
 
 [NbConvertApp] Converting notebook index.ipynb to notebook
-[NbConvertApp] Writing 7509 bytes to index.ipynb
+Traceback (most recent call last):
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/bin/jupyter-nbconvert", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/jupyter_core/application.py", line 284, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/traitlets/config/application.py", line 1075, in launch_instance
+    app.start()
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/preprocessors/base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/preprocessors/execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/preprocessors/execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import molsysviewer as viewer
+
+view = viewer.load('1TCD')
+view.clean()
+view.show(selection='all within 4.5 angstroms of atom_name=="CA" and residue_id=="23"')
+------------------
+
+----- stderr -----
+Failing with 'dataBlocks'
+Traceback (most recent call last):
+  File "/home/diego/Myopt/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/bcifreader/BinaryCifReader.py", line 79, in __deserialize
+    logger.debug("bD['dataBlocks'] %s", bD[self.__toBytes("dataBlocks")])
+                                        ~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'dataBlocks'
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mValueError[39m                                Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 3[39m
+[32m      1[39m [38;5;28;01mimport[39;00m[38;5;250m [39m[34;01mmolsysviewer[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[34;01mviewer[39;00m
+[32m----> [39m[32m3[39m view = [43mviewer[49m[43m.[49m[43mload[49m[43m([49m[33;43m'[39;49m[33;43m1TCD[39;49m[33;43m'[39;49m[43m)[49m
+[32m      4[39m view.clean()
+[32m      5[39m view.show(selection=[33m'[39m[33mall within 4.5 angstroms of atom_name==[39m[33m"[39m[33mCA[39m[33m"[39m[33m and residue_id==[39m[33m"[39m[33m23[39m[33m"[39m[33m'[39m)
+
+[36mFile [39m[32m~/repos@uibcdf/molsysviewer/molsysviewer/load.py:21[39m, in [36mload[39m[34m(molecular_system, selection, structure_indices, debug_js, view)[39m
+[32m     11[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mload[39m(
+[32m     12[39m     molecular_system: Any,
+[32m     13[39m     selection: Selection = [33m"[39m[33mall[39m[33m"[39m,
+[32m   (...)[39m[32m     17[39m     view: MolSysView | [38;5;28;01mNone[39;00m = [38;5;28;01mNone[39;00m,
+[32m     18[39m ) -> MolSysView:
+[32m     20[39m     view = MolSysView(debug_js=debug_js) [38;5;28;01mif[39;00m view [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m [38;5;28;01melse[39;00m view
+[32m---> [39m[32m21[39m     [43mview[49m[43m.[49m[43mload[49m[43m([49m
+[32m     22[39m [43m        [49m[43mmolecular_system[49m[43m,[49m
+[32m     23[39m [43m        [49m[43mselection[49m[43m=[49m[43mselection[49m[43m,[49m
+[32m     24[39m [43m        [49m[43mstructure_indices[49m[43m=[49m[43mstructure_indices[49m[43m,[49m
+[32m     25[39m [43m    [49m[43m)[49m
+[32m     26[39m     [38;5;28;01mreturn[39;00m view
+
+[36mFile [39m[32m~/repos@uibcdf/molsysviewer/molsysviewer/viewer.py:419[39m, in [36mMolSysView.load[39m[34m(self, molecular_system, selection, structure_indices, syntax, label)[39m
+[32m    410[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mload[39m(
+[32m    411[39m     [38;5;28mself[39m,
+[32m    412[39m     molecular_system: Any,
+[32m   (...)[39m[32m    416[39m     label: [38;5;28mstr[39m | [38;5;28;01mNone[39;00m = [38;5;28;01mNone[39;00m,
+[32m    417[39m ) -> [38;5;28;01mNone[39;00m:
+[32m    418[39m [38;5;250m    [39m[33;03m"""Load a molecular system (MolSysMT-compatible) into the viewer."""[39;00m
+[32m--> [39m[32m419[39m     [43m_load_from_molsysmt[49m[43m([49m
+[32m    420[39m [43m        [49m[43mmolecular_system[49m[43m=[49m[43mmolecular_system[49m[43m,[49m
+[32m    421[39m [43m        [49m[43mselection[49m[43m=[49m[43mselection[49m[43m,[49m
+[32m    422[39m [43m        [49m[43mstructure_indices[49m[43m=[49m[43mstructure_indices[49m[43m,[49m
+[32m    423[39m [43m        [49m[43msyntax[49m[43m=[49m[43msyntax[49m[43m,[49m
+[32m    424[39m [43m        [49m[43mlabel[49m[43m=[49m[43mlabel[49m[43m,[49m
+[32m    425[39m [43m        [49m[43mview[49m[43m=[49m[38;5;28;43mself[39;49m[43m,[49m
+[32m    426[39m [43m    [49m[43m)[49m
+
+[36mFile [39m[32m~/repos@uibcdf/molsysviewer/molsysviewer/loaders/load_molsysmt.py:50[39m, in [36mload_from_molsysmt[39m[34m(molecular_system, selection, structure_indices, syntax, label, view)[39m
+[32m     47[39m view.structure_indices = structure_indices
+[32m     49[39m [38;5;66;03m# Convertir a MolSys y crear máscara[39;00m
+[32m---> [39m[32m50[39m view._molsys = [43mmsm[49m[43m.[49m[43mconvert[49m[43m([49m
+[32m     51[39m [43m    [49m[43mmolecular_system[49m[43m,[49m
+[32m     52[39m [43m    [49m[43mto_form[49m[43m=[49m[33;43m"[39;49m[33;43mmolsysmt.MolSys[39;49m[33;43m"[39;49m[43m,[49m
+[32m     53[39m [43m    [49m[43mselection[49m[43m=[49m[43mselection[49m[43m,[49m
+[32m     54[39m [43m    [49m[43mstructure_indices[49m[43m=[49m[43mstructure_indices[49m[43m,[49m
+[32m     55[39m [43m    [49m[43msyntax[49m[43m=[49m[43msyntax[49m[43m,[49m
+[32m     56[39m [43m[49m[43m)[49m
+[32m     57[39m n_atoms = view._molsys.get(element=[33m"[39m[33matom[39m[33m"[39m, n_atoms=[38;5;28;01mTrue[39;00m)
+[32m     58[39m view.atom_mask = np.ones(n_atoms, dtype=[38;5;28mbool[39m)
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/_private/digestion/digest.py:122[39m, in [36mdigest.<locals>.digestor.<locals>.wrapper[39m[34m(*args, **kwargs)[39m
+[32m    120[39m     [38;5;28;01mreturn[39;00m func(all_args[[33m'[39m[33mself[39m[33m'[39m], **final_args)
+[32m    121[39m [38;5;28;01melse[39;00m:
+[32m--> [39m[32m122[39m     [38;5;28;01mreturn[39;00m [43mfunc[49m[43m([49m[43m*[49m[43m*[49m[43mfinal_args[49m[43m)[49m
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/basic/convert.py:518[39m, in [36mconvert[39m[34m(molecular_system, to_form, selection, structure_indices, syntax, skip_digestion, **kwargs)[39m
+[32m    516[39m [38;5;66;03m# If one to one[39;00m
+[32m    517[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m [38;5;28misinstance[39m(from_form, ([38;5;28mlist[39m, [38;5;28mtuple[39m)):
+[32m--> [39m[32m518[39m     output = [43m_convert_one_to_one[49m[43m([49m[43mmolecular_system[49m[43m,[49m[43m [49m[43mfrom_form[49m[43m,[49m[43m [49m[43mto_form[49m[43m=[49m[43mto_form[49m[43m,[49m[43m [49m[43mselection[49m[43m=[49m[43mselection[49m[43m,[49m[43m [49m[43mstructure_indices[49m[43m=[49m[43mstructure_indices[49m[43m,[49m
+[32m    519[39m [43m            [49m[43msyntax[49m[43m=[49m[43msyntax[49m[43m,[49m[43m [49m[43mskip_digestion[49m[43m=[49m[38;5;28;43;01mTrue[39;49;00m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+[32m    521[39m [38;5;66;03m# If multiple to one[39;00m
+[32m    522[39m 
+[32m    523[39m [38;5;28;01melse[39;00m:
+[32m    524[39m 
+[32m    525[39m     [38;5;66;03m# conversions in private shortcuts[39;00m
+[32m    526[39m     [38;5;28;01mif[39;00m [38;5;28mtuple[39m([38;5;28msorted[39m(from_form)) [38;5;129;01min[39;00m _multiple_conversion_shortcuts:
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/basic/convert.py:94[39m, in [36m_convert_one_to_one[39m[34m(molecular_system, from_form, to_form, selection, structure_indices, syntax, **kwargs)[39m
+[32m     91[39m         [38;5;28;01mif[39;00m [38;5;28mlen[39m(missing_arguments)>[32m0[39m:
+[32m     92[39m             [38;5;28;01mraise[39;00m NotCompatibleConversionError(from_form, to_form, missing_arguments)
+[32m---> [39m[32m94[39m     output = [43mfunction[49m[43m([49m[43mmolecular_system[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mconversion_arguments[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+[32m     96[39m [38;5;28;01melif[39;00m ([33m'[39m[33mmolsysmt.MolSys[39m[33m'[39m [38;5;129;01min[39;00m _dict_modules[from_form]._convert_to) [38;5;129;01mand[39;00m (to_form [38;5;129;01min[39;00m _dict_modules[[33m'[39m[33mmolsysmt.MolSys[39m[33m'[39m]._convert_to):
+[32m     98[39m     output = _convert_one_to_one(molecular_system, from_form, to_form=[33m'[39m[33mmolsysmt.MolSys[39m[33m'[39m, selection=selection,
+[32m     99[39m             structure_indices=structure_indices, syntax=syntax, **kwargs)
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/_private/digestion/digest.py:52[39m, in [36mdigest.<locals>.digestor.<locals>.wrapper[39m[34m(*args, **kwargs)[39m
+[32m     48[39m [38;5;129m@functools[39m.wraps(func)
+[32m     49[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mwrapper[39m(*args, **kwargs):
+[32m     51[39m     [38;5;28;01mif[39;00m kwargs.get([33m'[39m[33mskip_digestion[39m[33m'[39m, [38;5;28;01mFalse[39;00m):
+[32m---> [39m[32m52[39m         [38;5;28;01mreturn[39;00m [43mfunc[49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+[32m     54[39m     [38;5;66;03m# Define caller[39;00m
+[32m     56[39m     caller = func.[34m__module__[39m+[33m'[39m[33m.[39m[33m'[39m+func.[34m__name__[39m
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/form/string_pdb_id/to_molsysmt_MolSys.py:9[39m, in [36mto_molsysmt_MolSys[39m[34m(item, atom_indices, structure_indices, skip_digestion)[39m
+[32m      6[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m to_bcifreader_PdbxContainers_DataContainer
+[32m      7[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01m.[39;00m[34;01m.[39;00m[34;01mbcifreader_PdbxContainers_DataContainer[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m to_molsysmt_MolSys [38;5;28;01mas[39;00m bcifreader_PdbxContainers_DataContainer_to_molsysmt_MolSys
+[32m----> [39m[32m9[39m tmp_item = [43mto_bcifreader_PdbxContainers_DataContainer[49m[43m([49m[43mitem[49m[43m,[49m[43m [49m[43mskip_digestion[49m[43m=[49m[38;5;28;43;01mTrue[39;49;00m[43m)[49m
+[32m     10[39m tmp_item = bcifreader_PdbxContainers_DataContainer_to_molsysmt_MolSys(tmp_item, atom_indices=atom_indices,
+[32m     11[39m                                                           structure_indices=structure_indices, skip_digestion=[38;5;28;01mTrue[39;00m)
+[32m     13[39m [38;5;28;01mreturn[39;00m tmp_item
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/_private/digestion/digest.py:52[39m, in [36mdigest.<locals>.digestor.<locals>.wrapper[39m[34m(*args, **kwargs)[39m
+[32m     48[39m [38;5;129m@functools[39m.wraps(func)
+[32m     49[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mwrapper[39m(*args, **kwargs):
+[32m     51[39m     [38;5;28;01mif[39;00m kwargs.get([33m'[39m[33mskip_digestion[39m[33m'[39m, [38;5;28;01mFalse[39;00m):
+[32m---> [39m[32m52[39m         [38;5;28;01mreturn[39;00m [43mfunc[49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+[32m     54[39m     [38;5;66;03m# Define caller[39;00m
+[32m     56[39m     caller = func.[34m__module__[39m+[33m'[39m[33m.[39m[33m'[39m+func.[34m__name__[39m
+
+[36mFile [39m[32m~/repos@uibcdf/molsysmt/molsysmt/form/string_pdb_id/to_bcifreader_PdbxContainers_DataContainer.py:30[39m, in [36mto_bcifreader_PdbxContainers_DataContainer[39m[34m(item, atom_indices, structure_indices, skip_digestion)[39m
+[32m     27[39m     warnings.warn([33m'[39m[33mBCIF download has more than one DataContainer; using the first one.[39m[33m'[39m, stacklevel=[32m2[39m)
+[32m     29[39m [38;5;28;01mif[39;00m [38;5;28mlen[39m(containers)==[32m0[39m:
+[32m---> [39m[32m30[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([33m'[39m[33mThe PDB ID does not have any DataContainer[39m[33m'[39m)
+[32m     32[39m tmp_item = containers[[32m0[39m]
+[32m     34[39m remove(tempfile)
+
+[31mValueError[39m: The PDB ID does not have any DataContainer
+
