@@ -19,7 +19,8 @@ current development cycle. It is intended as a quick map for contributors.
 - `molsysviewer/js/`  
   - TypeScript + Mol* sources and Node toolchain.  
   - Contains `src/`, `package.json`, `tsconfig.json` and tests under
-    `tests/`.
+    `tests/`. Includes `scripts/` helpers for tooling (e.g. syncing the
+    JS package version with the Python version).
 
 - `devguide/`  
   - Internal design, structure, planning and history documents.  
@@ -32,7 +33,8 @@ current development cycle. It is intended as a quick map for contributors.
 
 - `docs/`  
   - Sphinx documentation (user + developer), MyST notebooks and static HTML
-    exports of the viewer.
+    exports of the viewer (docs builds copy a runtime bundle to
+    `_static/molsysviewer-runtime.js`).
 
 - `tests/`  
   - Python test suite (unit + integration).
@@ -61,8 +63,9 @@ Estructura principal:
     - API de alto nivel: `load`, `load_pdb_string`, `load_mmcif_string`,
       `load_pdb_id`, `load_from_url`, `show`, `hide`, `isolate`,
       `new_region`, `new_layer`, `clear_decorations`, `reset_camera`,
-      `reset_viewer`, `write_html`.
-    - Registro público de `regions` y `layers`, wrapper `global_view`,
+      `get_camera_snapshot`, `set_camera_snapshot`, `reset_viewer`,
+      `write_html` (modos `standalone`/`docs`).
+    - Registro público de `regions` y `layers`, wrapper `whole`,
       gestor de shapes (`self.shapes`).
     - Cola/historial de mensajes para el frontend y para exportar HTML
       (`_send`, `_message_history`, `_clean_message_history`).
@@ -71,7 +74,8 @@ Estructura principal:
   - Clase `MolSysViewerWidget(anywidget.AnyWidget)`.  
   - Carga `viewer.js` como `_esm` y expone traits sincronizados:
     `popup_js_source`, `initial_messages`, `show_controls`,
-    `autohide_controls`, `debug_js`, posiciones de controles, etc.
+    `autohide_controls`, `enable_popout`, `debug_js`, posiciones de controles,
+    etc.
 
 - `load.py`  
   - Función de conveniencia `load(molecular_system, ...)` que instancia
@@ -95,12 +99,12 @@ Estructura principal:
   - Normalizan argumentos y envían mensajes (`op: add_*`) al frontend;
     mantienen `Layer` en el registro Python.
 
-- `regions.py`, `layers.py`, `global_view.py`  
+- `regions.py`, `layers.py`, `whole.py`  
   - `Region` – wrapper de componentes Mol* por `tag` (selección, índices,
     representación, complementos).
   - `Layer` – capa de visuales no estructurales, con `hide/show/delete` y
     `set_tag`.
-  - `GlobalView` – control de representación/preset global y visibilidad
+  - `Whole` – control de representación/preset global y visibilidad
     de la capa base.
 
 - `_private/`  
@@ -126,7 +130,7 @@ Estructura simplificada:
   - Crea el contenedor DOM, inicializa `MolSysViewerController`,
     construye los controles (`buildControls`) y gestiona el popup host.
   - Maneja mensajes Python→JS (`msg:custom`) y mensajes host↔popup
-    (`postMessage`).
+    (`postMessage`); exporta `bootDocsView` para exports docs-light.
 
 - `src/managers/viewer-controller.ts`  
   - Clase `MolSysViewerController`:

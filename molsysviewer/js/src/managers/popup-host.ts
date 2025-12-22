@@ -1,10 +1,18 @@
-import { bootPopup } from "../popup/popup-logic";
-
 export class PopupHostManager {
     private popoutWin: Window | null = null;
     public isReady = false;
 
-    constructor(private viewerJsSource: string) {}
+    private readonly viewerJsSource: string;
+    private readonly viewerModuleUrl?: string;
+
+    constructor(viewer: string | { source?: string; moduleUrl?: string }) {
+        if (typeof viewer === "string") {
+            this.viewerJsSource = viewer;
+            return;
+        }
+        this.viewerJsSource = viewer.source ?? "";
+        this.viewerModuleUrl = viewer.moduleUrl;
+    }
 
     get isOpen() {
         return this.popoutWin && !this.popoutWin.closed;
@@ -49,41 +57,55 @@ export class PopupHostManager {
         `);
         doc.close();
 
-        // Robust Injection Strategy: Direct Blob from Payload
         try {
-            if (!this.viewerJsSource) {
-                throw new Error("No viewer source code provided to PopupHostManager");
-            }
-            
-            // Create Blob in Popup context
-            // NOTE: We create the Blob in the popup's window context to avoid cross-origin tainting for some browsers
-            const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: 'text/javascript' });
-            const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
-            
-            console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
-
-            // Inject bootstrapper
             const scriptEl = doc.createElement("script");
             scriptEl.type = "module";
-            scriptEl.textContent = `
-                (async () => {
-                    try {
-                        // Import the cloned blob
-                        const module = await import("${popBlobUrl}");
-                        const boot = module.bootPopup || (module.default && module.default.bootPopup);
-                        if (boot) {
-                            boot(module);
-                        } else {
-                            console.error("MolSysViewer Popout: bootPopup not found in module");
+            if (this.viewerModuleUrl) {
+                const resolved = new URL(this.viewerModuleUrl, window.location.href).href;
+                scriptEl.textContent = `
+                    (async () => {
+                        try {
+                            const module = await import("${resolved}");
+                            const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                            if (boot) {
+                                boot(module);
+                            } else {
+                                console.error("MolSysViewer Popout: bootPopup not found in module");
+                            }
+                        } catch (e) {
+                            console.error("MolSysViewer Popout: Boot failed", e);
                         }
-                    } catch (e) {
-                        console.error("MolSysViewer Popout: Boot failed", e);
-                    } finally {
-                        // Clean up the blob URL to free memory
-                        URL.revokeObjectURL("${popBlobUrl}");
-                    }
-                })();
-            `;
+                    })();
+                `;
+            } else {
+                if (!this.viewerJsSource) {
+                    throw new Error("No viewer source code provided to PopupHostManager");
+                }
+                // Create Blob in Popup context
+                // NOTE: We create the Blob in the popup's window context to avoid cross-origin tainting for some browsers
+                const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+                const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+
+                console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
+
+                scriptEl.textContent = `
+                    (async () => {
+                        try {
+                            const module = await import("${popBlobUrl}");
+                            const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                            if (boot) {
+                                boot(module);
+                            } else {
+                                console.error("MolSysViewer Popout: bootPopup not found in module");
+                            }
+                        } catch (e) {
+                            console.error("MolSysViewer Popout: Boot failed", e);
+                        } finally {
+                            URL.revokeObjectURL("${popBlobUrl}");
+                        }
+                    })();
+                `;
+            }
             doc.body.appendChild(scriptEl);
 
         } catch (err) {

@@ -11,7 +11,7 @@
 - Registros públicos: `view.regions` / `view.layers` (acceso: `view.regions["set1"].hide()`).
 - `Region`: `set_representation(...)`, `hide()/show()`, `delete()`, complementos (`new_complementary_region()`), selección modificable en futuro.
 - `Layer`: `hide()/show()`, `delete()`, `set_tag()/merge()` opcional.
-- Global: `view.global_view` (`set_representation`, `hide()/show()`), no eliminable ni retaggable.
+- Whole: `view.whole` (`set_representation`, `hide()/show()`), no eliminable ni retaggable.
 - Complementos: `new_region(..., complement_of_regions=["tagA", ...] | "all")` calcula complementos en Python, requiere sistema cargado y `atom_indices` conocidos de esas regiones.
 
 ## Responsabilidades JS
@@ -22,14 +22,14 @@
 
 ## Visibilidad (global vs regiones vs viewer)
 - `region.hide()/show()`: sólo esa región; el estado `hidden` se recuerda, `viewer.show()` no las reenciende.
-- `global_view.hide()/show()`: sólo representación base/global (auto/preset/cartoon de `load`); no toca regiones. Si se invoca antes del primer `show()`, se memoriza y aplica al cargar la estructura.
+- `whole.hide()/show()`: sólo representación base/global (auto/preset/cartoon de `load`); no toca regiones. Si se invoca antes del primer `show()`, se memoriza y aplica al cargar la estructura.
 - `viewer.hide()/show()` con `selection="all"`: ajusta máscara de átomos y envía `hide_global/show_global target=all`; respeta regiones ocultas y re-oculta global si estaba marcada como oculta.
 
 ### Flujos de referencia
 1) Ocultar global antes de mostrar
 ```python
 view = viewer.demo.tctim
-view.global_view.hide()
+view.whole.hide()
 view.show()  # sólo regiones creadas; global permanece oculta
 ```
 2) Ocultar región y mantenerla tras hide/show general
@@ -48,13 +48,13 @@ view.show()  # regiones ocultas siguen ocultas; global según su estado
 
 ## Presets globales y tags: precaución
 - El filtro que separa “global” de “regiones” asume que las reps base/global no usan tags de región (o usan tag `global`/sin tag).  
-- Si un preset global personalizado crea representaciones con un `tag` idéntico a una región, se considerarán “región” y pueden ser excluidas de las operaciones de global (p.ej., `global_view.hide()` podría no ocultarlas).  
+- Si un preset global personalizado crea representaciones con un `tag` idéntico a una región, se considerarán “región” y pueden ser excluidas de las operaciones de whole (p.ej., `whole.hide()` podría no ocultarlas).  
 - Recomendaciones:
   1. Para presets globales, no asignar tags de regiones; usar `tag="global"` o sin tag.
-  2. Si se necesita aplicar un preset a una región concreta, hacerlo vía `region.set_representation(preset=...)`, no vía `global_view`.
+  2. Si se necesita aplicar un preset a una región concreta, hacerlo vía `region.set_representation(preset=...)`, no vía `whole`.
   3. Si se hereda de un preset Mol* y se añaden reglas, evitar tags que colisionen con regiones; ejemplo seguro:
      ```python
-     view.global_view.set_representation(
+     view.whole.set_representation(
          preset="auto",
          params={"ignoreHydrogens": True},
      )
@@ -63,7 +63,7 @@ view.show()  # regiones ocultas siguen ocultas; global según su estado
      ```
 
 ## Estado actual (branch)
-- API Python funcional (regiones, layers, global_view, complementos, presets/aliases).
+- API Python funcional (regiones, layers, whole, complementos, presets/aliases).
 - JS controller con registros, hide/show independentes, cola de ops pendientes (global/regions) antes de `show()`, global auto `auto/cartoon`.
 - Demos para tests/manual: `demo.dialanine`, `demo.pentalanine`, `demo.tctim`, `demo.chicken_villin_HP35`.
 

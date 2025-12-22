@@ -2,7 +2,7 @@
 
 ## Estado actual
 - Regiones: creación con selección o complementos; preset/representation per-region; hide/show independiente; estado `hidden` conservado al hacer `viewer.hide/show`.
-- Global: `global_view` controla solo la capa base; hide antes de `show()` se respeta; `viewer.hide/show` re-oculta global si estaba oculta.
+- Whole: `whole` controla solo la capa base; hide antes de `show()` se respeta; `viewer.hide/show` re-oculta whole si estaba oculta.
 - Layers (shapes/overlays): todos los `shapes.add_*` generan tag por defecto (`layerN`) si no se pasa, registran y devuelven `Layer`; `view.hide/show` incluye layers; `hide_layer/show_layer` funciona incluso si el mensaje llega antes de crear la shape.
 - Registros públicos: `view.regions`, `view.layers` actualizados por acks; complementos funcionan; demos en `molsysviewer.demo.*`.
 

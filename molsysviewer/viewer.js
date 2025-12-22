@@ -144355,10 +144355,15 @@ var bootPopup = async (loadedModule) => {
 
 // src/managers/popup-host.ts
 var PopupHostManager = class {
-  constructor(viewerJsSource) {
-    this.viewerJsSource = viewerJsSource;
+  constructor(viewer) {
     this.popoutWin = null;
     this.isReady = false;
+    if (typeof viewer === "string") {
+      this.viewerJsSource = viewer;
+      return;
+    }
+    this.viewerJsSource = viewer.source ?? "";
+    this.viewerModuleUrl = viewer.moduleUrl;
   }
   get isOpen() {
     return this.popoutWin && !this.popoutWin.closed;
@@ -144399,33 +144404,50 @@ var PopupHostManager = class {
         `);
     doc.close();
     try {
-      if (!this.viewerJsSource) {
-        throw new Error("No viewer source code provided to PopupHostManager");
-      }
-      const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
-      const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
-      console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
       const scriptEl = doc.createElement("script");
       scriptEl.type = "module";
-      scriptEl.textContent = `
-                (async () => {
-                    try {
-                        // Import the cloned blob
-                        const module = await import("${popBlobUrl}");
-                        const boot = module.bootPopup || (module.default && module.default.bootPopup);
-                        if (boot) {
-                            boot(module);
-                        } else {
-                            console.error("MolSysViewer Popout: bootPopup not found in module");
+      if (this.viewerModuleUrl) {
+        const resolved = new URL(this.viewerModuleUrl, window.location.href).href;
+        scriptEl.textContent = `
+                    (async () => {
+                        try {
+                            const module = await import("${resolved}");
+                            const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                            if (boot) {
+                                boot(module);
+                            } else {
+                                console.error("MolSysViewer Popout: bootPopup not found in module");
+                            }
+                        } catch (e) {
+                            console.error("MolSysViewer Popout: Boot failed", e);
                         }
-                    } catch (e) {
-                        console.error("MolSysViewer Popout: Boot failed", e);
-                    } finally {
-                        // Clean up the blob URL to free memory
-                        URL.revokeObjectURL("${popBlobUrl}");
-                    }
-                })();
-            `;
+                    })();
+                `;
+      } else {
+        if (!this.viewerJsSource) {
+          throw new Error("No viewer source code provided to PopupHostManager");
+        }
+        const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+        const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+        console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
+        scriptEl.textContent = `
+                    (async () => {
+                        try {
+                            const module = await import("${popBlobUrl}");
+                            const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                            if (boot) {
+                                boot(module);
+                            } else {
+                                console.error("MolSysViewer Popout: bootPopup not found in module");
+                            }
+                        } catch (e) {
+                            console.error("MolSysViewer Popout: Boot failed", e);
+                        } finally {
+                            URL.revokeObjectURL("${popBlobUrl}");
+                        }
+                    })();
+                `;
+      }
       doc.body.appendChild(scriptEl);
     } catch (err) {
       console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
@@ -144879,6 +144901,131 @@ var createLogger = (model, debug) => {
 };
 
 // src/index.ts
+async function bootDocsView(opts) {
+  const debug = !!opts.ui?.debug_js;
+  const sendLog = (level, ...args) => {
+    if (!debug) return;
+    console.log("[MolSysViewer docs]", level, ...args);
+  };
+  const commandLog = Array.isArray(opts.initialMessages) ? [...opts.initialMessages] : [];
+  const ui = opts.ui || {};
+  const hostEl = opts.el;
+  hostEl.innerHTML = "";
+  const target = document.createElement("div");
+  Object.assign(target.style, {
+    width: "100%",
+    height: "100%",
+    minHeight: "400px",
+    position: "relative",
+    touchAction: "none",
+    cursor: "default"
+  });
+  let isUserInteracting = false;
+  let wheelTimeout = null;
+  const onPointerDown = () => {
+    isUserInteracting = true;
+  };
+  const onPointerUpOrCancel = () => {
+    isUserInteracting = false;
+  };
+  const onWheel = () => {
+    isUserInteracting = true;
+    if (wheelTimeout) clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(() => {
+      isUserInteracting = false;
+    }, 200);
+  };
+  target.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointerup", onPointerUpOrCancel);
+  window.addEventListener("pointercancel", onPointerUpOrCancel);
+  target.addEventListener("wheel", onWheel, { passive: true });
+  hostEl.appendChild(target);
+  const controllerPromise = MolSysViewerController.create(target, () => {
+  });
+  const popupMgr = new PopupHostManager({
+    moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : void 0,
+    source: ""
+  });
+  const enablePopout = !!ui.enable_popout && !!opts.runtimeUrl;
+  const model = {
+    get: (k) => k in ui ? ui[k] : void 0,
+    on: (_, __) => {
+    },
+    off: (_, __) => {
+    }
+  };
+  controllerPromise.then((c8) => {
+    const sendSync = (msg) => {
+      if (!msg) return;
+      commandLog.push(msg);
+      popupMgr.send("molsysviewer-sync-op", msg);
+    };
+    const overlay = buildControls(c8, model, sendSync, target, enablePopout ? () => popupMgr.open() : void 0);
+    target.appendChild(overlay);
+    if (c8.plugin.canvas3d) {
+      let hostCameraSyncTimer = null;
+      const c3d = c8.plugin.canvas3d;
+      const syncCamera = () => {
+        if (!popupMgr.isReady || !isUserInteracting) return;
+        if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
+        hostCameraSyncTimer = setTimeout(() => {
+          popupMgr.send("molsysviewer-sync-camera", c8.getCameraSnapshot());
+          hostCameraSyncTimer = null;
+        }, 20);
+      };
+      const onCameraFrame = () => syncCamera();
+      if (c3d.didDraw) {
+        c3d.didDraw.subscribe(onCameraFrame);
+      }
+    }
+  });
+  const messageHandler = async (ev) => {
+    if (!ev.data || ev.data.from === "host") return;
+    const { type: type3, data } = ev.data;
+    if (!type3 || typeof type3 !== "string" || !type3.startsWith("molsysviewer-")) return;
+    const controller = await controllerPromise;
+    try {
+      switch (type3) {
+        case "molsysviewer-pop-ready":
+          popupMgr.isReady = true;
+          popupMgr.send("molsysviewer-initial-sync", {
+            messages: [...commandLog],
+            cameraSnapshot: controller.getCameraSnapshot(),
+            isSpinActive: controller.isSpinActive,
+            isSwingActive: controller.isSwingActive,
+            isDarkMode: controller.isDarkMode,
+            autohide: !!ui.autohide_controls
+          });
+          break;
+        case "molsysviewer-sync-op":
+          if (data) await controller.handleMessage(data);
+          break;
+        case "molsysviewer-sync-camera":
+          if (data && !isUserInteracting) {
+            controller.setCameraSnapshot(data, 0);
+          }
+          break;
+        case "molsysviewer-log-from-popout":
+          sendLog("info", "[Popout Log]:", data?.msg);
+          break;
+      }
+    } catch (e) {
+      console.error("[MolSysViewer docs] Error handling popout message:", e);
+    }
+  };
+  window.addEventListener("message", messageHandler);
+  (async () => {
+    try {
+      const controller = await controllerPromise;
+      const initial = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
+      for (const msg of initial) {
+        if (msg) await controller.handleMessage(msg);
+      }
+    } catch (err) {
+      console.error("[MolSysViewer docs] Init error:", err);
+    }
+  })();
+}
 var index_default = {
   render({ model, el }) {
     const debug = !!model.get("debug_js");
@@ -144915,15 +145062,25 @@ var index_default = {
     target.addEventListener("wheel", onWheel, { passive: true });
     el.appendChild(target);
     const controllerPromise = MolSysViewerController.create(target, (msg) => model.send(msg));
-    const viewerJsSource = model.get("popup_js_source");
+    const popupJsSource = model.get("popup_js_source");
+    const esmSource = model.get("_esm");
+    const viewerJsSource = popupJsSource || esmSource;
     if (!viewerJsSource) {
-      console.warn("[MolSysViewer] 'popup_js_source' not found in model. Popout might fail.");
+      console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
     } else {
-      console.log("[MolSysViewer] Initialized with payload source length:", viewerJsSource.length);
+      const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
+      console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
     }
     const popupMgr = new PopupHostManager(viewerJsSource || "");
+    const enablePopout = !!model.get("enable_popout");
     controllerPromise.then((c8) => {
-      const overlay = buildControls(c8, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), target, () => popupMgr.open());
+      const overlay = buildControls(
+        c8,
+        model,
+        (msg) => popupMgr.send("molsysviewer-sync-op", msg),
+        target,
+        enablePopout ? () => popupMgr.open() : void 0
+      );
       target.appendChild(overlay);
       if (c8.plugin.canvas3d) {
         let hostCameraSyncTimer = null;
@@ -145066,6 +145223,7 @@ var index_default = {
 };
 export {
   MolSysViewerController,
+  bootDocsView,
   bootPopup,
   index_default as default
 };

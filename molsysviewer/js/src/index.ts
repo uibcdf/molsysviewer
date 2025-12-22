@@ -10,6 +10,146 @@ import { createLogger } from "./utils/logger";
 // Re-export bootPopup so it is available in the bundle's public interface
 export { bootPopup };
 export { MolSysViewerController }; // Export Controller for Popup context usage
+export async function bootDocsView(opts: {
+    el: HTMLElement;
+    initialMessages?: ViewerMessage[];
+    ui?: any;
+    runtimeUrl?: string;
+}) {
+    const debug = !!opts.ui?.debug_js;
+    const sendLog = (level: string, ...args: any[]) => {
+        if (!debug) return;
+        // eslint-disable-next-line no-console
+        console.log("[MolSysViewer docs]", level, ...args);
+    };
+
+    const commandLog: ViewerMessage[] = Array.isArray(opts.initialMessages) ? [...opts.initialMessages] : [];
+    const ui = opts.ui || {};
+
+    // Setup DOM
+    const hostEl = opts.el;
+    hostEl.innerHTML = "";
+    const target = document.createElement("div");
+    Object.assign(target.style, {
+        width: "100%", height: "100%", minHeight: "400px", position: "relative",
+        touchAction: "none", cursor: "default"
+    });
+
+    // Track user interaction for camera sync logic
+    let isUserInteracting = false;
+    let wheelTimeout: ReturnType<typeof window.setTimeout> | null = null;
+    const onPointerDown = () => { isUserInteracting = true; };
+    const onPointerUpOrCancel = () => { isUserInteracting = false; };
+    const onWheel = () => {
+        isUserInteracting = true;
+        if (wheelTimeout) clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => { isUserInteracting = false; }, 200);
+    };
+
+    target.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointerup", onPointerUpOrCancel);
+    window.addEventListener("pointercancel", onPointerUpOrCancel);
+    target.addEventListener("wheel", onWheel, { passive: true });
+
+    hostEl.appendChild(target);
+
+    // Initialize Controller (no-op notify)
+    const controllerPromise = MolSysViewerController.create(target, () => {});
+
+    // Popup manager: prefer runtime URL (docs-light), otherwise disable popout.
+    const popupMgr = new PopupHostManager({
+        moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : undefined,
+        source: ""
+    });
+
+    const enablePopout = !!ui.enable_popout && !!opts.runtimeUrl;
+
+    // Minimal model stub for buildControls
+    const model = {
+        get: (k: string) => (k in ui ? ui[k] : undefined),
+        on: (_: string, __: any) => {},
+        off: (_: string, __: any) => {}
+    };
+
+    // Build UI Controls & Setup Sync
+    controllerPromise.then(c => {
+        const sendSync = (msg: ViewerMessage) => {
+            if (!msg) return;
+            commandLog.push(msg);
+            popupMgr.send("molsysviewer-sync-op", msg);
+        };
+        const overlay = buildControls(c, model, sendSync, target, enablePopout ? () => popupMgr.open() : undefined);
+        target.appendChild(overlay);
+
+        // Camera sync (Host -> Popup)
+        if (c.plugin.canvas3d) {
+            let hostCameraSyncTimer: ReturnType<typeof window.setTimeout> | null = null;
+            const c3d = c.plugin.canvas3d;
+            const syncCamera = () => {
+                if (!popupMgr.isReady || !isUserInteracting) return;
+                if (hostCameraSyncTimer) clearTimeout(hostCameraSyncTimer);
+                hostCameraSyncTimer = setTimeout(() => {
+                    popupMgr.send("molsysviewer-sync-camera", c.getCameraSnapshot());
+                    hostCameraSyncTimer = null;
+                }, 20);
+            };
+            const onCameraFrame = () => syncCamera();
+            if (c3d.didDraw) {
+                c3d.didDraw.subscribe(onCameraFrame);
+            }
+        }
+    });
+
+    // Handle Incoming Messages (Popup -> Host)
+    const messageHandler = async (ev: MessageEvent) => {
+        if (!ev.data || ev.data.from === "host") return;
+        const { type, data } = ev.data;
+        if (!type || typeof type !== "string" || !type.startsWith("molsysviewer-")) return;
+        const controller = await controllerPromise;
+        try {
+            switch (type) {
+                case "molsysviewer-pop-ready":
+                    popupMgr.isReady = true;
+                    popupMgr.send("molsysviewer-initial-sync", {
+                        messages: [...commandLog],
+                        cameraSnapshot: controller.getCameraSnapshot(),
+                        isSpinActive: controller.isSpinActive,
+                        isSwingActive: controller.isSwingActive,
+                        isDarkMode: controller.isDarkMode,
+                        autohide: !!ui.autohide_controls
+                    });
+                    break;
+                case "molsysviewer-sync-op":
+                    if (data) await controller.handleMessage(data as ViewerMessage);
+                    break;
+                case "molsysviewer-sync-camera":
+                    if (data && !isUserInteracting) {
+                        controller.setCameraSnapshot(data, 0);
+                    }
+                    break;
+                case "molsysviewer-log-from-popout":
+                    sendLog("info", "[Popout Log]:", data?.msg);
+                    break;
+            }
+        } catch (e) {
+            console.error("[MolSysViewer docs] Error handling popout message:", e);
+        }
+    };
+    window.addEventListener("message", messageHandler);
+
+    // Replay initial messages
+    (async () => {
+        try {
+            const controller = await controllerPromise;
+            const initial = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
+            for (const msg of initial) {
+                if (msg) await controller.handleMessage(msg);
+            }
+        } catch (err) {
+            console.error("[MolSysViewer docs] Init error:", err);
+        }
+    })();
+}
 
 /**
  * NOTE FOR AUTOMATION AGENTS:
@@ -60,18 +200,29 @@ export default {
         const controllerPromise = MolSysViewerController.create(target, msg => model.send(msg));
 
         // 3. Initialize Popup Manager with Payload
-        const viewerJsSource = model.get("popup_js_source");
+        // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.
+        const popupJsSource = model.get("popup_js_source");
+        const esmSource = model.get("_esm");
+        const viewerJsSource = popupJsSource || esmSource;
         if (!viewerJsSource) {
-            console.warn("[MolSysViewer] 'popup_js_source' not found in model. Popout might fail.");
+            console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
         } else {
-            console.log("[MolSysViewer] Initialized with payload source length:", viewerJsSource.length);
+            const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
+            console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
         }
-        
+
         const popupMgr = new PopupHostManager(viewerJsSource || "");
+        const enablePopout = !!model.get("enable_popout");
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
-            const overlay = buildControls(c, model, (msg) => popupMgr.send("molsysviewer-sync-op", msg), target, () => popupMgr.open());
+            const overlay = buildControls(
+                c,
+                model,
+                (msg) => popupMgr.send("molsysviewer-sync-op", msg),
+                target,
+                enablePopout ? () => popupMgr.open() : undefined
+            );
             target.appendChild(overlay);
 
             // 5. Setup Camera Sync (Host -> Popup)

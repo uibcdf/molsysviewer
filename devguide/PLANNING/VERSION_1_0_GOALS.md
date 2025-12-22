@@ -25,7 +25,7 @@ La 1.0 debe ser, sobre todo, una versión:
 - **estable**: comportamiento predecible y consistente en carga, regiones,
   capas, popup, trayectorias y shapes básicos;
 - **bien definida**: API pública clara (`MolSysView`, loaders, shapes,
-  regiones/layers/global, popup) y documentada;
+  regiones/layers/whole (global), popup) y documentada;
 - **confiable en notebooks y docs**: buen funcionamiento en Jupyter,
   exportación HTML sólida, ejemplos reproducibles;
 - **mantenible**: código y documentación alineados, con tests suficientes para
@@ -60,21 +60,21 @@ Para 1.0, los caminos de carga deben considerarse “cerrados” y bien probados
 Objetivo 1.0: **todos estos caminos deben estar cubiertos por tests y
 documentación clara**, incluyendo ejemplos simples de uso en docs.
 
-### 2.2. Regiones, capas y vista global
+### 2.2. Regiones, capas y vista whole (global)
 
-El sistema `regions/layers/global` ya existe, pero la 1.0 debe asegurar que:
+El sistema `regions/layers/whole` ya existe, pero la 1.0 debe asegurar que:
 
 - API Python:
-  - `new_region`, `new_layer`, `regions`, `layers`, `global_view`.
+  - `new_region`, `new_layer`, `regions`, `layers`, `whole`.
   - Métodos de `Region`: `set_representation`, `show`, `hide`, `delete`,
     `new_complementary_region`.
   - Métodos de `Layer`: `show`, `hide`, `delete`, `set_tag`.
-  - `GlobalView`: `set_representation`, `show`, `hide`.
+  - `Whole`: `set_representation`, `show`, `hide`.
 
 - Semántica clara (y documentada) de visibilidad:
   - `show/hide/isolate` en el viewer afectan máscaras y reps globales.
   - `region.hide()` no se “pierde” al hacer `viewer.hide(); viewer.show()`.
-  - `global_view.hide()` se respeta aunque se llame antes del primer `show()`.
+  - `whole.hide()` se respeta aunque se llame antes del primer `show()`.
 
 - Complementos:
   - Funcionan de forma robusta cuando hay múltiples regiones con
@@ -104,7 +104,6 @@ Objetivos para 1.0:
   encolados o delays.
 - Mantener los mensajes TS (`ViewerMessage`) en sync con las expectativas de
   Python (tests que validen la forma de los diccionarios).
-r
 No se trata de añadir nuevas primitives para 1.0, sino de **cerrar bien
 las existentes**.
 
@@ -164,7 +163,7 @@ aspectos:
 - **Mensajes Python↔TS**:
   - Asegurar que `ViewerMessage` refleja todos los `op` reales.
   - Documentar brevemente las operaciones clave (carga, visibilidad,
-    regiones, capas, global, trayectoria, popup) en devguide.
+    regiones, capas, whole (global), trayectoria, popup) en devguide.
 
 - **Inicialización Mol\***:
   - Mantener usos correctos de `PluginContext` (`init()`, `initViewer` o
@@ -182,9 +181,9 @@ La 1.0 no exige cobertura perfecta, pero sí:
 
 - Cobertura razonable de:
   - Loaders (MolSysMT, PDB/mmCIF, PDB ID, URL).
-  - Regions/layers/global (incluyendo complementos y visibilidad).
+  - Regions/layers/whole (incluyendo complementos y visibilidad).
   - Shapes clave (esferas, pockets, tubos) a nivel de mensajes Python.
-  - Exportación HTML (`write_html` y `_build_standalone_html`).
+  - Exportación HTML (`write_html` en modo standalone/docs).
 
 - Al menos un camino JS/TS probado:
   - Unitario (`region-hide.test.ts` y análogos) para la lógica de estado
@@ -217,7 +216,7 @@ Objetivos:
 
 - **Docs de desarrollador sólidas**:
   - Devguide actualizado (ya en marcha): arquitectura real, repositorio,
-    payload, popup, regions/layers/global.
+    payload, popup, regions/layers/whole.
   - Guía de contribución alineada con la estructura actual (paths reales,
     build TS manual, checkpoints en `HISTORY/`).
 
@@ -241,4 +240,3 @@ En resumen, la versión 1.0 debe entregar:
 
 La 1.0 es, por tanto, la versión que “cierra el prototipo” y lo convierte en
 una base sólida sobre la cual construir las capacidades avanzadas de la 2.0.
-
