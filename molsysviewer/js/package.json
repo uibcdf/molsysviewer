@@ -22,5 +22,5 @@
     "playwright": "^1.57.0",
     "typescript": "^5.6.0"
   },
-  "pythonVersion": "0.0.2+76.gd4d2ad5.dirty"
+  "pythonVersion": "0.0.2+63.gfd80b88.dirty"
 }

@@ -53,7 +53,9 @@ def load_from_molsysmt(
         selection=selection,
         structure_indices=structure_indices,
         syntax=syntax,
+        skip_digestion=True,
     )
+
     n_atoms = view._molsys.get(element="atom", n_atoms=True)
     view.atom_mask = np.ones(n_atoms, dtype=bool)
 
