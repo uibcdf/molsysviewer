@@ -52,3 +52,21 @@ def test_build_html_includes_anywidget(monkeypatch, include_bundle):
     else:
         assert "anywidget-inline" not in html
         assert "requirejs.config" not in html
+
+
+def test_build_html_includes_camera_snapshot(monkeypatch):
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore
+    view._last_camera_snapshot = {"target": [0, 0, 0]}
+
+    monkeypatch.setattr(view, "_load_anywidget_bundle", lambda: "")
+
+    html = view._build_standalone_html("Test", include_controls=True)
+    state = _extract_state_json(html)
+    widget_state = state["state"][view.widget.model_id]["state"]
+
+    assert widget_state["initial_messages"][-1] == {
+        "op": "set_camera_snapshot",
+        "snapshot": {"target": [0, 0, 0]},
+        "duration_ms": 0,
+    }

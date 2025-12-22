@@ -17,10 +17,13 @@ The following files **must not be readed** to avoid oversized context and irrele
 
 * `molsysviewer/viewer.js`
 * `molsysviewer/viewer.js.map`
+* `docs/_static/views/*.html`
 
 These files are **build artifacts** generated automatically from the TypeScript sources located in the `js/` directory. Any manual edits will be overwritten and may corrupt the build process.
 The content of these files is not relevant for understanding or modifying the viewer's logic.
 Their content is redundant with the TypeScript source files. Read only the TypeScript source files.
+The HTML files under `docs/_static/views/` are auxiliary exports for documentation embeds and do not add
+developer-relevant context beyond the docs sources.
 
 ## ✔️ Source of Truth
 

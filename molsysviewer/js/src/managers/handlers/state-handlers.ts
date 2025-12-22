@@ -29,6 +29,7 @@ import {
     ShowLayerMessage,
     ShowRegionMessage,
     UpdateVisibilityMessage,
+    ZoomMessage,
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
 
@@ -58,6 +59,7 @@ export class StateHandlers {
     private readonly pendingRegions: CreateRegionMessage[] = [];
     private pendingVisibility?: number[];
     private requestedGlobalHidden: boolean | null = null;
+    private pendingZoom?: ZoomMessage;
 
     constructor(private plugin: PluginContext, private callbacks: StateCallbacks) {}
 
@@ -406,12 +408,43 @@ export class StateHandlers {
         await this.handleShowHideGlobal(true, msg.target ?? "global");
     }
 
+    async zoom(msg: ZoomMessage) {
+        const structure = this.callbacks.getStructure();
+        if (!structure) {
+            this.pendingZoom = msg;
+            return;
+        }
+
+        const atomIndices = Array.isArray(msg.atom_indices)
+            ? msg.atom_indices.map(i => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter(i => Number.isFinite(i))
+            : [];
+        if (atomIndices.length === 0) {
+            console.warn("[MolSysViewer] zoom called with empty atom_indices");
+            return;
+        }
+
+        const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
+        if (!selection) return;
+
+        const loci = StructureSelection.toLociWithSourceUnits(selection);
+        this.plugin.managers.camera.focusLoci(loci, {
+            durationMs: msg.options?.duration_ms,
+            extraRadius: msg.options?.extra_radius,
+            minRadius: msg.options?.min_radius,
+        });
+    }
+
     // Public method to be called by Loader/Controller when structure is ready
     async onStructureLoaded() {
         if (this.pendingVisibility) {
             const pending = this.pendingVisibility;
             this.pendingVisibility = void 0;
             await this.updateVisibility(pending);
+        }
+        if (this.pendingZoom) {
+            const pending = this.pendingZoom;
+            this.pendingZoom = void 0;
+            await this.zoom(pending);
         }
         if (this.pendingGlobalOps.length) {
             const ops = [...this.pendingGlobalOps];

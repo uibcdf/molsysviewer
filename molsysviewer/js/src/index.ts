@@ -77,6 +77,7 @@ export default {
             // 5. Setup Camera Sync (Host -> Popup)
             if (c.plugin.canvas3d) {
                 let hostCameraSyncTimer: ReturnType<typeof window.setTimeout> | null = null;
+                let cameraSnapshotTimer: ReturnType<typeof window.setTimeout> | null = null;
                 const c3d = c.plugin.canvas3d;
 
                 const syncCamera = () => {
@@ -90,12 +91,28 @@ export default {
                     }, 20); // Fast debounce
                 };
 
+                const scheduleCameraSnapshot = () => {
+                    if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
+                    cameraSnapshotTimer = setTimeout(() => {
+                        const snapshot = c.getCameraSnapshot();
+                        if (snapshot) {
+                            model.send({ event: "camera_snapshot", snapshot });
+                        }
+                        cameraSnapshotTimer = null;
+                    }, 300);
+                };
+
+                const onCameraFrame = () => {
+                    syncCamera();
+                    scheduleCameraSnapshot();
+                };
+
                 // Force usage of didDraw for reliable interactive sync, matching the popup's working logic
                 if (c3d.didDraw) {
-                    c3d.didDraw.subscribe(syncCamera);
+                    c3d.didDraw.subscribe(onCameraFrame);
                     console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
                 } else if (c3d.camera.events?.changed) {
-                    c3d.camera.events.changed.subscribe(syncCamera);
+                    c3d.camera.events.changed.subscribe(onCameraFrame);
                     console.log("[MolSysViewer] Host: Sync via camera.events.changed (fallback).");
                 } else {
                     console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");

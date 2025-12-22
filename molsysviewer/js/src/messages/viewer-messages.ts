@@ -263,6 +263,22 @@ export type HideGlobalMessage = {
     target?: "global" | "all";
 };
 
+export type ZoomMessage = {
+    op: "zoom";
+    atom_indices: number[];
+    options?: {
+        duration_ms?: number;
+        extra_radius?: number;
+        min_radius?: number;
+    };
+};
+
+export type SetCameraSnapshotMessage = {
+    op: "set_camera_snapshot";
+    snapshot: any;
+    duration_ms?: number;
+};
+
 export type ViewerMessage =
     AddSphereMessage |
     AddAlphaSphereSetMessage |
@@ -304,4 +320,6 @@ export type ViewerMessage =
     SetGlobalRepresentationMessage |
     ShowGlobalMessage |
     HideGlobalMessage |
+    ZoomMessage |
+    SetCameraSnapshotMessage |
     Record<string, unknown>;

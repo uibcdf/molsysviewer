@@ -143343,12 +143343,37 @@ var StateHandlers = class {
   async hideGlobal(msg) {
     await this.handleShowHideGlobal(true, msg.target ?? "global");
   }
+  async zoom(msg) {
+    const structure = this.callbacks.getStructure();
+    if (!structure) {
+      this.pendingZoom = msg;
+      return;
+    }
+    const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
+    if (atomIndices.length === 0) {
+      console.warn("[MolSysViewer] zoom called with empty atom_indices");
+      return;
+    }
+    const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
+    if (!selection) return;
+    const loci = StructureSelection.toLociWithSourceUnits(selection);
+    this.plugin.managers.camera.focusLoci(loci, {
+      durationMs: msg.options?.duration_ms,
+      extraRadius: msg.options?.extra_radius,
+      minRadius: msg.options?.min_radius
+    });
+  }
   // Public method to be called by Loader/Controller when structure is ready
   async onStructureLoaded() {
     if (this.pendingVisibility) {
       const pending = this.pendingVisibility;
       this.pendingVisibility = void 0;
       await this.updateVisibility(pending);
+    }
+    if (this.pendingZoom) {
+      const pending = this.pendingZoom;
+      this.pendingZoom = void 0;
+      await this.zoom(pending);
     }
     if (this.pendingGlobalOps.length) {
       const ops = [...this.pendingGlobalOps];
@@ -143883,6 +143908,12 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "hide_global":
           await this.state.hideGlobal(msg);
+          break;
+        case "zoom":
+          await this.state.zoom(msg);
+          break;
+        case "set_camera_snapshot":
+          await this.setCameraSnapshot(msg.snapshot, msg.duration_ms);
           break;
         // Trajectory Ops
         case "step_trajectory":
@@ -144896,6 +144927,7 @@ var index_default = {
       target.appendChild(overlay);
       if (c8.plugin.canvas3d) {
         let hostCameraSyncTimer = null;
+        let cameraSnapshotTimer = null;
         const c3d = c8.plugin.canvas3d;
         const syncCamera = () => {
           if (!popupMgr.isReady || !isUserInteracting) return;
@@ -144905,11 +144937,25 @@ var index_default = {
             hostCameraSyncTimer = null;
           }, 20);
         };
+        const scheduleCameraSnapshot = () => {
+          if (cameraSnapshotTimer) clearTimeout(cameraSnapshotTimer);
+          cameraSnapshotTimer = setTimeout(() => {
+            const snapshot = c8.getCameraSnapshot();
+            if (snapshot) {
+              model.send({ event: "camera_snapshot", snapshot });
+            }
+            cameraSnapshotTimer = null;
+          }, 300);
+        };
+        const onCameraFrame = () => {
+          syncCamera();
+          scheduleCameraSnapshot();
+        };
         if (c3d.didDraw) {
-          c3d.didDraw.subscribe(syncCamera);
+          c3d.didDraw.subscribe(onCameraFrame);
           console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
         } else if (c3d.camera.events?.changed) {
-          c3d.camera.events.changed.subscribe(syncCamera);
+          c3d.camera.events.changed.subscribe(onCameraFrame);
           console.log("[MolSysViewer] Host: Sync via camera.events.changed (fallback).");
         } else {
           console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
