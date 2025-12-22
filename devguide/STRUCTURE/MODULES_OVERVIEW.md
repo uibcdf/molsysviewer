@@ -19,9 +19,9 @@ Responsibilities:
     `load_from_url`).
   - Visibility (`show`, `hide`, `isolate`).
   - Regions and layers (`new_region`, `new_layer`, `regions`, `layers`,
-    `global_view`).
+    `whole`).
   - Shapes (`self.shapes`).
-  - Export (`write_html` y helpers internos para HTML standalone).
+  - Export (`write_html` con modos `standalone`/`docs` y helpers internos).
 - Encapsulate Python↔JS messaging (`_send`, `_message_history`,
   `_clean_message_history`).
 
@@ -30,8 +30,9 @@ Internamente, `MolSysView` cumple el papel de varios módulos lógicos:
 - **basic**: info, show/hide/isolate, reset de visibilidad.
 - **structure**: interacción con MolSysMT (`_molsys`, selecciones, payloads).
 - **shapes**: acceso a `ShapesManager`.
-- **view/cam**: `reset_camera`, control de controles (`set_controls_visible`),
-  wrapper `GlobalView`.
+- **view/cam**: `reset_camera`, `get_camera_snapshot`,
+  `set_camera_snapshot`, control de controles (`set_controls_visible`) y
+  wrapper `Whole`.
 
 En el futuro, algunos de estos roles podrían separarse en clases dedicadas,
 pero hoy viven en `viewer.py`.
@@ -89,7 +90,7 @@ que construyen geometría Mol* (meshes, volúmenes, glyphs) y la añaden al
 ## 4. Regiones y capas
 
 **Archivos:** `molsysviewer/regions.py`, `molsysviewer/layers.py`,
-`molsysviewer/global_view.py`, `molsysviewer/shapes/__init__.py`,
+`molsysviewer/whole.py`, `molsysviewer/shapes/__init__.py`,
 JS en `js/src/managers/handlers/state-handlers.ts`.
 
 ### 4.1 Region (Region module)
@@ -108,7 +109,7 @@ JS en `js/src/managers/handlers/state-handlers.ts`.
 - Mantiene `kind`, `meta` y `_active`.
 - Métodos: `show()`, `hide()`, `delete()`, `set_tag()`.
 
-### 4.3 GlobalView (global module)
+### 4.3 Whole (whole module)
 - Controla la representación global/base (preset o tipo simple) para toda la
   estructura.
 - Mantiene flags internos (`_global_hidden`) y re-sincroniza el estado
@@ -152,7 +153,8 @@ Módulo lógico: **popup** (ventana espejo).
 
 Responsabilidades:
 - Abrir y cerrar una ventana independiente (`PopupHostManager`).
-- Inyectar el bundle JS (`viewer.js`) en el popup vía Blob + `import`.
+- Inyectar el bundle JS en el popup vía Blob + `import` o usando `moduleUrl`
+  cuando se exporta en modo docs.
 - Crear un `MolSysViewerController` dentro del popup.
 - Reproducir el `commandLog` de mensajes y snapshot de cámara inicial.
 - Sincronizar estado host↔popup:

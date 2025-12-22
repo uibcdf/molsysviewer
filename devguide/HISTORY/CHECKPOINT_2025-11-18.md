@@ -40,7 +40,7 @@ The modern architecture replaces the legacy labextension-based prototypes.
 
 > **Update note (2025-12-07)**  
 > Since this checkpoint, MolSysViewer has gained native MolSysMT payload
-> loading (`load_from_molsysmt`), a full regions/layers/global API, a
+> loading (`load_from_molsysmt`), a full regions/layers/whole (global) API, a
 > synchronized popup viewer, and trajectory controls in the on-canvas UI.
 > The sections below should be read as describing the state as of
 > 2025-11-18; newer capabilities are documented in the devguide

@@ -13,7 +13,7 @@ from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .shapes import ShapesManager
 from .regions import Region
-from .global_view import GlobalView
+from .whole import Whole
 from .layers import Layer
 from . import config
 from .config.user_presets import user_presets
@@ -101,7 +101,7 @@ class MolSysView:
         self._layer_counter = 0
         self._global_hidden = False
 
-        self.global_view = GlobalView(self)
+        self.whole = Whole(self)
 
         # Registrar callback para mensajes JS->Python
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
@@ -143,7 +143,7 @@ class MolSysView:
                 self._region_counter = 0
                 self._layer_counter = 0
                 self._global_hidden = False
-                self.global_view = GlobalView(self)
+                self.whole = Whole(self)
             elif event == "js_log" and self._debug_js:
                 level = str(content.get("level", "info")).upper()
                 message = content.get("message", "")
@@ -622,13 +622,47 @@ class MolSysView:
         self._region_counter = 0
         self._layer_counter = 0
         self._global_hidden = False
-        self.global_view = GlobalView(self)
+        self.whole = Whole(self)
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
             {
                 "op": "clear_all",
                 "options": {},
+            }
+        )
+
+    def get_camera_snapshot(self, *, pretty: bool = False) -> dict | str | None:
+        """Return the last camera snapshot received from the frontend.
+
+        Parameters
+        ----------
+        pretty
+            If ``True``, return a formatted JSON string instead of a dict.
+        """
+        if self._last_camera_snapshot is None:
+            return None
+        if not pretty:
+            return dict(self._last_camera_snapshot)
+        return json.dumps(self._last_camera_snapshot, indent=2, sort_keys=True)
+
+    def set_camera_snapshot(self, snapshot: dict, *, duration_ms: int = 0) -> None:
+        """Apply a previously saved camera snapshot.
+
+        Parameters
+        ----------
+        snapshot
+            Camera snapshot dict (Mol* format).
+        duration_ms
+            Transition duration in milliseconds.
+        """
+        if not snapshot:
+            return
+        self._send(
+            {
+                "op": "set_camera_snapshot",
+                "snapshot": snapshot,
+                "duration_ms": int(duration_ms),
             }
         )
 
@@ -648,8 +682,12 @@ class MolSysView:
         *,
         title: str = "MolSysViewer",
         include_controls: bool = True,
+        include_popout: bool = True,
+        mode: str = "standalone",
+        docs_assets: str = "local",
+        inline_messages: bool = True,
     ) -> None:
-        """Export this viewer widget to a standalone HTML file (for docs embedding).
+        """Export this viewer widget to an HTML file.
 
         Parameters
         ----------
@@ -663,11 +701,40 @@ class MolSysView:
             Set this to ``False`` if you prefer a minimal viewer without these controls,
             for example when embedding inside another application that already provides
             its own UI.
+        include_popout:
+            If ``True`` (default), include the popout button and allow opening a popout window.
+        mode:
+            - ``"standalone"`` (default): produce a self-contained HTML using the widget embed machinery.
+            - ``"docs"``: produce a docs-optimized HTML that loads a shared runtime and replays messages.
+        docs_assets:
+            Only used when ``mode="docs"``. Use ``"local"`` to load the runtime from Sphinx `_static/`.
+        inline_messages:
+            Only used when ``mode="docs"``. If ``True`` (default), embed the replay messages inline in the HTML.
         """
-        # Serialize the message history so the exported HTML can replay all
-        # actions (loads/shapes/visibility) without needing a live Python kernel.
-        self.widget.initial_messages = self._build_export_messages()
-        html = self._build_standalone_html(title=title, include_controls=include_controls)
+        if mode not in {"standalone", "docs"}:
+            raise ValueError("write_html(mode=...) must be 'standalone' or 'docs'.")
+        if mode == "docs" and docs_assets not in {"local"}:
+            raise ValueError("write_html(docs_assets=...) must be 'local' for now.")
+
+        messages = self._build_export_messages()
+
+        if mode == "standalone":
+            # Serialize the message history so the exported HTML can replay all
+            # actions (loads/shapes/visibility) without needing a live Python kernel.
+            self.widget.initial_messages = messages
+            html = self._build_standalone_html(
+                title=title,
+                include_controls=include_controls,
+                include_popout=include_popout,
+            )
+        else:
+            html = self._build_docs_html(
+                title=title,
+                include_controls=include_controls,
+                include_popout=include_popout,
+                messages=messages,
+                inline_messages=inline_messages,
+            )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
 
@@ -703,7 +770,12 @@ class MolSysView:
 
         return "\n".join(sources)
 
-    def _build_standalone_html(self, title: str, include_controls: bool = True) -> str:
+    def _build_standalone_html(
+        self,
+        title: str,
+        include_controls: bool = True,
+        include_popout: bool = True,
+    ) -> str:
         """Create a minimal standalone HTML embedding only this widget."""
         # Ensure initial_messages is in sync before exporting
         self.widget.initial_messages = self._build_export_messages()
@@ -714,6 +786,12 @@ class MolSysView:
         # the live widget trait in notebooks.
         widget_state["show_controls"] = bool(include_controls)
         widget_state["layout"] = f"IPY_MODEL_{self.widget.layout.model_id}"
+        # Avoid duplicating the full viewer bundle in exports: the widget already
+        # carries its ESM source under `_esm`. The popout can fall back to `_esm`
+        # when `popup_js_source` is empty.
+        if "popup_js_source" in widget_state:
+            widget_state["popup_js_source"] = ""
+        widget_state["enable_popout"] = bool(include_popout)
 
         state_json = {
             "version_major": 2,
@@ -775,6 +853,94 @@ class MolSysView:
 """
         return template
 
+    def _build_docs_html(
+        self,
+        *,
+        title: str,
+        include_controls: bool,
+        include_popout: bool,
+        messages: list[dict],
+        inline_messages: bool,
+    ) -> str:
+        """Create a docs-optimized HTML that loads a shared runtime and replays messages."""
+        # This HTML is meant to live under Sphinx `_static/views/` and load the
+        # runtime from `_static/molsysviewer-runtime.js`.
+        # Keep it independent from the widget manager to avoid bundling megabytes per example.
+        runtime_rel = "../molsysviewer-runtime.js"
+        runtime_repo_rel = "../../../molsysviewer/viewer.js"
+        from ._version import __version__ as _pkg_version
+        base_version = _pkg_version.split("+", 1)[0]
+        runtime_cdn = f"https://cdn.jsdelivr.net/gh/uibcdf/molsysviewer@v{base_version}/molsysviewer/viewer.js"
+
+        ui_config = {
+            "show_controls": bool(include_controls),
+            "autohide_controls": bool(getattr(self.widget, "autohide_controls", False)),
+            "controls_position": list(getattr(self.widget, "controls_position", ["top", "right"])),
+            "controls_position_fullscreen": list(getattr(self.widget, "controls_position_fullscreen", ["bottom", "right"])),
+            "enable_popout": bool(include_popout),
+            "debug_js": bool(getattr(self.widget, "debug_js", False)),
+        }
+
+        messages_json = self._json_for_html_script(messages) if inline_messages else "[]"
+        ui_json = self._json_for_html_script(ui_config)
+
+        template = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <style>
+    html, body {{ margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }}
+    #molsysviewer-root {{ width: 100%; height: 100%; min-height: 400px; position: relative; }}
+  </style>
+</head>
+<body>
+  <div id="molsysviewer-root"></div>
+  <script id="molsysviewer-ui" type="application/json">{ui_json}</script>
+  <script id="molsysviewer-messages" type="application/json">{messages_json}</script>
+  <script type="module">
+    const el = document.getElementById("molsysviewer-root");
+    const ui = JSON.parse(document.getElementById("molsysviewer-ui").textContent || "{{}}");
+    const messages = JSON.parse(document.getElementById("molsysviewer-messages").textContent || "[]");
+
+    const candidates = [
+      "{runtime_rel}",
+      "{runtime_cdn}",
+      "{runtime_repo_rel}",
+    ];
+
+    let lastError = null;
+    for (const rel of candidates) {{
+      try {{
+        const moduleUrl = new URL(rel, window.location.href).href;
+        const mod = await import(moduleUrl);
+        const boot = mod.bootDocsView || mod.boot_docs_view || mod.default?.bootDocsView;
+        if (typeof boot !== "function") {{
+          throw new Error("bootDocsView not found in runtime: " + moduleUrl);
+        }}
+        await boot({{
+          el,
+          initialMessages: messages,
+          ui,
+          runtimeUrl: moduleUrl,
+        }});
+        lastError = null;
+        break;
+      }} catch (e) {{
+        lastError = e;
+      }}
+    }}
+    if (lastError) {{
+      console.error("[MolSysViewer docs] Failed to load runtime.", lastError);
+      el.textContent = "MolSysViewer failed to load. See console for details.";
+    }}
+  </script>
+</body>
+</html>
+"""
+        return template
+
     def _build_export_messages(self) -> list[dict]:
         """Return the messages to replay when exporting HTML."""
         messages = self._clean_message_history()
@@ -802,3 +968,15 @@ class MolSysView:
                     continue
             cleaned.append(msg)
         return cleaned
+
+    def _json_for_html_script(self, obj: Any) -> str:
+        """Serialize JSON safely for embedding inside an HTML <script> tag."""
+        text = json.dumps(obj, separators=(",", ":"))
+        # Prevent `</script>`-style early termination and reduce HTML parsing surprises.
+        return (
+            text.replace("&", "\\u0026")
+            .replace("<", "\\u003c")
+            .replace(">", "\\u003e")
+            .replace("\u2028", "\\u2028")
+            .replace("\u2029", "\\u2029")
+        )

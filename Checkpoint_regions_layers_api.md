@@ -12,7 +12,7 @@
 - Helpers: `view.get_region(tag)`, `view.get_layer(tag)`, `view.list_regions()`, `view.list_layers()`.
 - `Region` methods: `set_representation(type, **params)`, `hide()`, `show()`, `delete()`, selection ops (`extract_subregion`, `add_atoms`, `remove_atoms`), `new_complementary_region()`.
 - `Layer` methods: `hide()`, `show()`, `delete()`, `relabel(new_tag)`, `merge(other_layer)`.
-- `Global`: `view.global_view` provides `set_representation(...)`, `show()/hide()` for whole-structure control (no tag, non-deletable).
+- `Whole`: `view.whole` provides `set_representation(...)`, `show()/hide()` for whole-structure control (no tag, non-deletable).
 - Complements: `new_region(..., complement_of_regions=["tagA", ...] | "all")` builds complement on Python side; requires a loaded system and known `atom_indices` from regions/acks.
 
 ## JS Side Responsibilities
@@ -66,8 +66,8 @@ implemented in the main branch with small variations:
      de tests JS/E2E sigue en la lista de mejoras.
 
 ## Current Status (this branch)
-- Python API: `new_region` (supports complements via `complement_of_regions` or `Region.new_complementary_region`), `new_layer`, `view.global` wrapper (`set_representation` re-shows if hidden), public registries `regions`/`layers`. Regions store `atom_indices` from ack or selection; complement logic computed in Python (requires loaded system).
-- JS controller: handlers for regions/layers/global (create/set/show/hide/delete), registries (`regionIndex`, `layerMeta`, `globalReprs`), `clear_all` resets and notifies. Layers auto-registered for shapes by tag.
+- Python API: `new_region` (supports complements via `complement_of_regions` or `Region.new_complementary_region`), `new_layer`, `view.whole` wrapper (`set_representation` re-shows if hidden), public registries `regions`/`layers`. Regions store `atom_indices` from ack or selection; complement logic computed in Python (requires loaded system).
+- JS controller: handlers for regions/layers/whole (create/set/show/hide/delete), registries (`regionIndex`, `layerMeta`, `globalReprs`), `clear_all` resets and notifies. Layers auto-registered for shapes by tag.
 - Messaging: acks for regions/layers; registry cleared notification. Bundle rebuilt.
 - Docs: checkpoint updated; docstrings note load requirement and complement behavior; global shows on set_representation.
 
@@ -79,14 +79,14 @@ implemented in the main branch with small variations:
 
 ## Visibilidad (global vs regiones vs viewer)
 - `region.hide()/show()`: sólo afecta a esa región. El estado `hidden` se recuerda; `viewer.show()` no reactivará regiones ocultas.
-- `global_view.hide()/show()`: afecta sólo a la representación base/global (auto/preset/cartoon cargada al `load`). No toca regiones. Si se invoca antes del primer `show()`, la intención se memoriza y se aplica al cargar la estructura.
+- `whole.hide()/show()`: afecta sólo a la representación base/global (auto/preset/cartoon cargada al `load`). No toca regiones. Si se invoca antes del primer `show()`, la intención se memoriza y se aplica al cargar la estructura.
 - `viewer.hide()/show()` con `selection="all"`: ajusta la máscara de átomos y envía `hide_global/show_global target=all`. Respeta regiones ocultas y re-oculta la vista global si estaba marcada como oculta.
 
 ### Flujos de referencia (manual/UI)
 1) **Ocultar global antes de mostrar**
 ```python
 view = viewer.demo.tctim
-view.global_view.hide()
+view.whole.hide()
 view.show()  # se muestran sólo las regiones creadas; la base/global permanece oculta
 ```
 2) **Ocultar región y mantenerla oculta tras hide/show general**

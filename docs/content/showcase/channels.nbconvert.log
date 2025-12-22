@@ -1,0 +1,96 @@
+
+[NbConvertApp] Converting notebook content/showcase/channels.ipynb to notebook
+Traceback (most recent call last):
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/bin/jupyter-nbconvert", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/jupyter_core/application.py", line 284, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/traitlets/config/application.py", line 1075, in launch_instance
+    app.start()
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/preprocessors/base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/preprocessors/execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbconvert/preprocessors/execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/conda/miniconda3/envs/molsysviewer@uibcdf_3.12/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import molsysviewer as mv
+
+centers = [(0,0,0), (2,0.5,0.2), (4,1,0.5), (6,1.5,1.0)]
+radii   = [1.2, 1.0, 0.9, 1.1]
+
+v = mv.MolSysView()
+v.shapes.add_channel_tube(
+    centers=centers,
+    radii=radii,
+    color_mode="segment",  # or "distance"
+    smoothing=0.5,
+    tag="channel-demo",
+)
+v.show()
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mTypeError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 7[39m
+[32m      4[39m radii   = [[32m1.2[39m, [32m1.0[39m, [32m0.9[39m, [32m1.1[39m]
+[32m      6[39m v = mv.MolSysView()
+[32m----> [39m[32m7[39m [43mv[49m[43m.[49m[43mshapes[49m[43m.[49m[43madd_channel_tube[49m[43m([49m
+[32m      8[39m [43m    [49m[43mcenters[49m[43m=[49m[43mcenters[49m[43m,[49m
+[32m      9[39m [43m    [49m[43mradii[49m[43m=[49m[43mradii[49m[43m,[49m
+[32m     10[39m [43m    [49m[43mcolor_mode[49m[43m=[49m[33;43m"[39;49m[33;43msegment[39;49m[33;43m"[39;49m[43m,[49m[43m  [49m[38;5;66;43;03m# or "distance"[39;49;00m
+[32m     11[39m [43m    [49m[43msmoothing[49m[43m=[49m[32;43m0.5[39;49m[43m,[49m
+[32m     12[39m [43m    [49m[43mtag[49m[43m=[49m[33;43m"[39;49m[33;43mchannel-demo[39;49m[33;43m"[39;49m[43m,[49m
+[32m     13[39m [43m)[49m
+[32m     14[39m v.show()
+
+[36mFile [39m[32m~/repos@uibcdf/molsysviewer/molsysviewer/shapes/__init__.py:106[39m, in [36mShapesManager.add_channel_tube[39m[34m(self, *args, **kwargs)[39m
+[32m    101[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34madd_channel_tube[39m(
+[32m    102[39m     [38;5;28mself[39m,
+[32m    103[39m     *args,
+[32m    104[39m     **kwargs,
+[32m    105[39m ):
+[32m--> [39m[32m106[39m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[43m.[49m[43mtubes[49m[43m.[49m[43madd_channel_tube[49m[43m([49m[43m*[49m[43margs[49m[43m,[49m[43m [49m[43m*[49m[43m*[49m[43mkwargs[49m[43m)[49m
+
+[31mTypeError[39m: ChannelTubes.add_channel_tube() got an unexpected keyword argument 'smoothing'
+

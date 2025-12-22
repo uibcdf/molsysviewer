@@ -12,8 +12,8 @@ MolSysViewer is split into:
 - **Python layer (`molsysviewer/`)**
   - `MolSysView` facade and widget wrapper.
   - Loaders for MolSysMT/PDB/mmCIF/URL.
-  - Regions/layers/GlobalView and shapes APIs.
-  - HTML export helpers for docs.
+  - Regions/layers/Whole and shapes APIs.
+  - HTML export helpers (standalone + docs-light).
 
 - **TypeScript/Mol\* layer (`molsysviewer/js/src/`)**
   - Anywidget entry (`index.ts`).
@@ -178,7 +178,7 @@ usa la infraestructura de representaciones de Mol\* para el renderizado.
   - Envía `show_layer`, `hide_layer`, `delete_layer`, `set_layer_tag`
     y mantiene sincronizado el registro.
 
-- `GlobalView.set_representation(...)`:
+- `Whole.set_representation(...)`:
   - Resuelve presets de usuario en Python (vía MolSysMT) y envía
     `set_global_representation` + payload de user preset.
 
@@ -214,7 +214,8 @@ y emite `registry_cleared` hacia Python.
 
 - **Host (notebook)**:
   - `PopupHostManager` abre la ventana, construye un Blob con el código
-    fuente de `viewer.js` y lo `import`a en el contexto del popup.
+    fuente de `viewer.js` o usa un `moduleUrl` (docs-light) y lo `import`a
+    en el contexto del popup.
   - Llama a `bootPopup(module)` dentro del popup.
   - Mantiene un `commandLog` (lista de mensajes Python→JS) para poder
     reconstruir el estado en el popup.
@@ -249,7 +250,7 @@ alternativos) y una API `structure.get_* / show_*` más rica. A día de hoy:
 - El núcleo de:
   - carga MolSysMT,
   - shapes científicos básicos (esferas, pockets, tubos, farmacóforo),
-  - regions/layers/global,
+  - regions/layers/whole (global),
   - popup,
   - trayectorias
 

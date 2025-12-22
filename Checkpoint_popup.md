@@ -8,7 +8,10 @@
 ## Estado actual (2025-12-07)
 - Se añadió botón “Pop” en la UI del host (overlay).
 - Al pulsar, se abre una ventana nueva con contenedor, controlador MolSysViewer y controles completos (Reset/Full/Bg/Spin/Swing + controles de trayectoria).
-- El bundle JS (`viewer.js`) se inyecta en el popup vía Blob URL y `import(...)`; el popup crea su propio `MolSysViewerController`.
+- El popup puede cargar el bundle JS de dos formas:
+  - **Blob URL** si se proporciona el código fuente (`popup_js_source` o `_esm`).
+  - **URL de módulo** si se pasa una ruta `moduleUrl` (exports docs-light con
+    runtime compartido, p.ej. `molsysviewer-runtime.js`).
 - Se mantiene un `commandLog`/`commandLog` (historial de mensajes) y se reenvía al popup en `molsysviewer-initial-sync`; cada mensaje Python→JS nuevo se duplica en vivo hacia el popout como `molsysviewer-sync-op`.
 - El popup notifica cuando está listo (`molsysviewer-pop-ready`) y queda marcado como `isReady` en el host.
 - Popout se cierra si se vuelve a pulsar Pop; si se cierra manualmente, el host detecta el cierre y resetea `isReady`/referencias.
@@ -17,6 +20,7 @@
   - Popup → host: el popup también se engancha a `didDraw` y envía snapshots sólo cuando el usuario interactúa en el popup.
 - Autohide de controles sincronizado: cambios en `autohide_controls` se envían al popup y éste ajusta listeners de `pointerenter/leave`.
 - El popup replica los controles principales (incluida trayectoria) y los opera sobre su propio controller, re-enviando las operaciones (`molsysviewer-sync-op`) al host.
+- El botón Pop puede desactivarse desde el host con `enable_popout=False` (trait sincronizado).
 
 ## Problemas/limitaciones actuales
 - Seguridad: `postMessage` sigue usando `"*"`; si en el futuro se endurece CSP u orígenes cruzados, habrá que restringirlo a mismo origen.

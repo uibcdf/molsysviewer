@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 
-class GlobalView:
+class Whole:
     """Wrapper for operations on the whole structure (non-deletable, non-retaggable)."""
 
     def __init__(self, view: Any) -> None:

@@ -32,4 +32,4 @@
 - `MolSysViewerController` (JS): initializes Mol\*, routes messages, manages refs/tags, clears shapes/styles.
 - `js/src/shapes/`: geometry helpers (spheres, pockets, blobs, tubes, ellipsoids, pharmacophore, etc.).
 - `js/src/managers/` and `plugin/`: message handling and structure loading.
-- Static docs embeds: export with `write_html` into `_static/views/`; embed with `molsysviewer.thirds.load_html_in_jupyter_notebook`.
+- Static docs embeds: export with `write_html(..., mode="docs", docs_assets="local")` into `_static/views/`; embed with `molsysviewer.thirds.load_html_in_jupyter_notebook`.
