@@ -7,6 +7,7 @@ import re
 import molsysmt as msm
 import numpy as np
 
+from ._pyunitwizard import puw
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
@@ -92,6 +93,7 @@ class MolSysView:
         self._ready = False
         self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
+        self._last_camera_snapshot: dict | None = None
 
         self._regions: Dict[str, Region] = {}
         self._layers: Dict[str, Layer] = {}
@@ -148,6 +150,10 @@ class MolSysView:
                 entry = {"level": level, "message": message}
                 self._js_logs.append(entry)
                 print(f"[JS {level}] {message}")
+            elif event == "camera_snapshot":
+                snapshot = content.get("snapshot")
+                if isinstance(snapshot, dict):
+                    self._last_camera_snapshot = snapshot
 
         self.widget.on_msg(_handle_msg)
 
@@ -525,6 +531,57 @@ class MolSysView:
         self.atom_mask[atom_indices] = True
         self._update_visibility_in_frontend()
 
+    def zoom(
+        self,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        duration_ms: Any = '250 ms',
+        extra_radius: Any = '4.0 angstroms',
+        min_radius: Any = '1.0 angstroms',
+    ) -> None:
+        """Focus the camera on the geometric center of a selection of atoms.
+
+        Parameters
+        ----------
+        selection
+            MolSysMT selection string/expression or a list of atom indices. If a list
+            is provided, it is passed through MolSysMT and used directly.
+        structure_indices
+            Structure indices to apply when resolving the selection.
+        syntax
+            Selection syntax understood by MolSysMT.
+        duration_ms
+            Transition duration in milliseconds for the camera move.
+        extra_radius
+            Extra padding (Å) added to the selection's bounding sphere.
+        min_radius
+            Minimum radius (Å) to enforce for the camera focus.
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling zoom().")
+
+        atom_indices = msm.select(self._molsys, selection=selection, structure_indices=structure_indices, syntax=syntax)
+        if not atom_indices:
+            raise ValueError("Cannot zoom: empty selection.")
+
+        duration_ms = puw.get_value(duration_ms, to_unit="ms")
+        extra_radius = puw.get_value(extra_radius, to_unit="angstroms")
+        min_radius = puw.get_value(min_radius, to_unit="angstroms")
+
+        self._send(
+            {
+                "op": "zoom",
+                "atom_indices": atom_indices,
+                "options": {
+                    "duration_ms": int(duration_ms),
+                    "extra_radius": float(extra_radius),
+                    "min_radius": float(min_radius),
+                },
+            }
+        )
+
     def clear_decorations(
         self,
         *,
@@ -575,8 +632,13 @@ class MolSysView:
             }
         )
 
-    def info(self):
-        msm.info(self._molsys)
+    def info(self,
+             element='system',
+             selection='all',
+             syntax='MolSysMT',
+             skip_digestion=False
+            ):
+        return msm.info(self._molsys, element=element, selection=selection, syntax=syntax)
 
     # --- Export helpers for docs/notebooks ---
 
@@ -604,7 +666,7 @@ class MolSysView:
         """
         # Serialize the message history so the exported HTML can replay all
         # actions (loads/shapes/visibility) without needing a live Python kernel.
-        self.widget.initial_messages = self._clean_message_history()
+        self.widget.initial_messages = self._build_export_messages()
         html = self._build_standalone_html(title=title, include_controls=include_controls)
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
@@ -644,7 +706,7 @@ class MolSysView:
     def _build_standalone_html(self, title: str, include_controls: bool = True) -> str:
         """Create a minimal standalone HTML embedding only this widget."""
         # Ensure initial_messages is in sync before exporting
-        self.widget.initial_messages = self._clean_message_history()
+        self.widget.initial_messages = self._build_export_messages()
 
         layout_state = self.widget.layout.get_state(drop_defaults=False)
         widget_state = self.widget.get_state(drop_defaults=False)
@@ -712,6 +774,19 @@ class MolSysView:
 </html>
 """
         return template
+
+    def _build_export_messages(self) -> list[dict]:
+        """Return the messages to replay when exporting HTML."""
+        messages = self._clean_message_history()
+        if self._last_camera_snapshot:
+            messages.append(
+                {
+                    "op": "set_camera_snapshot",
+                    "snapshot": self._last_camera_snapshot,
+                    "duration_ms": 0,
+                }
+            )
+        return messages
 
     def _clean_message_history(self) -> list[dict]:
         """Remove redundant messages to keep exports lean."""
