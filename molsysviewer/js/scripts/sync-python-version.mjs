@@ -25,7 +25,23 @@ function pythonToNpmVersion(pyVersion) {
   return pyVersion.split("+", 1)[0];
 }
 
-const pyVersion = readPythonVersion(pythonVersionFile);
+let pyVersion = null;
+if (fs.existsSync(pythonVersionFile)) {
+  pyVersion = readPythonVersion(pythonVersionFile);
+} else {
+  const envVersion =
+    process.env.RELEASE_VERSION ||
+    process.env.GITHUB_REF_NAME ||
+    process.env.GIT_REF_NAME;
+  if (envVersion) {
+    pyVersion = envVersion.replace(/^v/, "");
+    console.warn(
+      `[sync-python-version] _version.py not found. Using ${pyVersion} from environment.`
+    );
+  } else {
+    throw new Error(`Missing ${pythonVersionFile} and no version override found.`);
+  }
+}
 const npmVersion = pythonToNpmVersion(pyVersion);
 
 const pkg = JSON.parse(fs.readFileSync(packageJsonFile, "utf8"));
