@@ -13,9 +13,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # Permisos críticos para Trusted Publishing (OIDC)
+    # Añadimos 'contents: write' para poder subir los cambios al repo
     permissions:
-      contents: read
+      contents: write
       id-token: write 
     
     defaults:
@@ -26,7 +26,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag || github.ref_name }}
+          # Importante: para hacer commit de vuelta, necesitamos el historial
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -34,43 +36,39 @@ jobs:
           node-version: "22"
 
       - name: Install latest npm
-        # Necesario para que el CLI soporte Trusted Publishing nativo (v11.5.1+)
         run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Inject version into package.json
+        id: get_version
+        run: |
+          RAW_VERSION="${{ github.event.inputs.tag || github.ref_name }}"
+          CLEAN_VERSION=$(echo "$RAW_VERSION" | sed 's/^v//')
+          
+          if [[ "$CLEAN_VERSION" == "main" || "$CLEAN_VERSION" == "master" ]]; then
+            echo "ERROR: Versión inválida."
+            exit 1
+          fi
+          
+          npm version $CLEAN_VERSION --no-git-tag-version
+          echo "version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+
       - name: Build runtime bundle
         run: npm run build
-
-      - name: Verify tag matches package version
         env:
-          # Usamos el input del manual dispatch o el nombre del tag del release
-          TAG: ${{ inputs.tag || github.ref_name }}
-        run: |
-          node - <<'NODE'
-          const tag = (process.env.TAG || "").replace(/^v/, "");
-          
-          // Validación de seguridad para no publicar con versión "main"
-          if (tag === "main" || tag === "master") {
-            console.error("Error: Estás intentando publicar desde la rama '" + tag + "'.");
-            console.error("Debes especificar una versión numérica (ej. 0.5.3) en el input del workflow.");
-            process.exit(1);
-          }
-
-          const pkg = require("./package.json");
-          if (pkg.version !== tag) {
-            console.error(`Error: El tag/input (${tag}) no coincide con la versión en package.json (${pkg.version})`);
-            process.exit(1);
-          }
-          console.log(`Versión validada: ${tag}`);
-          NODE
+          RELEASE_VERSION: ${{ steps.get_version.outputs.version }}
 
       - name: Publish to npm
         run: |
-          # Limpiamos cualquier configuración residual del entorno
           rm -f .npmrc ~/.npmrc
-          # Publicamos. npm v11 detectará automáticamente el OIDC de GitHub.
-          # Nota: --provenance se genera automáticamente en npm 11 con OIDC, 
-          # pero puedes dejarlo para mayor seguridad.
           npm publish --access public --provenance
+
+      # PASO NUEVO: Hacer commit de la versión actualizada al repositorio
+      - name: Commit updated package.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update version to ${{ steps.get_version.outputs.version }} [skip ci]"
+          file_pattern: 'molsysviewer/js/package.json'
+          branch: main # O la rama donde quieras que se actualice
