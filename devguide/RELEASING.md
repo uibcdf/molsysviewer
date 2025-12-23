@@ -18,6 +18,11 @@ Steps:
 2. Create and push a tag `x.y.z` (or `x.y.z-rc.1`).
 3. The workflow builds and publishes to npm automatically using OIDC.
 
+## Conda packages
+The conda build workflow reads `RELEASE_VERSION` from the release tag and
+injects it into `devtools/conda-build/meta.yaml` when building:
+`.github/workflows/build_and_upload_conda_packages.yaml`.
+
 ## CDN URL
 Docs-light exports use jsDelivr:
 

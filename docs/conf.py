@@ -7,7 +7,9 @@
 # http://www.sphinx-doc.org/en/master/config
 
 import os
+import re
 import sys
+from pathlib import Path
 
 # -- Path setup --------------------------------------------------------------
 
@@ -195,11 +197,29 @@ html_css_files = [
 ]
 
 # Custom css for tabs
+def _update_docs_light_runtime_links(app):
+    version = molsysviewer.__version__.split('+')[0]
+    target = f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{version}/dist/viewer.js"
+    views_dir = Path(__file__).parent / "_static" / "views"
+    if not views_dir.exists():
+        return
+    pattern = re.compile(r"https://cdn\.jsdelivr\.net/npm/@uibcdf/molsysviewer@[^/]+/dist/viewer\.js")
+    for html_path in views_dir.glob("*.html"):
+        try:
+            content = html_path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            content = html_path.read_text(encoding="utf-8", errors="ignore")
+        updated = pattern.sub(target, content)
+        if updated != content:
+            html_path.write_text(updated, encoding="utf-8")
+
+
 def setup(app):
     app.add_css_file('sphinx_tabs.css')
     app.add_css_file('custom.css')
     app.add_js_file('https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js')
     app.add_js_file('https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js')
+    app.connect('builder-inited', _update_docs_light_runtime_links)
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -247,4 +267,3 @@ texinfo_documents = [
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
-
