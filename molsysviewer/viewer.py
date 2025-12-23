@@ -684,7 +684,6 @@ class MolSysView:
         include_controls: bool = True,
         include_popout: bool = True,
         mode: str = "standalone",
-        docs_assets: str = "local",
         inline_messages: bool = True,
     ) -> None:
         """Export this viewer widget to an HTML file.
@@ -705,16 +704,13 @@ class MolSysView:
             If ``True`` (default), include the popout button and allow opening a popout window.
         mode:
             - ``"standalone"`` (default): produce a self-contained HTML using the widget embed machinery.
-            - ``"docs"``: produce a docs-optimized HTML that loads a shared runtime and replays messages.
-        docs_assets:
-            Only used when ``mode="docs"``. Use ``"local"`` to load the runtime from Sphinx `_static/`.
+            - ``"lite"``: produce a lightweight HTML that loads the runtime from the CDN
+              and replays messages (suitable for embedded docs-light views).
         inline_messages:
-            Only used when ``mode="docs"``. If ``True`` (default), embed the replay messages inline in the HTML.
+            Only used when ``mode="lite"``. If ``True`` (default), embed the replay messages inline in the HTML.
         """
-        if mode not in {"standalone", "docs"}:
-            raise ValueError("write_html(mode=...) must be 'standalone' or 'docs'.")
-        if mode == "docs" and docs_assets not in {"local"}:
-            raise ValueError("write_html(docs_assets=...) must be 'local' for now.")
+        if mode not in {"standalone", "lite"}:
+            raise ValueError("write_html(mode=...) must be 'standalone' or 'lite'.")
 
         messages = self._build_export_messages()
 
@@ -728,7 +724,7 @@ class MolSysView:
                 include_popout=include_popout,
             )
         else:
-            html = self._build_docs_html(
+            html = self._build_lite_html(
                 title=title,
                 include_controls=include_controls,
                 include_popout=include_popout,
@@ -853,7 +849,7 @@ class MolSysView:
 """
         return template
 
-    def _build_docs_html(
+    def _build_lite_html(
         self,
         *,
         title: str,
@@ -862,12 +858,10 @@ class MolSysView:
         messages: list[dict],
         inline_messages: bool,
     ) -> str:
-        """Create a docs-optimized HTML that loads a shared runtime and replays messages."""
-        # This HTML is meant to live under Sphinx `_static/views/` and load the
-        # runtime from `_static/molsysviewer-runtime.js`.
-        # Keep it independent from the widget manager to avoid bundling megabytes per example.
-        runtime_rel = "../molsysviewer-runtime.js"
-        runtime_repo_rel = "../../../molsysviewer/viewer.js"
+        """Create a lightweight HTML that loads a shared runtime and replays messages."""
+        # This HTML is meant to be embedded and load the runtime from the CDN
+        # (jsDelivr). Keep it independent from the widget manager to avoid
+        # bundling megabytes per example.
         from ._version import __version__ as _pkg_version
         base_version = _pkg_version.split("+", 1)[0]
         runtime_cdn = f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{base_version}/dist/viewer.js"
@@ -905,9 +899,7 @@ class MolSysView:
     const messages = JSON.parse(document.getElementById("molsysviewer-messages").textContent || "[]");
 
     const candidates = [
-      "{runtime_rel}",
       "{runtime_cdn}",
-      "{runtime_repo_rel}",
     ];
 
     let lastError = null;

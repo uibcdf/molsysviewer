@@ -15,7 +15,7 @@ TypeScript/JS
 Docs
 - Tone: second person, concise, “why” before “how”, scannable headings/lists.
 - Assets in `_static/`, layouts in `_templates/`. Notebooks off by default for builds.
-- Export docs-light views with `write_html(..., mode="docs", docs_assets="local")` and embed via `load_html_in_jupyter_notebook` for showcases.
+- Export docs-light views with `write_html(..., mode="lite")` and embed via `load_html_in_jupyter_notebook` for showcases.
 
 General
 - Avoid touching unrelated changes; keep diffs focused.

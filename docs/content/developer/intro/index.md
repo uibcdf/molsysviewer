@@ -6,7 +6,7 @@
 - Editable install: `pip install -e .` in the repo root.
 - Iterate in notebooks with anywidget (the bundle is already present).
 - When touching TS/JS, you may rebuild manually if needed; never auto-rebuild in tests/CI.
-- Doc demos: export docs-light views (`write_html(..., mode="docs", docs_assets="local")`) into `_static/views/` and embed with `molsysviewer.thirds.load_html_in_jupyter_notebook`.
+- Doc demos: export docs-light views (`write_html(..., mode="lite")`) into `_static/views/` and embed with `molsysviewer.thirds.load_html_in_jupyter_notebook`.
 
 Typical dev loop
 - Python change → reload module (editable install).
