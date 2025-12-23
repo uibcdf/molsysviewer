@@ -65,6 +65,7 @@ export const bootPopup = async (loadedModule?: any) => {
     };
 
     const container = document.getElementById("molsysviewer-pop");
+    const loading = document.getElementById("molsysviewer-loading");
     let isUserInteracting = false; // Only send camera updates when user is interacting
     let wheelTimeout: any = null;
 
@@ -80,6 +81,21 @@ export const bootPopup = async (loadedModule?: any) => {
         wheelTimeout = setTimeout(() => { isUserInteracting = false; }, 200);
     }, { passive: true });
     
+    const revealViewer = () => {
+        if (container) {
+            container.style.opacity = "1";
+        }
+        if (loading) {
+            loading.style.opacity = "0";
+            loading.style.pointerEvents = "none";
+            window.setTimeout(() => {
+                try { loading.remove(); } catch (e) {}
+            }, 300);
+        }
+    };
+
+    const revealTimer = window.setTimeout(revealViewer, 2500);
+
     // Create a new instance of MolSysViewerController for the popout
     const popControllerPromise = (async () => {
         // Wait a tick to ensure DOM is ready
@@ -163,6 +179,8 @@ export const bootPopup = async (loadedModule?: any) => {
                     
                     // Sync autohide state
                     if (data.autohide !== undefined) updateAutohide(!!data.autohide);
+                    window.clearTimeout(revealTimer);
+                    revealViewer();
                     break;
 
                 case "molsysviewer-sync-autohide":

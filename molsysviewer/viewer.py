@@ -870,7 +870,7 @@ class MolSysView:
         runtime_repo_rel = "../../../molsysviewer/viewer.js"
         from ._version import __version__ as _pkg_version
         base_version = _pkg_version.split("+", 1)[0]
-        runtime_cdn = f"https://cdn.jsdelivr.net/gh/uibcdf/molsysviewer@v{base_version}/molsysviewer/viewer.js"
+        runtime_cdn = f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{base_version}/dist/viewer.js"
 
         ui_config = {
             "show_controls": bool(include_controls),

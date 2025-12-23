@@ -24,6 +24,16 @@ export class PopupHostManager {
             return;
         }
 
+        let resolvedModuleUrl: string | null = null;
+        if (this.viewerModuleUrl) {
+            try {
+                resolvedModuleUrl = new URL(this.viewerModuleUrl, window.location.href).href;
+                fetch(resolvedModuleUrl, { cache: "force-cache" }).catch(() => {});
+            } catch (e) {
+                resolvedModuleUrl = null;
+            }
+        }
+
         this.popoutWin = window.open("", "_blank", "width=960,height=720");
         if (!this.popoutWin) return;
         
@@ -38,8 +48,11 @@ export class PopupHostManager {
   <meta charset="UTF-8" />
   <title>MolSysViewer Popout</title>
   <style>
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
-    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f5f6f8; }
+    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; opacity: 0; transition: opacity 240ms ease; }
+    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #2b2f36; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
+    #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
+    @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
     /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
     .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
     .molsysviewer-traj-input::-webkit-inner-spin-button,
@@ -49,8 +62,10 @@ export class PopupHostManager {
     .molsysviewer-slider::-webkit-slider-runnable-track { background: rgba(200,200,200,0.35) !important; height: 16px; border-radius: 999px; }
     .molsysviewer-slider::-webkit-slider-thumb { -webkit-appearance: none !important; width: 16px; height: 16px; border-radius: 50% !important; background: rgba(0,0,0,0.5) !important; margin-top: 0px; }
   </style>
+  ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
 </head>
 <body>
+  <div id="molsysviewer-loading"><div class="spinner"></div><div>Loading viewer…</div></div>
   <div id="molsysviewer-pop"></div>
 </body>
 </html>
@@ -61,11 +76,10 @@ export class PopupHostManager {
             const scriptEl = doc.createElement("script");
             scriptEl.type = "module";
             if (this.viewerModuleUrl) {
-                const resolved = new URL(this.viewerModuleUrl, window.location.href).href;
                 scriptEl.textContent = `
                     (async () => {
                         try {
-                            const module = await import("${resolved}");
+                            const module = await import("${resolvedModuleUrl ?? ""}");
                             const boot = module.bootPopup || (module.default && module.default.bootPopup);
                             if (boot) {
                                 boot(module);

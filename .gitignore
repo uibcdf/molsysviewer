@@ -56,6 +56,7 @@ molsysviewer/js/src/*.js.map
 # Webpack cache
 molsysviewer/js/.webpack-cache/
 molsysviewer/js/.parcel-cache/
+molsysviewer/js/*.tgz
 
 # =========================================================
 # Unit test / coverage reports
