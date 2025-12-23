@@ -4,7 +4,7 @@ channels:
 
 dependencies:
   # Core tools for building and uploading conda packages
-  - python=3.12
+  - python
   - conda-build
   - anaconda-client
   - versioningit
