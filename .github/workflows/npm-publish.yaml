@@ -6,14 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Versión exacta a publicar (ej. 0.5.3)"
+        description: "Versión exacta (ej. 0.5.3)"
         required: true
         default: "0.5.3"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # Añadimos 'contents: write' para poder subir los cambios al repo
     permissions:
       contents: write
       id-token: write 
@@ -26,7 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Importante: para hacer commit de vuelta, necesitamos el historial
           fetch-depth: 0
           ref: ${{ github.event.inputs.tag || github.ref_name }}
 
@@ -41,18 +39,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Inject version into package.json
+      - name: Inject version and repo info
         id: get_version
         run: |
-          RAW_VERSION="${{ github.event.inputs.tag || github.ref_name }}"
-          CLEAN_VERSION=$(echo "$RAW_VERSION" | sed 's/^v//')
-          
-          if [[ "$CLEAN_VERSION" == "main" || "$CLEAN_VERSION" == "master" ]]; then
-            echo "ERROR: Versión inválida."
-            exit 1
-          fi
-          
+          CLEAN_VERSION=$(echo "${{ github.event.inputs.tag || github.ref_name }}" | sed 's/^v//')
           npm version $CLEAN_VERSION --no-git-tag-version
+          npm pkg set repository.type="git"
+          npm pkg set repository.url="https://github.com/uibcdf/molsysviewer"
+          npm pkg set repository.directory="molsysviewer/js"
           echo "version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build runtime bundle
@@ -65,10 +59,9 @@ jobs:
           rm -f .npmrc ~/.npmrc
           npm publish --access public --provenance
 
-      # PASO NUEVO: Hacer commit de la versión actualizada al repositorio
       - name: Commit updated package.json
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update version to ${{ steps.get_version.outputs.version }} [skip ci]"
           file_pattern: 'molsysviewer/js/package.json'
-          branch: main # O la rama donde quieras que se actualice
+          branch: main
