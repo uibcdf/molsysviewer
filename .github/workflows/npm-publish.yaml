@@ -6,13 +6,14 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Git tag to publish"
+        description: "Versión exacta a publicar (ej. 0.5.3)"
         required: true
         default: "0.5.3"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Permisos críticos para Trusted Publishing (OIDC)
     permissions:
       contents: read
       id-token: write 
@@ -30,10 +31,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "22" # Usamos una versión más reciente de Node
+          node-version: "22"
 
       - name: Install latest npm
-        # ESTO ES NECESARIO: Trusted Publishing requiere npm >= 11.5.1
+        # Necesario para que el CLI soporte Trusted Publishing nativo (v11.5.1+)
         run: npm install -g npm@latest
 
       - name: Install dependencies
@@ -42,9 +43,34 @@ jobs:
       - name: Build runtime bundle
         run: npm run build
 
+      - name: Verify tag matches package version
+        env:
+          # Usamos el input del manual dispatch o el nombre del tag del release
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          node - <<'NODE'
+          const tag = (process.env.TAG || "").replace(/^v/, "");
+          
+          // Validación de seguridad para no publicar con versión "main"
+          if (tag === "main" || tag === "master") {
+            console.error("Error: Estás intentando publicar desde la rama '" + tag + "'.");
+            console.error("Debes especificar una versión numérica (ej. 0.5.3) en el input del workflow.");
+            process.exit(1);
+          }
+
+          const pkg = require("./package.json");
+          if (pkg.version !== tag) {
+            console.error(`Error: El tag/input (${tag}) no coincide con la versión en package.json (${pkg.version})`);
+            process.exit(1);
+          }
+          console.log(`Versión validada: ${tag}`);
+          NODE
+
       - name: Publish to npm
         run: |
-          # Eliminamos cualquier config que setup-node haya creado por defecto
+          # Limpiamos cualquier configuración residual del entorno
           rm -f .npmrc ~/.npmrc
-          # Publicamos. Con npm v11+, detectará el OIDC de GitHub automáticamente
-          npm publish --access public
+          # Publicamos. npm v11 detectará automáticamente el OIDC de GitHub.
+          # Nota: --provenance se genera automáticamente en npm 11 con OIDC, 
+          # pero puedes dejarlo para mayor seguridad.
+          npm publish --access public --provenance
