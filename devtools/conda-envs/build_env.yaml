@@ -4,7 +4,6 @@ channels:
 
 dependencies:
   # Core tools for building and uploading conda packages
-  - python
   - conda-build
   - anaconda-client
   - versioningit
