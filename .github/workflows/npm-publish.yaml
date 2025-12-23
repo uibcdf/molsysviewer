@@ -1,4 +1,4 @@
-name: npm-publish.yaml
+name: NPM Release
 
 on:
   release:
@@ -58,10 +58,3 @@ jobs:
         run: |
           rm -f .npmrc ~/.npmrc
           npm publish --access public --provenance
-
-      - name: Commit updated package.json
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update version to ${{ steps.get_version.outputs.version }} [skip ci]"
-          file_pattern: 'molsysviewer/js/package.json'
-          branch: main
