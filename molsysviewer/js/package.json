@@ -2,6 +2,11 @@
   "name": "@uibcdf/molsysviewer",
   "version": "0.0.0",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uibcdf/molsysviewer.git",
+    "directory": "molsysviewer/js"
+  },
   "files": [
     "dist/*"
   ],
