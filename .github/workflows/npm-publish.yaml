@@ -4,29 +4,38 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Git tag to publish (e.g., 0.5.3 or v0.5.3)"
+        required: true
+        default: "0.5.3"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Permisos necesarios para Trusted Publishing (OIDC)
     permissions:
       contents: read
-      id-token: write
+      id-token: write 
+    
     env:
-      RELEASE_VERSION: ${{ github.ref_name }}
+      RELEASE_VERSION: ${{ inputs.tag || github.ref_name }}
+    
     defaults:
       run:
         working-directory: molsysviewer/js
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ inputs.tag || github.ref_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+          # IMPORTANTE: No incluimos registry-url para que no bloquee el flujo OIDC
 
       - name: Install dependencies
         run: npm ci
@@ -37,7 +46,7 @@ jobs:
       - name: Verify tag matches package version
         run: |
           node - <<'NODE'
-          const tag = (process.env.GITHUB_REF_NAME || "").replace(/^v/, "");
+          const tag = (process.env.INPUT_TAG || process.env.GITHUB_REF_NAME || "").replace(/^v/, "");
           const pkg = require("./package.json");
           if (pkg.version !== tag) {
             throw new Error(`Tag ${tag} does not match package.json version ${pkg.version}`);
@@ -45,6 +54,6 @@ jobs:
           NODE
 
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ""
+        # No se requiere NODE_AUTH_TOKEN. npm usará el permiso id-token: write
+        # para autenticarse automáticamente con el "Trusted Publisher".
         run: npm publish --access public --provenance
