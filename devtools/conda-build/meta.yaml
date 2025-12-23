@@ -10,7 +10,6 @@ source:
 
 build:
   noarch: python
-  script: bash build.sh
 
 requirements:
   host:
