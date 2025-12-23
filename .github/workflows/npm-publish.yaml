@@ -44,9 +44,11 @@ jobs:
         run: npm run build
 
       - name: Verify tag matches package version
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           node - <<'NODE'
-          const tag = (process.env.INPUT_TAG || process.env.GITHUB_REF_NAME || "").replace(/^v/, "");
+          const tag = (process.env.TAG || "").replace(/^v/, "");
           const pkg = require("./package.json");
           if (pkg.version !== tag) {
             throw new Error(`Tag ${tag} does not match package.json version ${pkg.version}`);
