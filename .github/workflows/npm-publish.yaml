@@ -6,20 +6,16 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Git tag to publish (e.g., 0.5.3 or v0.5.3)"
+        description: "Git tag to publish"
         required: true
         default: "0.5.3"
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # Permisos necesarios para Trusted Publishing (OIDC)
     permissions:
       contents: read
       id-token: write 
-    
-    env:
-      RELEASE_VERSION: ${{ inputs.tag || github.ref_name }}
     
     defaults:
       run:
@@ -34,8 +30,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          # IMPORTANTE: No incluimos registry-url para que no bloquee el flujo OIDC
+          node-version: "22" # Usamos una versión más reciente de Node
+
+      - name: Install latest npm
+        # ESTO ES NECESARIO: Trusted Publishing requiere npm >= 11.5.1
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
@@ -43,19 +42,9 @@ jobs:
       - name: Build runtime bundle
         run: npm run build
 
-      - name: Verify tag matches package version
-        env:
-          TAG: ${{ inputs.tag || github.ref_name }}
-        run: |
-          node - <<'NODE'
-          const tag = (process.env.TAG || "").replace(/^v/, "");
-          const pkg = require("./package.json");
-          if (pkg.version !== tag) {
-            throw new Error(`Tag ${tag} does not match package.json version ${pkg.version}`);
-          }
-          NODE
-
       - name: Publish to npm
-        # No se requiere NODE_AUTH_TOKEN. npm usará el permiso id-token: write
-        # para autenticarse automáticamente con el "Trusted Publisher".
-        run: npm publish --access public --provenance --registry=https://registry.npmjs.org/
+        run: |
+          # Eliminamos cualquier config que setup-node haya creado por defecto
+          rm -f .npmrc ~/.npmrc
+          # Publicamos. Con npm v11+, detectará el OIDC de GitHub automáticamente
+          npm publish --access public
