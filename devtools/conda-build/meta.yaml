@@ -1,23 +1,20 @@
-{% set name = "molsysviewer" %}
-{% set version = environ.get("RELEASE_VERSION", "0.0.2") %}
-
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: molsysviewer
+  version: "{{ environ['GIT_DESCRIBE_TAG'] }}"
 
 source:
-  path: ../..   # raíz del repositorio (ajusta si tu estructura es otra)
+  path: ../../   # raíz del repositorio (ajusta si tu estructura es otra)
 
 build:
-  noarch: python
+  number: 1
 
 requirements:
   host:
-    - python >=3.10
+    - python
     - pip
     - nodejs  # para npm y el build de viewer.js
   run:
-    - python >=3.10
+    - python
     - anywidget
 
 about:
