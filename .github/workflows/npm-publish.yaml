@@ -1,4 +1,4 @@
-name: Publish NPM Package
+name: npm-publish.yaml
 
 on:
   release:
@@ -58,4 +58,4 @@ jobs:
       - name: Publish to npm
         # No se requiere NODE_AUTH_TOKEN. npm usará el permiso id-token: write
         # para autenticarse automáticamente con el "Trusted Publisher".
-        run: npm publish --access public --provenance
+        run: npm publish --access public --provenance --registry=https://registry.npmjs.org/
