@@ -11,6 +11,7 @@ import re
 import sys
 from pathlib import Path
 
+from sphinx.util import logging
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -35,6 +36,8 @@ version = molsysviewer.__version__.split('+')[0]
 release = molsysviewer.__version__.split('+')[0]
 
 print(f'version {version}, release {release}')
+
+logger = logging.getLogger(__name__)
 
 # -- General configuration ---------------------------------------------------
 
@@ -204,6 +207,7 @@ def _update_docs_light_runtime_links(app):
     if not views_dir.exists():
         return
     pattern = re.compile(r"https://cdn\.jsdelivr\.net/npm/@uibcdf/molsysviewer@[^/]+/dist/viewer\.js")
+    updated_files = 0
     for html_path in views_dir.glob("*.html"):
         try:
             content = html_path.read_text(encoding="utf-8")
@@ -212,6 +216,9 @@ def _update_docs_light_runtime_links(app):
         updated = pattern.sub(target, content)
         if updated != content:
             html_path.write_text(updated, encoding="utf-8")
+            updated_files += 1
+    if updated_files:
+        logger.info("Updated docs-light runtime links in %s HTML files.", updated_files)
 
 
 def setup(app):

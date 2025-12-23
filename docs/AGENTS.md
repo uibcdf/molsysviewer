@@ -5,8 +5,8 @@
 - Do not edit generated artifacts (`_build/`). Use `_static/` for assets and
   `_templates/` for layout overrides.
 - Notebooks execute off (`nb_execution_mode="off"`). For interactive demos,
-  export docs-light views with `MolSysView.write_html(..., mode="docs",
-  docs_assets="local")` into `_static/views/` and embed via
+  export docs-light views with `MolSysView.write_html(..., mode="lite")` into
+  `_static/views/` and embed via
   `molsysviewer.thirds.load_html_in_jupyter_notebook`.
 - Respect the existing structure (`content/`, `api/`, `_static/`,
   `_templates/`, `_bibtex/`). Keep new pages consistent with
