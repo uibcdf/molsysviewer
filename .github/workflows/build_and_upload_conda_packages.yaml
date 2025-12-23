@@ -10,6 +10,8 @@ jobs:
   conda_deployment_with_new_tag:
     name: Conda deployment of package with Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ github.event.release.tag_name }}
     strategy:
       fail-fast: false  # do not cancel all in-progress jobs if any job variation fails
       matrix:
@@ -65,4 +67,3 @@ jobs:
           platform_osx-arm64: true
           platform_win-64: true
           token: ${{ secrets.ANACONDA_UIBCDF_TOKEN }} # Replace with the right name of your secret
-

@@ -2,7 +2,7 @@
 set -ex
 
 # 1) Build JS bundle (viewer.js) into molsysviewer/
-pushd js
+pushd molsysviewer/js
 # Si usas package-lock, mejor npm ci; si no, npm install
 npm ci || npm install
 npm run build
