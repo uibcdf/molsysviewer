@@ -3,6 +3,10 @@ set -ex
 
 # 1) Build JS bundle (viewer.js) into molsysviewer/
 pushd molsysviewer/js
+# Conda build sets PKG_VERSION; use it if RELEASE_VERSION is unset.
+if [ -z "${RELEASE_VERSION:-}" ] && [ -n "${PKG_VERSION:-}" ]; then
+  export RELEASE_VERSION="${PKG_VERSION}"
+fi
 # Si usas package-lock, mejor npm ci; si no, npm install
 npm ci || npm install
 npm run build
