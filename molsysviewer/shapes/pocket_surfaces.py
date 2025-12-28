@@ -9,14 +9,14 @@ def _normalize_mouths(mouth_atom_indices: Sequence[int] | Sequence[Sequence[int]
     ):
         raise TypeError("mouth_atom_indices must be a sequence of indices or sequences")
 
-    # Lista de listas (normalizada)
+    # List of lists (normalized)
     if all(isinstance(x, Sequence) and not isinstance(x, (str, bytes)) for x in mouth_atom_indices):
         mouths = []
         for mouth in mouth_atom_indices:  # type: ignore[union-attr]
             mouths.append(_normalize_single_mouth(mouth))
         return mouths
 
-    # Lista plana -> una sola boca
+    # Flat list -> a single mouth
     return [_normalize_single_mouth(mouth_atom_indices)]
 
 
@@ -28,7 +28,7 @@ def _normalize_single_mouth(indices: Iterable[int]):
 
 
 class PocketSurfaces:
-    """Utilidades para superficies de pocket/void basadas en átomos."""
+    """Helpers for pocket/void surfaces based on selected atoms."""
 
     def __init__(self, view) -> None:
         self._view = view
@@ -48,7 +48,7 @@ class PocketSurfaces:
         clip_plane: dict | None = None,
         tag: str | None = None,
     ):
-        """Envía al frontend la petición de una superficie tipo pocket/void."""
+        """Send a pocket/void surface request to the frontend."""
 
         if not atom_indices:
             raise ValueError("atom_indices is required and cannot be empty")

@@ -23,7 +23,7 @@ class ShapesManager:
     def __init__(self, view) -> None:
         self._view = view
 
-        # Submódulos especializados
+        # Specialized submodules
         self.spheres = SphereShapes(view)
         self.pockets = PocketSurfaces(view)
         self.links = LinkShapes(view)
@@ -120,7 +120,7 @@ class ShapesManager:
         return self.ph4.add_pharmacophore_features(*args, **kwargs)
 
     def clear(self, tag: str | None = None):
-        """Eliminar shapes (todas si tag es None, o por tag)."""
+        """Delete shapes (all if tag is None, or by tag)."""
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
 
 

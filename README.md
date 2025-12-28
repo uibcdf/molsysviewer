@@ -20,6 +20,9 @@ It provides high-quality, interactive 3D rendering of molecular structures,
 custom shapes, trajectories, and scientific overlays — directly inside Jupyter
 notebooks and JupyterLab.
 
+For users and developers, see the web documentation:
+https://www.uibcdf.org/molsysviewer
+
 The viewer is implemented as a lightweight anywidget extension with a
 TypeScript/Mol* core, giving it excellent performance, portability, and
 extensibility while keeping the Python-facing API simple and intuitive.
@@ -58,7 +61,7 @@ of the active roadmap.
 ### ✔ Clean, modern architecture
 - Built entirely on **anywidget** (no JupyterLab extension required)
 - TypeScript + esbuild bundling
-- Zero external CDN dependencies
+- The widget runtime ships locally; docs-lite exports may use a CDN
 - Viewer initializes reliably through a robust JS → Python handshake
 - Fully self-contained for conda and pip packaging
 
@@ -70,6 +73,7 @@ designed to support:
 - pharmacophoric elements (PharmacophoreMT)
 - trajectory inspection (MolSysMT)
 - structure + annotation blends (ML predictions, scoring fields, etc.)
+- region/layer scene management and a popout mirror view
 
 ---
 
@@ -87,7 +91,7 @@ END
 
 v = mv.MolSysView()
 v.show()
-v.load_pdb_string(pdb_text)
+v.load(pdb_text)
 
 # Add a transparent sphere overlay
 v.add_sphere(center=(12.0, 12.0, 8.0), radius=3.0, color=0x00ff00, alpha=0.4)
@@ -133,6 +137,10 @@ MolSysViewer uses:
 - Each structure includes `coordinates` (Å), optional `box` as three vectors (Å), and optional `time`.  
 - Legacy names (`positions`, `frames`) are not used in the viewer pipeline.
 
+Developer Guide
+
+- Start here: https://www.uibcdf.org/molsysviewer/content/developer/
+
 The JS bundle (`viewer.js`) is generated automatically during packaging and is
 tracked in the repository (it carries the `@generated` banner) so that users of
 the published wheels/conda packages never need a Node.js toolchain. The bundle
@@ -144,7 +152,7 @@ Build the JS bundle manually for development:
 ```bash
 cd js
 npm install
-npm run build
+npm run build  # only when you need to test TS changes locally
 ```
 
 Then install the Python package:
@@ -181,7 +189,7 @@ visualizations.
 - Event callbacks (click, hover)
 - Scene export
 
-For the complete roadmap, see `ROADMAP.md`.
+For the complete roadmap, see `docs/content/developer/roadmap.md`.
 
 ---
 

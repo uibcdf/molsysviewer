@@ -5,10 +5,10 @@ import molsysviewer as viewer
 
 
 def test_demo_region_hide():
-    """Smoke-test: crear región y ocultarla sin errores."""
+    """Smoke-test: create a region and hide it without errors."""
 
     view = viewer.demo.tctim(debug_js=True)
-    # Evitar tráfico real con el frontend; solo necesitamos que no falle.
+    # Avoid real frontend traffic; we only need the calls to not fail.
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.show()

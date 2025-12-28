@@ -31,22 +31,21 @@ def load_from_molsysmt(
     label: str | None = None,
     view: "MolSysView | None" = None,
 ) -> "MolSysView":
-    """Backend interno para MolSysView.load(...).
+    """Internal backend for `MolSysView.load(...)`.
 
-    - Convierte cualquier `molecular_system` a MolSysMT.MolSys.
-    - Inicializa la máscara de átomos.
-    - Intenta el camino nativo (payload MolSysMT → Mol*).
-    - Si falla, hace fallback a PDB string.
+    - Convert `molecular_system` into `molsysmt.MolSys`.
+    - Initialize the atom mask.
+    - Use the native path (MolSys payload → Mol*).
     """
 
     view = ensure_view(view)
 
-    # Guardar en el estado del viewer
+    # Store the input on the viewer instance.
     view.molecular_system = molecular_system
     view.selection = selection
     view.structure_indices = structure_indices
 
-    # Convertir a MolSys y crear máscara
+    # Convert to MolSys and create the atom mask.
     view._molsys = msm.convert(
         molecular_system,
         to_form="molsysmt.MolSys",

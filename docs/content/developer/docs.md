@@ -1,18 +1,16 @@
 # Documentation
 
-- We mirror MolSysMT’s docs style (pydata_sphinx_theme, MyST, notebooks off by default).
+- We mirror MolSysMT’s docs tooling and style (pydata_sphinx_theme, MyST, notebooks off by default).
 - Writing style: second person, short sentences, “why” before “how”, scannable headings/lists.
 - Assets go to `_static/`; layout overrides in `_templates/`.
 - API pages use autosummary and must match the public Python surface; run `clean_api.py` after regenerating.
 - Build with `make html` (use `make clean` if artifacts conflict). Keep `_build/` out of commits.
-- When reviewing exported HTML, serve `_build/html` via HTTP (e.g., `python -m http.server`); opening with `file://` blocks module imports by CORS and the viewer will not load.
+- When reviewing docs with lite embeds, you can open the site directly in Chrome (for example `google-chrome _build/html/index.html`); you do not need to serve `_build/html` via HTTP because lite assets load from the CDN.
+- Execute notebooks manually with `docs/execute_notebooks.py` when you want frozen outputs in tutorials; it strips ipywidgets/AnyWidget state by default to keep `.ipynb` files small. Add the cell tag `keep-widget-state` if you really need a widget-based output to survive the strip.
 - Runtime CDN: docs-light exports load the npm package `@uibcdf/molsysviewer` (served by jsDelivr). Publishing is handled by the Trusted Publisher workflow in `.github/workflows/npm-publish.yml`.
-- For interactive showcases, export docs-light views with `MolSysView.write_html(..., mode="lite")` into `_static/views/` and embed them via `molsysviewer.thirds.load_html_in_jupyter_notebook` (docs builds rewrite the CDN version to the current tag).
+- For interactive showcases, export docs-light views with `MolSysView.write_html(..., mode="lite")` into `_static/views/` and embed them via `molsysviewer.thirds.jupyter.load_html_in_notebook` (docs builds rewrite the CDN version to the current tag).
 - Stub pages in `content/user/cookbook/` and `content/showcase/` should be filled with real code and static exports when ready.
 
-See also `Provisional_Docs_Guidelines.md` for the full checklist.
-
-```{toctree}
-:hidden:
-:maxdepth: 1
-```
+See also:
+- `docs/content/developer/documentation/web/editorial_guidelines.md` for the editorial rules used across the web docs.
+- `docs/content/developer/documentation/web/build_and_layout.md` for the docs build and layout conventions.

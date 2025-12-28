@@ -39,7 +39,7 @@ def test_mouth_indices_override_clip():
         clip_plane={"point": [0, 0, 0], "normal": [0, 0, 1]},
     )
 
-    # clip_plane se ignora cuando se especifican bocas
+    # clip_plane is ignored when mouths are provided
     options = view.messages[0]["options"]
     assert "clip_plane" not in options
     assert options["mouth_atom_indices"] == [[4, 5], [6]]

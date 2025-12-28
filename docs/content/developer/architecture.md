@@ -5,7 +5,8 @@
 - **Shapes & tags**: shape builders register Mol* state refs; tags allow selective clearing.
 - **Data flow**: Python → message → JS controller → Mol* state tree → renderer; visibility uses transparency over atom masks.
 - **Generated artifacts**: `viewer.js`/`.map` are produced from `js/src/` with esbuild; never edit them directly.
-- **Doc embeds**: use `MolSysView.write_html(..., mode="lite")` to export docs-light views and `molsysviewer.thirds.load_html_in_jupyter_notebook` to embed them in docs notebooks.
+- **Doc embeds**: use `MolSysView.write_html(..., mode="lite")` to export docs-light views and `molsysviewer.thirds.jupyter.load_html_in_notebook` to embed them in docs notebooks.
+- For a detailed architecture reference, see {doc}`architecture_full`.
 
 Developer-facing structure
 - `molsysviewer/viewer.py`: message queue, visibility masks, shape manager, exports.
@@ -22,8 +23,3 @@ Message flow (conceptual)
 WebGL boundary
 - MolSysViewer does not draw directly; Mol* owns WebGL. We prepare geometry/state; Mol* renders.
 - AnyWidget hosts the canvas; the Mol* plugin attaches to it and manages lifecycle.
-
-```{toctree}
-:hidden:
-:maxdepth: 1
-```

@@ -257,13 +257,13 @@ export async function addPocketSurfaceFromPython(plugin: PluginContext, options:
     const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
     const structure = structureRef?.cell.obj?.data as Structure | undefined;
     if (!structure) {
-        console.warn("[MolSysViewer] add_pocket_surface sin estructura cargada");
+        console.warn("[MolSysViewer] add_pocket_surface: no structure loaded");
         return undefined;
     }
 
     const subset = createSubsetFromAtomIndices(structure, options.atom_indices);
     if (!subset || subset.elementCount === 0) {
-        console.warn("[MolSysViewer] add_pocket_surface sin átomos seleccionados");
+        console.warn("[MolSysViewer] add_pocket_surface: no selected atoms");
         return undefined;
     }
 

@@ -5,23 +5,23 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 cd "$REPO_ROOT"
 
-# 1. Crear o actualizar el entorno Conda/Mamba desde environment.yml
+# 1. Create or update the Conda/Mamba environment from environment.yml
 if ! conda env list | grep -q 'molsysviewer@uibcdf_3\.12'; then
     conda env create -f environment.yml
 else
     conda env update -f environment.yml --prune
 fi
 
-# 2. Activar el entorno y preparar Python.
+# 2. Activate the environment and prepare Python.
 eval "$(conda shell.bash hook)"
 conda activate molsysviewer@uibcdf_3.12
 pip install --upgrade pip
 pip install -e .
 
-# 3. Instalar dependencias JS y construir el bundle del widget.
+# 3. Install JS dependencies and build the widget bundle.
 pushd molsysviewer/js >/dev/null
 npm install
 npm run build
 popd >/dev/null
 
-echo "MolSysViewer listo para usarse."
+echo "MolSysViewer is ready to use."

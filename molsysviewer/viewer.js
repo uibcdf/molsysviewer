@@ -140708,7 +140708,7 @@ var PocketBlob3D = MSVTransform({
 function preparePocketBlobData(options) {
   const field = buildPocketBlobField(options);
   if (!field) {
-    console.warn("[MolSysViewer] add_pocket_blob sin datos v\xE1lidos");
+    console.warn("[MolSysViewer] add_pocket_blob: no valid data");
     return void 0;
   }
   const levels = options.iso_levels && options.iso_levels.length > 0 ? options.iso_levels : [options.iso_level ?? 0.1];
@@ -140951,7 +140951,7 @@ function prepareChannelTubeData(options) {
   const built = buildChannelSegments(options);
   const segments2 = built.segments;
   if (!segments2 || segments2.length === 0) {
-    console.warn("[MolSysViewer] add_channel_tube sin segmentos v\xE1lidos");
+    console.warn("[MolSysViewer] add_channel_tube: no valid segments");
     return { radialSegments: built.radialSegments };
   }
   const alpha = options.alpha ?? 1;
@@ -141173,7 +141173,7 @@ var AnisotropyEllipsoids3D = MSVTransform({
 function prepareAnisotropyEllipsoidData(plugin, options) {
   const ellipsoids = buildEllipsoidSpecs(plugin, options);
   if (ellipsoids.length === 0) {
-    console.warn("[MolSysViewer] add_anisotropy_ellipsoids sin datos v\xE1lidos");
+    console.warn("[MolSysViewer] add_anisotropy_ellipsoids: no valid data");
     return void 0;
   }
   const alpha = options.alpha ?? 0.6;
@@ -141303,7 +141303,7 @@ function preparePharmacophoreData(options) {
   const centers = options.centers ?? [];
   const kinds = options.kinds ?? [];
   if (centers.length === 0 || centers.length !== kinds.length) {
-    console.warn("[MolSysViewer] add_pharmacophore_features requiere centers y kinds del mismo tama\xF1o");
+    console.warn("[MolSysViewer] add_pharmacophore_features requires centers and kinds of the same length");
     return void 0;
   }
   const radii = options.radii && options.radii.length === centers.length ? options.radii : new Array(centers.length).fill(0.6);
@@ -141455,7 +141455,7 @@ function normalizeCoordinatePair(entry) {
 function expandToList(value, count3, cast, fallback) {
   if (Array.isArray(value)) {
     if (value.length === count3) return value.map(cast);
-    console.warn(`[MolSysViewer] Esperaba ${count3} valores pero recib\xED ${value.length}. Se reutilizar\xE1 el primero.`);
+    console.warn(`[MolSysViewer] Expected ${count3} values but got ${value.length}. The first value will be reused.`);
     return Array(count3).fill(cast(value[0]));
   }
   return Array(count3).fill(cast(value ?? fallback));
@@ -141528,7 +141528,7 @@ function buildLinksFromAtoms(structure, options) {
     const locA = lookup.get(a8);
     const locB = lookup.get(b8);
     if (!locA || !locB) {
-      console.warn(`[MolSysViewer] atom_pairs[${i}] no coincide con \xE1tomos de la estructura`);
+      console.warn(`[MolSysViewer] atom_pairs[${i}] does not match atoms in the structure`);
       continue;
     }
     locA.unit.conformation.position(locA.elementIndex, positionsStart);
@@ -141568,7 +141568,7 @@ async function addNetworkLinksFromPython(plugin, options) {
     const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
     const structure = structureRef?.cell.obj?.data;
     if (!structure) {
-      console.warn("[MolSysViewer] add_network_links sin estructura cargada");
+      console.warn("[MolSysViewer] add_network_links: no structure loaded");
       return void 0;
     }
     links = buildLinksFromAtoms(structure, options);
@@ -141578,7 +141578,7 @@ async function addNetworkLinksFromPython(plugin, options) {
     name = getNetworkLinksName(links.length);
   }
   if (links.length === 0) {
-    console.warn("[MolSysViewer] add_network_links sin datos v\xE1lidos");
+    console.warn("[MolSysViewer] add_network_links: no valid data");
     return void 0;
   }
   const data = {
@@ -141784,7 +141784,7 @@ function expandOptionalToList(value, count3, cast) {
   if (value === void 0) return Array(count3).fill(void 0);
   if (Array.isArray(value)) {
     if (value.length === count3) return value.map(cast);
-    console.warn(`[MolSysViewer] Esperaba ${count3} valores pero recib\xED ${value.length}. Se reutilizar\xE1 el primero.`);
+    console.warn(`[MolSysViewer] Expected ${count3} values but got ${value.length}. The first value will be reused.`);
     return Array(count3).fill(cast(value[0]));
   }
   return Array(count3).fill(cast(value));
@@ -141815,14 +141815,14 @@ function buildTrianglesFromAtoms(structure, options) {
   for (let i = 0; i < triplets.length; i++) {
     const triplet = triplets[i];
     if (!Array.isArray(triplet) || triplet.length !== 3) {
-      console.warn(`[MolSysViewer] atom_triplets[${i}] no es un triplete v\xE1lido`);
+      console.warn(`[MolSysViewer] atom_triplets[${i}] is not a valid triplet`);
       continue;
     }
     const locA = lookup.get(triplet[0]);
     const locB = lookup.get(triplet[1]);
     const locC = lookup.get(triplet[2]);
     if (!locA || !locB || !locC) {
-      console.warn(`[MolSysViewer] atom_triplets[${i}] no coincide con \xE1tomos de la estructura`);
+      console.warn(`[MolSysViewer] atom_triplets[${i}] does not match atoms in the structure`);
       continue;
     }
     locA.unit.conformation.position(locA.elementIndex, a8);
@@ -141848,7 +141848,7 @@ function prepareTriangleFacesData(plugin, options) {
     const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
     const structure = structureRef?.cell.obj?.data;
     if (!structure) {
-      console.warn("[MolSysViewer] add_triangle_faces con atom_triplets pero sin estructura cargada");
+      console.warn("[MolSysViewer] add_triangle_faces: atom_triplets provided but no structure loaded");
       return void 0;
     }
     triangles = buildTrianglesFromAtoms(structure, options);
@@ -141856,7 +141856,7 @@ function prepareTriangleFacesData(plugin, options) {
     triangles = buildTrianglesFromVertices(options);
   }
   if (triangles.length === 0) {
-    console.warn("[MolSysViewer] add_triangle_faces sin tri\xE1ngulos v\xE1lidos");
+    console.warn("[MolSysViewer] add_triangle_faces: no valid triangles");
     return void 0;
   }
   const name = triangles.length === 1 ? "Triangle Face" : `${triangles.length} Triangle Faces`;
@@ -142166,7 +142166,7 @@ function buildTetrahedraFromAtoms(structure, options) {
     const locC = lookup.get(quad[2]);
     const locD = lookup.get(quad[3]);
     if (!locA || !locB || !locC || !locD) {
-      console.warn(`[MolSysViewer] atom_quads[${i}] no coincide con \xE1tomos de la estructura`);
+      console.warn(`[MolSysViewer] atom_quads[${i}] does not match atoms in the structure`);
       continue;
     }
     locA.unit.conformation.position(locA.elementIndex, a8);
@@ -142195,7 +142195,7 @@ function prepareTetrahedraData(plugin, options) {
     const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
     const structure = structureRef?.cell.obj?.data;
     if (!structure) {
-      console.warn("[MolSysViewer] add_tetrahedra con atom_quads pero sin estructura cargada");
+      console.warn("[MolSysViewer] add_tetrahedra: atom_quads provided but no structure loaded");
       return void 0;
     }
     tetrahedra = buildTetrahedraFromAtoms(structure, options);
@@ -142203,7 +142203,7 @@ function prepareTetrahedraData(plugin, options) {
     tetrahedra = buildTetrahedraFromCoords(options);
   }
   if (tetrahedra.length === 0) {
-    console.warn("[MolSysViewer] add_tetrahedra sin tetraedros v\xE1lidos");
+    console.warn("[MolSysViewer] add_tetrahedra: no valid tetrahedra");
     return void 0;
   }
   const name = options.name ?? (tetrahedra.length === 1 ? "Tetrahedron" : `${tetrahedra.length} Tetrahedra`);
@@ -142344,7 +142344,7 @@ function resolveOriginsFromAtoms(plugin, atomIndices) {
   const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
   const structure = structureRef?.cell.obj?.data;
   if (!structure) {
-    console.warn("[MolSysViewer] add_displacement_vectors sin estructura cargada");
+    console.warn("[MolSysViewer] add_displacement_vectors: no structure loaded");
     return [];
   }
   const lookup = buildUnitLookup(structure);
@@ -142353,7 +142353,7 @@ function resolveOriginsFromAtoms(plugin, atomIndices) {
   atomIndices.forEach((idx, pos) => {
     const loc = lookup.get(idx);
     if (!loc) {
-      console.warn(`[MolSysViewer] atom_indices[${pos}] no coincide con \xE1tomos de la estructura`);
+      console.warn(`[MolSysViewer] atom_indices[${pos}] does not match atoms in the structure`);
       origins.push(void 0);
       return;
     }
@@ -142365,12 +142365,12 @@ function resolveOriginsFromAtoms(plugin, atomIndices) {
 function prepareDisplacementVectorData(plugin, options) {
   const vectors = options.vectors ?? [];
   if (!vectors || vectors.length === 0) {
-    console.warn("[MolSysViewer] add_displacement_vectors sin vectores");
+    console.warn("[MolSysViewer] add_displacement_vectors: missing vectors");
     return void 0;
   }
   const origins = options.atom_indices && options.atom_indices.length > 0 ? resolveOriginsFromAtoms(plugin, options.atom_indices) : options.origins ?? [];
   if (!origins || origins.length === 0) {
-    console.warn("[MolSysViewer] add_displacement_vectors sin or\xEDgenes v\xE1lidos");
+    console.warn("[MolSysViewer] add_displacement_vectors: no valid origins");
     return void 0;
   }
   const count3 = Math.min(origins.length, vectors.length);
@@ -142400,7 +142400,7 @@ function prepareDisplacementVectorData(plugin, options) {
     });
   }
   if (processed.length === 0) {
-    console.warn("[MolSysViewer] add_displacement_vectors sin entradas utilizables");
+    console.warn("[MolSysViewer] add_displacement_vectors: no usable inputs");
     return void 0;
   }
   const scaledMax = Math.max(...processed.map((p6) => p6.magnitude * lengthScale));
@@ -142425,7 +142425,7 @@ function prepareDisplacementVectorData(plugin, options) {
     colorValues.push(value);
   }
   if (arrows.length === 0) {
-    console.warn("[MolSysViewer] add_displacement_vectors sin flechas tras filtrado");
+    console.warn("[MolSysViewer] add_displacement_vectors: no arrows after filtering");
     return void 0;
   }
   const minValue = Math.min(...colorValues);
@@ -142634,12 +142634,12 @@ async function addPocketSurfaceFromPython(plugin, options) {
   const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
   const structure = structureRef?.cell.obj?.data;
   if (!structure) {
-    console.warn("[MolSysViewer] add_pocket_surface sin estructura cargada");
+    console.warn("[MolSysViewer] add_pocket_surface: no structure loaded");
     return void 0;
   }
   const subset = createSubsetFromAtomIndices(structure, options.atom_indices);
   if (!subset || subset.elementCount === 0) {
-    console.warn("[MolSysViewer] add_pocket_surface sin \xE1tomos seleccionados");
+    console.warn("[MolSysViewer] add_pocket_surface: no selected atoms");
     return void 0;
   }
   const gaussianProps = getDefaultGaussianProps(options);

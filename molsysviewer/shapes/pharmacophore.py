@@ -25,7 +25,7 @@ class PharmacophoreShapes:
         out: list[list[float]] = []
         for idx, c in enumerate(centers):
             if len(c) != 3:
-                raise ValueError(f"centers[{idx}] debe tener 3 coords")
+                raise ValueError(f"centers[{idx}] must have 3 coordinates")
             out.append([float(c[0]), float(c[1]), float(c[2])])
         return out
 
@@ -36,7 +36,7 @@ class PharmacophoreShapes:
         out: list[list[float]] = []
         for idx, v in enumerate(vectors):
             if len(v) != 3:
-                raise ValueError(f"directions[{idx}] debe tener 3 coords")
+                raise ValueError(f"directions[{idx}] must have 3 coordinates")
             out.append([float(v[0]), float(v[1]), float(v[2])])
         return out
 
@@ -57,7 +57,7 @@ class PharmacophoreShapes:
         kinds_list = list(kinds)
 
         if len(centers_list) != len(kinds_list):
-            raise ValueError("centers y kinds deben tener la misma longitud")
+            raise ValueError("centers and kinds must have the same length")
 
         def _as_list(val, cast, default):
             if val is None:
@@ -66,7 +66,7 @@ class PharmacophoreShapes:
                 return [cast(val)] * len(kinds_list)
             seq = list(val)
             if len(seq) not in (1, len(kinds_list)):
-                raise ValueError("Longitud inesperada en parámetro repetible")
+                raise ValueError("Unexpected length for a repeatable parameter")
             if len(seq) == 1:
                 return [cast(seq[0])] * len(kinds_list)
             return [cast(v) for v in seq]

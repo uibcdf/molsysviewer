@@ -12,13 +12,7 @@ the [Computational Biology and Drug Design Research Unit
 
 ## Contributors
 
-*-Maybe you?-*
-
-</br>
-
-</br>
-
-</br>
+Contributions are welcome.
 
 ::::{grid} 2
 :::{grid-item}
@@ -34,7 +28,3 @@ the [Computational Biology and Drug Design Research Unit
 ```
 :::
 ::::
-
-</br>
-
-</br>

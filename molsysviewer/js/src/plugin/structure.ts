@@ -16,16 +16,16 @@ import { Cell } from "molstar/lib/mol-math/geometry/spacegroup/cell";
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 
 export interface LoadStructureOptions {
-    /** Referencia al nodo anterior que se debe eliminar antes de cargar. */
+    /** Reference to the previous node that must be removed before loading. */
     previous?: StateObjectRef;
 }
 
 export interface LoadedStructure {
-    /** Referencia al nodo raíz de los datos brutos (puede no existir en cargas nativas). */
+    /** Reference to the raw-data root node (may not exist in native loads). */
     data?: StateObjectRef;
-    /** Referencia al nodo de la trayectoria (parseado). */
+    /** Reference to the (parsed) trajectory node. */
     trajectory: StateObjectRef<SO.Molecule.Trajectory>;
-    /** Referencia opcional a la estructura creada por el preset. */
+    /** Optional reference to the structure created by the preset. */
     structure?: StateObjectRef<SO.Molecule.Structure>;
 }
 
@@ -43,9 +43,9 @@ export interface MolSysAtomPayload {
 export interface MolSysStructurePayload {
     /** Lista de coordenadas [[x,y,z], ...] en Å. */
     coordinates: number[][];
-    /** Caja opcional como tres vectores en Å. */
+    /** Optional box as three vectors in Å. */
     box?: number[][];
-    /** Tiempo opcional del frame. */
+    /** Optional frame time. */
     time?: number;
 }
 
@@ -101,14 +101,14 @@ export async function loadStructureFromString(
     const raw = await plugin.builders.data.rawData({
         data,
         label: label ?? "Structure from string",
-        // extension opcional; ayuda a algunos parsers
+        // Optional extension; helps some parsers.
         ext: format,
     });
 
-    // parseTrajectory necesita el nombre del formato: 'pdb', 'mmcif', etc.
+    // parseTrajectory needs the format name: "pdb", "mmcif", etc.
     const trajectory = await plugin.builders.structure.parseTrajectory(raw, format as any);
 
-    // Aplica el preset por defecto (representación bonita estándar)
+    // Apply the default preset (standard "pretty" representation).
     const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
 
     return {
@@ -127,13 +127,13 @@ export async function loadStructureFromUrl(
 ): Promise<LoadedStructure> {
     await recyclePreviousNode(plugin, options?.previous);
 
-    // Descarga la estructura (texto) desde la URL
+    // Download the structure text from the URL.
     const dataNode = await plugin.builders.data.download(
         { url, isBinary: false, label },
         { state: { isGhost: true } }
     );
 
-    // Si no se especifica formato, intenta deducirlo de la extensión
+    // If the format is not provided, try to infer it from the extension.
     const guessedFormat =
         format ??
         (url.split(".").pop() ?? "pdb"); // "pdb", "cif", "mmcif", etc.

@@ -11,7 +11,16 @@
 - Python tests: validate option normalization, type casting, and message payload shapes.
 - Manual checks: when changing TS, do a manual pass in a notebook if you rebuild locally; otherwise rely on unit-level coverage.
 
-```{toctree}
-:hidden:
-:maxdepth: 1
-```
+Python tests
+- Location: `tests/`
+- Runner: `pytest`
+
+JS/TS unit tests
+- Location: `molsysviewer/js/tests/unit`
+- Commands: `npm run test:js`, `npm run coverage:js`
+
+E2E tests (Playwright)
+- Location: `molsysviewer/js/tests/e2e`
+- Command: `npm run test:e2e`
+- Requires a local Chrome/Chromium with WebGL; you can set `PW_CHROMIUM_BIN=/path/to/chrome`.
+- E2E tests are currently run manually, not in CI.

@@ -23,7 +23,7 @@ def test_write_html_prefers_anywidget_embed(monkeypatch, tmp_path):
     view._send({"op": "dummy"})
     view._send({"op": "update_visibility", "options": {"visible_atom_indices": [0, 1, 2]}})
 
-    # Anywidget no expone embed; interceptamos solo la escritura para inspeccionar estado.
+    # Anywidget does not expose an embed helper; we intercept the write to inspect state.
     monkeypatch.setattr(view, "_build_standalone_html", lambda title: "HTML")
 
     outfile = tmp_path / "out.html"

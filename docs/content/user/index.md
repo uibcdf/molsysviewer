@@ -8,7 +8,13 @@ Welcome to MolSysViewer.
 :maxdepth: 2
 
 introduction/index.md
-using_the_viewer/index.md
-extensions_and_utilities/index.md
+molecular_system/index.md
+viewer/index.md
+scene_management/index.md
+representations/index.md
+overlays/index.md
+export/index.md
+demo_systems/index.md
+troubleshooting/index.md
 cookbook/index.md
 ```

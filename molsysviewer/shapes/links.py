@@ -1,4 +1,4 @@
-"""Herramientas para representar enlaces/cilindros personalizados."""
+"""Helpers to render custom links/cylinders."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ class LinkShapes:
         normalized: list[list[int]] = []
         for pair in pairs:
             if len(pair) != expected_len:
-                raise ValueError(f"Cada par debe tener longitud {expected_len}, recibido {len(pair)}")
+                raise ValueError(f"Each pair must have length {expected_len}, got {len(pair)}")
             normalized.append([int(pair[0]), int(pair[1])])
         return normalized
 
@@ -27,10 +27,10 @@ class LinkShapes:
         normalized: list[list[list[float]]] = []
         for pair in coords:
             if len(pair) != 2:
-                raise ValueError("Cada entrada de coordinate_pairs debe tener dos puntos (start, end)")
+                raise ValueError("Each entry in coordinate_pairs must have two points (start, end)")
             start, end = pair
             if len(start) != 3 or len(end) != 3:
-                raise ValueError("Cada punto debe tener 3 coordenadas (x, y, z)")
+                raise ValueError("Each point must have 3 coordinates (x, y, z)")
             normalized.append([[float(start[0]), float(start[1]), float(start[2])], [float(end[0]), float(end[1]), float(end[2])]])
         return normalized
 
@@ -45,7 +45,7 @@ class LinkShapes:
         except TypeError:
             return [cast(values)] * n
         if len(seq) not in (1, n):
-            raise ValueError(f"Esperaba 1 o {n} valores, recibido {len(seq)}")
+            raise ValueError(f"Expected 1 or {n} values, got {len(seq)}")
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
@@ -64,34 +64,34 @@ class LinkShapes:
         radial_segments: int | None = None,
         tag: str | None = None,
     ):
-        """Añade cilindros/barras conectando pares de puntos o de átomos.
+        """Add cylinders/bars connecting pairs of points or atoms.
 
         Parameters
         ----------
         atom_pairs
-            Pares de índices atómicos (0-based) a conectar. Si se proporciona,
-            se usan las coordenadas actuales de la estructura cargada.
+            Pairs of atom indices (0-based) to connect. If provided, the current
+            coordinates of the loaded structure are used.
         coordinate_pairs
             Lista de pares de coordenadas [[x1, y1, z1], [x2, y2, z2]].
         radii, colors
-            Escalares o listas (uno por enlace) para radio y color.
+            Scalars or lists (one per link) for radius and color.
         pocket_ids, chain_ids
-            Identificadores opcionales para colorear por pocket o cadena.
+            Optional identifiers to color by pocket or chain.
         color_mode
             "link" | "pocket" | "chain".
         alpha
-            Transparencia global (0-1).
+            Global alpha (0-1).
         radial_segments
-            Segmentos radiales del cilindro (>=3). Por defecto 16.
+            Cylinder radial segments (>=3). Default is 16.
         tag
-            Etiqueta opcional para el nodo de estado en Mol*.
+            Optional tag for the Mol* state node.
         """
 
         coordinate_pairs_list = self._to_coord_pairs(coordinate_pairs)
         atom_pairs_list = self._to_pair_list(atom_pairs) if atom_pairs is not None else []
 
         if not coordinate_pairs_list and not atom_pairs_list:
-            raise ValueError("Debes aportar coordinate_pairs o atom_pairs")
+            raise ValueError("You must provide coordinate_pairs or atom_pairs")
 
         n_links = len(coordinate_pairs_list) if coordinate_pairs_list else len(atom_pairs_list)
 

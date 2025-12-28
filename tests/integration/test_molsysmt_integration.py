@@ -15,14 +15,14 @@ END
 """
 
 
-def test_load_pdb_string_uses_molsysmt():
+def test_load_string_uses_molsysmt():
     view = MolSysView(debug_js=True)
-    view.load_pdb_string(PDB_TEXT)
+    view.load(PDB_TEXT)
     assert view._molsys is not None
     assert view.atom_mask is not None
     expected_atoms = msm.get(view._molsys, element="atom", n_atoms=True)
     assert len(view.atom_mask) == expected_atoms
-    assert any(msg.get("op") == "load_structure_from_string" for msg in view._pending_messages)
+    assert any(msg.get("op") == "load_molsys_payload" for msg in view._pending_messages)
 
 
 def test_load_molsys_payload_or_fallback():

@@ -5,7 +5,7 @@ from typing import Sequence
 from ..layers import Layer
 
 class SphereShapes:
-    """Colección de utilidades para esferas en la escena."""
+    """Sphere helpers for the scene."""
 
     def __init__(self, view) -> None:
         self._view = view
@@ -18,7 +18,7 @@ class SphereShapes:
         alpha: float = 0.4,
         tag: str | None = None,
     ) -> Layer:
-        """Añade una esfera (posiblemente transparente) a la escena."""
+        """Add a (possibly transparent) sphere to the scene."""
         tag = tag or self._view._next_layer_tag()  # noqa: SLF001
         self._view._send(
             {
@@ -32,7 +32,7 @@ class SphereShapes:
                 },
             }
         )
-        # Asegura que el layer esté disponible inmediatamente en el registro Python
+        # Ensure the layer is immediately available in the Python registry.
         if tag not in self._view._layers:  # noqa: SLF001
             self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
         return self._view._layers[tag]  # noqa: SLF001
@@ -45,20 +45,20 @@ class SphereShapes:
         alphas: float | Sequence[float] = 0.4,
         tags: str | Sequence[str] | None = None,
     ):
-        """Añade muchas esferas a la escena.
+        """Add multiple spheres to the scene.
 
-        Parámetros
+        Parameters
         ----------
         centers
-            Secuencia de centros, cada uno (x, y, z).
+            Sequence of centers, each `(x, y, z)`.
         radii
-            Radio (escalar para todas) o lista de radios (uno por esfera).
+            Radius (scalar for all) or a list of radii (one per sphere).
         colors
-            Color en 0xRRGGBB (escalar o lista).
+            Color in `0xRRGGBB` (scalar or list).
         alphas
-            Transparencia (0.0-1.0), escalar o lista.
+            Alpha (0.0-1.0), scalar or list.
         tags
-            Etiqueta opcional (escalar o lista, uno por esfera).
+            Optional tag (scalar or list, one per sphere).
         """
         centers_list = [list(c) for c in centers]
         n = len(centers_list)
@@ -70,7 +70,7 @@ class SphereShapes:
             if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
                 if len(value) != n:
                     raise ValueError(
-                        f"Esperaba {n} valores pero recibí {len(value)}."
+                        f"Expected {n} values but got {len(value)}."
                     )
                 return [cast(v) for v in value]
             else:
@@ -99,18 +99,18 @@ class SphereShapes:
         alpha_atoms: float = 0.5,
         tag: str | None = None,
     ) -> Layer:
-        """Representa un conjunto de alpha-spheres (y opcionalmente los átomos en contacto) en un solo envío.
+        """Render a set of alpha-spheres (and optionally contact atoms) in a single message.
 
-        - `centers`, `radii`: posiciones y radios de las alpha-spheres.
-        - `atom_centers`: centros de los átomos de contacto (si se aportan).
-        - Colores y transparencias diferenciadas para alpha-spheres y átomos.
-        - Usa un único mensaje para minimizar el overhead de creación individual.
+        - `centers`, `radii`: alpha-sphere positions and radii.
+        - `atom_centers`: contact atom centers (optional).
+        - Separate colors and alpha for alpha-spheres and atoms.
+        - Uses a single message to minimize per-shape overhead.
         """
         centers_list = [list(c) for c in centers]
         radii_list = [float(r) for r in radii]
 
         if len(centers_list) != len(radii_list):
-            raise ValueError("centers y radii deben tener la misma longitud")
+            raise ValueError("centers and radii must have the same length")
 
         options: dict = {
             "alpha_spheres": {
@@ -138,5 +138,5 @@ class SphereShapes:
         return self._view._layers[tag]  # noqa: SLF001
 
     def clear(self, tag: str | None = None):
-        """Eliminar shapes (todas o por tag) en el frontend."""
+        """Delete shapes in the frontend (all or by tag)."""
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})

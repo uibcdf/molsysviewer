@@ -1,4 +1,4 @@
-"""Herramientas para visualizar vectores de desplazamiento."""
+"""Helpers to render displacement vectors."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class DisplacementVectors:
     def _to_array(data: Iterable[Sequence[float]] | np.ndarray, name: str) -> np.ndarray:
         arr = np.asarray(data, dtype=float)
         if arr.ndim != 2 or arr.shape[1] != 3:
-            raise ValueError(f"{name} debe tener forma (n, 3), recibido {arr.shape}")
+            raise ValueError(f"{name} must have shape (n, 3), got {arr.shape}")
         return arr
 
     @staticmethod
@@ -46,44 +46,44 @@ class DisplacementVectors:
         radial_segments: int | None = None,
         tag: str | None = None,
     ):
-        """Añade flechas (cilindro + cono) para vectores de desplazamiento.
+        """Add arrows (cylinder + cone) for displacement vectors.
 
         Parameters
         ----------
         origins
-            Coordenadas de origen (n, 3). Opcional si se usa ``atom_indices``.
+            Origin coordinates `(n, 3)`. Optional if you use ``atom_indices``.
         vectors
-            Vectores de desplazamiento (n, 3).
+            Displacement vectors `(n, 3)`.
         atom_indices
-            Índices atómicos para tomar las coordenadas actuales como origen.
+            Atom indices to use the current structure coordinates as origins.
         length_scale
-            Factor global de escala para la longitud de los vectores.
+            Global scale factor for vector lengths.
         min_length
-            Umbral mínimo después de escalar; vectores más cortos se omiten.
+            Minimum length after scaling; shorter vectors are skipped.
         max_length
-            Normaliza la longitud máxima resultante a este valor (si se define).
+            Normalize the resulting maximum length to this value (if set).
         color_mode
-            "norm" o "component" para mapear colores por norma o por componente.
+            "norm" or "component" to map colors by norm or by component.
         color_component
-            Componente usada al colorear por componente (0, 1 o 2).
+            Component used for "component" coloring (0, 1, or 2).
         color_map
-            Paleta opcional (lista de colores o nombre reconocido por Mol*).
+            Optional palette (color list or a Mol*-recognized name).
         radius_scale
-            Factor relativo de radio (respecto a la longitud final).
+            Relative radius factor (relative to final length).
         radial_segments
-            Segmentos radiales opcionales del cilindro/cono.
+            Optional radial segments for cylinder/cone.
         tag
-            Etiqueta opcional para el nodo de estado en Mol*.
+            Optional tag for the Mol* state node.
         """
 
         vector_array = self._to_array(vectors, "vectors")
         origins_array = None if origins is None else self._to_array(origins, "origins")
 
         if origins_array is None and atom_indices is None:
-            raise ValueError("Debes proporcionar origins o atom_indices")
+            raise ValueError("You must provide origins or atom_indices")
 
         if origins_array is not None and origins_array.shape[0] != vector_array.shape[0]:
-            raise ValueError("origins y vectors deben tener el mismo número de filas")
+            raise ValueError("origins and vectors must have the same number of rows")
 
         options: dict = {
             "vectors": vector_array.tolist(),

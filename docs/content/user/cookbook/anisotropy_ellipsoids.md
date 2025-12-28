@@ -37,6 +37,6 @@ What to tweak
 Embed the exported view
 
 ```python
-from molsysviewer.thirds import load_html_in_jupyter_notebook
-load_html_in_jupyter_notebook("_static/views/anisotropy_ellipsoids.html")
+from molsysviewer.thirds.jupyter import load_html_in_notebook
+load_html_in_notebook("_static/views/anisotropy_ellipsoids.html")
 ```
