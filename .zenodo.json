@@ -1,0 +1,41 @@
+{
+  "title": "MolSysViewer",
+  "upload_type": "software",
+  "description": "Molecular Systems Viewer: A Mol*-powered 3D viewer for molecular systems, integrated naturally within the MolSysSuite ecosystem",
+    "creators": [
+      {
+        "person_or_org": {
+          "family_name": "Prada-Gracia",
+          "given_name": "Diego",
+          "identifiers": [
+            {
+              "identifier": "0000-0003-3375-870X",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Prada-Gracia, Diego",
+      	  "affiliation": "Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF",
+          "type": "personal"
+        }
+      },
+      {
+        "person_or_org": {
+          "family_name": "Moreno-Vargas",
+          "given_name": "Liliana M.",
+          "identifiers": [
+            {
+              "identifier": "0000-0003-2812-1499",
+              "scheme": "orcid"
+            }
+          ],
+          "name": "Moreno-Vargas, Liliana M.",
+      	  "affiliation": "Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF",
+          "type": "personal"
+        }
+      }
+    ],
+  "license": "MIT",
+  "keywords": ["molecular visualization", "Jupyter", "Mol*", "computational chemistry", "drug design"],
+  "access_right": "open"
+}
+
