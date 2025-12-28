@@ -3,8 +3,8 @@
 Pocket overlays are typically built from alpha spheres and rendered as surfaces or volumetric blobs.
 
 See also the cookbook:
-- {doc}`../../../cookbook/pocket_surface`
-- {doc}`../../../cookbook/pocket_blob`
+- {doc}`../../cookbook/pocket_surface`
+- {doc}`../../cookbook/pocket_blob`
 
 ```python
 # Pocket blob (Gaussian field from alpha-spheres)

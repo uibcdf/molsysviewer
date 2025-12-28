@@ -3,7 +3,7 @@
 Pharmacophore overlays render feature glyphs (donor/acceptor/aromatic, etc.) on top of a structure.
 
 See also the cookbook:
-- {doc}`../../../cookbook/pharmacophore_overlay`
+- {doc}`../../cookbook/pharmacophore_overlay`
 
 ```python
 view.shapes.add_pharmacophore_features(

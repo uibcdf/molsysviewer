@@ -9,7 +9,7 @@
   `_static/views/` and embed via
   `molsysviewer.thirds.jupyter.load_html_in_notebook`.
 - Respect the existing structure (`content/`, `api/`, `_static/`,
-  `_templates/`, `_bibtex/`). Keep new pages consistent with
+  `_templates/`). Keep new pages consistent with
   `docs/content/developer/documentation/web/build_and_layout.md`.
 - Do not suggest running `npm run build` for TypeScript; the JS bundle is
   maintained separately.
@@ -20,9 +20,14 @@
 - Web docs editorial rules: `docs/content/developer/documentation/web/editorial_guidelines.md`
 - Web docs build/layout conventions: `docs/content/developer/documentation/web/build_and_layout.md`
 - Cross-linking patterns: `docs/content/developer/documentation/web/references.md`
+- API Reference workflow: `docs/content/developer/documentation/api/index.md`
 
 ## Notebook policy (important)
 
 - Sphinx does not execute notebooks (`nb_execution_mode="off"`).
 - Freeze tutorial outputs with `docs/execute_notebooks.py`.
 - The executor strips ipywidgets/AnyWidget state by default; tag cells with `keep-widget-state` only when you truly need widget state preserved.
+
+## Docs build prerequisites (important)
+
+- When building docs locally, set `NUMBA_CACHE_DIR=/tmp/numba_cache` to avoid Numba caching errors if `molsysmt` is used from a local checkout.

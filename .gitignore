@@ -118,6 +118,7 @@ Thumbs.db
 INSTALL.log
 record.txt
 /docs/api/_autosummary
+/docs/api/**/autosummary/
 
 # ==========================================================
 # Files in this library that should or should NOT be ignored

@@ -23,7 +23,7 @@ Concept DOI (all versions): *TODO: add the immutable Zenodo concept DOI here.*
 
 Diego Prada-Gracia & Liliana M. Moreno-Vargas. (2023). uibcdf/MolSysViewer: 0.8.1 (0.8.1). Zenodo. https://doi.org/10.5281/zenodo.8092688
 
-[BibTeX](../../_bibtex/software.bib)
+{download}`BibTeX <../../_static/bibtex/software.bib>`
 
 ```
 

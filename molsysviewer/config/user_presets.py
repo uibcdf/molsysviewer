@@ -9,17 +9,13 @@ try:
 except Exception:  # pragma: no cover - optional dependency
     yaml = None
 
-# Registry of user-defined presets. Shape:
-# {
-#   "name": {
-#       "base": "auto",
-#       "options": {...},
-#       "rules": [
-#           {"selection": "...", "representation": "...", "params": {...}},
-#           {"atom_indices": [0,1,2], "representation": "..."},
-#       ],
-#   },
-# }
+#: Registry of user-defined representation presets.
+#:
+#: The registry is a mapping: preset_name -> configuration dict.
+#: Each configuration typically contains ``base``, optional ``options``, and a list
+#: of ``rules`` (by selection or atom indices).
+#:
+#: See :func:`load_user_presets` for the expected file structure.
 user_presets: Dict[str, Dict[str, Any]] = {}
 
 
