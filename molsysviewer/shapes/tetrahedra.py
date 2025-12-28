@@ -16,12 +16,12 @@ class Tetrahedra:
         for idx, tetra in enumerate(tetra_coords):
             coords = list(tetra)
             if len(coords) != 4:
-                raise ValueError(f"tetra_coords[{idx}] debe tener 4 vértices")
+                raise ValueError(f"tetra_coords[{idx}] must have 4 vertices")
             vertices: list[list[float]] = []
             for v in coords:
                 if len(v) != 3:
                     raise ValueError(
-                        f"Cada vértice en tetra_coords[{idx}] debe ser [x, y, z]; recibido {v}"
+                        f"Each vertex in tetra_coords[{idx}] must be [x, y, z]; got {v}"
                     )
                 vertices.append([float(v[0]), float(v[1]), float(v[2])])
             normalized.append(vertices)
@@ -35,7 +35,7 @@ class Tetrahedra:
         normalized: list[list[int]] = []
         for idx, quad in enumerate(atom_quads):
             if len(quad) != 4:
-                raise ValueError(f"atom_quads[{idx}] debe tener 4 índices")
+                raise ValueError(f"atom_quads[{idx}] must have 4 indices")
             normalized.append([int(quad[0]), int(quad[1]), int(quad[2]), int(quad[3])])
         return normalized
 
@@ -50,7 +50,7 @@ class Tetrahedra:
         except TypeError:
             return [cast(values)] * n
         if len(seq) not in (1, n):
-            raise ValueError(f"Esperaba 1 o {n} valores, recibido {len(seq)}")
+            raise ValueError(f"Expected 1 or {n} values, got {len(seq)}")
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
@@ -74,18 +74,18 @@ class Tetrahedra:
         tag: str | None = None,
         name: str | None = None,
     ):
-        """Añade tetraedros como malla triangular, usando coordenadas o índices atómicos.
+        """Add tetrahedra as a triangle mesh, using coordinates or atom indices.
 
-        Flags opcionales:
-        - draw_edges: contornos con cilindros (edge_radius/edge_color).
-        - show_normals: flechas de normales de cara (normal_length/normal_color).
+        Optional flags:
+        - draw_edges: draw edges as cylinders (`edge_radius`/`edge_color`).
+        - show_normals: draw face normals as arrows (`normal_length`/`normal_color`).
         """
 
         coords_list = self._normalize_vertices(tetra_coords)
         atom_quads_list = self._normalize_quads(atom_quads)
 
         if not coords_list and not atom_quads_list:
-            raise ValueError("Debes proporcionar tetra_coords o atom_quads")
+            raise ValueError("You must provide tetra_coords or atom_quads")
 
         n = len(coords_list) if coords_list else len(atom_quads_list)
 

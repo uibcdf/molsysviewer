@@ -120,7 +120,7 @@ async function run() {
 
     const hasWebglError = errors.some(e => e.includes("WebGL rendering context"));
     if (hasWebglError) {
-        console.warn("[E2E] WebGL no disponible en este entorno; skipping test.");
+        console.warn("[E2E] WebGL is not available in this environment; skipping test.");
         process.exit(0);
     }
     assert.strictEqual(errors.length, 0, `Console errors detected: ${errors.join("; ")}`);

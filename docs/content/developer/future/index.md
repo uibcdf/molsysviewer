@@ -1,16 +1,12 @@
-# Development Vision and Roadmap
+# Future (index)
 
-The MolSysViewer library is designed as a...
+Use this section for developer notes that are not stable yet.
+When an item becomes stable, promote it into {doc}`../roadmap` or the relevant “current” page.
 
-This section outlines both the conceptual vision guiding TopoMT’s evolution and
-the planned technical milestones that will shape its development over time.
+```{toctree}
+:maxdepth: 1
 
-**Development Vision**
-...
-
-**Roadmap**
-The roadmap defines upcoming features...
-
-This section will evolve alongside the library, serving as a living design
-document that reflects both current capabilities and future directions.
-
+ci.md
+performance.md
+security.md
+```

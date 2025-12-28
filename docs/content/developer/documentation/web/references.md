@@ -1,7 +1,7 @@
 # References and Cross-links in Documentation
 
 This page defines how to create **robust, consistent cross-references** in the
-MolSysMT documentation using MyST and Sphinx. The goal is to avoid fragile
+MolSysViewer documentation using MyST and Sphinx. The goal is to avoid fragile
 filename-based links and make it easy to reorganize pages without breaking
 links.
 
@@ -42,7 +42,7 @@ To link to a labeled section or page, use the `{ref}` role:
 
 ```markdown
 See {ref}`User_Intro_MolecularSystems` for an overview of how molecular
-systems are represented in MolSysMT.
+systems are represented in MolSysViewer.
 ```
 
 This is preferred over hard-coding filenames such as
@@ -89,10 +89,7 @@ When referring to API objects, use the appropriate Sphinx roles through MyST.
 In most cases you will use `{func}` and `{class}`:
 
 ```markdown
-Use {func}`molsysmt.basic.get` to retrieve attributes from a molecular system.
-
-The {class}`molsysmt.native.MolSys` class stores topology and structures
-in a unified container.
+Use {class}`molsysviewer.viewer.MolSysView` as the main user-facing entrypoint.
 ```
 
 Guidelines:
@@ -115,8 +112,8 @@ There are still cases where plain Markdown links to files are appropriate:
 In these cases, use standard Markdown:
 
 ```markdown
-See the MolSysMT GitHub repository for more details:
-[uibcdf/molsysmt](https://github.com/uibcdf/molsysmt).
+See the MolSysViewer GitHub repository for more details:
+[uibcdf/molsysviewer](https://github.com/uibcdf/molsysviewer).
 ```
 
 Avoid using file-based links to internal pages when a label and `{ref}` can be
@@ -176,4 +173,4 @@ These links work but are fragile if files move. When updating a page:
 
 There is no need to migrate all links at once, but **new or updated content**
 should follow the conventions in this document. Over time, legacy links can be
-cleaned up as pages are revisited.***
+cleaned up as pages are revisited.

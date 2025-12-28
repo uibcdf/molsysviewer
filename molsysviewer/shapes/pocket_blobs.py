@@ -14,7 +14,7 @@ class PocketBlobs:
         normalized = []
         for idx, center in enumerate(centers):
             if len(center) != 3:
-                raise ValueError(f"centers[{idx}] debe tener 3 coordenadas (x, y, z)")
+                raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
             normalized.append([float(center[0]), float(center[1]), float(center[2])])
         return normalized
 
@@ -29,7 +29,7 @@ class PocketBlobs:
         except TypeError:
             return [cast(values)] * n
         if len(seq) not in (1, n):
-            raise ValueError(f"Esperaba 1 o {n} valores, recibido {len(seq)}")
+            raise ValueError(f"Expected 1 or {n} values, got {len(seq)}")
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
@@ -55,9 +55,9 @@ class PocketBlobs:
         radii_list = [float(r) for r in radii]
 
         if len(centers_list) == 0:
-            raise ValueError("centers no puede estar vacío")
+            raise ValueError("centers must not be empty")
         if len(centers_list) != len(radii_list):
-            raise ValueError("centers y radii deben tener la misma longitud")
+            raise ValueError("centers and radii must have the same length")
 
         values_list = self._normalize_sequence(values, len(centers_list), float)
 
@@ -86,7 +86,7 @@ class PocketBlobs:
             options["name"] = name
 
         self._view._send({"op": "add_pocket_blob", "options": options})
-        # Registrar layer para manejo de visibilidad
+        # Register layer for visibility management.
         if tag not in self._view._layers:  # noqa: SLF001
             from ..layers import Layer
             self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001

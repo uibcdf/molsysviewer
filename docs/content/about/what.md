@@ -1,14 +1,26 @@
 # What is MolSysViewer?
 
-MolSysViewer -**Mol**ecular **Sys**tems **Viewer** - is a scientific
-open-source Python library designed to ...
+MolSysViewer (**Mol**ecular **Sys**tems **Viewer**) is a scientific open-source
+Python library for interactive 3D molecular visualization in Jupyter.
 
-This library was developed to provide a user-friendly interface for
-computational molecular biology labs, such as the
-[UIBCDF](https://www.uibcdf.org/), to use in their research. With MolSysViewer, you
-can ...
+MolSysViewer is built on top of the Mol* engine and exposed through a Python-first API.
+It is designed for scientific workflows in the MolSys ecosystem.
 
-...
+This page is under construction.
+
+## What you use it for (placeholder)
+
+- Load structures and trajectories.
+- Control representations and visibility.
+- Add scientific overlays (shapes) and manage them by tags/layers.
+- Export reproducible interactive views (HTML lite).
+
+## Design goals (placeholder)
+
+- Jupyter-native workflow.
+- Stable Python API.
+- Fast rendering through Mol*.
+- Reproducible exports for documentation.
 
 MolSysViewer is an open-source project shared under the [MIT license](https://github.com/uibcdf/molsysviewer/blob/main/LICENSE). This means
 that you have the right to use, copy, modify, merge, publish, distribute,
@@ -27,16 +39,7 @@ We hope you find it useful!
 
 [Diego Prada-Gracia and Liliana M. Moreno Vargas](who.md).
 
-<br/>
-
-<br/>
-
 :::{figure} ../../_static/logo.svg
 :width: 50%
 :align: center
 :::
-
-<br/>
-
-<br/>
-

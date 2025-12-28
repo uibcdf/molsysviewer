@@ -85,7 +85,7 @@ class MolSysView:
             self.widget.show_controls = True
 
         self.widget.layout.width = "100%"
-        self.widget.layout.height = "480px"  # o "600px" si lo prefieres
+        self.widget.layout.height = "480px"  # adjust if you prefer a taller default
         self.widget.layout.min_height = "400px"
 
         self._already_shown = False
@@ -103,12 +103,12 @@ class MolSysView:
 
         self.whole = Whole(self)
 
-        # Registrar callback para mensajes JS->Python
+        # Register callback for JS->Python messages
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
             event = content.get("event")
             if event == "ready":
                 self._ready = True
-                # En cuanto el frontend esté listo, reenviamos todo
+                # As soon as the frontend is ready, flush the pending queue.
                 for msg in self._pending_messages:
                     self.widget.send(msg)
                 self._pending_messages.clear()
@@ -191,7 +191,7 @@ class MolSysView:
 
     @property
     def js_logs(self) -> list[dict[str, str]]:
-        """Logs received desde el frontend cuando debug_js está activado."""
+        """Logs received from the frontend when `debug_js` is enabled."""
         return list(self._js_logs)
 
     @property
@@ -382,7 +382,7 @@ class MolSysView:
         """Return the indices of currently visible atoms."""
         if self.atom_mask is None:
             return None
-        # lista para que sea JSON-serializable sin problemas
+        # Use a plain list so the payload is JSON-serializable.
         return np.nonzero(self.atom_mask)[0].tolist()
 
     @property
@@ -390,13 +390,13 @@ class MolSysView:
         """Return the indices of currently visible structures."""
         if self.structure_mask is None:
             return None
-        # lista para que sea JSON-serializable sin problemas
+        # Use a plain list so the payload is JSON-serializable.
         return np.nonzero(self.structure_mask)[0].tolist()
 
     # --- util interno ---
 
     def _send(self, msg: dict) -> None:
-        """Enviar un mensaje al frontend o encolarlo si aún no está listo."""
+        """Send a message to the frontend or queue it if the frontend is not ready yet."""
         self._message_history.append(msg)
         if self._ready:
             self.widget.send(msg)
@@ -430,47 +430,6 @@ class MolSysView:
             label=label,
             view=self,
         )
-
-    def load_pdb_string(
-        self,
-        pdb_string: str,
-        *,
-        label: str | None = None,
-    ) -> "MolSysView":
-        """Carga una cadena PDB directamente en el widget."""
-        from .loaders.load_pdb_string import load_pdb_string as _load_pdb_string
-        return _load_pdb_string(pdb_string=pdb_string, label=label, view=self)
-
-    def load_mmcif_string(
-        self,
-        mmcif_string: str,
-        *,
-        label: str | None = None,
-    ) -> "MolSysView":
-        """Carga una cadena MMCIF directamente en el widget."""
-        from .loaders.load_mmcif_string import load_mmcif_string as _load_mmcif_string
-        return _load_mmcif_string(mmcif_string=mmcif_string, label=label, view=self)
-
-    def load_pdb_id(
-        self,
-        pdb_id: str,
-        *,
-        label: str | None = None,
-    ) -> "MolSysView":
-        """Carga una estructura desde el identificador PDB."""
-        from .loaders.load_pdb_id import load_pdb_id as _load_pdb_id
-        return _load_pdb_id(pdb_id=pdb_id, label=label, view=self)
-
-    def load_from_url(
-        self,
-        url: str,
-        *,
-        format: str | None = None,
-        label: str | None = None,
-    ) -> "MolSysView":
-        """Carga una estructura desde una URL."""
-        from .loaders.load_url import load_from_url as _load_from_url
-        return _load_from_url(url=url, format=format, label=label, view=self)
 
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""

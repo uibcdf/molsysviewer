@@ -7,7 +7,7 @@ pushd molsysviewer/js
 if [ -z "${RELEASE_VERSION:-}" ] && [ -n "${PKG_VERSION:-}" ]; then
   export RELEASE_VERSION="${PKG_VERSION}"
 fi
-# Si usas package-lock, mejor npm ci; si no, npm install
+# If you have a package-lock, prefer `npm ci`; otherwise fall back to `npm install`.
 npm ci || npm install
 npm run build
 popd

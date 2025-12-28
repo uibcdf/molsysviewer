@@ -13,7 +13,7 @@ dependencies = [
   "anywidget>=0.9.15",
   "traitlets>=5"
 ]
-license = { text = "MIT" }  # o la que uses
+license = { text = "MIT" }  # adjust if needed
 urls = { "Homepage" = "https://github.com/uibcdf/molsysviewer" }
 
 [project.optional-dependencies]
@@ -42,24 +42,24 @@ target-version = ["py312"]
 [tool.ruff]
 line-length = 120
 target-version = "py312"
-# directorios a analizar (ajusta si quieres)
+# Directories to analyze (adjust if needed).
 src = ["molsysviewer", "tests"]
 
-# Reglas base (similar a flake8 + import order, etc.)
+# Base rules (similar to flake8 + import order, etc.)
 select = [
-  "E",  # errores estilo (flake8)
-  "W",  # warnings estilo
-  "F",  # errores pyflakes
-  "I",  # isort (orden de imports)
+  "E",  # style errors (flake8)
+  "W",  # style warnings
+  "F",  # pyflakes errors
+  "I",  # isort (import sorting)
   "B",  # bugbear
 ]
 ignore = [
-  "E203",  # compatible con black (espacios antes de ':')
-  "W503",  # compatible con black (line break before operator)
+  "E203",  # compatible with Black (spaces before ':')
+  "W503",  # compatible with Black (line break before operator)
 ]
 
 [tool.ruff.format]
-# Black sigue siendo el formateador principal, pero esto futura-prueba si usas `ruff format`
+# Black remains the primary formatter, but this future-proofs formatting if you use `ruff format`.
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"

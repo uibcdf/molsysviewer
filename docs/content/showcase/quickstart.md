@@ -1,7 +1,7 @@
 # Quickstart
 
 Outline for the minimal demo:
-- Load a small PDB string with `MolSysView.load_pdb_string`.
+- Load a small PDB string with `MolSysView.load`.
 - Add a sphere or alpha-sphere set.
 - Clear by tag.
 - Export the scene with `MolSysView.write_html("_static/views/quickstart.html")`.

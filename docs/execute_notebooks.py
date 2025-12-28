@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 import argparse
 import glob
 from concurrent.futures import ThreadPoolExecutor
+import json
+from typing import Any, Dict, Iterable, Set, Tuple
 
 GREEN = "\033[32m"
 RED = "\033[31m"
@@ -15,6 +17,11 @@ RESET = "\033[0m"
 
 # Log file in the same directory as this script, listing notebooks that failed.
 ERROR_LOG_PATH = Path(__file__).resolve().with_name("notebook_errors.log")
+
+KEEP_WIDGET_STATE_TAG = "keep-widget-state"
+WIDGET_VIEW_MIME = "application/vnd.jupyter.widget-view+json"
+WIDGET_STATE_MIME = "application/vnd.jupyter.widget-state+json"
+
 
 def write_timestamp_to_log(log_path: Path):
     timestamp = datetime.now(timezone.utc).timestamp()
@@ -27,6 +34,179 @@ def read_timestamp_from_log(log_path: Path) -> float:
         return float(log_path.read_text().strip())
     except Exception:
         return 0.0
+
+def _walk_json(value: Any) -> Iterable[Any]:
+    stack = [value]
+    while stack:
+        v = stack.pop()
+        yield v
+        if isinstance(v, dict):
+            for vv in v.values():
+                stack.append(vv)
+        elif isinstance(v, list):
+            for vv in v:
+                stack.append(vv)
+
+def _cell_tags(cell: Dict[str, Any]) -> Set[str]:
+    tags = cell.get("metadata", {}).get("tags", [])
+    if not isinstance(tags, list):
+        return set()
+    return {t for t in tags if isinstance(t, str)}
+
+def _find_widget_model_ids_in_cell(cell: Dict[str, Any]) -> Set[str]:
+    model_ids: Set[str] = set()
+    for output in cell.get("outputs", []) or []:
+        if not isinstance(output, dict):
+            continue
+        data = output.get("data")
+        if not isinstance(data, dict):
+            continue
+        widget_view = data.get(WIDGET_VIEW_MIME)
+        if isinstance(widget_view, dict):
+            model_id = widget_view.get("model_id")
+            if isinstance(model_id, str) and model_id:
+                model_ids.add(model_id)
+    return model_ids
+
+def _remove_widget_view_outputs_in_cell(cell: Dict[str, Any]) -> bool:
+    changed = False
+    outputs = cell.get("outputs")
+    if not isinstance(outputs, list):
+        return False
+    new_outputs = []
+    for out in outputs:
+        if not isinstance(out, dict):
+            new_outputs.append(out)
+            continue
+        data = out.get("data")
+        if not isinstance(data, dict) or WIDGET_VIEW_MIME not in data:
+            new_outputs.append(out)
+            continue
+        data = dict(data)
+        del data[WIDGET_VIEW_MIME]
+        changed = True
+        if len(data) == 0 and out.get("output_type") in ("display_data", "execute_result"):
+            # Drop the output entirely if it only carried the widget view.
+            continue
+        out = dict(out)
+        out["data"] = data
+        new_outputs.append(out)
+    if changed:
+        cell["outputs"] = new_outputs
+    return changed
+
+def _get_widget_state_container(nb: Dict[str, Any]) -> Tuple[Dict[str, Any] | None, str | None]:
+    meta = nb.get("metadata")
+    if not isinstance(meta, dict):
+        return None, None
+    widgets = meta.get("widgets")
+    if not isinstance(widgets, dict):
+        return None, None
+    if WIDGET_STATE_MIME in widgets and isinstance(widgets.get(WIDGET_STATE_MIME), dict):
+        return widgets[WIDGET_STATE_MIME], WIDGET_STATE_MIME
+    # Fallback for non-standard layouts.
+    if "state" in widgets and isinstance(widgets.get("state"), dict):
+        return widgets, None
+    return None, None
+
+def strip_widget_state(notebook_path: Path, keep_tag: str = KEEP_WIDGET_STATE_TAG) -> bool:
+    """
+    Remove ipywidgets/AnyWidget state that makes executed notebooks heavy.
+
+    Default behavior:
+    - Remove notebook-level widget state under `metadata.widgets`.
+    - Remove cell outputs that display widget views.
+
+    If a cell is tagged with `keep-widget-state`, keep only the widget models
+    required to render those tagged cells, and strip widget-view outputs from
+    other cells.
+    """
+    try:
+        nb = json.loads(notebook_path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+
+    if not isinstance(nb, dict):
+        return False
+
+    cells = nb.get("cells")
+    if not isinstance(cells, list):
+        return False
+
+    keep_cells = [c for c in cells if isinstance(c, dict) and keep_tag in _cell_tags(c)]
+    keep_model_ids: Set[str] = set()
+    for cell in keep_cells:
+        keep_model_ids |= _find_widget_model_ids_in_cell(cell)
+
+    changed = False
+
+    if not keep_model_ids:
+        meta = nb.get("metadata")
+        if isinstance(meta, dict) and "widgets" in meta:
+            del meta["widgets"]
+            changed = True
+        for cell in cells:
+            if isinstance(cell, dict):
+                changed = _remove_widget_view_outputs_in_cell(cell) or changed
+    else:
+        # Keep only widgets needed for tagged cells; remove widget views elsewhere.
+        for cell in cells:
+            if isinstance(cell, dict) and keep_tag not in _cell_tags(cell):
+                changed = _remove_widget_view_outputs_in_cell(cell) or changed
+
+        container, container_key = _get_widget_state_container(nb)
+        if container is None:
+            # No state container; nothing else to do.
+            pass
+        else:
+            models = container.get("state")
+            if isinstance(models, dict):
+                all_ids = {k for k in models.keys() if isinstance(k, str)}
+                closure: Set[str] = set()
+                frontier = [mid for mid in keep_model_ids if mid in all_ids]
+                while frontier:
+                    mid = frontier.pop()
+                    if mid in closure:
+                        continue
+                    closure.add(mid)
+                    model = models.get(mid)
+                    if not isinstance(model, dict):
+                        continue
+                    model_state = model.get("state")
+                    for v in _walk_json(model_state):
+                        if isinstance(v, str) and v in all_ids and v not in closure:
+                            frontier.append(v)
+                        elif isinstance(v, dict):
+                            maybe_id = v.get("model_id")
+                            if isinstance(maybe_id, str) and maybe_id in all_ids and maybe_id not in closure:
+                                frontier.append(maybe_id)
+                if closure and closure != all_ids:
+                    container["state"] = {k: models[k] for k in models.keys() if k in closure}
+                    changed = True
+
+            # If state is now empty, drop widgets metadata entirely.
+            if isinstance(container.get("state"), dict) and len(container["state"]) == 0:
+                meta = nb.get("metadata")
+                if isinstance(meta, dict) and "widgets" in meta:
+                    del meta["widgets"]
+                    changed = True
+            else:
+                # Ensure the container remains under metadata.widgets if we found it.
+                if container_key is not None:
+                    meta = nb.get("metadata")
+                    if isinstance(meta, dict):
+                        widgets = meta.get("widgets")
+                        if isinstance(widgets, dict):
+                            widgets[container_key] = container
+
+    if not changed:
+        return False
+
+    notebook_path.write_text(
+        json.dumps(nb, ensure_ascii=False, indent=1) + "\n",
+        encoding="utf-8",
+    )
+    return True
 
 def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
 
@@ -71,6 +251,13 @@ def execute_notebook(notebook_path: Path, force: bool = False) -> bool:
             return False
         else:
             print(f"{GREEN}✔{RESET} Notebook {notebook_path} executed successfully.")
+            try:
+                did_strip = strip_widget_state(notebook_path)
+                if did_strip:
+                    print(f"{GREEN}●{RESET} Stripped widget state from {notebook_path}")
+            except Exception:
+                # Never fail notebook execution because of a best-effort cleanup.
+                pass
             write_timestamp_to_log(last_run_file)
             return True
 

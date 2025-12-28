@@ -28,8 +28,8 @@ This command will:
 
 - Make sure your example is minimal but functional.
 - Avoid depending on random data or external files unless mock data is provided.
-- Use temporary or minimal molecular systems (for example, from
-  `molsysmt.systems`) when needed.
+- Prefer the real demo systems from `molsysviewer.demo` when you need a molecular system.
+- If MolSysMT/numba is involved, set `NUMBA_CACHE_DIR=/tmp/numba_cache` in your session to avoid cache issues.
 
 ### Example of a testable docstring
 
@@ -59,6 +59,5 @@ Adding well-formed and tested examples helps users understand usage and prevents
 This is how we test this example embeded in the docstring:
 
 ```bash
-pytest --doctest-modules molsysmt/basic/add.py
+pytest --doctest-modules molsysviewer
 ```
-

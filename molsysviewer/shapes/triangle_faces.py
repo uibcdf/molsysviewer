@@ -33,7 +33,7 @@ class TriangleFaces:
                 )
             else:
                 raise ValueError(
-                    "Cada triángulo debe ser [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]] o una lista de 9 números"
+                    "Each triangle must be [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]] or a list of 9 numbers"
                 )
         return normalized
 
@@ -45,7 +45,7 @@ class TriangleFaces:
         normalized: list[list[int]] = []
         for tri in atom_triplets:
             if len(tri) != 3:
-                raise ValueError("Cada entrada de atom_triplets debe tener 3 índices")
+                raise ValueError("Each entry in atom_triplets must have 3 indices")
             normalized.append([int(tri[0]), int(tri[1]), int(tri[2])])
         return normalized
 
@@ -60,7 +60,7 @@ class TriangleFaces:
         except TypeError:
             return [cast(values)] * n
         if len(seq) not in (1, n):
-            raise ValueError(f"Esperaba 1 o {n} valores, recibido {len(seq)}")
+            raise ValueError(f"Expected 1 or {n} values, got {len(seq)}")
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
@@ -81,18 +81,18 @@ class TriangleFaces:
         normal_color: int | None = None,
         tag: str | None = None,
     ):
-        """Añade caras triangulares personalizadas usando coordenadas o índices atómicos.
+        """Add custom triangle faces using coordinates or atom indices.
 
-        Parámetros adicionales:
-        - draw_edges: dibuja contornos como cilindros delgados (edge_radius/edge_color).
-        - show_normals: dibuja flechas de normales (normal_length/normal_color).
+        Extra parameters:
+        - draw_edges: draw edges as thin cylinders (`edge_radius`/`edge_color`).
+        - show_normals: draw normals as arrows (`normal_length`/`normal_color`).
         """
 
         vertices_list = self._normalize_vertices(vertices)
         atom_triplets_list = self._normalize_triplets(atom_triplets)
 
         if not vertices_list and not atom_triplets_list:
-            raise ValueError("Debes proporcionar vertices o atom_triplets")
+            raise ValueError("You must provide vertices or atom_triplets")
 
         n = len(vertices_list) if vertices_list else len(atom_triplets_list)
 

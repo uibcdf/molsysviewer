@@ -3,7 +3,7 @@ package:
   version: "{{ environ['GIT_DESCRIBE_TAG'] }}"
 
 source:
-  path: ../../   # raíz del repositorio (ajusta si tu estructura es otra)
+  path: ../../   # repo root (adjust if your layout differs)
 
 build:
   number: 1
@@ -12,12 +12,12 @@ requirements:
   host:
     - python
     - pip
-    - nodejs  # para npm y el build de viewer.js
+    - nodejs  # for npm and building viewer.js
   run:
     - python
     - anywidget
 
 about:
   home: "https://github.com/uibcdf/molsysviewer"
-  license: "MIT"  # o lo que toque
+  license: "MIT"  # adjust if needed
   summary: "Molecular viewer based on Mol* and anywidget."

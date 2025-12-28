@@ -14,7 +14,7 @@ class AnisotropyEllipsoids:
         normalized: list[list[float]] = []
         for idx, center in enumerate(centers):
             if len(center) != 3:
-                raise ValueError(f"centers[{idx}] debe tener 3 coordenadas (x, y, z)")
+                raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
             normalized.append([float(center[0]), float(center[1]), float(center[2])])
         return normalized
 
@@ -25,7 +25,7 @@ class AnisotropyEllipsoids:
         normalized: list[list[float]] = []
         for idx, vec in enumerate(vectors):
             if len(vec) != 3:
-                raise ValueError(f"vectors[{idx}] debe tener 3 componentes")
+                raise ValueError(f"vectors[{idx}] must have 3 components")
             normalized.append([float(vec[0]), float(vec[1]), float(vec[2])])
         return normalized
 
@@ -37,7 +37,7 @@ class AnisotropyEllipsoids:
         for midx, mat in enumerate(mats):
             rows = list(mat)
             if len(rows) != 3 or any(len(r) != 3 for r in rows):
-                raise ValueError(f"tensors[{midx}] debe ser 3x3")
+                raise ValueError(f"tensors[{midx}] must be 3x3")
             normalized.append([[float(x) for x in row] for row in rows])
         return normalized
 
@@ -52,7 +52,7 @@ class AnisotropyEllipsoids:
         except TypeError:
             return [cast(values)] * n
         if len(seq) not in (1, n):
-            raise ValueError(f"Esperaba 1 o {n} valores, recibido {len(seq)}")
+            raise ValueError(f"Expected 1 or {n} values, got {len(seq)}")
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
@@ -79,7 +79,7 @@ class AnisotropyEllipsoids:
 
         centers_list = self._normalize_centers(centers)
         if len(centers_list) == 0:
-            raise ValueError("centers no puede estar vacío")
+            raise ValueError("centers must not be empty")
 
         eigenvalues_list = (
             [list(map(float, ev)) for ev in eigenvalues] if eigenvalues is not None else None
@@ -91,13 +91,13 @@ class AnisotropyEllipsoids:
         principal_dirs = self._normalize_vectors(principal_directions)
 
         if eigenvalues_list is not None and len(eigenvalues_list) != len(centers_list):
-            raise ValueError("eigenvalues debe tener la misma longitud que centers")
+            raise ValueError("eigenvalues must have the same length as centers")
         if eigenvectors_list is not None and len(eigenvectors_list) != len(centers_list):
-            raise ValueError("eigenvectors debe tener la misma longitud que centers")
+            raise ValueError("eigenvectors must have the same length as centers")
         if tensors_list is not None and len(tensors_list) != len(centers_list):
-            raise ValueError("tensors debe tener la misma longitud que centers")
+            raise ValueError("tensors must have the same length as centers")
         if principal_dirs is not None and len(principal_dirs) != len(centers_list):
-            raise ValueError("principal_directions debe tener la misma longitud que centers")
+            raise ValueError("principal_directions must have the same length as centers")
 
         colors_list = self._normalize_list(colors, len(centers_list), int)
         values_list = self._normalize_list(values, len(centers_list), float)

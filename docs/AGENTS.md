@@ -7,9 +7,22 @@
 - Notebooks execute off (`nb_execution_mode="off"`). For interactive demos,
   export docs-light views with `MolSysView.write_html(..., mode="lite")` into
   `_static/views/` and embed via
-  `molsysviewer.thirds.load_html_in_jupyter_notebook`.
+  `molsysviewer.thirds.jupyter.load_html_in_notebook`.
 - Respect the existing structure (`content/`, `api/`, `_static/`,
   `_templates/`, `_bibtex/`). Keep new pages consistent with
-  `docs/Provisional_Docs_Guidelines.md`.
+  `docs/content/developer/documentation/web/build_and_layout.md`.
 - Do not suggest running `npm run build` for TypeScript; the JS bundle is
   maintained separately.
+
+## Documentation guide (where to look first)
+
+- Docs workflow checklist: `docs/content/developer/docs_workflow.md`
+- Web docs editorial rules: `docs/content/developer/documentation/web/editorial_guidelines.md`
+- Web docs build/layout conventions: `docs/content/developer/documentation/web/build_and_layout.md`
+- Cross-linking patterns: `docs/content/developer/documentation/web/references.md`
+
+## Notebook policy (important)
+
+- Sphinx does not execute notebooks (`nb_execution_mode="off"`).
+- Freeze tutorial outputs with `docs/execute_notebooks.py`.
+- The executor strips ipywidgets/AnyWidget state by default; tag cells with `keep-widget-state` only when you truly need widget state preserved.

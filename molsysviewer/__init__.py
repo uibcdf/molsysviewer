@@ -1,7 +1,7 @@
 from ._version import __version__
 from ._pyunitwizard import puw as pyunitwizard
 from .viewer import MolSysView
-from .load import load
+from .new_view import new_view
 from . import demo
 
 
@@ -11,6 +11,6 @@ def __print_version__():
 
 __all__ = [
     "MolSysView",
-    "load",
+    "new_view",
     "demo",
 ]

@@ -3,7 +3,7 @@ from pathlib import Path
 import molsysviewer as viewer
 
 
-view = viewer.load('181L', selection='molecule_type not in ["water", "ion"]')
+view = viewer.new_view('181L', selection='molecule_type not in ["water", "ion"]')
 region_1 = view.new_region('all within 9 angstroms of molecule_name=="BENZENE"', representation='sticks')
 view.zoom('molecule_name=="BENZENE"')
 

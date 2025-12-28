@@ -165,7 +165,7 @@ html_theme_options = {
         },
     ],
     "use_edit_page_button": False,
-    "header_links_before_dropdown": 8,  # valor alto para evitar 'More'
+    "header_links_before_dropdown": 8,  # high value to avoid the "More" dropdown
 }
 
 html_context = {

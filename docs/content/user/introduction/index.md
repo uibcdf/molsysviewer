@@ -1,19 +1,21 @@
 # Introduction
 
-MolSysViewer pairs a Mol* renderer with a lightweight AnyWidget bridge so you can control a 3D scene from Python.
+Use this section to learn the key ideas behind MolSysViewer before you follow the user guide tutorials.
 
-Key concepts
-- Load structures from strings, URLs, or MolSysMT payloads (`load_*` helpers).
-- Python sends JSON-like messages to the frontend to add shapes and overlays.
-- Tags let you group shapes and clear them selectively.
-- You can combine MolSysMT selections with MolSysViewer styles for rich overlays.
+Start here if you are new to:
 
-What you’ll find in this guide
-- A quick mental model of the Python ↔ JS bridge.
-- How to load data and show the widget the first time.
-- Where to look for shape-specific options (pockets, channels, pharmacophore, ellipsoids).
+- MolSysViewer’s scope and goals.
+- The MolSysMT “molecular system” model.
+- Units and conversions in the API.
+- Configuration and customization.
 
 ```{toctree}
 :hidden:
-:maxdepth: 1
+:maxdepth: 2
+
+what
+installation
+molsysmt_molecular_system
+units
+configuration
 ```

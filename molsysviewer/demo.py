@@ -3,24 +3,24 @@ from __future__ import annotations
 from importlib.resources import files
 from typing import Any, Callable
 
-from .load import load
+from .new_view import new_view
 
 
 def _load_dialanine(**kwargs):
     demo_system = files("molsysviewer.data.h5msm").joinpath("alanine_dipeptide.h5msm")
-    return load(demo_system, **kwargs)
+    return new_view(demo_system, **kwargs)
 
 def _load_tctim(**kwargs):
     demo_system = files("molsysviewer.data.h5msm").joinpath("1tcd.h5msm")
-    return load(demo_system, **kwargs)
+    return new_view(demo_system, **kwargs)
 
 def _load_pentalanine(**kwargs):
     demo_system = files("molsysviewer.data.h5msm").joinpath("traj_pentalanine.h5msm")
-    return load(demo_system, **kwargs)
+    return new_view(demo_system, **kwargs)
 
 def _load_chicken_villin_HP35(**kwargs):
     demo_system = files("molsysviewer.data.h5msm").joinpath("traj_chicken_villin_HP35_solvated.h5msm")
-    return load(demo_system, **kwargs)
+    return new_view(demo_system, **kwargs)
 
 
 class _LazyDemo:

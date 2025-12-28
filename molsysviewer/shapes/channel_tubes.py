@@ -14,7 +14,7 @@ class ChannelTubes:
         normalized: list[list[float]] = []
         for idx, center in enumerate(centers):
             if len(center) != 3:
-                raise ValueError(f"centers[{idx}] debe tener 3 coordenadas (x, y, z)")
+                raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
             normalized.append([float(center[0]), float(center[1]), float(center[2])])
         return normalized
 
@@ -29,7 +29,7 @@ class ChannelTubes:
         except TypeError:
             return [cast(values)] * n
         if len(seq) not in (1, n):
-            raise ValueError(f"Esperaba 1 o {n} valores, recibido {len(seq)}")
+            raise ValueError(f"Expected 1 or {n} values, got {len(seq)}")
         if len(seq) == 1:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
@@ -55,9 +55,9 @@ class ChannelTubes:
         radii_list = [float(r) for r in radii]
 
         if len(centers_list) < 2:
-            raise ValueError("Se necesitan al menos dos centros para un canal")
+            raise ValueError("You need at least two centers for a channel")
         if len(centers_list) != len(radii_list):
-            raise ValueError("centers y radii deben tener la misma longitud")
+            raise ValueError("centers and radii must have the same length")
 
         distances_list = self._normalize_sequence(solvent_distances, len(centers_list), float)
         colors_list = self._normalize_sequence(colors, len(centers_list), int)
