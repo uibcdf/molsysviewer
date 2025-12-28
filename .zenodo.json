@@ -4,33 +4,15 @@
   "description": "Molecular Systems Viewer: A Mol*-powered 3D viewer for molecular systems, integrated naturally within the MolSysSuite ecosystem",
     "creators": [
       {
-        "person_or_org": {
-          "family_name": "Prada-Gracia",
-          "given_name": "Diego",
-          "identifiers": [
-            {
-              "identifier": "0000-0003-3375-870X",
-              "scheme": "orcid"
-            }
-          ],
-          "name": "Prada-Gracia, Diego",
-      	  "affiliation": "Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF",
-          "type": "personal"
+	"name": "Prada-Gracia, Diego",
+      	"affiliation": "Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF",
+	"orcid": "0000-0003-3375-870X"
         }
       },
       {
-        "person_or_org": {
-          "family_name": "Moreno-Vargas",
-          "given_name": "Liliana M.",
-          "identifiers": [
-            {
-              "identifier": "0000-0003-2812-1499",
-              "scheme": "orcid"
-            }
-          ],
-          "name": "Moreno-Vargas, Liliana M.",
-      	  "affiliation": "Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF",
-          "type": "personal"
+        "name": "Moreno-Vargas, Liliana M.",
+      	"affiliation": "Hospital Infantil de México Federico Gómez (HIMFG) – UIBCDF",
+        "orcid": "0000-0003-2812-1499"
         }
       }
     ],
