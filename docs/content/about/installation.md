@@ -14,7 +14,7 @@ conda install -c uibcdf molsysviewer
 ## Pip (placeholder)
 
 ```bash
-pip install molsysviewer
+# Pip is not currently supported; use conda.
 ```
 
 ## From source (placeholder)
