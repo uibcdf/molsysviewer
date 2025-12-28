@@ -1,8 +1,14 @@
 # Citation
 
-Citing the [Zenodo DOI of MolSysViewer](https://doi.org/10.5281/zenodo.8092688) in
-addition to the scientific paper is a way to ensure that others can reproduce
-your results, as they will know exactly which version of the software you used.
+To make your work reproducible, cite the software in addition to any relevant
+scientific papers.
+
+We recommend citing both:
+
+- The Zenodo **concept DOI** (all versions, immutable entry).
+- The Zenodo **version DOI** for the specific version you used.
+
+Both DOIs are available on the MolSysViewer Zenodo page.
 
 ````{tabs}
 
@@ -12,6 +18,8 @@ Coming soon...
 
 ```
 ```{tab} Software
+
+Concept DOI (all versions): *TODO: add the immutable Zenodo concept DOI here.*
 
 Diego Prada-Gracia & Liliana M. Moreno-Vargas. (2023). uibcdf/MolSysViewer: 0.8.1 (0.8.1). Zenodo. https://doi.org/10.5281/zenodo.8092688
 
