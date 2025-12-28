@@ -1,10 +1,13 @@
 # API Reference
 
-Autosummary-driven reference for MolSysViewer. User-facing APIs focus on loading data and adding shapes; developer-facing APIs cover lower-level modules.
+Autosummary-driven reference for MolSysViewer.
+
+- Public API: user-facing entrypoints and supported modules.
+- Internal API: implementation details intended for contributors.
 
 ```{toctree}
 :maxdepth: 2
 
-users/api_users
-developers/api_developers
+public/api_public
+internal/api_internal
 ```

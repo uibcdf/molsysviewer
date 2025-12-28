@@ -14,14 +14,14 @@ It helps you keep local builds consistent with Read the Docs.
 From the repo root:
 
 ```bash
-make -C docs html
+NUMBA_CACHE_DIR=/tmp/numba_cache make -C docs html
 ```
 
 If you have stale artifacts:
 
 ```bash
 make -C docs clean
-make -C docs html
+NUMBA_CACHE_DIR=/tmp/numba_cache make -C docs html
 ```
 
 ## Review locally
@@ -54,4 +54,3 @@ If you truly need a widget-based output to survive, tag the cell with:
 - Keep external downloads optional or clearly documented (network access may be restricted).
 - Keep notebooks reproducible from a clean environment.
 - If you add new docs dependencies, update the docs environment files under `devtools/conda-envs/`.
-

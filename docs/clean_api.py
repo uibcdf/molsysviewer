@@ -12,6 +12,5 @@ def delete_autosummary_dirs(root_dir):
             dirnames.remove('autosummary')  # Avoid descending into this directory
 
 if __name__ == "__main__":
-    api_directory = 'api'  # Ruta del directorio "api"
+    api_directory = "api"  # Root "api" directory
     delete_autosummary_dirs(api_directory)
-

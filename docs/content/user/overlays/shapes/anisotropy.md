@@ -3,7 +3,7 @@
 Anisotropy overlays can be rendered as ellipsoids or disks driven by eigenvalues/eigenvectors.
 
 See also the cookbook:
-- {doc}`../../../cookbook/anisotropy_ellipsoids`
+- {doc}`../../cookbook/anisotropy_ellipsoids`
 
 ```python
 view.shapes.add_anisotropy_ellipsoids(
