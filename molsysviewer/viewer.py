@@ -95,6 +95,8 @@ class MolSysView:
         self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
         self._last_camera_snapshot: dict | None = None
+        self._shape_history: list[dict] = []
+        self._last_label: str | None = None
 
         self._regions: Dict[str, Region] = {}
         self._layers: Dict[str, Layer] = {}
@@ -413,8 +415,50 @@ class MolSysView:
 
     # --- util interno ---
 
+    def _shape_tag_from_message(self, msg: dict) -> str | None:
+        tag = msg.get("tag")
+        if isinstance(tag, str) and tag:
+            return tag
+        options = msg.get("options")
+        if isinstance(options, dict):
+            opt_tag = options.get("tag")
+            if isinstance(opt_tag, str) and opt_tag:
+                return opt_tag
+        return None
+
+    def _record_shape_message(self, msg: dict) -> None:
+        op = msg.get("op")
+        if not isinstance(op, str):
+            return
+
+        if op == "clear_shapes_by_tag":
+            cleared_tag = msg.get("tag")
+            if cleared_tag is None:
+                self._shape_history.clear()
+                return
+            if not isinstance(cleared_tag, str):
+                return
+            self._shape_history = [
+                m for m in self._shape_history if self._shape_tag_from_message(m) != cleared_tag
+            ]
+            return
+
+        if not op.startswith("add_"):
+            return
+
+        self._shape_history.append(dict(msg))
+
     def _send(self, msg: dict) -> None:
         """Send a message to the frontend or queue it if the frontend is not ready yet."""
+        self._message_history.append(msg)
+        self._record_shape_message(msg)
+        if self._ready:
+            self.widget.send(msg)
+        else:
+            self._pending_messages.append(msg)
+
+    def _send_replay(self, msg: dict) -> None:
+        """Send a message while rebuilding state, without updating shape registries."""
         self._message_history.append(msg)
         if self._ready:
             self.widget.send(msg)
@@ -428,6 +472,155 @@ class MolSysView:
             "op": "update_visibility",
             "options": {"visible_atom_indices": self.visible_atom_indices},
         })
+
+    def _remap_indices(self, indices: Any, atom_index_map: dict[int, int] | None) -> list[int]:
+        if atom_index_map is None:
+            if isinstance(indices, list):
+                return [int(ii) for ii in indices if isinstance(ii, (int, np.integer))]
+            return []
+        if not isinstance(indices, list):
+            return []
+        out: list[int] = []
+        for ii in indices:
+            if not isinstance(ii, (int, np.integer)):
+                continue
+            mapped = atom_index_map.get(int(ii))
+            if mapped is None:
+                continue
+            out.append(mapped)
+        return out
+
+    def _remap_atom_pairs(self, pairs: Any, atom_index_map: dict[int, int] | None) -> list[list[int]] | None:
+        if atom_index_map is None:
+            return pairs if isinstance(pairs, list) else None
+        if not isinstance(pairs, list):
+            return None
+        out: list[list[int]] = []
+        for pair in pairs:
+            if (
+                isinstance(pair, (list, tuple))
+                and len(pair) == 2
+                and isinstance(pair[0], (int, np.integer))
+                and isinstance(pair[1], (int, np.integer))
+            ):
+                a = atom_index_map.get(int(pair[0]))
+                b = atom_index_map.get(int(pair[1]))
+                if a is None or b is None:
+                    continue
+                out.append([a, b])
+        return out
+
+    def _remap_shape_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
+        if atom_index_map is None:
+            return msg
+        op = msg.get("op")
+        if not isinstance(op, str) or not op.startswith("add_"):
+            return msg
+
+        remapped = dict(msg)
+        options = remapped.get("options")
+        if not isinstance(options, dict):
+            return remapped
+
+        options = dict(options)
+        remapped["options"] = options
+
+        if "atom_indices" in options:
+            options["atom_indices"] = self._remap_indices(options.get("atom_indices"), atom_index_map)
+            if not options["atom_indices"]:
+                return None
+
+        if "atom_pairs" in options:
+            options["atom_pairs"] = self._remap_atom_pairs(options.get("atom_pairs"), atom_index_map)
+            if options["atom_pairs"] == []:
+                return None
+
+        if "mouth_atom_indices" in options:
+            mouths = options.get("mouth_atom_indices")
+            if isinstance(mouths, list) and mouths and isinstance(mouths[0], list):
+                options["mouth_atom_indices"] = [
+                    self._remap_indices(m, atom_index_map) for m in mouths
+                ]
+            else:
+                options["mouth_atom_indices"] = self._remap_indices(mouths, atom_index_map)
+
+        return remapped
+
+    def _rebuild_view_from_current_molsys(
+        self,
+        *,
+        label: str | None = None,
+        atom_index_map: dict[int, int] | None = None,
+        visible_atom_indices: list[int] | None = None,
+    ) -> None:
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before mutating the view.")
+
+        from .loaders.load_molsysmt import _serialize_molsys_payload
+
+        viewer_json = self._molsys.to_form("molsysmt.ViewerJSON")
+        payload = _serialize_molsys_payload(viewer_json)
+        if payload is None:
+            raise ValueError("Unable to serialize MolSysMT viewer payload")
+
+        n_atoms = int(msm.get(self._molsys, element="system", n_atoms=True, skip_digestion=True))
+        self.atom_mask = np.ones(n_atoms, dtype=bool)
+        if visible_atom_indices is not None:
+            self.atom_mask[:] = False
+            keep = self._remap_indices(visible_atom_indices, atom_index_map)
+            if keep:
+                self.atom_mask[keep] = True
+
+        if atom_index_map is not None:
+            for region in self._regions.values():
+                if region.atom_indices is None:
+                    continue
+                region.atom_indices = tuple(self._remap_indices(list(region.atom_indices), atom_index_map))
+
+        # Rebuild the message history to reflect the new state (important for HTML exports).
+        self._message_history = []
+        self._pending_messages = []
+
+        self._send({"op": "clear_all"})
+        self._send({"op": "load_molsys_payload", "payload": payload, "label": label})
+
+        if getattr(self.whole, "_preset", None) is not None or getattr(self.whole, "_representation", None) is not None:
+            self.whole.set_representation(
+                getattr(self.whole, "_representation", None),
+                preset=getattr(self.whole, "_preset", None),
+                **getattr(self.whole, "_repr_params", {}),
+            )
+
+        if self._global_hidden:
+            self._send({"op": "hide_global", "target": "global"})
+
+        for layer in list(self._layers.values()):
+            if not getattr(layer, "_active", True):
+                continue
+            layer._send_create()  # noqa: SLF001
+            if getattr(layer, "_hidden", False):
+                layer.hide()
+
+        for region in list(self._regions.values()):
+            if not getattr(region, "_active", True):
+                continue
+            region._send_create()  # noqa: SLF001
+            if getattr(region, "preset", None) is not None or region.representation is not None or region.repr_params:
+                region.set_representation(
+                    region.representation,
+                    preset=getattr(region, "preset", None),
+                    **(region.repr_params or {}),
+                )
+            if getattr(region, "_hidden", False):
+                region.hide()
+
+        for msg in self._shape_history:
+            remapped = self._remap_shape_message(msg, atom_index_map)
+            if remapped is None:
+                continue
+            self._send_replay(remapped)
+
+        self._update_visibility_in_frontend()
 
     # --- Public loading API ---
 
@@ -448,6 +641,7 @@ class MolSysView:
             label=label,
             view=self,
         )
+        self._last_label = label
 
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""
@@ -514,7 +708,8 @@ class MolSysView:
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
         *,
-        duration_ms: Any = '250 ms',
+        duration: Any = '250 ms',
+        duration_ms: Any | None = None,
         extra_radius: Any = '4.0 angstroms',
         min_radius: Any = '1.0 angstroms',
     ) -> None:
@@ -529,8 +724,10 @@ class MolSysView:
             Structure indices to apply when resolving the selection.
         syntax
             Selection syntax understood by MolSysMT.
+        duration
+            Transition duration for the camera move (any time unit supported by PyUnitWizard).
         duration_ms
-            Transition duration in milliseconds for the camera move.
+            Backward-compatible alias for ``duration``. If provided, it overrides ``duration``.
         extra_radius
             Extra padding (Å) added to the selection's bounding sphere.
         min_radius
@@ -543,7 +740,9 @@ class MolSysView:
         if not atom_indices:
             raise ValueError("Cannot zoom: empty selection.")
 
-        duration_ms = puw.get_value(duration_ms, to_unit="ms")
+        if duration_ms is not None:
+            duration = duration_ms
+        duration_ms_value = puw.get_value(duration, to_unit="ms")
         extra_radius = puw.get_value(extra_radius, to_unit="angstroms")
         min_radius = puw.get_value(min_radius, to_unit="angstroms")
 
@@ -552,7 +751,7 @@ class MolSysView:
                 "op": "zoom",
                 "atom_indices": atom_indices,
                 "options": {
-                    "duration_ms": int(duration_ms),
+                    "duration_ms": int(duration_ms_value),
                     "extra_radius": float(extra_radius),
                     "min_radius": float(min_radius),
                 },
@@ -567,6 +766,8 @@ class MolSysView:
         labels: bool = True,
     ) -> None:
         """Clear decorative elements (shapes/styles/labels) without touching the loaded structure or camera."""
+        if shapes:
+            self._shape_history.clear()
         self._send(
             {
                 "op": "clear_scene",
@@ -600,6 +801,8 @@ class MolSysView:
         self._layer_counter = 0
         self._global_hidden = False
         self.whole = Whole(self)
+        self._shape_history.clear()
+        self._last_label = None
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
@@ -706,6 +909,133 @@ class MolSysView:
             output_type=output_type,
             skip_digestion=skip_digestion,
             **kwargs,
+        )
+
+    def append_structures(
+        self,
+        from_molecular_system: Any,
+        *,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+    ) -> None:
+        """Append structures (frames) to the loaded system and refresh the viewer (live).
+
+        Notes
+        -----
+        This method mutates the molecular system behind this view and then reloads the frontend payload.
+        It aims to preserve regions, layers, visibility, and shapes.
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling append_structures().")
+
+        visible = self.visible_atom_indices
+        msm.append_structures(
+            self._molsys,
+            from_molecular_system,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            in_place=True,
+            skip_digestion=True,
+        )
+        self.molecular_system = self._molsys
+        self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
+
+    def set(
+        self,
+        *,
+        element: str | None = None,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        **kwargs: Any,
+    ) -> None:
+        """Set attribute values on the loaded system and refresh the viewer (live).
+
+        This forwards to `molsysmt.set(...)` and then reloads the frontend payload so that changes
+        become visible.
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling set().")
+
+        visible = self.visible_atom_indices
+        msm.set(
+            self._molsys,
+            element=element,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            skip_digestion=True,
+            **kwargs,
+        )
+        self.molecular_system = self._molsys
+        self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
+
+    def add(
+        self,
+        from_molecular_system: Any,
+        *,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        keep_ids: bool = True,
+        syntax: str = "MolSysMT",
+    ) -> None:
+        """Add atoms/structures from another system into this view and refresh the viewer (live)."""
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling add().")
+
+        visible = self.visible_atom_indices
+        msm.add(
+            self._molsys,
+            from_molecular_system,
+            selection=selection,
+            structure_indices=structure_indices,
+            keep_ids=keep_ids,
+            in_place=True,
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        self.molecular_system = self._molsys
+        self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
+
+    def remove(
+        self,
+        *,
+        selection: str | Any | None = None,
+        structure_indices: str | Any | None = None,
+        syntax: str = "MolSysMT",
+    ) -> None:
+        """Remove atoms and/or structures from this view and refresh the viewer (live).
+
+        Atom removals require remapping stored atom indices so that regions and shapes remain consistent.
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling remove().")
+
+        visible_old = self.visible_atom_indices or []
+        atom_index_map: dict[int, int] | None = None
+
+        if selection is not None:
+            removed = set(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
+            n_atoms = int(msm.get(self._molsys, element="system", n_atoms=True, skip_digestion=True))
+            kept = [i for i in range(n_atoms) if i not in removed]
+            atom_index_map = {old: new for new, old in enumerate(kept)}
+
+        self._molsys = msm.remove(
+            self._molsys,
+            selection=selection,
+            structure_indices=structure_indices,
+            to_form="molsysmt.MolSys",
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        self.molecular_system = self._molsys
+
+        self._rebuild_view_from_current_molsys(
+            label=self._last_label,
+            atom_index_map=atom_index_map,
+            visible_atom_indices=visible_old,
         )
 
     # --- Export helpers for docs/notebooks ---

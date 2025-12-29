@@ -14,6 +14,21 @@ Core entrypoints
    molsysviewer.new_view
    molsysviewer.demo
 
+MolSysView: query and live operations
+-------------------------------------
+
+.. autosummary::
+   :toctree: autosummary
+   :nosignatures:
+
+   molsysviewer.MolSysView.select
+   molsysviewer.MolSysView.get
+   molsysviewer.MolSysView.info
+   molsysviewer.MolSysView.append_structures
+   molsysviewer.MolSysView.set
+   molsysviewer.MolSysView.add
+   molsysviewer.MolSysView.remove
+
 Version
 -------
 
