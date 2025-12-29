@@ -28,6 +28,7 @@ a **label**. In MyST, labels are written as:
 Guidelines:
 
 - Place the label **immediately above** the heading it refers to.
+- For most pages, define a **top-level label** immediately above the H1 title.
 - Use a descriptive, stable name:
   - Existing patterns include `Tutorial_Get_attributes`, `User_Intro_*`,
     `Showcase_Quickstart`, etc.
@@ -100,6 +101,15 @@ Guidelines:
 - In tutorials, place API links in an `API documentation` admonition when
   possible, as described in the Developer Guide.
 
+### API-link density
+
+Use API links intentionally:
+
+- Prefer backticks for casual mentions in narrative text.
+- Add `{class}` / `{func}` / `{meth}` links when you want to invite the reader to
+  inspect the reference, especially on first introduction of a key entrypoint.
+- Avoid linking every symbol on a page; too many links reduce readability.
+
 ## File-based links (when they are acceptable)
 
 There are still cases where plain Markdown links to files are appropriate:
@@ -118,6 +128,14 @@ See the MolSysViewer GitHub repository for more details:
 
 Avoid using file-based links to internal pages when a label and `{ref}` can be
 used instead.
+
+## External links (first-mention rule)
+
+External links are part of good documentation, but repeating URLs makes pages noisy.
+
+- Link to an external project the first time you mention it on a page.
+- Do not repeat the URL for every subsequent mention of the same project on the same page.
+- Repeat only when you are pointing to a different destination (for example a specific guide page).
 
 ## Cross-linking between major sections
 

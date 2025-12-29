@@ -7,12 +7,12 @@ Goal
 Code sketch
 
 ```python
-import molsysviewer as mv
+import molsysviewer as viewer
 
 centers = [(0,0,0), (2,0.5,0.2), (4,1,0.5), (6,1.5,1.0)]
 radii   = [1.2, 1.0, 0.9, 1.1]
 
-v = mv.MolSysView()
+v = viewer.MolSysView()
 v.show()
 v.shapes.add_channel_tube(
     centers=centers,

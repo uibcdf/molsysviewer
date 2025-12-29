@@ -23,9 +23,9 @@ This page is a placeholder for the full schema and examples.
 ## Loading
 
 ```python
-import molsysviewer as mv
+import molsysviewer as viewer
 
-mv.config.load_user_presets("presets.yaml")
+viewer.config.load_user_presets("presets.yaml")
 ```
 
 ## Applying

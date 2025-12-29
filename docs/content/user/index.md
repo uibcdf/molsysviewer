@@ -2,6 +2,7 @@
 
 Welcome to MolSysViewer.
 
+If you are new here, start with {ref}`User_Intro_Installation` and {ref}`User_Intro_What`.
 
 ```{toctree}
 :hidden:

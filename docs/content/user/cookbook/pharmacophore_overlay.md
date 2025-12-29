@@ -7,9 +7,9 @@ Goal
 Code sketch
 
 ```python
-import molsysviewer as mv
+import molsysviewer as viewer
 
-v = mv.MolSysView()
+v = viewer.MolSysView()
 v.show()
 v.shapes.add_pharmacophore_features(
     centers=[(0,0,0), (3,0,0), (6,0,0)],
