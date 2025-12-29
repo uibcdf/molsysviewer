@@ -54,3 +54,17 @@ class Whole:
         """Hide the global representation(s)."""
         self._view._global_hidden = True  # noqa: SLF001
         self._view._send({"op": "hide_global", "target": "global"})  # noqa: SLF001
+
+    # --- MolSysMT query helpers (delegated to MolSysView) ---
+
+    def select(self, *args: Any, **kwargs: Any):
+        """Select indices from the whole system (delegates to `MolSysView.select`)."""
+        return self._view.select(*args, **kwargs)
+
+    def get(self, *args: Any, **kwargs: Any):
+        """Retrieve values from the whole system (delegates to `MolSysView.get`)."""
+        return self._view.get(*args, **kwargs)
+
+    def info(self, *args: Any, **kwargs: Any):
+        """Show a summary table for the whole system (delegates to `MolSysView.info`)."""
+        return self._view.info(*args, **kwargs)

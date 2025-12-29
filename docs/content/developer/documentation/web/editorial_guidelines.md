@@ -11,11 +11,27 @@ You also want diffs that are reviewable and a site that builds without running n
 ## Writing style (always)
 
 - Write in the second person (“you”).
-- Keep sentences short.
+- Keep a warm, helpful tone.
+- Prefer clear, complete explanations over telegraphic bullet lists.
+- Keep sentences short when it helps readability, but do not optimize for brevity.
 - Explain “why” before “how”.
-- Prefer headings and lists over long paragraphs.
+- Prefer headings and lists to support scanning, but do not replace narrative with lists.
 - Keep API names exact.
 - Keep code and docstrings in English.
+
+## Page anchors (labels)
+
+Every substantial page should define a top-level label so other pages can link to it
+without relying on filenames.
+
+Put the label immediately above the top-level heading:
+
+```markdown
+(User_Intro_What)=
+# What is MolSysViewer?
+```
+
+See {doc}`references` for the full cross-linking conventions.
 
 ## File types
 
@@ -79,6 +95,28 @@ Embed patterns
 - In `.md` pages, use an `<iframe>` pointing to the HTML file in `_static/views/`.
 - In notebooks, use `molsysviewer.thirds.jupyter.load_html_in_notebook(...)` when you want a quick iframe output cell.
 
+### Paths for embeds in notebooks
+
+When you embed an HTML lite file from a notebook under `docs/content/**`, use a
+**relative path** from the notebook location to `docs/_static/views/`.
+
+This keeps the embed working when you open the built documentation locally
+(`google-chrome docs/_build/html/index.html`) without running a web server.
+
+Examples:
+
+- From `docs/content/user/introduction/*.ipynb`:
+
+  ```python
+  load_html_in_notebook("../../../_static/views/demo_tctim.html")
+  ```
+
+- From `docs/content/showcase/*.ipynb`:
+
+  ```python
+  load_html_in_notebook("../../_static/views/quickstart.html")
+  ```
+
 ## Notebook execution and widget state
 
 Sphinx builds do not execute notebooks (`nb_execution_mode = "off"`).
@@ -108,6 +146,36 @@ Use MyST-NB cell tags to control what is visible in the rendered docs:
 
 - Use `docs/content/developer/documentation/web/references.md` for linking patterns (`{doc}`, `{ref}`, `{class}`, `{func}`).
 - Use `docs/content/developer/documentation/web/myst.ipynb` for MyST examples and admonitions.
+
+## External links (avoid repetition)
+
+External links are useful, but repeated URLs make pages harder to read.
+
+- Link to an external project the first time you introduce it on a page.
+- After that, use the project name without repeating the URL, unless you are pointing
+  to a different resource (for example “Mol* docs” vs “Mol* homepage”).
+
+## API-link density (readability first)
+
+Not every mention of code should become a hyperlink.
+
+- Use inline code (backticks) for light references inside narrative text.
+- Use Sphinx roles (`{class}`, `{func}`, `{meth}`, `{attr}`) when a link genuinely helps:
+  - the first time you introduce a key entrypoint,
+  - when you want the reader to jump to the reference for details,
+  - when a name might otherwise be ambiguous.
+- In introduction pages, keep API links sparse. In technical pages (Viewer/Loading/Export),
+  increase linking where it helps comprehension and navigation.
+
+## Code conventions in user-facing docs
+
+- In User Guide, Cookbook, and Showcase examples, import the package as:
+
+  ```python
+  import molsysviewer as viewer
+  ```
+
+  Keep this consistent across pages. Avoid using multiple aliases (`mv`, `msv`, etc.).
 
 See also
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Mapping
+import inspect
 import json
 import re
 
@@ -198,6 +199,23 @@ class MolSysView:
     def layers(self) -> Mapping[str, Layer]:
         """Public registry of layers (non-structural visuals)."""
         return self._layers
+
+    @property
+    def molsys(self):
+        """Read-only handle to the loaded MolSysMT molecular system.
+
+        This property exposes the underlying `molsysmt.MolSys` instance created
+        when you call `load(...)`. It is intended for inspection (for example,
+        via `molsysmt.info(...)` or `molsysmt.select(...)`).
+
+        Notes
+        -----
+        - This is a read-only property (no setter): you cannot reassign it.
+        - The returned object may be mutable. If you modify it directly, you can
+          desynchronize what you see in the viewer. If you need to change the
+          system, modify your data and call `load(...)` again.
+        """
+        return self._molsys
 
     def _next_region_tag(self) -> str:
         self._region_counter += 1
@@ -629,9 +647,66 @@ class MolSysView:
              element='system',
              selection='all',
              syntax='MolSysMT',
+             mask='all',
              skip_digestion=False
             ):
-        return msm.info(self._molsys, element=element, selection=selection, syntax=syntax)
+        kwargs = dict(
+            element=element,
+            selection=selection,
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+        )
+        if "mask" in inspect.signature(msm.info).parameters:
+            kwargs["mask"] = mask
+        return msm.info(self._molsys, **kwargs)
+
+    def select(
+        self,
+        selection="all",
+        structure_indices="all",
+        element="atom",
+        mask=None,
+        syntax="MolSysMT",
+        to_syntax=None,
+        skip_digestion=False,
+    ):
+        """Select indices from the current molecular system (MolSysMT selection language)."""
+        return msm.select(
+            self._molsys,
+            selection=selection,
+            structure_indices=structure_indices,
+            element=element,
+            mask=mask,
+            syntax=syntax,
+            to_syntax=to_syntax,
+            skip_digestion=skip_digestion,
+        )
+
+    def get(
+        self,
+        element="system",
+        selection="all",
+        structure_indices="all",
+        mask=None,
+        syntax="MolSysMT",
+        get_missing_bonds=True,
+        output_type="values",
+        skip_digestion=False,
+        **kwargs,
+    ):
+        """Retrieve attribute values from the current molecular system (MolSysMT get)."""
+        return msm.get(
+            self._molsys,
+            element=element,
+            selection=selection,
+            structure_indices=structure_indices,
+            mask=mask,
+            syntax=syntax,
+            get_missing_bonds=get_missing_bonds,
+            output_type=output_type,
+            skip_digestion=skip_digestion,
+            **kwargs,
+        )
 
     # --- Export helpers for docs/notebooks ---
 

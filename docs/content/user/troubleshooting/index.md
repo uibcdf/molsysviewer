@@ -7,6 +7,10 @@ Use this section when the viewer does not behave as expected.
 Check the GitHub issues board before contacting the maintainers directly.
 It is the fastest way to find answers and track fixes.
 
+If this Troubleshooting section does not solve your problem, GitHub issues is the
+best next step: you can often find the same symptom reported before, and if not,
+opening a new issue helps maintainers reproduce and fix the problem.
+
 - Check existing issues (open and closed).
 - If you cannot find your problem, open a new issue with a minimal reproducible example.
 
@@ -25,4 +29,3 @@ docs_embeds
 selection_issues
 performance
 ```
-

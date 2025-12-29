@@ -21,12 +21,12 @@ meshes
 Add basic shapes:
 
 ```python
-import molsysviewer as mv
-v = mv.MolSysView()
+import molsysviewer as viewer
+v = viewer.MolSysView()
 v.show()
 
 # Transparent sphere
-v.add_sphere(center=(0, 0, 0), radius=3.0, color=0x00ff00, alpha=0.4)
+v.shapes.add_sphere(center=(0, 0, 0), radius=3.0, color=0x00ff00, alpha=0.4)
 
 # Alpha-sphere set with optional atom spheres
 v.shapes.add_set_alpha_spheres(

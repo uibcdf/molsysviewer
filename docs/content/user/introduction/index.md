@@ -15,7 +15,7 @@ Start here if you are new to:
 
 what
 installation
-molsysmt_molecular_system
+molecular_system
 units
 configuration
 ```
