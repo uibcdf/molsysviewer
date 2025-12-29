@@ -17,7 +17,7 @@ You also want diffs that are reviewable and a site that builds without running n
 - Explain “why” before “how”.
 - Prefer headings and lists to support scanning, but do not replace narrative with lists.
 - Keep API names exact.
-- Keep code and docstrings in English.
+- Keep all repository text in English (including docs). Conversations can be in any language, but committed content must be English.
 
 ## Page anchors (labels)
 
@@ -141,6 +141,35 @@ Use MyST-NB cell tags to control what is visible in the rendered docs:
 - Keep headings and naming consistent across units.
 - Avoid duplicate page titles for different concepts.
 - If you split one concept into two pages, make titles unambiguous (for example “Atom masking” vs “Visibility”).
+
+## Section index pages (toctrees)
+
+Many sections have an `index.md` page that exists mainly to introduce the section and list its pages.
+
+Preferred pattern:
+
+- 1–2 short paragraphs of warm orientation text (what the section is for, who should read it, how to approach it).
+- A visible `toctree` with `:maxdepth: 1`.
+
+Avoid duplicating the navigation by writing a manual bullet list of pages that mirrors the `toctree`. If you need extra guidance,
+add a single sentence above the `toctree` (for example “Read these pages in order.”).
+
+If you truly need a short description per page, use a small narrative paragraph with inline `{doc}` links instead of a second list.
+
+## User-facing API naming (avoid unit suffixes)
+
+Prefer parameter names that describe meaning, not internal representation.
+
+- Avoid encoding units in parameter names (for example prefer `duration` over `duration_ms`).
+- Convert and standardize units internally (PyUnitWizard).
+- When renaming a public parameter, keep a backward-compatible alias for at least one release and document it in the docstring.
+
+## Experimental features
+
+If an API is user-facing but still evolving, label it clearly as experimental in both:
+
+- the docstring, and
+- the User Guide page where it is introduced.
 
 ## Cross-links and references
 

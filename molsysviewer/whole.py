@@ -68,3 +68,19 @@ class Whole:
     def info(self, *args: Any, **kwargs: Any):
         """Show a summary table for the whole system (delegates to `MolSysView.info`)."""
         return self._view.info(*args, **kwargs)
+
+    def append_structures(self, *args: Any, **kwargs: Any):
+        """Append structures to the underlying system (delegates to `MolSysView.append_structures`)."""
+        return self._view.append_structures(*args, **kwargs)
+
+    def set(self, *args: Any, **kwargs: Any):
+        """Set attributes on the underlying system (delegates to `MolSysView.set`)."""
+        return self._view.set(*args, **kwargs)
+
+    def add(self, *args: Any, **kwargs: Any):
+        """Add elements from another system (delegates to `MolSysView.add`)."""
+        return self._view.add(*args, **kwargs)
+
+    def remove(self, *args: Any, **kwargs: Any):
+        """Remove atoms/structures from the system (delegates to `MolSysView.remove`)."""
+        return self._view.remove(*args, **kwargs)

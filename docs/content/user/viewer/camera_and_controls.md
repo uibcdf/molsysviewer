@@ -11,7 +11,7 @@ view = viewer.MolSysView()
 view.load("1CRN")
 view.show()
 
-view.zoom("protein", duration_ms="250 ms", extra_radius="4 angstroms")
+view.zoom("protein", duration="250 ms", extra_radius="4 angstroms")
 ```
 
 ## Reset the camera

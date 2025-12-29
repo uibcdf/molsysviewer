@@ -23,8 +23,10 @@ class Region:
         self.selection = selection
         self.atom_indices = tuple(atom_indices) if atom_indices is not None else None
         self.representation = representation
+        self.preset: str | None = None
         self.repr_params = repr_params or {}
         self._active = True
+        self._hidden = False
 
     # --- helpers ---
 
@@ -260,6 +262,7 @@ class Region:
         user_preset_payload = self._view._resolve_user_preset(normalized_preset)  # noqa: SLF001
         normalized = None if normalized_preset else self._view._normalize_representation_type(representation)  # noqa: SLF001
         self.representation = normalized
+        self.preset = normalized_preset
         self.repr_params = params or {}
         self._send(
             "set_region_representation",
@@ -289,10 +292,12 @@ class Region:
 
     def show(self) -> None:
         """Show this region (all attached representations)."""
+        self._hidden = False
         self._send("show_region")
 
     def hide(self) -> None:
         """Hide this region (all attached representations)."""
+        self._hidden = True
         self._send("hide_region")
 
     def delete(self) -> None:

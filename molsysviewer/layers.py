@@ -19,6 +19,7 @@ class Layer:
         self.kind = kind
         self.meta = meta or {}
         self._active = True
+        self._hidden = False
 
     def _send(self, op: str, **payload: Any) -> None:
         if not self._active:
@@ -31,10 +32,12 @@ class Layer:
 
     def show(self) -> None:
         """Show this layer (all contained visuals)."""
+        self._hidden = False
         self._send("show_layer")
 
     def hide(self) -> None:
         """Hide this layer (all contained visuals)."""
+        self._hidden = True
         self._send("hide_layer")
 
     def delete(self) -> None:

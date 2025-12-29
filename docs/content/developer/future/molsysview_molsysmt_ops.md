@@ -1,12 +1,23 @@
 (Dev_Future_MolSysView_MolSysMTOps)=
-# MolSysView ↔ MolSysMT operations (planned)
+# MolSysView ↔ MolSysMT operations
 
 This page captures the agreed design direction for exposing a subset of MolSysMT operations through MolSysViewer objects
-(`MolSysView`, `Whole`, and `Region`). It exists to prevent design decisions from being lost between implementation
-iterations.
+(`MolSysView`, `Whole`, and `Region`), and tracks what is already implemented vs what is still planned.
 
 The core goal is to **avoid encouraging users to mutate `view.molsys` directly**. Instead, MolSysViewer should provide
 safe, user-facing methods that keep the viewer state (regions, layers, tags, shapes, UI controls) consistent.
+
+## Current status (summary)
+
+Implemented (Level A)
+- `MolSysView.select/get/info` and scoped `Whole`/`Region` counterparts.
+- Live operations on `MolSysView`: `append_structures`, `set`, `add`, `remove`.
+  These use a “Level A” strategy: mutate the MolSysMT system, then reload the `load_molsys_payload` payload and replay
+  scene state.
+
+Planned
+- The `molsysviewer.tools.*` toolbox module for advanced operations (multi-view composition, geometry edits, analysis).
+- “Level B” Mol* state-tree integration for incremental updates.
 
 ## Scope and principles
 
@@ -24,18 +35,18 @@ safe, user-facing methods that keep the viewer state (regions, layers, tags, sha
 
 ## Must / Should / Could
 
-| Priority | Item | Where | Behavior |
-|---|---|---|---|
-| Must | `select(...)` | `MolSysView`, `Whole`, `Region` | Wrapper to MolSysMT selection; `Region` is scoped by intersection. |
-| Must | `get(...)` | `MolSysView`, `Whole`, `Region` | Wrapper to MolSysMT get; `Region` is scoped by intersection. |
-| Must | `info(...)` | `MolSysView`, `Whole`, `Region` | Wrapper to MolSysMT info; `Region` is scoped by intersection. |
-| Should | `append_structures(...)` | `MolSysView` | Live: append frames; update frames UI; keep state consistent. |
-| Should | `set(...)` | `MolSysView` | Live: mutate attributes through MolSysMT; refresh viewer as needed. |
-| Could | `remove(...)` | `MolSysView` | Live: remove atoms/structures; remap indices; reconcile state; refresh viewer. |
-| Could | `add(...)` | `MolSysView` | Live: add another system into current view; handle collisions and remapping. |
-| Could | `concatenate_structures(...)` | `molsysviewer.tools` | Pure: return a new view built from multiple inputs/frames. |
-| Could | `merge_views(...)` | `molsysviewer.tools` | Pure: return a new view from multiple views (systems + scene state). |
-| Could | Geometry and analysis ops | `molsysviewer.tools` | Distances/angles/dihedrals, coordinate edits, etc. (planned). |
+| Priority | Item | Where | Status | Behavior |
+|---|---|---|---|---|
+| Must | `select(...)` | `MolSysView`, `Whole`, `Region` | Implemented | Wrapper to MolSysMT selection; `Region` is scoped by intersection. |
+| Must | `get(...)` | `MolSysView`, `Whole`, `Region` | Implemented | Wrapper to MolSysMT get; `Region` is scoped by intersection. |
+| Must | `info(...)` | `MolSysView`, `Whole`, `Region` | Implemented | Wrapper to MolSysMT info; `Region` is scoped by intersection. |
+| Should | `append_structures(...)` | `MolSysView` | Implemented | Live: append frames; reload payload; replay state. |
+| Should | `set(...)` | `MolSysView` | Implemented | Live: mutate via MolSysMT; reload payload; replay state. |
+| Could | `remove(...)` | `MolSysView` | Implemented (experimental) | Live: remove atoms/structures; remap indices; reload payload; replay state. |
+| Could | `add(...)` | `MolSysView` | Implemented (experimental) | Live: add another system into current view; reload payload; replay state. |
+| Could | `concatenate_structures(...)` | `molsysviewer.tools` | Planned | Pure: return a new view built from multiple inputs/frames. |
+| Could | `merge_views(...)` | `molsysviewer.tools` | Planned | Pure: return a new view from multiple views (systems + scene state). |
+| Could | Geometry and analysis ops | `molsysviewer.tools` | Planned | Distances/angles/dihedrals, coordinate edits, etc. |
 
 ## Contracts (what users should be able to assume)
 
@@ -74,6 +85,31 @@ The `molsysviewer.tools` namespace is intended for operations that go beyond “
 
 These functions may be *pure* (return a new `MolSysView`) or *live* (mutate an existing view), but the behavior must be
 explicit in their docstrings and user-facing documentation.
+
+### Mol* state-tree integration (Level B, planned for v2)
+
+The initial implementation can follow a “Level A” strategy: mutate the MolSysMT system, then reload the whole
+`load_molsys_payload` payload and replay the scene state (regions/layers/shapes).
+
+This Level A approach is already implemented for the current live operations, and it is the baseline behavior until
+Level B is introduced.
+
+For a second iteration, the goal should be a more Mol*-native pipeline that enables incremental updates:
+
+- Represent **topology** and **coordinates** as separate nodes in the Mol* state tree.
+- Build a trajectory using Mol*’s `TrajectoryFromModelAndCoordinates` transformer (or an equivalent internal helper),
+  with explicit `dependsOn` links between nodes.
+- For operations like `append_structures` and coordinate edits, update only the **coordinates node** and let the state
+  tree propagate updates instead of recreating the whole structure.
+
+This change should reduce reload/replay complexity, improve responsiveness, and make “live editing” operations more
+robust.
+
+**MolSysMT ↔ Mol* converter (planned)**:
+
+It would be valuable to implement a dedicated MolSysMT converter that maps `molsysmt.MolSys` to a Mol* `Trajectory`
+object (and/or the pair Topology + Coordinates), so that MolSysViewer’s JS layer can build state-tree nodes directly
+without going through the intermediate `MolSysPayload` path.
 
 ### Live operations: general obligations
 

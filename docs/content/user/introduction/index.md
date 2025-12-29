@@ -1,17 +1,14 @@
 # Introduction
 
-Use this section to learn the key ideas behind MolSysViewer before you follow the user guide tutorials.
+This section introduces the key ideas behind MolSysViewer before you dive into the rest of the User Guide.
 
-Start here if you are new to:
+If you are new to MolSysViewer, start here. The goal is to help you build a comfortable mental model (what a “molecular
+system” is in MolSysMT, how the viewer relates to it, and what conventions MolSysViewer uses for units and defaults).
 
-- MolSysViewer’s scope and goals.
-- The MolSysMT “molecular system” model.
-- Units and conversions in the API.
-- Configuration and customization.
+Read these pages in order. They are short, and they are meant to set you up for the rest of the User Guide.
 
 ```{toctree}
-:hidden:
-:maxdepth: 2
+:maxdepth: 1
 
 what
 installation
