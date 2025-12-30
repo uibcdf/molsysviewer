@@ -39,14 +39,14 @@ Reference flows
 
 1) Hide global before first show
 ```python
-view = viewer.demo.tctim
+view = viewer.demo["1TCD"]
 view.whole.hide()
 view.show()  # regions may be created; global stays hidden
 ```
 
 2) Hide one region and preserve it across hide/show
 ```python
-view = viewer.demo.tctim
+view = viewer.demo["1TCD"]
 r1 = view.new_region("chain_id == 'A'", representation="sticks")
 r2 = view.new_region("chain_id == 'B'", representation="sticks")
 r2.hide()

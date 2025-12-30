@@ -19,4 +19,3 @@ They also avoid large external downloads in CI and docs builds.
 
 - Prefer demos over mocks in tests.
 - Prefer demos over remote PDB downloads in docs tutorials.
-

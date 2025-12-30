@@ -1,64 +1,61 @@
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
 from importlib.resources import files
-from typing import Any, Callable
 
 from .new_view import new_view
 
 
-def _load_dialanine(**kwargs):
-    demo_system = files("molsysviewer.data.h5msm").joinpath("alanine_dipeptide.h5msm")
-    return new_view(demo_system, **kwargs)
-
-def _load_tctim(**kwargs):
-    demo_system = files("molsysviewer.data.h5msm").joinpath("1tcd.h5msm")
-    return new_view(demo_system, **kwargs)
-
-def _load_pentalanine(**kwargs):
-    demo_system = files("molsysviewer.data.h5msm").joinpath("traj_pentalanine.h5msm")
-    return new_view(demo_system, **kwargs)
-
-def _load_chicken_villin_HP35(**kwargs):
-    demo_system = files("molsysviewer.data.h5msm").joinpath("traj_chicken_villin_HP35_solvated.h5msm")
-    return new_view(demo_system, **kwargs)
+@dataclass(frozen=True)
+class _DemoSpec:
+    key: str
+    resource_filename: str
 
 
-class _LazyDemo:
-    """Lazy proxy so demos can be accessed as attributes (e.g., demo.dialanine.show())."""
+class DemoCatalog(Mapping[str, "MolSysView"]):
+    """Dictionary-like access to built-in demo views.
 
-    def __init__(self, loader: Callable[[], Any]):
-        self._loader = loader
-        self._cached: Any | None = None
+    Access demos by key:
 
-    def _get(self):
-        if self._cached is None:
-            self._cached = self._loader()
-        return self._cached
+    >>> import molsysviewer as viewer
+    >>> view = viewer.demo["1TCD"]
 
-    def __getattribute__(self, name: str):
-        if name == "__class__":
-            cached = object.__getattribute__(self, "_cached")
-            return cached.__class__ if cached is not None else type(self)
-        return object.__getattribute__(self, name)
+    Notes
+    -----
+    - Each access returns a **fresh** `MolSysView` instance (no shared state).
+    - Demo systems are shipped inside the package under `molsysviewer.data.h5msm`.
+    """
 
-    def __getattr__(self, name: str):
-        return getattr(self._get(), name)
+    def __init__(self, specs: list[_DemoSpec]):
+        self._specs = {spec.key: spec for spec in specs}
 
-    def __call__(self, **kwargs):
-        if kwargs or self._cached is None:
-            return self._loader(**kwargs)
-        return self._cached
+    def __getitem__(self, key: str):
+        spec = self._specs[key]
+        demo_system = files("molsysviewer.data.h5msm").joinpath(spec.resource_filename)
+        return new_view(demo_system)
 
-    @property
-    def viewer(self):
-        """Return the underlying viewer instance."""
-        return self._get()
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._specs)
 
+    def __len__(self) -> int:
+        return len(self._specs)
 
-dialanine = _LazyDemo(_load_dialanine)
-pentalanine = _LazyDemo(_load_pentalanine)
-tctim = _LazyDemo(_load_tctim)
-chicken_villin_HP35 = _LazyDemo(_load_chicken_villin_HP35)
+    def __repr__(self) -> str:  # pragma: no cover
+        keys = ", ".join(sorted(self._specs))
+        return f"DemoCatalog({keys})"
 
 
-__all__ = ["dialanine", "pentalanine", "tctim", "chicken_villin_HP35"]
+demo = DemoCatalog(
+    [
+        _DemoSpec("dialanine", "alanine_dipeptide.h5msm"),
+        _DemoSpec("1TCD", "1TCD.h5msm"),
+        _DemoSpec("181L", "181L.h5msm"),
+        _DemoSpec("pentalanine", "traj_pentalanine.h5msm"),
+        _DemoSpec("chicken_villin_HP35", "traj_chicken_villin_HP35_solvated.h5msm"),
+    ]
+)
+
+
+__all__ = ["DemoCatalog", "demo"]
+

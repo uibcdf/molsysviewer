@@ -2,7 +2,7 @@ from ._version import __version__
 from ._pyunitwizard import puw as pyunitwizard
 from .viewer import MolSysView
 from .new_view import new_view
-from . import demo
+from .demo import demo
 
 
 def __print_version__():
