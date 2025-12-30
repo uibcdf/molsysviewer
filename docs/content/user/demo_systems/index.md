@@ -16,4 +16,3 @@ It will include:
 
 catalog
 ```
-

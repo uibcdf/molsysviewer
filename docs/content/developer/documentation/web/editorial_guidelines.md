@@ -108,7 +108,7 @@ Examples:
 - From `docs/content/user/introduction/*.ipynb`:
 
   ```python
-  load_html_in_notebook("../../../_static/views/demo_tctim.html")
+  load_html_in_notebook("../../../_static/views/demo_1TCD.html")
   ```
 
 - From `docs/content/showcase/*.ipynb`:

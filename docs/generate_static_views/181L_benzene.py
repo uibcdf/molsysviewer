@@ -22,4 +22,4 @@ camera_snapshot = {
 }
 view.set_camera_snapshot(camera_snapshot)
 view.show()
-view.write_html("../_static/views/181l_benzene.html", title="181L", mode="lite")
+view.write_html("../_static/views/181L_benzene.html", title="181L", mode="lite")
