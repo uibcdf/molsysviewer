@@ -1,11 +1,10 @@
+(User_Intro_Customization)=
 # Customization
 
 MolSysViewer exposes a small set of user-facing configuration options so you can tailor your default experience without
 changing any source code.
 
 This page focuses on the `molsysviewer.config` module: what you can customize, and when it is useful.
-
-(User_Intro_Customization)=
 
 ## A quick mental model
 

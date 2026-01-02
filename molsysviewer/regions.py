@@ -106,13 +106,9 @@ class Region:
         element="atom",
         mask=None,
         syntax="MolSysMT",
-        to_syntax=None,
         skip_digestion=False,
     ):
         """Select indices, scoped to this region."""
-        if to_syntax is not None:
-            raise ValueError("Region.select(..., to_syntax=...) is not supported.")
-
         scope = self._scoped_indices_for_element(element)
         if scope is None:
             return self._view.select(  # noqa: SLF001
@@ -121,7 +117,6 @@ class Region:
                 element=element,
                 mask=mask,
                 syntax=syntax,
-                to_syntax=None,
                 skip_digestion=skip_digestion,
             )
 
@@ -134,7 +129,6 @@ class Region:
             element=element,
             mask=None,
             syntax=syntax,
-            to_syntax=None,
             skip_digestion=skip_digestion,
         )
         if mask is not None and mask != "all":
@@ -144,7 +138,6 @@ class Region:
                 element=element,
                 mask=None,
                 syntax=syntax,
-                to_syntax=None,
                 skip_digestion=skip_digestion,
             )
             selected = self._intersect_indices(selected, masked)
@@ -197,7 +190,6 @@ class Region:
             element=element,
             mask=mask,
             syntax=syntax,
-            to_syntax=None,
             skip_digestion=skip_digestion,
         )
         return self._view.get(  # noqa: SLF001
@@ -236,7 +228,6 @@ class Region:
             element=element,
             mask=mask,
             syntax=syntax,
-            to_syntax=None,
             skip_digestion=skip_digestion,
         )
         return self._view.info(  # noqa: SLF001

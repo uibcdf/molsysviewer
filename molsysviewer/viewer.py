@@ -870,10 +870,14 @@ class MolSysView:
         element="atom",
         mask=None,
         syntax="MolSysMT",
-        to_syntax=None,
         skip_digestion=False,
     ):
-        """Select indices from the current molecular system (MolSysMT selection language)."""
+        """Select indices from the current molecular system (MolSysMT selection language).
+
+        Notes
+        -----
+        This method intentionally focuses on the common workflow: returning indices.
+        """
         return msm.select(
             self._molsys,
             selection=selection,
@@ -881,7 +885,6 @@ class MolSysView:
             element=element,
             mask=mask,
             syntax=syntax,
-            to_syntax=to_syntax,
             skip_digestion=skip_digestion,
         )
 

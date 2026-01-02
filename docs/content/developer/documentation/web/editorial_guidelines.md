@@ -18,6 +18,15 @@ You also want diffs that are reviewable and a site that builds without running n
 - Prefer headings and lists to support scanning, but do not replace narrative with lists.
 - Keep API names exact.
 - Keep all repository text in English (including docs). Conversations can be in any language, but committed content must be English.
+- When describing the two halves of the viewer, prefer **Python side** / **browser side** (or **kernel** / **browser**). Use “frontend/backend” only when the context makes it unambiguous.
+
+## Terminology (MolSysMT-aligned)
+
+MolSysViewer is built on MolSysMT, so use MolSysMT terms consistently:
+
+- Use **group** (not “residue”). In MolSysMT, a *group* can be an amino acid, a water molecule, or an ion. “Residue” is too protein-centric.
+- Use **structure** as the general term. Only use **frame** when you explicitly mean “a structure from a molecular dynamics trajectory”.
+- When you need to name hierarchical levels, prefer MolSysMT’s wording: *elements* (`atom`, `group`, `chain`, `entity`, …).
 
 ## Page anchors (labels)
 
@@ -86,10 +95,23 @@ About → Support
 Prefer docs-light “HTML lite” exports over widget outputs.
 It keeps notebooks small and makes embeds stable.
 
-- Export with `MolSysView.write_html(..., mode="lite")`.
 - Store exported HTML under `docs/_static/views/`.
 - Do not edit the exported HTML by hand.
 - Do not read `docs/_static/views/*.html` when you work on logic or text. Treat them as build artifacts.
+
+### How HTML lite views are generated (source of truth)
+
+Treat `docs/_static/views/*.html` as build artifacts. The source of truth is a small Python script under:
+
+- `docs/generate_static_views/`
+
+When you need a new embedded view:
+
+1. Add a script in `docs/generate_static_views/` that produces the HTML lite file.
+2. Run the script to regenerate `docs/_static/views/<name>.html`.
+3. In docs pages, embed the HTML file (do not generate it from inside the notebook).
+
+This keeps the workflow reproducible and makes it obvious how each embedded view is produced.
 
 Embed patterns
 - In `.md` pages, use an `<iframe>` pointing to the HTML file in `_static/views/`.
@@ -136,6 +158,43 @@ Use MyST-NB cell tags to control what is visible in the rendered docs:
 - `remove-input` to hide “how the iframe is embedded”.
 - `remove-output` to hide widget outputs (prefer HTML lite instead).
 
+### Minimal example: embed an HTML lite view in a notebook
+
+In tutorial notebooks, the most robust pattern is:
+
+1. Run `view.show()` once (to keep the code visible), but tag the cell so its widget output does not get stored.
+2. In the next cell, embed the pre-rendered HTML lite view, but tag the cell so the embedding code is hidden.
+3. Optionally, end the section with a short “expectation check” sentence (for example “Your final view should look like this:” or “...like this:”) followed by an HTML lite embed.
+
+Example (notebook under `docs/content/**`):
+
+```python
+import molsysviewer as viewer
+
+view = viewer.demo["1TCD"]
+view.show()
+```
+
+Tag that cell with `remove-output`.
+
+Then:
+
+```python
+from molsysviewer.thirds.jupyter import load_html_in_notebook
+load_html_in_notebook("../../../_static/views/demo_1TCD.html")
+```
+
+Tag that cell with `remove-input`.
+
+This keeps notebooks small and makes the rendered documentation deterministic (no widget state required).
+
+## Notebook source formatting (keep diffs clean)
+
+When editing `.ipynb` files, keep the JSON as clean and reviewable as possible.
+
+- Avoid trailing blank lines in **Markdown cell** sources.
+- Prefer small, focused edits over large “reformat” diffs.
+
 ## Avoid accidental style drift
 
 - Keep headings and naming consistent across units.
@@ -155,6 +214,14 @@ Avoid duplicating the navigation by writing a manual bullet list of pages that m
 add a single sentence above the `toctree` (for example “Read these pages in order.”).
 
 If you truly need a short description per page, use a small narrative paragraph with inline `{doc}` links instead of a second list.
+
+## Page naming and discoverability
+
+Readers often scan the sidebar for the name of the method they remember (for example “get”, “info”, “remove”).
+When a page documents a specific user-facing method:
+
+- Prefer short, obvious titles (for example “Getting attributes”, “Quick info”, “Removing elements”).
+- Include the exact method name early in the page (for example “This page documents `view.get(...)`.").
 
 ## User-facing API naming (avoid unit suffixes)
 
