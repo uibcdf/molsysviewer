@@ -38,4 +38,4 @@ Commands
 - Place reusable assets in `_static/` or `_templates/`.
 - Do not edit generated artifacts under `_build/`.
 - Do not edit or read exported HTML under `_static/views/` (treat them as build artifacts).
-
+- Generate HTML lite views via scripts in `docs/generate_static_views/` (do not generate them inside notebooks).

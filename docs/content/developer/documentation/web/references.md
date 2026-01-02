@@ -110,6 +110,25 @@ Use API links intentionally:
   inspect the reference, especially on first introduction of a key entrypoint.
 - Avoid linking every symbol on a page; too many links reduce readability.
 
+## Page links: `{doc}` for intra-section navigation
+
+When you want to link to another documentation page by its document name (instead of a label), use `{doc}`.
+This is useful for nearby, intra-section navigation (for example, between pages within the same User Guide chapter).
+
+Correct syntax:
+
+```markdown
+See {doc}`loading_and_inspect` for the starting point.
+```
+
+Common mistake to avoid:
+
+```markdown
+See {doc}:`loading_and_inspect`
+```
+
+Prefer `{ref}` when a stable label exists (or should exist), especially for links that you expect to survive future reorganizations.
+
 ## File-based links (when they are acceptable)
 
 There are still cases where plain Markdown links to files are appropriate:
@@ -192,3 +211,17 @@ These links work but are fragile if files move. When updating a page:
 There is no need to migrate all links at once, but **new or updated content**
 should follow the conventions in this document. Over time, legacy links can be
 cleaned up as pages are revisited.
+
+## When you move pages: keep labels honest
+
+Labels are the stable anchors for cross-references. If you move a page to a different chapter, make sure its label still matches its role and location.
+
+Example:
+
+- If you move a page out of Introduction and into the Molecular System chapter, rename a label like `User_Intro_*` to something like `User_MolecularSystem_*`.
+
+Then update any references:
+
+- Replace `{ref}` targets that point to the old label with the new label.
+
+This avoids confusing cross-references such as an “Intro” label that now points to a chapter page.

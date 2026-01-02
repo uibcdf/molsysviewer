@@ -8,7 +8,7 @@ OpenMM units, Astropy units, Unyt, …) and converts them behind the scenes to t
 MolSysViewer expects.
 
 If you want the full picture of what is supported (all input forms and parsing rules), see the
-[PyUnitWizard documentation](https://www.uibcdf.org/pyunitwizard)
+[PyUnitWizard documentation](https://www.uibcdf.org/pyunitwizard).
 
 ## What you can pass
 

@@ -1,16 +1,15 @@
 # Molecular system
 
-In MolSysSuite, a **molecular system** has:
+This section is the practical core of how MolSysViewer works.
 
-- a **topology** (atoms, groups, chains, bonds, etc.), and
-- one or more **structures** (spatial information: coordinates, optional periodic box, optional time).
+MolSysViewer builds on MolSysMT, so the way you load, query, and modify what you see in the viewer follows MolSysMT’s definition of a molecular system: a topology (atoms, groups, chains, bonds, ...) plus one or more structures (coordinates, optional box, optional time).
 
-This matters because MolSysViewer is driven by MolSysMT concepts such as `selection` and `structure_indices`.
+If you are new to these ideas, start with the first section, an overview on what a molecular system is for MolSysViewer, and then continue in order:
 
 ```{toctree}
-:hidden:
-:maxdepth: 2
+:maxdepth: 1
 
+molecular_system
 loading_and_inspect
 topology
 structures
@@ -22,17 +21,3 @@ remove
 add
 append_structures
 ```
-
-## Terminology
-
-Molecular system
-: Topology + `structures`.
-
-Structure
-: One set of coordinates (and optional `box`/`time`). If the structures come from a molecular dynamics trajectory, many libraries call each structure a “frame”. In MolSysSuite, a structure can also represent a model (not necessarily time-ordered).
-
-Structure indices
-: Which structures you are working with (for example, to pick a subset from a trajectory-like dataset).
-
-Selection
-: A MolSysMT selection expression used to pick atoms/groups from the molecular system.
