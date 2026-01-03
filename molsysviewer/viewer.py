@@ -563,7 +563,9 @@ class MolSysView:
         if payload is None:
             raise ValueError("Unable to serialize MolSysMT viewer payload")
 
-        n_atoms = int(msm.get(self._molsys, element="system", n_atoms=True, skip_digestion=True))
+        n_atoms = int(self._molsys.topology.get_n_atoms())
+        n_structures = int(self._molsys.structures.get_n_structures())
+        multiple_structures = n_structures > 1
         self.atom_mask = np.ones(n_atoms, dtype=bool)
         if visible_atom_indices is not None:
             self.atom_mask[:] = False
@@ -582,7 +584,14 @@ class MolSysView:
         self._pending_messages = []
 
         self._send({"op": "clear_all"})
-        self._send({"op": "load_molsys_payload", "payload": payload, "label": label})
+        self._send(
+            {
+                "op": "load_molsys_payload",
+                "payload": payload,
+                "label": label,
+                "multiple_structures": multiple_structures,
+            }
+        )
 
         if getattr(self.whole, "_preset", None) is not None or getattr(self.whole, "_representation", None) is not None:
             self.whole.set_representation(

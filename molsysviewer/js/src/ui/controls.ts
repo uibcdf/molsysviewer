@@ -199,7 +199,8 @@ export const buildControls = (
     model: any, 
     sendSync: SyncCallback,
     container: HTMLElement,
-    onPopClick?: () => void
+    onPopClick?: () => void,
+    opts?: { initialHasTrajectory?: boolean; initialFrameCount?: number }
 ) => {
     injectStyles();
 
@@ -212,6 +213,8 @@ export const buildControls = (
     overlay.style.zIndex = "10";
     overlay.style.pointerEvents = "none";
     overlay.style.flexWrap = "nowrap";
+    overlay.style.opacity = "0"; // Reveal after initial trajectory state to avoid flash
+    overlay.style.display = "none"; // Keep hidden until we know if trajectory bar is needed
 
     const mk = (label: string, handler: () => void) => {
         const b = makeButton(label, handler);
@@ -247,6 +250,8 @@ export const buildControls = (
     traj.style.marginLeft = "6px";
     traj.style.paddingLeft = "0px";
     traj.style.borderLeft = "0px";
+    // Hide the trajectory bar by default; update immediately based on known state.
+    traj.style.display = "none";
 
     let currentStep = 1;
     let currentFps = 30;
@@ -337,15 +342,33 @@ export const buildControls = (
 
     overlay.appendChild(traj);
 
+    const initialHasTrajectory = !!opts?.initialHasTrajectory;
+    const initialFrameCount = typeof opts?.initialFrameCount === "number" ? opts.initialFrameCount : undefined;
+    if (initialHasTrajectory) {
+        const fc = initialFrameCount && initialFrameCount > 0 ? initialFrameCount : 2;
+        traj.style.display = fc > 1 ? "flex" : "none";
+        slider.max = fc > 0 ? String(Math.max(fc - 1, 1)) : "1";
+        slider.value = "0";
+        updateSliderBg();
+        label.textContent = fc > 0 ? `1 / ${fc}` : "0 / 0";
+        // Keep controls disabled until a real trajectory state arrives.
+        [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
+            (el as HTMLButtonElement | HTMLInputElement).disabled = true;
+        });
+    }
+
     // Trajectory listener to update UI
-    c.onTrajectoryState(state => {
+    let hasSeenState = false;
+    const applyTrajectoryState = (state: ReturnType<typeof c.trajectory.getTrajectoryState>) => {
+        hasSeenState = true;
         const frameCount = state.frameCount;
         const current = state.currentFrame;
+        traj.style.display = frameCount > 1 ? "flex" : "none";
         slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
         slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
         updateSliderBg();
         label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
-        const disabled = frameCount <= 1;
+        const disabled = !state.hasTrajectory || frameCount <= 1;
         [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
             (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
         });
@@ -358,7 +381,18 @@ export const buildControls = (
             btnPlayPause.textContent = "▶";
             btnPlayPause.title = "Play Trajectory";
         }
-    });
+        // Reveal overlay after first state application
+        overlay.style.display = "flex";
+        overlay.style.opacity = "1";
+        overlay.style.pointerEvents = "none";
+    };
+    c.onTrajectoryState(applyTrajectoryState, { immediate: false });
+    // If the trajectory state is already known (e.g., expected frame count pre-seeded),
+    // apply it immediately; otherwise wait for the first update to avoid a "buttons only" flash.
+    const initialState = c.trajectory.getTrajectoryState();
+    if (initialState.hasTrajectory || initialState.expectedFrameCount !== undefined) {
+        applyTrajectoryState(initialState);
+    }
 
     // Placement and Autohide logic
     const placeOverlay = () => {
@@ -380,6 +414,7 @@ export const buildControls = (
     const target = container; // Use passed container
 
     const applyShow = (visible: boolean) => {
+        if (!hasSeenState) return; // Do not toggle visibility until first state is applied
         if (autohide) {
             overlay.style.opacity = visible ? "1" : "0";
             overlay.style.pointerEvents = visible ? "auto" : "none";

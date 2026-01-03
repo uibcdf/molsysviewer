@@ -254,13 +254,9 @@ export const bootPopup = async (loadedModule?: any) => {
         if (autohide) {
             overlay.style.opacity = visible ? "1" : "0";
             overlay.style.pointerEvents = visible ? "auto" : "none";
-            traj.style.opacity = visible ? "1" : "0"; // Apply to trajectory controls
-            traj.style.pointerEvents = visible ? "auto" : "none"; // Apply to trajectory controls
         } else {
             overlay.style.opacity = "1";
             overlay.style.pointerEvents = "auto";
-            traj.style.opacity = "1"; // Always show trajectory controls
-            traj.style.pointerEvents = "auto"; // Always show trajectory controls
         }
     };
 
@@ -330,15 +326,13 @@ export const bootPopup = async (loadedModule?: any) => {
     // ... (Trajectory controls creation) ...
 
 
-    // Trajectory controls
+    // Trajectory controls (as an extension of the top-right buttons)
     const traj = document.createElement("div");
-    traj.style.position = "absolute";
-    traj.style.left = "8px";
-    traj.style.bottom = "8px";
-    traj.style.display = "flex";
+    traj.style.display = "none"; // show only for multi-structure systems
     traj.style.alignItems = "center";
     traj.style.gap = "6px";
     traj.style.pointerEvents = "auto";
+    traj.style.marginLeft = "6px";
 
     let currentStep = 1;
     let currentFps = 30;
@@ -393,10 +387,17 @@ export const bootPopup = async (loadedModule?: any) => {
     };
 
     const label = document.createElement("span");
-    label.style.color = "rgba(255,255,255,0.8)";
+    label.style.color = "rgba(255,255,255,0.9)";
     label.style.fontSize = "11px";
     label.style.minWidth = "60px";
     label.style.textAlign = "center";
+    label.style.padding = "2px 6px";
+    label.style.height = "22px";
+    label.style.lineHeight = "18px";
+    label.style.boxSizing = "border-box";
+    label.style.border = "1px solid rgba(255,255,255,0.5)";
+    label.style.borderRadius = "4px";
+    label.style.background = "rgba(0,0,0,0.5)";
     label.textContent = "0 / 0";
 
     traj.appendChild(btnPrev);
@@ -404,18 +405,19 @@ export const bootPopup = async (loadedModule?: any) => {
     traj.appendChild(btnNext);
     traj.appendChild(slider);
     traj.appendChild(label);
-    container.appendChild(traj);
+    overlay.appendChild(traj);
 
     popControllerPromise.then(c => {
-        c.onTrajectoryState(state => {
+        const applyState = (state: any) => {
             const frameCount = state.frameCount;
             const current = state.currentFrame;
             const isPlaying = state.isPlaying;
 
+            traj.style.display = frameCount > 1 ? "flex" : "none";
             slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
             slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
             label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
-            const disabled = frameCount <= 1;
+            const disabled = !state.hasTrajectory || frameCount <= 1;
             [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
                 (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
             });
@@ -423,7 +425,14 @@ export const bootPopup = async (loadedModule?: any) => {
             // Update Play/Pause button text
             btnPlayPause.textContent = isPlaying ? "⏸" : "▶";
             btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
-        });
+            overlay.style.opacity = "1";
+            overlay.style.display = "flex";
+        };
+        c.onTrajectoryState(applyState, { immediate: false });
+        const initialState = c.trajectory.getTrajectoryState();
+        if (initialState.hasTrajectory || initialState.expectedFrameCount !== undefined) {
+            applyState(initialState);
+        }
     });
 
     // Notify host

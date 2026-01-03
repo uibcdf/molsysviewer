@@ -19,12 +19,15 @@ export interface TrajectoryState {
     frameCount: number;
     currentFrame: number;
     isPlaying: boolean;
+    hasTrajectory: boolean;
+    expectedFrameCount?: number;
 }
 
 export class TrajectoryHandlers {
     private playbackTimer?: ReturnType<typeof setInterval>;
     private trajectoryPoll?: ReturnType<typeof setInterval>;
     private trajectoryListeners = new Set<(state: TrajectoryState) => void>();
+    private expectedFrameCount?: number;
 
     constructor(private plugin: PluginContext, private context: TrajectoryContext) {}
 
@@ -109,17 +112,28 @@ export class TrajectoryHandlers {
     }
 
     getTrajectoryState(): TrajectoryState {
-        const frameCount = this.getFrameCount();
+        const hasTrajectory = !!this.getTrajectoryRef();
+        let frameCount = this.getFrameCount();
+        if (!hasTrajectory && (!frameCount || frameCount < 1) && this.expectedFrameCount !== undefined) {
+            frameCount = this.expectedFrameCount;
+        }
         const currentFrame = this.getCurrentFrameIndex();
         // Check our custom timer or Mol*'s built-in manager as a fallback
         const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
-        return { frameCount, currentFrame, isPlaying };
+        return { frameCount, currentFrame, isPlaying, hasTrajectory, expectedFrameCount: this.expectedFrameCount };
     }
 
-    onTrajectoryState(cb: (state: TrajectoryState) => void): () => void {
+    onTrajectoryState(cb: (state: TrajectoryState) => void, opts?: { immediate?: boolean }): () => void {
         this.trajectoryListeners.add(cb);
-        cb(this.getTrajectoryState());
+        if (opts?.immediate ?? true) cb(this.getTrajectoryState());
         return () => this.trajectoryListeners.delete(cb);
+    }
+
+    setExpectedFrameCount(n: number | undefined) {
+        this.expectedFrameCount = n;
+        // Notify UI listeners immediately so the controls can update without waiting
+        // for the trajectory to finish loading in Mol*.
+        this.notifyListeners();
     }
 
     notifyListeners() {

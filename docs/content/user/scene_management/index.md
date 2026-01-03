@@ -14,8 +14,10 @@ You use:
 :maxdepth: 2
 
 visibility
+atom_masking
 whole
 regions
 layers
 tags
+reset_and_cleanup
 ```
