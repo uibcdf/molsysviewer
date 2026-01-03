@@ -64,6 +64,66 @@ export const bootPopup = async (loadedModule?: any) => {
         try { openerWin.postMessage({ type, data, from: "popup" }, "*"); } catch (e) {}
     };
 
+    // Inject minimal styles for the trajectory slider to match the host look
+    const injectSliderStyles = () => {
+        if (document.getElementById("molsysviewer-pop-slider-style")) return;
+        const css = `
+            .molsysviewer-slider {
+                background: transparent;
+                height: 16px;
+                border-radius: 999px;
+                overflow: visible;
+            }
+            .molsysviewer-slider::-webkit-slider-runnable-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+            }
+            .molsysviewer-slider::-moz-range-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+            }
+            .molsysviewer-slider::-ms-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+                border: none;
+                color: transparent;
+            }
+            .molsysviewer-slider::-webkit-slider-thumb {
+                -webkit-appearance: none !important;
+                appearance: none !important;
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin-top: 0px;
+            }
+            .molsysviewer-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+            }
+            .molsysviewer-slider::-ms-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+            }
+        `;
+        const el = document.createElement("style");
+        el.id = "molsysviewer-pop-slider-style";
+        el.textContent = css;
+        document.head.appendChild(el);
+    };
+    injectSliderStyles();
+
     const container = document.getElementById("molsysviewer-pop");
     const loading = document.getElementById("molsysviewer-loading");
     let isUserInteracting = false; // Only send camera updates when user is interacting
@@ -378,26 +438,35 @@ export const bootPopup = async (loadedModule?: any) => {
     slider.style.width = "160px";
     slider.style.flex = "0 0 160px";
     slider.style.pointerEvents = "auto";
+    slider.style.appearance = "none";
+    (slider.style as any).WebkitAppearance = "none";
+    (slider.style as any).MozAppearance = "none";
+    slider.style.setProperty("accent-color", "transparent");
+    const updateSliderBg = () => {
+        const track = "rgba(200,200,200,0.35)";
+        slider.style.background = track;
+    };
     slider.oninput = async () => {
         const val = Number(slider.value);
         if (!Number.isFinite(val)) return;
         const ctrl = await popControllerPromise;
         ctrl.setTrajectoryFrame(val);
         sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
+        updateSliderBg();
     };
 
     const label = document.createElement("span");
-    label.style.color = "rgba(255,255,255,0.9)";
+    label.style.color = "rgba(0,0,0,0.55)";
     label.style.fontSize = "11px";
     label.style.minWidth = "60px";
     label.style.textAlign = "center";
-    label.style.padding = "2px 6px";
-    label.style.height = "22px";
-    label.style.lineHeight = "18px";
+    label.style.padding = "0px";
+    label.style.height = "16px";
+    label.style.lineHeight = "16px";
     label.style.boxSizing = "border-box";
-    label.style.border = "1px solid rgba(255,255,255,0.5)";
-    label.style.borderRadius = "4px";
-    label.style.background = "rgba(0,0,0,0.5)";
+    label.style.border = "0";
+    label.style.borderRadius = "0";
+    label.style.background = "transparent";
     label.textContent = "0 / 0";
 
     traj.appendChild(btnPrev);
@@ -416,6 +485,7 @@ export const bootPopup = async (loadedModule?: any) => {
             traj.style.display = frameCount > 1 ? "flex" : "none";
             slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
             slider.value = String(Math.min(current, frameCount > 0 ? frameCount - 1 : 0));
+            updateSliderBg();
             label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
             const disabled = !state.hasTrajectory || frameCount <= 1;
             [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {

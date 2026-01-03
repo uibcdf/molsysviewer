@@ -144097,6 +144097,64 @@ var bootPopup = async (loadedModule) => {
     } catch (e) {
     }
   };
+  const injectSliderStyles = () => {
+    if (document.getElementById("molsysviewer-pop-slider-style")) return;
+    const css = `
+            .molsysviewer-slider {
+                background: transparent;
+                height: 16px;
+                border-radius: 999px;
+                overflow: visible;
+            }
+            .molsysviewer-slider::-webkit-slider-runnable-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+            }
+            .molsysviewer-slider::-moz-range-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+            }
+            .molsysviewer-slider::-ms-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+                border: none;
+                color: transparent;
+            }
+            .molsysviewer-slider::-webkit-slider-thumb {
+                -webkit-appearance: none !important;
+                appearance: none !important;
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin-top: 0px;
+            }
+            .molsysviewer-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+            }
+            .molsysviewer-slider::-ms-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+            }
+        `;
+    const el = document.createElement("style");
+    el.id = "molsysviewer-pop-slider-style";
+    el.textContent = css;
+    document.head.appendChild(el);
+  };
+  injectSliderStyles();
   const container = document.getElementById("molsysviewer-pop");
   const loading = document.getElementById("molsysviewer-loading");
   let isUserInteracting = false;
@@ -144351,25 +144409,34 @@ var bootPopup = async (loadedModule) => {
   slider.style.width = "160px";
   slider.style.flex = "0 0 160px";
   slider.style.pointerEvents = "auto";
+  slider.style.appearance = "none";
+  slider.style.WebkitAppearance = "none";
+  slider.style.MozAppearance = "none";
+  slider.style.setProperty("accent-color", "transparent");
+  const updateSliderBg = () => {
+    const track = "rgba(200,200,200,0.35)";
+    slider.style.background = track;
+  };
   slider.oninput = async () => {
     const val = Number(slider.value);
     if (!Number.isFinite(val)) return;
     const ctrl2 = await popControllerPromise;
     ctrl2.setTrajectoryFrame(val);
     sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
+    updateSliderBg();
   };
   const label2 = document.createElement("span");
-  label2.style.color = "rgba(255,255,255,0.9)";
+  label2.style.color = "rgba(0,0,0,0.55)";
   label2.style.fontSize = "11px";
   label2.style.minWidth = "60px";
   label2.style.textAlign = "center";
-  label2.style.padding = "2px 6px";
-  label2.style.height = "22px";
-  label2.style.lineHeight = "18px";
+  label2.style.padding = "0px";
+  label2.style.height = "16px";
+  label2.style.lineHeight = "16px";
   label2.style.boxSizing = "border-box";
-  label2.style.border = "1px solid rgba(255,255,255,0.5)";
-  label2.style.borderRadius = "4px";
-  label2.style.background = "rgba(0,0,0,0.5)";
+  label2.style.border = "0";
+  label2.style.borderRadius = "0";
+  label2.style.background = "transparent";
   label2.textContent = "0 / 0";
   traj.appendChild(btnPrev);
   traj.appendChild(btnPlayPause);
@@ -144385,6 +144452,7 @@ var bootPopup = async (loadedModule) => {
       traj.style.display = frameCount > 1 ? "flex" : "none";
       slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
       slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
+      updateSliderBg();
       label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
       const disabled = !state.hasTrajectory || frameCount <= 1;
       [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
@@ -144618,7 +144686,7 @@ var injectStyles = () => {
             width: 16px;
             height: 16px;
             border-radius: 50% !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgb(80,80,80) !important;
             border: none !important;
             box-shadow: none !important;
             margin-top: 0px;
@@ -144626,7 +144694,7 @@ var injectStyles = () => {
         .molsysviewer-slider::-webkit-slider-thumb:hover,
         .molsysviewer-slider::-webkit-slider-thumb:active,
         .molsysviewer-slider::-webkit-slider-thumb:focus {
-            background: rgba(0,0,0,0.5) !important;
+            background: rgb(80,80,80) !important;
             border: none !important;
             box-shadow: none !important;
         }
@@ -144634,20 +144702,20 @@ var injectStyles = () => {
             width: 16px;
             height: 16px;
             border-radius: 50% !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgb(80,80,80) !important;
             border: none !important;
         }
         .molsysviewer-slider::-moz-range-thumb:hover,
         .molsysviewer-slider::-moz-range-thumb:active,
         .molsysviewer-slider::-moz-range-thumb:focus {
-            background: rgba(0,0,0,0.5) !important;
+            background: rgba(80,80,80,0.95) !important;
             border: none !important;
         }
         .molsysviewer-slider::-ms-thumb {
             width: 16px;
             height: 16px;
             border-radius: 50% !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgba(80,80,80,0.95) !important;
             border: none !important;
         }
     `;
@@ -144819,10 +144887,9 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
     const min5 = Number(slider.min) || 0;
     const max5 = Number(slider.max) || 0;
     const val = Number(slider.value) || 0;
-    const pct = max5 > min5 ? Math.min(100, Math.max(0, (val - min5) * 100 / (max5 - min5))) : 0;
-    const fill = "rgba(128,128,128,0.8)";
+    const _ = { min: min5, max: max5, val };
     const track = "rgba(200,200,200,0.35)";
-    slider.style.background = `linear-gradient(to right, ${fill} 0%, ${fill} ${pct}%, ${track} ${pct}%, ${track} 100%)`;
+    slider.style.background = track;
   };
   slider.oninput = () => {
     const val = Number(slider.value);
