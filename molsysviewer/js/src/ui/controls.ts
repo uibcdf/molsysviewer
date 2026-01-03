@@ -80,7 +80,7 @@ const injectStyles = () => {
             width: 16px;
             height: 16px;
             border-radius: 50% !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgb(80,80,80) !important;
             border: none !important;
             box-shadow: none !important;
             margin-top: 0px;
@@ -88,7 +88,7 @@ const injectStyles = () => {
         .molsysviewer-slider::-webkit-slider-thumb:hover,
         .molsysviewer-slider::-webkit-slider-thumb:active,
         .molsysviewer-slider::-webkit-slider-thumb:focus {
-            background: rgba(0,0,0,0.5) !important;
+            background: rgb(80,80,80) !important;
             border: none !important;
             box-shadow: none !important;
         }
@@ -96,20 +96,20 @@ const injectStyles = () => {
             width: 16px;
             height: 16px;
             border-radius: 50% !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgb(80,80,80) !important;
             border: none !important;
         }
         .molsysviewer-slider::-moz-range-thumb:hover,
         .molsysviewer-slider::-moz-range-thumb:active,
         .molsysviewer-slider::-moz-range-thumb:focus {
-            background: rgba(0,0,0,0.5) !important;
+            background: rgba(80,80,80,0.95) !important;
             border: none !important;
         }
         .molsysviewer-slider::-ms-thumb {
             width: 16px;
             height: 16px;
             border-radius: 50% !important;
-            background: rgba(0,0,0,0.5) !important;
+            background: rgba(80,80,80,0.95) !important;
             border: none !important;
         }
     `;
@@ -308,10 +308,10 @@ export const buildControls = (
         const min = Number(slider.min) || 0;
         const max = Number(slider.max) || 0;
         const val = Number(slider.value) || 0;
-        const pct = max > min ? Math.min(100, Math.max(0, ((val - min) * 100) / (max - min))) : 0;
-        const fill = "rgba(128,128,128,0.8)";
+        // Keep a flat track to avoid visible gaps under the thumb; no filled gradient.
+        const _ = { min, max, val }; // satisfy lints
         const track = "rgba(200,200,200,0.35)";
-        slider.style.background = `linear-gradient(to right, ${fill} 0%, ${fill} ${pct}%, ${track} ${pct}%, ${track} 100%)`;
+        slider.style.background = track;
     };
     slider.oninput = () => {
         const val = Number(slider.value);
