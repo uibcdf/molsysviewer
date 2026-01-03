@@ -203,6 +203,9 @@ export default {
 
         // Store commands from Python to replay them in the popout
         const commandLog: ViewerMessage[] = [];
+        // Serialize message handling to preserve order when many messages arrive at once
+        // (e.g. flush of pending messages right after "ready").
+        let messageQueue: Promise<void> = Promise.resolve();
 
         // 1. Setup DOM
         const target = document.createElement("div");
@@ -380,19 +383,34 @@ export default {
         
         window.addEventListener("message", messageHandler);
 
+        const enqueueMessage = (msg: ViewerMessage, opts?: { syncToPopup?: boolean }) => {
+            messageQueue = messageQueue
+                .then(async () => {
+                    if (!msg || typeof msg !== "object") return;
+                    if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
+                    const controller = await controllerPromise;
+                    await controller.handleMessage(msg);
+                    commandLog.push(msg);
+                    if (opts?.syncToPopup) popupMgr.send("molsysviewer-sync-op", msg);
+                })
+                .catch((error) => {
+                    console.error("[MolSysViewer] Error handling message:", msg, error);
+                    sendLog("error", "[MolSysViewer] Error handling message:", msg, error);
+                });
+        };
+
         // 7. Handle Python Messages
         (async () => {
             try {
-                const controller = await controllerPromise;
                 model.send({ event: "ready" });
                 const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
                 if (Array.isArray(initialMessages) && initialMessages.length) {
                     for (const msg of initialMessages) {
                         if (msg) {
-                            await controller.handleMessage(msg);
-                            commandLog.push(msg);
+                            enqueueMessage(msg, { syncToPopup: false });
                         }
                     }
+                    await messageQueue;
                 }
             } catch (err) {
                 console.error("[MolSysViewer] Init error:", err);
@@ -403,22 +421,8 @@ export default {
         console.log("[MolSysViewer] widget render init");
         sendLog("info", "[MolSysViewer] widget render init");
 
-        const onCustomMsg = async (msg: ViewerMessage) => {
-            if (!msg || typeof msg !== "object") return;
-            if (debug) sendLog("info", "[MolSysViewer] msg from Python:", msg);
-            try {
-                const controller = await controllerPromise;
-                await controller.handleMessage(msg);
-                
-                // Sanitize log
-                if (msg && typeof msg === 'object') {
-                    commandLog.push(msg);
-                    popupMgr.send("molsysviewer-sync-op", msg);
-                }
-            } catch (error) {
-                console.error("[MolSysViewer] Error handling message:", msg, error);
-                sendLog("error", "[MolSysViewer] Error handling message:", msg, error);
-            }
+        const onCustomMsg = (msg: ViewerMessage) => {
+            enqueueMessage(msg, { syncToPopup: true });
         };
 
         model.on("msg:custom", onCustomMsg);

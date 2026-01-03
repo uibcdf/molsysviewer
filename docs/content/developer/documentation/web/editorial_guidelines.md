@@ -188,6 +188,27 @@ Tag that cell with `remove-input`.
 
 This keeps notebooks small and makes the rendered documentation deterministic (no widget state required).
 
+### Hiding cells: what works and what does not
+
+We use MyST-NB tags to hide inputs/outputs, but some combinations still leave a small empty output area (and a copy button) even when both input and output are hidden.
+
+Practical guidance:
+
+- Prefer `remove-output` (hide widget output) + a following HTML lite embed with `remove-input`.
+- `hide-cell` may render as a collapsible cell (it is still “there” in the page).
+- `remove-cell` removes the cell from the page, but it can also prevent execution in the docs pipeline. Do not rely on it for “run but leave absolutely no trace”.
+- If you truly need a side effect (e.g., `view.show()` to initialize browser-side state) without visual clutter, consider designing the unit so the **end-to-end HTML lite embed** is the visible proof instead of trying to fully hide execution details.
+
+### Camera snapshots are browser-side state
+
+`get_camera_snapshot()` / `set_camera_snapshot(...)` operate on the Mol* camera, which lives on the **browser side**.
+
+Implications for docs and scripts:
+
+- Calling `set_camera_snapshot(...)` only makes sense once there is a viewer instance on the browser side able to receive and apply the message.
+- In “declarative” scripts (build a view, then export), preserve the logical message order (`load` → viewer init/show/runtime → `set_camera_snapshot`) so the snapshot is applied after the structure exists.
+- If you observe race conditions when many messages are flushed at once, serialize message handling on the JS side to preserve order.
+
 ## Notebook source formatting (keep diffs clean)
 
 When editing `.ipynb` files, keep the JSON as clean and reviewable as possible.
