@@ -144391,6 +144391,8 @@ var bootPopup = async (loadedModule) => {
   btnPlayPause.style.paddingTop = "0px";
   btnPlayPause.style.paddingBottom = "0px";
   btnPlayPause.style.lineHeight = "18px";
+  btnPlayPause.style.minWidth = "28px";
+  btnPlayPause.style.width = "28px";
   btnPlayPause.title = "Play/Pause Trajectory";
   const btnNext = makeBtn("+", async () => {
     const ctrl2 = await popControllerPromise;
@@ -144861,6 +144863,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
   btnPlayPause.style.paddingTop = "0px";
   btnPlayPause.style.paddingBottom = "0px";
   btnPlayPause.style.lineHeight = "18px";
+  btnPlayPause.style.minWidth = "28px";
+  btnPlayPause.style.width = "28px";
   const btnNext = makeButton("+", () => {
     c8.stepTrajectory(currentStep);
     sendSync({ op: "step_trajectory", by: currentStep });

@@ -417,6 +417,8 @@ export const bootPopup = async (loadedModule?: any) => {
     btnPlayPause.style.paddingTop = "0px";
     btnPlayPause.style.paddingBottom = "0px";
     btnPlayPause.style.lineHeight = "18px";
+    btnPlayPause.style.minWidth = "28px";
+    btnPlayPause.style.width = "28px";
     btnPlayPause.title = "Play/Pause Trajectory";
 
     const btnNext = makeBtn("+", async () => {
