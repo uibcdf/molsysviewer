@@ -1,13 +1,11 @@
 # Viewer
 
-Use these pages to control the viewer scene (visibility, camera, and UI controls).
+Use these pages to understand the viewer interface and how to navigate the scene.
 
 ```{toctree}
 :hidden:
 :maxdepth: 2
 
-visibility
-camera_and_controls
 ui
-reset_and_cleanup
+camera_and_controls
 ```

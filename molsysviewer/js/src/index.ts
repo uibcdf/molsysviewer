@@ -7,6 +7,29 @@ import { PopupHostManager } from "./managers/popup-host";
 import { buildControls } from "./ui/controls";
 import { createLogger } from "./utils/logger";
 
+const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
+    let frameCount: number | undefined = undefined;
+    let multipleStructures = false;
+    if (!Array.isArray(msgs)) return { frameCount, multipleStructures };
+    for (const msg of msgs) {
+        if (!msg || typeof msg !== "object") continue;
+        if ((msg as any).op !== "load_molsys_payload") continue;
+        const payload = (msg as any).payload;
+        const structures = payload?.structures;
+        if (Array.isArray(structures)) {
+            frameCount = structures.length;
+            multipleStructures = structures.length > 1;
+        }
+        if ((msg as any).multiple_structures === true) {
+            multipleStructures = true;
+        } else if ((msg as any).multiple_structures === false && frameCount === undefined) {
+            multipleStructures = false;
+        }
+        break;
+    }
+    return { frameCount, multipleStructures };
+};
+
 // Re-export bootPopup so it is available in the bundle's public interface
 export { bootPopup };
 export { MolSysViewerController }; // Export Controller for Popup context usage
@@ -73,12 +96,29 @@ export async function bootDocsView(opts: {
 
     // Build UI Controls & Setup Sync
     controllerPromise.then(c => {
+        // If initial messages include a MolSys payload, pre-seed the frame count so the
+        // trajectory bar can appear immediately (avoids a brief "buttons first, bar later" flicker).
+        const trajInfo = parseInitialTrajectoryInfo(commandLog);
+        if (trajInfo.frameCount !== undefined) {
+            c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+        }
+
         const sendSync = (msg: ViewerMessage) => {
             if (!msg) return;
             commandLog.push(msg);
             popupMgr.send("molsysviewer-sync-op", msg);
         };
-        const overlay = buildControls(c, model, sendSync, target, enablePopout ? () => popupMgr.open() : undefined);
+        const overlay = buildControls(
+            c,
+            model,
+            sendSync,
+            target,
+            enablePopout ? () => popupMgr.open() : undefined,
+            {
+                initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+                initialFrameCount: trajInfo.frameCount,
+            }
+        );
         target.appendChild(overlay);
 
         // Camera sync (Host -> Popup)
@@ -216,12 +256,24 @@ export default {
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
+            // Pre-seed the expected frame count from the initial message buffer so the
+            // trajectory bar can appear immediately (avoids a brief "buttons first, bar later" flicker).
+            const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
+            const trajInfo = parseInitialTrajectoryInfo(initialMessages);
+            if (trajInfo.frameCount !== undefined) {
+                c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+            }
+
             const overlay = buildControls(
                 c,
                 model,
                 (msg) => popupMgr.send("molsysviewer-sync-op", msg),
                 target,
-                enablePopout ? () => popupMgr.open() : undefined
+                enablePopout ? () => popupMgr.open() : undefined,
+                {
+                    initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+                    initialFrameCount: trajInfo.frameCount,
+                }
             );
             target.appendChild(overlay);
 

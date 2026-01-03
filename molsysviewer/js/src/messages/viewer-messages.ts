@@ -102,6 +102,8 @@ export type LoadMolSysPayloadMessage = {
     op: "load_molsys_payload";
     payload: MolSysPayload;
     label?: string;
+    /** Hint from Python side: true when the molsys has more than one structure. */
+    multiple_structures?: boolean;
 };
 
 export type LoadStructureFromUrlMessage = {

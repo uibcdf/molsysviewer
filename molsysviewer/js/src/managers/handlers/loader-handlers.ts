@@ -18,6 +18,7 @@ export interface LoaderCallbacks {
     captureCurrentStructure: () => void;
     setLoadedStructure: (ls: LoadedStructure | undefined) => void;
     getLoadedStructure: () => LoadedStructure | undefined;
+    setExpectedFrameCount?: (n: number | undefined) => void;
 }
 
 export class LoaderHandlers {
@@ -60,6 +61,7 @@ export class LoaderHandlers {
     }
 
     private async loadFromStringInternal(data: string, format: string, label?: string) {
+        this.callbacks.setExpectedFrameCount?.(1);
         await this.callbacks.clearGlobalRepresentations();
         const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
         const ls = await loadStructureFromString(this.plugin, data, format, label, {
@@ -70,6 +72,7 @@ export class LoaderHandlers {
     }
 
     private async loadFromUrlInternal(url: string, format?: string, label?: string) {
+        this.callbacks.setExpectedFrameCount?.(1);
         await this.callbacks.clearGlobalRepresentations();
         const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
         const ls = await loadStructureFromUrl(this.plugin, url, format, label, {
@@ -80,6 +83,7 @@ export class LoaderHandlers {
     }
 
     private async loadFromMolSysPayloadInternal(payload: MolSysPayload, label?: string) {
+        this.callbacks.setExpectedFrameCount?.(payload.structures?.length);
         await this.callbacks.clearGlobalRepresentations();
         const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
         const ls = await loadStructureFromMolSysPayload(this.plugin, payload, label, {

@@ -22,4 +22,4 @@ view.show()  # reset to show all
 Selections are interpreted by MolSysMT (default `syntax="MolSysMT"`).
 See {doc}`../molecular_system/selection` for the selection basics.
 
-See also {doc}`../scene_management/visibility` for how visibility works across whole, regions, and layers.
+See also {doc}`visibility` for how visibility works across whole, regions, and layers.

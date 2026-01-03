@@ -55,7 +55,9 @@ def load_from_molsysmt(
         skip_digestion=True,
     )
 
-    n_atoms = view._molsys.get(element="atom", n_atoms=True)
+    n_atoms = int(view._molsys.topology.get_n_atoms())
+    n_structures = int(view._molsys.structures.get_n_structures())
+    multiple_structures = n_structures > 1
     view.atom_mask = np.ones(n_atoms, dtype=bool)
 
     viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
@@ -69,6 +71,7 @@ def load_from_molsysmt(
             "op": "load_molsys_payload",
             "payload": payload,
             "label": label,
+            "multiple_structures": multiple_structures,
         }
     )
 

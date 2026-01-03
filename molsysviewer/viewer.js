@@ -140086,7 +140086,7 @@ async function loadStructureFromString(plugin, data, format = "pdb", label2, opt
   const raw = await plugin.builders.data.rawData({
     data,
     label: label2 ?? "Structure from string",
-    // extension opcional; ayuda a algunos parsers
+    // Optional extension; helps some parsers.
     ext: format
   });
   const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
@@ -140327,6 +140327,7 @@ var LoaderHandlers = class {
     await this.loadPdbIdInternal(pdbId);
   }
   async loadFromStringInternal(data, format, label2) {
+    this.callbacks.setExpectedFrameCount?.(1);
     await this.callbacks.clearGlobalRepresentations();
     const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
     const ls = await loadStructureFromString(this.plugin, data, format, label2, {
@@ -140336,6 +140337,7 @@ var LoaderHandlers = class {
     this.callbacks.captureCurrentStructure();
   }
   async loadFromUrlInternal(url, format, label2) {
+    this.callbacks.setExpectedFrameCount?.(1);
     await this.callbacks.clearGlobalRepresentations();
     const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
     const ls = await loadStructureFromUrl(this.plugin, url, format, label2, {
@@ -140345,6 +140347,7 @@ var LoaderHandlers = class {
     this.callbacks.captureCurrentStructure();
   }
   async loadFromMolSysPayloadInternal(payload, label2) {
+    this.callbacks.setExpectedFrameCount?.(payload.structures?.length);
     await this.callbacks.clearGlobalRepresentations();
     const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
     const ls = await loadStructureFromMolSysPayload(this.plugin, payload, label2, {
@@ -143671,15 +143674,23 @@ var TrajectoryHandlers = class {
     this.updateTrajectoryState();
   }
   getTrajectoryState() {
-    const frameCount = this.getFrameCount();
+    const hasTrajectory = !!this.getTrajectoryRef();
+    let frameCount = this.getFrameCount();
+    if (!hasTrajectory && (!frameCount || frameCount < 1) && this.expectedFrameCount !== void 0) {
+      frameCount = this.expectedFrameCount;
+    }
     const currentFrame = this.getCurrentFrameIndex();
     const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
-    return { frameCount, currentFrame, isPlaying };
+    return { frameCount, currentFrame, isPlaying, hasTrajectory, expectedFrameCount: this.expectedFrameCount };
   }
-  onTrajectoryState(cb2) {
+  onTrajectoryState(cb2, opts) {
     this.trajectoryListeners.add(cb2);
-    cb2(this.getTrajectoryState());
+    if (opts?.immediate ?? true) cb2(this.getTrajectoryState());
     return () => this.trajectoryListeners.delete(cb2);
+  }
+  setExpectedFrameCount(n) {
+    this.expectedFrameCount = n;
+    this.notifyListeners();
   }
   notifyListeners() {
     const state = this.getTrajectoryState();
@@ -143745,7 +143756,8 @@ var MolSysViewerController = class _MolSysViewerController {
       setLoadedStructure: (ls) => {
         this.loadedStructure = ls;
       },
-      getLoadedStructure: () => this.loadedStructure
+      getLoadedStructure: () => this.loadedStructure,
+      setExpectedFrameCount: (n) => this.trajectory.setExpectedFrameCount(n)
     });
     this.trajectory = new TrajectoryHandlers(plugin, {
       getLoadedStructure: () => this.loadedStructure,
@@ -143794,6 +143806,14 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     try {
+      if (msg.op === "load_molsys_payload") {
+        const structures = msg.payload?.structures;
+        if (Array.isArray(structures)) {
+          this.trajectory.setExpectedFrameCount(structures.length);
+        } else if (msg.multiple_structures === true) {
+          this.trajectory.setExpectedFrameCount(2);
+        }
+      }
       switch (msg.op) {
         // Loader Ops
         case "load_structure_from_string":
@@ -144009,8 +144029,8 @@ var MolSysViewerController = class _MolSysViewerController {
   setTrajectoryFrame(index) {
     return this.trajectory.setTrajectoryFrame(index);
   }
-  onTrajectoryState(cb2) {
-    return this.trajectory.onTrajectoryState(cb2);
+  onTrajectoryState(cb2, opts) {
+    return this.trajectory.onTrajectoryState(cb2, opts);
   }
   getCameraSnapshot() {
     return this.plugin.canvas3d?.camera.getSnapshot?.();
@@ -144235,13 +144255,9 @@ var bootPopup = async (loadedModule) => {
     if (autohide) {
       overlay.style.opacity = visible ? "1" : "0";
       overlay.style.pointerEvents = visible ? "auto" : "none";
-      traj.style.opacity = visible ? "1" : "0";
-      traj.style.pointerEvents = visible ? "auto" : "none";
     } else {
       overlay.style.opacity = "1";
       overlay.style.pointerEvents = "auto";
-      traj.style.opacity = "1";
-      traj.style.pointerEvents = "auto";
     }
   };
   const onEnter = () => applyShow(true);
@@ -144291,13 +144307,11 @@ var bootPopup = async (loadedModule) => {
   });
   container.appendChild(overlay);
   const traj = document.createElement("div");
-  traj.style.position = "absolute";
-  traj.style.left = "8px";
-  traj.style.bottom = "8px";
-  traj.style.display = "flex";
+  traj.style.display = "none";
   traj.style.alignItems = "center";
   traj.style.gap = "6px";
   traj.style.pointerEvents = "auto";
+  traj.style.marginLeft = "6px";
   let currentStep = 1;
   let currentFps = 30;
   const btnPrev = makeBtn("\u2212", async () => {
@@ -144345,32 +144359,47 @@ var bootPopup = async (loadedModule) => {
     sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
   };
   const label2 = document.createElement("span");
-  label2.style.color = "rgba(255,255,255,0.8)";
+  label2.style.color = "rgba(255,255,255,0.9)";
   label2.style.fontSize = "11px";
   label2.style.minWidth = "60px";
   label2.style.textAlign = "center";
+  label2.style.padding = "2px 6px";
+  label2.style.height = "22px";
+  label2.style.lineHeight = "18px";
+  label2.style.boxSizing = "border-box";
+  label2.style.border = "1px solid rgba(255,255,255,0.5)";
+  label2.style.borderRadius = "4px";
+  label2.style.background = "rgba(0,0,0,0.5)";
   label2.textContent = "0 / 0";
   traj.appendChild(btnPrev);
   traj.appendChild(btnPlayPause);
   traj.appendChild(btnNext);
   traj.appendChild(slider);
   traj.appendChild(label2);
-  container.appendChild(traj);
+  overlay.appendChild(traj);
   popControllerPromise.then((c8) => {
-    c8.onTrajectoryState((state) => {
+    const applyState = (state) => {
       const frameCount = state.frameCount;
       const current2 = state.currentFrame;
       const isPlaying = state.isPlaying;
+      traj.style.display = frameCount > 1 ? "flex" : "none";
       slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
       slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
       label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
-      const disabled = frameCount <= 1;
+      const disabled = !state.hasTrajectory || frameCount <= 1;
       [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
         el.disabled = disabled;
       });
       btnPlayPause.textContent = isPlaying ? "\u23F8" : "\u25B6";
       btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
-    });
+      overlay.style.opacity = "1";
+      overlay.style.display = "flex";
+    };
+    c8.onTrajectoryState(applyState, { immediate: false });
+    const initialState = c8.trajectory.getTrajectoryState();
+    if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
+      applyState(initialState);
+    }
   });
   sendToHost("molsysviewer-pop-ready", null);
 };
@@ -144696,7 +144725,7 @@ var makeNumberControl = (initial, onChange, title) => {
   wrapper.appendChild(spinner);
   return { wrapper, input };
 };
-var buildControls = (c8, model, sendSync, container, onPopClick) => {
+var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
   injectStyles();
   const overlay = document.createElement("div");
   overlay.className = "molsysviewer-controls";
@@ -144706,6 +144735,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick) => {
   overlay.style.zIndex = "10";
   overlay.style.pointerEvents = "none";
   overlay.style.flexWrap = "nowrap";
+  overlay.style.opacity = "0";
+  overlay.style.display = "none";
   const mk = (label3, handler) => {
     const b8 = makeButton(label3, handler);
     b8.style.pointerEvents = "auto";
@@ -144737,6 +144768,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick) => {
   traj.style.marginLeft = "6px";
   traj.style.paddingLeft = "0px";
   traj.style.borderLeft = "0px";
+  traj.style.display = "none";
   let currentStep = 1;
   let currentFps = 30;
   const btnPrev = makeButton("\u2212", () => {
@@ -144820,14 +144852,30 @@ var buildControls = (c8, model, sendSync, container, onPopClick) => {
   traj.appendChild(stepControl.wrapper);
   traj.appendChild(fpsControl.wrapper);
   overlay.appendChild(traj);
-  c8.onTrajectoryState((state) => {
+  const initialHasTrajectory = !!opts?.initialHasTrajectory;
+  const initialFrameCount = typeof opts?.initialFrameCount === "number" ? opts.initialFrameCount : void 0;
+  if (initialHasTrajectory) {
+    const fc = initialFrameCount && initialFrameCount > 0 ? initialFrameCount : 2;
+    traj.style.display = fc > 1 ? "flex" : "none";
+    slider.max = fc > 0 ? String(Math.max(fc - 1, 1)) : "1";
+    slider.value = "0";
+    updateSliderBg();
+    label2.textContent = fc > 0 ? `1 / ${fc}` : "0 / 0";
+    [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
+      el.disabled = true;
+    });
+  }
+  let hasSeenState = false;
+  const applyTrajectoryState = (state) => {
+    hasSeenState = true;
     const frameCount = state.frameCount;
     const current2 = state.currentFrame;
+    traj.style.display = frameCount > 1 ? "flex" : "none";
     slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
     slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
     updateSliderBg();
     label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
-    const disabled = frameCount <= 1;
+    const disabled = !state.hasTrajectory || frameCount <= 1;
     [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
       el.disabled = disabled;
     });
@@ -144838,7 +144886,15 @@ var buildControls = (c8, model, sendSync, container, onPopClick) => {
       btnPlayPause.textContent = "\u25B6";
       btnPlayPause.title = "Play Trajectory";
     }
-  });
+    overlay.style.display = "flex";
+    overlay.style.opacity = "1";
+    overlay.style.pointerEvents = "none";
+  };
+  c8.onTrajectoryState(applyTrajectoryState, { immediate: false });
+  const initialState = c8.trajectory.getTrajectoryState();
+  if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
+    applyTrajectoryState(initialState);
+  }
   const placeOverlay = () => {
     const pos = model.get("controls_position");
     const posFs = model.get("controls_position_fullscreen");
@@ -144856,6 +144912,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick) => {
   let autohide = !!model.get("autohide_controls");
   const target = container;
   const applyShow = (visible) => {
+    if (!hasSeenState) return;
     if (autohide) {
       overlay.style.opacity = visible ? "1" : "0";
       overlay.style.pointerEvents = visible ? "auto" : "none";
@@ -144937,6 +144994,28 @@ var createLogger = (model, debug) => {
 };
 
 // src/index.ts
+var parseInitialTrajectoryInfo = (msgs) => {
+  let frameCount = void 0;
+  let multipleStructures = false;
+  if (!Array.isArray(msgs)) return { frameCount, multipleStructures };
+  for (const msg of msgs) {
+    if (!msg || typeof msg !== "object") continue;
+    if (msg.op !== "load_molsys_payload") continue;
+    const payload = msg.payload;
+    const structures = payload?.structures;
+    if (Array.isArray(structures)) {
+      frameCount = structures.length;
+      multipleStructures = structures.length > 1;
+    }
+    if (msg.multiple_structures === true) {
+      multipleStructures = true;
+    } else if (msg.multiple_structures === false && frameCount === void 0) {
+      multipleStructures = false;
+    }
+    break;
+  }
+  return { frameCount, multipleStructures };
+};
 async function bootDocsView(opts) {
   const debug = !!opts.ui?.debug_js;
   const sendLog = (level, ...args) => {
@@ -144991,12 +145070,26 @@ async function bootDocsView(opts) {
     }
   };
   controllerPromise.then((c8) => {
+    const trajInfo = parseInitialTrajectoryInfo(commandLog);
+    if (trajInfo.frameCount !== void 0) {
+      c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+    }
     const sendSync = (msg) => {
       if (!msg) return;
       commandLog.push(msg);
       popupMgr.send("molsysviewer-sync-op", msg);
     };
-    const overlay = buildControls(c8, model, sendSync, target, enablePopout ? () => popupMgr.open() : void 0);
+    const overlay = buildControls(
+      c8,
+      model,
+      sendSync,
+      target,
+      enablePopout ? () => popupMgr.open() : void 0,
+      {
+        initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+        initialFrameCount: trajInfo.frameCount
+      }
+    );
     target.appendChild(overlay);
     if (c8.plugin.canvas3d) {
       let hostCameraSyncTimer = null;
@@ -145110,12 +145203,21 @@ var index_default = {
     const popupMgr = new PopupHostManager(viewerJsSource || "");
     const enablePopout = !!model.get("enable_popout");
     controllerPromise.then((c8) => {
+      const initialMessages = model.get("initial_messages");
+      const trajInfo = parseInitialTrajectoryInfo(initialMessages);
+      if (trajInfo.frameCount !== void 0) {
+        c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+      }
       const overlay = buildControls(
         c8,
         model,
         (msg) => popupMgr.send("molsysviewer-sync-op", msg),
         target,
-        enablePopout ? () => popupMgr.open() : void 0
+        enablePopout ? () => popupMgr.open() : void 0,
+        {
+          initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+          initialFrameCount: trajInfo.frameCount
+        }
       );
       target.appendChild(overlay);
       if (c8.plugin.canvas3d) {

@@ -86,7 +86,8 @@ export class MolSysViewerController {
             clearGlobalRepresentations: async () => { /* handled by state via events usually, but direct call needed? state handles globals */ },
             captureCurrentStructure: () => this.captureCurrentStructure(),
             setLoadedStructure: (ls) => { this.loadedStructure = ls; },
-            getLoadedStructure: () => this.loadedStructure
+            getLoadedStructure: () => this.loadedStructure,
+            setExpectedFrameCount: (n) => this.trajectory.setExpectedFrameCount(n),
         });
 
         this.trajectory = new TrajectoryHandlers(plugin, {
@@ -104,6 +105,15 @@ export class MolSysViewerController {
         }
 
         try {
+            if ((msg as any).op === "load_molsys_payload") {
+                const structures = (msg as any).payload?.structures;
+                if (Array.isArray(structures)) {
+                    this.trajectory.setExpectedFrameCount(structures.length);
+                } else if ((msg as any).multiple_structures === true) {
+                    // No structures array yet, but Python told us there are multiple frames.
+                    this.trajectory.setExpectedFrameCount(2);
+                }
+            }
             switch (msg.op) {
                 // Loader Ops
                 case "load_structure_from_string":
@@ -230,7 +240,9 @@ export class MolSysViewerController {
     stopTrajectoryPlayback() { return this.trajectory.stopTrajectoryPlayback(); }
     setTrajectoryFrame(index: number) { return this.trajectory.setTrajectoryFrame(index); }
     
-    onTrajectoryState(cb: (state: TrajectoryState) => void) { return this.trajectory.onTrajectoryState(cb); }
+    onTrajectoryState(cb: (state: TrajectoryState) => void, opts?: { immediate?: boolean }) { 
+        return this.trajectory.onTrajectoryState(cb, opts); 
+    }
     
     getCameraSnapshot(): Camera.Snapshot | undefined {
         return this.plugin.canvas3d?.camera.getSnapshot?.();
