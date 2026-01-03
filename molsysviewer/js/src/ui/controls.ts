@@ -279,6 +279,9 @@ export const buildControls = (
     btnPlayPause.style.paddingTop = "0px";
     btnPlayPause.style.paddingBottom = "0px";
     btnPlayPause.style.lineHeight = "18px";
+    // Fix width so play/pause glyphs don't resize the button
+    btnPlayPause.style.minWidth = "28px";
+    btnPlayPause.style.width = "28px";
 
     const btnNext = makeButton("+", () => {
         c.stepTrajectory(currentStep);
