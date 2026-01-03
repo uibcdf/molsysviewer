@@ -3,10 +3,7 @@ from pathlib import Path
 import molsysviewer as viewer
 
 
-view = viewer.new_view('181L', selection='molecule_type not in ["water", "ion"]')
-region_1 = view.new_region('all within 9 angstroms of molecule_name=="BENZENE"', representation='sticks')
-#view.zoom('molecule_name=="BENZENE"')
-
+view = viewer.demo['181L']
 camera_snapshot = {
     'mode': 'perspective',
     'fov': 0.7853981633974483,
@@ -22,4 +19,4 @@ camera_snapshot = {
 }
 view.set_camera_snapshot(camera_snapshot)
 view.show()
-view.write_html("../_static/views/181L_benzene.html", title="181L", mode="lite")
+view.write_html("../_static/views/181L_benzene_only_set_camera.html", title="181L", mode="lite")
