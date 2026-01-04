@@ -54,6 +54,12 @@ export class PopupHostManager {
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
     /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
+    .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    .molsysviewer-controls button,
+    .molsysviewer-controls input,
+    .molsysviewer-controls select,
+    .molsysviewer-controls textarea,
+    .molsysviewer-controls span { font-family: inherit; }
     .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
     .molsysviewer-traj-input::-webkit-inner-spin-button,
     .molsysviewer-traj-input::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0 !important; }

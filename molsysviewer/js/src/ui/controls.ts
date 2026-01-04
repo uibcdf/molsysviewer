@@ -30,6 +30,16 @@ const makeButton = (label: string, onClick: () => void) => {
 const injectStyles = () => {
     if (document.getElementById("molsysviewer-traj-style")) return;
     const css = `
+        .molsysviewer-controls {
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+        .molsysviewer-controls button,
+        .molsysviewer-controls input,
+        .molsysviewer-controls select,
+        .molsysviewer-controls textarea,
+        .molsysviewer-controls span {
+            font-family: inherit;
+        }
         .molsysviewer-controls,
         .molsysviewer-controls * {
             user-select: none;
