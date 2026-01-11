@@ -1,22 +1,17 @@
-# AI assistant
+# MolSys-AI
 
-## Why use it
+MolSys-AI is a language model designed to help you work with the MolSysSuite tools.
+Use it when you need fast, cited guidance on MolSysViewer or other MolSysSuite
+libraries, or when you want help configuring a reproducible workflow.
 
-You want fast answers with citations.
-You want a direct link to the right MolSysSuite page.
-
-## How to use it
-
-1. Ask a question about MolSysViewer.
-2. Open the “Sources” links to verify the answer.
-3. Retry if the backend is busy.
+You can ask questions about this documentation or any other MolSysSuite tool.
+MolSys-AI can suggest steps, best practices, and code patterns to shape your workflow.
 
 ```{raw} html
-<div id="molsys-ai-chat"></div>
+<link rel="stylesheet" href="../_static/molsys_ai_pilot.css">
+<div class="molsys-ai-chat-wrap">
+  <div id="molsys-ai-chat"></div>
+</div>
+<script src="../_static/molsys_ai_config.js"></script>
+<script src="../_static/molsys_ai_widget.js"></script>
 ```
-
-## Notes
-
-- The assistant calls `https://api.uibcdf.org/v1/chat`.
-- It does not execute commands or modify files.
-- If the backend is offline, you will see a short error message.
