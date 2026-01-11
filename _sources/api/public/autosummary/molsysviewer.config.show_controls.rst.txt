@@ -1,0 +1,6 @@
+﻿molsysviewer.config.show\_controls
+==================================
+
+.. currentmodule:: molsysviewer.config
+
+.. autodata:: show_controls

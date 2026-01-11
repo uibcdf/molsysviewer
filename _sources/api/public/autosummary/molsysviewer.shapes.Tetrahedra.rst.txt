@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.Tetrahedra
+==============================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: Tetrahedra
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Tetrahedra.__init__
+      ~Tetrahedra.add_tetrahedra
+   
+   
+
+   
+   
+   

@@ -1,0 +1,14 @@
+﻿molsysviewer.config
+===================
+
+.. automodule:: molsysviewer.config
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      set_default_quantities_form
+      set_default_quantities_parser
+      set_default_standard_units
+   

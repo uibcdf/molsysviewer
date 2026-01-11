@@ -1,0 +1,6 @@
+﻿molsysviewer.config.autohide\_controls
+======================================
+
+.. currentmodule:: molsysviewer.config
+
+.. autodata:: autohide_controls

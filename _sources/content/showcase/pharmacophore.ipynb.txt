@@ -1,0 +1,102 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "d1be1e64-ac7f-4858-b624-29c0b1c9385c",
+   "metadata": {},
+   "source": [
+    "# Pharmacophore overlays\n",
+    "\n",
+    "Planned content:\n",
+    "- Render pharmacophore glyphs with standard colors and transparency.\n",
+    "- Combine with pockets or channels in the same scene."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "79adc15b-49b9-4f20-80c0-073840c2c35b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-12-27T21:11:30.379155Z",
+     "iopub.status.busy": "2025-12-27T21:11:30.378088Z",
+     "iopub.status.idle": "2025-12-27T21:11:34.690128Z",
+     "shell.execute_reply": "2025-12-27T21:11:34.688775Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x7b3aa3dabfb0>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as mv\n",
+    "\n",
+    "v = mv.MolSysView()\n",
+    "v.shapes.add_pharmacophore_features(\n",
+    "    centers=[(0,0,0), (3,0,0), (6,0,0)],\n",
+    "    kinds=[\"aromatic\", \"hydrophobic\", \"hbond_acceptor\"],\n",
+    "    alphas=[0.5, 0.4, 0.6],\n",
+    "    tag=\"ph4-demo\",\n",
+    ")\n",
+    "v.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "64747356-9387-4243-9d63-c9b3ff07385a",
+   "metadata": {},
+   "source": [
+    "What to tweak\n",
+    "- `radii`: glyph size (single value or per feature).\n",
+    "- `directions`: optional for arrows/disks; one per feature if needed.\n",
+    "- `colors`: override standard palette; otherwise defaults per kind.\n",
+    "- `alphas`: transparency per feature or a single float.\n",
+    "- Combine with pockets or channels in the same scene using tags."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6d63bae9-4f35-41e6-80a4-8449e1973c9c",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

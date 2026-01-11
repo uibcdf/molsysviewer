@@ -1,0 +1,35 @@
+﻿molsysviewer.shapes.ShapesManager
+=================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: ShapesManager
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ShapesManager.__init__
+      ~ShapesManager.add_anisotropy_ellipsoids
+      ~ShapesManager.add_channel_tube
+      ~ShapesManager.add_displacement_vectors
+      ~ShapesManager.add_links
+      ~ShapesManager.add_pharmacophore_features
+      ~ShapesManager.add_pocket_blob
+      ~ShapesManager.add_pocket_surface
+      ~ShapesManager.add_set_alpha_spheres
+      ~ShapesManager.add_sphere
+      ~ShapesManager.add_spheres
+      ~ShapesManager.add_tetrahedra
+      ~ShapesManager.add_triangle_faces
+      ~ShapesManager.clear
+   
+   
+
+   
+   
+   

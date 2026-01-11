@@ -1,0 +1,1365 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>Index – MolSysViewer 0.7.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_tabs.css?v=f45e19d3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d5ef24d1" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d5ef24d1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js"></script>
+    <script src="_static/tabs.js?v=3030b3cb"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.7.0 documentation - Home"/>
+    <img src="_static/logo.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.7.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.layers.Layer.html#molsysviewer.layers.Layer.__init__">__init__() (molsysviewer.layers.Layer method)</a>
+
+      <ul>
+        <li><a href="api/public/autosummary/molsysviewer.MolSysView.html#molsysviewer.MolSysView.__init__">(molsysviewer.MolSysView method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.regions.Region.html#molsysviewer.regions.Region.__init__">(molsysviewer.regions.Region method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.AnisotropyEllipsoids.html#molsysviewer.shapes.AnisotropyEllipsoids.__init__">(molsysviewer.shapes.AnisotropyEllipsoids method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.ChannelTubes.html#molsysviewer.shapes.ChannelTubes.__init__">(molsysviewer.shapes.ChannelTubes method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.DisplacementVectors.html#molsysviewer.shapes.DisplacementVectors.__init__">(molsysviewer.shapes.DisplacementVectors method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.LinkShapes.html#molsysviewer.shapes.LinkShapes.__init__">(molsysviewer.shapes.LinkShapes method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.PharmacophoreShapes.html#molsysviewer.shapes.PharmacophoreShapes.__init__">(molsysviewer.shapes.PharmacophoreShapes method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.PocketBlobs.html#molsysviewer.shapes.PocketBlobs.__init__">(molsysviewer.shapes.PocketBlobs method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.PocketSurfaces.html#molsysviewer.shapes.PocketSurfaces.__init__">(molsysviewer.shapes.PocketSurfaces method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.ShapesManager.html#molsysviewer.shapes.ShapesManager.__init__">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.SphereShapes.html#molsysviewer.shapes.SphereShapes.__init__">(molsysviewer.shapes.SphereShapes method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.Tetrahedra.html#molsysviewer.shapes.Tetrahedra.__init__">(molsysviewer.shapes.Tetrahedra method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.TriangleFaces.html#molsysviewer.shapes.TriangleFaces.__init__">(molsysviewer.shapes.TriangleFaces method)</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.whole.Whole.html#molsysviewer.whole.Whole.__init__">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.add.html#molsysviewer.MolSysView.add">add() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.add">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.add">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.add">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids.add_anisotropy_ellipsoids">add_anisotropy_ellipsoids() (molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.AnisotropyEllipsoids.add_anisotropy_ellipsoids">(molsysviewer.shapes.AnisotropyEllipsoids method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_anisotropy_ellipsoids">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.channel_tubes.ChannelTubes.add_channel_tube">add_channel_tube() (molsysviewer.shapes.channel_tubes.ChannelTubes method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ChannelTubes.add_channel_tube">(molsysviewer.shapes.ChannelTubes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_channel_tube">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.displacements.DisplacementVectors.add_displacement_vectors">add_displacement_vectors() (molsysviewer.shapes.displacements.DisplacementVectors method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.DisplacementVectors.add_displacement_vectors">(molsysviewer.shapes.DisplacementVectors method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_displacement_vectors">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.links.LinkShapes.add_links">add_links() (molsysviewer.shapes.links.LinkShapes method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.LinkShapes.add_links">(molsysviewer.shapes.LinkShapes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_links">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.pharmacophore.PharmacophoreShapes.add_pharmacophore_features">add_pharmacophore_features() (molsysviewer.shapes.pharmacophore.PharmacophoreShapes method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.PharmacophoreShapes.add_pharmacophore_features">(molsysviewer.shapes.PharmacophoreShapes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_pharmacophore_features">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.pocket_blobs.PocketBlobs.add_pocket_blob">add_pocket_blob() (molsysviewer.shapes.pocket_blobs.PocketBlobs method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.PocketBlobs.add_pocket_blob">(molsysviewer.shapes.PocketBlobs method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_pocket_blob">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.pocket_surfaces.PocketSurfaces.add_pocket_surface">add_pocket_surface() (molsysviewer.shapes.pocket_surfaces.PocketSurfaces method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.PocketSurfaces.add_pocket_surface">(molsysviewer.shapes.PocketSurfaces method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_pocket_surface">(molsysviewer.shapes.ShapesManager method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_set_alpha_spheres">add_set_alpha_spheres() (molsysviewer.shapes.ShapesManager method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.spheres.SphereShapes.add_set_alpha_spheres">(molsysviewer.shapes.spheres.SphereShapes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.SphereShapes.add_set_alpha_spheres">(molsysviewer.shapes.SphereShapes method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_sphere">add_sphere() (molsysviewer.shapes.ShapesManager method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.spheres.SphereShapes.add_sphere">(molsysviewer.shapes.spheres.SphereShapes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.SphereShapes.add_sphere">(molsysviewer.shapes.SphereShapes method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_spheres">add_spheres() (molsysviewer.shapes.ShapesManager method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.spheres.SphereShapes.add_spheres">(molsysviewer.shapes.spheres.SphereShapes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.SphereShapes.add_spheres">(molsysviewer.shapes.SphereShapes method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_tetrahedra">add_tetrahedra() (molsysviewer.shapes.ShapesManager method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.Tetrahedra.add_tetrahedra">(molsysviewer.shapes.Tetrahedra method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.tetrahedra.Tetrahedra.add_tetrahedra">(molsysviewer.shapes.tetrahedra.Tetrahedra method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.add_triangle_faces">add_triangle_faces() (molsysviewer.shapes.ShapesManager method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.triangle_faces.TriangleFaces.add_triangle_faces">(molsysviewer.shapes.triangle_faces.TriangleFaces method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.TriangleFaces.add_triangle_faces">(molsysviewer.shapes.TriangleFaces method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.AnisotropyEllipsoids.html#molsysviewer.shapes.AnisotropyEllipsoids">AnisotropyEllipsoids (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.AnisotropyEllipsoids">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids">(class in molsysviewer.shapes.anisotropy_ellipsoids)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.append_structures.html#molsysviewer.MolSysView.append_structures">append_structures() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.append_structures">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.append_structures">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.append_structures">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.config.autohide_controls.html#molsysviewer.config.autohide_controls">autohide_controls (in module molsysviewer.config)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.autohide_controls">(molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.ChannelTubes.html#molsysviewer.shapes.ChannelTubes">ChannelTubes (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.ChannelTubes">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.channel_tubes.ChannelTubes">(class in molsysviewer.shapes.channel_tubes)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager.clear">clear() (molsysviewer.shapes.ShapesManager method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.spheres.SphereShapes.clear">(molsysviewer.shapes.spheres.SphereShapes method)</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.SphereShapes.clear">(molsysviewer.shapes.SphereShapes method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.clear_decorations">clear_decorations() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.clear_decorations">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.config.controls_position.html#molsysviewer.config.controls_position">controls_position (in module molsysviewer.config)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.controls_position">(molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.config.controls_position_fullscreen.html#molsysviewer.config.controls_position_fullscreen">controls_position_fullscreen (in module molsysviewer.config)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.controls_position_fullscreen">(molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.debug_js">debug_js (molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.layers.Layer.delete">delete() (molsysviewer.layers.Layer method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.regions.Region.delete">(molsysviewer.regions.Region method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.demo.html#molsysviewer.demo">demo (in module molsysviewer)</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.demo.DemoCatalog">DemoCatalog (class in molsysviewer.demo)</a>
+</li>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.DisplacementVectors.html#molsysviewer.shapes.DisplacementVectors">DisplacementVectors (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.DisplacementVectors">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.displacements.DisplacementVectors">(class in molsysviewer.shapes.displacements)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.enable_popout">enable_popout (molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/internal/autosummary/molsysviewer.loaders.load_molsysmt.ensure_view.html#molsysviewer.loaders.load_molsysmt.ensure_view">ensure_view() (in module molsysviewer.loaders.load_molsysmt)</a>, <a href="molsysviewer.loaders.html#molsysviewer.loaders.load_molsysmt.ensure_view">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.get.html#molsysviewer.MolSysView.get">get() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.get">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.regions.Region.get">(molsysviewer.regions.Region method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.get">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.get">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.get_camera_snapshot">get_camera_snapshot() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.get_camera_snapshot">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.layers.Layer.hide">hide() (molsysviewer.layers.Layer method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.MolSysView.hide">(molsysviewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.regions.Region.hide">(molsysviewer.regions.Region method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.hide">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.hide">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.info.html#molsysviewer.MolSysView.info">info() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.info">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.regions.Region.info">(molsysviewer.regions.Region method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.info">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.info">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.initial_messages">initial_messages (molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.isolate">isolate() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.isolate">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.js_logs">js_logs (molsysviewer.MolSysView property)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.js_logs">(molsysviewer.viewer.MolSysView property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.layers.Layer.html#molsysviewer.layers.Layer">Layer (class in molsysviewer.layers)</a>, <a href="molsysviewer.html#molsysviewer.layers.Layer">[1]</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.layers">layers (molsysviewer.MolSysView property)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.layers">(molsysviewer.viewer.MolSysView property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.LinkShapes.html#molsysviewer.shapes.LinkShapes">LinkShapes (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.LinkShapes">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.links.LinkShapes">(class in molsysviewer.shapes.links)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.load">load() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.load">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.loaders.load_from_molsysmt.html#molsysviewer.loaders.load_from_molsysmt">load_from_molsysmt() (in module molsysviewer.loaders)</a>, <a href="molsysviewer.loaders.html#molsysviewer.loaders.load_from_molsysmt">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.loaders.html#molsysviewer.loaders.load_molsysmt.load_from_molsysmt">(in module molsysviewer.loaders.load_molsysmt)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.thirds.jupyter.load_html_in_notebook.html#molsysviewer.thirds.jupyter.load_html_in_notebook">load_html_in_notebook() (in module molsysviewer.thirds.jupyter)</a>, <a href="molsysviewer.thirds.jupyter.html#molsysviewer.thirds.jupyter.load_html_in_notebook">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.thirds.jupyter.html#molsysviewer.thirds.jupyter.load_html_in_notebook.load_html_in_notebook">(in module molsysviewer.thirds.jupyter.load_html_in_notebook)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.config.load_user_presets.html#molsysviewer.config.load_user_presets">load_user_presets() (in module molsysviewer.config)</a>, <a href="molsysviewer.config.html#molsysviewer.config.load_user_presets">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.config.html#molsysviewer.config.user_presets.load_user_presets">(in module molsysviewer.config.user_presets)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    module
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer">molsysviewer</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.config.html#module-molsysviewer.config">molsysviewer.config</a>, <a href="molsysviewer.config.html#module-molsysviewer.config">[1]</a>
+</li>
+        <li><a href="molsysviewer.config.html#module-molsysviewer.config.user_presets">molsysviewer.config.user_presets</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.demo">molsysviewer.demo</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.layers">molsysviewer.layers</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.loaders.html#module-molsysviewer.loaders">molsysviewer.loaders</a>, <a href="molsysviewer.loaders.html#module-molsysviewer.loaders">[1]</a>
+</li>
+        <li><a href="api/internal/autosummary/molsysviewer.loaders.load_molsysmt.html#module-molsysviewer.loaders.load_molsysmt">molsysviewer.loaders.load_molsysmt</a>, <a href="molsysviewer.loaders.html#module-molsysviewer.loaders.load_molsysmt">[1]</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.new_view">molsysviewer.new_view</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.regions">molsysviewer.regions</a>
+</li>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.html#module-molsysviewer.shapes">molsysviewer.shapes</a>, <a href="molsysviewer.shapes.html#module-molsysviewer.shapes">[1]</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.anisotropy_ellipsoids">molsysviewer.shapes.anisotropy_ellipsoids</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.channel_tubes">molsysviewer.shapes.channel_tubes</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.displacements">molsysviewer.shapes.displacements</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.links">molsysviewer.shapes.links</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.pharmacophore">molsysviewer.shapes.pharmacophore</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.pocket_blobs">molsysviewer.shapes.pocket_blobs</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.pocket_surfaces">molsysviewer.shapes.pocket_surfaces</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.spheres">molsysviewer.shapes.spheres</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.tetrahedra">molsysviewer.shapes.tetrahedra</a>
+</li>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.triangle_faces">molsysviewer.shapes.triangle_faces</a>
+</li>
+        <li><a href="molsysviewer.thirds.html#module-molsysviewer.thirds">molsysviewer.thirds</a>
+</li>
+        <li><a href="molsysviewer.thirds.jupyter.html#module-molsysviewer.thirds.jupyter">molsysviewer.thirds.jupyter</a>
+</li>
+        <li><a href="molsysviewer.thirds.jupyter.html#module-molsysviewer.thirds.jupyter.load_html_in_notebook">molsysviewer.thirds.jupyter.load_html_in_notebook</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.viewer">molsysviewer.viewer</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.whole">molsysviewer.whole</a>
+</li>
+        <li><a href="molsysviewer.html#module-molsysviewer.widget">molsysviewer.widget</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.molsys">molsys (molsysviewer.MolSysView property)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.molsys">(molsysviewer.viewer.MolSysView property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.html#molsysviewer.MolSysView">MolSysView (class in molsysviewer)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView">(class in molsysviewer.viewer)</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.config
+
+      <ul>
+        <li><a href="api/public/autosummary/molsysviewer.config.html#module-molsysviewer.config">module</a>, <a href="molsysviewer.config.html#module-molsysviewer.config">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.config.user_presets
+
+      <ul>
+        <li><a href="molsysviewer.config.html#module-molsysviewer.config.user_presets">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.demo
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.demo">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.layers
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.layers">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.loaders
+
+      <ul>
+        <li><a href="api/public/autosummary/molsysviewer.loaders.html#module-molsysviewer.loaders">module</a>, <a href="molsysviewer.loaders.html#module-molsysviewer.loaders">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    molsysviewer.loaders.load_molsysmt
+
+      <ul>
+        <li><a href="api/internal/autosummary/molsysviewer.loaders.load_molsysmt.html#module-molsysviewer.loaders.load_molsysmt">module</a>, <a href="molsysviewer.loaders.html#module-molsysviewer.loaders.load_molsysmt">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.new_view
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.new_view">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.regions
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.regions">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes
+
+      <ul>
+        <li><a href="api/public/autosummary/molsysviewer.shapes.html#module-molsysviewer.shapes">module</a>, <a href="molsysviewer.shapes.html#module-molsysviewer.shapes">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.anisotropy_ellipsoids
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.anisotropy_ellipsoids">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.channel_tubes
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.channel_tubes">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.displacements
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.displacements">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.links
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.links">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.pharmacophore
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.pharmacophore">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.pocket_blobs
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.pocket_blobs">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.pocket_surfaces
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.pocket_surfaces">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.spheres
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.spheres">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.tetrahedra
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.tetrahedra">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.shapes.triangle_faces
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#module-molsysviewer.shapes.triangle_faces">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.thirds
+
+      <ul>
+        <li><a href="molsysviewer.thirds.html#module-molsysviewer.thirds">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.thirds.jupyter
+
+      <ul>
+        <li><a href="molsysviewer.thirds.jupyter.html#module-molsysviewer.thirds.jupyter">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.thirds.jupyter.load_html_in_notebook
+
+      <ul>
+        <li><a href="molsysviewer.thirds.jupyter.html#module-molsysviewer.thirds.jupyter.load_html_in_notebook">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.viewer
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.viewer">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.whole
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.whole">module</a>
+</li>
+      </ul></li>
+      <li>
+    molsysviewer.widget
+
+      <ul>
+        <li><a href="molsysviewer.html#module-molsysviewer.widget">module</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget">MolSysViewerWidget (class in molsysviewer.widget)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.regions.Region.new_complementary_region">new_complementary_region() (molsysviewer.regions.Region method)</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.new_layer">new_layer() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.new_layer">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.new_region">new_region() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.new_region">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.new_view.html#molsysviewer.new_view">new_view() (in module molsysviewer)</a>, <a href="molsysviewer.html#molsysviewer.new_view">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.new_view.new_view">(in module molsysviewer.new_view)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.PharmacophoreShapes.html#molsysviewer.shapes.PharmacophoreShapes">PharmacophoreShapes (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.PharmacophoreShapes">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.pharmacophore.PharmacophoreShapes">(class in molsysviewer.shapes.pharmacophore)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.PocketBlobs.html#molsysviewer.shapes.PocketBlobs">PocketBlobs (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.PocketBlobs">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.pocket_blobs.PocketBlobs">(class in molsysviewer.shapes.pocket_blobs)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.PocketSurfaces.html#molsysviewer.shapes.PocketSurfaces">PocketSurfaces (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.PocketSurfaces">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.pocket_surfaces.PocketSurfaces">(class in molsysviewer.shapes.pocket_surfaces)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.popup_js_source">popup_js_source (molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.regions.Region.html#molsysviewer.regions.Region">Region (class in molsysviewer.regions)</a>, <a href="molsysviewer.html#molsysviewer.regions.Region">[1]</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.regions">regions (molsysviewer.MolSysView property)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.regions">(molsysviewer.viewer.MolSysView property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.remove.html#molsysviewer.MolSysView.remove">remove() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.remove">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.remove">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.remove">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.reset_camera">reset_camera() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.reset_camera">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.reset_viewer">reset_viewer() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.reset_viewer">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.select.html#molsysviewer.MolSysView.select">select() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.select">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.regions.Region.select">(molsysviewer.regions.Region method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.select">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.select">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.MolSysView.set.html#molsysviewer.MolSysView.set">set() (molsysviewer.MolSysView method)</a>, <a href="molsysviewer.html#molsysviewer.MolSysView.set">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.set">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.set">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.set_camera_snapshot">set_camera_snapshot() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.set_camera_snapshot">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.set_controls_visible">set_controls_visible() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.set_controls_visible">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.config.html#molsysviewer.config.set_default_quantities_form">set_default_quantities_form() (in module molsysviewer.config)</a>
+</li>
+      <li><a href="molsysviewer.config.html#molsysviewer.config.set_default_quantities_parser">set_default_quantities_parser() (in module molsysviewer.config)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.config.html#molsysviewer.config.set_default_standard_units">set_default_standard_units() (in module molsysviewer.config)</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.regions.Region.set_representation">set_representation() (molsysviewer.regions.Region method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.set_representation">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+      <li><a href="molsysviewer.html#molsysviewer.layers.Layer.set_tag">set_tag() (molsysviewer.layers.Layer method)</a>
+</li>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.ShapesManager.html#molsysviewer.shapes.ShapesManager">ShapesManager (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.ShapesManager">[1]</a>
+</li>
+      <li><a href="molsysviewer.html#molsysviewer.layers.Layer.show">show() (molsysviewer.layers.Layer method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.MolSysView.show">(molsysviewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.regions.Region.show">(molsysviewer.regions.Region method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.show">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+        <li><a href="molsysviewer.html#molsysviewer.whole.Whole.show">(molsysviewer.whole.Whole method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.config.show_controls.html#molsysviewer.config.show_controls">show_controls (in module molsysviewer.config)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.widget.MolSysViewerWidget.show_controls">(molsysviewer.widget.MolSysViewerWidget attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.SphereShapes.html#molsysviewer.shapes.SphereShapes">SphereShapes (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.SphereShapes">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.spheres.SphereShapes">(class in molsysviewer.shapes.spheres)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.Tetrahedra.html#molsysviewer.shapes.Tetrahedra">Tetrahedra (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.Tetrahedra">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.tetrahedra.Tetrahedra">(class in molsysviewer.shapes.tetrahedra)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.shapes.TriangleFaces.html#molsysviewer.shapes.TriangleFaces">TriangleFaces (class in molsysviewer.shapes)</a>, <a href="molsysviewer.shapes.html#molsysviewer.shapes.TriangleFaces">[1]</a>
+
+      <ul>
+        <li><a href="molsysviewer.shapes.html#molsysviewer.shapes.triangle_faces.TriangleFaces">(class in molsysviewer.shapes.triangle_faces)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/api_public.html#molsysviewer.config.user_presets">user_presets (in module molsysviewer.config)</a>
+
+      <ul>
+        <li><a href="molsysviewer.config.html#molsysviewer.config.user_presets.user_presets">(in module molsysviewer.config.user_presets)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.visible_atom_indices">visible_atom_indices (molsysviewer.MolSysView property)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.visible_atom_indices">(molsysviewer.viewer.MolSysView property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.visible_structure_indices">visible_structure_indices (molsysviewer.MolSysView property)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.visible_structure_indices">(molsysviewer.viewer.MolSysView property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/public/autosummary/molsysviewer.whole.Whole.html#molsysviewer.whole.Whole">Whole (class in molsysviewer.whole)</a>, <a href="molsysviewer.html#molsysviewer.whole.Whole">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.write_html">write_html() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.write_html">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="molsysviewer.html#molsysviewer.MolSysView.zoom">zoom() (molsysviewer.MolSysView method)</a>
+
+      <ul>
+        <li><a href="molsysviewer.html#molsysviewer.viewer.MolSysView.zoom">(molsysviewer.viewer.MolSysView method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+	with a structure based on the
+	<a href="https://github.com/MolSSI/cookiecutter-cms">Computational Molecular Science
+		Python Cookiecutter</a> version 1.5
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

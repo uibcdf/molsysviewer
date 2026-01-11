@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.LinkShapes
+==============================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: LinkShapes
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LinkShapes.__init__
+      ~LinkShapes.add_links
+   
+   
+
+   
+   
+   

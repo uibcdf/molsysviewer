@@ -1,0 +1,6 @@
+﻿molsysviewer.config.load\_user\_presets
+=======================================
+
+.. currentmodule:: molsysviewer.config
+
+.. autofunction:: load_user_presets

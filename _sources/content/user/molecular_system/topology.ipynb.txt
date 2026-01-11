@@ -1,0 +1,671 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0d98a99b",
+   "metadata": {},
+   "source": [
+    "(User_MolecularSystem_Topology)=\n",
+    "# Topology\n",
+    "\n",
+    "A **molecular system** in MolSysMT has two parts:\n",
+    "\n",
+    "- **Topology**: what the system *is* — atoms, groups, chains, molecules, entities…\n",
+    "- **Structures**: where those atoms *are* in space — coordinates, optional box, optional time…\n",
+    "\n",
+    "This page focuses on topology. We will keep examples simple and descriptive, so you can look at your own system and immediately recognize these ideas."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "a6ab3e27",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:11.366017Z",
+     "iopub.status.busy": "2026-01-02T05:37:11.365401Z",
+     "iopub.status.idle": "2026-01-02T05:37:16.375667Z",
+     "shell.execute_reply": "2026-01-02T05:37:16.374710Z"
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x714495bdc3b0>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as viewer\n",
+    "\n",
+    "view = viewer.demo[\"pentalanine\"]\n",
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "fd834b00",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:16.377965Z",
+     "iopub.status.busy": "2026-01-02T05:37:16.377586Z",
+     "iopub.status.idle": "2026-01-02T05:37:16.383031Z",
+     "shell.execute_reply": "2026-01-02T05:37:16.382083Z"
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_pentalanine.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x714496df9070>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "load_html_in_notebook(\"../../../_static/views/demo_pentalanine.html\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8f22d433-a225-4ac4-b9da-1dcae92dc070",
+   "metadata": {},
+   "source": [
+    "As explained in {doc}`loading_and_inspect`, the molecular system is stored in `view` as `view.molsys`. Inside it, you will find the topology object at `view.molsys.topology`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "89ffaf19-a719-4b3e-870f-5a7dba78896b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:16.385154Z",
+     "iopub.status.busy": "2026-01-02T05:37:16.384931Z",
+     "iopub.status.idle": "2026-01-02T05:37:16.389387Z",
+     "shell.execute_reply": "2026-01-02T05:37:16.388325Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "molsysmt.native.topology.Topology"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type(view.molsys.topology)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8b27830",
+   "metadata": {},
+   "source": [
+    "## Topology levels\n",
+    "\n",
+    "MolSysMT (and therefore MolSysViewer) can query the system at different hierarchical levels, called *elements* in MolSysMT.\n",
+    "\n",
+    "Here is a quick reference table:\n",
+    "\n",
+    "```{include} ../_snippets/elements_table.md\n",
+    "```\n",
+    "\n",
+    "You do not need to memorize these definitions. The key idea is simple: **selections and queries can be applied at any of these levels**, depending on what you are trying to do.\n",
+    "\n",
+    "In MolSysMT’s topology object, each element level has its own pandas DataFrame. For example, inspect the groups DataFrame in `view.molsys.topology`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "5d687489-c817-497c-b271-5ba21d57dda5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:16.391855Z",
+     "iopub.status.busy": "2026-01-02T05:37:16.391648Z",
+     "iopub.status.idle": "2026-01-02T05:37:16.400324Z",
+     "shell.execute_reply": "2026-01-02T05:37:16.399319Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>group_id</th>\n",
+       "      <th>group_name</th>\n",
+       "      <th>group_type</th>\n",
+       "      <th>molecule_index</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>ACE</td>\n",
+       "      <td>terminal capping</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>ALA</td>\n",
+       "      <td>amino acid</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>ALA</td>\n",
+       "      <td>amino acid</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>ALA</td>\n",
+       "      <td>amino acid</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>ALA</td>\n",
+       "      <td>amino acid</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>6</td>\n",
+       "      <td>ALA</td>\n",
+       "      <td>amino acid</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>7</td>\n",
+       "      <td>NME</td>\n",
+       "      <td>terminal capping</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  group_id group_name        group_type  molecule_index\n",
+       "0        1        ACE  terminal capping               0\n",
+       "1        2        ALA        amino acid               0\n",
+       "2        3        ALA        amino acid               0\n",
+       "3        4        ALA        amino acid               0\n",
+       "4        5        ALA        amino acid               0\n",
+       "5        6        ALA        amino acid               0\n",
+       "6        7        NME  terminal capping               0"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.molsys.topology.groups"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "339de88e",
+   "metadata": {},
+   "source": [
+    "## A practical way to navigate the hierarchy\n",
+    "\n",
+    "A very common pattern is:\n",
+    "\n",
+    "1. start with an atom-level selection (atoms are concrete and easy to pick),\n",
+    "2. then retrieve a few **attributes** that tell you where those atoms belong (group name, chain index, entity name…).\n",
+    "\n",
+    "This is how you connect “I see these atoms” to “what biological unit is this?”"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "89cd8b69",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:16.402806Z",
+     "iopub.status.busy": "2026-01-02T05:37:16.402576Z",
+     "iopub.status.idle": "2026-01-02T05:37:16.506191Z",
+     "shell.execute_reply": "2026-01-02T05:37:16.505178Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[8, 18, 28, 38, 48]"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ca_atoms = view.select('atom_name==\"CA\"')\n",
+    "ca_atoms[:10]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "d721399c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:16.509125Z",
+     "iopub.status.busy": "2026-01-02T05:37:16.508864Z",
+     "iopub.status.idle": "2026-01-02T05:37:16.773416Z",
+     "shell.execute_reply": "2026-01-02T05:37:16.772338Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[['CA', 'CA', 'CA', 'CA', 'CA'],\n",
+       " ['2', '3', '4', '5', '6'],\n",
+       " ['ALA', 'ALA', 'ALA', 'ALA', 'ALA'],\n",
+       " [0, 0, 0, 0, 0]]"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(\n",
+    "    element=\"atom\",\n",
+    "    selection=ca_atoms[:5],\n",
+    "    atom_name=True,\n",
+    "    group_id=True,\n",
+    "    group_name=True,\n",
+    "    chain_index=True\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a8a33d6a",
+   "metadata": {},
+   "source": [
+    "## A quick look with `info`\n",
+    "\n",
+    "`view.info(...)` is a small convenience wrapper around MolSysMT’s `info`. It shows a summary table in Jupyter.\n",
+    "\n",
+    "Try changing the `element` to see which levels your system can describe.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8b6662e2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:16.775549Z",
+     "iopub.status.busy": "2026-01-02T05:37:16.775321Z",
+     "iopub.status.idle": "2026-01-02T05:37:17.738616Z",
+     "shell.execute_reply": "2026-01-02T05:37:17.737602Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_b0426\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_b0426_level0_col0\" class=\"col_heading level0 col0\" >form</th>\n",
+       "      <th id=\"T_b0426_level0_col1\" class=\"col_heading level0 col1\" >n_atoms</th>\n",
+       "      <th id=\"T_b0426_level0_col2\" class=\"col_heading level0 col2\" >n_groups</th>\n",
+       "      <th id=\"T_b0426_level0_col3\" class=\"col_heading level0 col3\" >n_components</th>\n",
+       "      <th id=\"T_b0426_level0_col4\" class=\"col_heading level0 col4\" >n_chains</th>\n",
+       "      <th id=\"T_b0426_level0_col5\" class=\"col_heading level0 col5\" >n_molecules</th>\n",
+       "      <th id=\"T_b0426_level0_col6\" class=\"col_heading level0 col6\" >n_entities</th>\n",
+       "      <th id=\"T_b0426_level0_col7\" class=\"col_heading level0 col7\" >n_peptides</th>\n",
+       "      <th id=\"T_b0426_level0_col8\" class=\"col_heading level0 col8\" >n_structures</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_b0426_row0_col0\" class=\"data row0 col0\" >molsysmt.MolSys</td>\n",
+       "      <td id=\"T_b0426_row0_col1\" class=\"data row0 col1\" >62</td>\n",
+       "      <td id=\"T_b0426_row0_col2\" class=\"data row0 col2\" >7</td>\n",
+       "      <td id=\"T_b0426_row0_col3\" class=\"data row0 col3\" >1</td>\n",
+       "      <td id=\"T_b0426_row0_col4\" class=\"data row0 col4\" >1</td>\n",
+       "      <td id=\"T_b0426_row0_col5\" class=\"data row0 col5\" >1</td>\n",
+       "      <td id=\"T_b0426_row0_col6\" class=\"data row0 col6\" >1</td>\n",
+       "      <td id=\"T_b0426_row0_col7\" class=\"data row0 col7\" >1</td>\n",
+       "      <td id=\"T_b0426_row0_col8\" class=\"data row0 col8\" >200</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x7144922fbe30>"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.info(element=\"system\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "fd8804c8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:17.740627Z",
+     "iopub.status.busy": "2026-01-02T05:37:17.740280Z",
+     "iopub.status.idle": "2026-01-02T05:37:18.265801Z",
+     "shell.execute_reply": "2026-01-02T05:37:18.264906Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style type=\"text/css\">\n",
+       "</style>\n",
+       "<table id=\"T_ea864\">\n",
+       "  <thead>\n",
+       "    <tr>\n",
+       "      <th id=\"T_ea864_level0_col0\" class=\"col_heading level0 col0\" >index</th>\n",
+       "      <th id=\"T_ea864_level0_col1\" class=\"col_heading level0 col1\" >name</th>\n",
+       "      <th id=\"T_ea864_level0_col2\" class=\"col_heading level0 col2\" >type</th>\n",
+       "      <th id=\"T_ea864_level0_col3\" class=\"col_heading level0 col3\" >n atoms</th>\n",
+       "      <th id=\"T_ea864_level0_col4\" class=\"col_heading level0 col4\" >n groups</th>\n",
+       "      <th id=\"T_ea864_level0_col5\" class=\"col_heading level0 col5\" >n components</th>\n",
+       "      <th id=\"T_ea864_level0_col6\" class=\"col_heading level0 col6\" >chain index</th>\n",
+       "      <th id=\"T_ea864_level0_col7\" class=\"col_heading level0 col7\" >entity index</th>\n",
+       "      <th id=\"T_ea864_level0_col8\" class=\"col_heading level0 col8\" >entity name</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td id=\"T_ea864_row0_col0\" class=\"data row0 col0\" >0</td>\n",
+       "      <td id=\"T_ea864_row0_col1\" class=\"data row0 col1\" >peptide 0</td>\n",
+       "      <td id=\"T_ea864_row0_col2\" class=\"data row0 col2\" >peptide</td>\n",
+       "      <td id=\"T_ea864_row0_col3\" class=\"data row0 col3\" >62</td>\n",
+       "      <td id=\"T_ea864_row0_col4\" class=\"data row0 col4\" >7</td>\n",
+       "      <td id=\"T_ea864_row0_col5\" class=\"data row0 col5\" >1</td>\n",
+       "      <td id=\"T_ea864_row0_col6\" class=\"data row0 col6\" >0</td>\n",
+       "      <td id=\"T_ea864_row0_col7\" class=\"data row0 col7\" >0</td>\n",
+       "      <td id=\"T_ea864_row0_col8\" class=\"data row0 col8\" >peptide 0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x714492576a80>"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.info(element=\"molecule\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f87620dd",
+   "metadata": {},
+   "source": [
+    "## Extracting a few attributes with `get`\n",
+    "\n",
+    "`view.get(...)` is the companion of `info(...)`: it returns attribute values you can use in your Python code.\n",
+    "\n",
+    "For example, you can retrieve atom- and group-level attributes such as `atom_name`, `atom_id`, or `group_type`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "ec3875f3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:18.268324Z",
+     "iopub.status.busy": "2026-01-02T05:37:18.268024Z",
+     "iopub.status.idle": "2026-01-02T05:37:18.488099Z",
+     "shell.execute_reply": "2026-01-02T05:37:18.486863Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(['H1', 'CH3', 'H2', 'H3', 'C'],\n",
+       " ['0', '1', '2', '3', '4'],\n",
+       " ['terminal capping',\n",
+       "  'terminal capping',\n",
+       "  'terminal capping',\n",
+       "  'terminal capping',\n",
+       "  'terminal capping'])"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "atom_name, atom_id, group_type = view.get(\n",
+    "    element=\"atom\",\n",
+    "    selection=[0, 1, 2, 3, 4],\n",
+    "    atom_name=True,\n",
+    "    atom_id=True,\n",
+    "    group_type=True,\n",
+    ")\n",
+    "\n",
+    "atom_name, atom_id, group_type"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b00af351",
+   "metadata": {},
+   "source": [
+    "## Discovering what topological attributes are available\n",
+    "\n",
+    "Sometimes you do not know which attribute names exist for your current system.\n",
+    "\n",
+    "MolSysMT provides a discovery function for that: {func}`molsysmt.basic.get_attributes`.\n",
+    "\n",
+    "We do not wrap it in MolSysViewer because it is mostly a power-user helper, but it is a great tool to keep in mind when you are exploring a new dataset or a new form."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "4cac9d6b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:18.490387Z",
+     "iopub.status.busy": "2026-01-02T05:37:18.490146Z",
+     "iopub.status.idle": "2026-01-02T05:37:18.551525Z",
+     "shell.execute_reply": "2026-01-02T05:37:18.550460Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['atom_index',\n",
+       " 'atom_name',\n",
+       " 'atom_id',\n",
+       " 'atom_type',\n",
+       " 'group_index',\n",
+       " 'group_name',\n",
+       " 'group_id',\n",
+       " 'group_type',\n",
+       " 'component_index',\n",
+       " 'component_name',\n",
+       " 'component_id',\n",
+       " 'component_type',\n",
+       " 'chain_index',\n",
+       " 'chain_name',\n",
+       " 'chain_id',\n",
+       " 'chain_type',\n",
+       " 'molecule_index',\n",
+       " 'molecule_name',\n",
+       " 'molecule_id',\n",
+       " 'molecule_type',\n",
+       " 'entity_index',\n",
+       " 'entity_name',\n",
+       " 'entity_id',\n",
+       " 'entity_type',\n",
+       " 'bond_index',\n",
+       " 'bond_type',\n",
+       " 'bond_order',\n",
+       " 'bonded_atoms',\n",
+       " 'bonded_atom_pairs',\n",
+       " 'inner_bonded_atoms',\n",
+       " 'inner_bonded_atom_pairs',\n",
+       " 'inner_bond_index',\n",
+       " 'n_atoms',\n",
+       " 'n_groups',\n",
+       " 'n_components',\n",
+       " 'n_chains',\n",
+       " 'n_molecules',\n",
+       " 'n_entities',\n",
+       " 'n_bonds',\n",
+       " 'n_inner_bonds',\n",
+       " 'n_amino_acids',\n",
+       " 'n_nucleotides',\n",
+       " 'n_ions',\n",
+       " 'n_waters',\n",
+       " 'n_small_molecules',\n",
+       " 'n_peptides',\n",
+       " 'n_proteins',\n",
+       " 'n_dnas',\n",
+       " 'n_rnas',\n",
+       " 'n_lipids',\n",
+       " 'n_polysaccharides',\n",
+       " 'n_saccharides']"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysmt as msm\n",
+    "\n",
+    "attrs = msm.get_attributes(view.molsys, attribute_type='topological', output_type='list')\n",
+    "attrs"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "524d8de6",
+   "metadata": {},
+   "source": [
+    "## A note about editing topology\n",
+    "\n",
+    "In most workflows, you do not change topology from inside the viewer: you load a system, inspect it, select parts of it, and visualize it.\n",
+    "\n",
+    "If you ever need to mutate the underlying system (rename something, remove atoms…), do it via the explicit MolSysViewer methods that are meant to keep the visualization consistent. Directly editing `view.molsys` is possible, but it is an advanced move and it is easy to desynchronize what you see.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

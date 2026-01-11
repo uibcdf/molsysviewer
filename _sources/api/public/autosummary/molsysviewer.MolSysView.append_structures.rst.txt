@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.append\_structures
+==========================================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.append_structures

@@ -1,0 +1,762 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+    <title>molsysviewer.loaders.load_molsysmt – MolSysViewer 0.7.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_tabs.css?v=f45e19d3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d5ef24d1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d5ef24d1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js"></script>
+    <script src="../../../_static/tabs.js?v=3030b3cb"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/molsysviewer/loaders/load_molsysmt';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.7.0 documentation - Home"/>
+    <img src="../../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.7.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.loaders.load_molsysmt</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for molsysviewer.loaders.load_molsysmt</h1><div class="highlight"><pre>
+<span></span><span class="c1"># molsysviewer/loaders/load_molsysmt.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">molsysmt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolSysView</span>
+
+
+<div class="viewcode-block" id="ensure_view">
+<a class="viewcode-back" href="../../../api/internal/autosummary/molsysviewer.loaders.load_molsysmt.ensure_view.html#molsysviewer.loaders.load_molsysmt.ensure_view">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ensure_view</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="s2">&quot;MolSysView&quot;</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MolSysView&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">view</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolSysView</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">MolSysView</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">view</span></div>
+
+
+
+<div class="viewcode-block" id="load_from_molsysmt">
+<a class="viewcode-back" href="../../../api/public/autosummary/molsysviewer.loaders.load_from_molsysmt.html#molsysviewer.loaders.load_molsysmt.load_from_molsysmt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_from_molsysmt</span><span class="p">(</span>
+    <span class="n">molecular_system</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">structure_indices</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">syntax</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;MolSysMT&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">view</span><span class="p">:</span> <span class="s2">&quot;MolSysView | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MolSysView&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal backend for `MolSysView.load(...)`.</span>
+
+<span class="sd">    - Convert `molecular_system` into `molsysmt.MolSys`.</span>
+<span class="sd">    - Initialize the atom mask.</span>
+<span class="sd">    - Use the native path (MolSys payload → Mol*).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">view</span> <span class="o">=</span> <span class="n">ensure_view</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+
+    <span class="c1"># Store the input on the viewer instance.</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">molecular_system</span> <span class="o">=</span> <span class="n">molecular_system</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">selection</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">structure_indices</span> <span class="o">=</span> <span class="n">structure_indices</span>
+
+    <span class="c1"># Convert to MolSys and create the atom mask.</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">_molsys</span> <span class="o">=</span> <span class="n">msm</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span>
+        <span class="n">molecular_system</span><span class="p">,</span>
+        <span class="n">to_form</span><span class="o">=</span><span class="s2">&quot;molsysmt.MolSys&quot;</span><span class="p">,</span>
+        <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
+        <span class="n">structure_indices</span><span class="o">=</span><span class="n">structure_indices</span><span class="p">,</span>
+        <span class="n">syntax</span><span class="o">=</span><span class="n">syntax</span><span class="p">,</span>
+        <span class="n">skip_digestion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_molsys</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_n_atoms</span><span class="p">())</span>
+    <span class="n">n_structures</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_molsys</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">get_n_structures</span><span class="p">())</span>
+    <span class="n">multiple_structures</span> <span class="o">=</span> <span class="n">n_structures</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="n">view</span><span class="o">.</span><span class="n">atom_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="n">viewer_json</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">_molsys</span><span class="o">.</span><span class="n">to_form</span><span class="p">(</span><span class="s2">&quot;molsysmt.ViewerJSON&quot;</span><span class="p">)</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">_serialize_molsys_payload</span><span class="p">(</span><span class="n">viewer_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to serialize MolSysMT viewer payload&quot;</span><span class="p">)</span>
+
+    <span class="n">view</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;load_molsys_payload&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="n">payload</span><span class="p">,</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s2">&quot;multiple_structures&quot;</span><span class="p">:</span> <span class="n">multiple_structures</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">view</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_serialize_molsys_payload</span><span class="p">(</span><span class="n">viewer_json</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert MolSysMT ViewerJSON (new schema) into the MolSysPayload expected by the JS layer.&quot;&quot;&quot;</span>
+    <span class="c1"># Accept ViewerJSON object or plain dict</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">viewer_json</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">viewer_json</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">viewer_json</span><span class="p">)</span>
+
+    <span class="n">atoms_block</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;atoms&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">bonds_block</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bonds&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">structures</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;structures&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="n">atom_ids</span> <span class="o">=</span> <span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;atom_id&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_ids</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_atoms</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">structures</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_column</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">fallback</span><span class="p">,</span> <span class="n">cast</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">fallback</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">fallback</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_atoms</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">fallback</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)]</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">tolist</span><span class="p">()):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">fallback</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">fallback</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="n">atom_id</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atom_ids</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="n">atom_name</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;atom_name&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;A</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">residue_id</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group_id&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">_i</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="n">residue_name</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group_name&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">_i</span><span class="p">:</span> <span class="s2">&quot;RES&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">chain_id</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chain_id&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">_i</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">entity_id</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity_id&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">_i</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">element_symbol</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;element_symbol&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">_i</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">formal_charge</span> <span class="o">=</span> <span class="n">_column</span><span class="p">(</span><span class="n">atoms_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;formal_charge&quot;</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">_i</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">structures_payload</span> <span class="o">=</span> <span class="n">_extract_structures</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">structures_payload</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">bonds_payload</span> <span class="o">=</span> <span class="n">_normalize_bonds</span><span class="p">(</span><span class="n">bonds_block</span><span class="p">)</span>
+
+    <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;atoms&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;atom_id&quot;</span><span class="p">:</span> <span class="n">atom_id</span><span class="p">,</span>
+            <span class="s2">&quot;atom_name&quot;</span><span class="p">:</span> <span class="n">atom_name</span><span class="p">,</span>
+            <span class="s2">&quot;residue_id&quot;</span><span class="p">:</span> <span class="n">residue_id</span><span class="p">,</span>
+            <span class="s2">&quot;residue_name&quot;</span><span class="p">:</span> <span class="n">residue_name</span><span class="p">,</span>
+            <span class="s2">&quot;chain_id&quot;</span><span class="p">:</span> <span class="n">chain_id</span><span class="p">,</span>
+            <span class="s2">&quot;entity_id&quot;</span><span class="p">:</span> <span class="n">entity_id</span><span class="p">,</span>
+            <span class="s2">&quot;element_symbol&quot;</span><span class="p">:</span> <span class="n">element_symbol</span><span class="p">,</span>
+            <span class="s2">&quot;formal_charge&quot;</span><span class="p">:</span> <span class="n">formal_charge</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;structures&quot;</span><span class="p">:</span> <span class="n">structures_payload</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">bonds_payload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;bonds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bonds_payload</span>
+
+    <span class="k">return</span> <span class="n">payload</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_structures</span><span class="p">(</span><span class="n">structures</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">payload_frames</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">structure</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structures</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">_positions_to_angstroms</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">),</span> <span class="n">n_atoms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">frame_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">structure</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Box information is optional; omit if invalid to avoid Mol* issues</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">_box_vectors</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;box&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">box</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">frame_payload</span><span class="p">[</span><span class="s2">&quot;box&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">box</span>
+
+        <span class="n">payload_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frame_payload</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">payload_frames</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_positions_to_angstroms</span><span class="p">(</span><span class="n">positions</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover - runtime guard</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;MolSys payload: unable to convert coordinates to ndarray&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">array</span> <span class="o">=</span> <span class="n">array</span> <span class="o">*</span> <span class="mf">10.0</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_box_vectors</span><span class="p">(</span><span class="n">box</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert ViewerJSON box vectors (nm) to Å for Mol*.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="s2">&quot;v0&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="s2">&quot;v2&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;MolSys payload: invalid box vectors in ViewerJSON&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">v0</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="ow">or</span> <span class="n">v1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="ow">or</span> <span class="n">v2</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">])</span> <span class="o">*</span> <span class="mf">10.0</span>  <span class="c1"># nm -&gt; Å</span>
+
+    <span class="n">norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">norms</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">vectors</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">vectors</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">vectors</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_bonds</span><span class="p">(</span><span class="n">bonds</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Prefer explicit indexA/indexB if present</span>
+    <span class="n">index_a</span> <span class="o">=</span> <span class="n">bonds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;indexA&quot;</span><span class="p">)</span>
+    <span class="n">index_b</span> <span class="o">=</span> <span class="n">bonds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;indexB&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">index_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">index_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Fallback to atom_pairs [[a,b], ...]</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">bonds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;atom_pairs&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pairs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pairs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;MolSys payload: invalid bond pairs&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">index_a</span> <span class="o">=</span> <span class="n">array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">index_b</span> <span class="o">=</span> <span class="n">array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">array_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">index_a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">array_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">index_b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;MolSys payload: invalid bond indices&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">array_b</span><span class="o">.</span><span class="n">shape</span> <span class="ow">or</span> <span class="n">array_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">order</span> <span class="o">=</span> <span class="n">bonds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">)</span>
+    <span class="n">order_array</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">oa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">oa</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">array_a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="n">order_array</span> <span class="o">=</span> <span class="n">oa</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">order_array</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;indexA&quot;</span><span class="p">:</span> <span class="n">array_a</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;indexB&quot;</span><span class="p">:</span> <span class="n">array_b</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">order_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">order_array</span>
+
+    <span class="k">return</span> <span class="n">payload</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+	with a structure based on the
+	<a href="https://github.com/MolSSI/cookiecutter-cms">Computational Molecular Science
+		Python Cookiecutter</a> version 1.5
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../../content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

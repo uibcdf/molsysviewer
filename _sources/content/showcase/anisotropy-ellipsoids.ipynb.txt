@@ -1,0 +1,109 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7c4d64d0-a5a1-4359-afe3-1f8f87d11ad5",
+   "metadata": {},
+   "source": [
+    "# Anisotropy ellipsoids/disks\n",
+    "\n",
+    "Goal\n",
+    "- Visualize anisotropy from eigenvalues/eigenvectors or tensors.\n",
+    "- Clamp eccentricity and color by anisotropy or custom map.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "bb9ae6bf-7a7d-4166-8649-b111344d1dd0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2025-12-27T21:11:39.802488Z",
+     "iopub.status.busy": "2025-12-27T21:11:39.801763Z",
+     "iopub.status.idle": "2025-12-27T21:11:44.096514Z",
+     "shell.execute_reply": "2025-12-27T21:11:44.094595Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x7168cf8d01a0>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as mv\n",
+    "\n",
+    "v = mv.MolSysView()\n",
+    "v.shapes.add_anisotropy_ellipsoids(\n",
+    "    centers=[(0,0,0), (3,0,0)],\n",
+    "    eigenvalues=[[3,2,1],[2,1.5,0.8]],\n",
+    "    eigenvectors=[\n",
+    "        [[1,0,0],[0,1,0],[0,0,1]],\n",
+    "        [[0,1,0],[0,0,1],[1,0,0]],\n",
+    "    ],\n",
+    "    scale=1.0,\n",
+    "    max_eccentricity=5.0,\n",
+    "    color_mode=\"anisotropy\",\n",
+    "    tag=\"ellipsoid-demo\",\n",
+    ")\n",
+    "v.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "55ae2b91-672e-412c-bb2e-67628ecb331a",
+   "metadata": {},
+   "source": [
+    "What to tweak\n",
+    "- Provide either `eigenvalues` + `eigenvectors`, or `tensors`, or `principal_directions` (disks).\n",
+    "- `scale`: global scaling of axes.\n",
+    "- `max_eccentricity`: clamp to avoid extreme shapes.\n",
+    "- `color_mode`: `\"anisotropy\"` (default) or a custom color map via `color_map`/`colors`.\n",
+    "- `values`: optional per-center scalar to drive coloring.\n",
+    "- `alpha`: transparency for the glyphs.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a6e396dd-e79f-4b67-b008-16fac4757a50",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

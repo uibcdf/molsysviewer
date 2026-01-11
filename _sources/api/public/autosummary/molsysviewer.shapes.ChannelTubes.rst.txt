@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.ChannelTubes
+================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: ChannelTubes
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ChannelTubes.__init__
+      ~ChannelTubes.add_channel_tube
+   
+   
+
+   
+   
+   

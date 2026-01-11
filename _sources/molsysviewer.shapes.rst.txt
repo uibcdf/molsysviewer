@@ -1,0 +1,93 @@
+molsysviewer.shapes package
+===========================
+
+Submodules
+----------
+
+molsysviewer.shapes.anisotropy\_ellipsoids module
+-------------------------------------------------
+
+.. automodule:: molsysviewer.shapes.anisotropy_ellipsoids
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.channel\_tubes module
+-----------------------------------------
+
+.. automodule:: molsysviewer.shapes.channel_tubes
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.displacements module
+----------------------------------------
+
+.. automodule:: molsysviewer.shapes.displacements
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.links module
+--------------------------------
+
+.. automodule:: molsysviewer.shapes.links
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.pharmacophore module
+----------------------------------------
+
+.. automodule:: molsysviewer.shapes.pharmacophore
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.pocket\_blobs module
+----------------------------------------
+
+.. automodule:: molsysviewer.shapes.pocket_blobs
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.pocket\_surfaces module
+-------------------------------------------
+
+.. automodule:: molsysviewer.shapes.pocket_surfaces
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.spheres module
+----------------------------------
+
+.. automodule:: molsysviewer.shapes.spheres
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.tetrahedra module
+-------------------------------------
+
+.. automodule:: molsysviewer.shapes.tetrahedra
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.shapes.triangle\_faces module
+------------------------------------------
+
+.. automodule:: molsysviewer.shapes.triangle_faces
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.shapes
+   :members:
+   :show-inheritance:
+   :undoc-members:

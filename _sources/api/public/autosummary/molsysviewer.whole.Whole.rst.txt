@@ -1,0 +1,32 @@
+﻿molsysviewer.whole.Whole
+========================
+
+.. currentmodule:: molsysviewer.whole
+
+.. autoclass:: Whole
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Whole.__init__
+      ~Whole.add
+      ~Whole.append_structures
+      ~Whole.get
+      ~Whole.hide
+      ~Whole.info
+      ~Whole.remove
+      ~Whole.select
+      ~Whole.set
+      ~Whole.set_representation
+      ~Whole.show
+   
+   
+
+   
+   
+   

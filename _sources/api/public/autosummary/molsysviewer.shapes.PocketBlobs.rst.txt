@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.PocketBlobs
+===============================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: PocketBlobs
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PocketBlobs.__init__
+      ~PocketBlobs.add_pocket_blob
+   
+   
+
+   
+   
+   

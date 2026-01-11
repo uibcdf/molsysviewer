@@ -1,0 +1,54 @@
+﻿molsysviewer.MolSysView
+=======================
+
+.. currentmodule:: molsysviewer
+
+.. autoclass:: MolSysView
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MolSysView.__init__
+      ~MolSysView.add
+      ~MolSysView.append_structures
+      ~MolSysView.clear_decorations
+      ~MolSysView.get
+      ~MolSysView.get_camera_snapshot
+      ~MolSysView.hide
+      ~MolSysView.info
+      ~MolSysView.isolate
+      ~MolSysView.load
+      ~MolSysView.new_layer
+      ~MolSysView.new_region
+      ~MolSysView.remove
+      ~MolSysView.reset_camera
+      ~MolSysView.reset_viewer
+      ~MolSysView.select
+      ~MolSysView.set
+      ~MolSysView.set_camera_snapshot
+      ~MolSysView.set_controls_visible
+      ~MolSysView.show
+      ~MolSysView.write_html
+      ~MolSysView.zoom
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MolSysView.js_logs
+      ~MolSysView.layers
+      ~MolSysView.molsys
+      ~MolSysView.regions
+      ~MolSysView.visible_atom_indices
+      ~MolSysView.visible_structure_indices
+   
+   

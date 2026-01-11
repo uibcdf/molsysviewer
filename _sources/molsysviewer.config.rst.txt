@@ -1,0 +1,21 @@
+molsysviewer.config package
+===========================
+
+Submodules
+----------
+
+molsysviewer.config.user\_presets module
+----------------------------------------
+
+.. automodule:: molsysviewer.config.user_presets
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.config
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.remove
+==============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.remove

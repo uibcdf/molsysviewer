@@ -1,0 +1,1548 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>molsysviewer.shapes package – MolSysViewer 0.7.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_tabs.css?v=f45e19d3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d5ef24d1" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d5ef24d1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.7.0 documentation - Home"/>
+    <img src="_static/logo.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.7.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="content/ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="molsysviewer.config.html">molsysviewer.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="molsysviewer.loaders.html">molsysviewer.loaders package</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">molsysviewer.shapes package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="molsysviewer.thirds.html">molsysviewer.thirds package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="molsysviewer.thirds.jupyter.html">molsysviewer.thirds.jupyter package</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">molsysviewer.shapes package</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="molsysviewer-shapes-package">
+<h1>molsysviewer.shapes package<a class="headerlink" href="#molsysviewer-shapes-package" title="Link to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
+</section>
+<section id="module-molsysviewer.shapes.anisotropy_ellipsoids">
+<span id="molsysviewer-shapes-anisotropy-ellipsoids-module"></span><h2>molsysviewer.shapes.anisotropy_ellipsoids module<a class="headerlink" href="#module-molsysviewer.shapes.anisotropy_ellipsoids" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.anisotropy_ellipsoids.</span></span><span class="sig-name descname"><span class="pre">AnisotropyEllipsoids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/anisotropy_ellipsoids.html#AnisotropyEllipsoids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Visualize oriented ellipsoids/disks from eigenvalues/eigenvectors or tensors.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids.add_anisotropy_ellipsoids">
+<span class="sig-name descname"><span class="pre">add_anisotropy_ellipsoids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tensors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">principal_directions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eccentricity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/anisotropy_ellipsoids.html#AnisotropyEllipsoids.add_anisotropy_ellipsoids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids.add_anisotropy_ellipsoids" title="Link to this definition">#</a></dt>
+<dd><p>Send oriented ellipsoids or flat disks based on anisotropy inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>eigenvalues</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>eigenvectors</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>tensors</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>principal_directions</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>max_eccentricity</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>values</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.channel_tubes">
+<span id="molsysviewer-shapes-channel-tubes-module"></span><h2>molsysviewer.shapes.channel_tubes module<a class="headerlink" href="#module-molsysviewer.shapes.channel_tubes" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.channel_tubes.ChannelTubes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.channel_tubes.</span></span><span class="sig-name descname"><span class="pre">ChannelTubes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/channel_tubes.html#ChannelTubes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.channel_tubes.ChannelTubes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>API to build channel tubes along ordered centers/radii (e.g., TopoMT routes).</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.channel_tubes.ChannelTubes.add_channel_tube">
+<span class="sig-name descname"><span class="pre">add_channel_tube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_distances</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_subdivisions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/channel_tubes.html#ChannelTubes.add_channel_tube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.channel_tubes.ChannelTubes.add_channel_tube" title="Link to this definition">#</a></dt>
+<dd><p>Generate a smoothed tube from ordered centers/radii (e.g., TopoMT routes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>Iterable</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>solvent_distances</strong> (<em>Iterable</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>radial_segments</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>smoothing_subdivisions</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.displacements">
+<span id="molsysviewer-shapes-displacements-module"></span><h2>molsysviewer.shapes.displacements module<a class="headerlink" href="#module-molsysviewer.shapes.displacements" title="Link to this heading">#</a></h2>
+<p>Helpers to render displacement vectors.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.displacements.DisplacementVectors">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.displacements.</span></span><span class="sig-name descname"><span class="pre">DisplacementVectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/displacements.html#DisplacementVectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.displacements.DisplacementVectors" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.displacements.DisplacementVectors.add_displacement_vectors">
+<span class="sig-name descname"><span class="pre">add_displacement_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'norm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/displacements.html#DisplacementVectors.add_displacement_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.displacements.DisplacementVectors.add_displacement_vectors" title="Link to this definition">#</a></dt>
+<dd><p>Add arrows (cylinder + cone) for displacement vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origins</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>ndarray</em><em> | </em><em>None</em>) – Origin coordinates <cite>(n, 3)</cite>. Optional if you use <code class="docutils literal notranslate"><span class="pre">atom_indices</span></code>.</p></li>
+<li><p><strong>vectors</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>ndarray</em>) – Displacement vectors <cite>(n, 3)</cite>.</p></li>
+<li><p><strong>atom_indices</strong> (<em>Iterable</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>) – Atom indices to use the current structure coordinates as origins.</p></li>
+<li><p><strong>length_scale</strong> (<em>float</em>) – Global scale factor for vector lengths.</p></li>
+<li><p><strong>min_length</strong> (<em>float</em>) – Minimum length after scaling; shorter vectors are skipped.</p></li>
+<li><p><strong>max_length</strong> (<em>float</em><em> | </em><em>None</em>) – Normalize the resulting maximum length to this value (if set).</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em>) – “norm” or “component” to map colors by norm or by component.</p></li>
+<li><p><strong>color_component</strong> (<em>int</em>) – Component used for “component” coloring (0, 1, or 2).</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional palette (color list or a Mol*-recognized name).</p></li>
+<li><p><strong>radius_scale</strong> (<em>float</em>) – Relative radius factor (relative to final length).</p></li>
+<li><p><strong>radial_segments</strong> (<em>int</em><em> | </em><em>None</em>) – Optional radial segments for cylinder/cone.</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>) – Optional tag for the Mol* state node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.links">
+<span id="molsysviewer-shapes-links-module"></span><h2>molsysviewer.shapes.links module<a class="headerlink" href="#module-molsysviewer.shapes.links" title="Link to this heading">#</a></h2>
+<p>Helpers to render custom links/cylinders.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.links.LinkShapes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.links.</span></span><span class="sig-name descname"><span class="pre">LinkShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/links.html#LinkShapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.links.LinkShapes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.links.LinkShapes.add_links">
+<span class="sig-name descname"><span class="pre">add_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4495871</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pocket_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'link'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/links.html#LinkShapes.add_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.links.LinkShapes.add_links" title="Link to this definition">#</a></dt>
+<dd><p>Add cylinders/bars connecting pairs of points or atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_pairs</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>) – Pairs of atom indices (0-based) to connect. If provided, the current
+coordinates of the loaded structure are used.</p></li>
+<li><p><strong>coordinate_pairs</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>) – Lista de pares de coordenadas [[x1, y1, z1], [x2, y2, z2]].</p></li>
+<li><p><strong>radii</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Scalars or lists (one per link) for radius and color.</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Scalars or lists (one per link) for radius and color.</p></li>
+<li><p><strong>pocket_ids</strong> (<em>Sequence</em><em>[</em><em>int</em><em> | </em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional identifiers to color by pocket or chain.</p></li>
+<li><p><strong>chain_ids</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional identifiers to color by pocket or chain.</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em>) – “link” | “pocket” | “chain”.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Global alpha (0-1).</p></li>
+<li><p><strong>radial_segments</strong> (<em>int</em><em> | </em><em>None</em>) – Cylinder radial segments (&gt;=3). Default is 16.</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>) – Optional tag for the Mol* state node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.pharmacophore">
+<span id="molsysviewer-shapes-pharmacophore-module"></span><h2>molsysviewer.shapes.pharmacophore module<a class="headerlink" href="#module-molsysviewer.shapes.pharmacophore" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.pharmacophore.PharmacophoreShapes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.pharmacophore.</span></span><span class="sig-name descname"><span class="pre">PharmacophoreShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pharmacophore.html#PharmacophoreShapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.pharmacophore.PharmacophoreShapes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>API for pharmacophore glyphs (spheres/disks/arrows).</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.pharmacophore.PharmacophoreShapes.add_pharmacophore_features">
+<span class="sig-name descname"><span class="pre">add_pharmacophore_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pharmacophore.html#PharmacophoreShapes.add_pharmacophore_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.pharmacophore.PharmacophoreShapes.add_pharmacophore_features" title="Link to this definition">#</a></dt>
+<dd><p>Render standard pharmacophore glyphs (sphere/disk/arrow).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>kinds</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>directions</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>alphas</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.pocket_blobs">
+<span id="molsysviewer-shapes-pocket-blobs-module"></span><h2>molsysviewer.shapes.pocket_blobs module<a class="headerlink" href="#module-molsysviewer.shapes.pocket_blobs" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.pocket_blobs.PocketBlobs">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.pocket_blobs.</span></span><span class="sig-name descname"><span class="pre">PocketBlobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_blobs.html#PocketBlobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.pocket_blobs.PocketBlobs" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>API for volumetric blobs (Gaussian fields) built from alpha-spheres.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.pocket_blobs.PocketBlobs.add_pocket_blob">
+<span class="sig-name descname"><span class="pre">add_pocket_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_blobs.html#PocketBlobs.add_pocket_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.pocket_blobs.PocketBlobs.add_pocket_blob" title="Link to this definition">#</a></dt>
+<dd><p>Create a volumetric blob (iso-surface) from alpha-spheres.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>Iterable</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>radius_scale</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>iso_level</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>smoothing</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>values</strong> (<em>Iterable</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.pocket_surfaces">
+<span id="molsysviewer-shapes-pocket-surfaces-module"></span><h2>molsysviewer.shapes.pocket_surfaces module<a class="headerlink" href="#module-molsysviewer.shapes.pocket_surfaces" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.pocket_surfaces.PocketSurfaces">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.pocket_surfaces.</span></span><span class="sig-name descname"><span class="pre">PocketSurfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_surfaces.html#PocketSurfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.pocket_surfaces.PocketSurfaces" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helpers for pocket/void surfaces based on selected atoms.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.pocket_surfaces.PocketSurfaces.add_pocket_surface">
+<span class="sig-name descname"><span class="pre">add_pocket_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouth_atom_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_surfaces.html#PocketSurfaces.add_pocket_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.pocket_surfaces.PocketSurfaces.add_pocket_surface" title="Link to this definition">#</a></dt>
+<dd><p>Send a pocket/void surface request to the frontend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_indices</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>scalars</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>grid</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>iso_levels</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>iso_colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>iso_alphas</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>mouth_atom_indices</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>clip_plane</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.spheres">
+<span id="molsysviewer-shapes-spheres-module"></span><h2>molsysviewer.shapes.spheres module<a class="headerlink" href="#module-molsysviewer.shapes.spheres" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.spheres.SphereShapes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.spheres.</span></span><span class="sig-name descname"><span class="pre">SphereShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.spheres.SphereShapes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sphere helpers for the scene.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.spheres.SphereShapes.add_set_alpha_spheres">
+<span class="sig-name descname"><span class="pre">add_set_alpha_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_centers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_alpha_spheres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65280</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">255</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_alpha_spheres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.add_set_alpha_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.spheres.SphereShapes.add_set_alpha_spheres" title="Link to this definition">#</a></dt>
+<dd><p>Render a set of alpha-spheres (and optionally contact atoms) in a single message.</p>
+<ul class="simple">
+<li><p><cite>centers</cite>, <cite>radii</cite>: alpha-sphere positions and radii.</p></li>
+<li><p><cite>atom_centers</cite>: contact atom centers (optional).</p></li>
+<li><p>Separate colors and alpha for alpha-spheres and atoms.</p></li>
+<li><p>Uses a single message to minimize per-shape overhead.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>Sequence</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>atom_centers</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>atom_radius</strong> (<em>float</em>)</p></li>
+<li><p><strong>color_alpha_spheres</strong> (<em>int</em>)</p></li>
+<li><p><strong>color_atoms</strong> (<em>int</em>)</p></li>
+<li><p><strong>alpha_alpha_spheres</strong> (<em>float</em>)</p></li>
+<li><p><strong>alpha_atoms</strong> (<em>float</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="molsysviewer.html#molsysviewer.layers.Layer" title="molsysviewer.layers.Layer"><em>Layer</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.spheres.SphereShapes.add_sphere">
+<span class="sig-name descname"><span class="pre">add_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65280</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.add_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.spheres.SphereShapes.add_sphere" title="Link to this definition">#</a></dt>
+<dd><p>Add a (possibly transparent) sphere to the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>radius</strong> (<em>float</em>)</p></li>
+<li><p><strong>color</strong> (<em>int</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="molsysviewer.html#molsysviewer.layers.Layer" title="molsysviewer.layers.Layer"><em>Layer</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.spheres.SphereShapes.add_spheres">
+<span class="sig-name descname"><span class="pre">add_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65280</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.add_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.spheres.SphereShapes.add_spheres" title="Link to this definition">#</a></dt>
+<dd><p>Add multiple spheres to the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Sequence of centers, each <cite>(x, y, z)</cite>.</p></li>
+<li><p><strong>radii</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Radius (scalar for all) or a list of radii (one per sphere).</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Color in <cite>0xRRGGBB</cite> (scalar or list).</p></li>
+<li><p><strong>alphas</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Alpha (0.0-1.0), scalar or list.</p></li>
+<li><p><strong>tags</strong> (<em>str</em><em> | </em><em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional tag (scalar or list, one per sphere).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.spheres.SphereShapes.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.spheres.SphereShapes.clear" title="Link to this definition">#</a></dt>
+<dd><p>Delete shapes in the frontend (all or by tag).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.tetrahedra">
+<span id="molsysviewer-shapes-tetrahedra-module"></span><h2>molsysviewer.shapes.tetrahedra module<a class="headerlink" href="#module-molsysviewer.shapes.tetrahedra" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.tetrahedra.Tetrahedra">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.tetrahedra.</span></span><span class="sig-name descname"><span class="pre">Tetrahedra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/tetrahedra.html#Tetrahedra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.tetrahedra.Tetrahedra" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.tetrahedra.Tetrahedra.add_tetrahedra">
+<span class="sig-name descname"><span class="pre">add_tetrahedra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tetra_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_quads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16746496</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exterior_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_all_faces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_normals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/tetrahedra.html#Tetrahedra.add_tetrahedra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.tetrahedra.Tetrahedra.add_tetrahedra" title="Link to this definition">#</a></dt>
+<dd><p>Add tetrahedra as a triangle mesh, using coordinates or atom indices.</p>
+<p>Optional flags:
+- draw_edges: draw edges as cylinders (<cite>edge_radius</cite>/<cite>edge_color</cite>).
+- show_normals: draw face normals as arrows (<cite>normal_length</cite>/<cite>normal_color</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tetra_coords</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>atom_quads</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>alphas</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>labels</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>exterior_only</strong> (<em>bool</em>)</p></li>
+<li><p><strong>show_all_faces</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>draw_edges</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_radius</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>show_normals</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_length</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes.triangle_faces">
+<span id="molsysviewer-shapes-triangle-faces-module"></span><h2>molsysviewer.shapes.triangle_faces module<a class="headerlink" href="#module-molsysviewer.shapes.triangle_faces" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.triangle_faces.TriangleFaces">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.triangle_faces.</span></span><span class="sig-name descname"><span class="pre">TriangleFaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/triangle_faces.html#TriangleFaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.triangle_faces.TriangleFaces" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.triangle_faces.TriangleFaces.add_triangle_faces">
+<span class="sig-name descname"><span class="pre">add_triangle_faces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_triplets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13421772</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_normals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/triangle_faces.html#TriangleFaces.add_triangle_faces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.triangle_faces.TriangleFaces.add_triangle_faces" title="Link to this definition">#</a></dt>
+<dd><p>Add custom triangle faces using coordinates or atom indices.</p>
+<p>Extra parameters:
+- draw_edges: draw edges as thin cylinders (<cite>edge_radius</cite>/<cite>edge_color</cite>).
+- show_normals: draw normals as arrows (<cite>normal_length</cite>/<cite>normal_color</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vertices</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>atom_triplets</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>)</p></li>
+<li><p><strong>labels</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>draw_edges</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_radius</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>show_normals</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_length</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-molsysviewer.shapes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-molsysviewer.shapes" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.AnisotropyEllipsoids">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">AnisotropyEllipsoids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/anisotropy_ellipsoids.html#AnisotropyEllipsoids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.AnisotropyEllipsoids" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Visualize oriented ellipsoids/disks from eigenvalues/eigenvectors or tensors.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.AnisotropyEllipsoids.add_anisotropy_ellipsoids">
+<span class="sig-name descname"><span class="pre">add_anisotropy_ellipsoids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tensors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">principal_directions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_eccentricity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/anisotropy_ellipsoids.html#AnisotropyEllipsoids.add_anisotropy_ellipsoids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.AnisotropyEllipsoids.add_anisotropy_ellipsoids" title="Link to this definition">#</a></dt>
+<dd><p>Send oriented ellipsoids or flat disks based on anisotropy inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>eigenvalues</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>eigenvectors</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>tensors</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>principal_directions</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>max_eccentricity</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>values</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ChannelTubes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">ChannelTubes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/channel_tubes.html#ChannelTubes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ChannelTubes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>API to build channel tubes along ordered centers/radii (e.g., TopoMT routes).</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ChannelTubes.add_channel_tube">
+<span class="sig-name descname"><span class="pre">add_channel_tube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_distances</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_subdivisions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/channel_tubes.html#ChannelTubes.add_channel_tube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ChannelTubes.add_channel_tube" title="Link to this definition">#</a></dt>
+<dd><p>Generate a smoothed tube from ordered centers/radii (e.g., TopoMT routes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>Iterable</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>solvent_distances</strong> (<em>Iterable</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>radial_segments</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>smoothing_subdivisions</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.DisplacementVectors">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">DisplacementVectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/displacements.html#DisplacementVectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.DisplacementVectors" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.DisplacementVectors.add_displacement_vectors">
+<span class="sig-name descname"><span class="pre">add_displacement_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'norm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/displacements.html#DisplacementVectors.add_displacement_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.DisplacementVectors.add_displacement_vectors" title="Link to this definition">#</a></dt>
+<dd><p>Add arrows (cylinder + cone) for displacement vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origins</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>ndarray</em><em> | </em><em>None</em>) – Origin coordinates <cite>(n, 3)</cite>. Optional if you use <code class="docutils literal notranslate"><span class="pre">atom_indices</span></code>.</p></li>
+<li><p><strong>vectors</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>ndarray</em>) – Displacement vectors <cite>(n, 3)</cite>.</p></li>
+<li><p><strong>atom_indices</strong> (<em>Iterable</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>) – Atom indices to use the current structure coordinates as origins.</p></li>
+<li><p><strong>length_scale</strong> (<em>float</em>) – Global scale factor for vector lengths.</p></li>
+<li><p><strong>min_length</strong> (<em>float</em>) – Minimum length after scaling; shorter vectors are skipped.</p></li>
+<li><p><strong>max_length</strong> (<em>float</em><em> | </em><em>None</em>) – Normalize the resulting maximum length to this value (if set).</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em>) – “norm” or “component” to map colors by norm or by component.</p></li>
+<li><p><strong>color_component</strong> (<em>int</em>) – Component used for “component” coloring (0, 1, or 2).</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional palette (color list or a Mol*-recognized name).</p></li>
+<li><p><strong>radius_scale</strong> (<em>float</em>) – Relative radius factor (relative to final length).</p></li>
+<li><p><strong>radial_segments</strong> (<em>int</em><em> | </em><em>None</em>) – Optional radial segments for cylinder/cone.</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>) – Optional tag for the Mol* state node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.LinkShapes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">LinkShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/links.html#LinkShapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.LinkShapes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.LinkShapes.add_links">
+<span class="sig-name descname"><span class="pre">add_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4495871</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pocket_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'link'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/links.html#LinkShapes.add_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.LinkShapes.add_links" title="Link to this definition">#</a></dt>
+<dd><p>Add cylinders/bars connecting pairs of points or atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_pairs</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>) – Pairs of atom indices (0-based) to connect. If provided, the current
+coordinates of the loaded structure are used.</p></li>
+<li><p><strong>coordinate_pairs</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>) – Lista de pares de coordenadas [[x1, y1, z1], [x2, y2, z2]].</p></li>
+<li><p><strong>radii</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Scalars or lists (one per link) for radius and color.</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Scalars or lists (one per link) for radius and color.</p></li>
+<li><p><strong>pocket_ids</strong> (<em>Sequence</em><em>[</em><em>int</em><em> | </em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional identifiers to color by pocket or chain.</p></li>
+<li><p><strong>chain_ids</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional identifiers to color by pocket or chain.</p></li>
+<li><p><strong>color_mode</strong> (<em>str</em>) – “link” | “pocket” | “chain”.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Global alpha (0-1).</p></li>
+<li><p><strong>radial_segments</strong> (<em>int</em><em> | </em><em>None</em>) – Cylinder radial segments (&gt;=3). Default is 16.</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>) – Optional tag for the Mol* state node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.PharmacophoreShapes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">PharmacophoreShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pharmacophore.html#PharmacophoreShapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.PharmacophoreShapes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>API for pharmacophore glyphs (spheres/disks/arrows).</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.PharmacophoreShapes.add_pharmacophore_features">
+<span class="sig-name descname"><span class="pre">add_pharmacophore_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pharmacophore.html#PharmacophoreShapes.add_pharmacophore_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.PharmacophoreShapes.add_pharmacophore_features" title="Link to this definition">#</a></dt>
+<dd><p>Render standard pharmacophore glyphs (sphere/disk/arrow).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>kinds</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>directions</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>alphas</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.PocketBlobs">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">PocketBlobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_blobs.html#PocketBlobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.PocketBlobs" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>API for volumetric blobs (Gaussian fields) built from alpha-spheres.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.PocketBlobs.add_pocket_blob">
+<span class="sig-name descname"><span class="pre">add_pocket_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_blobs.html#PocketBlobs.add_pocket_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.PocketBlobs.add_pocket_blob" title="Link to this definition">#</a></dt>
+<dd><p>Create a volumetric blob (iso-surface) from alpha-spheres.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>Iterable</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>radius_scale</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>iso_level</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>smoothing</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>values</strong> (<em>Iterable</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.PocketSurfaces">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">PocketSurfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_surfaces.html#PocketSurfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.PocketSurfaces" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helpers for pocket/void surfaces based on selected atoms.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.PocketSurfaces.add_pocket_surface">
+<span class="sig-name descname"><span class="pre">add_pocket_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouth_atom_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_plane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/pocket_surfaces.html#PocketSurfaces.add_pocket_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.PocketSurfaces.add_pocket_surface" title="Link to this definition">#</a></dt>
+<dd><p>Send a pocket/void surface request to the frontend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_indices</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>scalars</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>grid</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>iso_levels</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>iso_colors</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>iso_alphas</strong> (<em>Sequence</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>color_map</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>mouth_atom_indices</strong> (<em>Sequence</em><em>[</em><em>int</em><em>] </em><em>| </em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>clip_plane</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">ShapesManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Shape manager bound to a MolSysView.</p>
+<p>Provides high-level shortcuts (<cite>add_sphere</cite>, <cite>add_pocket_surface</cite>, etc.)
+and exposes specialized submodules (spheres, pockets, tubes, ellipsoids,
+pharmacophore, etc.).</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_anisotropy_ellipsoids">
+<span class="sig-name descname"><span class="pre">add_anisotropy_ellipsoids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_anisotropy_ellipsoids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_anisotropy_ellipsoids" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_channel_tube">
+<span class="sig-name descname"><span class="pre">add_channel_tube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_channel_tube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_channel_tube" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_displacement_vectors">
+<span class="sig-name descname"><span class="pre">add_displacement_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_displacement_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_displacement_vectors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_links">
+<span class="sig-name descname"><span class="pre">add_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_links" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_pharmacophore_features">
+<span class="sig-name descname"><span class="pre">add_pharmacophore_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_pharmacophore_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_pharmacophore_features" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_pocket_blob">
+<span class="sig-name descname"><span class="pre">add_pocket_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_pocket_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_pocket_blob" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_pocket_surface">
+<span class="sig-name descname"><span class="pre">add_pocket_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_pocket_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_pocket_surface" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_set_alpha_spheres">
+<span class="sig-name descname"><span class="pre">add_set_alpha_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_set_alpha_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_set_alpha_spheres" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_sphere">
+<span class="sig-name descname"><span class="pre">add_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_sphere" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_spheres">
+<span class="sig-name descname"><span class="pre">add_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_spheres" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_tetrahedra">
+<span class="sig-name descname"><span class="pre">add_tetrahedra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_tetrahedra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_tetrahedra" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.add_triangle_faces">
+<span class="sig-name descname"><span class="pre">add_triangle_faces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.add_triangle_faces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.add_triangle_faces" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.ShapesManager.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes.html#ShapesManager.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.ShapesManager.clear" title="Link to this definition">#</a></dt>
+<dd><p>Delete shapes (all if tag is None, or by tag).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.SphereShapes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">SphereShapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.SphereShapes" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Sphere helpers for the scene.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.SphereShapes.add_set_alpha_spheres">
+<span class="sig-name descname"><span class="pre">add_set_alpha_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_centers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_alpha_spheres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65280</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">255</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_alpha_spheres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.add_set_alpha_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.SphereShapes.add_set_alpha_spheres" title="Link to this definition">#</a></dt>
+<dd><p>Render a set of alpha-spheres (and optionally contact atoms) in a single message.</p>
+<ul class="simple">
+<li><p><cite>centers</cite>, <cite>radii</cite>: alpha-sphere positions and radii.</p></li>
+<li><p><cite>atom_centers</cite>: contact atom centers (optional).</p></li>
+<li><p>Separate colors and alpha for alpha-spheres and atoms.</p></li>
+<li><p>Uses a single message to minimize per-shape overhead.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>)</p></li>
+<li><p><strong>radii</strong> (<em>Sequence</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>atom_centers</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>atom_radius</strong> (<em>float</em>)</p></li>
+<li><p><strong>color_alpha_spheres</strong> (<em>int</em>)</p></li>
+<li><p><strong>color_atoms</strong> (<em>int</em>)</p></li>
+<li><p><strong>alpha_alpha_spheres</strong> (<em>float</em>)</p></li>
+<li><p><strong>alpha_atoms</strong> (<em>float</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="molsysviewer.html#molsysviewer.layers.Layer" title="molsysviewer.layers.Layer"><em>Layer</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.SphereShapes.add_sphere">
+<span class="sig-name descname"><span class="pre">add_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65280</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.add_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.SphereShapes.add_sphere" title="Link to this definition">#</a></dt>
+<dd><p>Add a (possibly transparent) sphere to the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>radius</strong> (<em>float</em>)</p></li>
+<li><p><strong>color</strong> (<em>int</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="molsysviewer.html#molsysviewer.layers.Layer" title="molsysviewer.layers.Layer"><em>Layer</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.SphereShapes.add_spheres">
+<span class="sig-name descname"><span class="pre">add_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65280</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.add_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.SphereShapes.add_spheres" title="Link to this definition">#</a></dt>
+<dd><p>Add multiple spheres to the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Sequence of centers, each <cite>(x, y, z)</cite>.</p></li>
+<li><p><strong>radii</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Radius (scalar for all) or a list of radii (one per sphere).</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Color in <cite>0xRRGGBB</cite> (scalar or list).</p></li>
+<li><p><strong>alphas</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Alpha (0.0-1.0), scalar or list.</p></li>
+<li><p><strong>tags</strong> (<em>str</em><em> | </em><em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional tag (scalar or list, one per sphere).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.SphereShapes.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/spheres.html#SphereShapes.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.SphereShapes.clear" title="Link to this definition">#</a></dt>
+<dd><p>Delete shapes in the frontend (all or by tag).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.Tetrahedra">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">Tetrahedra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/tetrahedra.html#Tetrahedra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.Tetrahedra" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.Tetrahedra.add_tetrahedra">
+<span class="sig-name descname"><span class="pre">add_tetrahedra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tetra_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_quads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16746496</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alphas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exterior_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_all_faces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_normals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/tetrahedra.html#Tetrahedra.add_tetrahedra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.Tetrahedra.add_tetrahedra" title="Link to this definition">#</a></dt>
+<dd><p>Add tetrahedra as a triangle mesh, using coordinates or atom indices.</p>
+<p>Optional flags:
+- draw_edges: draw edges as cylinders (<cite>edge_radius</cite>/<cite>edge_color</cite>).
+- show_normals: draw face normals as arrows (<cite>normal_length</cite>/<cite>normal_color</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tetra_coords</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>atom_quads</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>alphas</strong> (<em>float</em><em> | </em><em>Sequence</em><em>[</em><em>float</em><em>]</em>)</p></li>
+<li><p><strong>labels</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>exterior_only</strong> (<em>bool</em>)</p></li>
+<li><p><strong>show_all_faces</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>draw_edges</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_radius</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>show_normals</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_length</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="molsysviewer.shapes.TriangleFaces">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">molsysviewer.shapes.</span></span><span class="sig-name descname"><span class="pre">TriangleFaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/triangle_faces.html#TriangleFaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.TriangleFaces" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="molsysviewer.shapes.TriangleFaces.add_triangle_faces">
+<span class="sig-name descname"><span class="pre">add_triangle_faces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_triplets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13421772</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_normals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/molsysviewer/shapes/triangle_faces.html#TriangleFaces.add_triangle_faces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#molsysviewer.shapes.TriangleFaces.add_triangle_faces" title="Link to this definition">#</a></dt>
+<dd><p>Add custom triangle faces using coordinates or atom indices.</p>
+<p>Extra parameters:
+- draw_edges: draw edges as thin cylinders (<cite>edge_radius</cite>/<cite>edge_color</cite>).
+- show_normals: draw normals as arrows (<cite>normal_length</cite>/<cite>normal_color</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vertices</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>float</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>atom_triplets</strong> (<em>Iterable</em><em>[</em><em>Sequence</em><em>[</em><em>int</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>colors</strong> (<em>int</em><em> | </em><em>Sequence</em><em>[</em><em>int</em><em>]</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>)</p></li>
+<li><p><strong>labels</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>draw_edges</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_radius</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>edge_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>show_normals</strong> (<em>bool</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_length</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>normal_color</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>tag</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.anisotropy_ellipsoids">molsysviewer.shapes.anisotropy_ellipsoids module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids"><code class="docutils literal notranslate"><span class="pre">AnisotropyEllipsoids</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.anisotropy_ellipsoids.AnisotropyEllipsoids.add_anisotropy_ellipsoids"><code class="docutils literal notranslate"><span class="pre">AnisotropyEllipsoids.add_anisotropy_ellipsoids()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.channel_tubes">molsysviewer.shapes.channel_tubes module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.channel_tubes.ChannelTubes"><code class="docutils literal notranslate"><span class="pre">ChannelTubes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.channel_tubes.ChannelTubes.add_channel_tube"><code class="docutils literal notranslate"><span class="pre">ChannelTubes.add_channel_tube()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.displacements">molsysviewer.shapes.displacements module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.displacements.DisplacementVectors"><code class="docutils literal notranslate"><span class="pre">DisplacementVectors</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.displacements.DisplacementVectors.add_displacement_vectors"><code class="docutils literal notranslate"><span class="pre">DisplacementVectors.add_displacement_vectors()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.links">molsysviewer.shapes.links module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.links.LinkShapes"><code class="docutils literal notranslate"><span class="pre">LinkShapes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.links.LinkShapes.add_links"><code class="docutils literal notranslate"><span class="pre">LinkShapes.add_links()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.pharmacophore">molsysviewer.shapes.pharmacophore module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.pharmacophore.PharmacophoreShapes"><code class="docutils literal notranslate"><span class="pre">PharmacophoreShapes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.pharmacophore.PharmacophoreShapes.add_pharmacophore_features"><code class="docutils literal notranslate"><span class="pre">PharmacophoreShapes.add_pharmacophore_features()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.pocket_blobs">molsysviewer.shapes.pocket_blobs module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.pocket_blobs.PocketBlobs"><code class="docutils literal notranslate"><span class="pre">PocketBlobs</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.pocket_blobs.PocketBlobs.add_pocket_blob"><code class="docutils literal notranslate"><span class="pre">PocketBlobs.add_pocket_blob()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.pocket_surfaces">molsysviewer.shapes.pocket_surfaces module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.pocket_surfaces.PocketSurfaces"><code class="docutils literal notranslate"><span class="pre">PocketSurfaces</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.pocket_surfaces.PocketSurfaces.add_pocket_surface"><code class="docutils literal notranslate"><span class="pre">PocketSurfaces.add_pocket_surface()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.spheres">molsysviewer.shapes.spheres module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.spheres.SphereShapes"><code class="docutils literal notranslate"><span class="pre">SphereShapes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.spheres.SphereShapes.add_set_alpha_spheres"><code class="docutils literal notranslate"><span class="pre">SphereShapes.add_set_alpha_spheres()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.spheres.SphereShapes.add_sphere"><code class="docutils literal notranslate"><span class="pre">SphereShapes.add_sphere()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.spheres.SphereShapes.add_spheres"><code class="docutils literal notranslate"><span class="pre">SphereShapes.add_spheres()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.spheres.SphereShapes.clear"><code class="docutils literal notranslate"><span class="pre">SphereShapes.clear()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.tetrahedra">molsysviewer.shapes.tetrahedra module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.tetrahedra.Tetrahedra"><code class="docutils literal notranslate"><span class="pre">Tetrahedra</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.tetrahedra.Tetrahedra.add_tetrahedra"><code class="docutils literal notranslate"><span class="pre">Tetrahedra.add_tetrahedra()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes.triangle_faces">molsysviewer.shapes.triangle_faces module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.triangle_faces.TriangleFaces"><code class="docutils literal notranslate"><span class="pre">TriangleFaces</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.triangle_faces.TriangleFaces.add_triangle_faces"><code class="docutils literal notranslate"><span class="pre">TriangleFaces.add_triangle_faces()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-molsysviewer.shapes">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.AnisotropyEllipsoids"><code class="docutils literal notranslate"><span class="pre">AnisotropyEllipsoids</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.AnisotropyEllipsoids.add_anisotropy_ellipsoids"><code class="docutils literal notranslate"><span class="pre">AnisotropyEllipsoids.add_anisotropy_ellipsoids()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ChannelTubes"><code class="docutils literal notranslate"><span class="pre">ChannelTubes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ChannelTubes.add_channel_tube"><code class="docutils literal notranslate"><span class="pre">ChannelTubes.add_channel_tube()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.DisplacementVectors"><code class="docutils literal notranslate"><span class="pre">DisplacementVectors</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.DisplacementVectors.add_displacement_vectors"><code class="docutils literal notranslate"><span class="pre">DisplacementVectors.add_displacement_vectors()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.LinkShapes"><code class="docutils literal notranslate"><span class="pre">LinkShapes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.LinkShapes.add_links"><code class="docutils literal notranslate"><span class="pre">LinkShapes.add_links()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.PharmacophoreShapes"><code class="docutils literal notranslate"><span class="pre">PharmacophoreShapes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.PharmacophoreShapes.add_pharmacophore_features"><code class="docutils literal notranslate"><span class="pre">PharmacophoreShapes.add_pharmacophore_features()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.PocketBlobs"><code class="docutils literal notranslate"><span class="pre">PocketBlobs</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.PocketBlobs.add_pocket_blob"><code class="docutils literal notranslate"><span class="pre">PocketBlobs.add_pocket_blob()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.PocketSurfaces"><code class="docutils literal notranslate"><span class="pre">PocketSurfaces</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.PocketSurfaces.add_pocket_surface"><code class="docutils literal notranslate"><span class="pre">PocketSurfaces.add_pocket_surface()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager"><code class="docutils literal notranslate"><span class="pre">ShapesManager</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_anisotropy_ellipsoids"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_anisotropy_ellipsoids()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_channel_tube"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_channel_tube()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_displacement_vectors"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_displacement_vectors()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_links"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_links()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_pharmacophore_features"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_pharmacophore_features()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_pocket_blob"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_pocket_blob()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_pocket_surface"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_pocket_surface()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_set_alpha_spheres"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_set_alpha_spheres()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_sphere"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_sphere()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_spheres"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_spheres()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_tetrahedra"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_tetrahedra()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.add_triangle_faces"><code class="docutils literal notranslate"><span class="pre">ShapesManager.add_triangle_faces()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.ShapesManager.clear"><code class="docutils literal notranslate"><span class="pre">ShapesManager.clear()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.SphereShapes"><code class="docutils literal notranslate"><span class="pre">SphereShapes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.SphereShapes.add_set_alpha_spheres"><code class="docutils literal notranslate"><span class="pre">SphereShapes.add_set_alpha_spheres()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.SphereShapes.add_sphere"><code class="docutils literal notranslate"><span class="pre">SphereShapes.add_sphere()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.SphereShapes.add_spheres"><code class="docutils literal notranslate"><span class="pre">SphereShapes.add_spheres()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.SphereShapes.clear"><code class="docutils literal notranslate"><span class="pre">SphereShapes.clear()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.Tetrahedra"><code class="docutils literal notranslate"><span class="pre">Tetrahedra</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.Tetrahedra.add_tetrahedra"><code class="docutils literal notranslate"><span class="pre">Tetrahedra.add_tetrahedra()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.TriangleFaces"><code class="docutils literal notranslate"><span class="pre">TriangleFaces</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#molsysviewer.shapes.TriangleFaces.add_triangle_faces"><code class="docutils literal notranslate"><span class="pre">TriangleFaces.add_triangle_faces()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+	with a structure based on the
+	<a href="https://github.com/MolSSI/cookiecutter-cms">Computational Molecular Science
+		Python Cookiecutter</a> version 1.5
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="content/about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

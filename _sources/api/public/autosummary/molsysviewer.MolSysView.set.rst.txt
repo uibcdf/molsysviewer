@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.set
+===========================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.set

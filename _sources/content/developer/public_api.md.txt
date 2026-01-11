@@ -1,0 +1,57 @@
+# Public API and stability
+
+This page defines what is public API in MolSysViewer.
+It also defines which contracts must remain stable.
+
+## Public Python API
+
+You treat these as public:
+
+- `molsysviewer.viewer.MolSysView`
+- `molsysviewer.new_view.new_view`
+- `molsysviewer.load.load` (convenience wrapper, if exposed)
+- `molsysviewer.demo` (demo viewers used by docs and tests)
+- `molsysviewer.config.*` (configuration and user presets)
+
+If you rename, remove, or change behavior here, you update docs and add tests.
+
+## Internal Python APIs
+
+You can change these without a stability guarantee:
+
+- Most of `molsysviewer._private.*`
+- Helper functions inside loaders and shapes modules
+- Non-exported functions and private methods (`_name`)
+
+## Python ↔ TypeScript contracts
+
+These are stability-critical:
+
+- MolSys payload schema (Python → JS):
+  - top-level `structures` list
+  - each structure has `coordinates` (Å), optional `box` as three vectors (Å), optional `time`
+  - do not reintroduce legacy names like `positions` or `frames`
+- Message protocol (`op` + payload):
+  - the TypeScript union type `ViewerMessage` is the contract view
+  - changes must be versioned and tested
+- Tag semantics:
+  - tags must remain stable across regions, layers, and shapes
+  - `Layer.set_tag(...)` must keep working across tag renames/merges
+
+See also
+
+- {doc}`protocol_and_payloads`
+- {doc}`regions_layers`
+
+## Exports (HTML lite)
+
+`MolSysView.write_html(..., mode="lite")` is a public, user-facing export mode.
+It must remain reproducible.
+
+If you change:
+
+- the runtime URL logic,
+- the initial message replay behavior,
+- or popup synchronization,
+
+you must validate the docs-lite output.

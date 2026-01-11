@@ -1,0 +1,974 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>Web documentation editorial guidelines – MolSysViewer 0.7.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_tabs.css?v=f45e19d3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=d5ef24d1" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=d5ef24d1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Web docs build &amp; layout" href="build_and_layout.html" />
+    <link rel="prev" title="Documentation for the web" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.7.0 documentation - Home"/>
+    <img src="../../../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.7.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../intro/index.html">Getting started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../intro/contributing.html">Contributing (quick start)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev_setup.html">Developer setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../repo_structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demo_systems.html">Demo systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ci.html">CI and automation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../concepts.html">MolSysViewer Concepts (Python ↔ AnyWidget ↔ Mol* ↔ WebGL)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../public_api.html">Public API and stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../protocol_and_payloads.html">Protocol and payloads (Python ↔ TypeScript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture_full.html">Architecture (full)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../regions_layers.html">Regions and layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debugging.html">Debugging</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Workflow</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../js_workflow.html">JS/TS workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing.html">Testing &amp; QA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../warnings.html">Warnings (planned)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasing.html">Releasing and publishing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docs_workflow.html">Docs workflow (local build and RTD parity)</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Documentation for the web</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Web documentation editorial guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_and_layout.html">Web docs build &amp; layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="myst.html">MyST in MolSysViewer documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="references.html">References and Cross-links in Documentation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/index.html">API documentation guidelines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/docstrings.html">Docstrings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/doctests.html">Doctests</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Style</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../style.html">Coding style &amp; conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../type_annotations_guidelines.html">Type annotations (Python ≥3.10)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../string_style.html">String and quotation style</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Planning and history</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../roadmap.html">Roadmap</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../../changes_notes.html">Changes notes</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../future/index.html">Future (index)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../future/ci.html">CI roadmap (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../future/performance.html">Performance notes (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../future/security.html">Security (future)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../future/molsysview_molsysmt_ops.html">MolSysView ↔ MolSysMT operations</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../appendix/index.html">Appendix</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../appendix/historical/index.html">Historical documents</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../architecture_snapshot_2025_11.html">Architecture snapshot (2025-11)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../design_overview.html">Design overview (historical)</a></li>
+
+
+
+
+
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="../../modules_overview.html">Modules overview (snapshot)</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Developer guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Documentation for the web</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Web documentation editorial guidelines</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="web-documentation-editorial-guidelines">
+<h1>Web documentation editorial guidelines<a class="headerlink" href="#web-documentation-editorial-guidelines" title="Link to this heading">#</a></h1>
+<p>Use this page as the source of truth when you write or review MolSysViewer web documentation.
+It applies to humans and AI agents.</p>
+<section id="why-this-exists">
+<h2>Why this exists<a class="headerlink" href="#why-this-exists" title="Link to this heading">#</a></h2>
+<p>You want consistent pages across the docs.
+You also want diffs that are reviewable and a site that builds without running notebooks.</p>
+</section>
+<section id="writing-style-always">
+<h2>Writing style (always)<a class="headerlink" href="#writing-style-always" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Write in the second person (“you”).</p></li>
+<li><p>Keep a warm, helpful tone.</p></li>
+<li><p>Prefer clear, complete explanations over telegraphic bullet lists.</p></li>
+<li><p>Keep sentences short when it helps readability, but do not optimize for brevity.</p></li>
+<li><p>Explain “why” before “how”.</p></li>
+<li><p>Prefer headings and lists to support scanning, but do not replace narrative with lists.</p></li>
+<li><p>Keep API names exact.</p></li>
+<li><p>Keep all repository text in English (including docs). Conversations can be in any language, but committed content must be English.</p></li>
+<li><p>When describing the two halves of the viewer, prefer <strong>Python side</strong> / <strong>browser side</strong> (or <strong>kernel</strong> / <strong>browser</strong>). Use “frontend/backend” only when the context makes it unambiguous.</p></li>
+</ul>
+</section>
+<section id="terminology-molsysmt-aligned">
+<h2>Terminology (MolSysMT-aligned)<a class="headerlink" href="#terminology-molsysmt-aligned" title="Link to this heading">#</a></h2>
+<p>MolSysViewer is built on MolSysMT, so use MolSysMT terms consistently:</p>
+<ul class="simple">
+<li><p>Use <strong>group</strong> (not “residue”). In MolSysMT, a <em>group</em> can be an amino acid, a water molecule, or an ion. “Residue” is too protein-centric.</p></li>
+<li><p>Use <strong>structure</strong> as the general term. Only use <strong>frame</strong> when you explicitly mean “a structure from a molecular dynamics trajectory”.</p></li>
+<li><p>When you need to name hierarchical levels, prefer MolSysMT’s wording: <em>elements</em> (<code class="docutils literal notranslate"><span class="pre">atom</span></code>, <code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">chain</span></code>, <code class="docutils literal notranslate"><span class="pre">entity</span></code>, …).</p></li>
+</ul>
+</section>
+<section id="page-anchors-labels">
+<h2>Page anchors (labels)<a class="headerlink" href="#page-anchors-labels" title="Link to this heading">#</a></h2>
+<p>Every substantial page should define a top-level label so other pages can link to it
+without relying on filenames.</p>
+<p>Put the label immediately above the top-level heading:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span>(User_Intro_What)=
+<span class="gh"># What is MolSysViewer?</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="references.html"><span class="doc">References and Cross-links in Documentation</span></a> for the full cross-linking conventions.</p>
+</section>
+<section id="file-types">
+<h2>File types<a class="headerlink" href="#file-types" title="Link to this heading">#</a></h2>
+<p>Choose the file type based on what you need to show.</p>
+<p>Decision rule</p>
+<ul class="simple">
+<li><p>If you must show <strong>code and its output</strong>, use <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>.</p></li>
+<li><p>If you only show <strong>code without output</strong> (or pure text), use <code class="docutils literal notranslate"><span class="pre">.md</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.rst</span></code> only when you need Sphinx machinery (usually API/autosummary).</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code></p>
+<ul class="simple">
+<li><p>For tutorial pages that must show code <em>and</em> the output of that code.</p></li>
+<li><p>Freeze outputs with <code class="docutils literal notranslate"><span class="pre">docs/execute_notebooks.py</span></code> (we do not execute notebooks during Sphinx builds).</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">.md</span></code></p>
+<ul class="simple">
+<li><p>For concepts, reference, and index pages.</p></li>
+<li><p>When you show code snippets without outputs.</p></li>
+<li><p>When you embed pre-rendered HTML lite views via iframe.</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">.rst</span></code> (rare)</p>
+<ul class="simple">
+<li><p>Only when needed by Sphinx machinery (typically API/autosummary pages).</p></li>
+</ul>
+</section>
+<section id="page-roles-what-goes-where">
+<h2>Page roles (what goes where)<a class="headerlink" href="#page-roles-what-goes-where" title="Link to this heading">#</a></h2>
+<p>Keep these sections distinct so readers do not get mixed signals.</p>
+<p>User guide</p>
+<ul class="simple">
+<li><p>Use it for complete “units” focused on one concept.</p></li>
+<li><p>Make it reproducible.</p></li>
+<li><p>Mix short reference blocks (options/arguments) inside the tutorial narrative.</p></li>
+</ul>
+<p>Cookbook</p>
+<ul class="simple">
+<li><p>Use it for practical, transversal workflows.</p></li>
+<li><p>Be didactic.</p></li>
+<li><p>End with export/embedding when it makes sense.</p></li>
+</ul>
+<p>Showcase</p>
+<ul class="simple">
+<li><p>Use it to show what is possible.</p></li>
+<li><p>Be narrative, not didactic.</p></li>
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> plus HTML lite embeds for the 3D view.</p></li>
+</ul>
+<p>Troubleshooting (User)</p>
+<ul class="simple">
+<li><p>Start with the issues board guidance (yes, it is duplicated on purpose).</p></li>
+<li><p>Link to About → Support for contact details.</p></li>
+</ul>
+<p>About → Support</p>
+<ul class="simple">
+<li><p>Keep the contact details here.</p></li>
+<li><p>Repeat the issues board guidance here too.</p></li>
+</ul>
+</section>
+<section id="html-lite-preferred-for-3d-visuals">
+<h2>HTML lite (preferred for 3D visuals)<a class="headerlink" href="#html-lite-preferred-for-3d-visuals" title="Link to this heading">#</a></h2>
+<p>Prefer docs-light “HTML lite” exports over widget outputs.
+It keeps notebooks small and makes embeds stable.</p>
+<ul class="simple">
+<li><p>Store exported HTML under <code class="docutils literal notranslate"><span class="pre">docs/_static/views/</span></code>.</p></li>
+<li><p>Do not edit the exported HTML by hand.</p></li>
+<li><p>Do not read <code class="docutils literal notranslate"><span class="pre">docs/_static/views/*.html</span></code> when you work on logic or text. Treat them as build artifacts.</p></li>
+</ul>
+<section id="how-html-lite-views-are-generated-source-of-truth">
+<h3>How HTML lite views are generated (source of truth)<a class="headerlink" href="#how-html-lite-views-are-generated-source-of-truth" title="Link to this heading">#</a></h3>
+<p>Treat <code class="docutils literal notranslate"><span class="pre">docs/_static/views/*.html</span></code> as build artifacts. The source of truth is a small Python script under:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/generate_static_views/</span></code></p></li>
+</ul>
+<p>When you need a new embedded view:</p>
+<ol class="arabic simple">
+<li><p>Add a script in <code class="docutils literal notranslate"><span class="pre">docs/generate_static_views/</span></code> that produces the HTML lite file.</p></li>
+<li><p>Run the script to regenerate <code class="docutils literal notranslate"><span class="pre">docs/_static/views/&lt;name&gt;.html</span></code>.</p></li>
+<li><p>In docs pages, embed the HTML file (do not generate it from inside the notebook).</p></li>
+</ol>
+<p>This keeps the workflow reproducible and makes it obvious how each embedded view is produced.</p>
+<p>Embed patterns</p>
+<ul class="simple">
+<li><p>In <code class="docutils literal notranslate"><span class="pre">.md</span></code> pages, use an <code class="docutils literal notranslate"><span class="pre">&lt;iframe&gt;</span></code> pointing to the HTML file in <code class="docutils literal notranslate"><span class="pre">_static/views/</span></code>.</p></li>
+<li><p>In notebooks, use <code class="docutils literal notranslate"><span class="pre">molsysviewer.thirds.jupyter.load_html_in_notebook(...)</span></code> when you want a quick iframe output cell.</p></li>
+</ul>
+</section>
+<section id="paths-for-embeds-in-notebooks">
+<h3>Paths for embeds in notebooks<a class="headerlink" href="#paths-for-embeds-in-notebooks" title="Link to this heading">#</a></h3>
+<p>When you embed an HTML lite file from a notebook under <code class="docutils literal notranslate"><span class="pre">docs/content/**</span></code>, use a
+<strong>relative path</strong> from the notebook location to <code class="docutils literal notranslate"><span class="pre">docs/_static/views/</span></code>.</p>
+<p>This keeps the embed working when you open the built documentation locally
+(<code class="docutils literal notranslate"><span class="pre">google-chrome</span> <span class="pre">docs/_build/html/index.html</span></code>) without running a web server.</p>
+<p>Examples:</p>
+<ul>
+<li><p>From <code class="docutils literal notranslate"><span class="pre">docs/content/user/introduction/*.ipynb</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">load_html_in_notebook</span><span class="p">(</span><span class="s2">&quot;../../../_static/views/demo_1TCD.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>From <code class="docutils literal notranslate"><span class="pre">docs/content/showcase/*.ipynb</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">load_html_in_notebook</span><span class="p">(</span><span class="s2">&quot;../../_static/views/quickstart.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="notebook-execution-and-widget-state">
+<h2>Notebook execution and widget state<a class="headerlink" href="#notebook-execution-and-widget-state" title="Link to this heading">#</a></h2>
+<p>Sphinx builds do not execute notebooks (<code class="docutils literal notranslate"><span class="pre">nb_execution_mode</span> <span class="pre">=</span> <span class="pre">&quot;off&quot;</span></code>).
+If you want frozen outputs in <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>, execute them manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>docs/execute_notebooks.py<span class="w"> </span>-f<span class="w"> </span>-r<span class="w"> </span>docs/content/
+</pre></div>
+</div>
+<p>The executor strips ipywidgets/AnyWidget state by default to keep <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> files small.
+If you truly need a widget-based output to survive, tag the output cell with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">keep-widget-state</span></code></p></li>
+</ul>
+<p>Use MyST-NB cell tags to control what is visible in the rendered docs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">remove-input</span></code> to hide “how the iframe is embedded”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remove-output</span></code> to hide widget outputs (prefer HTML lite instead).</p></li>
+</ul>
+<section id="minimal-example-embed-an-html-lite-view-in-a-notebook">
+<h3>Minimal example: embed an HTML lite view in a notebook<a class="headerlink" href="#minimal-example-embed-an-html-lite-view-in-a-notebook" title="Link to this heading">#</a></h3>
+<p>In tutorial notebooks, the most robust pattern is:</p>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">view.show()</span></code> once (to keep the code visible), but tag the cell so its widget output does not get stored.</p></li>
+<li><p>In the next cell, embed the pre-rendered HTML lite view, but tag the cell so the embedding code is hidden.</p></li>
+<li><p>Optionally, end the section with a short “expectation check” sentence (for example “Your final view should look like this:” or “…like this:”) followed by an HTML lite embed.</p></li>
+</ol>
+<p>Example (notebook under <code class="docutils literal notranslate"><span class="pre">docs/content/**</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">viewer</span>
+
+<span class="n">view</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">demo</span><span class="p">[</span><span class="s2">&quot;1TCD&quot;</span><span class="p">]</span>
+<span class="n">view</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Tag that cell with <code class="docutils literal notranslate"><span class="pre">remove-output</span></code>.</p>
+<p>Then:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">molsysviewer.thirds.jupyter</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_html_in_notebook</span>
+<span class="n">load_html_in_notebook</span><span class="p">(</span><span class="s2">&quot;../../../_static/views/demo_1TCD.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Tag that cell with <code class="docutils literal notranslate"><span class="pre">remove-input</span></code>.</p>
+<p>This keeps notebooks small and makes the rendered documentation deterministic (no widget state required).</p>
+</section>
+<section id="hiding-cells-what-works-and-what-does-not">
+<h3>Hiding cells: what works and what does not<a class="headerlink" href="#hiding-cells-what-works-and-what-does-not" title="Link to this heading">#</a></h3>
+<p>We use MyST-NB tags to hide inputs/outputs, but some combinations still leave a small empty output area (and a copy button) even when both input and output are hidden.</p>
+<p>Practical guidance:</p>
+<ul class="simple">
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">remove-output</span></code> (hide widget output) + a following HTML lite embed with <code class="docutils literal notranslate"><span class="pre">remove-input</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide-cell</span></code> may render as a collapsible cell (it is still “there” in the page).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remove-cell</span></code> removes the cell from the page, but it can also prevent execution in the docs pipeline. Do not rely on it for “run but leave absolutely no trace”.</p></li>
+<li><p>If you truly need a side effect (e.g., <code class="docutils literal notranslate"><span class="pre">view.show()</span></code> to initialize browser-side state) without visual clutter, consider designing the unit so the <strong>end-to-end HTML lite embed</strong> is the visible proof instead of trying to fully hide execution details.</p></li>
+</ul>
+</section>
+<section id="camera-snapshots-are-browser-side-state">
+<h3>Camera snapshots are browser-side state<a class="headerlink" href="#camera-snapshots-are-browser-side-state" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">get_camera_snapshot()</span></code> / <code class="docutils literal notranslate"><span class="pre">set_camera_snapshot(...)</span></code> operate on the Mol* camera, which lives on the <strong>browser side</strong>.</p>
+<p>Implications for docs and scripts:</p>
+<ul class="simple">
+<li><p>Calling <code class="docutils literal notranslate"><span class="pre">set_camera_snapshot(...)</span></code> only makes sense once there is a viewer instance on the browser side able to receive and apply the message.</p></li>
+<li><p>In “declarative” scripts (build a view, then export), preserve the logical message order (<code class="docutils literal notranslate"><span class="pre">load</span></code> → viewer init/show/runtime → <code class="docutils literal notranslate"><span class="pre">set_camera_snapshot</span></code>) so the snapshot is applied after the structure exists.</p></li>
+<li><p>If you observe race conditions when many messages are flushed at once, serialize message handling on the JS side to preserve order.</p></li>
+</ul>
+</section>
+</section>
+<section id="notebook-source-formatting-keep-diffs-clean">
+<h2>Notebook source formatting (keep diffs clean)<a class="headerlink" href="#notebook-source-formatting-keep-diffs-clean" title="Link to this heading">#</a></h2>
+<p>When editing <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> files, keep the JSON as clean and reviewable as possible.</p>
+<ul class="simple">
+<li><p>Avoid trailing blank lines in <strong>Markdown cell</strong> sources.</p></li>
+<li><p>Prefer small, focused edits over large “reformat” diffs.</p></li>
+</ul>
+</section>
+<section id="avoid-accidental-style-drift">
+<h2>Avoid accidental style drift<a class="headerlink" href="#avoid-accidental-style-drift" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Keep headings and naming consistent across units.</p></li>
+<li><p>Avoid duplicate page titles for different concepts.</p></li>
+<li><p>If you split one concept into two pages, make titles unambiguous (for example “Atom masking” vs “Visibility”).</p></li>
+</ul>
+</section>
+<section id="section-index-pages-toctrees">
+<h2>Section index pages (toctrees)<a class="headerlink" href="#section-index-pages-toctrees" title="Link to this heading">#</a></h2>
+<p>Many sections have an <code class="docutils literal notranslate"><span class="pre">index.md</span></code> page that exists mainly to introduce the section and list its pages.</p>
+<p>Preferred pattern:</p>
+<ul class="simple">
+<li><p>1–2 short paragraphs of warm orientation text (what the section is for, who should read it, how to approach it).</p></li>
+<li><p>A visible <code class="docutils literal notranslate"><span class="pre">toctree</span></code> with <code class="docutils literal notranslate"><span class="pre">:maxdepth:</span> <span class="pre">1</span></code>.</p></li>
+</ul>
+<p>Avoid duplicating the navigation by writing a manual bullet list of pages that mirrors the <code class="docutils literal notranslate"><span class="pre">toctree</span></code>. If you need extra guidance,
+add a single sentence above the <code class="docutils literal notranslate"><span class="pre">toctree</span></code> (for example “Read these pages in order.”).</p>
+<p>If you truly need a short description per page, use a small narrative paragraph with inline <code class="docutils literal notranslate"><span class="pre">{doc}</span></code> links instead of a second list.</p>
+</section>
+<section id="page-naming-and-discoverability">
+<h2>Page naming and discoverability<a class="headerlink" href="#page-naming-and-discoverability" title="Link to this heading">#</a></h2>
+<p>Readers often scan the sidebar for the name of the method they remember (for example “get”, “info”, “remove”).
+When a page documents a specific user-facing method:</p>
+<ul class="simple">
+<li><p>Prefer short, obvious titles (for example “Getting attributes”, “Quick info”, “Removing elements”).</p></li>
+<li><p>Include the exact method name early in the page (for example “This page documents <code class="docutils literal notranslate"><span class="pre">view.get(...)</span></code>.”).</p></li>
+</ul>
+</section>
+<section id="user-facing-api-naming-avoid-unit-suffixes">
+<h2>User-facing API naming (avoid unit suffixes)<a class="headerlink" href="#user-facing-api-naming-avoid-unit-suffixes" title="Link to this heading">#</a></h2>
+<p>Prefer parameter names that describe meaning, not internal representation.</p>
+<ul class="simple">
+<li><p>Avoid encoding units in parameter names (for example prefer <code class="docutils literal notranslate"><span class="pre">duration</span></code> over <code class="docutils literal notranslate"><span class="pre">duration_ms</span></code>).</p></li>
+<li><p>Convert and standardize units internally (PyUnitWizard).</p></li>
+<li><p>When renaming a public parameter, keep a backward-compatible alias for at least one release and document it in the docstring.</p></li>
+</ul>
+</section>
+<section id="experimental-features">
+<h2>Experimental features<a class="headerlink" href="#experimental-features" title="Link to this heading">#</a></h2>
+<p>If an API is user-facing but still evolving, label it clearly as experimental in both:</p>
+<ul class="simple">
+<li><p>the docstring, and</p></li>
+<li><p>the User Guide page where it is introduced.</p></li>
+</ul>
+</section>
+<section id="cross-links-and-references">
+<h2>Cross-links and references<a class="headerlink" href="#cross-links-and-references" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docs/content/developer/documentation/web/references.md</span></code> for linking patterns (<code class="docutils literal notranslate"><span class="pre">{doc}</span></code>, <code class="docutils literal notranslate"><span class="pre">{ref}</span></code>, <code class="docutils literal notranslate"><span class="pre">{class}</span></code>, <code class="docutils literal notranslate"><span class="pre">{func}</span></code>).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">docs/content/developer/documentation/web/myst.ipynb</span></code> for MyST examples and admonitions.</p></li>
+</ul>
+</section>
+<section id="external-links-avoid-repetition">
+<h2>External links (avoid repetition)<a class="headerlink" href="#external-links-avoid-repetition" title="Link to this heading">#</a></h2>
+<p>External links are useful, but repeated URLs make pages harder to read.</p>
+<ul class="simple">
+<li><p>Link to an external project the first time you introduce it on a page.</p></li>
+<li><p>After that, use the project name without repeating the URL, unless you are pointing
+to a different resource (for example “Mol* docs” vs “Mol* homepage”).</p></li>
+</ul>
+</section>
+<section id="api-link-density-readability-first">
+<h2>API-link density (readability first)<a class="headerlink" href="#api-link-density-readability-first" title="Link to this heading">#</a></h2>
+<p>Not every mention of code should become a hyperlink.</p>
+<ul class="simple">
+<li><p>Use inline code (backticks) for light references inside narrative text.</p></li>
+<li><p>Use Sphinx roles (<code class="docutils literal notranslate"><span class="pre">{class}</span></code>, <code class="docutils literal notranslate"><span class="pre">{func}</span></code>, <code class="docutils literal notranslate"><span class="pre">{meth}</span></code>, <code class="docutils literal notranslate"><span class="pre">{attr}</span></code>) when a link genuinely helps:</p>
+<ul>
+<li><p>the first time you introduce a key entrypoint,</p></li>
+<li><p>when you want the reader to jump to the reference for details,</p></li>
+<li><p>when a name might otherwise be ambiguous.</p></li>
+</ul>
+</li>
+<li><p>In introduction pages, keep API links sparse. In technical pages (Viewer/Loading/Export),
+increase linking where it helps comprehension and navigation.</p></li>
+</ul>
+</section>
+<section id="code-conventions-in-user-facing-docs">
+<h2>Code conventions in user-facing docs<a class="headerlink" href="#code-conventions-in-user-facing-docs" title="Link to this heading">#</a></h2>
+<ul>
+<li><p>In User Guide, Cookbook, and Showcase examples, import the package as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">viewer</span>
+</pre></div>
+</div>
+<p>Keep this consistent across pages. Avoid using multiple aliases (<code class="docutils literal notranslate"><span class="pre">mv</span></code>, <code class="docutils literal notranslate"><span class="pre">msv</span></code>, etc.).</p>
+</li>
+</ul>
+<p>See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="references.html"><span class="doc">References and Cross-links in Documentation</span></a></p></li>
+<li><p><a class="reference internal" href="myst.html"><span class="doc">MyST in MolSysViewer documentation</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Documentation for the web</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="build_and_layout.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Web docs build &amp; layout</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-exists">Why this exists</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-style-always">Writing style (always)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#terminology-molsysmt-aligned">Terminology (MolSysMT-aligned)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#page-anchors-labels">Page anchors (labels)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-types">File types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#page-roles-what-goes-where">Page roles (what goes where)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#html-lite-preferred-for-3d-visuals">HTML lite (preferred for 3D visuals)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-html-lite-views-are-generated-source-of-truth">How HTML lite views are generated (source of truth)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#paths-for-embeds-in-notebooks">Paths for embeds in notebooks</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-execution-and-widget-state">Notebook execution and widget state</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-example-embed-an-html-lite-view-in-a-notebook">Minimal example: embed an HTML lite view in a notebook</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hiding-cells-what-works-and-what-does-not">Hiding cells: what works and what does not</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#camera-snapshots-are-browser-side-state">Camera snapshots are browser-side state</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notebook-source-formatting-keep-diffs-clean">Notebook source formatting (keep diffs clean)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-accidental-style-drift">Avoid accidental style drift</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#section-index-pages-toctrees">Section index pages (toctrees)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#page-naming-and-discoverability">Page naming and discoverability</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#user-facing-api-naming-avoid-unit-suffixes">User-facing API naming (avoid unit suffixes)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#experimental-features">Experimental features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-links-and-references">Cross-links and references</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#external-links-avoid-repetition">External links (avoid repetition)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-link-density-readability-first">API-link density (readability first)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-conventions-in-user-facing-docs">Code conventions in user-facing docs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+	with a structure based on the
+	<a href="https://github.com/MolSSI/cookiecutter-cms">Computational Molecular Science
+		Python Cookiecutter</a> version 1.5
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

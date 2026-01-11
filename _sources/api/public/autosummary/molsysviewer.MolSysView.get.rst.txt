@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.get
+===========================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.get

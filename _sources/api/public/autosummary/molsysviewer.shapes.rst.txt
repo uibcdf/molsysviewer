@@ -1,0 +1,12 @@
+﻿molsysviewer.shapes
+===================
+
+.. automodule:: molsysviewer.shapes
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ShapesManager
+   

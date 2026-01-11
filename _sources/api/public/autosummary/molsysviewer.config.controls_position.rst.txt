@@ -1,0 +1,6 @@
+﻿molsysviewer.config.controls\_position
+======================================
+
+.. currentmodule:: molsysviewer.config
+
+.. autodata:: controls_position

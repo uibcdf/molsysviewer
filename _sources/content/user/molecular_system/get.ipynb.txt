@@ -1,0 +1,624 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "910db85e",
+   "metadata": {},
+   "source": [
+    "(User_MolecularSystem_Get)=\n",
+    "# Getting attributes\n",
+    "\n",
+    "This page documents `view.get(...)`.\n",
+    "\n",
+    "You will use `get` whenever you want to bring information from the molecular system into Python: names and indices, counts, coordinates, box vectors, times, and so on.\n",
+    "\n",
+    "`view.get(...)` is a small wrapper around MolSysMT’s `get`, so the mental model is the same.\n",
+    "\n",
+    "If you want a deeper dive (more element-level examples and edge cases), see the MolSysMT tutorial: [Get](https://www.uibcdf.org/molsysmt/content/user/tools/basic/get)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a89a5db8",
+   "metadata": {},
+   "source": [
+    "## Common attribute names\n",
+    "\n",
+    "Both selection strings and `get` rely on a shared vocabulary of attribute names (for atoms, groups, molecules, and so on).\n",
+    "\n",
+    "You do not need to memorize these, but it helps to know what names exist so you can search and experiment confidently.\n",
+    "\n",
+    "Here is a quick reference table with the most common attribute names you will see in MolSysMT/MolSysViewer:\n",
+    "\n",
+    "```{include} ../_snippets/attributes_table.md\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "95bfe993",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:36:58.868614Z",
+     "iopub.status.busy": "2026-01-02T05:36:58.867950Z",
+     "iopub.status.idle": "2026-01-02T05:37:03.951316Z",
+     "shell.execute_reply": "2026-01-02T05:37:03.950377Z"
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x783ea44c50a0>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as viewer\n",
+    "\n",
+    "view = viewer.demo[\"181L\"]\n",
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "765aed89",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:03.953683Z",
+     "iopub.status.busy": "2026-01-02T05:37:03.953265Z",
+     "iopub.status.idle": "2026-01-02T05:37:03.958818Z",
+     "shell.execute_reply": "2026-01-02T05:37:03.957945Z"
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_181L.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x783ea75dfaa0>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "\n",
+    "load_html_in_notebook(\"../../../_static/views/demo_181L.html\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ce113b9",
+   "metadata": {},
+   "source": [
+    "## A first example\n",
+    "\n",
+    "Let’s start with something simple: a system-level snapshot.\n",
+    "\n",
+    "`get` works with **attribute flags**: you request values by passing `attribute_name=True` as keyword arguments.\n",
+    "\n",
+    "When you are exploring a new system, this “ask a few questions quickly” pattern is usually the fastest way to orient yourself."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "1331a35c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:03.961067Z",
+     "iopub.status.busy": "2026-01-02T05:37:03.960845Z",
+     "iopub.status.idle": "2026-01-02T05:37:04.122958Z",
+     "shell.execute_reply": "2026-01-02T05:37:04.121895Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[1441, 1]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"system\", n_atoms=True, n_structures=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3cda9e43-3b7d-4b55-a5d0-e98b953c4f8d",
+   "metadata": {},
+   "source": [
+    "If you prefer a stable `{name: value}` mapping (often easier to read and debug), use `output_type=\"dictionary\"`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "ed267ffe-7979-4f84-91ad-a0a9c3293606",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:04.125369Z",
+     "iopub.status.busy": "2026-01-02T05:37:04.125133Z",
+     "iopub.status.idle": "2026-01-02T05:37:04.297855Z",
+     "shell.execute_reply": "2026-01-02T05:37:04.296811Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'n_molecules': 141, 'n_bonds': 1322}"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"system\", n_molecules=True, n_bonds=True, output_type=\"dictionary\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3cabc5e0",
+   "metadata": {},
+   "source": [
+    "## Getting attributes at different element levels\n",
+    "\n",
+    "One of the most useful ideas in MolSysMT/MolSysViewer is that you can ask questions at different *element* levels (see the Elements table in {doc}`topology`).\n",
+    "\n",
+    "Two element levels that are especially useful early on are:\n",
+    "\n",
+    "- `entity`: the molecular nature/type (for example, water vs benzene)\n",
+    "- `molecule`: a single molecular instance (for example, one water molecule)\n",
+    "\n",
+    "Here is a quick way to see how many molecules belong to each entity:\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "a9cb3522",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:04.300404Z",
+     "iopub.status.busy": "2026-01-02T05:37:04.300137Z",
+     "iopub.status.idle": "2026-01-02T05:37:04.468152Z",
+     "shell.execute_reply": "2026-01-02T05:37:04.467245Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'entity_name': ['T4 LYSOZYME',\n",
+       "  'CHLORIDE ION',\n",
+       "  '2-HYDROXYETHYL DISULFIDE',\n",
+       "  'BENZENE',\n",
+       "  'water'],\n",
+       " 'n_molecules': [1, 2, 1, 1, 136]}"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"entity\", entity_name=True, n_molecules=True, output_type=\"dictionary\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3dd49ac5",
+   "metadata": {},
+   "source": [
+    "You can also combine `element` with a selection at that same level. For example, select the water entity and retrieve its molecule count:\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "3d68de5e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:04.470909Z",
+     "iopub.status.busy": "2026-01-02T05:37:04.470690Z",
+     "iopub.status.idle": "2026-01-02T05:37:04.727185Z",
+     "shell.execute_reply": "2026-01-02T05:37:04.726171Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[136]"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"entity\", selection='entity_name==\"water\"', n_molecules=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e8ba953e",
+   "metadata": {},
+   "source": [
+    "## Getting multiple attributes\n",
+    "\n",
+    "You can request multiple attributes in a single call. This is a great way to inspect a few elements in one step.\n",
+    "\n",
+    "When you request several attributes at once, using `output_type=\"dictionary\"` usually makes the output easier to read."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "37de9097",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:04.729619Z",
+     "iopub.status.busy": "2026-01-02T05:37:04.729395Z",
+     "iopub.status.idle": "2026-01-02T05:37:04.984709Z",
+     "shell.execute_reply": "2026-01-02T05:37:04.983747Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'atom_index': [0, 1, 2],\n",
+       " 'atom_name': ['N', 'CA', 'C'],\n",
+       " 'group_name': ['MET', 'MET', 'MET'],\n",
+       " 'chain_id': ['A', 'A', 'A']}"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(\n",
+    "    element=\"atom\",\n",
+    "    selection=[0, 1, 2],\n",
+    "    atom_index=True,\n",
+    "    atom_name=True,\n",
+    "    group_name=True,\n",
+    "    chain_id=True,\n",
+    "    output_type=\"dictionary\",\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8b4bd752-3249-4417-a251-1785a3809887",
+   "metadata": {},
+   "source": [
+    "For more examples (and more element-level coverage), the MolSysMT tutorial linked above is a good next stop."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c47e2b2a",
+   "metadata": {},
+   "source": [
+    "## `selection` and `mask`\n",
+    "\n",
+    "A common workflow is: select a subset, then retrieve attributes for it.\n",
+    "\n",
+    "Both `selection` and `mask` can be given as indices or as selection strings (parsed by MolSysMT).\n",
+    "\n",
+    "When both are present, `mask` acts as an additional intersection filter: it refines the elements picked by `selection`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "341d49ca",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:04.987618Z",
+     "iopub.status.busy": "2026-01-02T05:37:04.987373Z",
+     "iopub.status.idle": "2026-01-02T05:37:05.369779Z",
+     "shell.execute_reply": "2026-01-02T05:37:05.368781Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[['CA', 'CA', 'CA', 'CA', 'CA'],\n",
+       " ['MET', 'ASN', 'ILE', 'PHE', 'GLU'],\n",
+       " ['A', 'A', 'A', 'A', 'A']]"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "protein_ca = view.select(selection='molecule_type==\"protein\"', mask='atom_name==\"CA\"')\n",
+    "view.get(element=\"atom\", selection=protein_ca[:5], atom_name=True, group_name=True, chain_id=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "824f3f48-82ea-4463-8259-833d66749b8b",
+   "metadata": {},
+   "source": [
+    "For example, start from a selection and then refine it with an additional mask:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "a9119692-b36f-4380-890d-7bc1330b39cb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:05.372487Z",
+     "iopub.status.busy": "2026-01-02T05:37:05.372230Z",
+     "iopub.status.idle": "2026-01-02T05:37:05.666162Z",
+     "shell.execute_reply": "2026-01-02T05:37:05.665026Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[['CA'], ['PHE'], ['A']]"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"atom\", selection=protein_ca[:5], mask='group_name==\"PHE\"', atom_name=True, group_name=True, chain_id=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fc8d3bee",
+   "metadata": {},
+   "source": [
+    "If you want a deeper explanation of selection strings, see {doc}`selection`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1e0d1ba4",
+   "metadata": {},
+   "source": [
+    "## Structural attributes and `structure_indices`\n",
+    "\n",
+    "Structural attributes (like `coordinates`, `box`, or `time`) require `structure_indices`, because you need to specify which structure(s) you mean:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "c2b8d8a3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:05.668583Z",
+     "iopub.status.busy": "2026-01-02T05:37:05.668346Z",
+     "iopub.status.idle": "2026-01-02T05:37:05.789003Z",
+     "shell.execute_reply": "2026-01-02T05:37:05.788008Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<table><tbody><tr><th>Magnitude</th><td style='text-align:left;'><pre>[[[4.398200035095215 -0.32580000162124634 0.9162999987602234]  [4.343400001525879 -0.19169999659061432 0.9133999943733215]  [4.2006001472473145 -0.19660000503063202 0.9639999866485596]]]</pre></td></tr><tr><th>Units</th><td style='text-align:left;'>nanometer</td></tr></tbody></table>"
+      ],
+      "text/latex": [
+       "$arr[,0,:,:] = \\begin{pmatrix} &  & \\\\ \n",
+       " &  & \\\\ \n",
+       " &  & \\end{pmatrix}\\ \\mathrm{nanometer}$"
+      ],
+      "text/plain": [
+       "<Quantity([[[ 4.39820004 -0.3258      0.9163    ]\n",
+       "  [ 4.3434     -0.1917      0.91339999]\n",
+       "  [ 4.20060015 -0.19660001  0.96399999]]], 'nanometer')>"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(\n",
+    "    element=\"atom\",\n",
+    "    selection=[0, 1, 2],\n",
+    "    structure_indices=0,\n",
+    "    coordinates=True,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fb56f45a",
+   "metadata": {},
+   "source": [
+    "## A note about bonds\n",
+    "\n",
+    "Some input formats do not include explicit bond connectivity. When you request bond-related attributes, MolSysMT can sometimes infer missing bonds on the fly.\n",
+    "\n",
+    "You can control this behavior with the `get_missing_bonds` argument.\n",
+    "\n",
+    "When bonds are available (or inferred), you can query simple connectivity questions. For example: “which atoms are bonded to these atoms?”"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "e28ac185",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:05.791292Z",
+     "iopub.status.busy": "2026-01-02T05:37:05.791078Z",
+     "iopub.status.idle": "2026-01-02T05:37:05.911286Z",
+     "shell.execute_reply": "2026-01-02T05:37:05.910208Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[[1], [0, 2, 4], [1, 3, 8]]"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"atom\", selection=[0, 1, 2], bonded_atoms=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d999d01f-4d3b-4ff4-98a9-2fc24857fcb2",
+   "metadata": {},
+   "source": [
+    "If you want the bond list explicitly (as atom pairs), you can request the bonded atom pairs found in a selection of atoms:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "5f7afb7c-a349-4939-9ef4-91ea84158acd",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:05.913751Z",
+     "iopub.status.busy": "2026-01-02T05:37:05.913536Z",
+     "iopub.status.idle": "2026-01-02T05:37:06.038837Z",
+     "shell.execute_reply": "2026-01-02T05:37:06.037772Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[[0, 1], [1, 2], [1, 4], [2, 3], [2, 8], [4, 5]]"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"atom\", selection=[0, 1, 2, 3, 4], bonded_atom_pairs=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "952ff2c0-fcac-4763-9963-88a30e802fde",
+   "metadata": {},
+   "source": [
+    "Sometimes you only want bonds fully contained in your selection. In that case, request the bonded atom pairs within the list itself (pairs where both atoms are in the selection):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "37bdbc36-d2aa-40dd-b22e-c9bfe4d1ebee",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-02T05:37:06.041354Z",
+     "iopub.status.busy": "2026-01-02T05:37:06.041078Z",
+     "iopub.status.idle": "2026-01-02T05:37:06.161840Z",
+     "shell.execute_reply": "2026-01-02T05:37:06.160778Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[[0, 1], [1, 2], [1, 4], [2, 3]]"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "view.get(element=\"atom\", selection=[0, 1, 2, 3, 4], inner_bonded_atom_pairs=True)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

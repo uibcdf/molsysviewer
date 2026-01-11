@@ -1,0 +1,21 @@
+molsysviewer.loaders package
+============================
+
+Submodules
+----------
+
+molsysviewer.loaders.load\_molsysmt module
+------------------------------------------
+
+.. automodule:: molsysviewer.loaders.load_molsysmt
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.loaders
+   :members:
+   :show-inheritance:
+   :undoc-members:

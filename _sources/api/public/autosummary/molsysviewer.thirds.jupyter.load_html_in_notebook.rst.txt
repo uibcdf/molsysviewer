@@ -1,0 +1,6 @@
+﻿molsysviewer.thirds.jupyter.load\_html\_in\_notebook
+====================================================
+
+.. currentmodule:: molsysviewer.thirds.jupyter
+
+.. autofunction:: load_html_in_notebook

@@ -1,0 +1,1215 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../../_static/favicon-16x16.png" sizes="16x16" rel="icon" type="image/png">
+    <link href="../../../_static/favicon-124x124.png" sizes="124x124" rel="icon" type="image/png">
+    <link href="../../../_static/favicon-128x128.png" sizes="128x128" rel="icon" type="image/png">
+    <link href="../../../_static/favicon-192x192.png" sizes="192x192" rel="icon" type="image/png">
+    <link href="../../../_static/icon.svg" rel="icon" type="image/svg+xml">
+  
+    <title>A molecular system in MolSysMT – MolSysViewer 0.7.0</title>
+  
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_tabs.css?v=f45e19d3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d5ef24d1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=d5ef24d1" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nglview-js-widgets@3.1.0/dist/index.js"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Loading and inspection" href="loading_and_inspect.html" />
+    <link rel="prev" title="Molecular system" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.svg" class="logo__image only-light" alt="MolSysViewer 0.7.0 documentation - Home"/>
+    <img src="../../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt="MolSysViewer 0.7.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../showcase/index.html">
+    Showcase
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer/index.html">
+    Developer guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../ai_assistant.html">
+    MolSys-AI
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/uibcdf/molsysviewer" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../introduction/index.html">Introduction</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/what.html">What is MolSysViewer?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/molsysmt.html">MolSysMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/molstar.html">Mol*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/units.html">Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introduction/configuration.html">Customization</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Molecular system</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">A molecular system in MolSysMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loading_and_inspect.html">Loading and inspection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topology.html">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structures.html">Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info.html">Quick info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="selection.html">Selecting elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get.html">Getting attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="set.html">Setting attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remove.html">Removing elements and structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="add.html">Adding elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="append_structures.html">Appending structures</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viewer/index.html">Viewer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viewer/ui.html">Viewer UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../viewer/camera_and_controls.html">Camera and controls</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../scene_management/index.html">Scene management</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/visibility.html">Visibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/atom_masking.html">Atom masking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/whole.html">Whole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/regions.html">Regions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/layers.html">Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/tags.html">Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scene_management/reset_and_cleanup.html">Reset &amp; cleanup</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../representations/index.html">Representations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../representations/types.html">Representation types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../representations/presets.html">Presets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../representations/user_presets.html">User presets</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../overlays/index.html">Overlays</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../overlays/shapes/index.html">Shapes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/spheres.html">Spheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/pockets.html">Pockets (surfaces and blobs)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/channels.html">Channels (tubes)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/pharmacophore.html">Pharmacophore overlays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/anisotropy.html">Anisotropy (ellipsoids/disks)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/links.html">Links (networks)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/vectors.html">Displacement vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overlays/shapes/meshes.html">Mesh primitives</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../overlays/labels.html">Labels</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../export/index.html">Export &amp; embedding</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../export/html_export.html">HTML Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../export/sphinx_html_embedding.html">Sphinx HTML Embedding</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../demo_systems/index.html">Demo systems</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../demo_systems/catalog.html">Demo catalog</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../troubleshooting/index.html">Troubleshooting</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/viewer_not_loading.html">Viewer not loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/docs_embeds.html">Docs embeds (HTML lite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/selection_issues.html">Selection issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/performance.html">Performance</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cookbook/index.html">Cookbook</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/pocket_surface.html">Pocket surface from alpha-spheres</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/pocket_blob.html">Pocket blob (Gaussian field)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/channel_tube.html">Channel tube</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/pharmacophore_overlay.html">Pharmacophore overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/anisotropy_ellipsoids.html">Anisotropy ellipsoids/disks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/html_export.html">HTML Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cookbook/sphinx_html_embedding.html">Sphinx HTML Embedding</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">User guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Molecular system</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">A molecular system in MolSysMT</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="a-molecular-system-in-molsysmt">
+<span id="user-molecularsystem-overview"></span><h1>A molecular system in MolSysMT<a class="headerlink" href="#a-molecular-system-in-molsysmt" title="Link to this heading">#</a></h1>
+<p>MolSysViewer builds on top of <a class="reference external" href="https://www.uibcdf.org/molsysmt">MolSysMT</a>: MolSysMT defines what a <strong>molecular system</strong> is, how it can be represented in different forms, and how you can <em>query it</em> (for example, selecting atoms or inspecting topology).</p>
+<p>If you are new to MolSysMT, this page is meant to give you a friendly mental model. You do not need to memorize anything—just aim to recognize the main pieces.</p>
+<p>In practice, this matters because:</p>
+<ul class="simple">
+<li><p>MolSysViewer keeps the molecular system you are visualizing inside the viewer object.</p></li>
+<li><p>Atom selection in MolSysViewer is powered by MolSysMT selection.</p></li>
+<li><p>Loading molecular systems from files, third-party python libraries, or web databases, into MolSysViewer relies on MolSysMT conversions under the hood.</p></li>
+</ul>
+<section id="the-two-key-ideas-forms-and-attributes">
+<h2>The two key ideas: <em>forms</em> and <em>attributes</em><a class="headerlink" href="#the-two-key-ideas-forms-and-attributes" title="Link to this heading">#</a></h2>
+<p>MolSysMT is designed around two simple ideas:</p>
+<ol class="arabic simple">
+<li><p>A molecular system can exist in different <strong>forms</strong> (different Python objects / file formats) that represent the same underlying system.</p></li>
+<li><p>Each form exposes a set of <strong>attributes</strong> (for example: atom names, group names, coordinates, box vectors, time).</p></li>
+</ol>
+<p>MolSysMT provides a consistent toolbox (functions like <code class="docutils literal notranslate"><span class="pre">select</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code>, <code class="docutils literal notranslate"><span class="pre">get</span></code>, and <code class="docutils literal notranslate"><span class="pre">convert</span></code>) that works across those forms.</p>
+<p>MolSysViewer takes advantage of this: you can load different inputs, and MolSysMT will convert them to a viewer-friendly representation.</p>
+<p>MolSysMT uses a shared vocabulary of attribute names (for example <code class="docutils literal notranslate"><span class="pre">atom_name</span></code>, <code class="docutils literal notranslate"><span class="pre">group_name</span></code>, <code class="docutils literal notranslate"><span class="pre">chain_id</span></code>, <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, <code class="docutils literal notranslate"><span class="pre">box</span></code>, …).
+You will encounter these names in both selection strings and attribute queries.</p>
+<p>Here is a quick reference table:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Word</p></th>
+<th class="head"><p>Attribute</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;atom_index&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atom_index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;atom_name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atom_name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;atom_id&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atom_id</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;atom_type&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atom_type</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;group_index&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">group_index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;group_name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">group_name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;group_id&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">group_id</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;group_type&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">group_type</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;component_index&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">component_index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;component_name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">component_name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;component_id&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">component_id</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;component_type&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">component_type</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;chain_index&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chain_index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;chain_name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chain_name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;chain_id&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chain_id</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;chain_type&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">chain_type</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;molecule_index&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molecule_index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;molecule_name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molecule_name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;molecule_id&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molecule_id</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;molecule_type&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">molecule_type</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;entity_index&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entity_index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;entity_name&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entity_name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;entity_id&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entity_id</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;entity_type&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entity_type</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;occupancy&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">occupancy</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;alternate_location&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">alternate_location</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;b_factor&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">b_factor</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;formal_charge&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">formal_charge</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;partial_charge&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">partial_charge</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">viewer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">molsysmt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">msm</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="a-concrete-example-a-demo-molecular-system">
+<h2>A concrete example: a demo molecular system<a class="headerlink" href="#a-concrete-example-a-demo-molecular-system" title="Link to this heading">#</a></h2>
+<p>Let’s load a small demo trajectory (pentalanine). This returns a <code class="docutils literal notranslate"><span class="pre">MolSysView</span></code>, MolSysViewer’s main viewer object.</p>
+<p>You can run this notebook cell-by-cell. If you are following the web documentation, treat these as examples you can reproduce locally.</p>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">view</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">demo</span><span class="p">[</span><span class="s2">&quot;pentalanine&quot;</span><span class="p">]</span>
+<span class="n">view</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output text_html">
+        <iframe
+            width="100%"
+            height="480px"
+            src="../../../_static/views/demo_pentalanine.html"
+            frameborder="0"
+            allowfullscreen
+            
+        ></iframe>
+        </div></div>
+</div>
+<p>The molecular system being visualized is available as <code class="docutils literal notranslate"><span class="pre">view.molsys</span></code>.</p>
+<p>This is a <strong>read-only</strong> property (there is no setter): you can inspect it freely, but if you mutate it in-place you are changing the very system the viewer is representing.</p>
+<p>If you need to modify the loaded system, prefer MolSysViewer’s live methods (for example, <code class="docutils literal notranslate"><span class="pre">view.set(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">view.remove(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">view.add(...)</span></code>, or <code class="docutils literal notranslate"><span class="pre">view.append_structures(...)</span></code>) instead of modifying <code class="docutils literal notranslate"><span class="pre">view.molsys</span></code> directly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">molsys</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>molsysmt.native.molsys.MolSys
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="topology-vs-structures">
+<h2>Topology vs structures<a class="headerlink" href="#topology-vs-structures" title="Link to this heading">#</a></h2>
+<p>MolSysMT’s native molecular system (<code class="docutils literal notranslate"><span class="pre">molsysmt.MolSys</span></code>) separates the system into two big parts:</p>
+<ul class="simple">
+<li><p><strong>Topology</strong>: “what is connected to what” and how atoms are organized (atoms, groups, components, chains, molecules, entities, bonds…).</p></li>
+<li><p><strong>Structures</strong>: “where things are” (coordinates), and other per-frame information (box, time, structure identifiers…).</p></li>
+</ul>
+<p>A trajectory is a single topology with many structures (frames). That is exactly why this split is so convenient.</p>
+<p>MolSysMT uses the word <em>element</em> to refer to these hierarchical levels. Here is a quick reference table:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Element</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">atom</span></code></p></td>
+<td><p>Atoms of the molecular system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">group</span></code></p></td>
+<td><p>First supra-atomic chemical level: amino acids, waters, ions, lipids, etc.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">component</span></code></p></td>
+<td><p>A covalently connected set of atoms (a covalent component).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">molecule</span></code></p></td>
+<td><p>A single molecular instance (one water molecule, one benzene molecule, etc.).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chain</span></code></p></td>
+<td><p>An author-defined grouping that can vary across sources; it may represent anything from a polymer chain to a higher-level supra-molecular partition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">entity</span></code></p></td>
+<td><p>Molecular nature/type. For example, you can have two entities (water and benzene) and six molecules (four waters and two benzenes).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">system</span></code></p></td>
+<td><p>The whole molecular system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">bond</span></code></p></td>
+<td><p>Covalent connectivity between atoms (may be absent or inferred depending on the input).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">topology</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">molsys</span><span class="o">.</span><span class="n">topology</span>
+<span class="n">structures</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">molsys</span><span class="o">.</span><span class="n">structures</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you are curious, you can inspect the topology tables directly. For example, atoms live in a Pandas table.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">topology</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>atom_id</th>
+      <th>atom_name</th>
+      <th>atom_type</th>
+      <th>group_index</th>
+      <th>component_index</th>
+      <th>chain_index</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>H1</td>
+      <td>H</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>CH3</td>
+      <td>C</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>H2</td>
+      <td>H</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>H3</td>
+      <td>H</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>C</td>
+      <td>C</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>And structures store coordinate arrays and optional per-frame attributes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">structures</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(200, 62, 3)
+</pre></div>
+</div>
+</div>
+</div>
+<p>You will find further details about <code class="docutils literal notranslate"><span class="pre">molsysmt.MolSys</span></code>, and about its inner objects for topology and structures, in the MolSysMT documentation.</p>
+<p>MolSysViewer can be used without knowing MolSysMT. Still, learning a few MolSysMT basics is strongly recommended if you want to get the most out of MolSysViewer.</p>
+</section>
+<section id="querying-the-system-info-select-and-get">
+<h2>Querying the system: <code class="docutils literal notranslate"><span class="pre">info</span></code>, <code class="docutils literal notranslate"><span class="pre">select</span></code>, and <code class="docutils literal notranslate"><span class="pre">get</span></code><a class="headerlink" href="#querying-the-system-info-select-and-get" title="Link to this heading">#</a></h2>
+<p>MolSysViewer exposes <code class="docutils literal notranslate"><span class="pre">view.info(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">view.select(...)</span></code>, and <code class="docutils literal notranslate"><span class="pre">view.get(...)</span></code> as convenience wrappers around MolSysMT’s
+<code class="docutils literal notranslate"><span class="pre">molsysmt.info(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">molsysmt.select(...)</span></code>, and <code class="docutils literal notranslate"><span class="pre">molsysmt.get(...)</span></code>.</p>
+<p>Because the loaded molecular system lives in <code class="docutils literal notranslate"><span class="pre">view.molsys</span></code> as a MolSysMT object, you can combine MolSysMT’s querying power
+with Mol*’s rendering power in a single workflow.</p>
+<p>In a notebook, <code class="docutils literal notranslate"><span class="pre">info</span></code> gives you a friendly summary table.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s2">&quot;system&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_794a1">
+  <thead>
+    <tr>
+      <th id="T_794a1_level0_col0" class="col_heading level0 col0" >form</th>
+      <th id="T_794a1_level0_col1" class="col_heading level0 col1" >n_atoms</th>
+      <th id="T_794a1_level0_col2" class="col_heading level0 col2" >n_groups</th>
+      <th id="T_794a1_level0_col3" class="col_heading level0 col3" >n_components</th>
+      <th id="T_794a1_level0_col4" class="col_heading level0 col4" >n_chains</th>
+      <th id="T_794a1_level0_col5" class="col_heading level0 col5" >n_molecules</th>
+      <th id="T_794a1_level0_col6" class="col_heading level0 col6" >n_entities</th>
+      <th id="T_794a1_level0_col7" class="col_heading level0 col7" >n_peptides</th>
+      <th id="T_794a1_level0_col8" class="col_heading level0 col8" >n_structures</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_794a1_row0_col0" class="data row0 col0" >molsysmt.MolSys</td>
+      <td id="T_794a1_row0_col1" class="data row0 col1" >62</td>
+      <td id="T_794a1_row0_col2" class="data row0 col2" >7</td>
+      <td id="T_794a1_row0_col3" class="data row0 col3" >1</td>
+      <td id="T_794a1_row0_col4" class="data row0 col4" >1</td>
+      <td id="T_794a1_row0_col5" class="data row0 col5" >1</td>
+      <td id="T_794a1_row0_col6" class="data row0 col6" >1</td>
+      <td id="T_794a1_row0_col7" class="data row0 col7" >1</td>
+      <td id="T_794a1_row0_col8" class="data row0 col8" >200</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Selections are also handled by MolSysMT.</p>
+<p>As a small example, let’s select the alpha-carbon atoms (<code class="docutils literal notranslate"><span class="pre">CA</span></code>) and then display their information.</p>
+<p>If you want to go deeper on selection language and examples, see MolSysMT’s documentation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ca_atom_indices</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="s2">&quot;atom_name == &#39;CA&#39;&quot;</span><span class="p">)</span>
+<span class="n">ca_atom_indices</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[8, 18, 28, 38, 48]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s2">&quot;atom&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">ca_atom_indices</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+</style>
+<table id="T_d53f4">
+  <thead>
+    <tr>
+      <th id="T_d53f4_level0_col0" class="col_heading level0 col0" >index</th>
+      <th id="T_d53f4_level0_col1" class="col_heading level0 col1" >id</th>
+      <th id="T_d53f4_level0_col2" class="col_heading level0 col2" >name</th>
+      <th id="T_d53f4_level0_col3" class="col_heading level0 col3" >type</th>
+      <th id="T_d53f4_level0_col4" class="col_heading level0 col4" >group index</th>
+      <th id="T_d53f4_level0_col5" class="col_heading level0 col5" >group id</th>
+      <th id="T_d53f4_level0_col6" class="col_heading level0 col6" >group name</th>
+      <th id="T_d53f4_level0_col7" class="col_heading level0 col7" >group type</th>
+      <th id="T_d53f4_level0_col8" class="col_heading level0 col8" >component index</th>
+      <th id="T_d53f4_level0_col9" class="col_heading level0 col9" >chain index</th>
+      <th id="T_d53f4_level0_col10" class="col_heading level0 col10" >molecule index</th>
+      <th id="T_d53f4_level0_col11" class="col_heading level0 col11" >molecule type</th>
+      <th id="T_d53f4_level0_col12" class="col_heading level0 col12" >entity index</th>
+      <th id="T_d53f4_level0_col13" class="col_heading level0 col13" >entity name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="T_d53f4_row0_col0" class="data row0 col0" >8</td>
+      <td id="T_d53f4_row0_col1" class="data row0 col1" >8</td>
+      <td id="T_d53f4_row0_col2" class="data row0 col2" >CA</td>
+      <td id="T_d53f4_row0_col3" class="data row0 col3" >C</td>
+      <td id="T_d53f4_row0_col4" class="data row0 col4" >1</td>
+      <td id="T_d53f4_row0_col5" class="data row0 col5" >2</td>
+      <td id="T_d53f4_row0_col6" class="data row0 col6" >ALA</td>
+      <td id="T_d53f4_row0_col7" class="data row0 col7" >amino acid</td>
+      <td id="T_d53f4_row0_col8" class="data row0 col8" >0</td>
+      <td id="T_d53f4_row0_col9" class="data row0 col9" >0</td>
+      <td id="T_d53f4_row0_col10" class="data row0 col10" >0</td>
+      <td id="T_d53f4_row0_col11" class="data row0 col11" >peptide</td>
+      <td id="T_d53f4_row0_col12" class="data row0 col12" >0</td>
+      <td id="T_d53f4_row0_col13" class="data row0 col13" >peptide 0</td>
+    </tr>
+    <tr>
+      <td id="T_d53f4_row1_col0" class="data row1 col0" >18</td>
+      <td id="T_d53f4_row1_col1" class="data row1 col1" >18</td>
+      <td id="T_d53f4_row1_col2" class="data row1 col2" >CA</td>
+      <td id="T_d53f4_row1_col3" class="data row1 col3" >C</td>
+      <td id="T_d53f4_row1_col4" class="data row1 col4" >2</td>
+      <td id="T_d53f4_row1_col5" class="data row1 col5" >3</td>
+      <td id="T_d53f4_row1_col6" class="data row1 col6" >ALA</td>
+      <td id="T_d53f4_row1_col7" class="data row1 col7" >amino acid</td>
+      <td id="T_d53f4_row1_col8" class="data row1 col8" >0</td>
+      <td id="T_d53f4_row1_col9" class="data row1 col9" >0</td>
+      <td id="T_d53f4_row1_col10" class="data row1 col10" >0</td>
+      <td id="T_d53f4_row1_col11" class="data row1 col11" >peptide</td>
+      <td id="T_d53f4_row1_col12" class="data row1 col12" >0</td>
+      <td id="T_d53f4_row1_col13" class="data row1 col13" >peptide 0</td>
+    </tr>
+    <tr>
+      <td id="T_d53f4_row2_col0" class="data row2 col0" >28</td>
+      <td id="T_d53f4_row2_col1" class="data row2 col1" >28</td>
+      <td id="T_d53f4_row2_col2" class="data row2 col2" >CA</td>
+      <td id="T_d53f4_row2_col3" class="data row2 col3" >C</td>
+      <td id="T_d53f4_row2_col4" class="data row2 col4" >3</td>
+      <td id="T_d53f4_row2_col5" class="data row2 col5" >4</td>
+      <td id="T_d53f4_row2_col6" class="data row2 col6" >ALA</td>
+      <td id="T_d53f4_row2_col7" class="data row2 col7" >amino acid</td>
+      <td id="T_d53f4_row2_col8" class="data row2 col8" >0</td>
+      <td id="T_d53f4_row2_col9" class="data row2 col9" >0</td>
+      <td id="T_d53f4_row2_col10" class="data row2 col10" >0</td>
+      <td id="T_d53f4_row2_col11" class="data row2 col11" >peptide</td>
+      <td id="T_d53f4_row2_col12" class="data row2 col12" >0</td>
+      <td id="T_d53f4_row2_col13" class="data row2 col13" >peptide 0</td>
+    </tr>
+    <tr>
+      <td id="T_d53f4_row3_col0" class="data row3 col0" >38</td>
+      <td id="T_d53f4_row3_col1" class="data row3 col1" >38</td>
+      <td id="T_d53f4_row3_col2" class="data row3 col2" >CA</td>
+      <td id="T_d53f4_row3_col3" class="data row3 col3" >C</td>
+      <td id="T_d53f4_row3_col4" class="data row3 col4" >4</td>
+      <td id="T_d53f4_row3_col5" class="data row3 col5" >5</td>
+      <td id="T_d53f4_row3_col6" class="data row3 col6" >ALA</td>
+      <td id="T_d53f4_row3_col7" class="data row3 col7" >amino acid</td>
+      <td id="T_d53f4_row3_col8" class="data row3 col8" >0</td>
+      <td id="T_d53f4_row3_col9" class="data row3 col9" >0</td>
+      <td id="T_d53f4_row3_col10" class="data row3 col10" >0</td>
+      <td id="T_d53f4_row3_col11" class="data row3 col11" >peptide</td>
+      <td id="T_d53f4_row3_col12" class="data row3 col12" >0</td>
+      <td id="T_d53f4_row3_col13" class="data row3 col13" >peptide 0</td>
+    </tr>
+    <tr>
+      <td id="T_d53f4_row4_col0" class="data row4 col0" >48</td>
+      <td id="T_d53f4_row4_col1" class="data row4 col1" >48</td>
+      <td id="T_d53f4_row4_col2" class="data row4 col2" >CA</td>
+      <td id="T_d53f4_row4_col3" class="data row4 col3" >C</td>
+      <td id="T_d53f4_row4_col4" class="data row4 col4" >5</td>
+      <td id="T_d53f4_row4_col5" class="data row4 col5" >6</td>
+      <td id="T_d53f4_row4_col6" class="data row4 col6" >ALA</td>
+      <td id="T_d53f4_row4_col7" class="data row4 col7" >amino acid</td>
+      <td id="T_d53f4_row4_col8" class="data row4 col8" >0</td>
+      <td id="T_d53f4_row4_col9" class="data row4 col9" >0</td>
+      <td id="T_d53f4_row4_col10" class="data row4 col10" >0</td>
+      <td id="T_d53f4_row4_col11" class="data row4 col11" >peptide</td>
+      <td id="T_d53f4_row4_col12" class="data row4 col12" >0</td>
+      <td id="T_d53f4_row4_col13" class="data row4 col13" >peptide 0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>If you need specific values of attributes, use <code class="docutils literal notranslate"><span class="pre">get</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="n">n_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_structures</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[62, 200]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">view</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s2">&quot;atom&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">ca_atom_indices</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">atom_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[&#39;CA&#39;, &#39;CA&#39;, &#39;CA&#39;, &#39;CA&#39;, &#39;CA&#39;], [&#39;ALA&#39;, &#39;ALA&#39;, &#39;ALA&#39;, &#39;ALA&#39;, &#39;ALA&#39;]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>More on these three functions will be found in the following sections of this documentation.</p>
+</section>
+<section id="conversion-is-the-bridge-to-the-viewer">
+<h2>Conversion is the bridge to the viewer<a class="headerlink" href="#conversion-is-the-bridge-to-the-viewer" title="Link to this heading">#</a></h2>
+<p>The browser viewer cannot consume arbitrary Python objects. MolSysViewer needs a lightweight, viewer-friendly payload.</p>
+<p>This is where MolSysMT’s <code class="docutils literal notranslate"><span class="pre">convert</span></code> comes in: it can turn a molecular system into a minimal JSON-like representation named <code class="docutils literal notranslate"><span class="pre">molsysmt.ViewerJSON</span></code>.</p>
+<p>MolSysViewer uses this idea internally in the loading pipeline (<code class="docutils literal notranslate"><span class="pre">new_view</span></code> / <code class="docutils literal notranslate"><span class="pre">load</span></code>). You normally do not have to call <code class="docutils literal notranslate"><span class="pre">convert</span></code> yourself—but seeing it once can help you understand what is happening behind the scenes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">viewer_json</span> <span class="o">=</span> <span class="n">msm</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">molsys</span><span class="p">,</span> <span class="n">to_form</span><span class="o">=</span><span class="s2">&quot;molsysmt.ViewerJSON&quot;</span><span class="p">)</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">viewer_json</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>molsysmt.native.viewer_json.ViewerJSON
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">payload</span> <span class="o">=</span> <span class="n">viewer_json</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;version&#39;, &#39;atoms&#39;, &#39;bonds&#39;, &#39;structures&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Try running the following code in your own notebook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">molsysviewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">viewer</span>
+
+<span class="n">view</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">new_view</span><span class="p">(</span>
+    <span class="s2">&quot;181L&quot;</span><span class="p">,</span>
+    <span class="n">selection</span><span class="o">=</span><span class="s1">&#39;molecule_type not in [&quot;water&quot;, &quot;ion&quot;]&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">view</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You should see the molecular system from the Protein Data Bank entry <strong>181L</strong>, with crystallographic waters and ions removed.</p>
+<p>This is a good example of what “conversion” means in practice:</p>
+<ul class="simple">
+<li><p>MolSysViewer does not implement a special-case “PDB id loader”.</p></li>
+<li><p>MolSysMT is the layer that understands inputs like a PDB id string, applies the selection, and converts the result into a viewer-friendly payload.</p></li>
+<li><p>Mol* is the rendering engine that draws the scene in the browser.</p></li>
+</ul>
+</section>
+<section id="takeaway">
+<h2>Takeaway<a class="headerlink" href="#takeaway" title="Link to this heading">#</a></h2>
+<p>If you only keep one idea from this page, let it be this:</p>
+<ul class="simple">
+<li><p><strong>MolSysMT defines and manipulates the molecular system</strong> (topology + structures, selection, inspection, conversions).</p></li>
+<li><p><strong>Mol* renders the 3D scene in the browser.</strong></p></li>
+<li><p><strong>MolSysViewer focuses on interactive visualization for analysis and exploration</strong>, and relies on MolSysMT to understand the system and on Mol* to create the visualization.</p></li>
+</ul>
+<p>In the next User Guide units, we will build on this model to explain selection, regions, layers, representations, and overlays.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Molecular system</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="loading_and_inspect.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Loading and inspection</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-two-key-ideas-forms-and-attributes">The two key ideas: <em>forms</em> and <em>attributes</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-concrete-example-a-demo-molecular-system">A concrete example: a demo molecular system</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#topology-vs-structures">Topology vs structures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-the-system-info-select-and-get">Querying the system: <code class="docutils literal notranslate"><span class="pre">info</span></code>, <code class="docutils literal notranslate"><span class="pre">select</span></code>, and <code class="docutils literal notranslate"><span class="pre">get</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conversion-is-the-bridge-to-the-viewer">Conversion is the bridge to the viewer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#takeaway">Takeaway</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><div>
+	&copy; 2026, <a href=contents/about/who.html>Liliana M. Moreno Vargas, Diego Prada Gracia
+		and contributors</a> | <a href="https://www.uibcdf.org/">UIBCDF Lab</a> 
+	at the <a href="http://himfg.com.mx">Federico Gómez Children’s Hospital of Mexico</a><br />
+	<a href="https://github.com/uibcdf/molsysviewer">MolSysViewer is an open source project</a> shared
+	under <a href="https://github.com/uibcdf/pocketmt/blob/main/LICENSE">an MIT license</a>
+	with a structure based on the
+	<a href="https://github.com/MolSSI/cookiecutter-cms">Computational Molecular Science
+		Python Cookiecutter</a> version 1.5
+</div></div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3
+     | 
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1
+    <br/>
+  </p>
+
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><a href="../../about/support.html">Contact us</a><br /></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

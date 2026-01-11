@@ -1,0 +1,30 @@
+﻿molsysviewer.regions.Region
+===========================
+
+.. currentmodule:: molsysviewer.regions
+
+.. autoclass:: Region
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Region.__init__
+      ~Region.delete
+      ~Region.get
+      ~Region.hide
+      ~Region.info
+      ~Region.new_complementary_region
+      ~Region.select
+      ~Region.set_representation
+      ~Region.show
+   
+   
+
+   
+   
+   

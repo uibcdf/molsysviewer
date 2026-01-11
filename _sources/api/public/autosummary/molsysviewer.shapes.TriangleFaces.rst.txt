@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.TriangleFaces
+=================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: TriangleFaces
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TriangleFaces.__init__
+      ~TriangleFaces.add_triangle_faces
+   
+   
+
+   
+   
+   

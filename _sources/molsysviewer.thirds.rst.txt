@@ -1,0 +1,18 @@
+molsysviewer.thirds package
+===========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   molsysviewer.thirds.jupyter
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer.thirds
+   :members:
+   :show-inheritance:
+   :undoc-members:

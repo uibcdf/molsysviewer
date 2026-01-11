@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.PharmacophoreShapes
+=======================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: PharmacophoreShapes
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PharmacophoreShapes.__init__
+      ~PharmacophoreShapes.add_pharmacophore_features
+   
+   
+
+   
+   
+   

@@ -1,0 +1,26 @@
+﻿molsysviewer.shapes.SphereShapes
+================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: SphereShapes
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SphereShapes.__init__
+      ~SphereShapes.add_set_alpha_spheres
+      ~SphereShapes.add_sphere
+      ~SphereShapes.add_spheres
+      ~SphereShapes.clear
+   
+   
+
+   
+   
+   

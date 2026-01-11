@@ -1,0 +1,6 @@
+﻿molsysviewer.demo
+=================
+
+.. currentmodule:: molsysviewer
+
+.. autodata:: demo

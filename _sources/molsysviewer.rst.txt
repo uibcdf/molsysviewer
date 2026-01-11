@@ -1,0 +1,80 @@
+molsysviewer package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   molsysviewer.config
+   molsysviewer.loaders
+   molsysviewer.shapes
+   molsysviewer.thirds
+
+Submodules
+----------
+
+molsysviewer.demo module
+------------------------
+
+.. automodule:: molsysviewer.demo
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.layers module
+--------------------------
+
+.. automodule:: molsysviewer.layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.new\_view module
+-----------------------------
+
+.. automodule:: molsysviewer.new_view
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.regions module
+---------------------------
+
+.. automodule:: molsysviewer.regions
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.viewer module
+--------------------------
+
+.. automodule:: molsysviewer.viewer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.whole module
+-------------------------
+
+.. automodule:: molsysviewer.whole
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+molsysviewer.widget module
+--------------------------
+
+.. automodule:: molsysviewer.widget
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: molsysviewer
+   :members:
+   :show-inheritance:
+   :undoc-members:

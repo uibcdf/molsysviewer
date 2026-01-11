@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.AnisotropyEllipsoids
+========================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: AnisotropyEllipsoids
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AnisotropyEllipsoids.__init__
+      ~AnisotropyEllipsoids.add_anisotropy_ellipsoids
+   
+   
+
+   
+   
+   

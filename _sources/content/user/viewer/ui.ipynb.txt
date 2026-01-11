@@ -1,0 +1,257 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "50132c1a",
+   "metadata": {},
+   "source": [
+    "(User_Viewer_UI)=\n",
+    "# Viewer UI\n",
+    "\n",
+    "This page introduces the on-canvas UI you see inside the viewer.\n",
+    "\n",
+    "When you are working in a notebook, it is easy to focus on code and forget that the viewer also provides a small, practical UI for everyday actions.\n",
+    "\n",
+    "Here we will walk through what appears on the canvas (buttons, the structures bar, and the popout). If what you need is camera navigation (zoom, snapshots, and interaction), see {doc}`camera_and_controls`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c4fda824",
+   "metadata": {},
+   "source": [
+    "## The canvas\n",
+    "\n",
+    "A good way to understand the UI is to start from a concrete view.\n",
+    "\n",
+    "Below, the demo system is rendered on the **canvas** (the 3D viewport). The small UI elements you see on top of the canvas are the on-canvas controls."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "5cbb55d6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-03T06:26:03.909843Z",
+     "iopub.status.busy": "2026-01-03T06:26:03.908915Z",
+     "iopub.status.idle": "2026-01-03T06:26:08.840498Z",
+     "shell.execute_reply": "2026-01-03T06:26:08.839739Z"
+    },
+    "tags": [
+     "remove-output"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": []
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<molsysviewer.widget.MolSysViewerWidget object at 0x79dfeef5d610>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import molsysviewer as viewer\n",
+    "\n",
+    "view = viewer.demo[\"pentalanine\"]\n",
+    "view.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "c7a022df",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-01-03T06:26:08.843209Z",
+     "iopub.status.busy": "2026-01-03T06:26:08.842842Z",
+     "iopub.status.idle": "2026-01-03T06:26:08.848252Z",
+     "shell.execute_reply": "2026-01-03T06:26:08.847241Z"
+    },
+    "tags": [
+     "remove-input"
+    ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "\n",
+       "        <iframe\n",
+       "            width=\"100%\"\n",
+       "            height=\"480px\"\n",
+       "            src=\"../../../_static/views/demo_pentalanine.html\"\n",
+       "            frameborder=\"0\"\n",
+       "            allowfullscreen\n",
+       "            \n",
+       "        ></iframe>\n",
+       "        "
+      ],
+      "text/plain": [
+       "<IPython.lib.display.IFrame at 0x79dfef593440>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from molsysviewer.thirds.jupyter import load_html_in_notebook\n",
+    "\n",
+    "load_html_in_notebook(\"../../../_static/views/demo_pentalanine.html\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1929485e",
+   "metadata": {},
+   "source": [
+    "A few practical notes:\n",
+    "\n",
+    "- The canvas is rendered on the **browser side** by Mol\\* (MolStar).\n",
+    "- You drive it from the **Python side** by calling methods on a `MolSysView` object (`view`).\n",
+    "- When a molecular system has multiple structures, the viewer shows a small **structures bar** so you can move between them.\n",
+    "\n",
+    "Take a moment to click the buttons on the canvas above (Reset, Fullscreen, Background, Spin/Swing), and try moving the structures slider to see how the view changes."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "087c8d2c",
+   "metadata": {},
+   "source": [
+    "## UI controls\n",
+    "\n",
+    "MolSysViewer provides a compact set of on-canvas controls so you can perform common actions without writing code for every interaction."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f29b4431",
+   "metadata": {},
+   "source": [
+    "### Buttons\n",
+    "\n",
+    "The on-canvas buttons are:\n",
+    "\n",
+    "- `Reset`: reset the camera view.\n",
+    "- `Full`: toggle fullscreen.\n",
+    "- `Bg`: toggle light/dark background.\n",
+    "- `Spin`: toggle continuous spin animation.\n",
+    "- `Swing`: toggle rocking animation.\n",
+    "- `Pop`: open a synced popout window (only when enabled).\n",
+    "\n",
+    "The `Pop` button deserves a bit more context; see {ref}`User_Viewer_UI_Popout`.\n",
+    "\n",
+    "Tip\n",
+    "- These buttons are meant to be used interactively while you work. You can always reproduce the same actions from Python later (for example, reset the camera with `view.reset_camera()`)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8a2d307c",
+   "metadata": {},
+   "source": [
+    "### Structures bar\n",
+    "\n",
+    "If your molecular system has multiple structures, the viewer exposes a small structures bar. It only appears when there is more than one structure.\n",
+    "\n",
+    "You can:\n",
+    "\n",
+    "- Step backward/forward by `step` using the `−` and `+` buttons.\n",
+    "- Play/pause using the play button (`▶` / `⏸`).\n",
+    "- Scrub to a structure index using the slider.\n",
+    "- Read the current position as `current / total` (1-based).\n",
+    "- Set the step size and playback FPS with the numeric fields."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "727e8ea0",
+   "metadata": {},
+   "source": [
+    "### Controls customization\n",
+    "\n",
+    "You can hide the on-canvas UI entirely from your notebook:\n",
+    "\n",
+    "```python\n",
+    "view.set_controls_visible(False)\n",
+    "```\n",
+    "\n",
+    "You can also enable autohide and configure placement:\n",
+    "\n",
+    "```python\n",
+    "view.set_controls_visible(\n",
+    "    True,\n",
+    "    autohide=True,\n",
+    "    position=[\"top\", \"right\"],\n",
+    "    position_fullscreen=[\"bottom\", \"right\"],\n",
+    ")\n",
+    "```\n",
+    "\n",
+    "Defaults come from `molsysviewer.config`:\n",
+    "\n",
+    "- `molsysviewer.config.show_controls`\n",
+    "- `molsysviewer.config.autohide_controls`\n",
+    "- `molsysviewer.config.controls_position`\n",
+    "- `molsysviewer.config.controls_position_fullscreen`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "50e40e8d",
+   "metadata": {},
+   "source": [
+    "(User_Viewer_UI_Popout)=\n",
+    "## Popout\n",
+    "\n",
+    "The popout is a second viewer window that acts like a synced “twin” of your main canvas.\n",
+    "\n",
+    "It is useful when you want to keep a large, clean viewer window (for example, on a second monitor or during a presentation), while still driving the scene from your notebook.\n",
+    "\n",
+    "If popout is enabled, try clicking the `Pop` button on the canvas above. Then interact with the popout: rotate the scene, zoom, and move between structures. You should see that it stays synced with the host view:\n",
+    "\n",
+    "- camera changes,\n",
+    "- spin/swing toggles,\n",
+    "- and scene operations (load, shapes, regions, layers).\n",
+    "\n",
+    "Notes\n",
+    "- Your browser may block popouts by default. If the popout does not open, check the popup-blocker settings.\n",
+    "- In docs-light exports (`write_html(..., mode=\"lite\")`), the popout button is controlled by `include_popout`."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

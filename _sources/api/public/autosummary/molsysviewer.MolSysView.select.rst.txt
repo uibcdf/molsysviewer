@@ -1,0 +1,6 @@
+﻿molsysviewer.MolSysView.select
+==============================
+
+.. currentmodule:: molsysviewer
+
+.. automethod:: MolSysView.select

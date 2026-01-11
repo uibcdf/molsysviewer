@@ -1,0 +1,23 @@
+﻿molsysviewer.shapes.PocketSurfaces
+==================================
+
+.. currentmodule:: molsysviewer.shapes
+
+.. autoclass:: PocketSurfaces
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PocketSurfaces.__init__
+      ~PocketSurfaces.add_pocket_surface
+   
+   
+
+   
+   
+   
