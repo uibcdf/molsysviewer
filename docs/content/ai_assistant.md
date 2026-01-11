@@ -1,7 +1,22 @@
-# AI Assistant
+# AI assistant
 
-This page will host an embedded MolSysViewer chat assistant.
+## Why use it
 
-The assistant is not available yet. It will be added soon as a web-based chatbot that connects to a JSON API.
+You want fast answers with citations.
+You want a direct link to the right MolSysSuite page.
 
-For now, use the documentation sections and the GitHub issues board for questions and support.
+## How to use it
+
+1. Ask a question about MolSysViewer.
+2. Open the “Sources” links to verify the answer.
+3. Retry if the backend is busy.
+
+```{raw} html
+<div id="molsys-ai-chat"></div>
+```
+
+## Notes
+
+- The assistant calls `https://api.uibcdf.org/v1/chat`.
+- It does not execute commands or modify files.
+- If the backend is offline, you will see a short error message.
