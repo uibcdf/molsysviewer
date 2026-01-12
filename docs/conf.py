@@ -199,6 +199,7 @@ html_css_files = [
     'custom.css',
 ]
 
+
 # Custom css for tabs
 def _update_docs_light_runtime_links(app):
     version = molsysviewer.__version__.split('+')[0]
