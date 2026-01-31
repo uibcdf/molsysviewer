@@ -281,6 +281,10 @@ export type SetCameraSnapshotMessage = {
     duration_ms?: number;
 };
 
+export type RequestCameraSnapshotMessage = {
+    op: "request_camera_snapshot";
+};
+
 export type ViewerMessage =
     AddSphereMessage |
     AddAlphaSphereSetMessage |
@@ -324,4 +328,5 @@ export type ViewerMessage =
     HideGlobalMessage |
     ZoomMessage |
     SetCameraSnapshotMessage |
+    RequestCameraSnapshotMessage |
     Record<string, unknown>;

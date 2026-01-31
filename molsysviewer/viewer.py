@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Mapping
+import time
 import inspect
 import json
 import re
@@ -9,6 +10,7 @@ import molsysmt as msm
 import numpy as np
 
 from ._pyunitwizard import puw
+from ._private.digestion import digest
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
@@ -73,6 +75,9 @@ class MolSysView:
     Provides structure loading, visibility control, shape management, and
     utilities to export static HTML views for documentation or sharing.
     """
+    def _repr_mimebundle_(self, include=None, exclude=None):
+        """IPython/Jupyter display hook (delegates to the underlying widget)."""
+        return self.widget._repr_mimebundle_(include=include, exclude=exclude)
 
     def __init__(self, *, debug_js: bool | None = None) -> None:
         self.widget = MolSysViewerWidget()
@@ -276,7 +281,16 @@ class MolSysView:
                 sel = new_rule.get("selection")
                 if sel is not None:
                     try:
-                        new_rule["atom_indices"] = list(msm.select(self._molsys, selection=sel, syntax="MolSysMT"))
+                        from ._private.digestion import digest_selection_and_syntax
+
+                        sel, syntax = digest_selection_and_syntax(
+                            sel,
+                            syntax="MolSysMT",
+                            caller="molsysviewer.viewer.MolSysView._resolve_user_preset",
+                        )
+                        new_rule["atom_indices"] = list(
+                            msm.select(self._molsys, selection=sel, syntax=syntax, skip_digestion=True)
+                        )
                     except Exception:
                         raise ValueError(f"Unable to resolve selection '{sel}' for user preset '{preset}'")
             rules.append(new_rule)
@@ -287,6 +301,7 @@ class MolSysView:
             "rules": rules,
         }
 
+    @digest()
     def new_region(
         self,
         selection: str | Any = "all",
@@ -295,6 +310,7 @@ class MolSysView:
         tag: str | None = None,
         representation: str | None = None,
         complement_of_regions: str | list[str] | None = None,
+        syntax: str = "MolSysMT",
         **repr_params: Any,
     ) -> Region:
         """Create a new region (structural subset) with an optional representation.
@@ -313,6 +329,8 @@ class MolSysView:
         complement_of_regions
             Tags of regions to exclude. If "all"/"All"/"ALL", the region covers the
             complement of all existing regions. Ignored if ``atom_indices`` is set.
+        syntax
+            Selection syntax understood by MolSysMT.
 
         Notes
         -----
@@ -344,7 +362,7 @@ class MolSysView:
             total = int(self._molsys._get_n_atoms())  # type: ignore[attr-defined]
             atom_indices = [i for i in range(total) if i not in exclude]
         elif atom_indices is None and self._molsys is not None:
-            atom_indices = list(msm.select(self._molsys, selection=selection, syntax="MolSysMT"))
+            atom_indices = list(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
         elif atom_indices is None and self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before creating regions.")
 
@@ -652,6 +670,7 @@ class MolSysView:
         )
         self._last_label = label
 
+    @digest()
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""
         if self.atom_mask is None or self._molsys is None:
@@ -664,11 +683,12 @@ class MolSysView:
             # Hide all representations in the frontend
             self._send({"op": "hide_global", "target": "all"})  # noqa: SLF001
         else:
-            atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
+            atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
             self.atom_mask[atom_indices] = False
 
         self._update_visibility_in_frontend()
 
+    @digest()
     def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False):
         """Show the widget (first call or if `force=True`) and optionally adjust visibility."""
         # (1) Apply visibility changes if a system is loaded
@@ -683,7 +703,7 @@ class MolSysView:
                 self._send({"op": "hide_global" if self._global_hidden else "show_global", "target": "global"})  # noqa: SLF001
             elif not (is_all(selection) and is_all(structure_indices)):
                 # Partial "show": turn on only the requested selection
-                atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
+                atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
                 self.atom_mask[atom_indices] = True
                 self._update_visibility_in_frontend()
     
@@ -695,6 +715,7 @@ class MolSysView:
         # (3) Subsequent calls without force do not return the widget
         return None
 
+    @digest()
     def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
         """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""
         if self.atom_mask is None or self._molsys is None:
@@ -706,11 +727,12 @@ class MolSysView:
             self._update_visibility_in_frontend()
             return
 
-        atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax)
+        atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
         self.atom_mask[:] = False
         self.atom_mask[atom_indices] = True
         self._update_visibility_in_frontend()
 
+    @digest()
     def zoom(
         self,
         selection: str | Any = "all",
@@ -745,7 +767,13 @@ class MolSysView:
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before calling zoom().")
 
-        atom_indices = msm.select(self._molsys, selection=selection, structure_indices=structure_indices, syntax=syntax)
+        atom_indices = msm.select(
+            self._molsys,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            skip_digestion=True,
+        )
         if not atom_indices:
             raise ValueError("Cannot zoom: empty selection.")
 
@@ -855,6 +883,7 @@ class MolSysView:
             }
         )
 
+    @digest()
     def info(self,
              element='system',
              selection='all',
@@ -866,12 +895,13 @@ class MolSysView:
             element=element,
             selection=selection,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
         if "mask" in inspect.signature(msm.info).parameters:
             kwargs["mask"] = mask
         return msm.info(self._molsys, **kwargs)
 
+    @digest()
     def select(
         self,
         selection="all",
@@ -894,9 +924,10 @@ class MolSysView:
             element=element,
             mask=mask,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
 
+    @digest()
     def get(
         self,
         element="system",
@@ -919,10 +950,11 @@ class MolSysView:
             syntax=syntax,
             get_missing_bonds=get_missing_bonds,
             output_type=output_type,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
             **kwargs,
         )
 
+    @digest()
     def append_structures(
         self,
         from_molecular_system: Any,
@@ -954,6 +986,7 @@ class MolSysView:
         self.molecular_system = self._molsys
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
 
+    @digest()
     def set(
         self,
         *,
@@ -984,6 +1017,7 @@ class MolSysView:
         self.molecular_system = self._molsys
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
 
+    @digest()
     def add(
         self,
         from_molecular_system: Any,
@@ -1011,6 +1045,7 @@ class MolSysView:
         self.molecular_system = self._molsys
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
 
+    @digest()
     def remove(
         self,
         *,
@@ -1088,6 +1123,10 @@ class MolSysView:
         if mode not in {"standalone", "lite"}:
             raise ValueError("write_html(mode=...) must be 'standalone' or 'lite'.")
 
+        # If the frontend is live, request a fresh camera snapshot so exports
+        # reflect the latest user view (best-effort, no hard dependency).
+        self._request_camera_snapshot()
+
         messages = self._build_export_messages()
 
         if mode == "standalone":
@@ -1109,6 +1148,25 @@ class MolSysView:
             )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
+
+    def _request_camera_snapshot(self, timeout_s: float = 0.35) -> bool:
+        """Ask the frontend for a camera snapshot (best-effort)."""
+        if not self._ready:
+            return False
+        previous = self._last_camera_snapshot
+        try:
+            self.widget.send({"op": "request_camera_snapshot"})
+        except Exception:
+            return False
+        if timeout_s <= 0:
+            return True
+        deadline = time.monotonic() + timeout_s
+        while time.monotonic() < deadline:
+            current = self._last_camera_snapshot
+            if current is not None and current is not previous:
+                return True
+            time.sleep(0.01)
+        return False
 
     def _load_anywidget_bundle(self) -> str:
         """Return the JS bundle for anywidget if available to inline in exports."""

@@ -9,6 +9,8 @@ import molsysmt as msm
 import numpy as np
 import math
 
+from .._private.digestion import digest_selection_inputs
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -40,7 +42,14 @@ def load_from_molsysmt(
 
     view = ensure_view(view)
 
-    # Store the input on the viewer instance.
+    selection, structure_indices, syntax = digest_selection_inputs(
+        selection=selection,
+        structure_indices=structure_indices,
+        syntax=syntax,
+        caller="molsysviewer.loaders.load_molsysmt.load_from_molsysmt",
+    )
+
+    # Store the digested inputs on the viewer instance.
     view.molecular_system = molecular_system
     view.selection = selection
     view.structure_indices = structure_indices

@@ -65,5 +65,7 @@ string_style.md
 roadmap.md
 changes_notes.md
 future/index.md
+architecture_snapshot_2026_01.md
+architecture_snapshot_2025_11.md
 appendix/index.md
 ```

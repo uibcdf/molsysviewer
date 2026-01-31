@@ -15,6 +15,12 @@ You treat these as public:
 
 If you rename, remove, or change behavior here, you update docs and add tests.
 
+`new_view(...)` includes a convenience argument `load_mode`:
+
+- `"selection"` (default): `selection` subsets the loaded system.
+- `"all"`: the full system loads, the global representation is hidden, and a
+  region tagged `"selection"` is created for the selection.
+
 ## Internal Python APIs
 
 You can change these without a stability guarantee:
