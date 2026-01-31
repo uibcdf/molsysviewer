@@ -6,6 +6,8 @@ MolSysViewer builds on MolSysMT, so the way you load, query, and modify what you
 
 If you are new to these ideas, start with the first section, an overview on what a molecular system is for MolSysViewer, and then continue in order:
 
+Why this matters: `new_view` defaults to `load_mode="selection"`, so a selection subsets the system you load. Use `load_mode="all"` when you want the full system and a visible region tagged `selection`.
+
 ```{toctree}
 :maxdepth: 1
 

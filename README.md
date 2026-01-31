@@ -97,6 +97,12 @@ v.load(pdb_text)
 v.add_sphere(center=(12.0, 12.0, 8.0), radius=3.0, color=0x00ff00, alpha=0.4)
 ```
 
+`new_view(...)` also accepts `load_mode`:
+
+- `load_mode="selection"` (default): the selection subsets the loaded system.
+- `load_mode="all"`: the full system loads, the global view is hidden, and a
+  region tagged `"selection"` is created for the selection.
+
 ---
 
 ## 📦 Installation

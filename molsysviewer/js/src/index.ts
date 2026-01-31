@@ -422,6 +422,15 @@ export default {
         sendLog("info", "[MolSysViewer] widget render init");
 
         const onCustomMsg = (msg: ViewerMessage) => {
+            if (msg && (msg as any).op === "request_camera_snapshot") {
+                controllerPromise.then(c => {
+                    const snapshot = c.getCameraSnapshot();
+                    if (snapshot) {
+                        model.send({ event: "camera_snapshot", snapshot });
+                    }
+                });
+                return;
+            }
             enqueueMessage(msg, { syncToPopup: true });
         };
 

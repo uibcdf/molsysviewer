@@ -3,7 +3,8 @@
 This page is the canonical architecture reference for MolSysViewer.
 It complements the short overview in {doc}`architecture`.
 If you want a longer, implementation-oriented snapshot from the original
-devguide, see {doc}`architecture_snapshot_2025_11`.
+devguide, see {doc}`architecture_snapshot_2026_01` (latest) or
+{doc}`architecture_snapshot_2025_11` (historical).
 
 ## Layers and responsibilities
 
@@ -66,6 +67,10 @@ The widget emits events back to Python via `widget.on_msg`:
 4. Python sends `load_molsys_payload`.
 5. TS builds Mol* `Topology`, `Coordinates`, `Trajectory` and applies a preset.
 6. The controller captures the structure and notifies state/trajectory handlers.
+
+Note: `new_view(..., load_mode="selection")` uses the same flow but subsets the
+system before loading, while `new_view(..., load_mode="all")` loads the full
+system and creates a `selection` region for the requested selection.
 
 ### String/URL loads
 

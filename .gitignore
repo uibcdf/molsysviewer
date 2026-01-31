@@ -125,3 +125,4 @@ record.txt
 # ==========================================================
 molsysviewer/_version.py
 !*.nbconvert.log
+codex_session.sh

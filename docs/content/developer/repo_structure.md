@@ -36,6 +36,8 @@ Key modules
   - AnyWidget wrapper, exports `viewer.js` as `_esm` and synced traits.
 - `molsysviewer/new_view.py`
   - Convenience `new_view(...)` that creates or reuses a `MolSysView`.
+  - Includes `load_mode` to choose between subsetting the system or loading all
+    and creating a `selection` region.
 - `molsysviewer/loaders/`
   - `load_molsysmt.py`: MolSysMT conversion and payload serialization.
 - `molsysviewer/regions.py`, `molsysviewer/layers.py`, `molsysviewer/whole.py`
