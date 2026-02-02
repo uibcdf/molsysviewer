@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 import molsysmt as msm
+from ._private.digestion import digest
 
 
 class Region:
@@ -99,6 +100,7 @@ class Region:
 
     # --- public API ---
 
+    @digest()
     def select(
         self,
         selection="all",
@@ -144,6 +146,7 @@ class Region:
 
         return self._intersect_indices(selected, scope)
 
+    @digest()
     def get(
         self,
         element="system",
@@ -204,6 +207,7 @@ class Region:
             **kwargs,
         )
 
+    @digest()
     def info(
         self,
         element="system",
@@ -238,7 +242,8 @@ class Region:
             skip_digestion=skip_digestion,
         )
 
-    def set_representation(self, representation: str | None = None, *, preset: str | None = None, **params: Any) -> None:
+    @digest()
+    def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Apply or update a representation for this region.
 
         Allowed Mol* types (normalized, case-insensitive): cartoon, backbone,
@@ -263,7 +268,8 @@ class Region:
             params=self.repr_params,
         )
 
-    def new_complementary_region(self, tag: str | None = None, **kwargs: Any) -> "Region":
+    @digest()
+    def new_complementary_region(self, tag: str | None = None, skip_digestion: bool = False, **kwargs: Any) -> "Region":
         """Create a new region with the complement of this region's atoms.
 
         The resulting tag defaults to ``f\"Global-{self.tag}\"`` if not provided.
@@ -281,17 +287,20 @@ class Region:
             **kwargs,
         )
 
-    def show(self) -> None:
+    @digest()
+    def show(self, skip_digestion: bool = False) -> None:
         """Show this region (all attached representations)."""
         self._hidden = False
         self._send("show_region")
 
-    def hide(self) -> None:
+    @digest()
+    def hide(self, skip_digestion: bool = False) -> None:
         """Hide this region (all attached representations)."""
         self._hidden = True
         self._send("hide_region")
 
-    def delete(self) -> None:
+    @digest()
+    def delete(self, skip_digestion: bool = False) -> None:
         """Remove this region and its representations."""
         if not self._active:
             return

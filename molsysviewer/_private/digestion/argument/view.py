@@ -2,7 +2,7 @@ from molsysviewer._private.exceptions import ArgumentError
 
 def digest_view(view, caller=None):
 
-    if caller == 'molsysviewer.new_view.new_view':
+    if caller in ['molsysviewer.new_view.new_view', 'molsysviewer.loaders.load_molsysmt.load_from_molsysmt']:
         return view
 
     from molsysmt.basic import get_form

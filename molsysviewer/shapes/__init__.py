@@ -10,6 +10,7 @@ from .pocket_blobs import PocketBlobs
 from .channel_tubes import ChannelTubes
 from .anisotropy_ellipsoids import AnisotropyEllipsoids
 from .pharmacophore import PharmacophoreShapes
+from .._private.digestion import digest
 
 
 class ShapesManager:
@@ -35,91 +36,116 @@ class ShapesManager:
         self.ellipsoids = AnisotropyEllipsoids(view)
         self.ph4 = PharmacophoreShapes(view)
 
+    @digest()
     def add_sphere(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.spheres.add_sphere(*args, **kwargs)
+        return self.spheres.add_sphere(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_spheres(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.spheres.add_spheres(*args, **kwargs)
+        return self.spheres.add_spheres(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_pocket_surface(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.pockets.add_pocket_surface(*args, **kwargs)
+        return self.pockets.add_pocket_surface(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_set_alpha_spheres(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.spheres.add_set_alpha_spheres(*args, **kwargs)
+        return self.spheres.add_set_alpha_spheres(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_links(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.links.add_links(*args, **kwargs)
+        return self.links.add_links(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_displacement_vectors(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.vectors.add_displacement_vectors(*args, **kwargs)
+        return self.vectors.add_displacement_vectors(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_triangle_faces(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.triangles.add_triangle_faces(*args, **kwargs)
+        return self.triangles.add_triangle_faces(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_tetrahedra(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.tetrahedra.add_tetrahedra(*args, **kwargs)
+        return self.tetrahedra.add_tetrahedra(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_pocket_blob(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.blobs.add_pocket_blob(*args, **kwargs)
+        return self.blobs.add_pocket_blob(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_channel_tube(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.tubes.add_channel_tube(*args, **kwargs)
+        return self.tubes.add_channel_tube(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_anisotropy_ellipsoids(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.ellipsoids.add_anisotropy_ellipsoids(*args, **kwargs)
+        return self.ellipsoids.add_anisotropy_ellipsoids(*args, skip_digestion=True, **kwargs)
 
+    @digest()
     def add_pharmacophore_features(
         self,
         *args,
+        skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.ph4.add_pharmacophore_features(*args, **kwargs)
+        return self.ph4.add_pharmacophore_features(*args, skip_digestion=True, **kwargs)
 
-    def clear(self, tag: str | None = None):
+    @digest()
+    def clear(self, tag: str | None = None, skip_digestion: bool = False):
         """Delete shapes (all if tag is None, or by tag)."""
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
 

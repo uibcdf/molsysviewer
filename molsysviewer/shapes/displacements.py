@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 import numpy as np
 
 
@@ -30,6 +32,7 @@ class DisplacementVectors:
             return values
         return seq
 
+    @digest()
     def add_displacement_vectors(
         self,
         origins: Iterable[Sequence[float]] | np.ndarray | None,
@@ -45,6 +48,7 @@ class DisplacementVectors:
         radius_scale: float = 0.05,
         radial_segments: int | None = None,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Add arrows (cylinder + cone) for displacement vectors.
 

@@ -8,6 +8,9 @@ def digest_color(color, caller=None):
         if len(color)==7 and color.startswith('#'):
             return color
 
+    if caller is not None and caller.startswith("molsysviewer.") and isinstance(color, int):
+        return color
+
     if isinstance(color, (list, tuple, np.ndarray)):
         if len(color)==3:
             return color

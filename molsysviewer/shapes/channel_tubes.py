@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 class ChannelTubes:
     """API to build channel tubes along ordered centers/radii (e.g., TopoMT routes)."""
@@ -34,6 +36,7 @@ class ChannelTubes:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @digest()
     def add_channel_tube(
         self,
         *,
@@ -48,6 +51,7 @@ class ChannelTubes:
         alpha: float | None = None,
         tag: str | None = None,
         name: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Generate a smoothed tube from ordered centers/radii (e.g., TopoMT routes)."""
 

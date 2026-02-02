@@ -1,4 +1,3 @@
-import molsysviewer.config as config
 from .argument_names_standardization import argument_names_standardization
 from molsysviewer._private.exceptions import NotDigestedArgumentWarning
 
@@ -109,15 +108,20 @@ def digest(**kwargs):
                 gut(arg_name)
 
 
-            if caller not in ['molsysviewer.viewer.MolSysView.new_region']:
+            if caller not in ['molsysviewer.viewer.MolSysView.new_region'] and not caller.startswith('molsysviewer.'):
                 for arg_name in not_digested_args:
                     if arg_name not in ['self']:
                         warnings.warn(arg_name+' from '+caller, NotDigestedArgumentWarning, stacklevel=2)
 
 
-            final_args = digested_args
+            if caller.startswith('molsysviewer.'):
+                final_args = {**not_digested_args, **digested_args}
+            else:
+                final_args = digested_args
 
             if 'self' in all_args:
+                if 'self' in final_args:
+                    del final_args['self']
                 return func(all_args['self'], **final_args)
             else:
                 return func(**final_args)

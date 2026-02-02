@@ -311,6 +311,7 @@ class MolSysView:
         representation: str | None = None,
         complement_of_regions: str | list[str] | None = None,
         syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
         **repr_params: Any,
     ) -> Region:
         """Create a new region (structural subset) with an optional representation.
@@ -381,11 +382,13 @@ class MolSysView:
         region._send_create()  # noqa: SLF001
         return region
 
+    @digest()
     def new_layer(
         self,
         *,
         tag: str | None = None,
         kind: str | None = None,
+        skip_digestion: bool = False,
         **meta: Any,
     ) -> Layer:
         """Create a new layer (non-structural visual group)."""
@@ -395,6 +398,7 @@ class MolSysView:
         layer._send_create()  # noqa: SLF001
         return layer
 
+    @digest()
     def set_controls_visible(
         self,
         visible: bool,
@@ -402,6 +406,7 @@ class MolSysView:
         autohide: bool | None = None,
         position: list[str] | tuple[str, str] | None = None,
         position_fullscreen: list[str] | tuple[str, str] | None = None,
+        skip_digestion: bool = False,
     ) -> None:
         """Show or hide the on-canvas controls (reset/full/bg/spin/swing + trajectory bar). Optionally toggle autohide and positions."""
         try:
@@ -651,6 +656,7 @@ class MolSysView:
 
     # --- Public loading API ---
 
+    @digest()
     def load(
         self,
         molecular_system: Any,
@@ -658,6 +664,7 @@ class MolSysView:
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
         label: str | None = None,
+        skip_digestion: bool = False,
     ) -> None:
         """Load a molecular system (MolSysMT-compatible) into the viewer."""
         _load_from_molsysmt(
@@ -666,12 +673,13 @@ class MolSysView:
             structure_indices=structure_indices,
             syntax=syntax,
             label=label,
+            skip_digestion=True,
             view=self,
         )
         self._last_label = label
 
     @digest()
-    def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
+    def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""
         if self.atom_mask is None or self._molsys is None:
             return
@@ -689,7 +697,7 @@ class MolSysView:
         self._update_visibility_in_frontend()
 
     @digest()
-    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False):
+    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False):
         """Show the widget (first call or if `force=True`) and optionally adjust visibility."""
         # (1) Apply visibility changes if a system is loaded
         if self._molsys is not None and self.atom_mask is not None:
@@ -716,7 +724,7 @@ class MolSysView:
         return None
 
     @digest()
-    def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT"):
+    def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
         """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""
         if self.atom_mask is None or self._molsys is None:
             return
@@ -743,6 +751,7 @@ class MolSysView:
         duration_ms: Any | None = None,
         extra_radius: Any = '4.0 angstroms',
         min_radius: Any = '1.0 angstroms',
+        skip_digestion: bool = False,
     ) -> None:
         """Focus the camera on the geometric center of a selection of atoms.
 
@@ -780,8 +789,8 @@ class MolSysView:
         if duration_ms is not None:
             duration = duration_ms
         duration_ms_value = puw.get_value(duration, to_unit="ms")
-        extra_radius = puw.get_value(extra_radius, to_unit="angstroms")
-        min_radius = puw.get_value(min_radius, to_unit="angstroms")
+        extra_radius = round(float(puw.get_value(extra_radius, to_unit="angstroms")), 6)
+        min_radius = round(float(puw.get_value(min_radius, to_unit="angstroms")), 6)
 
         self._send(
             {
@@ -795,12 +804,14 @@ class MolSysView:
             }
         )
 
+    @digest()
     def clear_decorations(
         self,
         *,
         shapes: bool = True,
         styles: bool = True,
         labels: bool = True,
+        skip_digestion: bool = False,
     ) -> None:
         """Clear decorative elements (shapes/styles/labels) without touching the loaded structure or camera."""
         if shapes:
@@ -816,14 +827,16 @@ class MolSysView:
             }
         )
 
-    def reset_camera(self) -> None:
+    @digest()
+    def reset_camera(self, skip_digestion: bool = False) -> None:
         """Reset the camera / view in the frontend."""
         self._send({
             "op": "reset_view",
             "options": {},
         })
 
-    def reset_viewer(self) -> None:
+    @digest()
+    def reset_viewer(self, skip_digestion: bool = False) -> None:
         """Fully clear the viewer and reset internal state (requires a new `load(...)`)."""
         # Reset Python-side state
         self.molecular_system = None
@@ -849,7 +862,8 @@ class MolSysView:
             }
         )
 
-    def get_camera_snapshot(self, *, pretty: bool = False) -> dict | str | None:
+    @digest()
+    def get_camera_snapshot(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
         """Return the last camera snapshot received from the frontend.
 
         Parameters
@@ -863,7 +877,8 @@ class MolSysView:
             return dict(self._last_camera_snapshot)
         return json.dumps(self._last_camera_snapshot, indent=2, sort_keys=True)
 
-    def set_camera_snapshot(self, snapshot: dict, *, duration_ms: int = 0) -> None:
+    @digest()
+    def set_camera_snapshot(self, snapshot: dict, *, duration_ms: int = 0, skip_digestion: bool = False) -> None:
         """Apply a previously saved camera snapshot.
 
         Parameters
@@ -962,6 +977,7 @@ class MolSysView:
         selection: str | Any = "all",
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
     ) -> None:
         """Append structures (frames) to the loaded system and refresh the viewer (live).
 
@@ -994,6 +1010,7 @@ class MolSysView:
         selection: str | Any = "all",
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
         **kwargs: Any,
     ) -> None:
         """Set attribute values on the loaded system and refresh the viewer (live).
@@ -1026,6 +1043,7 @@ class MolSysView:
         structure_indices: str | Any = "all",
         keep_ids: bool = True,
         syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
     ) -> None:
         """Add atoms/structures from another system into this view and refresh the viewer (live)."""
         if self._molsys is None:
@@ -1052,6 +1070,7 @@ class MolSysView:
         selection: str | Any | None = None,
         structure_indices: str | Any | None = None,
         syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
     ) -> None:
         """Remove atoms and/or structures from this view and refresh the viewer (live).
 
@@ -1087,6 +1106,7 @@ class MolSysView:
 
     # --- Export helpers for docs/notebooks ---
 
+    @digest()
     def write_html(
         self,
         output_filename: str,
@@ -1096,6 +1116,7 @@ class MolSysView:
         include_popout: bool = True,
         mode: str = "standalone",
         inline_messages: bool = True,
+        skip_digestion: bool = False,
     ) -> None:
         """Export this viewer widget to an HTML file.
 

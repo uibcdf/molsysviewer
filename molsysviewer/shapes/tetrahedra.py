@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 class Tetrahedra:
     def __init__(self, view) -> None:
@@ -55,6 +57,7 @@ class Tetrahedra:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @digest()
     def add_tetrahedra(
         self,
         *,
@@ -73,6 +76,7 @@ class Tetrahedra:
         normal_color: int | None = None,
         tag: str | None = None,
         name: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Add tetrahedra as a triangle mesh, using coordinates or atom indices.
 

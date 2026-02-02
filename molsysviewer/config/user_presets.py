@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 from typing import Any, Dict
 
+from .._private.digestion import digest
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - optional dependency
@@ -19,7 +20,8 @@ except Exception:  # pragma: no cover - optional dependency
 user_presets: Dict[str, Dict[str, Any]] = {}
 
 
-def load_user_presets(path: str | Path) -> Dict[str, Dict[str, Any]]:
+@digest()
+def load_user_presets(path: str | Path, skip_digestion: bool = False) -> Dict[str, Dict[str, Any]]:
     """Load user presets from a JSON or YAML file into ``user_presets``.
 
     The file must contain a top-level mapping: preset_name -> {base, options, rules}.

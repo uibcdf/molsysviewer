@@ -17,6 +17,7 @@ controls_position = ["top", "right"]
 controls_position_fullscreen = ["bottom", "right"]
 
 from .user_presets import user_presets, load_user_presets
+from .._private.digestion import digest
 
 __all__ = [
     "show_controls",
@@ -29,18 +30,21 @@ __all__ = [
 
 # PyUnitWizard configuration for quantities with units.
 
-def set_default_quantities_form(form='pint'):
+@digest()
+def set_default_quantities_form(form='pint', skip_digestion: bool = False):
 
     from molsysviewer import pyunitwizard as puw
     puw.configure.set_default_form(form)
 
-def set_default_quantities_parser(form='pint'):
+@digest()
+def set_default_quantities_parser(form='pint', skip_digestion: bool = False):
 
     from molsysviewer import pyunitwizard as puw
     puw.configure.set_default_parser(form)
 
+@digest()
 def set_default_standard_units(standards=['nm', 'ps', 'K', 'mole', 'amu', 'e',
-    'kJ/mol', 'kJ/(mol*nm**2)', 'N', 'degrees']):
+    'kJ/mol', 'kJ/(mol*nm**2)', 'N', 'degrees'], skip_digestion: bool = False):
 
     from molsysviewer import pyunitwizard as puw
     puw.configure.set_standard_units(standards)
@@ -50,6 +54,5 @@ __all__.extend([
     "set_default_quantities_parser",
     "set_default_standard_units",
 ])
-
 
 

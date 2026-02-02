@@ -19,6 +19,7 @@ def new_view(
     load_mode: Literal["selection", "all"] = "selection",
     debug_js: bool | None = None,
     view: MolSysView | None = None,
+    skip_digestion: bool = False,
 ) -> MolSysView:
     """Create and return a MolSysView, optionally loading a molecular system.
 
@@ -30,6 +31,8 @@ def new_view(
     ----------
     syntax
         Selection syntax understood by MolSysMT.
+    skip_digestion
+        Whether to skip MolSysViewer digestion for this call.
     load_mode
         - ``"selection"`` (default): the selection is used to subset the system
           before loading. The view only contains the selected atoms.
@@ -48,6 +51,7 @@ def new_view(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
+            skip_digestion=True
         )
         return view
 
@@ -57,12 +61,13 @@ def new_view(
         selection="all",
         structure_indices=structure_indices,
         syntax=syntax,
+        skip_digestion=True
     )
-    region = view.new_region(selection, tag="selection", syntax=syntax)
+    region = view.new_region(selection, tag="selection", syntax=syntax, skip_digestion=True)
     preset = getattr(view.whole, "_preset", None)
     representation = getattr(view.whole, "_representation", None)
     params = getattr(view.whole, "_repr_params", {}) or {}
     if preset is None and representation is None:
         preset = "auto"
-    region.set_representation(representation, preset=preset, **params)
+    region.set_representation(representation, preset=preset, skip_digestion=True, **params)
     return view

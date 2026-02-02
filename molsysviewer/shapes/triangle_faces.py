@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 class TriangleFaces:
     def __init__(self, view) -> None:
@@ -65,6 +67,7 @@ class TriangleFaces:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @digest()
     def add_triangle_faces(
         self,
         *,
@@ -80,6 +83,7 @@ class TriangleFaces:
         normal_length: float | None = None,
         normal_color: int | None = None,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Add custom triangle faces using coordinates or atom indices.
 

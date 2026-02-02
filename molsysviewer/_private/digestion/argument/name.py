@@ -8,6 +8,12 @@ def digest_name(name, caller=None):
         from .chain_name import digest_chain_name
         return digest_chain_name(name, caller=caller)
 
+    if caller is not None and caller.startswith("molsysviewer."):
+        if name is None:
+            return name
+        if isinstance(name, str):
+            return name
+
     if isinstance(name, (tuple, list)):
         name=np.ndarray(name)
 
@@ -15,4 +21,3 @@ def digest_name(name, caller=None):
         return name
 
     raise ArgumentError('name', caller=caller, message=None)
-

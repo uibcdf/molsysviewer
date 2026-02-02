@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from ._private.digestion import digest
+
 
 class Layer:
     """Wrapper for a non-structural visual layer (shapes, overlays) addressed by tag."""
@@ -30,17 +32,20 @@ class Layer:
     def _send_create(self) -> None:
         self._send("create_layer", kind=self.kind, meta=self.meta)
 
-    def show(self) -> None:
+    @digest()
+    def show(self, skip_digestion: bool = False) -> None:
         """Show this layer (all contained visuals)."""
         self._hidden = False
         self._send("show_layer")
 
-    def hide(self) -> None:
+    @digest()
+    def hide(self, skip_digestion: bool = False) -> None:
         """Hide this layer (all contained visuals)."""
         self._hidden = True
         self._send("hide_layer")
 
-    def delete(self) -> None:
+    @digest()
+    def delete(self, skip_digestion: bool = False) -> None:
         """Remove this layer and its visuals."""
         if not self._active:
             return
@@ -48,7 +53,8 @@ class Layer:
         self._send("delete_layer")
         self._view._unregister_layer(self.tag)  # noqa: SLF001
 
-    def set_tag(self, new_tag: str) -> None:
+    @digest()
+    def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
         """Change this layer's tag (and update the registry)."""
         if not self._active or new_tag == self.tag:
             return

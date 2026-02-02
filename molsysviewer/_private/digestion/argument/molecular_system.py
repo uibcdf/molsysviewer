@@ -32,7 +32,7 @@ def digest_molecular_system(molecular_system, caller=None):
             if isinstance(molecular_system[ii], PosixPath):
                 molecular_system[ii] = molecular_system[ii].absolute().__str__()
 
-    if caller == 'molsysviewer.new_view.new_view':
+    if caller in ['molsysviewer.new_view.new_view', 'molsysviewer.loaders.load_molsysmt.load_from_molsysmt']:
         return molecular_system
 
     if caller=='molsysmt.basic.view.view':

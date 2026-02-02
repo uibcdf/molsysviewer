@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 class LinkShapes:
     def __init__(self, view) -> None:
@@ -50,6 +52,7 @@ class LinkShapes:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @digest()
     def add_links(
         self,
         *,
@@ -63,6 +66,7 @@ class LinkShapes:
         alpha: float = 1.0,
         radial_segments: int | None = None,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Add cylinders/bars connecting pairs of points or atoms.
 
