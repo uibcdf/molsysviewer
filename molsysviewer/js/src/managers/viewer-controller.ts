@@ -19,6 +19,29 @@ import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handl
  * Refactored to use specialized handlers for better maintainability.
  */
 export class MolSysViewerController {
+    private static showInitFailureOverlay(target: HTMLElement, message: string) {
+        const overlay = document.createElement("div");
+        overlay.setAttribute("data-molsysviewer-error", "webgl");
+        Object.assign(overlay.style, {
+            position: "absolute",
+            inset: "0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
+            textAlign: "center",
+            background: "rgba(10, 10, 10, 0.78)",
+            color: "#f2f2f2",
+            fontFamily: "\"IBM Plex Sans\", system-ui, sans-serif",
+            fontSize: "14px",
+            lineHeight: "1.4",
+            zIndex: "10",
+            pointerEvents: "none",
+        });
+        overlay.textContent = message;
+        target.appendChild(overlay);
+    }
+
     static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement): Promise<MolSysViewerController> {
         const canvas = existingCanvas ?? document.createElement("canvas");
         if (!existingCanvas) {
@@ -41,7 +64,12 @@ export class MolSysViewerController {
         } else {
             console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
         }
-        if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
+        if (!ok) {
+            const message = "WebGL unavailable / GPU driver mismatch. Mol* viewer failed to initialize.";
+            console.error("[MolSysViewer] Failed to init Mol* viewer");
+            MolSysViewerController.showInitFailureOverlay(target, message);
+            notify?.({ event: "viewer_init_failed", reason: "webgl", message });
+        }
 
         return new MolSysViewerController(plugin, target, notify);
     }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Mapping
+import warnings
 import time
 import inspect
 import json
@@ -162,6 +163,14 @@ class MolSysView:
                 snapshot = content.get("snapshot")
                 if isinstance(snapshot, dict):
                     self._last_camera_snapshot = snapshot
+            elif event == "viewer_init_failed":
+                reason = content.get("reason", "unknown")
+                message = content.get("message") or "Mol* viewer failed to initialize."
+                warnings.warn(
+                    f"{message} (reason: {reason})",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
 
         self.widget.on_msg(_handle_msg)
 
