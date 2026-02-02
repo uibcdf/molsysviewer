@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 class AnisotropyEllipsoids:
     """Visualize oriented ellipsoids/disks from eigenvalues/eigenvectors or tensors."""
@@ -57,6 +59,7 @@ class AnisotropyEllipsoids:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @digest()
     def add_anisotropy_ellipsoids(
         self,
         *,
@@ -74,6 +77,7 @@ class AnisotropyEllipsoids:
         alpha: float | None = None,
         tag: str | None = None,
         name: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Send oriented ellipsoids or flat disks based on anisotropy inputs."""
 

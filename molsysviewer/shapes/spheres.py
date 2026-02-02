@@ -3,6 +3,7 @@
 from typing import Sequence
 
 from ..layers import Layer
+from .._private.digestion import digest
 
 class SphereShapes:
     """Sphere helpers for the scene."""
@@ -10,6 +11,7 @@ class SphereShapes:
     def __init__(self, view) -> None:
         self._view = view
 
+    @digest()
     def add_sphere(
         self,
         center=(0.0, 0.0, 0.0),
@@ -17,6 +19,7 @@ class SphereShapes:
         color: int = 0x00FF00,
         alpha: float = 0.4,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ) -> Layer:
         """Add a (possibly transparent) sphere to the scene."""
         tag = tag or self._view._next_layer_tag()  # noqa: SLF001
@@ -37,6 +40,7 @@ class SphereShapes:
             self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
         return self._view._layers[tag]  # noqa: SLF001
 
+    @digest()
     def add_spheres(
         self,
         centers: Sequence[Sequence[float]],
@@ -44,6 +48,7 @@ class SphereShapes:
         colors: int | Sequence[int] = 0x00FF00,
         alphas: float | Sequence[float] = 0.4,
         tags: str | Sequence[str] | None = None,
+        skip_digestion: bool = False,
     ):
         """Add multiple spheres to the scene.
 
@@ -83,9 +88,10 @@ class SphereShapes:
 
         layers = []
         for c, r, col, a, t in zip(centers_list, radii, colors, alphas, tags):
-            layers.append(self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t))
+            layers.append(self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t, skip_digestion=True))
         return layers
 
+    @digest()
     def add_set_alpha_spheres(
         self,
         *,
@@ -98,6 +104,7 @@ class SphereShapes:
         alpha_alpha_spheres: float = 0.3,
         alpha_atoms: float = 0.5,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ) -> Layer:
         """Render a set of alpha-spheres (and optionally contact atoms) in a single message.
 
@@ -137,6 +144,7 @@ class SphereShapes:
             self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
         return self._view._layers[tag]  # noqa: SLF001
 
-    def clear(self, tag: str | None = None):
+    @digest()
+    def clear(self, tag: str | None = None, skip_digestion: bool = False):
         """Delete shapes in the frontend (all or by tag)."""
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})

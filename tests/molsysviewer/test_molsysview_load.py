@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from molsysviewer import MolSysView, load
+from molsysviewer import MolSysView
 
 
 PDB_TEXT = """\
@@ -35,16 +35,15 @@ def _import_molsysmt():
     pytest.skip("molsysmt not available for load() integration test")
 
 
-def test_load_uses_molsysmt_payload():
+def test_molsysview_load_uses_molsysmt_payload():
     msm = _import_molsysmt()
     molsys = msm.convert(PDB_TEXT, to_form="molsysmt.MolSys")
 
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    result = load(molsys, view=view)
-
-    assert result is view
+    result = view.load(molsys)
+    assert result is None
     assert view.molecular_system is molsys
     assert view.selection == "all"
     assert view.structure_indices == "all"

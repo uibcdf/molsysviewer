@@ -65,6 +65,7 @@ AI agents must never write directly to these generated outputs.
 10. JS/TS tests:
     - Unit tests in `molsysviewer/js/tests/unit` (run with `npm run test:js`, coverage with `npm run coverage:js`).
     - E2E in `molsysviewer/js/tests/e2e` (headless Playwright: load structure, create region, hide). By default it uses Playwright Chromium; you can force a local Chrome/Chromium with `PW_CHROMIUM_BIN=/path/to/chrome npm run test:e2e`. If launch is blocked by crashpad/sandbox/missing WebGL, the test is skipped with a warning. These are run manually (not in CI) in an environment with a browser and WebGL; do not use xvfb/mesa for E2E.
+11. The `sandbox/` directory is a scratch area for developer experiments. Changes there may be committed without review, and should not drive architectural decisions or test expectations.
 
 ## Developer documentation (where to look first)
 

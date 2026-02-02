@@ -6,9 +6,15 @@ from molsysviewer.shapes import ShapesManager, SphereShapes
 class DummyView:
     def __init__(self) -> None:
         self.messages = []
+        self._layers = {}
+        self._layer_counter = 0
 
     def _send(self, message):
         self.messages.append(message)
+
+    def _next_layer_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
 
 
 def test_shapes_exports_and_delegation(monkeypatch):

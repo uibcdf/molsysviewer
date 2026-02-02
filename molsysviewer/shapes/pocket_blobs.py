@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 class PocketBlobs:
     """API for volumetric blobs (Gaussian fields) built from alpha-spheres."""
@@ -34,6 +36,7 @@ class PocketBlobs:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @digest()
     def add_pocket_blob(
         self,
         *,
@@ -48,6 +51,7 @@ class PocketBlobs:
         alpha: float | None = None,
         tag: str | None = None,
         name: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Create a volumetric blob (iso-surface) from alpha-spheres."""
 

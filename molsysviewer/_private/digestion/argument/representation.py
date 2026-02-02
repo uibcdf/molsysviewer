@@ -16,7 +16,7 @@ def digest_representation(representation, caller=None):
 
         if isinstance(representation, str):
             return representation
-    elif caller == 'molsysviewer.viewer.MolSysView.new_region':
+    elif caller in {'molsysviewer.viewer.MolSysView.new_region', 'molsysviewer.viewer.new_region'}:
         if representation is None:
             return representation
         if isinstance(representation, str):

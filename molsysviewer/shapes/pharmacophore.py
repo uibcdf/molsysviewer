@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 PHARM_COLORS = {
     "donor": 0x3b82f6,        # blue
@@ -40,6 +42,7 @@ class PharmacophoreShapes:
             out.append([float(v[0]), float(v[1]), float(v[2])])
         return out
 
+    @digest()
     def add_pharmacophore_features(
         self,
         *,
@@ -51,6 +54,7 @@ class PharmacophoreShapes:
         colors: Sequence[int] | None = None,
         tag: str | None = None,
         name: str | None = None,
+        skip_digestion: bool = False,
     ) -> None:
         """Render standard pharmacophore glyphs (sphere/disk/arrow)."""
         centers_list = self._norm_centers(centers)

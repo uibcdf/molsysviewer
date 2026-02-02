@@ -9,7 +9,7 @@ import molsysmt as msm
 import numpy as np
 import math
 
-from .._private.digestion import digest_selection_inputs
+from .._private.digestion import digest
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ def ensure_view(view: "MolSysView" | None = None) -> "MolSysView":
     return view
 
 
+@digest()
 def load_from_molsysmt(
     molecular_system: Any,
     *,
@@ -32,6 +33,7 @@ def load_from_molsysmt(
     syntax: str = "MolSysMT",
     label: str | None = None,
     view: "MolSysView | None" = None,
+    skip_digestion: bool = False,
 ) -> "MolSysView":
     """Internal backend for `MolSysView.load(...)`.
 
@@ -41,13 +43,6 @@ def load_from_molsysmt(
     """
 
     view = ensure_view(view)
-
-    selection, structure_indices, syntax = digest_selection_inputs(
-        selection=selection,
-        structure_indices=structure_indices,
-        syntax=syntax,
-        caller="molsysviewer.loaders.load_molsysmt.load_from_molsysmt",
-    )
 
     # Store the digested inputs on the viewer instance.
     view.molecular_system = molecular_system
@@ -64,9 +59,18 @@ def load_from_molsysmt(
         skip_digestion=True,
     )
 
-    n_atoms = int(view._molsys.topology.get_n_atoms())
-    n_structures = int(view._molsys.structures.get_n_structures())
-    multiple_structures = n_structures > 1
+    try:
+        n_atoms = int(view._molsys.topology.get_n_atoms())
+    except Exception:
+        if hasattr(view._molsys, "get"):
+            n_atoms = int(view._molsys.get(element="atom", n_atoms=True))  # type: ignore[call-arg]
+        else:
+            n_atoms = int(msm.get(view._molsys, element="atom", n_atoms=True, skip_digestion=True))
+    n_structures: int | None = None
+    try:
+        n_structures = int(view._molsys.structures.get_n_structures())
+    except Exception:
+        n_structures = None
     view.atom_mask = np.ones(n_atoms, dtype=bool)
 
     viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
@@ -74,6 +78,9 @@ def load_from_molsysmt(
     payload = _serialize_molsys_payload(viewer_json)
     if payload is None:
         raise ValueError("Unable to serialize MolSysMT viewer payload")
+    if n_structures is None:
+        n_structures = len(payload.get("structures") or [])
+    multiple_structures = n_structures > 1
 
     view._send(
         {

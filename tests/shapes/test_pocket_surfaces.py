@@ -6,9 +6,15 @@ from molsysviewer.shapes import PocketSurfaces
 class DummyView:
     def __init__(self) -> None:
         self.messages = []
+        self._layers = {}
+        self._layer_counter = 0
 
     def _send(self, message):
         self.messages.append(message)
+
+    def _next_layer_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
 
 
 def test_add_pocket_surface_basic_message():
@@ -24,6 +30,7 @@ def test_add_pocket_surface_basic_message():
                 "atom_indices": [1, 2, 3],
                 "scalars": [0.1, 0.2, 0.3],
                 "alpha": 0.5,
+                "tag": "shape-1",
             },
         }
     ]

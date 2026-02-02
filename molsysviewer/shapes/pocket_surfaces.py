@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from .._private.digestion import digest
+
 
 def _normalize_mouths(mouth_atom_indices: Sequence[int] | Sequence[Sequence[int]]):
     if not isinstance(mouth_atom_indices, Sequence) or isinstance(
@@ -33,6 +35,7 @@ class PocketSurfaces:
     def __init__(self, view) -> None:
         self._view = view
 
+    @digest()
     def add_pocket_surface(
         self,
         *,
@@ -47,10 +50,11 @@ class PocketSurfaces:
         mouth_atom_indices: Sequence[int] | Sequence[Sequence[int]] | None = None,
         clip_plane: dict | None = None,
         tag: str | None = None,
+        skip_digestion: bool = False,
     ):
         """Send a pocket/void surface request to the frontend."""
 
-        if not atom_indices:
+        if atom_indices is None or len(atom_indices) == 0:
             raise ValueError("atom_indices is required and cannot be empty")
 
         options: dict = {

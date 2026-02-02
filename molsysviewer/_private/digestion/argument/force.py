@@ -4,7 +4,7 @@ from ...exceptions import ArgumentError
 
 def digest_force(force, caller=None):
 
-    if caller == "molsysviewer.viewer.MolSysView.show":
+    if caller in {"molsysviewer.viewer.MolSysView.show", "molsysviewer.viewer.show"}:
         if isinstance(force, bool):
             return force
 

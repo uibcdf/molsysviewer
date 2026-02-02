@@ -48,6 +48,16 @@ def digest_center(center, syntax="MolSysMT", caller=None):
         if isinstance(center, bool):
             return center
 
+    elif caller is not None and caller.startswith("molsysviewer."):
+        if isinstance(center, (np.ndarray, list, tuple)):
+            array = np.asarray(center, dtype=float)
+            if array.ndim == 1 and array.shape[0] == 3:
+                if isinstance(center, tuple):
+                    return tuple(float(v) for v in array.tolist())
+                if isinstance(center, list):
+                    return [float(v) for v in array.tolist()]
+                return array.tolist()
+            if array.ndim == 2 and array.shape == (1, 3):
+                return array.reshape(3).tolist()
 
     raise ArgumentError('center', value=center, caller=caller, message=None)
-
