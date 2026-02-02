@@ -21,6 +21,14 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `"all"`: the full system loads, the global representation is hidden, and a
   region tagged `"selection"` is created for the selection.
 
+### Notebook rendering
+
+`MolSysView` implements the Jupyter display hook (`_repr_mimebundle_`). This means:
+
+- If a `MolSysView` instance is the last expression in a notebook cell, it renders automatically.
+- `MolSysView.load(...)` does **not** return the viewer, so it does not trigger rendering on its own.
+- `MolSysView.show()` remains the explicit way to display the widget in scripts or when needed.
+
 ## Internal Python APIs
 
 You can change these without a stability guarantee:
