@@ -107,3 +107,9 @@ This means:
 - When planning, debugging, or proposing refactors in JavaScript/TypeScript, refer to the Mol* source when clarity or
   correctness depends on understanding internal implementations.
 - This context applies ONLY to work inside the MolSysViewer repository.
+
+## External Tooling Guides (Required for Development)
+
+These guides are required reading for anyone developing this library. They describe how external tools must be used here.
+
+- `SMONITOR_GUIDE.md` — Required guide for SMonitor integration and diagnostics.
