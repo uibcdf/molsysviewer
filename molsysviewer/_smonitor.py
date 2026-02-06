@@ -33,7 +33,7 @@ CODES = {
     "MOLSYSVIEWER-ARGUMENT-ERROR": {
         "title": "Invalid argument",
         "user_message": "The argument '{argument}' has an invalid value in '{caller}'.",
-        "user_hint": "Review the argument requirements and try again. Docs: {doc_url}. Issues: {issues_url}.",
+        "user_hint": "Review the argument requirements and try again. Docs: {doc_url}. If needed, report at {issues_url}.",
         "dev_message": "Invalid argument '{argument}' in '{caller}' with value '{value}'.",
         "dev_hint": "Validate inputs or update the digesters for '{caller}'.",
         "qa_message": "Invalid argument '{argument}' in '{caller}'.",
@@ -99,7 +99,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-COMPATIBLE-CONVERSION": {
         "title": "Incompatible conversion",
         "user_message": "Conversion from '{from_form}' to '{to_form}' is missing required inputs.",
-        "user_hint": "Provide the missing inputs and try again.",
+        "user_hint": "Provide the missing inputs and try again. Docs: {doc_url}.",
         "dev_message": "Conversion '{from_form}' -> '{to_form}' missing {missing_arguments}.",
         "dev_hint": "Add required inputs or adjust conversion support.",
         "qa_message": "Conversion '{from_form}' -> '{to_form}' missing {missing_arguments}.",
@@ -110,7 +110,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-IMPLEMENTED-CONVERSION": {
         "title": "Conversion not implemented",
         "user_message": "Conversion from '{from_form}' to '{to_form}' is not implemented.",
-        "user_hint": "Choose a supported conversion or update MolSysViewer.",
+        "user_hint": "Choose a supported conversion or update MolSysViewer. Docs: {doc_url}.",
         "dev_message": "Conversion '{from_form}' -> '{to_form}' not implemented in '{caller}'.",
         "dev_hint": "Implement conversion or add a clear fallback.",
         "qa_message": "Conversion '{from_form}' -> '{to_form}' not implemented.",
@@ -121,7 +121,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-IMPLEMENTED-ITERATOR": {
         "title": "Iterator not implemented",
         "user_message": "Iterator for form '{form}' is not implemented.",
-        "user_hint": "Choose a supported form or update MolSysViewer.",
+        "user_hint": "Choose a supported form or update MolSysViewer. Docs: {doc_url}.",
         "dev_message": "Iterator for form '{form}' not implemented in '{caller}'.",
         "dev_hint": "Implement iterator or add a clear fallback.",
         "qa_message": "Iterator for form '{form}' not implemented.",
@@ -132,7 +132,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-IMPLEMENTED-METHOD": {
         "title": "Method not implemented",
         "user_message": "This method is not implemented yet.",
-        "user_hint": "Update MolSysViewer or choose a supported method.",
+        "user_hint": "Update MolSysViewer or choose a supported method. Docs: {doc_url}.",
         "dev_message": "Method not implemented in '{caller}'.",
         "dev_hint": "Implement the method or raise a clearer alternative.",
         "qa_message": "Method not implemented in '{caller}'.",
@@ -143,7 +143,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-SUPPORTED-FORM": {
         "title": "Form not supported",
         "user_message": "The form '{form}' is not supported in '{caller}'.",
-        "user_hint": "Use a supported form or convert your input.",
+        "user_hint": "Use a supported form or convert your input. Docs: {doc_url}.",
         "dev_message": "Form '{form}' not supported in '{caller}'.",
         "dev_hint": "Add support for '{form}' or improve error guidance.",
         "qa_message": "Form '{form}' not supported in '{caller}'.",
@@ -154,7 +154,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-SUPPORTED-SYNTAX": {
         "title": "Syntax not supported",
         "user_message": "The syntax '{syntax}' is not supported in '{caller}'.",
-        "user_hint": "Use a supported syntax or update MolSysViewer.",
+        "user_hint": "Use a supported syntax or update MolSysViewer. Docs: {doc_url}.",
         "dev_message": "Syntax '{syntax}' not supported in '{caller}'.",
         "dev_hint": "Add support for '{syntax}' or improve guidance.",
         "qa_message": "Syntax '{syntax}' not supported in '{caller}'.",
@@ -165,7 +165,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-WITH-THIS-FORM": {
         "title": "Incompatible form",
         "user_message": "This method cannot work with the provided form in '{caller}'.",
-        "user_hint": "Use a compatible form or check the API docs.",
+        "user_hint": "Use a compatible form or check the API docs. Docs: {doc_url}.",
         "dev_message": "Incompatible form in '{caller}'.",
         "dev_hint": "Add support or clarify accepted forms.",
         "qa_message": "Incompatible form in '{caller}'.",
@@ -176,7 +176,7 @@ CODES = {
     "MOLSYSVIEWER-NOT-DIGESTED-ARGUMENT": {
         "title": "Argument not digested",
         "user_message": "The argument '{argument}' was not digested for '{caller}'.",
-        "user_hint": "Check the argument name or update MolSysViewer.",
+        "user_hint": "Check the argument name or update MolSysViewer. Docs: {doc_url}.",
         "dev_message": "Argument '{argument}' not digested in '{caller}'.",
         "dev_hint": "Register a digester for '{argument}'.",
         "qa_message": "Argument '{argument}' not digested in '{caller}'.",
@@ -187,7 +187,7 @@ CODES = {
     "MOLSYSVIEWER-VIEWER-INIT-FAILED": {
         "title": "Viewer initialization failed",
         "user_message": "MolSysViewer failed to initialize the frontend.",
-        "user_hint": "Check your Jupyter environment or browser and retry.",
+        "user_hint": "Check your Jupyter environment or browser and retry. Docs: {doc_url}. If needed, report at {issues_url}.",
         "dev_message": "Viewer init failed (reason: {reason}).",
         "dev_hint": "Inspect frontend logs and widget payload.",
         "qa_message": "Viewer init failed (reason: {reason}).",
@@ -198,7 +198,7 @@ CODES = {
     "MOLSYSVIEWER-PAYLOAD-INVALID-COORDINATES": {
         "title": "Invalid coordinates payload",
         "user_message": "The MolSys payload has invalid coordinates.",
-        "user_hint": "Check the coordinates array and try again.",
+        "user_hint": "Check the coordinates array and try again. Docs: {doc_url}.",
         "dev_message": "Invalid coordinates payload: {detail}.",
         "dev_hint": "Validate payload schema before conversion.",
         "qa_message": "Invalid coordinates payload: {detail}.",
@@ -209,7 +209,7 @@ CODES = {
     "MOLSYSVIEWER-PAYLOAD-INVALID-BOX-VECTORS": {
         "title": "Invalid box vectors",
         "user_message": "The MolSys payload has invalid box vectors.",
-        "user_hint": "Check the box vectors and try again.",
+        "user_hint": "Check the box vectors and try again. Docs: {doc_url}.",
         "dev_message": "Invalid box vectors: {detail}.",
         "dev_hint": "Validate payload schema before conversion.",
         "qa_message": "Invalid box vectors: {detail}.",
@@ -220,7 +220,7 @@ CODES = {
     "MOLSYSVIEWER-PAYLOAD-INVALID-BOND-PAIRS": {
         "title": "Invalid bond pairs",
         "user_message": "The MolSys payload has invalid bond pairs.",
-        "user_hint": "Check bond pair indices and try again.",
+        "user_hint": "Check bond pair indices and try again. Docs: {doc_url}.",
         "dev_message": "Invalid bond pairs: {detail}.",
         "dev_hint": "Validate bond pairs before conversion.",
         "qa_message": "Invalid bond pairs: {detail}.",
@@ -231,7 +231,7 @@ CODES = {
     "MOLSYSVIEWER-PAYLOAD-INVALID-BOND-INDICES": {
         "title": "Invalid bond indices",
         "user_message": "The MolSys payload has invalid bond indices.",
-        "user_hint": "Check bond indices and try again.",
+        "user_hint": "Check bond indices and try again. Docs: {doc_url}.",
         "dev_message": "Invalid bond indices: {detail}.",
         "dev_hint": "Validate bond indices before conversion.",
         "qa_message": "Invalid bond indices: {detail}.",
