@@ -36,6 +36,7 @@ debugging.md
 js_workflow.md
 testing.md
 warnings.md
+smonitor.md
 releasing.md
 ```
 
