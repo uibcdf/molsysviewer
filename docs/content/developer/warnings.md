@@ -1,44 +1,23 @@
-# Warnings (planned)
+# Warnings
 
-MolSysViewer should use warnings for user-facing situations that are not fatal.
-You use warnings to make behavior explicit without breaking workflows.
+MolSysViewer routes warnings through **SMonitor**. The warning catalog lives in
+`molsysviewer/_private/smonitor/catalog.py` and messages are configured through
+`molsysviewer/_smonitor.py`.
 
-This page is a placeholder.
-The warning system described here is not implemented yet.
+## How it works
 
-## Goals
+- Python code emits warnings via `smonitor.integrations.emit_from_catalog`.
+- The catalog entry defines code, category, and level.
+- Messages are rendered by SMonitor using the catalog code templates.
 
-- Make non-fatal problems visible (for example: partial feature support).
-- Keep warnings filterable by category.
-- Keep warning locations useful (`stacklevel` points to the caller).
-- Avoid noisy repetition in notebooks (support “warn once” patterns).
+## Where warnings are emitted (current)
 
-## Proposed structure
+- Undigested arguments in the digestion layer.
+- Frontend initialization failures (`viewer_init_failed`).
 
-- Define warning categories under `molsysviewer/warnings.py`.
-- Use `warnings.warn(..., Category, stacklevel=2)` in public APIs.
-- Provide optional helpers:
-  - `warn(message, category=...)`
-  - `warn_once(message, category=...)`
+## Adding a new warning
 
-## Candidate categories
-
-- `MolSysViewerWarning` (base)
-- `ExportWarning` (HTML export and embedding limitations)
-- `FrontendWarning` (Jupyter/frontend constraints)
-- `SelectionWarning` (selection resolution ambiguities)
-- `PerformanceWarning` (slow paths, large scenes)
-- `DeprecationWarning` (API deprecations, with a clear horizon)
-
-## What should warn (examples)
-
-- HTML lite exports that cannot preserve an interactive widget output.
-- Falling back to a slower path (for example: large marching cubes grids).
-- Selection strings that match nothing or that are ambiguous (when applicable).
-- Features that require WebGL/browser capabilities that are missing.
-
-## Testing (planned)
-
-- Unit tests assert that the correct warning category is emitted.
-- Use `pytest.warns(...)` with the specific category.
-- Avoid mocks when possible; prefer real demo systems from `molsysviewer.demo`.
+1. Add a catalog entry in `molsysviewer/_private/smonitor/catalog.py`.
+2. Define the corresponding code in `molsysviewer/_smonitor.py`.
+3. Emit with `emit_from_catalog(...)` from the relevant module.
+4. Add a focused test in `tests/`.

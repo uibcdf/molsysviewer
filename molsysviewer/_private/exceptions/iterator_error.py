@@ -1,20 +1,20 @@
 from ..functions import caller_name
-from ..webs import github_issues, api_doc
+from ..smonitor_emit import message_from_catalog
+
 
 class IteratorError(Exception):
-
     def __init__(self, caller=None, message=None):
-
         if not caller:
             caller = caller_name()
 
-        full_message = f"An error was found in the iterator arguments. "
-
+        default_message = "An error was found in the iterator arguments. "
         if message:
-            full_message += message
+            default_message += message
 
-        full_message += (
-            f"Check {api_doc} for more information. "
-            f"If you still need help, open a new issue in {github_issues}."
+        full_message = message_from_catalog(
+            "iterator_error",
+            extra={"caller": caller, "detail": message},
+            default_message=default_message,
         )
 
+        super().__init__(full_message)

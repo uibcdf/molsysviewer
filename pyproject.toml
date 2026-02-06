@@ -11,10 +11,11 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "anywidget>=0.9.15",
+  "smonitor",
   "traitlets>=5"
 ]
 license = { text = "MIT" }  # adjust if needed
-urls = { "Homepage" = "https://github.com/uibcdf/molsysviewer" }
+urls = { "Homepage" = "https://github.com/uibcdf/molsysviewer", "Documentation" = "https://www.uibcdf.org/molsysviewer", "Issues" = "https://github.com/uibcdf/molsysviewer/issues" }
 
 [project.optional-dependencies]
 dev = [
