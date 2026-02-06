@@ -1,0 +1,130 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from .meta import DOC_URL, ISSUES_URL, API_URL
+
+PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+
+META = {
+    "doc_url": DOC_URL,
+    "issues_url": ISSUES_URL,
+    "api_url": API_URL,
+}
+
+CATALOG = {
+    "argument_error": {
+        "code": "MOLSYSVIEWER-ARGUMENT-ERROR",
+        "source": "molsysviewer.argument",
+        "category": "argument",
+        "level": "ERROR",
+    },
+    "file_already_handled": {
+        "code": "MOLSYSVIEWER-FILE-ALREADY-HANDLED",
+        "source": "molsysviewer.files",
+        "category": "io",
+        "level": "ERROR",
+    },
+    "iterator_error": {
+        "code": "MOLSYSVIEWER-ITERATOR-ERROR",
+        "source": "molsysviewer.iterator",
+        "category": "iteration",
+        "level": "ERROR",
+    },
+    "library_not_found": {
+        "code": "MOLSYSVIEWER-LIBRARY-NOT-FOUND",
+        "source": "molsysviewer.dependencies",
+        "category": "dependency",
+        "level": "ERROR",
+    },
+    "molecular_system_needed": {
+        "code": "MOLSYSVIEWER-MOLECULAR-SYSTEM-NEEDED",
+        "source": "molsysviewer.molecular_system",
+        "category": "molecular_system",
+        "level": "ERROR",
+    },
+    "molecular_systems_needed": {
+        "code": "MOLSYSVIEWER-MOLECULAR-SYSTEMS-NEEDED",
+        "source": "molsysviewer.molecular_system",
+        "category": "molecular_system",
+        "level": "ERROR",
+    },
+    "not_compatible_conversion": {
+        "code": "MOLSYSVIEWER-NOT-COMPATIBLE-CONVERSION",
+        "source": "molsysviewer.conversion",
+        "category": "conversion",
+        "level": "ERROR",
+    },
+    "not_implemented_conversion": {
+        "code": "MOLSYSVIEWER-NOT-IMPLEMENTED-CONVERSION",
+        "source": "molsysviewer.conversion",
+        "category": "conversion",
+        "level": "ERROR",
+    },
+    "not_implemented_iterator": {
+        "code": "MOLSYSVIEWER-NOT-IMPLEMENTED-ITERATOR",
+        "source": "molsysviewer.iterator",
+        "category": "iteration",
+        "level": "ERROR",
+    },
+    "not_implemented_method": {
+        "code": "MOLSYSVIEWER-NOT-IMPLEMENTED-METHOD",
+        "source": "molsysviewer.api",
+        "category": "api",
+        "level": "ERROR",
+    },
+    "not_supported_form": {
+        "code": "MOLSYSVIEWER-NOT-SUPPORTED-FORM",
+        "source": "molsysviewer.form",
+        "category": "form",
+        "level": "ERROR",
+    },
+    "not_supported_syntax": {
+        "code": "MOLSYSVIEWER-NOT-SUPPORTED-SYNTAX",
+        "source": "molsysviewer.syntax",
+        "category": "syntax",
+        "level": "ERROR",
+    },
+    "not_with_this_form": {
+        "code": "MOLSYSVIEWER-NOT-WITH-THIS-FORM",
+        "source": "molsysviewer.form",
+        "category": "form",
+        "level": "ERROR",
+    },
+    "not_digested_argument": {
+        "code": "MOLSYSVIEWER-NOT-DIGESTED-ARGUMENT",
+        "source": "molsysviewer.digestion",
+        "category": "argument",
+        "level": "WARNING",
+    },
+    "viewer_init_failed": {
+        "code": "MOLSYSVIEWER-VIEWER-INIT-FAILED",
+        "source": "molsysviewer.viewer",
+        "category": "frontend",
+        "level": "WARNING",
+    },
+    "payload_invalid_coordinates": {
+        "code": "MOLSYSVIEWER-PAYLOAD-INVALID-COORDINATES",
+        "source": "molsysviewer.loaders.molsysmt",
+        "category": "payload",
+        "level": "DEBUG",
+    },
+    "payload_invalid_box_vectors": {
+        "code": "MOLSYSVIEWER-PAYLOAD-INVALID-BOX-VECTORS",
+        "source": "molsysviewer.loaders.molsysmt",
+        "category": "payload",
+        "level": "DEBUG",
+    },
+    "payload_invalid_bond_pairs": {
+        "code": "MOLSYSVIEWER-PAYLOAD-INVALID-BOND-PAIRS",
+        "source": "molsysviewer.loaders.molsysmt",
+        "category": "payload",
+        "level": "DEBUG",
+    },
+    "payload_invalid_bond_indices": {
+        "code": "MOLSYSVIEWER-PAYLOAD-INVALID-BOND-INDICES",
+        "source": "molsysviewer.loaders.molsysmt",
+        "category": "payload",
+        "level": "DEBUG",
+    },
+}

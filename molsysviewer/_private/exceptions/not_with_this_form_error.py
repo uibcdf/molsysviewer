@@ -1,25 +1,22 @@
 from ..functions import caller_name
-from ..webs import github_issues, api_doc
+from ..smonitor_emit import message_from_catalog
+
 
 class NotWithThisFormError(Exception):
-    """ Exception raised when a method or a class can not accept a specific item's form -by no means-.
-
-        This exception is raised when a method or a class should be able to work with an item's form,
-        but it has not been implemented yet. For instance, the method used to get the value of the
-        dihedral angle defined by four atoms can not work over a GROMACS topology file (.top). In this
-        case the method will raise a 'NotWithTisFormError' exception.
-    """
+    """Exception raised when a method or a class cannot accept a specific form."""
 
     def __init__(self, caller=None, message=None):
-
         if not caller:
             caller = caller_name()
 
-        full_message = f""
+        default_message = ""
+        if message:
+            default_message += message
 
-        full_message += (
-            f"Check {api_doc} for more information. "
-            f"If you still need help, open a new issue in {github_issues}."
+        full_message = message_from_catalog(
+            "not_with_this_form",
+            extra={"caller": caller, "detail": message},
+            default_message=default_message,
         )
-        super().__init__(full_message)
 
+        super().__init__(full_message)

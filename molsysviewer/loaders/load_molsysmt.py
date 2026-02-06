@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Any
 
 import molsysmt as msm
 import numpy as np
 import math
+from smonitor.integrations import emit_from_catalog
 
 from .._private.digestion import digest
-
-logger = logging.getLogger(__name__)
+from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 
 if TYPE_CHECKING:
     from ..viewer import MolSysView
@@ -197,8 +196,13 @@ def _extract_structures(structures: Any, n_atoms: int) -> list[dict[str, Any]]:
 def _positions_to_angstroms(positions: Any, n_atoms: int) -> list[list[float]] | None:
     try:
         array = np.asarray(positions, dtype=float)
-    except Exception:  # pragma: no cover - runtime guard
-        logger.debug("MolSys payload: unable to convert coordinates to ndarray", exc_info=True)
+    except Exception as exc:  # pragma: no cover - runtime guard
+        emit_from_catalog(
+            CATALOG["payload_invalid_coordinates"],
+            package_root=PACKAGE_ROOT,
+            meta=META,
+            extra={"detail": f"unable to convert coordinates to ndarray: {exc}"},
+        )
         return None
 
     if array.shape != (n_atoms, 3):
@@ -219,8 +223,13 @@ def _box_vectors(box: Any) -> list[list[float]] | None:
         v0 = np.asarray(box["v0"], dtype=float)
         v1 = np.asarray(box["v1"], dtype=float)
         v2 = np.asarray(box["v2"], dtype=float)
-    except Exception:
-        logger.debug("MolSys payload: invalid box vectors in ViewerJSON", exc_info=True)
+    except Exception as exc:
+        emit_from_catalog(
+            CATALOG["payload_invalid_box_vectors"],
+            package_root=PACKAGE_ROOT,
+            meta=META,
+            extra={"detail": f"invalid box vectors in ViewerJSON: {exc}"},
+        )
         return None
 
     if v0.shape != (3,) or v1.shape != (3,) or v2.shape != (3,):
@@ -253,8 +262,13 @@ def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
             return None
         try:
             array = np.asarray(pairs, dtype=int)
-        except Exception:
-            logger.debug("MolSys payload: invalid bond pairs", exc_info=True)
+        except Exception as exc:
+            emit_from_catalog(
+                CATALOG["payload_invalid_bond_pairs"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+                extra={"detail": f"invalid bond pairs: {exc}"},
+            )
             return None
         if array.ndim != 2 or array.shape[1] != 2:
             return None
@@ -263,8 +277,13 @@ def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
     try:
         array_a = np.asarray(index_a, dtype=int).ravel()
         array_b = np.asarray(index_b, dtype=int).ravel()
-    except Exception:
-        logger.debug("MolSys payload: invalid bond indices", exc_info=True)
+    except Exception as exc:
+        emit_from_catalog(
+            CATALOG["payload_invalid_bond_indices"],
+            package_root=PACKAGE_ROOT,
+            meta=META,
+            extra={"detail": f"invalid bond indices: {exc}"},
+        )
         return None
 
     if array_a.shape != array_b.shape or array_a.ndim != 1:

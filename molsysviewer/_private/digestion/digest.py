@@ -1,11 +1,13 @@
 from .argument_names_standardization import argument_names_standardization
-from molsysviewer._private.exceptions import NotDigestedArgumentWarning
 
 import functools
 import inspect
 from importlib import import_module
 import os
-import warnings
+
+from smonitor.integrations import emit_from_catalog
+
+from molsysviewer._private.smonitor import CATALOG, PACKAGE_ROOT, META
 
 ###
 
@@ -111,7 +113,12 @@ def digest(**kwargs):
             if caller not in ['molsysviewer.viewer.MolSysView.new_region'] and not caller.startswith('molsysviewer.'):
                 for arg_name in not_digested_args:
                     if arg_name not in ['self']:
-                        warnings.warn(arg_name+' from '+caller, NotDigestedArgumentWarning, stacklevel=2)
+                        emit_from_catalog(
+                            CATALOG[\"not_digested_argument\"],
+                            package_root=PACKAGE_ROOT,
+                            meta=META,
+                            extra={\"argument\": arg_name, \"caller\": caller},
+                        )
 
 
             if caller.startswith('molsysviewer.'):

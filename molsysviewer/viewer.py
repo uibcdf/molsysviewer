@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Mapping
-import warnings
 import time
 import inspect
 import json
@@ -9,9 +8,11 @@ import re
 
 import molsysmt as msm
 import numpy as np
+from smonitor.integrations import emit_from_catalog
 
 from ._pyunitwizard import puw
 from ._private.digestion import digest
+from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
@@ -166,10 +167,11 @@ class MolSysView:
             elif event == "viewer_init_failed":
                 reason = content.get("reason", "unknown")
                 message = content.get("message") or "Mol* viewer failed to initialize."
-                warnings.warn(
-                    f"{message} (reason: {reason})",
-                    RuntimeWarning,
-                    stacklevel=2,
+                emit_from_catalog(
+                    CATALOG["viewer_init_failed"],
+                    package_root=PACKAGE_ROOT,
+                    meta=META,
+                    extra={\"reason\": reason, \"message\": message},
                 )
 
         self.widget.on_msg(_handle_msg)

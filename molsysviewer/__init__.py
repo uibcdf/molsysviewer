@@ -1,8 +1,13 @@
-from ._version import __version__
+from smonitor.integrations import ensure_configured as _ensure_smonitor_configured
+
 from ._pyunitwizard import puw as pyunitwizard
-from .viewer import MolSysView
-from .new_view import new_view
+from ._private.smonitor import PACKAGE_ROOT as _SMONITOR_PACKAGE_ROOT
+from ._version import __version__
 from .demo import demo
+from .new_view import new_view
+from .viewer import MolSysView
+
+_ensure_smonitor_configured(_SMONITOR_PACKAGE_ROOT)
 
 
 def __print_version__():

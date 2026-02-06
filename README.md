@@ -75,6 +75,11 @@ designed to support:
 - structure + annotation blends (ML predictions, scoring fields, etc.)
 - region/layer scene management and a popout mirror view
 
+### ✔ SMonitor integration
+MolSysViewer emits structured warnings and errors through **SMonitor**. This
+keeps user-facing messages consistent and gives developers a unified way to
+trace diagnostics across the MolSys ecosystem.
+
 ---
 
 ## 🚀 Example
