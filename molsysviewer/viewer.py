@@ -171,7 +171,7 @@ class MolSysView:
                     CATALOG["viewer_init_failed"],
                     package_root=PACKAGE_ROOT,
                     meta=META,
-                    extra={\"reason\": reason, \"message\": message},
+                    extra={"reason": reason, "message": message},
                 )
 
         self.widget.on_msg(_handle_msg)
