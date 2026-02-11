@@ -114,10 +114,10 @@ def digest(**kwargs):
                 for arg_name in not_digested_args:
                     if arg_name not in ['self']:
                         emit_from_catalog(
-                            CATALOG[\"not_digested_argument\"],
+                            CATALOG["not_digested_argument"],
                             package_root=PACKAGE_ROOT,
                             meta=META,
-                            extra={\"argument\": arg_name, \"caller\": caller},
+                            extra={"argument": arg_name, "caller": caller},
                         )
 
 
