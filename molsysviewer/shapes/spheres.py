@@ -1,9 +1,10 @@
 # molsysviewer/shapes/spheres.py
 
 from typing import Sequence
+import numpy as np
 
 from ..layers import Layer
-from .._private.digestion import digest
+from .._private.arg_digestion import digest
 
 class SphereShapes:
     """Sphere helpers for the scene."""
@@ -72,7 +73,7 @@ class SphereShapes:
             return
 
         def _as_list(value, n, cast):
-            if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+            if isinstance(value, (Sequence, np.ndarray)) and not isinstance(value, (str, bytes)):
                 if len(value) != n:
                     raise ValueError(
                         f"Expected {n} values but got {len(value)}."
@@ -128,7 +129,7 @@ class SphereShapes:
             }
         }
 
-        if atom_centers:
+        if atom_centers is not None:
             options["atom_spheres"] = {
                 "centers": [list(c) for c in atom_centers],
                 "radius": float(atom_radius),

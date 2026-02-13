@@ -1,6 +1,6 @@
 # SMonitor Guide (Canonical)
 
-Source of truth for integrating **SMonitor** in this library.
+Source of truth for integrating and using **SMonitor** in this library.
 
 Metadata
 - Source repository: `smonitor`
@@ -10,178 +10,173 @@ Metadata
 
 ## What is SMonitor
 
-SMonitor is the diagnostics layer for the MolSys ecosystem. It centralizes warnings, errors, and developer signals so that user messages are consistent, actionable, and traceable across libraries.
+SMonitor is the diagnostics layer for the UIBCDF ecosystem. It centralizes warnings, errors, and developer signals so that user messages are consistent, actionable, and traceable across libraries.
 
-SMonitor is not a logging wrapper. It is the single source of truth for message templates, severity, categories, and structured metadata.
+SMonitor is not just a logging wrapper; it is a **Signal Orchestrator** that decouples event emission from message presentation.
 
 ## Why this matters in this library
 
-- Users see clear, consistent messages.
-- Developers and QA can trace the exact signal code across tools.
-- Agents can parse structured events and automate fixes.
+- **Consistency**: Users see clear, helpful messages formatted as cards.
+- **Traceability**: Developers can see the "Breadcrumb" trail across libraries.
+- **AI-Ready**: Agents can parse structured events via the `agent` profile.
 
-## Required files in this library
+## 1. Required Configuration Structure
 
-If the library is named `A` and the source code lives in the `A/` directory at the repository root, these paths are relative to the repository root:
+If the library is named `A`, the following files must exist relative to the repository root:
 
-- `_smonitor.py`: runtime configuration and code templates.
-- `A/_private/smonitor/catalog.py`: catalog entries (code/category/level/source).
-- `A/_private/smonitor/meta.py`: metadata (docs/issues/api URLs).
-- `A/_private/smonitor/__init__.py`: exports `CATALOG`, `META`, `PACKAGE_ROOT`.
+- `_smonitor.py`: Runtime configuration and message templates (CODES).
 
-## Required behavior (non-negotiable)
-
-All warnings and errors must be emitted through the catalog. Do not write new hardcoded warning/exception strings in library code.
-
-## Minimum initialization (required)
-
-In the library `__init__.py`, ensure SMonitor is configured on import:
-
+Example `_smonitor.py`:
 ```python
-from smonitor.integrations import ensure_configured as _ensure_smonitor_configured
-from ._private.smonitor import PACKAGE_ROOT as _SMONITOR_PACKAGE_ROOT
+PROFILE = "user"
 
-_ensure_smonitor_configured(_SMONITOR_PACKAGE_ROOT)
-```
-
-## Minimal integration example
-
-Catalog entry (`A/_private/smonitor/catalog.py`):
-
-```python
-CATALOG = {
-    "missing_dependency": {
-        "code": "A-MISSING-DEPENDENCY",
-        "source": "A.dependencies",
-        "category": "dependency",
-        "level": "ERROR",
-    }
+SMONITOR = {
+    "level": "WARNING",
+    "trace_depth": 3,
+    "capture_warnings": True,
+    "capture_logging": True,
+    "theme": "plain",
+    "silence": ["pint", "networkx"], # Noisy loggers to ignore
 }
 ```
+- `A/_private/smonitor/catalog.py`: Catalog entries (meta-data about each signal).
+- `A/_private/smonitor/meta.py`: Project metadata (URLs for documentation and issues).
+- `A/_private/smonitor/__init__.py`: Exports `CATALOG`, `META`, and `PACKAGE_ROOT`.
 
-Code templates (`A/_smonitor.py`):
+### 1.1 Single Source of Truth for Templates
+
+`CODES` and `SIGNALS` must be resolved from exactly one authoritative place.
+
+Recommended pattern:
+- define `CATALOG`, `CODES`, and `SIGNALS` in `A/_private/smonitor/catalog.py`;
+- in `_smonitor.py`, import them from `A._private.smonitor.catalog`.
+
+This avoids drift where emitted catalog codes exist but template messages are missing at runtime.
+
+## 2. Initialization Protocol
+
+In your library's `__init__.py`, ensure SMonitor is configured on import. This activates the "System Nervous System":
 
 ```python
-CODES = {
-    "A-MISSING-DEPENDENCY": {
-        "title": "Missing dependency",
-        "user_message": "Optional dependency '{library}' was not found.",
-        "user_hint": "Install '{library}' to enable this feature.",
-        "dev_message": "Missing optional dependency '{library}' in '{caller}'.",
-        "dev_hint": "Guard optional imports and document the dependency.",
-    }
-}
+from smonitor.integrations import ensure_configured
+from ._private.smonitor import PACKAGE_ROOT
+
+ensure_configured(PACKAGE_ROOT)
 ```
 
-Emission from code:
+## 3. Emission via Catalog (Mandatory)
+
+All diagnostic output must be driven by the catalog. **Never hardcode strings** in the scientific logic.
+
+### 3.1. Standard Warning Helper
+Use the `DiagnosticBundle` to create consistent `warn` and `warn_once` helpers in your library's `_private/smonitor/emitter.py`:
 
 ```python
-from smonitor.integrations import emit_from_catalog
-from A._private.smonitor import CATALOG, META, PACKAGE_ROOT
+# A/_private/smonitor/emitter.py
+from smonitor.integrations import DiagnosticBundle
+from . import CATALOG, META, PACKAGE_ROOT
 
-emit_from_catalog(
-    CATALOG["missing_dependency"],
-    package_root=PACKAGE_ROOT,
-    meta=META,
-    extra={"library": lib_name, "caller": caller},
-)
+bundle = DiagnosticBundle(CATALOG, META, PACKAGE_ROOT)
+warn = bundle.warn
+warn_once = bundle.warn_once
+resolve = bundle.resolve
 ```
 
-## Signal contract and required extras
+### 3.2. Exceptions
+All custom exceptions must inherit from `CatalogException` (provided by `smonitor.integrations`). This ensures messages are automatically hydrated from the catalog.
 
-If the signal needs context, add it to `SIGNALS` in `_smonitor.py` and enforce it:
+```python
+# A/_private/smonitor/exceptions.py
+from smonitor.integrations import CatalogException
+from . import CATALOG, META
+
+class MyLibException(CatalogException):
+    def __init__(self, **kwargs):
+        super().__init__(catalog=CATALOG, meta=META, **kwargs)
+
+class ArgumentError(MyLibException):
+    catalog_key = "ArgumentError"
+    # ... logic to prepare extra dict ...
+```
+
+### 3.3. Warnings
+Similarly, use `CatalogWarning` for warning classes:
+
+```python
+# A/_private/smonitor/warnings.py
+from smonitor.integrations import CatalogWarning
+from .emitter import bundle
+
+class MyLibWarning(CatalogWarning):
+    # ... setup catalog and meta ...
+```
+
+**Note**: The raw `emit_from_catalog` function is still available but `DiagnosticBundle` is the preferred high-level interface.
+
+### 3.4 Emission Failures Must Not Be Silenced
+
+Do not swallow diagnostics emission errors with `except Exception: pass`.
+
+If emission fails in non-critical paths:
+- fallback to a plain Python warning/log line;
+- keep enough context (`caller`, signal key, exception text) for debugging.
+
+Silencing emission failures causes loss of traceability and empty/noisy diagnostics in downstream libraries.
+
+## 4. Telemetry with `@signal`
+
+To enable execution traceability (breadcrumbs), decorate all major API entry points and internal orchestration functions.
+
+```python
+from smonitor import signal
+
+@signal(tags=["topology"])
+def get_atoms(molecular_system, selection="all"):
+    ...
+```
+
+**Benefits**:
+- On error, SMonitor reports the full call chain: `[A.api_func] -> [B.internal_logic] -> [ERROR]`.
+- Performance telemetry can be enabled globally without changing the code.
+
+## 5. Signal Contracts
+
+Enforce structured data by defining required fields in `_smonitor.py`:
 
 ```python
 SIGNALS = {
-    "A.missing_dependency": {
-        "extra_required": ["library", "caller"],
+    "A.select": {
+        "extra_required": ["selection"],
     }
 }
 ```
 
-If `extra_required` is missing, SMonitor can fail validation or emit incomplete messages. Treat missing extras as a bug.
+Missing fields will trigger warnings or errors in `dev` and `qa` profiles, ensuring diagnostic quality.
 
-## Metadata (META) and URLs
+## 6. Noise Control
 
-`A/_private/smonitor/meta.py` should expose URLs used in hints:
+SMonitor captures all exceptions by default as `ERROR`. For functions that perform exploratory checks (e.g., "is this string a unit?"), this creates log noise.
 
-```python
-DOC_URL = "https://..."
-ISSUES_URL = "https://..."
-API_URL = "https://..."
-```
-
-These are merged into `META` and passed to emissions so templates can include `{doc_url}` and `{issues_url}`.
-
-## Naming conventions
-
-- Catalog keys: short and stable (e.g., `missing_dependency`, `not_digested_argument`).
-- Codes: `LIB-NAME-UPPER-SIGNAL` (e.g., `MOLSYSVIEWER-VIEWER-INIT-FAILED`).
-- Sources: dotted paths to feature area (e.g., `molsysviewer.loaders.molsysmt`).
-
-## Compatibility with legacy exceptions
-
-Legacy classes may remain, but must emit SMonitor events and use catalog messages.
-
-Example wrapper:
+### Exploratory Functions
+Use `exception_level="DEBUG"` in the `@signal` decorator to silence expected failures in normal operation.
 
 ```python
-from A._private.smonitor_emit import message_from_catalog
-
-class ArgumentError(Exception):
-    def __init__(self, argument, caller=None, message=None):
-        default_message = f"Error in {caller} due to {argument}."
-        full_message = message_from_catalog(
-            "argument_error",
-            extra={"argument": argument, "caller": caller, "detail": message},
-            default_message=default_message,
-        )
-        super().__init__(full_message)
+@signal(tags=["check"], exception_level="DEBUG")
+def is_valid_format(data):
+    # If this raises, it will be logged as DEBUG, not ERROR
+    ...
 ```
 
-## Configuration and runtime overrides
+### Assertive Parsing
+For functions that *must* succeed (e.g., "parse this unit"), keep the default `ERROR` level. If a user provides malformed input where a valid one is expected, it *is* an error.
 
-- Default configuration is in `_smonitor.py`.
-- Users or agents can override at runtime:
+## Required behavior (non-negotiable)
 
-```python
-import smonitor
-smonitor.configure(profile="dev", level="INFO", event_buffer_size=200)
-```
+1.  **Zero String Hardcoding**: If it's a warning or error, it belongs in the catalog.
+2.  **Lazy Diagnostics**: Do not perform expensive string formatting before calling `emit`. Pass raw data in `extra` and let SMonitor handle the interpolation.
+3.  **Traceability First**: Use `@signal` generously in orchestration layers but avoid it in high-frequency tight loops.
+4.  **Template Wiring Integrity**: Every emitted catalog code must have a matching template in the active `_smonitor.py` configuration.
+5.  **No Silent Emission Failures**: Never hide failed catalog emissions without an explicit fallback diagnostic.
 
-Runtime configuration always takes precedence over `_smonitor.py`.
-
-Profiles typically used:
-- `user`: default, minimal noise.
-- `dev`: more context, tracebacks.
-- `qa`: similar to dev but stable for test runs.
-- `agent`: machine-readable emphasis.
-- `debug`: full verbosity.
-
-## Testing pattern
-
-Use the event buffer to assert emissions:
-
-```python
-import smonitor
-smonitor.configure(event_buffer_size=50)
-
-# call code that should emit
-report = smonitor.report()
-assert report["events_buffered"] >= 1
-```
-
-You can also assert on specific `code` values and message fragments.
-
-## Common mistakes
-
-- Adding a catalog entry but forgetting the `CODES` template.
-- Emitting without required `extra` fields.
-- Hardcoding messages directly in exceptions or warnings.
-- Forgetting to call `ensure_configured(PACKAGE_ROOT)` on import.
-
-## Message quality rules
-
-- User messages must be explicit and actionable.
-- Hints should include the most useful next step (docs/issues if relevant).
-- Tone: helpful, neutral, concise.
+---
+*Document created on February 6, 2026, as the authority for SMonitor integration.*

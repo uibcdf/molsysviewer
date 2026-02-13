@@ -3,7 +3,7 @@
 from pathlib import Path
 from IPython.display import IFrame
 
-from ..._private.digestion import digest
+from ..._private.arg_digestion import digest
 
 
 @digest()

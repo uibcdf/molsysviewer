@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
-from .._private.digestion import digest
+from .._private.arg_digestion import digest
 
 import numpy as np
 

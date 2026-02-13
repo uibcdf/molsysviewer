@@ -17,7 +17,7 @@ controls_position = ["top", "right"]
 controls_position_fullscreen = ["bottom", "right"]
 
 from .user_presets import user_presets, load_user_presets
-from .._private.digestion import digest
+from .._private.arg_digestion import digest
 
 __all__ = [
     "show_controls",

@@ -2,7 +2,7 @@ from ..functions import caller_name
 from ..smonitor_emit import message_from_catalog
 
 
-class ArgumentError(Exception):
+class ArgumentError(ValueError):
     """Exception raised when a method, or a class, was not properly called or instantiated."""
 
     def __init__(self, argument, value=None, caller=None, message=None):
