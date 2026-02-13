@@ -9,7 +9,7 @@ import numpy as np
 import math
 from smonitor.integrations import emit_from_catalog
 
-from .._private.digestion import digest
+from .._private.arg_digestion import digest
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 
 if TYPE_CHECKING:

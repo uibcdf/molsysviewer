@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ._private.digestion import digest
+from ._private.arg_digestion import digest
 
 
 class Whole:

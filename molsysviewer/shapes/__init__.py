@@ -10,7 +10,7 @@ from .pocket_blobs import PocketBlobs
 from .channel_tubes import ChannelTubes
 from .anisotropy_ellipsoids import AnisotropyEllipsoids
 from .pharmacophore import PharmacophoreShapes
-from .._private.digestion import digest
+from .._private.arg_digestion import digest
 
 
 class ShapesManager:

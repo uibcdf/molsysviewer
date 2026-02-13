@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from ._private.digestion import digest
+from ._private.arg_digestion import digest
 
 
 class Layer:

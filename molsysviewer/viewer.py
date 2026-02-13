@@ -8,10 +8,12 @@ import re
 
 import molsysmt as msm
 import numpy as np
+from smonitor import signal
 from smonitor.integrations import emit_from_catalog
+from depdigest import dep_digest
 
 from ._pyunitwizard import puw
-from ._private.digestion import digest
+from ._private.arg_digestion import digest
 from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
@@ -81,6 +83,8 @@ class MolSysView:
         """IPython/Jupyter display hook (delegates to the underlying widget)."""
         return self.widget._repr_mimebundle_(include=include, exclude=exclude)
 
+    @dep_digest('anywidget')
+    @dep_digest('molsysmt')
     def __init__(self, *, debug_js: bool | None = None) -> None:
         self.widget = MolSysViewerWidget()
         self._debug_js = bool(debug_js) if debug_js is not None else False
@@ -292,7 +296,7 @@ class MolSysView:
                 sel = new_rule.get("selection")
                 if sel is not None:
                     try:
-                        from ._private.digestion import digest_selection_and_syntax
+                        from ._private.arg_digestion import digest_selection_and_syntax
 
                         sel, syntax = digest_selection_and_syntax(
                             sel,
@@ -312,6 +316,8 @@ class MolSysView:
             "rules": rules,
         }
 
+    @dep_digest('molsysmt')
+    @signal(tags=["region"])
     @digest()
     def new_region(
         self,
@@ -667,6 +673,8 @@ class MolSysView:
 
     # --- Public loading API ---
 
+    @dep_digest('molsysmt')
+    @signal(tags=["load"])
     @digest()
     def load(
         self,
@@ -689,6 +697,7 @@ class MolSysView:
         )
         self._last_label = label
 
+    @signal(tags=["visibility"])
     @digest()
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""
@@ -707,6 +716,7 @@ class MolSysView:
 
         self._update_visibility_in_frontend()
 
+    @signal(tags=["visibility"])
     @digest()
     def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False):
         """Show the widget (first call or if `force=True`) and optionally adjust visibility."""
@@ -751,6 +761,7 @@ class MolSysView:
         self.atom_mask[atom_indices] = True
         self._update_visibility_in_frontend()
 
+    @signal(tags=["camera"])
     @digest()
     def zoom(
         self,

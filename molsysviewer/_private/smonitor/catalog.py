@@ -128,3 +128,30 @@ CATALOG = {
         "level": "DEBUG",
     },
 }
+
+CODES = {
+    "argument_error": "Error in {caller} due to the {argument} argument with value {value}.",
+    "file_already_handled": "The file {file} is already handled.",
+    "iterator_error": "Error in iterator: {detail}.",
+    "library_not_found": "The python library {library} was not found. (Caller: {caller})",
+    "molecular_system_needed": "A molecular system is needed.",
+    "molecular_systems_needed": "Molecular systems are needed.",
+    "not_compatible_conversion": "Not compatible conversion.",
+    "not_implemented_conversion": "Not implemented conversion.",
+    "not_implemented_iterator": "Not implemented iterator.",
+    "not_implemented_method": "Not implemented method: {method}.",
+    "not_supported_form": "Not supported form: {form}.",
+    "not_supported_syntax": "Not supported syntax: {syntax}.",
+    "not_with_this_form": "Not with this form.",
+    "not_digested_argument": "The argument '{argument}' in '{caller}' has no digester. (Standard: ArgDigest style='package')",
+    "viewer_init_failed": "Mol* viewer failed to initialize. Reason: {reason}. {message}",
+    "payload_invalid_coordinates": "Invalid coordinates in payload: {detail}",
+    "payload_invalid_box_vectors": "Invalid box vectors in payload: {detail}",
+    "payload_invalid_bond_pairs": "Invalid bond pairs in payload: {detail}",
+    "payload_invalid_bond_indices": "Invalid bond indices in payload: {detail}",
+}
+
+SIGNALS = {
+    "molsysviewer.viewer.MolSysView.load": {"extra_required": ["molecular_system"]},
+    "molsysviewer.viewer.MolSysView.zoom": {"extra_required": ["selection"]},
+}
