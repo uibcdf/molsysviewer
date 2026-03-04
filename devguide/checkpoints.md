@@ -62,3 +62,24 @@ It is intentionally concise and operational.
   - Incremental JS test expansion should reduce regression risk in protocol/state changes.
 - `Ideas`:
   - Split `tests/unit/region-hide.test.ts` into themed files as coverage grows.
+
+## 2026-03-04 — CP-2026-03-04-C
+
+- `Scope`: Extend JS unit coverage for `LoaderHandlers` and `SceneHandlers`.
+- `Decisions`:
+  - Keep tests deterministic and mock-based; avoid depending on live Mol* runtime.
+  - Prioritize contract-relevant behavior: validation guards, callback orchestration, state toggles.
+- `Status`:
+  - Added loader guard tests for invalid inputs (`loadFromString`, `loadMolSysPayload`, `loadFromUrl`, `loadPdbId`).
+  - Added scene tests for `clearScene` flag behavior, `clearAll` reset notification, and spin/swing mutual exclusion.
+  - JS unit suite remains green with updated coverage.
+- `Plan`:
+  - Add tests for successful loader paths (with controllable stubs) and additional state/trajectory branches.
+  - Add a second E2E scenario beyond region hide.
+- `Criteria`:
+  - Test assertions must map to externally meaningful handler behavior, not brittle internals.
+  - Preserve compatibility of Python -> TS op handling while increasing guard coverage.
+- `Perspectives`:
+  - Incremental handler coverage should make protocol refactors safer and faster.
+- `Ideas`:
+  - Introduce a simple test helper module for common plugin/callback mocks.
