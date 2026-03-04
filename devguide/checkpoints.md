@@ -128,3 +128,27 @@ It is intentionally concise and operational.
   - This gives first coverage of lifecycle reset behavior that unit tests cannot fully emulate.
 - `Ideas`:
   - Add artifact capture (last message + operation trace) to ease debugging when E2E fails outside sandbox.
+
+## 2026-03-04 — CP-2026-03-04-F
+
+- `Scope`: Increase unit coverage for state/global visibility queueing and scene background toggling.
+- `Decisions`:
+  - Validate queue behavior for global visibility ops when structure is unavailable.
+  - Add explicit assertions for shape-tag indexing and first-time layer ack emission.
+  - Cover dark/light background toggling with cached renderer snapshots.
+- `Status`:
+  - Added `StateHandlers` tests for:
+    - queued `hideGlobal/showGlobal` behavior and `requestedGlobalHidden` semantics,
+    - `registerShapeRef` indexing + `layer_ack` emission.
+  - Added `SceneHandlers` test for deterministic `toggleBackground` dark/light transitions.
+  - JS unit suite remains green with expanded assertions.
+- `Plan`:
+  - Continue by splitting the growing unit test file into handler-specific files.
+  - Start a trajectory-focused E2E when browser/WebGL-capable environment is available.
+- `Criteria`:
+  - Keep state/scene assertions tied to stable observable behavior (maps, flags, emitted events).
+  - Avoid tests that rely on fragile private controller internals.
+- `Perspectives`:
+  - Current coverage now spans guard paths, success forwarding, queueing semantics, and key UI state toggles.
+- `Ideas`:
+  - Add helper factories for mock plugin/callback creation to reduce test boilerplate.
