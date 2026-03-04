@@ -286,3 +286,83 @@ test("state handler stores pending layer visibility when layer refs do not exist
     await handler.showLayer({ op: "show_layer", tag: "layer-pending" });
     assert.strictEqual(pending.get("layer-pending"), false);
 });
+
+test("state handler queues global visibility ops when structure is not ready", async () => {
+    const plugin: any = { state: { data: {} } };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    await handler.hideGlobal({ op: "hide_global" });
+    const pendingOpsA = (handler as any).pendingGlobalOps as Array<{ hide: boolean; target: string }>;
+    const requestedA = (handler as any).requestedGlobalHidden as boolean | null;
+    assert.strictEqual(pendingOpsA.length, 1);
+    assert.deepStrictEqual(pendingOpsA[0], { hide: true, target: "global" });
+    assert.strictEqual(requestedA, true);
+
+    await handler.showGlobal({ op: "show_global", target: "all" });
+    const pendingOpsB = (handler as any).pendingGlobalOps as Array<{ hide: boolean; target: string }>;
+    const requestedB = (handler as any).requestedGlobalHidden as boolean | null;
+    assert.strictEqual(pendingOpsB.length, 2);
+    assert.deepStrictEqual(pendingOpsB[1], { hide: false, target: "all" });
+    // target=all should not overwrite requestedGlobalHidden
+    assert.strictEqual(requestedB, true);
+});
+
+test("state handler registerShapeRef indexes ref and emits layer ack for new tag", () => {
+    const notifications: any[] = [];
+    const plugin: any = { state: { data: {} } };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (msg: any) => notifications.push(msg),
+    });
+
+    handler.registerShapeRef("ref-1" as any, "shape-tag");
+
+    const tagIndex = (handler as any).tagIndex as Map<string, Set<any>>;
+    const layerMeta = (handler as any).layerMeta as Map<string, any>;
+    assert.strictEqual(tagIndex.has("shape-tag"), true);
+    assert.strictEqual(tagIndex.get("shape-tag")?.has("ref-1"), true);
+    assert.strictEqual(layerMeta.has("shape-tag"), true);
+    assert.deepStrictEqual(notifications, [
+        { event: "layer_ack", tag: "shape-tag", kind: "shape", meta: {} },
+    ]);
+});
+
+test("scene toggleBackground flips dark mode and reuses cached renderer snapshots", async () => {
+    const setPropsCalls: any[] = [];
+    const plugin: any = {
+        canvas3d: {
+            props: {
+                renderer: { backgroundColor: 0xffffff, lightIntensity: 0.8, ambientIntensity: 0.6 },
+                camera: { radius: 12 },
+            },
+            setProps: (props: any) => setPropsCalls.push(props),
+        },
+    };
+    const handler = new SceneHandlers(plugin, {} as any, {
+        clearShapes: async () => {},
+        clearLabels: async () => {},
+        getComponents: () => [],
+        clearShapesByTag: async () => {},
+        removeLoadedStructure: async () => {},
+        notify: (_msg: any) => {},
+    });
+
+    await handler.toggleBackground("dark");
+    assert.strictEqual(handler.isDarkMode, true);
+    const darkRenderer = setPropsCalls[0]?.renderer ?? {};
+    assert.strictEqual(darkRenderer.backgroundColor, 0x101010);
+
+    await handler.toggleBackground("light");
+    assert.strictEqual(handler.isDarkMode, false);
+    const lightRenderer = setPropsCalls[1]?.renderer ?? {};
+    assert.strictEqual(lightRenderer.backgroundColor, 0xffffff);
+});

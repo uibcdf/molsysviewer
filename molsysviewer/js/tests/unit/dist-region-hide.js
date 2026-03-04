@@ -127750,6 +127750,82 @@ test("state handler stores pending layer visibility when layer refs do not exist
   await handler.showLayer({ op: "show_layer", tag: "layer-pending" });
   assert.strictEqual(pending.get("layer-pending"), false);
 });
+test("state handler queues global visibility ops when structure is not ready", async () => {
+  const plugin = { state: { data: {} } };
+  const handler = new StateHandlers(plugin, {
+    getStructure: () => void 0,
+    getLoadedStructure: () => void 0,
+    getCurrentStructureRef: () => void 0,
+    getComponents: () => [],
+    notify: (_msg) => {
+    }
+  });
+  await handler.hideGlobal({ op: "hide_global" });
+  const pendingOpsA = handler.pendingGlobalOps;
+  const requestedA = handler.requestedGlobalHidden;
+  assert.strictEqual(pendingOpsA.length, 1);
+  assert.deepStrictEqual(pendingOpsA[0], { hide: true, target: "global" });
+  assert.strictEqual(requestedA, true);
+  await handler.showGlobal({ op: "show_global", target: "all" });
+  const pendingOpsB = handler.pendingGlobalOps;
+  const requestedB = handler.requestedGlobalHidden;
+  assert.strictEqual(pendingOpsB.length, 2);
+  assert.deepStrictEqual(pendingOpsB[1], { hide: false, target: "all" });
+  assert.strictEqual(requestedB, true);
+});
+test("state handler registerShapeRef indexes ref and emits layer ack for new tag", () => {
+  const notifications = [];
+  const plugin = { state: { data: {} } };
+  const handler = new StateHandlers(plugin, {
+    getStructure: () => void 0,
+    getLoadedStructure: () => void 0,
+    getCurrentStructureRef: () => void 0,
+    getComponents: () => [],
+    notify: (msg) => notifications.push(msg)
+  });
+  handler.registerShapeRef("ref-1", "shape-tag");
+  const tagIndex = handler.tagIndex;
+  const layerMeta = handler.layerMeta;
+  assert.strictEqual(tagIndex.has("shape-tag"), true);
+  assert.strictEqual(tagIndex.get("shape-tag")?.has("ref-1"), true);
+  assert.strictEqual(layerMeta.has("shape-tag"), true);
+  assert.deepStrictEqual(notifications, [
+    { event: "layer_ack", tag: "shape-tag", kind: "shape", meta: {} }
+  ]);
+});
+test("scene toggleBackground flips dark mode and reuses cached renderer snapshots", async () => {
+  const setPropsCalls = [];
+  const plugin = {
+    canvas3d: {
+      props: {
+        renderer: { backgroundColor: 16777215, lightIntensity: 0.8, ambientIntensity: 0.6 },
+        camera: { radius: 12 }
+      },
+      setProps: (props) => setPropsCalls.push(props)
+    }
+  };
+  const handler = new SceneHandlers(plugin, {}, {
+    clearShapes: async () => {
+    },
+    clearLabels: async () => {
+    },
+    getComponents: () => [],
+    clearShapesByTag: async () => {
+    },
+    removeLoadedStructure: async () => {
+    },
+    notify: (_msg) => {
+    }
+  });
+  await handler.toggleBackground("dark");
+  assert.strictEqual(handler.isDarkMode, true);
+  const darkRenderer = setPropsCalls[0]?.renderer ?? {};
+  assert.strictEqual(darkRenderer.backgroundColor, 1052688);
+  await handler.toggleBackground("light");
+  assert.strictEqual(handler.isDarkMode, false);
+  const lightRenderer = setPropsCalls[1]?.renderer ?? {};
+  assert.strictEqual(lightRenderer.backgroundColor, 16777215);
+});
 /*! Bundled license information:
 
 immutable/dist/immutable.js:
