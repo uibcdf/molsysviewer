@@ -2,6 +2,18 @@
 
 Welcome to the technical documentation for **MolSysViewer**. This guide is intended for developers who wish to contribute to the library or understand its inner workings.
 
+## Source of Truth
+
+For development work in this repository, `devguide/` is the source of truth.
+Every meaningful development step should be reflected here as a checkpoint
+covering:
+
+- decisions,
+- status,
+- immediate plan,
+- criteria/invariants,
+- perspectives and ideas.
+
 ## Contents
 
 1. [**Architecture**](architecture.md)
@@ -12,6 +24,8 @@ Welcome to the technical documentation for **MolSysViewer**. This guide is inten
    - Diagnostics, catalog rules, and telemetry signals.
 4. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
+5. [**Checkpoints**](checkpoints.md)
+   - Running log of technical decisions and progress status.
 
 ## Standards and Conventions
 
