@@ -105,6 +105,32 @@ async function run() {
     });
     await controller.handleMessage({ op: "hide_region", tag: "region1" });
   }, PDB_TEXT);
+  await page.evaluate(async (pdb) => {
+    const controller = window.__controller;
+    if (!controller) throw new Error("Controller not available for second scenario");
+    await controller.handleMessage({
+      op: "add_sphere",
+      options: {
+        center: [10, 10, 10],
+        radius: 2,
+        color: 65280,
+        alpha: 0.35,
+        tag: "shape-e2e"
+      }
+    });
+    await controller.handleMessage({ op: "clear_shapes_by_tag", tag: "shape-e2e" });
+    await controller.handleMessage({ op: "clear_all" });
+    const lastMsg = window.__lastMessage;
+    if (!lastMsg || lastMsg.event !== "registry_cleared") {
+      throw new Error("Expected registry_cleared event after clear_all");
+    }
+    await controller.handleMessage({
+      op: "load_structure_from_string",
+      data: pdb,
+      format: "pdb",
+      label: "reload-after-clear-all"
+    });
+  }, PDB_TEXT);
   await browser.close();
   const hasWebglError = errors.some((e) => e.includes("WebGL rendering context"));
   if (hasWebglError) {

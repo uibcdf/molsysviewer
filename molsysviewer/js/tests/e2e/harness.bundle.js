@@ -140091,7 +140091,7 @@ void main(void) {
     const raw = await plugin.builders.data.rawData({
       data,
       label: label2 ?? "Structure from string",
-      // extension opcional; ayuda a algunos parsers
+      // Optional extension; helps some parsers.
       ext: format
     });
     const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
@@ -140332,6 +140332,7 @@ void main(void) {
       await this.loadPdbIdInternal(pdbId);
     }
     async loadFromStringInternal(data, format, label2) {
+      this.callbacks.setExpectedFrameCount?.(1);
       await this.callbacks.clearGlobalRepresentations();
       const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
       const ls = await loadStructureFromString(this.plugin, data, format, label2, {
@@ -140341,6 +140342,7 @@ void main(void) {
       this.callbacks.captureCurrentStructure();
     }
     async loadFromUrlInternal(url, format, label2) {
+      this.callbacks.setExpectedFrameCount?.(1);
       await this.callbacks.clearGlobalRepresentations();
       const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
       const ls = await loadStructureFromUrl(this.plugin, url, format, label2, {
@@ -140350,6 +140352,7 @@ void main(void) {
       this.callbacks.captureCurrentStructure();
     }
     async loadFromMolSysPayloadInternal(payload, label2) {
+      this.callbacks.setExpectedFrameCount?.(payload.structures?.length);
       await this.callbacks.clearGlobalRepresentations();
       const previous = this.callbacks.getLoadedStructure()?.data ?? this.callbacks.getLoadedStructure()?.trajectory;
       const ls = await loadStructureFromMolSysPayload(this.plugin, payload, label2, {
@@ -143676,15 +143679,23 @@ void main(void) {
       this.updateTrajectoryState();
     }
     getTrajectoryState() {
-      const frameCount = this.getFrameCount();
+      const hasTrajectory = !!this.getTrajectoryRef();
+      let frameCount = this.getFrameCount();
+      if (!hasTrajectory && (!frameCount || frameCount < 1) && this.expectedFrameCount !== void 0) {
+        frameCount = this.expectedFrameCount;
+      }
       const currentFrame = this.getCurrentFrameIndex();
       const isPlaying = !!this.playbackTimer || this.plugin.managers.animation.isAnimating;
-      return { frameCount, currentFrame, isPlaying };
+      return { frameCount, currentFrame, isPlaying, hasTrajectory, expectedFrameCount: this.expectedFrameCount };
     }
-    onTrajectoryState(cb2) {
+    onTrajectoryState(cb2, opts) {
       this.trajectoryListeners.add(cb2);
-      cb2(this.getTrajectoryState());
+      if (opts?.immediate ?? true) cb2(this.getTrajectoryState());
       return () => this.trajectoryListeners.delete(cb2);
+    }
+    setExpectedFrameCount(n) {
+      this.expectedFrameCount = n;
+      this.notifyListeners();
     }
     notifyListeners() {
       const state = this.getTrajectoryState();
@@ -143750,12 +143761,35 @@ void main(void) {
         setLoadedStructure: (ls) => {
           this.loadedStructure = ls;
         },
-        getLoadedStructure: () => this.loadedStructure
+        getLoadedStructure: () => this.loadedStructure,
+        setExpectedFrameCount: (n) => this.trajectory.setExpectedFrameCount(n)
       });
       this.trajectory = new TrajectoryHandlers(plugin, {
         getLoadedStructure: () => this.loadedStructure,
         notifyTrajectoryState: () => this.notifyTrajectoryState()
       });
+    }
+    static showInitFailureOverlay(target, message) {
+      const overlay = document.createElement("div");
+      overlay.setAttribute("data-molsysviewer-error", "webgl");
+      Object.assign(overlay.style, {
+        position: "absolute",
+        inset: "0",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        textAlign: "center",
+        background: "rgba(10, 10, 10, 0.78)",
+        color: "#f2f2f2",
+        fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+        fontSize: "14px",
+        lineHeight: "1.4",
+        zIndex: "10",
+        pointerEvents: "none"
+      });
+      overlay.textContent = message;
+      target.appendChild(overlay);
     }
     static async create(target, notify, existingCanvas) {
       const canvas = existingCanvas ?? document.createElement("canvas");
@@ -143777,7 +143811,12 @@ void main(void) {
       } else {
         console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
       }
-      if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
+      if (!ok) {
+        const message = "WebGL unavailable / GPU driver mismatch. Mol* viewer failed to initialize.";
+        console.error("[MolSysViewer] Failed to init Mol* viewer");
+        _MolSysViewerController.showInitFailureOverlay(target, message);
+        notify?.({ event: "viewer_init_failed", reason: "webgl", message });
+      }
       return new _MolSysViewerController(plugin, target, notify);
     }
     // Loaded structure bundle
@@ -143799,6 +143838,14 @@ void main(void) {
         return;
       }
       try {
+        if (msg.op === "load_molsys_payload") {
+          const structures = msg.payload?.structures;
+          if (Array.isArray(structures)) {
+            this.trajectory.setExpectedFrameCount(structures.length);
+          } else if (msg.multiple_structures === true) {
+            this.trajectory.setExpectedFrameCount(2);
+          }
+        }
         switch (msg.op) {
           // Loader Ops
           case "load_structure_from_string":
@@ -144014,8 +144061,8 @@ void main(void) {
     setTrajectoryFrame(index) {
       return this.trajectory.setTrajectoryFrame(index);
     }
-    onTrajectoryState(cb2) {
-      return this.trajectory.onTrajectoryState(cb2);
+    onTrajectoryState(cb2, opts) {
+      return this.trajectory.onTrajectoryState(cb2, opts);
     }
     getCameraSnapshot() {
       return this.plugin.canvas3d?.camera.getSnapshot?.();

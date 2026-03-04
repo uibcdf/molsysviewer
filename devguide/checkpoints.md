@@ -104,3 +104,27 @@ It is intentionally concise and operational.
   - Handler-level confidence is improving enough to support safer protocol-level refactors.
 - `Ideas`:
   - Add explicit success-path tests for `SceneHandlers.toggleBackground` and fullscreen fallback behavior.
+
+## 2026-03-04 — CP-2026-03-04-E
+
+- `Scope`: Add second JS E2E scenario beyond region hide.
+- `Decisions`:
+  - Extend existing E2E script with a second scenario instead of creating a separate harness flow.
+  - Validate full-reset resilience through `clear_all` and explicit `registry_cleared` event check.
+- `Status`:
+  - E2E now covers:
+    - region creation + hide,
+    - shape add/clear by tag,
+    - `clear_all` + registry reset signal,
+    - reload after full reset.
+  - In this workspace, Chromium launch is sandbox-blocked; test exits with documented skip path.
+- `Plan`:
+  - Keep this scenario as baseline for future interactive regressions.
+  - Add one more E2E around trajectory controls when browser/WebGL environment is available.
+- `Criteria`:
+  - E2E scripts must remain resilient to sandbox/WebGL restrictions and skip cleanly when required.
+  - Assertions should target stable externally observable behavior (events, no console errors).
+- `Perspectives`:
+  - This gives first coverage of lifecycle reset behavior that unit tests cannot fully emulate.
+- `Ideas`:
+  - Add artifact capture (last message + operation trace) to ease debugging when E2E fails outside sandbox.
