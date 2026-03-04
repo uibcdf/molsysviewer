@@ -152,3 +152,24 @@ It is intentionally concise and operational.
   - Current coverage now spans guard paths, success forwarding, queueing semantics, and key UI state toggles.
 - `Ideas`:
   - Add helper factories for mock plugin/callback creation to reduce test boilerplate.
+
+## 2026-03-04 — CP-2026-03-04-G
+
+- `Scope`: Split JS unit test suite into handler-domain files.
+- `Decisions`:
+  - Keep `region-hide.test.ts` as stable entrypoint used by existing npm scripts.
+  - Move test cases into domain-focused files: `trajectory`, `state`, `loader`, `scene`.
+  - Extract shared utilities (`withWarnCapture`, trajectory plugin mock) into `helpers.ts`.
+- `Status`:
+  - Unit tests are now physically split by concern with a small aggregator entrypoint.
+  - Existing `npm run test:js` flow remains unchanged and green after refactor.
+- `Plan`:
+  - Optionally rename the legacy entrypoint in a later step (`unit/index.test.ts`) once scripts are updated.
+  - Continue expanding coverage per-domain without growing a monolithic test file.
+- `Criteria`:
+  - Preserve compatibility with current build/test scripts while improving maintainability.
+  - Keep each test file narrowly scoped to one handler area.
+- `Perspectives`:
+  - This unlocks cleaner growth of JS coverage and easier review of behavior changes.
+- `Ideas`:
+  - Add a tiny README in `js/tests/unit` describing file ownership by handler domain.
