@@ -137,6 +137,64 @@ test("loader handlers reject invalid payloads without triggering callbacks", asy
     assert.deepStrictEqual(calls, []);
 });
 
+test("loader handlers forward valid inputs to internal methods with defaults", async () => {
+    const plugin: any = {};
+    const callbacks = {
+        clearGlobalRepresentations: async () => {},
+        captureCurrentStructure: () => {},
+        setLoadedStructure: (_ls: any) => {},
+        getLoadedStructure: () => undefined,
+        setExpectedFrameCount: (_n: number | undefined) => {},
+    };
+    const handler: any = new LoaderHandlers(plugin, callbacks);
+
+    const observed: Array<{ method: string; args: any[] }> = [];
+    handler.loadFromStringInternal = async (...args: any[]) => {
+        observed.push({ method: "loadFromStringInternal", args });
+    };
+    handler.loadFromUrlInternal = async (...args: any[]) => {
+        observed.push({ method: "loadFromUrlInternal", args });
+    };
+    handler.loadFromMolSysPayloadInternal = async (...args: any[]) => {
+        observed.push({ method: "loadFromMolSysPayloadInternal", args });
+    };
+
+    await handler.loadFromString({
+        op: "load_structure_from_string",
+        pdb_text: "ATOM ...",
+    });
+    await handler.loadFromUrl({
+        op: "load_structure_from_url",
+        url: "https://example.org/a.pdb",
+    });
+    await handler.loadMolSysPayload({
+        op: "load_molsys_payload",
+        payload: { atoms: { atom_id: [1] }, structures: [{ coordinates: [[0, 0, 0]] }] } as any,
+        label: "payload-label",
+    });
+    await handler.loadPdbId({
+        op: "load_pdb_id",
+        pdb_id: " 1tcd ",
+    });
+
+    assert.deepStrictEqual(observed[0], {
+        method: "loadFromStringInternal",
+        args: ["ATOM ...", "pdb", "Structure"],
+    });
+    assert.deepStrictEqual(observed[1], {
+        method: "loadFromUrlInternal",
+        args: ["https://example.org/a.pdb", undefined, undefined],
+    });
+    assert.deepStrictEqual(observed[2], {
+        method: "loadFromMolSysPayloadInternal",
+        args: [{ atoms: { atom_id: [1] }, structures: [{ coordinates: [[0, 0, 0]] }] }, "payload-label"],
+    });
+    assert.deepStrictEqual(observed[3], {
+        method: "loadFromUrlInternal",
+        args: ["https://files.rcsb.org/download/1TCD.pdb", "pdb", "PDB 1TCD"],
+    });
+});
+
 test("scene clearScene obeys option flags and clearAll emits registry reset", async () => {
     const plugin: any = {};
     const events: any[] = [];
@@ -209,4 +267,22 @@ test("scene toggles spin and swing with mutual exclusion", async () => {
         .filter((x) => typeof x === "string");
     assert.ok(animateNames.includes("spin"));
     assert.ok(animateNames.includes("rock"));
+});
+
+test("state handler stores pending layer visibility when layer refs do not exist", async () => {
+    const plugin: any = { state: { data: {} } };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    await handler.hideLayer({ op: "hide_layer", tag: "layer-pending" });
+    const pending = (handler as any).pendingLayerVisibility as Map<string, boolean>;
+    assert.strictEqual(pending.get("layer-pending"), true);
+
+    await handler.showLayer({ op: "show_layer", tag: "layer-pending" });
+    assert.strictEqual(pending.get("layer-pending"), false);
 });

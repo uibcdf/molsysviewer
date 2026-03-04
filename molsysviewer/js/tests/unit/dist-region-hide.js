@@ -127607,6 +127607,64 @@ test("loader handlers reject invalid payloads without triggering callbacks", asy
   });
   assert.deepStrictEqual(calls, []);
 });
+test("loader handlers forward valid inputs to internal methods with defaults", async () => {
+  const plugin = {};
+  const callbacks = {
+    clearGlobalRepresentations: async () => {
+    },
+    captureCurrentStructure: () => {
+    },
+    setLoadedStructure: (_ls) => {
+    },
+    getLoadedStructure: () => void 0,
+    setExpectedFrameCount: (_n) => {
+    }
+  };
+  const handler = new LoaderHandlers(plugin, callbacks);
+  const observed = [];
+  handler.loadFromStringInternal = async (...args) => {
+    observed.push({ method: "loadFromStringInternal", args });
+  };
+  handler.loadFromUrlInternal = async (...args) => {
+    observed.push({ method: "loadFromUrlInternal", args });
+  };
+  handler.loadFromMolSysPayloadInternal = async (...args) => {
+    observed.push({ method: "loadFromMolSysPayloadInternal", args });
+  };
+  await handler.loadFromString({
+    op: "load_structure_from_string",
+    pdb_text: "ATOM ..."
+  });
+  await handler.loadFromUrl({
+    op: "load_structure_from_url",
+    url: "https://example.org/a.pdb"
+  });
+  await handler.loadMolSysPayload({
+    op: "load_molsys_payload",
+    payload: { atoms: { atom_id: [1] }, structures: [{ coordinates: [[0, 0, 0]] }] },
+    label: "payload-label"
+  });
+  await handler.loadPdbId({
+    op: "load_pdb_id",
+    pdb_id: " 1tcd "
+  });
+  assert.deepStrictEqual(observed[0], {
+    method: "loadFromStringInternal",
+    args: ["ATOM ...", "pdb", "Structure"]
+  });
+  assert.deepStrictEqual(observed[1], {
+    method: "loadFromUrlInternal",
+    args: ["https://example.org/a.pdb", void 0, void 0]
+  });
+  assert.deepStrictEqual(observed[2], {
+    method: "loadFromMolSysPayloadInternal",
+    args: [{ atoms: { atom_id: [1] }, structures: [{ coordinates: [[0, 0, 0]] }] }, "payload-label"]
+  });
+  assert.deepStrictEqual(observed[3], {
+    method: "loadFromUrlInternal",
+    args: ["https://files.rcsb.org/download/1TCD.pdb", "pdb", "PDB 1TCD"]
+  });
+});
 test("scene clearScene obeys option flags and clearAll emits registry reset", async () => {
   const plugin = {};
   const events = [];
@@ -127675,6 +127733,22 @@ test("scene toggles spin and swing with mutual exclusion", async () => {
   const animateNames = setPropsCalls.map((p3) => p3?.trackball?.animate?.name).filter((x) => typeof x === "string");
   assert.ok(animateNames.includes("spin"));
   assert.ok(animateNames.includes("rock"));
+});
+test("state handler stores pending layer visibility when layer refs do not exist", async () => {
+  const plugin = { state: { data: {} } };
+  const handler = new StateHandlers(plugin, {
+    getStructure: () => void 0,
+    getLoadedStructure: () => void 0,
+    getCurrentStructureRef: () => void 0,
+    getComponents: () => [],
+    notify: (_msg) => {
+    }
+  });
+  await handler.hideLayer({ op: "hide_layer", tag: "layer-pending" });
+  const pending = handler.pendingLayerVisibility;
+  assert.strictEqual(pending.get("layer-pending"), true);
+  await handler.showLayer({ op: "show_layer", tag: "layer-pending" });
+  assert.strictEqual(pending.get("layer-pending"), false);
 });
 /*! Bundled license information:
 

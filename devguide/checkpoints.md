@@ -83,3 +83,24 @@ It is intentionally concise and operational.
   - Incremental handler coverage should make protocol refactors safer and faster.
 - `Ideas`:
   - Introduce a simple test helper module for common plugin/callback mocks.
+
+## 2026-03-04 — CP-2026-03-04-D
+
+- `Scope`: Add JS unit tests for successful loader forwarding and pending layer visibility state.
+- `Decisions`:
+  - Verify successful public handler paths by stubbing private internal methods at runtime.
+  - Expand state coverage around pending layer visibility bookkeeping before refs exist.
+- `Status`:
+  - Added tests for valid forwarding/default behavior in `LoaderHandlers`.
+  - Added test for `StateHandlers` pending visibility transitions (`hideLayer` then `showLayer` without refs).
+  - JS unit suite remains green after changes.
+- `Plan`:
+  - Continue with E2E expansion (second scenario beyond current region-hide path).
+  - Consider splitting growing unit test file by handler domain.
+- `Criteria`:
+  - Keep tests independent from Mol* runtime side effects where possible.
+  - Keep assertions on externally meaningful orchestration behavior.
+- `Perspectives`:
+  - Handler-level confidence is improving enough to support safer protocol-level refactors.
+- `Ideas`:
+  - Add explicit success-path tests for `SceneHandlers.toggleBackground` and fullscreen fallback behavior.
