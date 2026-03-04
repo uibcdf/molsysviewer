@@ -1,45 +1,173 @@
-# Development Roadmap
+# Development Roadmap (Status-Aligned)
 
-This document outlines the strategic directions for **MolSysViewer** based on the 2026 technical audit and the project's long-term vision. The goal is to evolve from a visualization widget into an interactive analysis tool integrated with the UIBCDF ecosystem.
+Last update: 2026-03-04
 
-## Phase 1: Bi-directional Interactivity (High Priority)
+This roadmap is status-aligned with the current repository state.
+It is organized by execution priority and uses three labels:
 
-Currently, communication is primarily one-way (Python → JS). We need to empower Python to react to user actions in the 3D canvas.
+- `Done`: implemented and present in codebase.
+- `In progress`: partially implemented or implemented with limited coverage/docs.
+- `Planned`: not implemented yet or not stabilized.
 
-- **Picking System**: Implement atom/residue picking in the TypeScript layer.
-- **Event Synchronization**: 
-  - Emit `atom_clicked` or `selection_changed` messages from JS.
-  - Create a callback system in Python (e.g., `view.on_click(func)`) to handle these events using MolSysMT indices.
-- **Hover Feedback**: Support custom tooltips triggered from Python to show property values on mouse-over.
+## 1) Core Runtime and Contracts
 
-## Phase 2: Scientific Data Mapping & Primitives
+### Status
 
-Move beyond simple spheres into data-driven visualization and rich geometric support.
+- `Done`
+  - Python facade centered on `MolSysView`.
+  - TypeScript runtime centered on `MolSysViewerController` + handler split.
+  - Stable Python -> TS op protocol (`ViewerMessage` union).
+  - MolSys payload path (`load_molsys_payload`) with native topology/trajectory construction.
+  - Region/layer/whole abstractions with tag-based state.
 
-- **Geometric Expansion**: Implement official support for:
-  - Arrows and Displacement Vectors (ElasNetMT).
-  - Cylinders and Bonds customization.
-  - Labels and Billboards for annotation.
-  - General meshes for custom surfaces.
-- **Color by Property**: Implement `view.color_by(values=array, colormap='viridis', selection='...')` to automatically map scientific data to the 3D model.
-- **Domain-Specific Visuals**:
-  - **TopoMT**: Dedicated rendering for pockets, cavities, and alpha-sphere sets.
-  - **PharmacophoreMT**: Standardized features (points, spheres with orientation).
+- `In progress`
+  - Contract hardening by test breadth across all ops and edge paths.
+  - Cross-check consistency between docs snapshots and runtime behavior.
 
-## Phase 3: Frontend Quality and Robustness
+### Next actions
 
-As the TypeScript layer grows in complexity, we must ensure it is as stable as the Python backend.
+- Expand protocol-focused tests for non-trivial operations (`set_global_representation`, layer retag, clear/reset interactions).
+- Keep contract changes additive unless versioned.
 
-- **JS Testing Infrastructure**: Implement unit tests in `molsysviewer/js/tests/unit` (Vitest) and E2E tests in `molsysviewer/js/tests/e2e` (Playwright).
-- **Message Validation in TS**: Implement schema validation for incoming messages from Python to catch protocol mismatches early.
+### Criteria
 
-## Phase 4: User Experience (UX) & Workflow
+- Preserve payload schema: top-level `structures`, each with `coordinates` and optional `box`/`time`.
+- Do not reintroduce legacy payload names.
 
-- **On-Canvas GUI**: Add a lightweight floating UI in the viewer to control layer visibility, transparency, and trajectory playback without re-executing Python cells.
-- **Camera Helpers**: Add high-level API methods for common camera moves (align to axis, focus on ligand, fly-by).
-- **Scene Persistence**: Ability to export/import the full viewer state (including shapes and camera) as a JSON bundle.
+## 2) Structural Editing and Live Rebuild
 
-## Technical Debt
+### Status
 
-- **Zero Warnings Goal**: Reach 100% ArgDigest coverage for all arguments in the `shapes/` and `loaders/` submodules to eliminate `DigestNotDigestedWarning` during tests.
-- **Numba Cache Management**: Ensure environment-safe Numba caching to avoid collision in shared HPC environments.
+- `Done`
+  - Live operations exposed in Python: `append_structures`, `set`, `add`, `remove`.
+  - Rebuild pipeline remaps indices and replays state/history.
+
+- `In progress`
+  - Behavioral stabilization and broader regression coverage for remap/replay scenarios.
+
+### Next actions
+
+- Add targeted tests for remap correctness (regions + shape atom indices + visibility after `remove`).
+- Validate replay consistency across consecutive mutating operations.
+
+### Criteria
+
+- Preserve tag identity and region/layer continuity after rebuild.
+- No silent index desynchronization between Python and TS state.
+
+## 3) Shapes and Scientific Overlays
+
+### Status
+
+- `Done`
+  - Python and TS support for major overlay families:
+    - spheres/alpha-sphere sets,
+    - pocket surfaces/blobs,
+    - channel tubes,
+    - anisotropy ellipsoids,
+    - pharmacophore features,
+    - links, vectors, triangle faces, tetrahedra.
+  - Tag-based registration for selective clear/hide.
+
+- `In progress`
+  - Deep coverage of TS shape handler branches and error paths.
+  - Docs parity for all implemented overlays.
+
+### Next actions
+
+- Extend JS tests beyond region-hide to shape routing and tag-index lifecycle.
+- Close docs gaps where implemented APIs are still documented as placeholders.
+
+### Criteria
+
+- Keep Python option normalization deterministic and validated.
+- Keep shape ops replay-safe for exports and rebuild flow.
+
+## 4) Visibility, Regions/Layers, and Global Semantics
+
+### Status
+
+- `Done`
+  - Atom-level visibility masking from Python.
+  - Global vs region visibility split in TS (`show_global` / `hide_global`, region hidden memory).
+  - Region/layer acks from frontend to keep Python registries synchronized.
+
+- `In progress`
+  - Complex interaction tests (global hide/show + hidden regions + selective updates).
+
+### Next actions
+
+- Add combined-flow tests for visibility invariants.
+- Document edge semantics with executable examples in devguide checkpoints as needed.
+
+### Criteria
+
+- `region.hide()` must remain sticky across global show/hide cycles.
+- Whole/global operations must not accidentally mutate region-specific hidden state.
+
+## 5) Export, Embedding, and Popup
+
+### Status
+
+- `Done`
+  - `write_html` in `standalone` and `lite` modes.
+  - Message-history replay and camera snapshot embedding.
+  - Popup host logic with runtime source/module URL modes.
+
+- `In progress`
+  - Robustness tests for popup sync flows and camera sync edge cases.
+  - Documentation parity for embed/export troubleshooting.
+
+### Next actions
+
+- Add tests around export message cleaning and replay ordering.
+- Add explicit checklist for popup host/popout behavior verification.
+
+### Criteria
+
+- Export output must be reproducible from message history.
+- Runtime source should remain decoupled from generated-artifact manual edits.
+
+## 6) Testing and Quality Gates
+
+### Status
+
+- `Done`
+  - Python test suite covers loaders, shapes, core viewer helpers, and key integration paths.
+  - JS unit/e2e scaffolding exists with runnable scripts.
+
+- `In progress`
+  - JS coverage is narrow relative to runtime surface.
+  - E2E matrix is minimal.
+
+### Next actions
+
+- Prioritize JS unit coverage for handlers (`loader`, `state`, `shape`, `trajectory`, `scene`).
+- Add at least one additional E2E path beyond region hide.
+
+### Criteria
+
+- Every protocol-significant behavior should be covered in either Python or JS tests.
+- Keep E2E deterministic and environment-aware (browser/WebGL constraints).
+
+## 7) Documentation and Development Memory
+
+### Status
+
+- `Done`
+  - Strong developer docs for architecture/protocol/public API.
+  - Canonical infra guides integrated (SMonitor/ArgDigest/DepDigest/PyUnitWizard).
+
+- `In progress`
+  - Multiple user/developer pages remain placeholders.
+  - Historical docs and current docs can diverge in status wording.
+
+### Next actions
+
+- Use `devguide/` checkpoints as authoritative development memory.
+- Keep roadmap and checkpoints synchronized with executed work.
+
+### Criteria
+
+- Development decisions must be logged in `devguide/checkpoints.md`.
+- Roadmap status must reflect repository reality, not aspirational-only lists.

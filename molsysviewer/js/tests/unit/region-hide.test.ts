@@ -1,58 +1,78 @@
 import assert from "node:assert";
 import test from "node:test";
-import { MolSysViewerController } from "../../src/managers/viewer-controller";
+import { StateHandlers } from "../../src/managers/handlers/state-handlers";
+import { TrajectoryHandlers } from "../../src/managers/handlers/trajectory-handlers";
 
-function makeBuilder() {
-    const updates: Array<{ ref: any; next: any }> = [];
+function makeTrajectoryPluginMock() {
     return {
-        updates,
-        to(ref: any) {
-            return {
-                update(fn: (old: any) => any) {
-                    const next = fn({ state: {} });
-                    updates.push({ ref, next });
-                    return this;
+        managers: {
+            animation: {
+                isAnimating: false,
+                stop() {
+                    return;
                 },
-            };
-        },
-        commit: async () => ({}),
-    };
-}
-
-// Minimal plugin mock that satisfies the parts touched by handleShowHideRegion.
-function makePluginMock() {
-    const builder = makeBuilder();
-    return {
-        state: {
-            data: {
-                build: () => builder,
             },
         },
-        __builder: builder,
+        state: {
+            data: {
+                selectQ() {
+                    return [];
+                },
+            },
+        },
     };
 }
 
-// Forcing access despite private constructor; runtime allows it.
-function makeController() {
-    const plugin: any = makePluginMock();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const controller: any = new (MolSysViewerController as any)(plugin, {} as any, undefined);
-    return { controller, plugin };
-}
-
-test("hide_region updates isHidden via state update", async () => {
-    const { controller, plugin } = makeController();
-    const tag = "region1";
-    const reprRef = "repr1";
-    controller.regionIndex.set(tag, {
-        component: undefined,
-        representations: [reprRef],
-        atomIndices: [],
+test("trajectory handler exposes expected frame count before structure is ready", () => {
+    const plugin: any = makeTrajectoryPluginMock();
+    const handler = new TrajectoryHandlers(plugin, {
+        getLoadedStructure: () => undefined,
+        notifyTrajectoryState: () => {},
     });
 
-    await controller.handleShowHideRegion({ tag } as any, true);
+    const observed: Array<{ frameCount: number; hasTrajectory: boolean }> = [];
+    handler.onTrajectoryState(
+        (state) => observed.push({ frameCount: state.frameCount, hasTrajectory: state.hasTrajectory }),
+        { immediate: false },
+    );
 
-    const updates = plugin.__builder.updates ?? [];
-    const hasHideUpdate = updates.some((u: any) => u.ref === reprRef && u.next?.state?.isHidden === true);
-    assert.ok(hasHideUpdate, "Expected hide to set isHidden=true on representation");
+    handler.setExpectedFrameCount(5);
+
+    assert.strictEqual(observed.length, 1);
+    assert.strictEqual(observed[0].frameCount, 5);
+    assert.strictEqual(observed[0].hasTrajectory, false);
+});
+
+test("state handler emits layer ack and keeps metadata through retag", async () => {
+    const notifications: any[] = [];
+    const plugin: any = { state: { data: {} } };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (msg: any) => notifications.push(msg),
+    });
+
+    await handler.createLayer({
+        op: "create_layer",
+        tag: "layer-a",
+        kind: "shape",
+        meta: { source: "unit-test" },
+    });
+
+    assert.deepStrictEqual(notifications, [
+        { event: "layer_ack", tag: "layer-a", kind: "shape", meta: { source: "unit-test" } },
+    ]);
+
+    await handler.setLayerTag({
+        op: "set_layer_tag",
+        tag: "layer-a",
+        new_tag: "layer-b",
+    });
+
+    const layerMeta = (handler as any).layerMeta as Map<string, any>;
+    assert.strictEqual(layerMeta.has("layer-a"), false);
+    assert.strictEqual(layerMeta.has("layer-b"), true);
+    assert.deepStrictEqual(layerMeta.get("layer-b"), { kind: "shape", meta: { source: "unit-test" } });
 });
