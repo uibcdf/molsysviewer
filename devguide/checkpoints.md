@@ -173,3 +173,23 @@ It is intentionally concise and operational.
   - This unlocks cleaner growth of JS coverage and easier review of behavior changes.
 - `Ideas`:
   - Add a tiny README in `js/tests/unit` describing file ownership by handler domain.
+
+## 2026-03-05 — CP-2026-03-05-H
+
+- `Scope`: Complete step 1 by normalizing JS unit test entrypoint naming.
+- `Decisions`:
+  - Replace legacy `region-hide` unit entrypoint name with neutral `index`.
+  - Keep test content split by handler domain with `index.test.ts` as aggregator only.
+- `Status`:
+  - Unit entrypoint/files renamed to `tests/unit/index.test.ts` and `tests/unit/dist-index.js`.
+  - npm scripts updated in `molsysviewer/js/package.json` (`build:test:js`, `test:js`, `coverage:js`).
+- `Plan`:
+  - Re-run JS unit tests with updated scripts and keep E2E flow unchanged.
+  - Continue roadmap "Testing and Quality Gates" with next planned coverage target.
+- `Criteria`:
+  - Preserve deterministic build/test commands and avoid legacy naming drift.
+  - Keep `devguide` as authoritative checkpoint log before each next step.
+- `Perspectives`:
+  - Neutral naming avoids coupling test infrastructure to a single scenario and clarifies intent.
+- `Ideas`:
+  - Add a short `js/tests/unit/README.md` documenting the entrypoint and handler-file layout.
