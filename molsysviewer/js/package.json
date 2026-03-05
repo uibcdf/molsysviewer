@@ -14,9 +14,9 @@
   "scripts": {
     "sync:pyversion": "node scripts/sync-python-version.mjs",
     "build": "npm run sync:pyversion && node scripts/build-runtime.mjs",
-    "build:test:js": "npx esbuild tests/unit/region-hide.test.ts --bundle --platform=node --format=esm --outfile=tests/unit/dist-region-hide.js",
-    "test:js": "npm run build:test:js && node --test tests/unit/dist-region-hide.js",
-    "coverage:js": "npm run build:test:js && npx c8 --reporter=lcov --report-dir=coverage-js node --test tests/unit/dist-region-hide.js",
+    "build:test:js": "npx esbuild tests/unit/index.test.ts --bundle --platform=node --format=esm --outfile=tests/unit/dist-index.js",
+    "test:js": "npm run build:test:js && node --test tests/unit/dist-index.js",
+    "coverage:js": "npm run build:test:js && npx c8 --reporter=lcov --report-dir=coverage-js node --test tests/unit/dist-index.js",
     "build:harness": "npx esbuild tests/e2e/harness.ts --bundle --format=iife --global-name=Harness --outfile=tests/e2e/harness.bundle.js",
     "build:e2e": "npx esbuild tests/e2e/region-hide.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/region-hide.e2e.js --external:playwright --external:chromium-bidi/*",
     "test:e2e": "npm run build:harness && npm run build:e2e && node tests/e2e/region-hide.e2e.js"
