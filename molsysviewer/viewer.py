@@ -1046,17 +1046,79 @@ class MolSysView:
             raise ValueError("No molecular system loaded. Load a system before calling set().")
 
         visible = self.visible_atom_indices
-        msm.set(
-            self._molsys,
+        self._set_molsys_attributes(
             element=element,
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
-            skip_digestion=True,
             **kwargs,
         )
         self.molecular_system = self._molsys
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
+
+    def _normalize_set_value(self, attribute: str, value: Any):
+        if attribute != "coordinates":
+            return value
+
+        quantity = puw.standardize(value)
+        if not puw.check(puw.get_unit(quantity), dimensionality={"[L]": 1}):
+            raise ValueError("coordinates passed to set() must have length units")
+        return quantity
+
+    def _set_molsys_attributes(
+        self,
+        *,
+        element: str | None,
+        selection: str | Any,
+        structure_indices: str | Any,
+        syntax: str,
+        **kwargs: Any,
+    ) -> None:
+        from molsysmt.attribute import attributes
+        from molsysmt.basic import select, where_is_attribute
+        from molsysmt.form import _dict_modules
+
+        element_indices: dict[str, Any] = {}
+
+        for attribute, raw_value in kwargs.items():
+            target_element = element if element is not None else attributes[attribute]["set_to"]
+
+            dict_indices: dict[str, Any] = {}
+            if target_element != "system":
+                if target_element not in element_indices:
+                    if is_all(selection):
+                        element_indices[target_element] = "all"
+                    else:
+                        element_indices[target_element] = select(
+                            self._molsys,
+                            element=target_element,
+                            selection=selection,
+                            syntax=syntax,
+                            skip_digestion=True,
+                        )
+                dict_indices["indices"] = element_indices[target_element]
+
+            if attributes[attribute]["runs_on_structures"]:
+                dict_indices["structure_indices"] = structure_indices
+
+            item, form = where_is_attribute(
+                self._molsys,
+                attribute,
+                include_none=True,
+                skip_digestion=True,
+            )
+            if item is None or form is None:
+                raise ValueError(f"Attribute {attribute!r} is not available in the loaded molecular system.")
+
+            setter_name = f"set_{attribute}_to_{target_element}"
+            setter = getattr(_dict_modules[form], setter_name, None)
+            if setter is None:
+                raise ValueError(
+                    f"Attribute {attribute!r} cannot currently be set at element level {target_element!r}."
+                )
+
+            value = self._normalize_set_value(attribute, raw_value)
+            setter(item, value=value, skip_digestion=True, **dict_indices)
 
     @digest()
     def add(

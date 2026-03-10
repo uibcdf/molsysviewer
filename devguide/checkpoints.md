@@ -37,7 +37,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - Regression coverage now exists for:
     - `remove()`: rebuild with atom-index remap,
     - `append_structures()`: rebuild without atom-index remap, multi-structure payload,
-    - `add()`: rebuild with expanded atom payload.
+    - `add()`: rebuild with expanded atom payload,
+    - `set()`: rebuild after topological and structural edits.
   - These regressions use real demo viewers instead of synthetic mocks.
 
 - Dev/docs workflow
@@ -57,34 +58,30 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Next Step
 
-- Attack `MolSysView.set()` directly.
+- Add a regression for consecutive live edits and confirm replay/export safety after rebuild chains.
 
 Why this is next:
 
-- It is the last uncovered live-edit API in the current matrix.
-- `remove()`, `append_structures()`, and `add()` are now protected by regressions.
-- `set()` already exposed backend friction during exploration, so it is now more valuable to treat it as an implementation/debugging target than to defer it.
+- The single-operation live-edit matrix is now covered for `remove()`, `append_structures()`, `add()`, and `set()`.
+- The next failure mode with the highest architectural risk is no longer “one operation breaks rebuild”, but “multiple live edits leave replay/history inconsistent”.
+- This also connects directly to export reliability, because HTML replay depends on `_message_history` staying coherent after rebuilds.
 
 ## What We Learned About `set()`
 
-- The current backend path is not yet yielding a clean regression scenario.
-- Observed blockers during direct exercise:
-  - string-valued edits can fall into MolSysMT/PyUnitWizard unit parsing,
-  - some attribute/form resolution paths in `molsysmt.set(...)` do not behave robustly in the current environment,
-  - coordinate edits also hit value-digestion expectations that need explicit handling.
-
-Working assumption:
-
-- `set()` likely needs implementation hardening or a narrower supported-path policy before it can be covered with a stable regression test.
+- `MolSysView.set()` needed a MolSysViewer-side wrapper instead of blind delegation to `molsysmt.set(...)`.
+- The important fixes were:
+  - resolving attributes with `include_none=True`,
+  - calling the concrete `set_*` function with `skip_digestion=True`,
+  - normalizing `coordinates` as a quantity with length units before applying the setter.
+- With that adapter in place, at least these core paths are now covered and working:
+  - topological string edit (`group_name`),
+  - structural edit (`coordinates` with units).
 
 ## Immediate Plan
 
-1. Reproduce `set()` with the smallest meaningful mutation that should be supported.
-2. Decide whether the right fix is:
-   - a MolSysViewer-side adaptation before calling `molsysmt.set(...)`, or
-   - documenting a more constrained supported `set()` surface if the issue is upstream.
-3. Add the regression only after the supported behavior is clear and stable.
-4. After `set()`, add one consecutive-mutations regression to validate replay consistency across multiple live edits.
+1. Add one consecutive-mutations regression over the current live-edit matrix.
+2. Add a focused export/replay regression using rebuilt `_message_history`.
+3. Revisit any remaining unsupported `set()` attribute families only if they surface as real user-facing needs.
 
 ## Criteria
 
@@ -96,13 +93,12 @@ Working assumption:
 
 ## Open Risks
 
-- `set()` is still uncovered and currently appears brittle because of backend digestion/value-resolution behavior.
 - `add()` still depends on a scoped `NUMBA_CACHE_DIR` workaround in this environment.
 - E2E breadth is still thin relative to the runtime surface.
 - Export/replay regression coverage is still lighter than live-edit coverage.
 
 ## Useful Follow-ups
 
-- Add a regression around consecutive live edits (`remove` + `append_structures`, or `add` + `remove`) once `set()` is resolved.
+- Add a regression around consecutive live edits (`remove` + `append_structures`, or `add` + `remove`).
 - Add a focused export test that asserts rebuilt `_message_history` remains HTML-replay-safe.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
