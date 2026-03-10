@@ -49,6 +49,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `show(all)` restoring the atom mask without explicitly re-showing hidden regions.
   - These assertions are aligned directly with `devguide` visibility semantics.
 
+- Export / popout core contracts
+  - Regression coverage now exists for:
+    - export replay ordering with `set_camera_snapshot` appended after cleaned message history,
+    - standalone export state honoring `enable_popout=False`,
+    - popup host runtime bootstrap via `moduleUrl`,
+    - popup host sync messages being gated on `isReady` and open window state.
+
 - Dev/docs workflow
   - `devguide/` is the source of truth for active development status and handoff context.
   - `NUMBA_CACHE_DIR=/tmp/numba_cache` is no longer treated as a default global requirement.
@@ -66,7 +73,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Next Step
 
-- Shift the next core focus to popup/popout and export behavior outside the now-covered live-edit and visibility core.
+- Shift the next core focus from baseline popup/export contracts to broader popup synchronization and additional implementation work.
 
 Why this is next:
 
@@ -74,11 +81,12 @@ Why this is next:
   - single operations,
   - a consecutive mutation chain,
   - and replay/export safety of the rebuilt history.
-- The next high-value core gaps are no longer centered on rebuild mechanics or baseline visibility semantics.
+- The next high-value core gaps are no longer centered on rebuild mechanics, baseline visibility semantics, or the most basic popup/export contracts.
 - The strongest remaining architectural risks are:
   - popup/popout sync behavior,
   - broader export reliability outside the already-tested rebuild chain.
   - replay ordering and camera/state continuity across embedded/exported flows.
+  - feature breadth toward the still-incomplete 1.0 surface.
 
 ## What We Learned About `set()`
 
@@ -95,7 +103,7 @@ Why this is next:
 
 1. Pick the next core cross-cutting behavior:
    - popup/popout synchronization behavior, or
-   - export replay ordering/camera continuity behavior.
+   - resume feature implementation on the highest-value 1.0 path once no uncovered core blocker remains.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Revisit additional `set()` attribute families only if they become a real product need.
 
@@ -111,7 +119,7 @@ Why this is next:
 
 - `add()` still depends on a scoped `NUMBA_CACHE_DIR` workaround in this environment.
 - E2E breadth is still thin relative to the runtime surface.
-- Popup/popout behavior is still lighter in coverage than live-edit and export behavior.
+- Popup/popout behavior is still lighter in coverage than live-edit and visibility behavior.
 
 ## Useful Follow-ups
 
