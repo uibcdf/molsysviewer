@@ -604,7 +604,7 @@ class MolSysView:
             raise ValueError("Unable to serialize MolSysMT viewer payload")
 
         n_atoms = int(self._molsys.topology.get_n_atoms())
-        n_structures = int(self._molsys.structures.get_n_structures())
+        n_structures = len(payload.get("structures") or [])
         multiple_structures = n_structures > 1
         self.atom_mask = np.ones(n_atoms, dtype=bool)
         if visible_atom_indices is not None:
@@ -637,6 +637,7 @@ class MolSysView:
             self.whole.set_representation(
                 getattr(self.whole, "_representation", None),
                 preset=getattr(self.whole, "_preset", None),
+                skip_digestion=True,
                 **getattr(self.whole, "_repr_params", {}),
             )
 
@@ -648,7 +649,7 @@ class MolSysView:
                 continue
             layer._send_create()  # noqa: SLF001
             if getattr(layer, "_hidden", False):
-                layer.hide()
+                layer.hide(skip_digestion=True)
 
         for region in list(self._regions.values()):
             if not getattr(region, "_active", True):
@@ -658,10 +659,11 @@ class MolSysView:
                 region.set_representation(
                     region.representation,
                     preset=getattr(region, "preset", None),
+                    skip_digestion=True,
                     **(region.repr_params or {}),
                 )
             if getattr(region, "_hidden", False):
-                region.hide()
+                region.hide(skip_digestion=True)
 
         for msg in self._shape_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
