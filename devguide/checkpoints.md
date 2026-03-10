@@ -257,3 +257,25 @@ It is intentionally concise and operational.
   - Developer guidance should reflect validated current behavior, not obsolete setup habits.
 - `Perspectives`:
   - This removes unnecessary environment ceremony and keeps troubleshooting evidence-based.
+
+## 2026-03-10 — CP-2026-03-10-L
+
+- `Scope`: Extend live-edit rebuild coverage from `remove()` to `append_structures()`.
+- `Decisions`:
+  - Reuse the same demo-based regression file for structural editing scenarios to keep invariants comparable across operations.
+  - Treat `append_structures()` as the next lowest-friction live-edit path because it exercises replay/rebuild without atom-index remap complexity.
+- `Status`:
+  - Added a regression test asserting that `append_structures()`:
+    - rebuilds history from `clear_all`,
+    - emits a `load_molsys_payload` with `multiple_structures=True`,
+    - preserves region atom indices,
+    - preserves hidden region/layer state,
+    - replays shape messages unchanged when no remap is needed.
+- `Plan`:
+  - Continue the file with `set()` and `add()` scenarios.
+  - Add a consecutive-mutations case once the single-operation matrix is in place.
+- `Criteria`:
+  - Appending structures must not break tag continuity or replay ordering.
+  - Multi-structure payload state must remain explicit in replayed history.
+- `Perspectives`:
+  - The live-edit matrix now covers both rebuild-with-remap (`remove`) and rebuild-without-remap (`append_structures`).
