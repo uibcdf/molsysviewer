@@ -119,6 +119,7 @@ It is organized by execution priority and uses three labels:
   - Robustness tests for popup sync flows and camera sync edge cases.
   - Documentation parity for embed/export troubleshooting.
   - Baseline export ordering and popup host bootstrap contracts are now covered, but live mirror behavior remains only partially exercised.
+  - Popup live-sync baseline is now regression-covered for initial replay and camera fight avoidance, though broader interactive breadth is still limited.
 
 ### Next actions
 

@@ -21518,8 +21518,8 @@ var Column;
     return areColumnsEqual(a5, b5);
   }
   Column2.areEqual = areEqual4;
-  function indicesOf2(c5, test7) {
-    return columnIndicesOf(c5, test7);
+  function indicesOf2(c5, test8) {
+    return columnIndicesOf(c5, test8);
   }
   Column2.indicesOf = indicesOf2;
   function asArrayColumn(c5, array2) {
@@ -21773,10 +21773,10 @@ function areValuesEqual(a5, b5) {
   }
   return true;
 }
-function columnIndicesOf(c5, test7) {
+function columnIndicesOf(c5, test8) {
   const ret = [], v3 = c5.value;
   for (let i = 0, _i = c5.rowCount; i < _i; i++) {
-    if (test7(v3(i)))
+    if (test8(v3(i)))
       ret[ret.length] = i;
   }
   return ret;
@@ -22028,10 +22028,10 @@ var Table;
     return ret;
   }
   Table2.view = view2;
-  function pick2(table, schema, test7) {
+  function pick2(table, schema, test8) {
     const _view = [];
     for (let i = 0, il = table._rowCount; i < il; ++i) {
-      if (test7(i))
+      if (test8(i))
         _view.push(i);
     }
     return view2(table, schema, _view);
@@ -22131,9 +22131,9 @@ var Table;
     return row;
   }
   Table2.getRow = getRow;
-  function pickRow(table, test7) {
+  function pickRow(table, test8) {
     for (let i = 0, il = table._rowCount; i < il; ++i) {
-      if (test7(i))
+      if (test8(i))
         return getRow(table, i);
     }
   }
@@ -37456,8 +37456,8 @@ var StateSelection;
   }
   StateSelection2.ofType = ofType;
   registerModifier("ancestor", ancestor);
-  function ancestor(b5, test7) {
-    return unique(mapObject(b5, (n, s) => findAncestor(s.tree, s.cells, n.transform.ref, test7)));
+  function ancestor(b5, test8) {
+    return unique(mapObject(b5, (n, s) => findAncestor(s.tree, s.cells, n.transform.ref, test8)));
   }
   StateSelection2.ancestor = ancestor;
   registerModifier("ancestorOfType", ancestorOfType);
@@ -37476,8 +37476,8 @@ var StateSelection;
   }
   StateSelection2.withTransformer = withTransformer;
   registerModifier("root", root);
-  function root(b5, test7) {
-    return unique(mapObject(b5, (n, s) => findRoot(s.tree, s.cells, n.transform.ref, test7)));
+  function root(b5, test8) {
+    return unique(mapObject(b5, (n, s) => findRoot(s.tree, s.cells, n.transform.ref, test8)));
   }
   StateSelection2.root = root;
   registerModifier("rootOfType", rootOfType);
@@ -37490,13 +37490,13 @@ var StateSelection;
     return unique(mapObject(b5, (n, s) => s.cells.get(s.tree.transforms.get(n.transform.ref).parent)));
   }
   StateSelection2.parent = parent;
-  function _findAncestor(tree, cells, root2, test7, findClosest) {
+  function _findAncestor(tree, cells, root2, test8, findClosest) {
     let current2 = tree.transforms.get(root2);
     let ret = void 0;
     while (true) {
       current2 = tree.transforms.get(current2.parent);
       const cell = cells.get(current2.ref);
-      if (cell.obj && test7(cell)) {
+      if (cell.obj && test8(cell)) {
         ret = cell;
         if (findClosest)
           return ret;
@@ -37506,12 +37506,12 @@ var StateSelection;
       }
     }
   }
-  function findAncestor(tree, cells, root2, test7) {
-    return _findAncestor(tree, cells, root2, test7, true);
+  function findAncestor(tree, cells, root2, test8) {
+    return _findAncestor(tree, cells, root2, test8, true);
   }
   StateSelection2.findAncestor = findAncestor;
-  function findRoot(tree, cells, root2, test7) {
-    return _findAncestor(tree, cells, root2, test7, false);
+  function findRoot(tree, cells, root2, test8) {
+    return _findAncestor(tree, cells, root2, test8, false);
   }
   StateSelection2.findRoot = findRoot;
   function findAncestorWithTransformer(tree, cells, root2, transfomers) {
@@ -70452,7 +70452,7 @@ var StructureLookup3D = class {
       builder.commitUnit();
     }
   }
-  findIntoBuilderIf(x, y, z, radius, builder, test7) {
+  findIntoBuilderIf(x, y, z, radius, builder, test8) {
     const { units } = this.structure;
     const closeUnits = this.unitLookup.find(x, y, z, radius);
     if (closeUnits.count === 0)
@@ -70473,7 +70473,7 @@ var StructureLookup3D = class {
       builder.beginUnit(unit2.id);
       for (let j = 0, _j = groupResult.count; j < _j; j++) {
         loc.element = elements[groupResult.indices[j]];
-        if (test7(loc)) {
+        if (test8(loc)) {
           builder.addElement(loc.element);
         }
       }
@@ -82113,7 +82113,7 @@ var MonadicParser = class _MonadicParser {
     });
   }
   MonadicParser2.notFollowedBy = notFollowedBy;
-  function test7(predicate) {
+  function test8(predicate) {
     return new MonadicParser2((input, i) => {
       const char = input.charAt(i);
       if (i < input.length && predicate(char)) {
@@ -82123,17 +82123,17 @@ var MonadicParser = class _MonadicParser {
       }
     });
   }
-  MonadicParser2.test = test7;
+  MonadicParser2.test = test8;
   function oneOf(str11) {
-    return test7((ch) => str11.indexOf(ch) >= 0);
+    return test8((ch) => str11.indexOf(ch) >= 0);
   }
   MonadicParser2.oneOf = oneOf;
   function noneOf(str11) {
-    return test7((ch) => str11.indexOf(ch) < 0);
+    return test8((ch) => str11.indexOf(ch) < 0);
   }
   MonadicParser2.noneOf = noneOf;
   function range2(begin, end4) {
-    return test7((ch) => begin <= ch && ch <= end4).desc(begin + "-" + end4);
+    return test8((ch) => begin <= ch && ch <= end4).desc(begin + "-" + end4);
   }
   MonadicParser2.range = range2;
   function takeWhile(predicate) {
@@ -86100,13 +86100,13 @@ var lang3 = MonadicParser.createLanguage({
       });
       const rangeTest = orExpr(rangeValues);
       const listTest = valuesTest(property2, listValues);
-      let test7;
+      let test8;
       if (rangeTest && listTest) {
-        test7 = B14.core.logic.or([rangeTest, listTest]);
+        test8 = B14.core.logic.or([rangeTest, listTest]);
       } else {
-        test7 = rangeTest ? rangeTest : listTest;
+        test8 = rangeTest ? rangeTest : listTest;
       }
-      return B14.struct.generator.atomGroups({ [testLevel(property2)]: test7 });
+      return B14.struct.generator.atomGroups({ [testLevel(property2)]: test8 });
     });
   },
   Operator: function(r) {
@@ -86354,18 +86354,18 @@ var symbols = [
   }),
   // ============= FLAGS ================
   C3(MolScriptSymbolTable.core.flags.hasAny, (ctx, v3) => {
-    const test7 = v3[1](ctx);
+    const test8 = v3[1](ctx);
     const tested = v3[0](ctx);
-    if (!test7)
+    if (!test8)
       return !!tested;
-    return (tested & test7) !== 0;
+    return (tested & test8) !== 0;
   }),
   C3(MolScriptSymbolTable.core.flags.hasAll, (ctx, v3) => {
-    const test7 = v3[1](ctx);
+    const test8 = v3[1](ctx);
     const tested = v3[0](ctx);
-    if (!test7)
+    if (!test8)
       return !tested;
-    return (tested & test7) === test7;
+    return (tested & test8) === test8;
   }),
   // Structure
   // ============= TYPES ================
@@ -131769,6 +131769,761 @@ test6("popup host send only posts when popup is ready and open", () => {
   popup.closed = true;
   manager.send("molsysviewer-sync-op", { op: "ignored" });
   assert6.strictEqual(popup.posted.length, 1);
+});
+
+// tests/unit/popup-logic.test.ts
+import assert7 from "node:assert";
+import test7 from "node:test";
+
+// src/popup/popup-logic.ts
+var bootPopup = async (loadedModule) => {
+  const openerWin = window.opener;
+  if (!openerWin) {
+    console.error("MolSysViewer Popout: Opened without opener");
+    return;
+  }
+  let MolSysViewerController;
+  if (loadedModule) {
+    if (loadedModule.MolSysViewerController) {
+      MolSysViewerController = loadedModule.MolSysViewerController;
+    } else if (loadedModule.default && loadedModule.default.MolSysViewerController) {
+      MolSysViewerController = loadedModule.default.MolSysViewerController;
+    }
+  }
+  if (!MolSysViewerController) {
+    try {
+      const path = window.molsysviewer_path;
+      if (path) {
+        const module = await import(path);
+        if (module.MolSysViewerController) {
+          MolSysViewerController = module.MolSysViewerController;
+        } else if (module.default && module.default.MolSysViewerController) {
+          MolSysViewerController = module.default.MolSysViewerController;
+        } else if (window.MolSysViewerController) {
+          MolSysViewerController = window.MolSysViewerController;
+        }
+      }
+    } catch (err) {
+      console.error("MolSysViewer Popout: Failed to load viewer module", err);
+      return;
+    }
+  }
+  if (!MolSysViewerController) {
+    MolSysViewerController = window.MolSysViewerController;
+  }
+  if (!MolSysViewerController) {
+    console.error("MolSysViewer Popout: MolSysViewerController not found");
+    return;
+  }
+  const sendToHost = (type3, data) => {
+    if (!openerWin || openerWin.closed) return;
+    try {
+      openerWin.postMessage({ type: type3, data, from: "popup" }, "*");
+    } catch (e) {
+    }
+  };
+  const injectSliderStyles = () => {
+    if (document.getElementById("molsysviewer-pop-slider-style")) return;
+    const css = `
+            .molsysviewer-slider {
+                background: transparent;
+                height: 16px;
+                border-radius: 999px;
+                overflow: visible;
+            }
+            .molsysviewer-slider::-webkit-slider-runnable-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+            }
+            .molsysviewer-slider::-moz-range-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+            }
+            .molsysviewer-slider::-ms-track {
+                background: rgba(200,200,200,0.35) !important;
+                height: 16px;
+                border-radius: 999px;
+                border: none;
+                color: transparent;
+            }
+            .molsysviewer-slider::-webkit-slider-thumb {
+                -webkit-appearance: none !important;
+                appearance: none !important;
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin-top: 0px;
+            }
+            .molsysviewer-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+            }
+            .molsysviewer-slider::-ms-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50% !important;
+                background: rgb(80,80,80) !important;
+                border: none !important;
+            }
+        `;
+    const el = document.createElement("style");
+    el.id = "molsysviewer-pop-slider-style";
+    el.textContent = css;
+    document.head.appendChild(el);
+  };
+  injectSliderStyles();
+  const container = document.getElementById("molsysviewer-pop");
+  const loading = document.getElementById("molsysviewer-loading");
+  let isUserInteracting = false;
+  let wheelTimeout = null;
+  container?.addEventListener("pointerdown", () => {
+    isUserInteracting = true;
+  });
+  window.addEventListener("pointerup", () => {
+    isUserInteracting = false;
+  });
+  window.addEventListener("pointercancel", () => {
+    isUserInteracting = false;
+  });
+  container?.addEventListener("wheel", () => {
+    isUserInteracting = true;
+    if (wheelTimeout) clearTimeout(wheelTimeout);
+    wheelTimeout = setTimeout(() => {
+      isUserInteracting = false;
+    }, 200);
+  }, { passive: true });
+  const revealViewer = () => {
+    if (container) {
+      container.style.opacity = "1";
+    }
+    if (loading) {
+      loading.style.opacity = "0";
+      loading.style.pointerEvents = "none";
+      window.setTimeout(() => {
+        try {
+          loading.remove();
+        } catch (e) {
+        }
+      }, 300);
+    }
+  };
+  const revealTimer = window.setTimeout(revealViewer, 2500);
+  const popControllerPromise = (async () => {
+    await new Promise((r) => setTimeout(r, 100));
+    const ctrl2 = await MolSysViewerController.create(container, (msg) => {
+      sendToHost("molsysviewer-log-from-popout", msg);
+    });
+    const waitForCanvas3d = async (retries = 50) => {
+      for (let i = 0; i < retries; i++) {
+        if (ctrl2.plugin?.canvas3d) return true;
+        if (i % 10 === 0) {
+          console.log(`[Popout] Waiting for Canvas3D... (${i}/${retries})`, {
+            plugin: !!ctrl2.plugin,
+            canvas3d: !!ctrl2.plugin?.canvas3d
+          });
+        }
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
+    };
+    waitForCanvas3d().then((ready) => {
+      if (!ready) {
+        console.warn("MolSysViewer Popout: Canvas3D failed to initialize after timeout (visuals may work but sync won't).");
+        return;
+      }
+      const c3d = ctrl2.plugin.canvas3d;
+      let popCameraSyncTimer = null;
+      const syncCamera = () => {
+        if (!isUserInteracting) return;
+        if (popCameraSyncTimer) clearTimeout(popCameraSyncTimer);
+        popCameraSyncTimer = setTimeout(() => {
+          sendToHost("molsysviewer-sync-camera", ctrl2.getCameraSnapshot());
+          popCameraSyncTimer = null;
+        }, 20);
+      };
+      if (c3d.didDraw) {
+        c3d.didDraw.subscribe(syncCamera);
+        console.log("MolSysViewer Popout: Sync via didDraw (interactive camera movements).");
+      } else {
+        console.warn("MolSysViewer Popout: didDraw event not found for sync.");
+      }
+    });
+    return ctrl2;
+  })();
+  window.addEventListener("message", async (ev) => {
+    if (!ev.data || ev.data.from === "popup") return;
+    const { type: type3, data } = ev.data;
+    const ctrl2 = await popControllerPromise;
+    try {
+      switch (type3) {
+        case "molsysviewer-initial-sync":
+          if (Array.isArray(data.messages)) {
+            for (const msg of data.messages) {
+              await ctrl2.handleMessage(msg);
+            }
+          }
+          if (data.cameraSnapshot) {
+            ctrl2.setCameraSnapshot(data.cameraSnapshot, 0);
+          }
+          if (data.isSpinActive) await ctrl2.toggleSpin(true);
+          if (data.isSwingActive) await ctrl2.toggleSwing(true);
+          if (data.isDarkMode) await ctrl2.toggleBackground("dark");
+          if (data.autohide !== void 0) updateAutohide(!!data.autohide);
+          window.clearTimeout(revealTimer);
+          revealViewer();
+          break;
+        case "molsysviewer-sync-autohide":
+          updateAutohide(!!data.enabled);
+          break;
+        case "molsysviewer-sync-op":
+          await ctrl2.handleMessage(data);
+          break;
+        case "molsysviewer-sync-camera":
+          if (data && !isUserInteracting) {
+            ctrl2.setCameraSnapshot(data, 0);
+          }
+          break;
+      }
+    } catch (e) {
+      console.error("Popout sync error", e);
+    }
+  });
+  const makeBtn = (label3, onClick) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = label3;
+    btn.style.padding = "2px 6px";
+    btn.style.fontSize = "11px";
+    btn.style.lineHeight = "16px";
+    btn.style.height = "22px";
+    btn.style.minHeight = "22px";
+    btn.style.boxSizing = "border-box";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.border = "1px solid rgba(255,255,255,0.5)";
+    btn.style.borderRadius = "4px";
+    btn.style.background = "rgba(0,0,0,0.5)";
+    btn.style.color = "#fff";
+    btn.style.cursor = "pointer";
+    btn.addEventListener("click", onClick);
+    return btn;
+  };
+  const overlay = document.createElement("div");
+  overlay.className = "molsysviewer-controls";
+  overlay.style.position = "absolute";
+  overlay.style.top = "8px";
+  overlay.style.right = "8px";
+  overlay.style.display = "flex";
+  overlay.style.gap = "6px";
+  overlay.style.zIndex = "10";
+  overlay.style.pointerEvents = "none";
+  overlay.style.flexWrap = "nowrap";
+  overlay.style.transition = "opacity 150ms ease";
+  const addBtn = (label3, handler) => {
+    const b5 = makeBtn(label3, handler);
+    b5.style.pointerEvents = "auto";
+    overlay.appendChild(b5);
+  };
+  let autohide = false;
+  const applyShow = (visible) => {
+    if (autohide) {
+      overlay.style.opacity = visible ? "1" : "0";
+      overlay.style.pointerEvents = visible ? "auto" : "none";
+    } else {
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "auto";
+    }
+  };
+  const onEnter = () => applyShow(true);
+  const onLeave = () => applyShow(false);
+  const updateAutohide = (enabled) => {
+    if (enabled === autohide) return;
+    autohide = enabled;
+    if (autohide) {
+      container?.addEventListener("pointerenter", onEnter);
+      container?.addEventListener("pointerleave", onLeave);
+      applyShow(false);
+    } else {
+      container?.removeEventListener("pointerenter", onEnter);
+      container?.removeEventListener("pointerleave", onLeave);
+      applyShow(true);
+    }
+  };
+  addBtn("Reset", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.resetView();
+    sendToHost("molsysviewer-sync-op", { op: "reset_view" });
+  });
+  addBtn("Full", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.toggleFullscreen();
+  });
+  addBtn("Bg", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.toggleBackground();
+    sendToHost("molsysviewer-sync-op", { op: "toggle_background", mode: ctrl2.isDarkMode ? "dark" : "light" });
+  });
+  addBtn("Spin", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.toggleSpin();
+    sendToHost("molsysviewer-sync-op", { op: "toggle_spin", enable: ctrl2.isSpinActive });
+  });
+  addBtn("Swing", async () => {
+    const ctrl2 = await popControllerPromise;
+    await ctrl2.toggleSwing();
+    sendToHost("molsysviewer-sync-op", { op: "toggle_swing", enable: ctrl2.isSwingActive });
+  });
+  addBtn("Pop", () => {
+    try {
+      window.close();
+    } catch (e) {
+    }
+  });
+  container.appendChild(overlay);
+  const traj = document.createElement("div");
+  traj.style.display = "none";
+  traj.style.alignItems = "center";
+  traj.style.gap = "6px";
+  traj.style.pointerEvents = "auto";
+  traj.style.marginLeft = "6px";
+  let currentStep = 1;
+  let currentFps = 30;
+  const btnPrev = makeBtn("\u2212", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.stepTrajectory(-currentStep);
+    sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: -currentStep });
+  });
+  const btnPlayPause = makeBtn("\u25B6", async () => {
+    const ctrl2 = await popControllerPromise;
+    const isPlaying = ctrl2.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      ctrl2.stopTrajectoryPlayback();
+      sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "stop" });
+    } else {
+      ctrl2.playTrajectory({ fps: currentFps, step: currentStep });
+      sendToHost("molsysviewer-sync-op", { op: "set_trajectory_playback", action: "play", fps: currentFps, step: currentStep });
+    }
+  });
+  btnPlayPause.style.paddingTop = "0px";
+  btnPlayPause.style.paddingBottom = "0px";
+  btnPlayPause.style.lineHeight = "18px";
+  btnPlayPause.style.minWidth = "28px";
+  btnPlayPause.style.width = "28px";
+  btnPlayPause.title = "Play/Pause Trajectory";
+  const btnNext = makeBtn("+", async () => {
+    const ctrl2 = await popControllerPromise;
+    ctrl2.stepTrajectory(currentStep);
+    sendToHost("molsysviewer-sync-op", { op: "step_trajectory", by: currentStep });
+  });
+  [btnPrev, btnPlayPause, btnNext].forEach((b5) => {
+    b5.style.pointerEvents = "auto";
+  });
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "0";
+  slider.value = "0";
+  slider.className = "molsysviewer-slider";
+  slider.style.width = "160px";
+  slider.style.flex = "0 0 160px";
+  slider.style.pointerEvents = "auto";
+  slider.style.appearance = "none";
+  slider.style.WebkitAppearance = "none";
+  slider.style.MozAppearance = "none";
+  slider.style.setProperty("accent-color", "transparent");
+  const updateSliderBg = () => {
+    const track = "rgba(200,200,200,0.35)";
+    slider.style.background = track;
+  };
+  slider.oninput = async () => {
+    const val = Number(slider.value);
+    if (!Number.isFinite(val)) return;
+    const ctrl2 = await popControllerPromise;
+    ctrl2.setTrajectoryFrame(val);
+    sendToHost("molsysviewer-sync-op", { op: "set_trajectory_frame", index: val });
+    updateSliderBg();
+  };
+  const label2 = document.createElement("span");
+  label2.style.color = "rgba(0,0,0,0.55)";
+  label2.style.fontSize = "11px";
+  label2.style.minWidth = "60px";
+  label2.style.textAlign = "center";
+  label2.style.padding = "0px";
+  label2.style.height = "16px";
+  label2.style.lineHeight = "16px";
+  label2.style.boxSizing = "border-box";
+  label2.style.border = "0";
+  label2.style.borderRadius = "0";
+  label2.style.background = "transparent";
+  label2.textContent = "0 / 0";
+  traj.appendChild(btnPrev);
+  traj.appendChild(btnPlayPause);
+  traj.appendChild(btnNext);
+  traj.appendChild(slider);
+  traj.appendChild(label2);
+  overlay.appendChild(traj);
+  popControllerPromise.then((c5) => {
+    const applyState = (state) => {
+      const frameCount = state.frameCount;
+      const current2 = state.currentFrame;
+      const isPlaying = state.isPlaying;
+      traj.style.display = frameCount > 1 ? "flex" : "none";
+      slider.max = frameCount > 0 ? String(frameCount - 1) : "0";
+      slider.value = String(Math.min(current2, frameCount > 0 ? frameCount - 1 : 0));
+      updateSliderBg();
+      label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
+      const disabled = !state.hasTrajectory || frameCount <= 1;
+      [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
+        el.disabled = disabled;
+      });
+      btnPlayPause.textContent = isPlaying ? "\u23F8" : "\u25B6";
+      btnPlayPause.title = isPlaying ? "Pause Trajectory" : "Play Trajectory";
+      overlay.style.opacity = "1";
+      overlay.style.display = "flex";
+    };
+    c5.onTrajectoryState(applyState, { immediate: false });
+    const initialState = c5.trajectory.getTrajectoryState();
+    if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
+      applyState(initialState);
+    }
+  });
+  sendToHost("molsysviewer-pop-ready", null);
+};
+
+// tests/unit/popup-logic.test.ts
+function makeElement(id) {
+  const listeners = /* @__PURE__ */ new Map();
+  const element = {
+    id,
+    style: {
+      setProperty(_name, _value) {
+      }
+    },
+    children: [],
+    textContent: "",
+    className: "",
+    type: "",
+    value: "0",
+    min: "0",
+    max: "0",
+    disabled: false,
+    title: "",
+    appendChild(child) {
+      this.children.push(child);
+    },
+    addEventListener(type3, listener) {
+      const current2 = listeners.get(type3) ?? [];
+      current2.push(listener);
+      listeners.set(type3, current2);
+    },
+    removeEventListener(type3, listener) {
+      const current2 = listeners.get(type3) ?? [];
+      listeners.set(type3, current2.filter((item2) => item2 !== listener));
+    },
+    dispatch(type3, event = {}) {
+      for (const listener of listeners.get(type3) ?? []) {
+        listener(event);
+      }
+    },
+    listenerCount(type3) {
+      return (listeners.get(type3) ?? []).length;
+    },
+    remove() {
+    }
+  };
+  return element;
+}
+function makePopupTestEnv() {
+  const container = makeElement("molsysviewer-pop");
+  const loading = makeElement("molsysviewer-loading");
+  const head = makeElement("head");
+  const body = makeElement("body");
+  const documentListeners = /* @__PURE__ */ new Map();
+  const windowListeners = /* @__PURE__ */ new Map();
+  const postedToHost = [];
+  const document2 = {
+    head,
+    body,
+    createElement(_tag) {
+      return makeElement();
+    },
+    getElementById(id) {
+      if (id === "molsysviewer-pop") return container;
+      if (id === "molsysviewer-loading") return loading;
+      if (id === "molsysviewer-pop-slider-style") return null;
+      return null;
+    },
+    addEventListener(type3, listener) {
+      const current2 = documentListeners.get(type3) ?? [];
+      current2.push(listener);
+      documentListeners.set(type3, current2);
+    }
+  };
+  const opener = {
+    closed: false,
+    postMessage(message, _target) {
+      postedToHost.push(message);
+    }
+  };
+  const windowObj = {
+    opener,
+    listeners: windowListeners,
+    addEventListener(type3, listener) {
+      const current2 = windowListeners.get(type3) ?? [];
+      current2.push(listener);
+      windowListeners.set(type3, current2);
+    },
+    removeEventListener(type3, listener) {
+      const current2 = windowListeners.get(type3) ?? [];
+      windowListeners.set(type3, current2.filter((item2) => item2 !== listener));
+    },
+    dispatch(type3, event = {}) {
+      for (const listener of windowListeners.get(type3) ?? []) {
+        listener(event);
+      }
+    },
+    setTimeout(fn, _ms) {
+      fn();
+      return 1;
+    },
+    clearTimeout(_id) {
+    },
+    close() {
+    }
+  };
+  return { container, loading, head, body, document: document2, windowObj, postedToHost };
+}
+function flushAsync() {
+  return new Promise((resolve) => setImmediate(resolve));
+}
+test7("bootPopup replays initial sync and enables autohide listeners", async () => {
+  const previousWindow = globalThis.window;
+  const previousDocument = globalThis.document;
+  const previousSetTimeout = globalThis.setTimeout;
+  const previousClearTimeout = globalThis.clearTimeout;
+  const env = makePopupTestEnv();
+  const calls = {
+    handled: [],
+    camera: [],
+    spin: [],
+    swing: [],
+    bg: []
+  };
+  let drawSubscriber;
+  const ctrl2 = {
+    plugin: {
+      canvas3d: {
+        didDraw: {
+          subscribe(fn) {
+            drawSubscriber = fn;
+          }
+        }
+      }
+    },
+    trajectory: {
+      getTrajectoryState() {
+        return { hasTrajectory: false, frameCount: 0, currentFrame: 0, isPlaying: false };
+      }
+    },
+    async handleMessage(msg) {
+      calls.handled.push(msg);
+    },
+    setCameraSnapshot(snapshot, duration) {
+      calls.camera.push({ snapshot, duration });
+    },
+    async toggleSpin(enable) {
+      calls.spin.push(enable);
+    },
+    async toggleSwing(enable) {
+      calls.swing.push(enable);
+    },
+    async toggleBackground(mode) {
+      calls.bg.push(mode);
+    },
+    getCameraSnapshot() {
+      return { position: [1, 2, 3] };
+    },
+    onTrajectoryState(_cb, _opts) {
+    },
+    async resetView() {
+    },
+    toggleFullscreen() {
+    },
+    stepTrajectory(_by) {
+    },
+    stopTrajectoryPlayback() {
+    },
+    playTrajectory(_opts) {
+    },
+    setTrajectoryFrame(_index) {
+    },
+    isSpinActive: false,
+    isSwingActive: false,
+    isDarkMode: false
+  };
+  globalThis.window = env.windowObj;
+  globalThis.document = env.document;
+  globalThis.setTimeout = (fn, _ms) => {
+    fn();
+    return 1;
+  };
+  globalThis.clearTimeout = (_id) => {
+  };
+  try {
+    await bootPopup({ MolSysViewerController: { create: async () => ctrl2 } });
+    await flushAsync();
+    assert7.deepStrictEqual(env.postedToHost[0], {
+      type: "molsysviewer-pop-ready",
+      data: null,
+      from: "popup"
+    });
+    assert7.ok(drawSubscriber);
+    env.windowObj.dispatch("message", {
+      data: {
+        type: "molsysviewer-initial-sync",
+        data: {
+          messages: [{ op: "load_molsys_payload" }, { op: "hide_global", target: "global" }],
+          cameraSnapshot: { target: [0, 0, 0] },
+          isSpinActive: true,
+          isSwingActive: true,
+          isDarkMode: true,
+          autohide: true
+        }
+      }
+    });
+    await flushAsync();
+    assert7.deepStrictEqual(calls.handled, [
+      { op: "load_molsys_payload" },
+      { op: "hide_global", target: "global" }
+    ]);
+    assert7.deepStrictEqual(calls.camera, [
+      { snapshot: { target: [0, 0, 0] }, duration: 0 }
+    ]);
+    assert7.deepStrictEqual(calls.spin, [true]);
+    assert7.deepStrictEqual(calls.swing, [true]);
+    assert7.deepStrictEqual(calls.bg, ["dark"]);
+    assert7.ok(env.container.listenerCount("pointerenter") > 0);
+    assert7.ok(env.container.listenerCount("pointerleave") > 0);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.document = previousDocument;
+    globalThis.setTimeout = previousSetTimeout;
+    globalThis.clearTimeout = previousClearTimeout;
+  }
+});
+test7("bootPopup gates camera sync by interaction in both directions", async () => {
+  const previousWindow = globalThis.window;
+  const previousDocument = globalThis.document;
+  const previousSetTimeout = globalThis.setTimeout;
+  const previousClearTimeout = globalThis.clearTimeout;
+  const env = makePopupTestEnv();
+  const cameraApplied = [];
+  let drawSubscriber;
+  const ctrl2 = {
+    plugin: {
+      canvas3d: {
+        didDraw: {
+          subscribe(fn) {
+            drawSubscriber = fn;
+          }
+        }
+      }
+    },
+    trajectory: {
+      getTrajectoryState() {
+        return { hasTrajectory: false, frameCount: 0, currentFrame: 0, isPlaying: false };
+      }
+    },
+    async handleMessage(_msg) {
+    },
+    setCameraSnapshot(snapshot, duration) {
+      cameraApplied.push({ snapshot, duration });
+    },
+    async toggleSpin(_enable) {
+    },
+    async toggleSwing(_enable) {
+    },
+    async toggleBackground(_mode) {
+    },
+    getCameraSnapshot() {
+      return { eye: [9, 8, 7] };
+    },
+    onTrajectoryState(_cb, _opts) {
+    },
+    async resetView() {
+    },
+    toggleFullscreen() {
+    },
+    stepTrajectory(_by) {
+    },
+    stopTrajectoryPlayback() {
+    },
+    playTrajectory(_opts) {
+    },
+    setTrajectoryFrame(_index) {
+    },
+    isSpinActive: false,
+    isSwingActive: false,
+    isDarkMode: false
+  };
+  globalThis.window = env.windowObj;
+  globalThis.document = env.document;
+  globalThis.setTimeout = (fn, _ms) => {
+    fn();
+    return 1;
+  };
+  globalThis.clearTimeout = (_id) => {
+  };
+  try {
+    await bootPopup({ MolSysViewerController: { create: async () => ctrl2 } });
+    await flushAsync();
+    assert7.ok(drawSubscriber);
+    drawSubscriber?.();
+    assert7.strictEqual(
+      env.postedToHost.some((msg) => msg.type === "molsysviewer-sync-camera"),
+      false
+    );
+    env.container.dispatch("pointerdown");
+    drawSubscriber?.();
+    assert7.deepStrictEqual(env.postedToHost.at(-1), {
+      type: "molsysviewer-sync-camera",
+      data: { eye: [9, 8, 7] },
+      from: "popup"
+    });
+    env.windowObj.dispatch("message", {
+      data: {
+        type: "molsysviewer-sync-camera",
+        data: { target: [1, 1, 1] }
+      }
+    });
+    await flushAsync();
+    assert7.deepStrictEqual(cameraApplied, []);
+    env.windowObj.dispatch("pointerup");
+    env.windowObj.dispatch("message", {
+      data: {
+        type: "molsysviewer-sync-camera",
+        data: { target: [2, 2, 2] }
+      }
+    });
+    await flushAsync();
+    assert7.deepStrictEqual(cameraApplied, [
+      { snapshot: { target: [2, 2, 2] }, duration: 0 }
+    ]);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.document = previousDocument;
+    globalThis.setTimeout = previousSetTimeout;
+    globalThis.clearTimeout = previousClearTimeout;
+  }
 });
 /*! Bundled license information:
 
