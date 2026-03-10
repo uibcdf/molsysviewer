@@ -5,14 +5,17 @@ Welcome to the technical documentation for **MolSysViewer**. This guide is inten
 ## Source of Truth
 
 For development work in this repository, `devguide/` is the source of truth.
-Every meaningful development step should be reflected here as a checkpoint
-covering:
+The purpose of `devguide/checkpoints.md` is not to duplicate git history.
+Git already records the historical sequence of changes.
 
-- decisions,
-- status,
-- immediate plan,
-- criteria/invariants,
-- perspectives and ideas.
+`devguide/checkpoints.md` should instead be maintained as the current working
+checkpoint for the next developer session. It should make clear:
+
+- where we are now,
+- what is already decided,
+- what we think should happen next,
+- why that is the right next step,
+- and what criteria/invariants must be preserved.
 
 ## Contents
 
@@ -25,7 +28,7 @@ covering:
 4. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
 5. [**Checkpoints**](checkpoints.md)
-   - Running log of technical decisions and progress status.
+   - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions
 
