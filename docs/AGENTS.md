@@ -30,4 +30,4 @@
 
 ## Docs build prerequisites (important)
 
-- When building docs locally, set `NUMBA_CACHE_DIR=/tmp/numba_cache` to avoid Numba caching errors if `molsysmt` is used from a local checkout.
+- If a local docs build shows a MolSysMT/Numba cache failure, document the exact traceback before adding an environment workaround. Do not assume `NUMBA_CACHE_DIR` is required by default.

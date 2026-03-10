@@ -61,7 +61,7 @@ AI agents must never write directly to these generated outputs.
 6. When in doubt, **ask before modifying files outside `js/src/`**.
 7. MolSys payload schema (Python → TS): top-level `structures` list, each with `coordinates` (Å), optional `box` as three vectors (Å), and `time`. Do not reintroduce legacy names like `positions` or `frames`.
 8. Tests should avoid mocks: use the real demo viewers in `molsysviewer.demo` (`dialanine`, `pentalanine`, `tctim`, `chicken_villin_HP35`) to build regression/unit tests.
-9. When importing/running molsysviewer (and molsysmt), set `NUMBA_CACHE_DIR=/tmp/numba_cache` in your session to avoid numba cache errors when molsysmt is used from a local checkout.
+9. If a specific local setup shows a MolSysMT/Numba cache failure, document the exact traceback before adding an environment workaround. Do not assume `NUMBA_CACHE_DIR` overrides are required by default.
 10. JS/TS tests:
     - Unit tests in `molsysviewer/js/tests/unit` (run with `npm run test:js`, coverage with `npm run coverage:js`).
     - E2E in `molsysviewer/js/tests/e2e` (headless Playwright: load structure, create region, hide). By default it uses Playwright Chromium; you can force a local Chrome/Chromium with `PW_CHROMIUM_BIN=/path/to/chrome npm run test:e2e`. If launch is blocked by crashpad/sandbox/missing WebGL, the test is skipped with a warning. These are run manually (not in CI) in an environment with a browser and WebGL; do not use xvfb/mesa for E2E.
