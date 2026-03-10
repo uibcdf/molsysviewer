@@ -42,6 +42,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - consecutive live-edit chains with replay/export assertions.
   - These regressions use real demo viewers instead of synthetic mocks.
 
+- Python visibility semantics
+  - Regression coverage now exists for:
+    - sticky `whole.hide()` across `show(all)`,
+    - sticky hidden region/layer state across `view.hide()` / `view.show()`,
+    - `show(all)` restoring the atom mask without explicitly re-showing hidden regions.
+  - These assertions are aligned directly with `devguide` visibility semantics.
+
 - Dev/docs workflow
   - `devguide/` is the source of truth for active development status and handoff context.
   - `NUMBA_CACHE_DIR=/tmp/numba_cache` is no longer treated as a default global requirement.
@@ -59,7 +66,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Next Step
 
-- Shift the next core focus to combined visibility semantics and/or popup/export behavior outside the live-edit matrix.
+- Shift the next core focus to popup/popout and export behavior outside the now-covered live-edit and visibility core.
 
 Why this is next:
 
@@ -67,11 +74,11 @@ Why this is next:
   - single operations,
   - a consecutive mutation chain,
   - and replay/export safety of the rebuilt history.
-- The next high-value core gaps are no longer centered on rebuild mechanics themselves.
+- The next high-value core gaps are no longer centered on rebuild mechanics or baseline visibility semantics.
 - The strongest remaining architectural risks are:
-  - complex visibility interactions,
   - popup/popout sync behavior,
   - broader export reliability outside the already-tested rebuild chain.
+  - replay ordering and camera/state continuity across embedded/exported flows.
 
 ## What We Learned About `set()`
 
@@ -87,8 +94,8 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - combined visibility semantics, or
-   - popup/export synchronization behavior.
+   - popup/popout synchronization behavior, or
+   - export replay ordering/camera continuity behavior.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Revisit additional `set()` attribute families only if they become a real product need.
 
@@ -108,6 +115,6 @@ Why this is next:
 
 ## Useful Follow-ups
 
-- Add visibility regressions that combine global show/hide with hidden regions/layers.
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
+- Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
