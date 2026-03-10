@@ -241,3 +241,19 @@ It is intentionally concise and operational.
   - This starts closing the highest-risk Python-side mutation gap: rebuild correctness after atom removal.
 - `Ideas`:
   - Add a focused export test ensuring rebuilt `_message_history` remains HTML-replay-safe after consecutive live edits.
+
+## 2026-03-10 — CP-2026-03-10-K
+
+- `Scope`: Remove stale default guidance around `NUMBA_CACHE_DIR`.
+- `Decisions`:
+  - `NUMBA_CACHE_DIR=/tmp/numba_cache` is no longer documented as a default requirement.
+  - MolSysMT/Numba workarounds should only be documented after reproducing and capturing a concrete failure.
+- `Status`:
+  - Repo guidance and developer docs were updated to remove unconditional `NUMBA_CACHE_DIR` setup instructions.
+  - The current workspace was validated without that variable for demo loading and `tests/test_live_edit_rebuild.py`.
+- `Plan`:
+  - Keep observing for environment-specific MolSysMT/Numba failures before reintroducing any workaround guidance.
+- `Criteria`:
+  - Developer guidance should reflect validated current behavior, not obsolete setup habits.
+- `Perspectives`:
+  - This removes unnecessary environment ceremony and keeps troubleshooting evidence-based.

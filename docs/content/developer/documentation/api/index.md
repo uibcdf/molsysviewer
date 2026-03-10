@@ -43,10 +43,10 @@ the docs (see below).
 1. (Optional) Remove stale autosummary outputs:
    - `python docs/clean_api.py`
 2. Build the docs:
-   - `NUMBA_CACHE_DIR=/tmp/numba_cache make -C docs html`
+   - `make -C docs html`
 
-The `NUMBA_CACHE_DIR` environment variable avoids Numba caching errors when
-`molsysmt` is used from a local checkout.
+If a local MolSysMT/Numba environment shows cache failures, document the exact
+traceback before adding a workaround to the docs.
 
 ```{toctree}
 :maxdepth: 2

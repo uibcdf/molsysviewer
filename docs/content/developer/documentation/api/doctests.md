@@ -29,7 +29,7 @@ This command will:
 - Make sure your example is minimal but functional.
 - Avoid depending on random data or external files unless mock data is provided.
 - Prefer the real demo systems from `molsysviewer.demo` when you need a molecular system.
-- If MolSysMT/numba is involved, set `NUMBA_CACHE_DIR=/tmp/numba_cache` in your session to avoid cache issues.
+- If MolSysMT/Numba causes a local environment failure, capture the traceback before introducing session-specific workarounds.
 
 ### Example of a testable docstring
 

@@ -5,7 +5,7 @@ Use this page when you need to debug the viewer runtime (Python ↔ JS) or docs-
 ## Python-side checks
 
 - Confirm you are using an editable install when developing: `pip install -e .[dev]`.
-- If you use MolSysMT from a local checkout, set `NUMBA_CACHE_DIR=/tmp/numba_cache` to avoid cache issues.
+- If you hit a MolSysMT/Numba-specific local failure, capture the traceback first and only then decide whether an environment workaround is justified.
 
 ## Frontend logs
 

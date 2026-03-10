@@ -14,14 +14,14 @@ It helps you keep local builds consistent with Read the Docs.
 From the repo root:
 
 ```bash
-NUMBA_CACHE_DIR=/tmp/numba_cache make -C docs html
+make -C docs html
 ```
 
 If you have stale artifacts:
 
 ```bash
 make -C docs clean
-NUMBA_CACHE_DIR=/tmp/numba_cache make -C docs html
+make -C docs html
 ```
 
 ## Review locally
