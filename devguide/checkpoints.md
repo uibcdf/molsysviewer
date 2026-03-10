@@ -279,3 +279,25 @@ It is intentionally concise and operational.
   - Multi-structure payload state must remain explicit in replayed history.
 - `Perspectives`:
   - The live-edit matrix now covers both rebuild-with-remap (`remove`) and rebuild-without-remap (`append_structures`).
+
+## 2026-03-10 — CP-2026-03-10-M
+
+- `Scope`: Extend live-edit rebuild coverage to `add()`.
+- `Decisions`:
+  - Keep the `add()` regression in the same demo-based test file used for other live-edit operations.
+  - Apply `NUMBA_CACHE_DIR=/tmp/numba_cache` only inside the `add()` regression, because this workflow reproduced a concrete MolSysMT/Numba cache failure in the current environment.
+- `Status`:
+  - Added a regression test asserting that `add()`:
+    - rebuilds history from `clear_all`,
+    - expands the atom payload from 22 to 44 atoms,
+    - preserves region atom indices,
+    - preserves hidden region/layer state,
+    - keeps single-structure replay semantics explicit in the payload.
+- `Plan`:
+  - Investigate a stable `set()` scenario next, or document its current backend limitations if the issue remains upstream in MolSysMT value digestion.
+  - Add a consecutive-mutations regression once `set()` or another final single-operation case is covered.
+- `Criteria`:
+  - Environment-specific workarounds stay narrowly scoped to the exact failing path.
+  - Live-edit coverage should keep using real demo systems and replay-history assertions.
+- `Perspectives`:
+  - The matrix now covers `append_structures`, `add`, and `remove`, leaving `set()` as the main uncovered live-edit API.
