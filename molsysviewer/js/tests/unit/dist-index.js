@@ -17561,8 +17561,8 @@ var Task;
 
 // node_modules/molstar/lib/mol-task/execution/runtime-context.js
 var RuntimeContext;
-(function(RuntimeContext2) {
-  RuntimeContext2.Synchronous = SyncRuntimeContext;
+(function(RuntimeContext3) {
+  RuntimeContext3.Synchronous = SyncRuntimeContext;
 })(RuntimeContext || (RuntimeContext = {}));
 
 // node_modules/molstar/lib/mol-task/execution/progress.js
@@ -18248,11 +18248,11 @@ function Vec3() {
     return Math.sqrt(x * x + y * y + z * z);
   }
   Vec32.distance = distance;
-  function squaredDistance(a5, b5) {
+  function squaredDistance2(a5, b5) {
     const x = b5[0] - a5[0], y = b5[1] - a5[1], z = b5[2] - a5[2];
     return x * x + y * y + z * z;
   }
-  Vec32.squaredDistance = squaredDistance;
+  Vec32.squaredDistance = squaredDistance2;
   function magnitude(a5) {
     const x = a5[0], y = a5[1], z = a5[2];
     return Math.sqrt(x * x + y * y + z * z);
@@ -20735,11 +20735,11 @@ function Vec2() {
     return Math.sqrt(x * x + y * y);
   }
   Vec22.distance = distance;
-  function squaredDistance(a5, b5) {
+  function squaredDistance2(a5, b5) {
     const x = b5[0] - a5[0], y = b5[1] - a5[1];
     return x * x + y * y;
   }
-  Vec22.squaredDistance = squaredDistance;
+  Vec22.squaredDistance = squaredDistance2;
   function magnitude(a5) {
     const x = a5[0], y = a5[1];
     return Math.sqrt(x * x + y * y);
@@ -20917,11 +20917,11 @@ function Vec4() {
     return out;
   }
   Vec42.floor = floor;
-  function squaredDistance(a5, b5) {
+  function squaredDistance2(a5, b5) {
     const x = b5[0] - a5[0], y = b5[1] - a5[1], z = b5[2] - a5[2], w = b5[3] - a5[3];
     return x * x + y * y + z * z + w * w;
   }
-  Vec42.squaredDistance = squaredDistance;
+  Vec42.squaredDistance = squaredDistance2;
   function norm(a5) {
     const x = a5[0], y = a5[1], z = a5[2], w = a5[3];
     return Math.sqrt(x * x + y * y + z * z + w * w);
@@ -21518,8 +21518,8 @@ var Column;
     return areColumnsEqual(a5, b5);
   }
   Column2.areEqual = areEqual4;
-  function indicesOf2(c5, test5) {
-    return columnIndicesOf(c5, test5);
+  function indicesOf2(c5, test6) {
+    return columnIndicesOf(c5, test6);
   }
   Column2.indicesOf = indicesOf2;
   function asArrayColumn(c5, array2) {
@@ -21773,10 +21773,10 @@ function areValuesEqual(a5, b5) {
   }
   return true;
 }
-function columnIndicesOf(c5, test5) {
+function columnIndicesOf(c5, test6) {
   const ret = [], v3 = c5.value;
   for (let i = 0, _i = c5.rowCount; i < _i; i++) {
-    if (test5(v3(i)))
+    if (test6(v3(i)))
       ret[ret.length] = i;
   }
   return ret;
@@ -22028,10 +22028,10 @@ var Table;
     return ret;
   }
   Table2.view = view2;
-  function pick2(table, schema, test5) {
+  function pick2(table, schema, test6) {
     const _view = [];
     for (let i = 0, il = table._rowCount; i < il; ++i) {
-      if (test5(i))
+      if (test6(i))
         _view.push(i);
     }
     return view2(table, schema, _view);
@@ -22131,9 +22131,9 @@ var Table;
     return row;
   }
   Table2.getRow = getRow;
-  function pickRow(table, test5) {
+  function pickRow(table, test6) {
     for (let i = 0, il = table._rowCount; i < il; ++i) {
-      if (test5(i))
+      if (test6(i))
         return getRow(table, i);
     }
   }
@@ -33439,7 +33439,7 @@ var StateObjectSelector = class {
   }
 };
 var StateObjectRef;
-(function(StateObjectRef2) {
+(function(StateObjectRef4) {
   function resolveRef(ref) {
     var _a;
     if (!ref)
@@ -33450,7 +33450,7 @@ var StateObjectRef;
       return ref.transform.ref;
     return (_a = ref.cell) === null || _a === void 0 ? void 0 : _a.transform.ref;
   }
-  StateObjectRef2.resolveRef = resolveRef;
+  StateObjectRef4.resolveRef = resolveRef;
   function resolve(state, ref) {
     if (!ref)
       return;
@@ -33460,14 +33460,14 @@ var StateObjectRef;
       return state.cells.get(ref);
     return ref.cell;
   }
-  StateObjectRef2.resolve = resolve;
+  StateObjectRef4.resolve = resolve;
   function resolveAndCheck(state, ref) {
     const cell = resolve(state, ref);
     if (!cell || !cell.obj || cell.status !== "ok")
       return;
     return cell;
   }
-  StateObjectRef2.resolveAndCheck = resolveAndCheck;
+  StateObjectRef4.resolveAndCheck = resolveAndCheck;
 })(StateObjectRef || (StateObjectRef = {}));
 
 // node_modules/molstar/lib/mol-state/tree/immutable.js
@@ -37456,8 +37456,8 @@ var StateSelection;
   }
   StateSelection2.ofType = ofType;
   registerModifier("ancestor", ancestor);
-  function ancestor(b5, test5) {
-    return unique(mapObject(b5, (n, s) => findAncestor(s.tree, s.cells, n.transform.ref, test5)));
+  function ancestor(b5, test6) {
+    return unique(mapObject(b5, (n, s) => findAncestor(s.tree, s.cells, n.transform.ref, test6)));
   }
   StateSelection2.ancestor = ancestor;
   registerModifier("ancestorOfType", ancestorOfType);
@@ -37476,8 +37476,8 @@ var StateSelection;
   }
   StateSelection2.withTransformer = withTransformer;
   registerModifier("root", root);
-  function root(b5, test5) {
-    return unique(mapObject(b5, (n, s) => findRoot(s.tree, s.cells, n.transform.ref, test5)));
+  function root(b5, test6) {
+    return unique(mapObject(b5, (n, s) => findRoot(s.tree, s.cells, n.transform.ref, test6)));
   }
   StateSelection2.root = root;
   registerModifier("rootOfType", rootOfType);
@@ -37490,13 +37490,13 @@ var StateSelection;
     return unique(mapObject(b5, (n, s) => s.cells.get(s.tree.transforms.get(n.transform.ref).parent)));
   }
   StateSelection2.parent = parent;
-  function _findAncestor(tree, cells, root2, test5, findClosest) {
+  function _findAncestor(tree, cells, root2, test6, findClosest) {
     let current2 = tree.transforms.get(root2);
     let ret = void 0;
     while (true) {
       current2 = tree.transforms.get(current2.parent);
       const cell = cells.get(current2.ref);
-      if (cell.obj && test5(cell)) {
+      if (cell.obj && test6(cell)) {
         ret = cell;
         if (findClosest)
           return ret;
@@ -37506,12 +37506,12 @@ var StateSelection;
       }
     }
   }
-  function findAncestor(tree, cells, root2, test5) {
-    return _findAncestor(tree, cells, root2, test5, true);
+  function findAncestor(tree, cells, root2, test6) {
+    return _findAncestor(tree, cells, root2, test6, true);
   }
   StateSelection2.findAncestor = findAncestor;
-  function findRoot(tree, cells, root2, test5) {
-    return _findAncestor(tree, cells, root2, test5, false);
+  function findRoot(tree, cells, root2, test6) {
+    return _findAncestor(tree, cells, root2, test6, false);
   }
   StateSelection2.findRoot = findRoot;
   function findAncestorWithTransformer(tree, cells, root2, transfomers) {
@@ -39190,20 +39190,20 @@ var PluginStateObject;
     class Trajectory extends PluginStateObject2.Create({ name: "Trajectory", typeClass: "Object" }) {
     }
     Molecule2.Trajectory = Trajectory;
-    class Structure2 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
+    class Structure4 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
     }
-    Molecule2.Structure = Structure2;
-    (function(Structure3) {
+    Molecule2.Structure = Structure4;
+    (function(Structure5) {
       class Representation3D extends CreateRepresentation3D({ name: "Structure 3D" }) {
       }
-      Structure3.Representation3D = Representation3D;
+      Structure5.Representation3D = Representation3D;
       class Representation3DState extends PluginStateObject2.Create({ name: "Structure 3D State", typeClass: "Object" }) {
       }
-      Structure3.Representation3DState = Representation3DState;
+      Structure5.Representation3DState = Representation3DState;
       class Selections extends PluginStateObject2.Create({ name: "Selections", typeClass: "Object" }) {
       }
-      Structure3.Selections = Selections;
-    })(Structure2 = Molecule2.Structure || (Molecule2.Structure = {}));
+      Structure5.Selections = Selections;
+    })(Structure4 = Molecule2.Structure || (Molecule2.Structure = {}));
   })(Molecule = PluginStateObject2.Molecule || (PluginStateObject2.Molecule = {}));
   let Volume2;
   (function(Volume3) {
@@ -43243,6 +43243,15 @@ function Box3D() {
   Box3D2.equals = equals;
 })(Box3D || (Box3D = {}));
 
+// node_modules/molstar/lib/mol-math/geometry/common.js
+function fillGridDim(length, start4, step) {
+  const a5 = new Float32Array(length);
+  for (let i = 0; i < a5.length; i++) {
+    a5[i] = start4 + step * i;
+  }
+  return a5;
+}
+
 // node_modules/molstar/lib/mol-math/geometry/symmetry-operator.js
 var SymmetryOperator;
 (function(SymmetryOperator2) {
@@ -46111,17 +46120,17 @@ function queryNearest(ctx, result2) {
       if (k === 1) {
         const node = tmpHeapG.findMinimum();
         if (node) {
-          const { key: squaredDistance, value: index } = node;
-          Result.add(result2, index, squaredDistance);
+          const { key: squaredDistance2, value: index } = node;
+          Result.add(result2, index, squaredDistance2);
           return true;
         }
       } else {
         while (!tmpHeapG.isEmpty() && (gridPointsFinished || tmpHeapG.findMinimum().key <= maxRange) && result2.count < k) {
           const node = tmpHeapG.extractMinimum();
-          const squaredDistance = node.key, index = node.value;
-          Result.add(result2, index, squaredDistance);
+          const squaredDistance2 = node.key, index = node.value;
+          Result.add(result2, index, squaredDistance2);
           if (stopIf && !stop) {
-            stop = stopIf(index, squaredDistance);
+            stop = stopIf(index, squaredDistance2);
           }
         }
       }
@@ -61883,7 +61892,7 @@ function createRenderable2(ctx, o, transparency, globals) {
 // node_modules/molstar/lib/mol-model/shape/shape.js
 var Shape;
 (function(Shape2) {
-  function create3(name, sourceData, geometry, getColor, getSize, getLabel, transforms, groupCount) {
+  function create3(name, sourceData, geometry, getColor2, getSize, getLabel, transforms, groupCount) {
     return {
       id: UUID.create22(),
       name,
@@ -61893,7 +61902,7 @@ var Shape;
       get groupCount() {
         return groupCount !== null && groupCount !== void 0 ? groupCount : Geometry.getGroupCount(geometry);
       },
-      getColor,
+      getColor: getColor2,
       getSize,
       getLabel
     };
@@ -70406,16 +70415,16 @@ var StructureLookup3D = class {
     if (k === 1) {
       const node = heap.findMinimum();
       if (node) {
-        const { key: squaredDistance } = node;
+        const { key: squaredDistance2 } = node;
         const { unit: unit2, index } = node.value;
-        StructureResult.add(result2, unit2, index, squaredDistance);
+        StructureResult.add(result2, unit2, index, squaredDistance2);
       }
     } else {
       while (!heap.isEmpty() && result2.count < k) {
         const node = heap.extractMinimum();
-        const { key: squaredDistance } = node;
+        const { key: squaredDistance2 } = node;
         const { unit: unit2, index } = node.value;
-        StructureResult.add(result2, unit2, index, squaredDistance);
+        StructureResult.add(result2, unit2, index, squaredDistance2);
       }
     }
     return result2;
@@ -70443,7 +70452,7 @@ var StructureLookup3D = class {
       builder.commitUnit();
     }
   }
-  findIntoBuilderIf(x, y, z, radius, builder, test5) {
+  findIntoBuilderIf(x, y, z, radius, builder, test6) {
     const { units } = this.structure;
     const closeUnits = this.unitLookup.find(x, y, z, radius);
     if (closeUnits.count === 0)
@@ -70464,7 +70473,7 @@ var StructureLookup3D = class {
       builder.beginUnit(unit2.id);
       for (let j = 0, _j = groupResult.count; j < _j; j++) {
         loc.element = elements[groupResult.indices[j]];
-        if (test5(loc)) {
+        if (test6(loc)) {
           builder.addElement(loc.element);
         }
       }
@@ -75709,12 +75718,12 @@ function getAtomicResidueCount(structure) {
   }
   return atomicResidueCount;
 }
-(function(Structure2) {
-  Structure2.Empty = create3([]);
+(function(Structure4) {
+  Structure4.Empty = create3([]);
   function Loci3(structure) {
     return { kind: "structure-loci", structure };
   }
-  Structure2.Loci = Loci3;
+  Structure4.Loci = Loci3;
   function toStructureElementLoci(structure) {
     const elements = [];
     for (const unit2 of structure.units) {
@@ -75722,29 +75731,29 @@ function getAtomicResidueCount(structure) {
     }
     return element_exports.Loci(structure, elements);
   }
-  Structure2.toStructureElementLoci = toStructureElementLoci;
+  Structure4.toStructureElementLoci = toStructureElementLoci;
   function toSubStructureElementLoci(parent, structure) {
     return StructureSelection.toLociWithSourceUnits(StructureSelection.Singletons(parent, structure));
   }
-  Structure2.toSubStructureElementLoci = toSubStructureElementLoci;
+  Structure4.toSubStructureElementLoci = toSubStructureElementLoci;
   function isLoci(x) {
     return !!x && x.kind === "structure-loci";
   }
-  Structure2.isLoci = isLoci;
+  Structure4.isLoci = isLoci;
   function areLociEqual(a5, b5) {
     return a5.structure === b5.structure;
   }
-  Structure2.areLociEqual = areLociEqual;
+  Structure4.areLociEqual = areLociEqual;
   function isLociEmpty(loci) {
     return loci.structure.isEmpty;
   }
-  Structure2.isLociEmpty = isLociEmpty;
+  Structure4.isLociEmpty = isLociEmpty;
   function remapLoci(loci, structure) {
     if (structure === loci.structure)
       return loci;
     return Loci3(structure);
   }
-  Structure2.remapLoci = remapLoci;
+  Structure4.remapLoci = remapLoci;
   function create3(units, props = {}) {
     const unitMap = IntMap.Mutable();
     const unitIndexMap = IntMap.Mutable();
@@ -75810,12 +75819,12 @@ function getAtomicResidueCount(structure) {
       state.representativeModel = props.representativeModel;
     else if (props.parent)
       state.representativeModel = props.parent.representativeModel;
-    return new Structure2(units, unitMap, unitIndexMap, state);
+    return new Structure4(units, unitMap, unitIndexMap, state);
   }
-  Structure2.create = create3;
+  Structure4.create = create3;
   async function ofTrajectory(trajectory, ctx) {
     if (trajectory.frameCount === 0)
-      return Structure2.Empty;
+      return Structure4.Empty;
     const units = [];
     let first2 = void 0;
     let count2 = 0;
@@ -75835,7 +75844,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { representativeModel: first2, label: first2.label });
   }
-  Structure2.ofTrajectory = ofTrajectory;
+  Structure4.ofTrajectory = ofTrajectory;
   function ofModel(model, props = {}) {
     const chains2 = model.atomicHierarchy.chainAtomSegments;
     const { index } = model.atomicHierarchy;
@@ -75896,7 +75905,7 @@ function getAtomicResidueCount(structure) {
     }
     return builder.getStructure();
   }
-  Structure2.ofModel = ofModel;
+  Structure4.ofModel = ofModel;
   function isWaterChain(model, chainIndex2) {
     const e = model.atomicHierarchy.index.getEntityFromChain(chainIndex2);
     return model.entities.data.type.value(e) === "water";
@@ -75923,7 +75932,7 @@ function getAtomicResidueCount(structure) {
     const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform2, cs), cs);
     return create3(units, { parent: s, coordinateSystem: newCS });
   }
-  Structure2.transform = transform;
+  Structure4.transform = transform;
   function instances(s, transforms) {
     for (const t2 of transforms) {
       if (!Mat4.isRotationAndTranslation(t2, SymmetryOperator.RotationTranslationEpsilon)) {
@@ -75945,7 +75954,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { parent: s });
   }
-  Structure2.instances = instances;
+  Structure4.instances = instances;
   class StructureBuilder {
     beginChainGroup() {
       this.chainGroupId++;
@@ -76001,19 +76010,19 @@ function getAtomicResidueCount(structure) {
       this.singleElementUnits = /* @__PURE__ */ new Map();
     }
   }
-  Structure2.StructureBuilder = StructureBuilder;
+  Structure4.StructureBuilder = StructureBuilder;
   function Builder(props = {}) {
     return new StructureBuilder(props);
   }
-  Structure2.Builder = Builder;
+  Structure4.Builder = Builder;
   function hashCode4(s) {
     return s.hashCode;
   }
-  Structure2.hashCode = hashCode4;
+  Structure4.hashCode = hashCode4;
   function conformationHash(s) {
     return hashString(s.units.map((u) => Unit.conformationId(u)).join("|"));
   }
-  Structure2.conformationHash = conformationHash;
+  Structure4.conformationHash = conformationHash;
   function areUnitIdsEqual(a5, b5) {
     if (a5 === b5)
       return true;
@@ -76028,7 +76037,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure2.areUnitIdsEqual = areUnitIdsEqual;
+  Structure4.areUnitIdsEqual = areUnitIdsEqual;
   function areUnitIdsAndIndicesEqual(a5, b5) {
     if (a5 === b5)
       return true;
@@ -76040,7 +76049,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure2.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
+  Structure4.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
   function areHierarchiesEqual(a5, b5) {
     if (a5.hashCode !== b5.hashCode)
       return false;
@@ -76053,19 +76062,19 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure2.areHierarchiesEqual = areHierarchiesEqual;
+  Structure4.areHierarchiesEqual = areHierarchiesEqual;
   function areEquivalent(a5, b5) {
     return a5 === b5 || a5.hashCode === b5.hashCode && StructureSymmetry.areTransformGroupsEquivalent(a5.unitSymmetryGroups, b5.unitSymmetryGroups);
   }
-  Structure2.areEquivalent = areEquivalent;
+  Structure4.areEquivalent = areEquivalent;
   function areRootsEquivalent(a5, b5) {
     return areEquivalent(a5.root, b5.root);
   }
-  Structure2.areRootsEquivalent = areRootsEquivalent;
+  Structure4.areRootsEquivalent = areRootsEquivalent;
   function areRootsEqual(a5, b5) {
     return a5.root === b5.root;
   }
-  Structure2.areRootsEqual = areRootsEqual;
+  Structure4.areRootsEqual = areRootsEqual;
   class ElementLocationIterator {
     move() {
       this.advance();
@@ -76106,7 +76115,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure2.ElementLocationIterator = ElementLocationIterator;
+  Structure4.ElementLocationIterator = ElementLocationIterator;
   const distVec = Vec3();
   function unitElementMinDistance(unit2, p3, eRadius) {
     const { elements, conformation: c5 } = unit2, dV = distVec;
@@ -76130,7 +76139,7 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure2.minDistanceToPoint = minDistanceToPoint;
+  Structure4.minDistanceToPoint = minDistanceToPoint;
   const distPivot = Vec3();
   function distance(a5, b5) {
     if (a5.elementCount === 0 || b5.elementCount === 0)
@@ -76149,15 +76158,15 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure2.distance = distance;
+  Structure4.distance = distance;
   function elementDescription(s) {
     return s.elementCount === 1 ? "1 element" : `${s.elementCount} elements`;
   }
-  Structure2.elementDescription = elementDescription;
+  Structure4.elementDescription = elementDescription;
   function validUnitPair(s, a5, b5) {
     return s.masterModel ? a5.model === b5.model || a5.model === s.masterModel || b5.model === s.masterModel : a5.model === b5.model;
   }
-  Structure2.validUnitPair = validUnitPair;
+  Structure4.validUnitPair = validUnitPair;
   function eachUnitPair(structure, callback, props) {
     const { maxRadius, validUnit, validUnitPair: validUnitPair2 } = props;
     if (!structure.units.some((u) => validUnit(u)))
@@ -76183,7 +76192,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure2.eachUnitPair = eachUnitPair;
+  Structure4.eachUnitPair = eachUnitPair;
   ;
   function eachAtomicHierarchyElement(structure, { chain: chain2, residue: residue2, atom: atom2 }) {
     const l = element_exports.Location.create(structure);
@@ -76219,8 +76228,8 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure2.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
-  Structure2.DefaultSizeThresholds = {
+  Structure4.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
+  Structure4.DefaultSizeThresholds = {
     /** Must be lower to be small */
     smallResidueCount: 10,
     /** Must be lower to be medium */
@@ -76253,9 +76262,9 @@ function getAtomicResidueCount(structure) {
     Size2[Size2["Large"] = 2] = "Large";
     Size2[Size2["Huge"] = 3] = "Huge";
     Size2[Size2["Gigantic"] = 4] = "Gigantic";
-  })(Size = Structure2.Size || (Structure2.Size = {}));
+  })(Size = Structure4.Size || (Structure4.Size = {}));
   function getSize(structure, thresholds = {}, residueCountFactor = 1) {
-    const t2 = { ...Structure2.DefaultSizeThresholds, ...thresholds };
+    const t2 = { ...Structure4.DefaultSizeThresholds, ...thresholds };
     if (structure.polymerResidueCount >= t2.largeResidueCount * residueCountFactor) {
       if (hasHighSymmetry(structure, t2)) {
         return Size.Huge;
@@ -76272,18 +76281,18 @@ function getAtomicResidueCount(structure) {
       return Size.Large;
     }
   }
-  Structure2.getSize = getSize;
-  Structure2.Index = CustomStructureProperty.createSimple("index", "root");
-  Structure2.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
+  Structure4.getSize = getSize;
+  Structure4.Index = CustomStructureProperty.createSimple("index", "root");
+  Structure4.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
   const PrincipalAxesProp = "__PrincipalAxes__";
   function getPrincipalAxes2(structure) {
     if (structure.currentPropertyData[PrincipalAxesProp])
       return structure.currentPropertyData[PrincipalAxesProp];
-    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure2.toStructureElementLoci(structure));
+    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure4.toStructureElementLoci(structure));
     structure.currentPropertyData[PrincipalAxesProp] = principalAxes;
     return principalAxes;
   }
-  Structure2.getPrincipalAxes = getPrincipalAxes2;
+  Structure4.getPrincipalAxes = getPrincipalAxes2;
 })(Structure || (Structure = {}));
 
 // node_modules/molstar/lib/mol-script/runtime/query/base.js
@@ -82104,7 +82113,7 @@ var MonadicParser = class _MonadicParser {
     });
   }
   MonadicParser2.notFollowedBy = notFollowedBy;
-  function test5(predicate) {
+  function test6(predicate) {
     return new MonadicParser2((input, i) => {
       const char = input.charAt(i);
       if (i < input.length && predicate(char)) {
@@ -82114,17 +82123,17 @@ var MonadicParser = class _MonadicParser {
       }
     });
   }
-  MonadicParser2.test = test5;
+  MonadicParser2.test = test6;
   function oneOf(str11) {
-    return test5((ch) => str11.indexOf(ch) >= 0);
+    return test6((ch) => str11.indexOf(ch) >= 0);
   }
   MonadicParser2.oneOf = oneOf;
   function noneOf(str11) {
-    return test5((ch) => str11.indexOf(ch) < 0);
+    return test6((ch) => str11.indexOf(ch) < 0);
   }
   MonadicParser2.noneOf = noneOf;
   function range2(begin, end4) {
-    return test5((ch) => begin <= ch && ch <= end4).desc(begin + "-" + end4);
+    return test6((ch) => begin <= ch && ch <= end4).desc(begin + "-" + end4);
   }
   MonadicParser2.range = range2;
   function takeWhile(predicate) {
@@ -86091,13 +86100,13 @@ var lang3 = MonadicParser.createLanguage({
       });
       const rangeTest = orExpr(rangeValues);
       const listTest = valuesTest(property2, listValues);
-      let test5;
+      let test6;
       if (rangeTest && listTest) {
-        test5 = B14.core.logic.or([rangeTest, listTest]);
+        test6 = B14.core.logic.or([rangeTest, listTest]);
       } else {
-        test5 = rangeTest ? rangeTest : listTest;
+        test6 = rangeTest ? rangeTest : listTest;
       }
-      return B14.struct.generator.atomGroups({ [testLevel(property2)]: test5 });
+      return B14.struct.generator.atomGroups({ [testLevel(property2)]: test6 });
     });
   },
   Operator: function(r) {
@@ -86345,18 +86354,18 @@ var symbols = [
   }),
   // ============= FLAGS ================
   C3(MolScriptSymbolTable.core.flags.hasAny, (ctx, v3) => {
-    const test5 = v3[1](ctx);
+    const test6 = v3[1](ctx);
     const tested = v3[0](ctx);
-    if (!test5)
+    if (!test6)
       return !!tested;
-    return (tested & test5) !== 0;
+    return (tested & test6) !== 0;
   }),
   C3(MolScriptSymbolTable.core.flags.hasAll, (ctx, v3) => {
-    const test5 = v3[1](ctx);
+    const test6 = v3[1](ctx);
     const tested = v3[0](ctx);
-    if (!test5)
+    if (!test6)
       return !tested;
-    return (tested & test5) === test5;
+    return (tested & test6) === test6;
   }),
   // Structure
   // ============= TYPES ================
@@ -91213,7 +91222,7 @@ function transformParamsNeedCentroid(src) {
   }
   return false;
 }
-function getTransformFromParams(src, centroid) {
+function getTransformFromParams(src, centroid2) {
   var _a, _b;
   if (src.name === "matrix") {
     const transform = Mat4();
@@ -91223,7 +91232,7 @@ function getTransformFromParams(src, centroid) {
     return transform;
   } else {
     if (((_a = src.params.rotationCenter) === null || _a === void 0 ? void 0 : _a.name) === "centroid") {
-      Vec3.copy(GetTransformState.center, centroid);
+      Vec3.copy(GetTransformState.center, centroid2);
     } else if (((_b = src.params.rotationCenter) === null || _b === void 0 ? void 0 : _b.name) === "point") {
       Vec3.copy(GetTransformState.center, src.params.rotationCenter.params.point);
     } else {
@@ -93002,7 +93011,7 @@ function CarbohydrateSymbolColorTheme(ctx, props) {
   let color;
   if (ctx.structure) {
     const { elements, getElementIndices } = ctx.structure.carbohydrates;
-    const getColor = (unit2, index) => {
+    const getColor2 = (unit2, index) => {
       if (!Unit.isAtomic(unit2))
         return DefaultColor3;
       const carbs = getElementIndices(unit2, index);
@@ -93013,9 +93022,9 @@ function CarbohydrateSymbolColorTheme(ctx, props) {
         return SaccharideColors.Secondary;
       } else {
         if (element_exports.Location.is(location2)) {
-          return getColor(location2.unit, location2.element);
+          return getColor2(location2.unit, location2.element);
         } else if (Bond.isLocation(location2)) {
-          return getColor(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+          return getColor2(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
         }
       }
       return DefaultColor3;
@@ -102737,6 +102746,21 @@ function includesUnitKind(unitKinds, unit2) {
   }
   return false;
 }
+var DefaultMaxCells = 5e8;
+function getVolumeSliceInfo(box2, resolution, maxCells = DefaultMaxCells) {
+  const size4 = Box3D.size(Vec3(), box2);
+  Vec3.ceil(size4, size4);
+  size4.sort((a5, b5) => b5 - a5);
+  const maxAreaCells = Math.floor(Math.cbrt(maxCells) * Math.cbrt(maxCells));
+  const area = size4[0] * size4[1];
+  const areaCells = Math.ceil(area / (resolution * resolution));
+  return { area, areaCells, maxAreaCells };
+}
+function ensureReasonableResolution(box2, props, maxCells = DefaultMaxCells) {
+  const { area, areaCells, maxAreaCells } = getVolumeSliceInfo(box2, props.resolution, maxCells);
+  const resolution = areaCells > maxAreaCells ? Math.sqrt(area / maxAreaCells) : props.resolution;
+  return { ...props, resolution };
+}
 var CommonSurfaceParams = {
   ignoreHydrogens: ParamDefinition.Boolean(false, { description: "Whether or not to include hydrogen atoms in the surface calculation." }),
   ignoreHydrogensVariant: ParamDefinition.Select("all", ParamDefinition.arrayToOptions(["all", "non-polar"])),
@@ -102745,6 +102769,94 @@ var CommonSurfaceParams = {
 };
 var DefaultCommonSurfaceProps = ParamDefinition.getDefaultValues(CommonSurfaceParams);
 var v2 = Vec3();
+function squaredDistance(x, y, z, center) {
+  return Vec3.squaredDistance(Vec3.set(v2, x, y, z), center);
+}
+function getStructureConformationAndRadius(structure, sizeTheme, props) {
+  const { ignoreHydrogens, ignoreHydrogensVariant, traceOnly, includeParent } = props;
+  const differentRoot = includeParent && !!structure.parent;
+  const l = element_exports.Location.create(structure.root);
+  const { center, radius: sphereRadius } = structure.boundary.sphere;
+  const extraRadius = (4 + 1.5) * 2;
+  const radiusSq = (sphereRadius + extraRadius) * (sphereRadius + extraRadius);
+  let xs;
+  let ys;
+  let zs;
+  let rs;
+  let id;
+  let indices2;
+  if (ignoreHydrogens || traceOnly || differentRoot) {
+    const { getSerialIndex } = structure.serialMapping;
+    const units = differentRoot ? structure.root.units : structure.units;
+    const _xs = [];
+    const _ys = [];
+    const _zs = [];
+    const _rs = [];
+    const _id = [];
+    for (let i = 0, il = units.length; i < il; ++i) {
+      const unit2 = units[i];
+      const { elements, conformation: c5 } = unit2;
+      const childUnit = structure.unitMap.get(unit2.id);
+      l.unit = unit2;
+      for (let j = 0, jl = elements.length; j < jl; ++j) {
+        const eI = elements[j];
+        if (ignoreHydrogens && isHydrogen2(structure, unit2, eI, ignoreHydrogensVariant))
+          continue;
+        if (traceOnly && !isTrace(unit2, eI))
+          continue;
+        const _x = c5.x(eI), _y = c5.y(eI), _z = c5.z(eI);
+        if (differentRoot && squaredDistance(_x, _y, _z, center) > radiusSq)
+          continue;
+        _xs.push(_x);
+        _ys.push(_y);
+        _zs.push(_z);
+        l.element = eI;
+        _rs.push(sizeTheme.size(l));
+        if (differentRoot) {
+          const idx = childUnit ? SortedArray.indexOf(childUnit.elements, eI) : -1;
+          if (idx === -1) {
+            _id.push(-2);
+          } else {
+            _id.push(getSerialIndex(childUnit, eI));
+          }
+        } else {
+          _id.push(getSerialIndex(unit2, eI));
+        }
+      }
+    }
+    xs = _xs, ys = _ys, zs = _zs, rs = _rs;
+    id = _id;
+    indices2 = OrderedSet3.ofRange(0, id.length);
+  } else {
+    const { elementCount } = structure;
+    const _xs = new Float32Array(elementCount);
+    const _ys = new Float32Array(elementCount);
+    const _zs = new Float32Array(elementCount);
+    const _rs = new Float32Array(elementCount);
+    for (let i = 0, m = 0, il = structure.units.length; i < il; ++i) {
+      const unit2 = structure.units[i];
+      const { elements, conformation: c5 } = unit2;
+      l.unit = unit2;
+      for (let j = 0, jl = elements.length; j < jl; ++j) {
+        const eI = elements[j];
+        const mj = m + j;
+        _xs[mj] = c5.x(eI);
+        _ys[mj] = c5.y(eI);
+        _zs[mj] = c5.z(eI);
+        l.element = eI;
+        _rs[mj] = sizeTheme.size(l);
+      }
+      m += elements.length;
+    }
+    xs = _xs, ys = _ys, zs = _zs, rs = _rs;
+    id = fillSerial(new Uint32Array(elementCount));
+    indices2 = OrderedSet3.ofRange(0, id.length);
+  }
+  const position = { indices: indices2, x: xs, y: ys, z: zs, id };
+  const boundary = differentRoot ? getBoundary(position) : structure.boundary;
+  const radius = (index) => rs[index];
+  return { position, boundary, radius };
+}
 var _H = AtomicNumbers["H"];
 function isHydrogen2(structure, unit2, element, variant) {
   if (Unit.isCoarse(unit2))
@@ -102757,6 +102869,14 @@ function isHydrogen2(structure, unit2, element, variant) {
   if (polar && variant === "polar")
     return true;
   if (!polar && variant === "non-polar")
+    return true;
+  return false;
+}
+function isTrace(unit2, element) {
+  if (Unit.isCoarse(unit2))
+    return true;
+  const atomId2 = unit2.model.atomicHierarchy.atoms.label_atom_id.value(element);
+  if (atomId2 === "CA" || atomId2 === "BB" || atomId2 === "P")
     return true;
   return false;
 }
@@ -117702,7 +117822,7 @@ function getAxesMeshShape(props, shape) {
   const scale = 100 * props.scale;
   const mesh = createAxesMesh(props, shape === null || shape === void 0 ? void 0 : shape.geometry);
   mesh.setBoundingSphere(Sphere3D.create(Vec3.create(scale / 2, scale / 2, scale / 2), scale + scale / 4));
-  const getColor = (groupId) => {
+  const getColor2 = (groupId) => {
     switch (groupId) {
       case CameraHelperAxis.X:
         return props.colorX;
@@ -117722,7 +117842,7 @@ function getAxesMeshShape(props, shape) {
         return ColorNames.grey;
     }
   };
-  return Shape.create("axes-mesh", {}, mesh, getColor, () => 1, () => "");
+  return Shape.create("axes-mesh", {}, mesh, getColor2, () => 1, () => "");
 }
 function createMeshRenderObject(props) {
   const shape = getAxesMeshShape(props);
@@ -117749,7 +117869,7 @@ function getAxesTextShape(props, shape) {
   const scale = 100 * props.scale;
   const text = createAxesText(props, shape === null || shape === void 0 ? void 0 : shape.geometry);
   text.setBoundingSphere(Sphere3D.create(Vec3.create(scale / 2, scale / 2, scale / 2), scale));
-  const getColor = (groupId) => {
+  const getColor2 = (groupId) => {
     switch (groupId) {
       case CameraHelperAxis.X:
         return props.labelColorX;
@@ -117761,7 +117881,7 @@ function getAxesTextShape(props, shape) {
         return ColorNames.grey;
     }
   };
-  return Shape.create("axes-text", {}, text, getColor, () => 1, () => "");
+  return Shape.create("axes-text", {}, text, getColor2, () => 1, () => "");
 }
 function createTextRenderObject(props) {
   const shape = getAxesTextShape(props);
@@ -119683,7 +119803,7 @@ function getHandleShape(props, shape) {
   const scale = 10 * props.scale;
   const mesh = createHandleMesh(scale, shape === null || shape === void 0 ? void 0 : shape.geometry);
   mesh.setBoundingSphere(Sphere3D.create(Vec3.create(scale / 2, scale / 2, scale / 2), scale + scale / 4));
-  const getColor = (groupId) => {
+  const getColor2 = (groupId) => {
     switch (groupId) {
       case HandleGroup.TranslateObjectX:
         return props.colorX;
@@ -119695,7 +119815,7 @@ function getHandleShape(props, shape) {
         return ColorNames.grey;
     }
   };
-  return Shape.create("handle", {}, mesh, getColor, () => 1, () => "");
+  return Shape.create("handle", {}, mesh, getColor2, () => 1, () => "");
 }
 function createHandleRenderObject(props) {
   const shape = getHandleShape(props);
@@ -119820,7 +119940,7 @@ function createPointerMesh(data, mesh) {
 }
 function getPointerMeshShape(data, props, shape) {
   const mesh = createPointerMesh(data, shape === null || shape === void 0 ? void 0 : shape.geometry);
-  const getColor = (groupId) => {
+  const getColor2 = (groupId) => {
     switch (groupId) {
       case PointerHelperGroup.Hit:
         return props.hitColor;
@@ -119828,7 +119948,7 @@ function getPointerMeshShape(data, props, shape) {
         return props.color;
     }
   };
-  return Shape.create("pointer-mesh", data, mesh, getColor, () => 1, () => "", void 0, 2);
+  return Shape.create("pointer-mesh", data, mesh, getColor2, () => 1, () => "", void 0, 2);
 }
 function createMeshRenderObject2(shape, props) {
   return Shape.createRenderObject(shape, {
@@ -119937,6 +120057,14 @@ var _f_fastPow2 = new Float32Array(_a_fastPow2);
 var _a_fasterPow2 = new ArrayBuffer(4);
 var _i_fasterPow2 = new Int32Array(_a_fasterPow2);
 var _f_fasterPow2 = new Float32Array(_a_fasterPow2);
+function fasterPow2(v3) {
+  const clipNumber = v3 < -126 ? -126 : v3;
+  _i_fasterPow2[0] = (1 << 23) * (clipNumber + 126.94269504);
+  return _f_fasterPow2[0];
+}
+function fasterExp(v3) {
+  return fasterPow2(1.44269504 * v3);
+}
 var _a_fastLog2 = new ArrayBuffer(8);
 var _i_fastLog2 = new Int32Array(_a_fastLog2);
 var _f_fastLog2 = new Float32Array(_a_fastLog2);
@@ -124038,17 +124166,17 @@ function AccessibleSurfaceAreaColorTheme(ctx, props) {
   if ((accessibleSurfaceArea === null || accessibleSurfaceArea === void 0 ? void 0 : accessibleSurfaceArea.value) && ctx.structure) {
     const l = element_exports.Location.create(ctx.structure);
     const asa = accessibleSurfaceArea.value;
-    const getColor = (location2) => {
+    const getColor2 = (location2) => {
       const value = AccessibleSurfaceArea.getNormalizedValue(location2, asa);
       return value === -1 ? DefaultColor21 : scale.color(value);
     };
     color = (location2) => {
       if (element_exports.Location.is(location2) && Unit.isAtomic(location2.unit)) {
-        return getColor(location2);
+        return getColor2(location2);
       } else if (Bond.isLocation(location2)) {
         l.unit = location2.aUnit;
         l.element = location2.aUnit.elements[location2.aIndex];
-        return getColor(l);
+        return getColor2(l);
       }
       return DefaultColor21;
     };
@@ -124425,7 +124553,7 @@ function SIFTSMappingColorTheme(ctx, props) {
     const l = element_exports.Location.create(ctx.structure);
     const palette = getPalette(globalAccessionMap.size + 1, props, { valueLabel: (i) => `${i}` });
     const colorMap = /* @__PURE__ */ new Map();
-    const getColor = (location2) => {
+    const getColor2 = (location2) => {
       const key2 = SIFTSMapping.getKey(location2);
       if (!key2)
         return DefaultColor22;
@@ -124437,11 +124565,11 @@ function SIFTSMappingColorTheme(ctx, props) {
     };
     color = (location2) => {
       if (element_exports.Location.is(location2) && Unit.isAtomic(location2.unit)) {
-        return getColor(location2);
+        return getColor2(location2);
       } else if (Bond.isLocation(location2)) {
         l.unit = location2.aUnit;
         l.element = location2.aUnit.elements[location2.aIndex];
-        return getColor(l);
+        return getColor2(l);
       }
       return DefaultColor22;
     };
@@ -127845,6 +127973,3553 @@ test4("scene toggleBackground flips dark mode and reuses cached renderer snapsho
   assert4.strictEqual(handler.isDarkMode, false);
   const lightRenderer = setPropsCalls[1]?.renderer ?? {};
   assert4.strictEqual(lightRenderer.backgroundColor, 16777215);
+});
+
+// tests/unit/shape-handler.test.ts
+import assert5 from "node:assert";
+import test5 from "node:test";
+
+// src/shapes/index.ts
+var MSVTransform = Transformer.builderFactory("molsysviewer");
+var TransparentSphereParams = {
+  ...Mesh.Params
+};
+function buildSphereMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(128, 64, prev);
+  const detail = 2;
+  for (let i = 0, il = data.spheres.length; i < il; i++) {
+    const s = data.spheres[i];
+    state.currentGroup = i;
+    addSphere(state, Vec3.create(s.center[0], s.center[1], s.center[2]), s.radius, detail);
+  }
+  return MeshBuilder.getMesh(state);
+}
+function getTransparentSphereName(data) {
+  if (data.spheres.length === 0) return "Transparent Sphere (empty)";
+  if (data.spheres.length === 1) {
+    const s = data.spheres[0];
+    return s.id ? `Sphere ${s.id}` : "Transparent Sphere";
+  }
+  return `${data.spheres.length} Transparent Spheres`;
+}
+function getTransparentSphereShape(_ctx, data, _props, shape) {
+  const mesh = buildSphereMesh(data, _props, shape?.geometry);
+  const name = getTransparentSphereName(data);
+  const getColor2 = (groupId) => Color(data.spheres[groupId].color);
+  const getSize = (groupId) => data.spheres[groupId].radius;
+  const getLabel = (groupId) => {
+    const spec = data.spheres[groupId];
+    const id = spec.id ?? `${groupId}`;
+    return `Sphere ${id} (r = ${spec.radius.toFixed(2)})`;
+  };
+  return Shape.create(name, data, mesh, getColor2, getSize, getLabel);
+}
+var TransparentSphereVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getTransparentSphereShape, Mesh.Utils)
+};
+var TransparentSphereShapeParams = {
+  ...TransparentSphereParams
+};
+function TransparentSphereRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "TransparentSpheres",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    TransparentSphereVisuals
+  );
+}
+var TransparentSphere3D = MSVTransform({
+  name: "molsysviewer-transparent-sphere-3d",
+  display: { name: "Transparent Sphere" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: {
+    center: ParamDefinition.Vec3(Vec3.create(0, 0, 0), { isEssential: true }),
+    radius: ParamDefinition.Numeric(1, { min: 0.01, max: 1e3, step: 0.01 }, { isEssential: true }),
+    color: ParamDefinition.Color(ColorNames.green, { isEssential: true }),
+    alpha: ParamDefinition.Numeric(0.4, { min: 0, max: 1, step: 0.01 }, { isEssential: true })
+  }
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Transparent Sphere", async (ctx) => {
+      const data = {
+        spheres: [
+          {
+            center: [params.center[0], params.center[1], params.center[2]],
+            radius: params.radius,
+            color: params.color,
+            alpha: params.alpha,
+            id: "sphere-0"
+          }
+        ]
+      };
+      const repr = TransparentSphereRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => TransparentSphereShapeParams
+      );
+      const props = {
+        ...ParamDefinition.getDefaultValues(TransparentSphereShapeParams)
+      };
+      await repr.createOrUpdate(props, data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.alpha });
+      return new PluginStateObject.Shape.Representation3D(
+        { repr, sourceData: data },
+        { label: "Transparent Sphere" }
+      );
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Transparent Sphere", async (ctx) => {
+      const data = {
+        spheres: [
+          {
+            center: [
+              newParams.center[0],
+              newParams.center[1],
+              newParams.center[2]
+            ],
+            radius: newParams.radius,
+            color: newParams.color,
+            alpha: newParams.alpha,
+            id: "sphere-0"
+          }
+        ]
+      };
+      const props = { ...b5.data.repr.props };
+      await b5.data.repr.createOrUpdate(props, data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.alpha });
+      b5.data.sourceData = data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+async function addTransparentSphereFromPython(plugin, spec) {
+  const centerVec = Vec3.create(spec.center[0], spec.center[1], spec.center[2]);
+  const builder = plugin.state.data.build();
+  const sphere = builder.toRoot().apply(
+    TransparentSphere3D,
+    {
+      center: centerVec,
+      radius: spec.radius,
+      color: spec.color,
+      alpha: spec.alpha
+    },
+    { tags: "molsysviewer:spheres" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return sphere.ref;
+}
+var TransparentSpheresParams = {
+  spheres: ParamDefinition.Value([]),
+  alpha: ParamDefinition.Numeric(0.4, { min: 0, max: 1, step: 0.01 }, { isEssential: true })
+};
+var TransparentSpheres3D = MSVTransform({
+  name: "molsysviewer-transparent-spheres-3d",
+  display: { name: "Transparent Spheres" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: TransparentSpheresParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Transparent Spheres", async (ctx) => {
+      const data = {
+        spheres: params.spheres ?? []
+      };
+      const repr = TransparentSphereRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => TransparentSphereShapeParams
+      );
+      const props = {
+        ...ParamDefinition.getDefaultValues(TransparentSphereShapeParams)
+      };
+      await repr.createOrUpdate(props, data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.alpha });
+      return new PluginStateObject.Shape.Representation3D(
+        { repr, sourceData: data },
+        { label: "Transparent Spheres" }
+      );
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Transparent Spheres", async (ctx) => {
+      const data = {
+        spheres: newParams.spheres ?? []
+      };
+      const props = { ...b5.data.repr.props };
+      await b5.data.repr.createOrUpdate(props, data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.alpha });
+      b5.data.sourceData = data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+async function addTransparentSpheresFromPython(plugin, spheres2, alpha, tag) {
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    TransparentSpheres3D,
+    {
+      spheres: spheres2,
+      alpha
+    },
+    { tags: tag ?? "molsysviewer:spheres" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var PocketBlobParams = {
+  ...Mesh.Params
+};
+function buildPocketBlobColors(count2, values, colorMap) {
+  const colors = /* @__PURE__ */ new Map();
+  const base = Color(ColorNames.lightgrey);
+  if (!values || values.length !== count2) {
+    for (let i = 0; i < count2; i++) colors.set(i, base);
+    return colors;
+  }
+  const min4 = Math.min(...values);
+  const max4 = Math.max(...values);
+  const domain = min4 === max4 ? [min4, min4 + 1] : [min4, max4];
+  const palette = Array.isArray(colorMap) && colorMap.length > 0 ? colorMap : void 0;
+  const scale = ColorScale.create({ domain, listOrName: palette ?? "rainbow", minLabel: "min", maxLabel: "max" });
+  values.forEach((v3, idx) => {
+    colors.set(idx, scale.color(v3));
+  });
+  return colors;
+}
+function buildPocketBlobField(options) {
+  const centers = options.centers ?? [];
+  const radii = options.radii ?? [];
+  if (centers.length === 0 || centers.length !== radii.length) {
+    return void 0;
+  }
+  const radiusScale = Math.max(0.01, options.radius_scale ?? 1);
+  const scaledRadii = radii.map((r) => r * radiusScale);
+  const smoothing = Math.max(0.1, options.smoothing ?? 1);
+  const resolution = Math.max(0.25, options.resolution ?? 1);
+  const min4 = Vec3.create(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
+  const max4 = Vec3.create(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY);
+  let maxRadius = 0;
+  centers.forEach((c5, idx) => {
+    const r = scaledRadii[idx];
+    maxRadius = Math.max(maxRadius, r);
+    Vec3.min(min4, min4, Vec3.create(c5[0] - r * 2, c5[1] - r * 2, c5[2] - r * 2));
+    Vec3.max(max4, max4, Vec3.create(c5[0] + r * 2, c5[1] + r * 2, c5[2] + r * 2));
+  });
+  const padding2 = Math.max(resolution * 2, maxRadius * smoothing * 2);
+  Vec3.sub(min4, min4, Vec3.create(padding2, padding2, padding2));
+  Vec3.add(max4, max4, Vec3.create(padding2, padding2, padding2));
+  const dims = Vec3();
+  Vec3.sub(dims, max4, min4);
+  const nX = Math.max(2, Math.ceil(dims[0] / resolution));
+  const nY = Math.max(2, Math.ceil(dims[1] / resolution));
+  const nZ = Math.max(2, Math.ceil(dims[2] / resolution));
+  const space = Tensor.Space([nX, nY, nZ], [0, 1, 2], Float32Array);
+  const scalarField = space.create();
+  const idSpace = Tensor.Space([nX, nY, nZ], [0, 1, 2], Int32Array);
+  const idField = idSpace.create();
+  const sigmaFactor = smoothing;
+  for (let k = 0; k < nZ; k++) {
+    const z = min4[2] + k * resolution;
+    for (let j = 0; j < nY; j++) {
+      const y = min4[1] + j * resolution;
+      for (let i = 0; i < nX; i++) {
+        const x = min4[0] + i * resolution;
+        let density = 0;
+        let best = -1;
+        let bestVal = -Infinity;
+        for (let s = 0; s < centers.length; s++) {
+          const c5 = centers[s];
+          const r = scaledRadii[s];
+          const dx = x - c5[0];
+          const dy = y - c5[1];
+          const dz = z - c5[2];
+          const dist2 = dx * dx + dy * dy + dz * dz;
+          const sigma = Math.max(1e-3, r * sigmaFactor);
+          const val = Math.exp(-dist2 / (2 * sigma * sigma));
+          density += val;
+          if (val > bestVal) {
+            bestVal = val;
+            best = s;
+          }
+        }
+        space.set(scalarField, i, j, k, density);
+        idSpace.set(idField, i, j, k, best);
+      }
+    }
+  }
+  return {
+    scalarField: Tensor.create(space, scalarField),
+    idField: Tensor.create(idSpace, idField),
+    bottomLeft: [0, 0, 0],
+    topRight: [nX, nY, nZ],
+    count: centers.length,
+    origin: [min4[0], min4[1], min4[2]],
+    resolution
+  };
+}
+function getPocketBlobShape(_ctx, data, _props, shape) {
+  const getColor2 = (groupId) => data.colors.get(groupId) ?? Color(ColorNames.lightgrey);
+  const getSize = () => 1;
+  const getLabel = (groupId) => `${data.name} (region ${groupId})`;
+  return Shape.create(data.name, data, data.mesh, getColor2, getSize, getLabel, shape?.transforms);
+}
+var PocketBlobVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getPocketBlobShape, Mesh.Utils)
+};
+function PocketBlobRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "PocketBlob",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    PocketBlobVisuals
+  );
+}
+var PocketBlobTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var PocketBlob3D = MSVTransform({
+  name: "molsysviewer-pocket-blob-3d",
+  display: { name: "Pocket Blob" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: PocketBlobTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Pocket Blob", async (ctx) => {
+      const repr = PocketBlobRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => PocketBlobParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.data.alpha });
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Pocket Blob", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.data.alpha });
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function preparePocketBlobData(options) {
+  const field = buildPocketBlobField(options);
+  if (!field) {
+    console.warn("[MolSysViewer] add_pocket_blob: no valid data");
+    return void 0;
+  }
+  const levels = options.iso_levels && options.iso_levels.length > 0 ? options.iso_levels : [options.iso_level ?? 0.1];
+  const baseAlpha = options.alpha ?? 0.5;
+  const isoAlphas = options.iso_alphas && options.iso_alphas.length === levels.length ? options.iso_alphas : new Array(levels.length).fill(baseAlpha);
+  const isoColors = options.iso_colors && options.iso_colors.length === levels.length ? options.iso_colors : void 0;
+  const colorScale = !isoColors ? ColorScale.create({ domain: [Math.min(...levels), Math.max(...levels)], listOrName: options.color_map ?? "turbo" }) : void 0;
+  const results = [];
+  levels.forEach((level, idx) => {
+    const isoColor = isoColors ? isoColors[idx] : colorScale?.color(level);
+    const regionColors = isoColor !== void 0 ? new Map(Array.from({ length: field.count }, (_v, i) => [i, isoColor])) : buildPocketBlobColors(field.count, options.values, options.color_map);
+    const mesh = computeMarchingCubesMesh({
+      isoLevel: level,
+      scalarField: field.scalarField,
+      idField: field.idField,
+      bottomLeft: field.bottomLeft,
+      topRight: field.topRight
+    });
+    const transform = Mat4.identity();
+    Mat4.fromScaling(transform, Vec3.create(field.resolution, field.resolution, field.resolution));
+    Mat4.setTranslation(transform, Vec3.create(field.origin[0], field.origin[1], field.origin[2]));
+    results.push({
+      mesh,
+      colors: regionColors,
+      alpha: isoAlphas[idx],
+      name: `${options.name ?? "Pocket Blob"} (iso=${level})`,
+      transform
+    });
+  });
+  return results;
+}
+async function addPocketBlobFromPython(plugin, options) {
+  const datasets = preparePocketBlobData(options);
+  if (!datasets) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(PocketBlobParams)
+  };
+  const refs = [];
+  for (const data of datasets) {
+    const blobMesh = await plugin.runTask(data.mesh);
+    Mesh.transform(blobMesh, data.transform);
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+      PocketBlob3D,
+      {
+        data: { ...data, mesh: blobMesh },
+        props
+      },
+      { tags: options.tag ?? "molsysviewer:pocket-blob" }
+    );
+    await PluginCommands.State.Update(plugin, {
+      state: plugin.state.data,
+      tree: builder,
+      options: { doNotLogTiming: true }
+    });
+    refs.push(node.ref);
+  }
+  return refs.length === 1 ? refs[0] : refs;
+}
+var ChannelTubeParams = {
+  ...Mesh.Params,
+  radialSegments: ParamDefinition.Numeric(16, { min: 3, max: 64, step: 1 })
+};
+function catmullRomPoint(p0, p1, p22, p3, t2, out) {
+  const t22 = t2 * t2;
+  const t3 = t22 * t2;
+  out[0] = 0.5 * (2 * p1[0] + (-p0[0] + p22[0]) * t2 + (2 * p0[0] - 5 * p1[0] + 4 * p22[0] - p3[0]) * t22 + (-p0[0] + 3 * p1[0] - 3 * p22[0] + p3[0]) * t3);
+  out[1] = 0.5 * (2 * p1[1] + (-p0[1] + p22[1]) * t2 + (2 * p0[1] - 5 * p1[1] + 4 * p22[1] - p3[1]) * t22 + (-p0[1] + 3 * p1[1] - 3 * p22[1] + p3[1]) * t3);
+  out[2] = 0.5 * (2 * p1[2] + (-p0[2] + p22[2]) * t2 + (2 * p0[2] - 5 * p1[2] + 4 * p22[2] - p3[2]) * t22 + (-p0[2] + 3 * p1[2] - 3 * p22[2] + p3[2]) * t3);
+  return out;
+}
+function buildChannelSegments(options) {
+  const centers = options.centers ?? [];
+  const radii = options.radii ?? [];
+  if (centers.length < 2 || centers.length !== radii.length) return { segments: [], radialSegments: 16 };
+  const subdiv = Math.max(0, Math.floor(options.smoothing_subdivisions ?? 0));
+  const points2 = centers.map((c5) => Vec3.create(c5[0], c5[1], c5[2]));
+  const radiiList = radii.map((r) => Math.max(0.01, r));
+  const distanceList = options.solvent_distances ? options.solvent_distances.slice() : void 0;
+  if (subdiv > 0 && points2.length >= 4) {
+    const refined = [];
+    const refinedRadii = [];
+    const refinedDistances = [];
+    const steps = subdiv + 1;
+    for (let i = 0; i < points2.length - 1; i++) {
+      const p0 = points2[Math.max(0, i - 1)];
+      const p1 = points2[i];
+      const p22 = points2[i + 1];
+      const p3 = points2[Math.min(points2.length - 1, i + 2)];
+      const r0 = radiiList[Math.max(0, i - 1)];
+      const r1 = radiiList[i];
+      const r2 = radiiList[i + 1];
+      const r3 = radiiList[Math.min(points2.length - 1, i + 2)];
+      const d0 = distanceList && distanceList[Math.max(0, i - 1)];
+      const d1 = distanceList && distanceList[i];
+      const d22 = distanceList && distanceList[i + 1];
+      const d3 = distanceList && distanceList[Math.min(points2.length - 1, i + 2)];
+      for (let s = 0; s < steps; s++) {
+        const t2 = s / steps;
+        const v3 = Vec3();
+        catmullRomPoint(p0, p1, p22, p3, t2, v3);
+        refined.push(v3);
+        const r = 0.5 * (r1 + r2 + t2 * (r2 - r1) + t2 * t2 * (r0 - 2 * r1 + r2) + t2 * t2 * t2 * (-r0 + 3 * r1 - 3 * r2 + r3));
+        refinedRadii.push(Math.max(0.01, r));
+        if (distanceList && d0 !== void 0 && d1 !== void 0 && d22 !== void 0 && d3 !== void 0) {
+          const dt = 0.5 * (d1 + d22 + t2 * (d22 - d1) + t2 * t2 * (d0 - 2 * d1 + d22) + t2 * t2 * t2 * (-d0 + 3 * d1 - 3 * d22 + d3));
+          refinedDistances.push(dt);
+        }
+      }
+    }
+    points2.splice(0, points2.length, ...refined);
+    radiiList.splice(0, radiiList.length, ...refinedRadii);
+    if (distanceList && refinedDistances.length === refined.length) {
+      distanceList.splice(0, distanceList.length, ...refinedDistances);
+    }
+  }
+  const colorMode = options.color_mode ?? "segment";
+  const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));
+  const colors = options.colors;
+  const solventDistances = distanceList ?? options.solvent_distances;
+  const colorMap = options.color_map;
+  const segments2 = [];
+  const palette = [
+    ColorNames.blue,
+    ColorNames.orange,
+    ColorNames.green,
+    ColorNames.red,
+    ColorNames.purple,
+    ColorNames.gray,
+    ColorNames.pink,
+    ColorNames.brown
+  ];
+  let distanceScale;
+  if (colorMode === "solvent" && solventDistances && solventDistances.length === radiiList.length) {
+    const min4 = Math.min(...solventDistances);
+    const max4 = Math.max(...solventDistances);
+    const domain = min4 === max4 ? [min4, min4 + 1] : [min4, max4];
+    distanceScale = ColorScale.create({ domain, listOrName: colorMap ?? "turbo" });
+  }
+  for (let i = 0; i < points2.length - 1; i++) {
+    const start4 = points2[i];
+    const end4 = points2[i + 1];
+    const radius = (radiiList[i] + radiiList[i + 1]) * 0.5;
+    let color = ColorNames.skyblue;
+    if (colorMode === "segment") {
+      if (colors && colors.length) {
+        color = colors[i % colors.length];
+      } else {
+        color = palette[i % palette.length];
+      }
+    } else if (colorMode === "solvent" && distanceScale && solventDistances && solventDistances.length === radiiList.length) {
+      const v1 = solventDistances[Math.min(solventDistances.length - 1, i)];
+      const v22 = solventDistances[Math.min(solventDistances.length - 1, i + 1)];
+      color = distanceScale.color((v1 + v22) * 0.5);
+    }
+    segments2.push({
+      start: [start4[0], start4[1], start4[2]],
+      end: [end4[0], end4[1], end4[2]],
+      radius,
+      color
+    });
+  }
+  return { segments: segments2, radialSegments };
+}
+function buildChannelTubeMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(512, 256, prev);
+  const start4 = Vec3();
+  const end4 = Vec3();
+  data.segments.forEach((seg, idx) => {
+    state.currentGroup = idx;
+    Vec3.set(start4, seg.start[0], seg.start[1], seg.start[2]);
+    Vec3.set(end4, seg.end[0], seg.end[1], seg.end[2]);
+    const props = {
+      radiusTop: seg.radius,
+      radiusBottom: seg.radius,
+      radialSegments: Math.max(3, data.radialSegments)
+    };
+    addCylinder(state, start4, end4, 1, props);
+  });
+  return MeshBuilder.getMesh(state);
+}
+function getChannelTubeShape(_ctx, data, _props, shape) {
+  const mesh = buildChannelTubeMesh(
+    { segments: data.segments, radialSegments: _props.radialSegments ?? 16 },
+    _props,
+    shape?.geometry
+  );
+  const getColor2 = (groupId) => Color(data.segments[groupId].color);
+  const getSize = (groupId) => data.segments[groupId].radius;
+  const getLabel = (groupId) => `${data.name} ${groupId}`;
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var ChannelTubeVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getChannelTubeShape, Mesh.Utils)
+};
+function ChannelTubeRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "ChannelTube",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    ChannelTubeVisuals
+  );
+}
+var ChannelTubeTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var ChannelTube3D = MSVTransform({
+  name: "molsysviewer-channel-tube-3d",
+  display: { name: "Channel Tube" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: ChannelTubeTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Channel Tube", async (ctx) => {
+      const repr = ChannelTubeRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => ChannelTubeParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.data.alpha });
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Channel Tube", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.data.alpha });
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function prepareChannelTubeData(options) {
+  const built = buildChannelSegments(options);
+  const segments2 = built.segments;
+  if (!segments2 || segments2.length === 0) {
+    console.warn("[MolSysViewer] add_channel_tube: no valid segments");
+    return { radialSegments: built.radialSegments };
+  }
+  const alpha = options.alpha ?? 1;
+  const name = options.name ?? "Channel Tube";
+  const radialSegments = built.radialSegments;
+  return {
+    data: {
+      segments: segments2,
+      alpha,
+      name
+    },
+    radialSegments
+  };
+}
+async function addChannelTubeFromPython(plugin, options) {
+  const { data, radialSegments } = prepareChannelTubeData(options);
+  if (!data) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(ChannelTubeParams),
+    radialSegments
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    ChannelTube3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:channel-tube" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var AnisotropyEllipsoidParams = {
+  ...Mesh.Params
+};
+function clampEccentricity(axes, maxEcc) {
+  if (!maxEcc || maxEcc <= 1) return axes;
+  const [a5, b5, c5] = axes;
+  const maxVal = Math.max(a5, b5, c5);
+  const minAllowed = maxVal / maxEcc;
+  return [
+    Math.max(a5, minAllowed),
+    Math.max(b5, minAllowed),
+    Math.max(c5, minAllowed)
+  ];
+}
+function anisotropyValue(axes) {
+  const maxVal = Math.max(...axes);
+  const minVal = Math.min(...axes);
+  if (maxVal <= 0) return 0;
+  return (maxVal - minVal) / maxVal;
+}
+function normalizeVec(v3) {
+  const out = Vec3.create(v3[0], v3[1], v3[2]);
+  Vec3.normalize(out, out);
+  return out;
+}
+function fallbackDirs() {
+  return [Vec3.create(1, 0, 0), Vec3.create(0, 1, 0)];
+}
+function buildEllipsoidSpecs(plugin, options) {
+  const centers = options.centers ? [...options.centers] : [];
+  if (centers.length === 0 && options.atom_indices) {
+    const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+    const structure = structureRef?.cell.obj?.data;
+    if (structure) {
+      const lookup = buildUnitLookup(structure);
+      options.atom_indices.forEach((idx) => {
+        const loc = lookup.get(idx);
+        if (loc) {
+          const p3 = Vec3();
+          loc.unit.conformation.position(loc.elementIndex, p3);
+          centers.push([p3[0], p3[1], p3[2]]);
+        }
+      });
+    }
+  }
+  const n = centers.length;
+  if (n === 0) return [];
+  const scale = options.scale ?? 1;
+  const maxEcc = options.max_eccentricity ?? 0;
+  const specs = [];
+  const colorMode = options.color_mode ?? "anisotropy";
+  const values = options.values;
+  const colors = options.colors;
+  const colorMap = options.color_map;
+  let scaleLookup;
+  if (colorMode === "anisotropy") {
+    scaleLookup = ColorScale.create({ domain: [0, 1], listOrName: colorMap ?? "turbo" });
+  }
+  for (let i = 0; i < n; i++) {
+    const center = centers[i];
+    const eigenVals = options.eigenvalues?.[i];
+    const eigenVecs = options.eigenvectors?.[i]?.map((v3) => normalizeVec(v3));
+    const tensor = options.tensors?.[i];
+    const principal = options.principal_directions?.[i];
+    let axes;
+    let dirA;
+    let dirB;
+    if (eigenVals && eigenVecs) {
+      axes = [Math.abs(eigenVals[0]), Math.abs(eigenVals[1]), Math.abs(eigenVals[2])];
+      dirA = eigenVecs[0];
+      dirB = eigenVecs[1];
+    } else if (principal) {
+      axes = [1, 0.2, 0.2];
+      dirA = normalizeVec(principal);
+      dirB = Vec3.orthogonal(Vec3(), dirA);
+    } else if (tensor && tensor.length === 3) {
+      axes = [
+        Math.abs(tensor[0][0]),
+        Math.abs(tensor[1][1]),
+        Math.abs(tensor[2][2])
+      ];
+      const [a5, b5] = fallbackDirs();
+      dirA = a5;
+      dirB = b5;
+    } else {
+      continue;
+    }
+    axes = clampEccentricity([
+      axes[0] * scale,
+      axes[1] * scale,
+      axes[2] * scale
+    ], maxEcc);
+    const anisotropy = anisotropyValue(axes);
+    let color = ColorNames.orange;
+    if (colorMode === "fixed" && colors && colors.length) {
+      color = colors[i % colors.length];
+    } else if (colorMode === "anisotropy" && scaleLookup) {
+      color = scaleLookup.color(values?.[i] ?? anisotropy);
+    } else if (colors && colors.length) {
+      color = colors[i % colors.length];
+    }
+    const [fallbackA, fallbackB] = fallbackDirs();
+    specs.push({
+      center: [center[0], center[1], center[2]],
+      axes,
+      dirA: dirA ?? fallbackA,
+      dirB: dirB ?? fallbackB,
+      color
+    });
+  }
+  return specs;
+}
+function buildAnisotropyEllipsoidMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(256, 128, prev);
+  const detail = 2;
+  data.ellipsoids.forEach((ellipsoid, idx) => {
+    state.currentGroup = idx;
+    addEllipsoid(
+      state,
+      Vec3.create(ellipsoid.center[0], ellipsoid.center[1], ellipsoid.center[2]),
+      ellipsoid.dirA,
+      ellipsoid.dirB,
+      Vec3.create(ellipsoid.axes[0], ellipsoid.axes[1], ellipsoid.axes[2]),
+      detail
+    );
+  });
+  return MeshBuilder.getMesh(state);
+}
+function getAnisotropyEllipsoidShape(_ctx, data, _props, shape) {
+  const mesh = buildAnisotropyEllipsoidMesh(data, _props, shape?.geometry);
+  const getColor2 = (groupId) => Color(data.ellipsoids[groupId].color);
+  const getSize = (groupId) => data.ellipsoids[groupId].axes[0];
+  const getLabel = (groupId) => `${data.name} ${groupId}`;
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var AnisotropyEllipsoidVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getAnisotropyEllipsoidShape, Mesh.Utils)
+};
+function AnisotropyEllipsoidRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "AnisotropyEllipsoids",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    AnisotropyEllipsoidVisuals
+  );
+}
+var AnisotropyEllipsoidTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var AnisotropyEllipsoids3D = MSVTransform({
+  name: "molsysviewer-anisotropy-ellipsoids-3d",
+  display: { name: "Anisotropy Ellipsoids" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: AnisotropyEllipsoidTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Anisotropy Ellipsoids", async (ctx) => {
+      const repr = AnisotropyEllipsoidRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => AnisotropyEllipsoidParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.data.alpha });
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Anisotropy Ellipsoids", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.data.alpha });
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function prepareAnisotropyEllipsoidData(plugin, options) {
+  const ellipsoids = buildEllipsoidSpecs(plugin, options);
+  if (ellipsoids.length === 0) {
+    console.warn("[MolSysViewer] add_anisotropy_ellipsoids: no valid data");
+    return void 0;
+  }
+  const alpha = options.alpha ?? 0.6;
+  const name = options.name ?? "Anisotropy Ellipsoids";
+  return {
+    ellipsoids,
+    alpha,
+    name
+  };
+}
+async function addAnisotropyEllipsoidsFromPython(plugin, options) {
+  const data = prepareAnisotropyEllipsoidData(plugin, options);
+  if (!data) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(AnisotropyEllipsoidParams)
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    AnisotropyEllipsoids3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:anisotropy-ellipsoids" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var PharmColors = {
+  donor: 3900150,
+  acceptor: 15680580,
+  hydrophobe: 16096779,
+  aromatic: 9133302,
+  positive: 2450411,
+  negative: 16007006,
+  metal: 1096065
+};
+var PharmacophoreParams = {
+  ...Mesh.Params
+};
+function buildPharmacophoreMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(256, 128, prev);
+  const center = Vec3();
+  const dir = Vec3();
+  const tip = Vec3();
+  const base = Vec3();
+  data.glyphs.forEach((g, idx) => {
+    state.currentGroup = idx;
+    Vec3.set(center, g.center[0], g.center[1], g.center[2]);
+    addSphere(state, center, g.radius, 2);
+    if (g.direction) {
+      Vec3.set(dir, g.direction[0], g.direction[1], g.direction[2]);
+      if (Vec3.magnitude(dir) > 1e-6) {
+        Vec3.normalize(dir, dir);
+        Vec3.scale(tip, dir, g.radius * 2);
+        Vec3.add(tip, center, tip);
+        Vec3.scale(base, dir, g.radius * 1.2);
+        Vec3.add(base, center, base);
+        addCylinder(state, center, base, 1, { radiusTop: g.radius * 0.3, radiusBottom: g.radius * 0.3, radialSegments: 10 });
+        addCylinder(state, base, tip, g.radius * 0.6, {
+          topCap: true,
+          bottomCap: true,
+          radialSegments: 12
+        });
+      }
+    }
+  });
+  return MeshBuilder.getMesh(state);
+}
+function getPharmacophoreShape(_ctx, data, _props, shape) {
+  const mesh = buildPharmacophoreMesh(data, _props, shape?.geometry);
+  const getColor2 = (groupId) => Color(data.glyphs[groupId].color);
+  const getSize = (groupId) => data.glyphs[groupId].radius;
+  const getLabel = (groupId) => `${data.glyphs[groupId].kind}`;
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var PharmacophoreVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getPharmacophoreShape, Mesh.Utils)
+};
+function PharmacophoreRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "PharmacophoreFeatures",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    PharmacophoreVisuals
+  );
+}
+var PharmacophoreTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var Pharmacophore3D = MSVTransform({
+  name: "molsysviewer-pharmacophore-3d",
+  display: { name: "Pharmacophore Features" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: PharmacophoreTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Pharmacophore Features", async (ctx) => {
+      const repr = PharmacophoreRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => PharmacophoreParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: 1 });
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Pharmacophore Features", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function preparePharmacophoreData(options) {
+  const centers = options.centers ?? [];
+  const kinds = options.kinds ?? [];
+  if (centers.length === 0 || centers.length !== kinds.length) {
+    console.warn("[MolSysViewer] add_pharmacophore_features requires centers and kinds of the same length");
+    return void 0;
+  }
+  const radii = options.radii && options.radii.length === centers.length ? options.radii : new Array(centers.length).fill(0.6);
+  const alphas = options.alphas && options.alphas.length === centers.length ? options.alphas : new Array(centers.length).fill(0.6);
+  const colors = options.colors && options.colors.length === centers.length ? options.colors : kinds.map((k) => PharmColors[k.toLowerCase()] ?? ColorNames.gray);
+  const directions = options.directions;
+  const glyphs = centers.map((c5, i) => ({
+    center: [c5[0], c5[1], c5[2]],
+    radius: radii[i],
+    alpha: alphas[i],
+    color: colors[i],
+    kind: kinds[i],
+    direction: directions?.[i]
+  }));
+  const name = options.name ?? "Pharmacophore Features";
+  return { glyphs, name };
+}
+async function addPharmacophoreFromPython(plugin, options) {
+  const data = preparePharmacophoreData(options);
+  if (!data) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(PharmacophoreParams)
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    Pharmacophore3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:pharmacophore" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var DefaultLinkPalette = [
+  ColorNames.blue,
+  ColorNames.orange,
+  ColorNames.green,
+  ColorNames.red,
+  ColorNames.purple,
+  ColorNames.gray,
+  ColorNames.pink,
+  ColorNames.brown
+];
+var NetworkLinksParams = {
+  ...Mesh.Params
+};
+function buildNetworkLinkMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(256, 128, prev);
+  const start4 = Vec3();
+  const end4 = Vec3();
+  for (let i = 0, il = data.links.length; i < il; i++) {
+    const link = data.links[i];
+    state.currentGroup = i;
+    Vec3.set(start4, link.start[0], link.start[1], link.start[2]);
+    Vec3.set(end4, link.end[0], link.end[1], link.end[2]);
+    const cylinderProps = {
+      radiusTop: link.radius,
+      radiusBottom: link.radius,
+      radialSegments: Math.max(3, Math.floor(data.radialSegments))
+    };
+    addCylinder(state, start4, end4, 1, cylinderProps);
+  }
+  return MeshBuilder.getMesh(state);
+}
+function getNetworkLinksName(count2) {
+  if (count2 === 0) return "Network Links (empty)";
+  if (count2 === 1) return "Network Link";
+  return `${count2} Network Links`;
+}
+function getNetworkLinksShape(_ctx, data, _props, shape) {
+  const mesh = buildNetworkLinkMesh(data, _props, shape?.geometry);
+  const getColor2 = (groupId) => Color(data.links[groupId].color);
+  const getSize = (groupId) => data.links[groupId].radius;
+  const getLabel = (groupId) => data.links[groupId].label ?? `Link ${groupId} (r = ${data.links[groupId].radius.toFixed(2)})`;
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var NetworkLinksVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getNetworkLinksShape, Mesh.Utils)
+};
+function NetworkLinksRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "NetworkLinks",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    NetworkLinksVisuals
+  );
+}
+var NetworkLinksTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var NetworkLinks3D = MSVTransform({
+  name: "molsysviewer-network-links-3d",
+  display: { name: "Network Links" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: NetworkLinksTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Network Links", async (ctx) => {
+      const repr = NetworkLinksRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => NetworkLinksParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.data.alpha });
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Network Links", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.data.alpha });
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function normalizeCoordinatePair(entry) {
+  if (Array.isArray(entry[0])) {
+    const start4 = entry[0];
+    const end4 = entry[1];
+    if (start4.length === 3 && end4.length === 3) {
+      return {
+        start: [Number(start4[0]), Number(start4[1]), Number(start4[2])],
+        end: [Number(end4[0]), Number(end4[1]), Number(end4[2])]
+      };
+    }
+    return null;
+  }
+  if (Array.isArray(entry) && entry.length === 6) {
+    return {
+      start: [Number(entry[0]), Number(entry[1]), Number(entry[2])],
+      end: [Number(entry[3]), Number(entry[4]), Number(entry[5])]
+    };
+  }
+  return null;
+}
+function expandToList(value, count2, cast, fallback) {
+  if (Array.isArray(value)) {
+    if (value.length === count2) return value.map(cast);
+    console.warn(`[MolSysViewer] Expected ${count2} values but got ${value.length}. The first value will be reused.`);
+    return Array(count2).fill(cast(value[0]));
+  }
+  return Array(count2).fill(cast(value ?? fallback));
+}
+function prepareColorLookup(keys, fallback) {
+  const paletteCount = DefaultLinkPalette.length;
+  const colorByKey = /* @__PURE__ */ new Map();
+  keys.forEach((key2, idx) => {
+    if (!colorByKey.has(key2)) {
+      colorByKey.set(key2, DefaultLinkPalette[idx % paletteCount]);
+    }
+  });
+  return (key2) => key2 !== void 0 ? colorByKey.get(key2) ?? fallback : fallback;
+}
+function buildUnitLookup(structure) {
+  const map2 = /* @__PURE__ */ new Map();
+  for (const unit2 of structure.units) {
+    const { elements } = unit2;
+    const count2 = OrderedSet3.size(elements);
+    for (let i = 0; i < count2; i++) {
+      const element = OrderedSet3.getAt(elements, i);
+      map2.set(element, { unit: unit2, elementIndex: element });
+    }
+  }
+  return map2;
+}
+function getChainId2(unit2, elementIndex) {
+  if (!Unit.isAtomic(unit2)) return void 0;
+  const chainIndex2 = unit2.getChainIndex(elementIndex);
+  return unit2.model.atomicHierarchy.chains.label_asym_id.value(chainIndex2);
+}
+function buildLinksFromCoordinates(options) {
+  const pairs = options.coordinate_pairs ?? [];
+  const normalizedPairs = pairs.map(normalizeCoordinatePair).filter((p3) => p3 !== null);
+  const count2 = normalizedPairs.length;
+  if (count2 === 0) return [];
+  const radii = expandToList(options.radii, count2, Number, 0.2);
+  const chainIds = expandToList(options.chain_ids, count2, String, "");
+  const pocketIds = expandToList(options.pocket_ids, count2, (v3) => v3, "");
+  const colorMode = options.color_mode ?? "link";
+  const colors = expandToList(options.colors, count2, Number, ColorNames.skyblue);
+  const paletteLookup = prepareColorLookup(colorMode === "pocket" ? pocketIds : chainIds, colors[0]);
+  return normalizedPairs.map((pair2, idx) => {
+    const linkColor = colorMode === "link" ? colors[idx] : paletteLookup(colorMode === "pocket" ? pocketIds[idx] : chainIds[idx]);
+    return {
+      start: pair2.start,
+      end: pair2.end,
+      radius: radii[idx],
+      color: linkColor,
+      pocketId: pocketIds[idx],
+      chainId: chainIds[idx] || void 0
+    };
+  });
+}
+function buildLinksFromAtoms(structure, options) {
+  const pairs = options.atom_pairs ?? [];
+  const count2 = pairs.length;
+  if (count2 === 0) return [];
+  const lookup = buildUnitLookup(structure);
+  const radii = expandToList(options.radii, count2, Number, 0.2);
+  const pocketIds = expandToList(options.pocket_ids, count2, (v3) => v3, "");
+  const colorMode = options.color_mode ?? "link";
+  const colors = expandToList(options.colors, count2, Number, ColorNames.skyblue);
+  const positionsStart = Vec3();
+  const positionsEnd = Vec3();
+  const chainIdList = [];
+  const specs = [];
+  for (let i = 0; i < count2; i++) {
+    const [a5, b5] = pairs[i];
+    const locA = lookup.get(a5);
+    const locB = lookup.get(b5);
+    if (!locA || !locB) {
+      console.warn(`[MolSysViewer] atom_pairs[${i}] does not match atoms in the structure`);
+      continue;
+    }
+    locA.unit.conformation.position(locA.elementIndex, positionsStart);
+    locB.unit.conformation.position(locB.elementIndex, positionsEnd);
+    const chainId = getChainId2(locA.unit, locA.elementIndex) ?? getChainId2(locB.unit, locB.elementIndex);
+    chainIdList.push(chainId ?? "");
+    specs.push({
+      start: [positionsStart[0], positionsStart[1], positionsStart[2]],
+      end: [positionsEnd[0], positionsEnd[1], positionsEnd[2]],
+      radius: radii[i],
+      color: colors[i],
+      pocketId: pocketIds[i],
+      chainId: chainId ?? void 0
+    });
+  }
+  if (specs.length === 0) return [];
+  if (colorMode === "chain") {
+    const paletteLookup = prepareColorLookup(chainIdList, colors[0]);
+    specs.forEach((spec, idx) => {
+      spec.color = paletteLookup(chainIdList[idx]);
+    });
+  } else if (colorMode === "pocket") {
+    const paletteLookup = prepareColorLookup(pocketIds, colors[0]);
+    specs.forEach((spec) => {
+      spec.color = paletteLookup(spec.pocketId);
+    });
+  }
+  return specs;
+}
+async function addNetworkLinksFromPython(plugin, options) {
+  const mode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
+  const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));
+  const alpha = options.alpha ?? 1;
+  let links = [];
+  let name = "Network Links";
+  if (mode === "atom-indices") {
+    const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+    const structure = structureRef?.cell.obj?.data;
+    if (!structure) {
+      console.warn("[MolSysViewer] add_network_links: no structure loaded");
+      return void 0;
+    }
+    links = buildLinksFromAtoms(structure, options);
+    name = getNetworkLinksName(links.length);
+  } else {
+    links = buildLinksFromCoordinates(options);
+    name = getNetworkLinksName(links.length);
+  }
+  if (links.length === 0) {
+    console.warn("[MolSysViewer] add_network_links: no valid data");
+    return void 0;
+  }
+  const data = {
+    links,
+    alpha,
+    radialSegments,
+    name,
+    tag: options.tag
+  };
+  const props = {
+    ...ParamDefinition.getDefaultValues(NetworkLinksParams)
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    NetworkLinks3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:network-links" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var TriangleFacesParams = {
+  ...Mesh.Params
+};
+function buildTriangleFacesMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(256, 128, prev);
+  const a5 = Vec3();
+  const b5 = Vec3();
+  const c5 = Vec3();
+  const edgeStart = Vec3();
+  const edgeEnd = Vec3();
+  const centroid2 = Vec3();
+  const ab2 = Vec3();
+  const ac = Vec3();
+  const normal = Vec3();
+  const edgeRadius = data.edges?.radius ?? 0.05;
+  const normalLength = data.normals?.length ?? 0.5;
+  const normalRadius = data.normals?.radius ?? edgeRadius * 0.6;
+  let groupIndex = 0;
+  for (let i = 0, il = data.triangles.length; i < il; i++) {
+    const tri = data.triangles[i];
+    state.currentGroup = groupIndex++;
+    Vec3.set(a5, tri.vertices[0][0], tri.vertices[0][1], tri.vertices[0][2]);
+    Vec3.set(b5, tri.vertices[1][0], tri.vertices[1][1], tri.vertices[1][2]);
+    Vec3.set(c5, tri.vertices[2][0], tri.vertices[2][1], tri.vertices[2][2]);
+    MeshBuilder.addTriangle(state, a5, b5, c5);
+    if (data.edges?.enabled) {
+      const r = edgeRadius;
+      Vec3.copy(edgeStart, a5);
+      Vec3.copy(edgeEnd, b5);
+      state.currentGroup = groupIndex++;
+      addCylinder(state, edgeStart, edgeEnd, 1, { radiusTop: r, radiusBottom: r, radialSegments: 8 });
+      Vec3.copy(edgeStart, b5);
+      Vec3.copy(edgeEnd, c5);
+      state.currentGroup = groupIndex++;
+      addCylinder(state, edgeStart, edgeEnd, 1, { radiusTop: r, radiusBottom: r, radialSegments: 8 });
+      Vec3.copy(edgeStart, c5);
+      Vec3.copy(edgeEnd, a5);
+      state.currentGroup = groupIndex++;
+      addCylinder(state, edgeStart, edgeEnd, 1, { radiusTop: r, radiusBottom: r, radialSegments: 8 });
+    }
+    if (data.normals?.enabled) {
+      Vec3.sub(ab2, b5, a5);
+      Vec3.sub(ac, c5, a5);
+      Vec3.cross(normal, ab2, ac);
+      if (Vec3.magnitude(normal) > 1e-6) {
+        Vec3.normalize(normal, normal);
+        Vec3.scale(normal, normal, normalLength);
+        Vec3.scaleAndAdd(centroid2, a5, b5, 1);
+        Vec3.add(centroid2, centroid2, c5);
+        Vec3.scale(centroid2, centroid2, 1 / 3);
+        const arrowTip = Vec3();
+        Vec3.add(arrowTip, centroid2, normal);
+        const shaftRadius = normalRadius;
+        const headRadius = shaftRadius * 1.8;
+        const shaftLength = normalLength * 0.7;
+        const headStart = Vec3();
+        Vec3.scaleAndAdd(headStart, centroid2, normal, shaftLength / normalLength);
+        state.currentGroup = groupIndex++;
+        addCylinder(state, centroid2, headStart, 1, { radiusTop: shaftRadius, radiusBottom: shaftRadius, radialSegments: 12 });
+        addCylinder(state, headStart, arrowTip, 1, { radiusTop: 1e-4, radiusBottom: headRadius, radialSegments: 12 });
+      }
+    }
+  }
+  return MeshBuilder.getMesh(state);
+}
+function getTriangleFacesShape(_ctx, data, _props, shape) {
+  const mesh = buildTriangleFacesMesh(data, _props, shape?.geometry);
+  const triCount = data.triangles.length;
+  const edgesEnabled = !!data.edges?.enabled;
+  const normalsEnabled = !!data.normals?.enabled;
+  const edgesPerTri = edgesEnabled ? 3 : 0;
+  const getColor2 = (groupId) => {
+    if (groupId < triCount) {
+      return Color(data.triangles[groupId].color);
+    }
+    let offset2 = groupId - triCount;
+    if (edgesEnabled) {
+      const totalEdges = triCount * edgesPerTri;
+      if (offset2 < totalEdges) {
+        return Color(data.edges?.color ?? ColorNames.black);
+      }
+      offset2 -= totalEdges;
+    }
+    if (normalsEnabled) {
+      return Color(data.normals?.color ?? ColorNames.red);
+    }
+    return Color(ColorNames.gray);
+  };
+  const getSize = () => 1;
+  const getLabel = (groupId) => {
+    if (groupId < triCount) {
+      return data.triangles[groupId].label ?? `Triangle ${groupId}`;
+    }
+    let offset2 = groupId - triCount;
+    if (edgesEnabled) {
+      const totalEdges = triCount * edgesPerTri;
+      if (offset2 < totalEdges) {
+        return `Triangle edge ${offset2}`;
+      }
+      offset2 -= totalEdges;
+    }
+    if (normalsEnabled) {
+      return `Triangle normal ${offset2}`;
+    }
+    return `Triangle decoration ${groupId}`;
+  };
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var TriangleFacesVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getTriangleFacesShape, Mesh.Utils)
+};
+function TriangleFacesRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "TriangleFaces",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    TriangleFacesVisuals
+  );
+}
+var TriangleFacesTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var TriangleFaces3D = MSVTransform({
+  name: "molsysviewer-triangle-faces-3d",
+  display: { name: "Triangle Faces" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: TriangleFacesTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Triangle Faces", async (ctx) => {
+      const repr = TriangleFacesRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => TriangleFacesParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.data.alpha });
+      return new PluginStateObject.Shape.Representation3D(
+        { repr, sourceData: params.data },
+        { label: params.data.name }
+      );
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Triangle Faces", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.data.alpha });
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function normalizeTriangle(entry) {
+  if (Array.isArray(entry) && entry.length === 3 && Array.isArray(entry[0])) {
+    const verts = entry;
+    if (verts.every((v3) => Array.isArray(v3) && v3.length === 3)) {
+      return verts.map((v3) => [Number(v3[0]), Number(v3[1]), Number(v3[2])]);
+    }
+  }
+  if (Array.isArray(entry) && entry.length === 9) {
+    return [
+      [Number(entry[0]), Number(entry[1]), Number(entry[2])],
+      [Number(entry[3]), Number(entry[4]), Number(entry[5])],
+      [Number(entry[6]), Number(entry[7]), Number(entry[8])]
+    ];
+  }
+  return null;
+}
+function expandOptionalToList(value, count2, cast) {
+  if (value === void 0) return Array(count2).fill(void 0);
+  if (Array.isArray(value)) {
+    if (value.length === count2) return value.map(cast);
+    console.warn(`[MolSysViewer] Expected ${count2} values but got ${value.length}. The first value will be reused.`);
+    return Array(count2).fill(cast(value[0]));
+  }
+  return Array(count2).fill(cast(value));
+}
+function buildTrianglesFromVertices(options) {
+  const input = options.vertices ?? [];
+  const normalized2 = input.map(normalizeTriangle).filter((v3) => v3 !== null);
+  const count2 = normalized2.length;
+  if (count2 === 0) return [];
+  const colors = expandToList(options.colors, count2, Number, ColorNames.orange);
+  const labels = expandOptionalToList(options.labels, count2, String);
+  return normalized2.map((verts, idx) => ({
+    vertices: verts,
+    color: colors[idx],
+    label: labels[idx]
+  }));
+}
+function buildTrianglesFromAtoms(structure, options) {
+  const triplets = options.atom_triplets ?? options.atomTriplets ?? [];
+  if (triplets.length === 0) return [];
+  const lookup = buildUnitLookup(structure);
+  const a5 = Vec3();
+  const b5 = Vec3();
+  const c5 = Vec3();
+  const colors = expandToList(options.colors, triplets.length, Number, ColorNames.orange);
+  const labels = expandOptionalToList(options.labels, triplets.length, String);
+  const triangles = [];
+  for (let i = 0; i < triplets.length; i++) {
+    const triplet = triplets[i];
+    if (!Array.isArray(triplet) || triplet.length !== 3) {
+      console.warn(`[MolSysViewer] atom_triplets[${i}] is not a valid triplet`);
+      continue;
+    }
+    const locA = lookup.get(triplet[0]);
+    const locB = lookup.get(triplet[1]);
+    const locC = lookup.get(triplet[2]);
+    if (!locA || !locB || !locC) {
+      console.warn(`[MolSysViewer] atom_triplets[${i}] does not match atoms in the structure`);
+      continue;
+    }
+    locA.unit.conformation.position(locA.elementIndex, a5);
+    locB.unit.conformation.position(locB.elementIndex, b5);
+    locC.unit.conformation.position(locC.elementIndex, c5);
+    triangles.push({
+      vertices: [
+        [a5[0], a5[1], a5[2]],
+        [b5[0], b5[1], b5[2]],
+        [c5[0], c5[1], c5[2]]
+      ],
+      color: colors[i],
+      label: labels[i]
+    });
+  }
+  return triangles;
+}
+function prepareTriangleFacesData(plugin, options) {
+  const alpha = options.alpha ?? 1;
+  let triangles = [];
+  const atomTriplets = options.atom_triplets ?? options.atomTriplets;
+  if (atomTriplets && atomTriplets.length > 0) {
+    const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+    const structure = structureRef?.cell.obj?.data;
+    if (!structure) {
+      console.warn("[MolSysViewer] add_triangle_faces: atom_triplets provided but no structure loaded");
+      return void 0;
+    }
+    triangles = buildTrianglesFromAtoms(structure, options);
+  } else {
+    triangles = buildTrianglesFromVertices(options);
+  }
+  if (triangles.length === 0) {
+    console.warn("[MolSysViewer] add_triangle_faces: no valid triangles");
+    return void 0;
+  }
+  const name = triangles.length === 1 ? "Triangle Face" : `${triangles.length} Triangle Faces`;
+  const edgesConfig = options.draw_edges ? {
+    enabled: true,
+    radius: Math.max(0.01, options.edge_radius ?? 0.05),
+    color: options.edge_color ?? ColorNames.black
+  } : void 0;
+  const normalsConfig = options.show_normals ? {
+    enabled: true,
+    length: Math.max(0.01, options.normal_length ?? 0.5),
+    color: options.normal_color ?? ColorNames.red,
+    radius: Math.max(5e-3, (options.edge_radius ?? 0.05) * 0.6)
+  } : void 0;
+  return {
+    triangles,
+    alpha,
+    name,
+    edges: edgesConfig,
+    normals: normalsConfig
+  };
+}
+async function addTriangleFacesFromPython(plugin, options) {
+  const data = prepareTriangleFacesData(plugin, options);
+  if (!data) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(TriangleFacesParams)
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    TriangleFaces3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:triangle-faces" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var TetrahedraParams = {
+  ...Mesh.Params
+};
+function faceKey(vertices2) {
+  return vertices2.map((v3) => v3.map((n) => Number(n)).join(",")).sort().join("|");
+}
+function collectTetraFaces(data) {
+  const combos = [
+    [0, 1, 2],
+    [0, 1, 3],
+    [0, 2, 3],
+    [1, 2, 3]
+  ];
+  const faceMap = /* @__PURE__ */ new Map();
+  for (let i = 0; i < data.tetrahedra.length; i++) {
+    const tetra = data.tetrahedra[i];
+    for (const [a5, b5, c5] of combos) {
+      const vertices2 = [tetra.vertices[a5], tetra.vertices[b5], tetra.vertices[c5]];
+      const key2 = faceKey(vertices2);
+      const entry = faceMap.get(key2);
+      if (entry) {
+        entry.count += 1;
+      } else {
+        faceMap.set(key2, { tetraIndex: i, vertices: vertices2, count: 1 });
+      }
+    }
+  }
+  if (!data.exteriorOnly) {
+    return Array.from(faceMap.values()).map(({ tetraIndex, vertices: vertices2 }) => ({ tetraIndex, vertices: vertices2 }));
+  }
+  const exterior = [];
+  faceMap.forEach((face) => {
+    if (face.count === 1) {
+      exterior.push({ tetraIndex: face.tetraIndex, vertices: face.vertices });
+    }
+  });
+  return exterior;
+}
+function buildTetrahedraMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(512, 256, prev);
+  const faces = collectTetraFaces(data);
+  const edgeRadius = data.edges?.radius ?? 0.05;
+  const normalLength = data.normals?.length ?? 0.5;
+  const normalRadius = data.normals?.radius ?? edgeRadius * 0.6;
+  const edgeKeySet = /* @__PURE__ */ new Set();
+  const edges = [];
+  const baseDecorGroup = data.tetrahedra.length;
+  let decorIndex = 0;
+  for (let i = 0, il = faces.length; i < il; i++) {
+    const face = faces[i];
+    state.currentGroup = face.tetraIndex;
+    const [a5, b5, c5] = face.vertices;
+    MeshBuilder.addTriangle(
+      state,
+      Vec3.set(Vec3(), a5[0], a5[1], a5[2]),
+      Vec3.set(Vec3(), b5[0], b5[1], b5[2]),
+      Vec3.set(Vec3(), c5[0], c5[1], c5[2])
+    );
+    if (data.edges?.enabled) {
+      const faceEdges = [
+        [a5, b5],
+        [b5, c5],
+        [c5, a5]
+      ];
+      for (const [p1, p22] of faceEdges) {
+        const key2 = `${p1[0]},${p1[1]},${p1[2]}|${p22[0]},${p22[1]},${p22[2]}`;
+        const revKey = `${p22[0]},${p22[1]},${p22[2]}|${p1[0]},${p1[1]},${p1[2]}`;
+        if (!edgeKeySet.has(key2) && !edgeKeySet.has(revKey)) {
+          edgeKeySet.add(key2);
+          edges.push([p1, p22]);
+        }
+      }
+    }
+    if (data.normals?.enabled) {
+      const ab2 = Vec3();
+      const ac = Vec3();
+      const normal = Vec3();
+      Vec3.set(ab2, b5[0] - a5[0], b5[1] - a5[1], b5[2] - a5[2]);
+      Vec3.set(ac, c5[0] - a5[0], c5[1] - a5[1], c5[2] - a5[2]);
+      Vec3.cross(normal, ab2, ac);
+      if (Vec3.magnitude(normal) > 1e-6) {
+        Vec3.normalize(normal, normal);
+        Vec3.scale(normal, normal, normalLength);
+        const centroid2 = Vec3.create(
+          (a5[0] + b5[0] + c5[0]) / 3,
+          (a5[1] + b5[1] + c5[1]) / 3,
+          (a5[2] + b5[2] + c5[2]) / 3
+        );
+        const tip = Vec3.create(centroid2[0] + normal[0], centroid2[1] + normal[1], centroid2[2] + normal[2]);
+        const headStart = Vec3.create(
+          centroid2[0] + normal[0] * 0.7,
+          centroid2[1] + normal[1] * 0.7,
+          centroid2[2] + normal[2] * 0.7
+        );
+        state.currentGroup = baseDecorGroup + decorIndex++;
+        addCylinder(state, centroid2, headStart, 1, { radiusTop: normalRadius, radiusBottom: normalRadius, radialSegments: 12 });
+        addCylinder(state, headStart, tip, 1, { radiusTop: 1e-4, radiusBottom: normalRadius * 1.8, radialSegments: 12 });
+      }
+    }
+  }
+  if (data.edges?.enabled) {
+    for (const [p1, p22] of edges) {
+      state.currentGroup = baseDecorGroup + decorIndex++;
+      addCylinder(
+        state,
+        Vec3.create(p1[0], p1[1], p1[2]),
+        Vec3.create(p22[0], p22[1], p22[2]),
+        1,
+        { radiusTop: edgeRadius, radiusBottom: edgeRadius, radialSegments: 10 }
+      );
+    }
+  }
+  return MeshBuilder.getMesh(state);
+}
+function applyTetrahedraTransparency(repr, data) {
+  const loci = repr.getAllLoci().find(Shape.isLoci);
+  if (!loci) return;
+  const layers = data.tetrahedra.map((tetra, idx) => ({ tetra, idx })).filter(({ tetra }) => tetra.alpha < 1).map(({ tetra, idx }) => ({
+    loci: ShapeGroup.Loci(loci.shape, [{ ids: OrderedSet3.ofSingleton(idx), instance: 0 }]),
+    value: 1 - Math.max(0, Math.min(1, tetra.alpha))
+  }));
+  const transparency = layers.length > 0 ? Transparency("group-loci", layers) : Transparency.Empty;
+  repr.setState({ transparency, alphaFactor: 1 });
+}
+function getTetrahedraShape(_ctx, data, _props, shape) {
+  const mesh = buildTetrahedraMesh(data, _props, shape?.geometry);
+  const tetraCount = data.tetrahedra.length;
+  const edgesEnabled = !!data.edges?.enabled;
+  const normalsEnabled = !!data.normals?.enabled;
+  const faces = collectTetraFaces(data);
+  const faceCount = faces.length;
+  const edgeCount = edgesEnabled ? new Set(faces.flatMap((f) => {
+    const [a5, b5, c5] = f.vertices;
+    return [`${a5}|${b5}`, `${b5}|${c5}`, `${c5}|${a5}`];
+  })).size : 0;
+  const getColor2 = (groupId) => {
+    if (groupId < tetraCount) {
+      return Color(data.tetrahedra[groupId].color);
+    }
+    let offset2 = groupId - tetraCount;
+    if (normalsEnabled) {
+      if (offset2 < faceCount) {
+        return Color(data.normals?.color ?? ColorNames.red);
+      }
+      offset2 -= faceCount;
+    }
+    if (edgesEnabled) {
+      if (offset2 < edgeCount) {
+        return Color(data.edges?.color ?? ColorNames.black);
+      }
+    }
+    return Color(ColorNames.gray);
+  };
+  const getSize = () => 1;
+  const getLabel = (groupId) => {
+    if (groupId < tetraCount) {
+      return data.tetrahedra[groupId].label ?? `Tetrahedron ${groupId}`;
+    }
+    let offset2 = groupId - tetraCount;
+    if (normalsEnabled) {
+      if (offset2 < faceCount) {
+        return `Tetrahedron normal ${offset2}`;
+      }
+      offset2 -= faceCount;
+    }
+    if (edgesEnabled && offset2 < edgeCount) {
+      return `Tetrahedron edge ${offset2}`;
+    }
+    return `Decoration ${groupId}`;
+  };
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var TetrahedraVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getTetrahedraShape, Mesh.Utils)
+};
+function TetrahedraRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "Tetrahedra",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    TetrahedraVisuals
+  );
+}
+var TetrahedraTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var Tetrahedra3D = MSVTransform({
+  name: "molsysviewer-tetrahedra-3d",
+  display: { name: "Tetrahedra" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: TetrahedraTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Tetrahedra", async (ctx) => {
+      const repr = TetrahedraRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => TetrahedraParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      applyTetrahedraTransparency(repr, params.data);
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Tetrahedra", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      applyTetrahedraTransparency(b5.data.repr, newParams.data);
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function normalizeTetraVertices(entry) {
+  if (!Array.isArray(entry) || entry.length !== 4) return null;
+  const verts = entry.map((v3) => {
+    if (!Array.isArray(v3) || v3.length !== 3) return null;
+    return [Number(v3[0]), Number(v3[1]), Number(v3[2])];
+  });
+  if (verts.some((v3) => v3 === null)) return null;
+  return verts;
+}
+function buildTetrahedraFromCoords(options) {
+  const coords = options.tetraCoords ?? options.tetra_coords ?? [];
+  const normalized2 = coords.map(normalizeTetraVertices).filter((v3) => v3 !== null);
+  const count2 = normalized2.length;
+  if (count2 === 0) return [];
+  const colors = expandToList(options.colors, count2, Number, ColorNames.orange);
+  const alphas = expandToList(options.alphas, count2, (v3) => Math.max(0, Math.min(1, Number(v3))), 0.6);
+  const labels = expandOptionalToList(options.labels, count2, String);
+  return normalized2.map((verts, idx) => ({
+    vertices: verts,
+    color: colors[idx],
+    alpha: alphas[idx],
+    label: labels[idx]
+  }));
+}
+function normalizeQuad(quad) {
+  if (!Array.isArray(quad) || quad.length !== 4) return null;
+  return quad.map((q) => Number(q));
+}
+function buildTetrahedraFromAtoms(structure, options) {
+  const quads = (options.atomQuads ?? options.atom_quads ?? []).map(normalizeQuad).filter((q) => q !== null);
+  if (quads.length === 0) return [];
+  const lookup = buildUnitLookup(structure);
+  const a5 = Vec3();
+  const b5 = Vec3();
+  const c5 = Vec3();
+  const d3 = Vec3();
+  const colors = expandToList(options.colors, quads.length, Number, ColorNames.orange);
+  const alphas = expandToList(options.alphas, quads.length, (v3) => Math.max(0, Math.min(1, Number(v3))), 0.6);
+  const labels = expandOptionalToList(options.labels, quads.length, String);
+  const tetrahedra = [];
+  for (let i = 0; i < quads.length; i++) {
+    const quad = quads[i];
+    const locA = lookup.get(quad[0]);
+    const locB = lookup.get(quad[1]);
+    const locC = lookup.get(quad[2]);
+    const locD = lookup.get(quad[3]);
+    if (!locA || !locB || !locC || !locD) {
+      console.warn(`[MolSysViewer] atom_quads[${i}] does not match atoms in the structure`);
+      continue;
+    }
+    locA.unit.conformation.position(locA.elementIndex, a5);
+    locB.unit.conformation.position(locB.elementIndex, b5);
+    locC.unit.conformation.position(locC.elementIndex, c5);
+    locD.unit.conformation.position(locD.elementIndex, d3);
+    tetrahedra.push({
+      vertices: [
+        [a5[0], a5[1], a5[2]],
+        [b5[0], b5[1], b5[2]],
+        [c5[0], c5[1], c5[2]],
+        [d3[0], d3[1], d3[2]]
+      ],
+      color: colors[i],
+      alpha: alphas[i],
+      label: labels[i]
+    });
+  }
+  return tetrahedra;
+}
+function prepareTetrahedraData(plugin, options) {
+  const exteriorOnly = options.exterior_only ?? !options.show_all_faces;
+  let tetrahedra = [];
+  const atomQuads = options.atomQuads ?? options.atom_quads;
+  if (atomQuads && atomQuads.length > 0) {
+    const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+    const structure = structureRef?.cell.obj?.data;
+    if (!structure) {
+      console.warn("[MolSysViewer] add_tetrahedra: atom_quads provided but no structure loaded");
+      return void 0;
+    }
+    tetrahedra = buildTetrahedraFromAtoms(structure, options);
+  } else {
+    tetrahedra = buildTetrahedraFromCoords(options);
+  }
+  if (tetrahedra.length === 0) {
+    console.warn("[MolSysViewer] add_tetrahedra: no valid tetrahedra");
+    return void 0;
+  }
+  const name = options.name ?? (tetrahedra.length === 1 ? "Tetrahedron" : `${tetrahedra.length} Tetrahedra`);
+  const edgesConfig = options.draw_edges ? {
+    enabled: true,
+    radius: Math.max(0.01, options.edge_radius ?? 0.05),
+    color: options.edge_color ?? ColorNames.black
+  } : void 0;
+  const normalsConfig = options.show_normals ? {
+    enabled: true,
+    length: Math.max(0.01, options.normal_length ?? 0.5),
+    color: options.normal_color ?? ColorNames.red,
+    radius: Math.max(5e-3, (options.edge_radius ?? 0.05) * 0.6)
+  } : void 0;
+  return {
+    tetrahedra,
+    name,
+    exteriorOnly: !!exteriorOnly,
+    edges: edgesConfig,
+    normals: normalsConfig
+  };
+}
+async function addTetrahedraFromPython(plugin, options) {
+  const data = prepareTetrahedraData(plugin, options);
+  if (!data) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(TetrahedraParams),
+    doubleSided: true
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    Tetrahedra3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:tetrahedra" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+var DisplacementVectorParams = {
+  ...Mesh.Params
+};
+function buildDisplacementVectorMesh(data, _props, prev) {
+  const state = MeshBuilder.createState(256, 128, prev);
+  const start4 = Vec3();
+  const end4 = Vec3();
+  const dir = Vec3();
+  const tipBase = Vec3();
+  for (let i = 0, il = data.arrows.length; i < il; i++) {
+    const arrow = data.arrows[i];
+    state.currentGroup = i;
+    Vec3.set(start4, arrow.start[0], arrow.start[1], arrow.start[2]);
+    Vec3.set(end4, arrow.end[0], arrow.end[1], arrow.end[2]);
+    Vec3.sub(dir, end4, start4);
+    const length = arrow.length;
+    if (length < 1e-4) continue;
+    const radialSegments = Math.max(3, Math.floor(data.radialSegments));
+    const shaftRadius = Math.max(0.01, length * data.radiusScale);
+    const headRadius = shaftRadius * 1.8;
+    const headLength = Math.max(length * 0.2, headRadius * 2.5);
+    const shaftLength = Math.max(0, length - headLength);
+    Vec3.scale(dir, dir, 1 / length);
+    Vec3.scaleAndAdd(tipBase, start4, dir, shaftLength);
+    addCylinder(state, start4, tipBase, 1, {
+      radiusTop: shaftRadius,
+      radiusBottom: shaftRadius,
+      radialSegments
+    });
+    addCylinder(state, tipBase, end4, 1, {
+      radiusTop: 1e-4,
+      radiusBottom: headRadius,
+      radialSegments
+    });
+  }
+  return MeshBuilder.getMesh(state);
+}
+function getDisplacementVectorShape(_ctx, data, _props, shape) {
+  const mesh = buildDisplacementVectorMesh(data, _props, shape?.geometry);
+  const getColor2 = (groupId) => Color(data.arrows[groupId].color);
+  const getSize = (groupId) => data.arrows[groupId].length;
+  const getLabel = (groupId) => {
+    const arrow = data.arrows[groupId];
+    return `Vector ${groupId}: |v|=${arrow.length.toFixed(2)}, value=${arrow.value.toFixed(2)}`;
+  };
+  return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
+}
+var DisplacementVectorVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(getDisplacementVectorShape, Mesh.Utils)
+};
+function DisplacementVectorRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "DisplacementVectors",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    DisplacementVectorVisuals
+  );
+}
+var DisplacementVectorTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var DisplacementVectors3D = MSVTransform({
+  name: "molsysviewer-displacement-vectors-3d",
+  display: { name: "Displacement Vectors" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: DisplacementVectorTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Displacement Vectors", async (ctx) => {
+      const repr = DisplacementVectorRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => DisplacementVectorParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Displacement Vectors", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function resolveOriginsFromAtoms(plugin, atomIndices) {
+  const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+  const structure = structureRef?.cell.obj?.data;
+  if (!structure) {
+    console.warn("[MolSysViewer] add_displacement_vectors: no structure loaded");
+    return [];
+  }
+  const lookup = buildUnitLookup(structure);
+  const position = Vec3();
+  const origins = [];
+  atomIndices.forEach((idx, pos) => {
+    const loc = lookup.get(idx);
+    if (!loc) {
+      console.warn(`[MolSysViewer] atom_indices[${pos}] does not match atoms in the structure`);
+      origins.push(void 0);
+      return;
+    }
+    loc.unit.conformation.position(loc.elementIndex, position);
+    origins.push([position[0], position[1], position[2]]);
+  });
+  return origins;
+}
+function prepareDisplacementVectorData(plugin, options) {
+  const vectors = options.vectors ?? [];
+  if (!vectors || vectors.length === 0) {
+    console.warn("[MolSysViewer] add_displacement_vectors: missing vectors");
+    return void 0;
+  }
+  const origins = options.atom_indices && options.atom_indices.length > 0 ? resolveOriginsFromAtoms(plugin, options.atom_indices) : options.origins ?? [];
+  if (!origins || origins.length === 0) {
+    console.warn("[MolSysViewer] add_displacement_vectors: no valid origins");
+    return void 0;
+  }
+  const count2 = Math.min(origins.length, vectors.length);
+  if (count2 === 0) {
+    console.warn("[MolSysViewer] add_displacement_vectors con longitudes incompatibles");
+    return void 0;
+  }
+  const lengthScale = options.length_scale ?? 1;
+  const minLength = options.min_length ?? 0;
+  const maxLength = options.max_length ?? 0;
+  const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 12));
+  const radiusScale = options.radius_scale ?? 0.05;
+  const colorMode = options.color_mode ?? "norm";
+  const colorComponent = Math.max(0, Math.min(2, Math.floor(options.color_component ?? 2)));
+  const processed = [];
+  for (let i = 0; i < count2; i++) {
+    const origin = origins[i];
+    const vec = vectors[i];
+    if (!origin || !vec || origin.length !== 3 || vec.length !== 3) continue;
+    const vector = Vec3.create(vec[0], vec[1], vec[2]);
+    const magnitude = Vec3.magnitude(vector);
+    if (magnitude < 1e-6) continue;
+    processed.push({
+      start: [Number(origin[0]), Number(origin[1]), Number(origin[2])],
+      vector,
+      magnitude
+    });
+  }
+  if (processed.length === 0) {
+    console.warn("[MolSysViewer] add_displacement_vectors: no usable inputs");
+    return void 0;
+  }
+  const scaledMax = Math.max(...processed.map((p3) => p3.magnitude * lengthScale));
+  const normalization = maxLength > 0 && scaledMax > maxLength ? maxLength / scaledMax : 1;
+  const arrows = [];
+  const colorValues = [];
+  for (const entry of processed) {
+    const scaledLength = entry.magnitude * lengthScale * normalization;
+    if (scaledLength < minLength) continue;
+    const direction = Vec3.scale(Vec3(), entry.vector, lengthScale * normalization / entry.magnitude);
+    const start4 = Vec3.create(entry.start[0], entry.start[1], entry.start[2]);
+    const end4 = Vec3.create(entry.start[0], entry.start[1], entry.start[2]);
+    Vec3.add(end4, end4, direction);
+    const value = colorMode === "component" ? entry.vector[colorComponent] : entry.magnitude;
+    arrows.push({
+      start: entry.start,
+      end: [end4[0], end4[1], end4[2]],
+      length: scaledLength,
+      value,
+      color: ColorNames.gray
+    });
+    colorValues.push(value);
+  }
+  if (arrows.length === 0) {
+    console.warn("[MolSysViewer] add_displacement_vectors: no arrows after filtering");
+    return void 0;
+  }
+  const minValue = Math.min(...colorValues);
+  const maxValue = Math.max(...colorValues);
+  const domain = minValue === maxValue ? [minValue, minValue + 1] : [minValue, maxValue];
+  const palette = options.color_map && Array.isArray(options.color_map) && options.color_map.length === 0 ? void 0 : options.color_map;
+  const scale = ColorScale.create({ domain, listOrName: palette ?? "turbo", minLabel: "min", maxLabel: "max" });
+  arrows.forEach((arrow, idx) => {
+    arrow.color = scale.color(colorValues[idx]);
+  });
+  const name = arrows.length === 1 ? "Displacement Vector" : `${arrows.length} Displacement Vectors`;
+  return {
+    arrows,
+    radiusScale,
+    radialSegments,
+    name
+  };
+}
+async function addDisplacementVectorsFromPython(plugin, options) {
+  const data = prepareDisplacementVectorData(plugin, options);
+  if (!data) return void 0;
+  const props = {
+    ...ParamDefinition.getDefaultValues(DisplacementVectorParams)
+  };
+  const builder = plugin.state.data.build();
+  const node = builder.toRoot().apply(
+    DisplacementVectors3D,
+    {
+      data,
+      props
+    },
+    { tags: options.tag ?? "molsysviewer:displacement-vectors" }
+  );
+  await PluginCommands.State.Update(plugin, {
+    state: plugin.state.data,
+    tree: builder,
+    options: { doNotLogTiming: true }
+  });
+  return node.ref;
+}
+
+// node_modules/molstar/lib/mol-math/geometry/gaussian-density/gpu.js
+var GaussianDensitySchema = {
+  drawCount: ValueSpec("number"),
+  instanceCount: ValueSpec("number"),
+  aRadius: AttributeSpec("float32", 1, 0),
+  aPosition: AttributeSpec("float32", 3, 0),
+  aGroup: AttributeSpec("float32", 1, 0),
+  uCurrentSlice: UniformSpec("f"),
+  uCurrentX: UniformSpec("f"),
+  uCurrentY: UniformSpec("f"),
+  uBboxMin: UniformSpec("v3", "material"),
+  uBboxSize: UniformSpec("v3", "material"),
+  uGridDim: UniformSpec("v3", "material"),
+  uGridTexDim: UniformSpec("v3", "material"),
+  uGridTexScale: UniformSpec("v2", "material"),
+  uAlpha: UniformSpec("f", "material"),
+  uResolution: UniformSpec("f", "material"),
+  uRadiusFactorInv: UniformSpec("f", "material"),
+  tMinDistanceTex: TextureSpec("texture", "rgba", "float", "nearest", "material"),
+  dGridTexType: DefineSpec("string", ["2d", "3d"]),
+  dCalcType: DefineSpec("string", ["density", "minDistance", "groupId"])
+};
+
+// node_modules/molstar/lib/mol-math/geometry/gaussian-density/cpu.js
+async function GaussianDensityCPU(ctx, position, box2, radius, props) {
+  const { resolution, radiusOffset, smoothness } = props;
+  const scaleFactor = 1 / resolution;
+  const { indices: indices2, x, y, z, id } = position;
+  const n = OrderedSet3.size(indices2);
+  const radii = new Float32Array(n);
+  let maxRadius = 0;
+  for (let i = 0; i < n; ++i) {
+    const r = radius(OrderedSet3.getAt(indices2, i)) + radiusOffset;
+    if (maxRadius < r)
+      maxRadius = r;
+    radii[i] = r;
+  }
+  const pad2 = maxRadius * 2 + resolution;
+  const expandedBox = Box3D.expand(Box3D(), box2, Vec3.create(pad2, pad2, pad2));
+  const min4 = expandedBox.min;
+  const scaledBox = Box3D.scale(Box3D(), expandedBox, scaleFactor);
+  const dim = Box3D.size(Vec3(), scaledBox);
+  Vec3.ceil(dim, dim);
+  const space = Tensor.Space(dim, [0, 1, 2], Float32Array);
+  const data = space.create();
+  const field = Tensor.create(space, data);
+  const idData = space.create();
+  idData.fill(-1);
+  const idField = Tensor.create(space, idData);
+  const [dimX, dimY, dimZ] = dim;
+  const iu = dimZ, iv = dimY, iuv = iu * iv;
+  const gridx = fillGridDim(dim[0], min4[0], resolution);
+  const gridy = fillGridDim(dim[1], min4[1], resolution);
+  const gridz = fillGridDim(dim[2], min4[2], resolution);
+  const densData = space.create();
+  const alpha = smoothness;
+  const updateChunk2 = Math.ceil(1e5 / (Math.pow(Math.pow(maxRadius, 3), 3) * scaleFactor));
+  function accumulateRange(begI, endI) {
+    for (let i = begI; i < endI; ++i) {
+      const j = OrderedSet3.getAt(indices2, i);
+      const vx = x[j], vy = y[j], vz = z[j];
+      const rad = radii[i];
+      const rSq = rad * rad;
+      const rSqInv = 1 / rSq;
+      const r2 = rad * 2;
+      const r2sq = r2 * r2;
+      const ng = Math.ceil(r2 * scaleFactor);
+      const iax = Math.floor(scaleFactor * (vx - min4[0]));
+      const iay = Math.floor(scaleFactor * (vy - min4[1]));
+      const iaz = Math.floor(scaleFactor * (vz - min4[2]));
+      const begX = Math.max(0, iax - ng);
+      const begY = Math.max(0, iay - ng);
+      const begZ = Math.max(0, iaz - ng);
+      const endX = Math.min(dimX, iax + ng + 2);
+      const endY = Math.min(dimY, iay + ng + 2);
+      const endZ = Math.min(dimZ, iaz + ng + 2);
+      for (let xi = begX; xi < endX; ++xi) {
+        const dx = gridx[xi] - vx;
+        const xIdx = xi * iuv;
+        for (let yi = begY; yi < endY; ++yi) {
+          const dy = gridy[yi] - vy;
+          const dxySq = dx * dx + dy * dy;
+          const xyIdx = yi * iu + xIdx;
+          for (let zi = begZ; zi < endZ; ++zi) {
+            const dz = gridz[zi] - vz;
+            const dSq = dxySq + dz * dz;
+            if (dSq <= r2sq) {
+              const dens = fasterExp(-alpha * (dSq * rSqInv));
+              const idx = zi + xyIdx;
+              data[idx] += dens;
+              if (dens > densData[idx]) {
+                densData[idx] = dens;
+                idData[idx] = id ? id[i] : i;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  async function accumulate() {
+    for (let i = 0; i < n; i += updateChunk2) {
+      accumulateRange(i, Math.min(i + updateChunk2, n));
+      if (ctx.shouldUpdate) {
+        await ctx.update({ message: "filling density grid", current: i, max: n });
+      }
+    }
+  }
+  await accumulate();
+  const transform = Mat4.identity();
+  Mat4.fromScaling(transform, Vec3.create(resolution, resolution, resolution));
+  Mat4.setTranslation(transform, expandedBox.min);
+  return { field, idField, transform, radiusFactor: 1, resolution, maxRadius };
+}
+
+// node_modules/molstar/lib/mol-repr/structure/visual/util/gaussian.js
+var GaussianDensityParams = {
+  resolution: ParamDefinition.Numeric(1, { min: 0.1, max: 20, step: 0.1 }, { description: "Grid resolution/cell spacing.", ...BaseGeometry.CustomQualityParamInfo }),
+  radiusOffset: ParamDefinition.Numeric(0, { min: 0, max: 10, step: 0.1 }, { description: "Extra/offset radius added to the atoms/coarse elements for gaussian calculation. Useful to create coarse, low resolution surfaces." }),
+  smoothness: ParamDefinition.Numeric(1.5, { min: 0.5, max: 2.5, step: 0.1 }, { description: "Smoothness of the gausian surface, lower is smoother." }),
+  ...CommonSurfaceParams
+};
+var DefaultGaussianDensityProps = ParamDefinition.getDefaultValues(GaussianDensityParams);
+function computeStructureGaussianDensity(structure, sizeTheme, props) {
+  const { position, boundary, radius } = getStructureConformationAndRadius(structure, sizeTheme, props);
+  const p3 = ensureReasonableResolution(boundary.box, props);
+  return Task.create("Gaussian Density", async (ctx) => {
+    return await GaussianDensityCPU(ctx, position, boundary.box, radius, p3);
+  });
+}
+
+// node_modules/molstar/lib/mol-geo/util/marching-cubes/tables.js
+function Index3(i, j, k) {
+  return { i, j, k };
+}
+function IndexPair(a5, b5) {
+  return { a: a5, b: b5 };
+}
+var CubeVertices = [
+  Index3(0, 0, 0),
+  // a
+  Index3(1, 0, 0),
+  // b
+  Index3(1, 1, 0),
+  // c
+  Index3(0, 1, 0),
+  // d
+  Index3(0, 0, 1),
+  // e
+  Index3(1, 0, 1),
+  // f
+  Index3(1, 1, 1),
+  // g
+  Index3(0, 1, 1)
+  // h
+];
+var CubeEdges = [
+  IndexPair(CubeVertices[0], CubeVertices[1]),
+  IndexPair(CubeVertices[1], CubeVertices[2]),
+  IndexPair(CubeVertices[2], CubeVertices[3]),
+  IndexPair(CubeVertices[3], CubeVertices[0]),
+  IndexPair(CubeVertices[4], CubeVertices[5]),
+  IndexPair(CubeVertices[5], CubeVertices[6]),
+  IndexPair(CubeVertices[6], CubeVertices[7]),
+  IndexPair(CubeVertices[7], CubeVertices[4]),
+  IndexPair(CubeVertices[0], CubeVertices[4]),
+  IndexPair(CubeVertices[1], CubeVertices[5]),
+  IndexPair(CubeVertices[2], CubeVertices[6]),
+  IndexPair(CubeVertices[3], CubeVertices[7])
+];
+var EdgeIdInfo = [
+  { i: 0, j: 0, k: 0, e: 0 },
+  { i: 1, j: 0, k: 0, e: 1 },
+  { i: 0, j: 1, k: 0, e: 0 },
+  { i: 0, j: 0, k: 0, e: 1 },
+  { i: 0, j: 0, k: 1, e: 0 },
+  { i: 1, j: 0, k: 1, e: 1 },
+  { i: 0, j: 1, k: 1, e: 0 },
+  { i: 0, j: 0, k: 1, e: 1 },
+  { i: 0, j: 0, k: 0, e: 2 },
+  { i: 1, j: 0, k: 0, e: 2 },
+  { i: 1, j: 1, k: 0, e: 2 },
+  { i: 0, j: 1, k: 0, e: 2 }
+];
+var EdgeTable = [
+  0,
+  265,
+  515,
+  778,
+  1030,
+  1295,
+  1541,
+  1804,
+  2060,
+  2309,
+  2575,
+  2822,
+  3082,
+  3331,
+  3593,
+  3840,
+  400,
+  153,
+  915,
+  666,
+  1430,
+  1183,
+  1941,
+  1692,
+  2460,
+  2197,
+  2975,
+  2710,
+  3482,
+  3219,
+  3993,
+  3728,
+  560,
+  825,
+  51,
+  314,
+  1590,
+  1855,
+  1077,
+  1340,
+  2620,
+  2869,
+  2111,
+  2358,
+  3642,
+  3891,
+  3129,
+  3376,
+  928,
+  681,
+  419,
+  170,
+  1958,
+  1711,
+  1445,
+  1196,
+  2988,
+  2725,
+  2479,
+  2214,
+  4010,
+  3747,
+  3497,
+  3232,
+  1120,
+  1385,
+  1635,
+  1898,
+  102,
+  367,
+  613,
+  876,
+  3180,
+  3429,
+  3695,
+  3942,
+  2154,
+  2403,
+  2665,
+  2912,
+  1520,
+  1273,
+  2035,
+  1786,
+  502,
+  255,
+  1013,
+  764,
+  3580,
+  3317,
+  4095,
+  3830,
+  2554,
+  2291,
+  3065,
+  2800,
+  1616,
+  1881,
+  1107,
+  1370,
+  598,
+  863,
+  85,
+  348,
+  3676,
+  3925,
+  3167,
+  3414,
+  2650,
+  2899,
+  2137,
+  2384,
+  1984,
+  1737,
+  1475,
+  1226,
+  966,
+  719,
+  453,
+  204,
+  4044,
+  3781,
+  3535,
+  3270,
+  3018,
+  2755,
+  2505,
+  2240,
+  2240,
+  2505,
+  2755,
+  3018,
+  3270,
+  3535,
+  3781,
+  4044,
+  204,
+  453,
+  719,
+  966,
+  1226,
+  1475,
+  1737,
+  1984,
+  2384,
+  2137,
+  2899,
+  2650,
+  3414,
+  3167,
+  3925,
+  3676,
+  348,
+  85,
+  863,
+  598,
+  1370,
+  1107,
+  1881,
+  1616,
+  2800,
+  3065,
+  2291,
+  2554,
+  3830,
+  4095,
+  3317,
+  3580,
+  764,
+  1013,
+  255,
+  502,
+  1786,
+  2035,
+  1273,
+  1520,
+  2912,
+  2665,
+  2403,
+  2154,
+  3942,
+  3695,
+  3429,
+  3180,
+  876,
+  613,
+  367,
+  102,
+  1898,
+  1635,
+  1385,
+  1120,
+  3232,
+  3497,
+  3747,
+  4010,
+  2214,
+  2479,
+  2725,
+  2988,
+  1196,
+  1445,
+  1711,
+  1958,
+  170,
+  419,
+  681,
+  928,
+  3376,
+  3129,
+  3891,
+  3642,
+  2358,
+  2111,
+  2869,
+  2620,
+  1340,
+  1077,
+  1855,
+  1590,
+  314,
+  51,
+  825,
+  560,
+  3728,
+  3993,
+  3219,
+  3482,
+  2710,
+  2975,
+  2197,
+  2460,
+  1692,
+  1941,
+  1183,
+  1430,
+  666,
+  915,
+  153,
+  400,
+  3840,
+  3593,
+  3331,
+  3082,
+  2822,
+  2575,
+  2309,
+  2060,
+  1804,
+  1541,
+  1295,
+  1030,
+  778,
+  515,
+  265,
+  0
+];
+var TriTable = [
+  [],
+  [0, 8, 3],
+  [0, 1, 9],
+  [1, 8, 3, 9, 8, 1],
+  [1, 2, 10],
+  [0, 8, 3, 1, 2, 10],
+  [9, 2, 10, 0, 2, 9],
+  [2, 8, 3, 2, 10, 8, 10, 9, 8],
+  [3, 11, 2],
+  [0, 11, 2, 8, 11, 0],
+  [1, 9, 0, 2, 3, 11],
+  [1, 11, 2, 1, 9, 11, 9, 8, 11],
+  [3, 10, 1, 11, 10, 3],
+  [0, 10, 1, 0, 8, 10, 8, 11, 10],
+  [3, 9, 0, 3, 11, 9, 11, 10, 9],
+  [9, 8, 10, 10, 8, 11],
+  [4, 7, 8],
+  [4, 3, 0, 7, 3, 4],
+  [0, 1, 9, 8, 4, 7],
+  [4, 1, 9, 4, 7, 1, 7, 3, 1],
+  [1, 2, 10, 8, 4, 7],
+  [3, 4, 7, 3, 0, 4, 1, 2, 10],
+  [9, 2, 10, 9, 0, 2, 8, 4, 7],
+  [2, 10, 9, 2, 9, 7, 2, 7, 3, 7, 9, 4],
+  [8, 4, 7, 3, 11, 2],
+  [11, 4, 7, 11, 2, 4, 2, 0, 4],
+  [9, 0, 1, 8, 4, 7, 2, 3, 11],
+  [4, 7, 11, 9, 4, 11, 9, 11, 2, 9, 2, 1],
+  [3, 10, 1, 3, 11, 10, 7, 8, 4],
+  [1, 11, 10, 1, 4, 11, 1, 0, 4, 7, 11, 4],
+  [4, 7, 8, 9, 0, 11, 9, 11, 10, 11, 0, 3],
+  [4, 7, 11, 4, 11, 9, 9, 11, 10],
+  [9, 5, 4],
+  [9, 5, 4, 0, 8, 3],
+  [0, 5, 4, 1, 5, 0],
+  [8, 5, 4, 8, 3, 5, 3, 1, 5],
+  [1, 2, 10, 9, 5, 4],
+  [3, 0, 8, 1, 2, 10, 4, 9, 5],
+  [5, 2, 10, 5, 4, 2, 4, 0, 2],
+  [2, 10, 5, 3, 2, 5, 3, 5, 4, 3, 4, 8],
+  [9, 5, 4, 2, 3, 11],
+  [0, 11, 2, 0, 8, 11, 4, 9, 5],
+  [0, 5, 4, 0, 1, 5, 2, 3, 11],
+  [2, 1, 5, 2, 5, 8, 2, 8, 11, 4, 8, 5],
+  [10, 3, 11, 10, 1, 3, 9, 5, 4],
+  [4, 9, 5, 0, 8, 1, 8, 10, 1, 8, 11, 10],
+  [5, 4, 0, 5, 0, 11, 5, 11, 10, 11, 0, 3],
+  [5, 4, 8, 5, 8, 10, 10, 8, 11],
+  [9, 7, 8, 5, 7, 9],
+  [9, 3, 0, 9, 5, 3, 5, 7, 3],
+  [0, 7, 8, 0, 1, 7, 1, 5, 7],
+  [1, 5, 3, 3, 5, 7],
+  [9, 7, 8, 9, 5, 7, 10, 1, 2],
+  [10, 1, 2, 9, 5, 0, 5, 3, 0, 5, 7, 3],
+  [8, 0, 2, 8, 2, 5, 8, 5, 7, 10, 5, 2],
+  [2, 10, 5, 2, 5, 3, 3, 5, 7],
+  [7, 9, 5, 7, 8, 9, 3, 11, 2],
+  [9, 5, 7, 9, 7, 2, 9, 2, 0, 2, 7, 11],
+  [2, 3, 11, 0, 1, 8, 1, 7, 8, 1, 5, 7],
+  [11, 2, 1, 11, 1, 7, 7, 1, 5],
+  [9, 5, 8, 8, 5, 7, 10, 1, 3, 10, 3, 11],
+  [5, 7, 0, 5, 0, 9, 7, 11, 0, 1, 0, 10, 11, 10, 0],
+  [11, 10, 0, 11, 0, 3, 10, 5, 0, 8, 0, 7, 5, 7, 0],
+  [11, 10, 5, 7, 11, 5],
+  [10, 6, 5],
+  [0, 8, 3, 5, 10, 6],
+  [9, 0, 1, 5, 10, 6],
+  [1, 8, 3, 1, 9, 8, 5, 10, 6],
+  [1, 6, 5, 2, 6, 1],
+  [1, 6, 5, 1, 2, 6, 3, 0, 8],
+  [9, 6, 5, 9, 0, 6, 0, 2, 6],
+  [5, 9, 8, 5, 8, 2, 5, 2, 6, 3, 2, 8],
+  [2, 3, 11, 10, 6, 5],
+  [11, 0, 8, 11, 2, 0, 10, 6, 5],
+  [0, 1, 9, 2, 3, 11, 5, 10, 6],
+  [5, 10, 6, 1, 9, 2, 9, 11, 2, 9, 8, 11],
+  [6, 3, 11, 6, 5, 3, 5, 1, 3],
+  [0, 8, 11, 0, 11, 5, 0, 5, 1, 5, 11, 6],
+  [3, 11, 6, 0, 3, 6, 0, 6, 5, 0, 5, 9],
+  [6, 5, 9, 6, 9, 11, 11, 9, 8],
+  [5, 10, 6, 4, 7, 8],
+  [4, 3, 0, 4, 7, 3, 6, 5, 10],
+  [1, 9, 0, 5, 10, 6, 8, 4, 7],
+  [10, 6, 5, 1, 9, 7, 1, 7, 3, 7, 9, 4],
+  [6, 1, 2, 6, 5, 1, 4, 7, 8],
+  [1, 2, 5, 5, 2, 6, 3, 0, 4, 3, 4, 7],
+  [8, 4, 7, 9, 0, 5, 0, 6, 5, 0, 2, 6],
+  [7, 3, 9, 7, 9, 4, 3, 2, 9, 5, 9, 6, 2, 6, 9],
+  [3, 11, 2, 7, 8, 4, 10, 6, 5],
+  [5, 10, 6, 4, 7, 2, 4, 2, 0, 2, 7, 11],
+  [0, 1, 9, 4, 7, 8, 2, 3, 11, 5, 10, 6],
+  [9, 2, 1, 9, 11, 2, 9, 4, 11, 7, 11, 4, 5, 10, 6],
+  [8, 4, 7, 3, 11, 5, 3, 5, 1, 5, 11, 6],
+  [5, 1, 11, 5, 11, 6, 1, 0, 11, 7, 11, 4, 0, 4, 11],
+  [0, 5, 9, 0, 6, 5, 0, 3, 6, 11, 6, 3, 8, 4, 7],
+  [6, 5, 9, 6, 9, 11, 4, 7, 9, 7, 11, 9],
+  [10, 4, 9, 6, 4, 10],
+  [4, 10, 6, 4, 9, 10, 0, 8, 3],
+  [10, 0, 1, 10, 6, 0, 6, 4, 0],
+  [8, 3, 1, 8, 1, 6, 8, 6, 4, 6, 1, 10],
+  [1, 4, 9, 1, 2, 4, 2, 6, 4],
+  [3, 0, 8, 1, 2, 9, 2, 4, 9, 2, 6, 4],
+  [0, 2, 4, 4, 2, 6],
+  [8, 3, 2, 8, 2, 4, 4, 2, 6],
+  [10, 4, 9, 10, 6, 4, 11, 2, 3],
+  [0, 8, 2, 2, 8, 11, 4, 9, 10, 4, 10, 6],
+  [3, 11, 2, 0, 1, 6, 0, 6, 4, 6, 1, 10],
+  [6, 4, 1, 6, 1, 10, 4, 8, 1, 2, 1, 11, 8, 11, 1],
+  [9, 6, 4, 9, 3, 6, 9, 1, 3, 11, 6, 3],
+  [8, 11, 1, 8, 1, 0, 11, 6, 1, 9, 1, 4, 6, 4, 1],
+  [3, 11, 6, 3, 6, 0, 0, 6, 4],
+  [6, 4, 8, 11, 6, 8],
+  [7, 10, 6, 7, 8, 10, 8, 9, 10],
+  [0, 7, 3, 0, 10, 7, 0, 9, 10, 6, 7, 10],
+  [10, 6, 7, 1, 10, 7, 1, 7, 8, 1, 8, 0],
+  [10, 6, 7, 10, 7, 1, 1, 7, 3],
+  [1, 2, 6, 1, 6, 8, 1, 8, 9, 8, 6, 7],
+  [2, 6, 9, 2, 9, 1, 6, 7, 9, 0, 9, 3, 7, 3, 9],
+  [7, 8, 0, 7, 0, 6, 6, 0, 2],
+  [7, 3, 2, 6, 7, 2],
+  [2, 3, 11, 10, 6, 8, 10, 8, 9, 8, 6, 7],
+  [2, 0, 7, 2, 7, 11, 0, 9, 7, 6, 7, 10, 9, 10, 7],
+  [1, 8, 0, 1, 7, 8, 1, 10, 7, 6, 7, 10, 2, 3, 11],
+  [11, 2, 1, 11, 1, 7, 10, 6, 1, 6, 7, 1],
+  [8, 9, 6, 8, 6, 7, 9, 1, 6, 11, 6, 3, 1, 3, 6],
+  [0, 9, 1, 11, 6, 7],
+  [7, 8, 0, 7, 0, 6, 3, 11, 0, 11, 6, 0],
+  [7, 11, 6],
+  [7, 6, 11],
+  [3, 0, 8, 11, 7, 6],
+  [0, 1, 9, 11, 7, 6],
+  [8, 1, 9, 8, 3, 1, 11, 7, 6],
+  [10, 1, 2, 6, 11, 7],
+  [1, 2, 10, 3, 0, 8, 6, 11, 7],
+  [2, 9, 0, 2, 10, 9, 6, 11, 7],
+  [6, 11, 7, 2, 10, 3, 10, 8, 3, 10, 9, 8],
+  [7, 2, 3, 6, 2, 7],
+  [7, 0, 8, 7, 6, 0, 6, 2, 0],
+  [2, 7, 6, 2, 3, 7, 0, 1, 9],
+  [1, 6, 2, 1, 8, 6, 1, 9, 8, 8, 7, 6],
+  [10, 7, 6, 10, 1, 7, 1, 3, 7],
+  [10, 7, 6, 1, 7, 10, 1, 8, 7, 1, 0, 8],
+  [0, 3, 7, 0, 7, 10, 0, 10, 9, 6, 10, 7],
+  [7, 6, 10, 7, 10, 8, 8, 10, 9],
+  [6, 8, 4, 11, 8, 6],
+  [3, 6, 11, 3, 0, 6, 0, 4, 6],
+  [8, 6, 11, 8, 4, 6, 9, 0, 1],
+  [9, 4, 6, 9, 6, 3, 9, 3, 1, 11, 3, 6],
+  [6, 8, 4, 6, 11, 8, 2, 10, 1],
+  [1, 2, 10, 3, 0, 11, 0, 6, 11, 0, 4, 6],
+  [4, 11, 8, 4, 6, 11, 0, 2, 9, 2, 10, 9],
+  [10, 9, 3, 10, 3, 2, 9, 4, 3, 11, 3, 6, 4, 6, 3],
+  [8, 2, 3, 8, 4, 2, 4, 6, 2],
+  [0, 4, 2, 4, 6, 2],
+  [1, 9, 0, 2, 3, 4, 2, 4, 6, 4, 3, 8],
+  [1, 9, 4, 1, 4, 2, 2, 4, 6],
+  [8, 1, 3, 8, 6, 1, 8, 4, 6, 6, 10, 1],
+  [10, 1, 0, 10, 0, 6, 6, 0, 4],
+  [4, 6, 3, 4, 3, 8, 6, 10, 3, 0, 3, 9, 10, 9, 3],
+  [10, 9, 4, 6, 10, 4],
+  [4, 9, 5, 7, 6, 11],
+  [0, 8, 3, 4, 9, 5, 11, 7, 6],
+  [5, 0, 1, 5, 4, 0, 7, 6, 11],
+  [11, 7, 6, 8, 3, 4, 3, 5, 4, 3, 1, 5],
+  [9, 5, 4, 10, 1, 2, 7, 6, 11],
+  [6, 11, 7, 1, 2, 10, 0, 8, 3, 4, 9, 5],
+  [7, 6, 11, 5, 4, 10, 4, 2, 10, 4, 0, 2],
+  [3, 4, 8, 3, 5, 4, 3, 2, 5, 10, 5, 2, 11, 7, 6],
+  [7, 2, 3, 7, 6, 2, 5, 4, 9],
+  [9, 5, 4, 0, 8, 6, 0, 6, 2, 6, 8, 7],
+  [3, 6, 2, 3, 7, 6, 1, 5, 0, 5, 4, 0],
+  [6, 2, 8, 6, 8, 7, 2, 1, 8, 4, 8, 5, 1, 5, 8],
+  [9, 5, 4, 10, 1, 6, 1, 7, 6, 1, 3, 7],
+  [1, 6, 10, 1, 7, 6, 1, 0, 7, 8, 7, 0, 9, 5, 4],
+  [4, 0, 10, 4, 10, 5, 0, 3, 10, 6, 10, 7, 3, 7, 10],
+  [7, 6, 10, 7, 10, 8, 5, 4, 10, 4, 8, 10],
+  [6, 9, 5, 6, 11, 9, 11, 8, 9],
+  [3, 6, 11, 0, 6, 3, 0, 5, 6, 0, 9, 5],
+  [0, 11, 8, 0, 5, 11, 0, 1, 5, 5, 6, 11],
+  [6, 11, 3, 6, 3, 5, 5, 3, 1],
+  [1, 2, 10, 9, 5, 11, 9, 11, 8, 11, 5, 6],
+  [0, 11, 3, 0, 6, 11, 0, 9, 6, 5, 6, 9, 1, 2, 10],
+  [11, 8, 5, 11, 5, 6, 8, 0, 5, 10, 5, 2, 0, 2, 5],
+  [6, 11, 3, 6, 3, 5, 2, 10, 3, 10, 5, 3],
+  [5, 8, 9, 5, 2, 8, 5, 6, 2, 3, 8, 2],
+  [9, 5, 6, 9, 6, 0, 0, 6, 2],
+  [1, 5, 8, 1, 8, 0, 5, 6, 8, 3, 8, 2, 6, 2, 8],
+  [1, 5, 6, 2, 1, 6],
+  [1, 3, 6, 1, 6, 10, 3, 8, 6, 5, 6, 9, 8, 9, 6],
+  [10, 1, 0, 10, 0, 6, 9, 5, 0, 5, 6, 0],
+  [0, 3, 8, 5, 6, 10],
+  [10, 5, 6],
+  [11, 5, 10, 7, 5, 11],
+  [11, 5, 10, 11, 7, 5, 8, 3, 0],
+  [5, 11, 7, 5, 10, 11, 1, 9, 0],
+  [10, 7, 5, 10, 11, 7, 9, 8, 1, 8, 3, 1],
+  [11, 1, 2, 11, 7, 1, 7, 5, 1],
+  [0, 8, 3, 1, 2, 7, 1, 7, 5, 7, 2, 11],
+  [9, 7, 5, 9, 2, 7, 9, 0, 2, 2, 11, 7],
+  [7, 5, 2, 7, 2, 11, 5, 9, 2, 3, 2, 8, 9, 8, 2],
+  [2, 5, 10, 2, 3, 5, 3, 7, 5],
+  [8, 2, 0, 8, 5, 2, 8, 7, 5, 10, 2, 5],
+  [9, 0, 1, 5, 10, 3, 5, 3, 7, 3, 10, 2],
+  [9, 8, 2, 9, 2, 1, 8, 7, 2, 10, 2, 5, 7, 5, 2],
+  [1, 3, 5, 3, 7, 5],
+  [0, 8, 7, 0, 7, 1, 1, 7, 5],
+  [9, 0, 3, 9, 3, 5, 5, 3, 7],
+  [9, 8, 7, 5, 9, 7],
+  [5, 8, 4, 5, 10, 8, 10, 11, 8],
+  [5, 0, 4, 5, 11, 0, 5, 10, 11, 11, 3, 0],
+  [0, 1, 9, 8, 4, 10, 8, 10, 11, 10, 4, 5],
+  [10, 11, 4, 10, 4, 5, 11, 3, 4, 9, 4, 1, 3, 1, 4],
+  [2, 5, 1, 2, 8, 5, 2, 11, 8, 4, 5, 8],
+  [0, 4, 11, 0, 11, 3, 4, 5, 11, 2, 11, 1, 5, 1, 11],
+  [0, 2, 5, 0, 5, 9, 2, 11, 5, 4, 5, 8, 11, 8, 5],
+  [9, 4, 5, 2, 11, 3],
+  [2, 5, 10, 3, 5, 2, 3, 4, 5, 3, 8, 4],
+  [5, 10, 2, 5, 2, 4, 4, 2, 0],
+  [3, 10, 2, 3, 5, 10, 3, 8, 5, 4, 5, 8, 0, 1, 9],
+  [5, 10, 2, 5, 2, 4, 1, 9, 2, 9, 4, 2],
+  [8, 4, 5, 8, 5, 3, 3, 5, 1],
+  [0, 4, 5, 1, 0, 5],
+  [8, 4, 5, 8, 5, 3, 9, 0, 5, 0, 3, 5],
+  [9, 4, 5],
+  [4, 11, 7, 4, 9, 11, 9, 10, 11],
+  [0, 8, 3, 4, 9, 7, 9, 11, 7, 9, 10, 11],
+  [1, 10, 11, 1, 11, 4, 1, 4, 0, 7, 4, 11],
+  [3, 1, 4, 3, 4, 8, 1, 10, 4, 7, 4, 11, 10, 11, 4],
+  [4, 11, 7, 9, 11, 4, 9, 2, 11, 9, 1, 2],
+  [9, 7, 4, 9, 11, 7, 9, 1, 11, 2, 11, 1, 0, 8, 3],
+  [11, 7, 4, 11, 4, 2, 2, 4, 0],
+  [11, 7, 4, 11, 4, 2, 8, 3, 4, 3, 2, 4],
+  [2, 9, 10, 2, 7, 9, 2, 3, 7, 7, 4, 9],
+  [9, 10, 7, 9, 7, 4, 10, 2, 7, 8, 7, 0, 2, 0, 7],
+  [3, 7, 10, 3, 10, 2, 7, 4, 10, 1, 10, 0, 4, 0, 10],
+  [1, 10, 2, 8, 7, 4],
+  [4, 9, 1, 4, 1, 7, 7, 1, 3],
+  [4, 9, 1, 4, 1, 7, 0, 8, 1, 8, 7, 1],
+  [4, 0, 3, 7, 4, 3],
+  [4, 8, 7],
+  [9, 10, 8, 10, 11, 8],
+  [3, 0, 9, 3, 9, 11, 11, 9, 10],
+  [0, 1, 10, 0, 10, 8, 8, 10, 11],
+  [3, 1, 10, 11, 3, 10],
+  [1, 2, 11, 1, 11, 9, 9, 11, 8],
+  [3, 0, 9, 3, 9, 11, 1, 2, 9, 2, 11, 9],
+  [0, 2, 11, 8, 0, 11],
+  [3, 2, 11],
+  [2, 3, 8, 2, 8, 10, 10, 8, 9],
+  [9, 10, 2, 0, 9, 2],
+  [2, 3, 8, 2, 8, 10, 0, 1, 8, 1, 10, 8],
+  [1, 10, 2],
+  [1, 3, 8, 9, 1, 8],
+  [0, 9, 1],
+  [0, 3, 8],
+  []
+];
+
+// node_modules/molstar/lib/mol-geo/util/marching-cubes/builder.js
+function MarchingCubesMeshBuilder(vertexChunkSize, mesh) {
+  const triangleChunkSize = Math.min(1 << 16, vertexChunkSize * 4);
+  const vertices2 = ChunkedArray.create(Float32Array, 3, vertexChunkSize, mesh && mesh.vertexBuffer.ref.value);
+  const normals = ChunkedArray.create(Float32Array, 3, vertexChunkSize, mesh && mesh.normalBuffer.ref.value);
+  const groups = ChunkedArray.create(Float32Array, 1, vertexChunkSize, mesh && mesh.groupBuffer.ref.value);
+  const indices2 = ChunkedArray.create(Uint32Array, 3, triangleChunkSize, mesh && mesh.indexBuffer.ref.value);
+  let vertexCount = 0;
+  let triangleCount = 0;
+  return {
+    addVertex: (x, y, z) => {
+      ++vertexCount;
+      return ChunkedArray.add3(vertices2, x, y, z);
+    },
+    addNormal: (x, y, z) => {
+      ChunkedArray.add3(normals, x, y, z);
+    },
+    addGroup: (group) => {
+      ChunkedArray.add(groups, group);
+    },
+    addTriangle: (vertList, a5, b5, c5) => {
+      const i = vertList[a5], j = vertList[b5], k = vertList[c5];
+      if (i >= 0 && j >= 0 && k >= 0) {
+        ++triangleCount;
+        ChunkedArray.add3(indices2, i, j, k);
+      }
+    },
+    get: () => {
+      const vb = ChunkedArray.compact(vertices2, true);
+      const nb = ChunkedArray.compact(normals, true);
+      const ib = ChunkedArray.compact(indices2, true);
+      const gb = ChunkedArray.compact(groups, true);
+      return Mesh.create(vb, ib, nb, gb, vertexCount, triangleCount, mesh);
+    }
+  };
+}
+
+// node_modules/molstar/lib/mol-geo/util/marching-cubes/algorithm.js
+function getInputParams(params) {
+  return {
+    ...params,
+    bottomLeft: defaults(params.bottomLeft, [0, 0, 0]),
+    topRight: defaults(params.topRight, params.scalarField.space.dimensions)
+  };
+}
+function getExtent(inputParams) {
+  return {
+    dX: inputParams.topRight[0] - inputParams.bottomLeft[0],
+    dY: inputParams.topRight[1] - inputParams.bottomLeft[1],
+    dZ: inputParams.topRight[2] - inputParams.bottomLeft[2]
+  };
+}
+function computeMarchingCubesMesh2(params, mesh) {
+  return Task.create("Marching Cubes Mesh", async (ctx) => {
+    const inputParams = getInputParams(params);
+    const { dX, dY, dZ } = getExtent(inputParams);
+    const vertexChunkSize = Math.min(262144, Math.max(dX * dY * dZ / 32, 1024));
+    const builder = MarchingCubesMeshBuilder(vertexChunkSize, mesh);
+    await new MarchingCubesComputation(ctx, builder, inputParams).run();
+    return builder.get();
+  });
+}
+var MarchingCubesComputation = class {
+  async doSlices() {
+    let done = 0;
+    this.edgeFilter = 15;
+    for (let k = this.minZ; k < this.maxZ; k++, this.edgeFilter &= ~4) {
+      this.slice(k);
+      done += this.sliceSize;
+      if (this.ctx.shouldUpdate) {
+        await this.ctx.update({ message: "Computing surface...", current: done, max: this.size });
+      }
+    }
+  }
+  slice(k) {
+    this.edgeFilter |= 2;
+    for (let j = this.minY; j < this.maxY; j++, this.edgeFilter &= ~2) {
+      this.edgeFilter |= 1;
+      for (let i = this.minX; i < this.maxX; i++, this.edgeFilter &= ~1) {
+        this.state.processCell(i, j, k, this.edgeFilter);
+      }
+    }
+    this.state.clearEdgeVertexIndexSlice(k);
+  }
+  async run() {
+    await this.doSlices();
+  }
+  constructor(ctx, builder, params) {
+    this.ctx = ctx;
+    this.minX = 0;
+    this.minY = 0;
+    this.minZ = 0;
+    this.maxX = 0;
+    this.maxY = 0;
+    this.maxZ = 0;
+    this.state = new MarchingCubesState(builder, params);
+    this.minX = params.bottomLeft[0];
+    this.minY = params.bottomLeft[1];
+    this.minZ = params.bottomLeft[2];
+    this.maxX = params.topRight[0] - 1;
+    this.maxY = params.topRight[1] - 1;
+    this.maxZ = params.topRight[2] - 1;
+    this.size = (this.maxX - this.minX) * (this.maxY - this.minY) * (this.maxZ - this.minZ);
+    this.sliceSize = (this.maxX - this.minX) * (this.maxY - this.minY);
+  }
+};
+var MarchingCubesState = class {
+  get3dOffsetFromEdgeInfo(index) {
+    return this.nX * ((this.k + index.k) % 2 * this.nY + this.j + index.j) + this.i + index.i;
+  }
+  /**
+   * This clears the "vertex index buffer" for the slice that will not be accessed anymore.
+   */
+  clearEdgeVertexIndexSlice(k) {
+    const start4 = k % 2 === 0 ? 0 : 3 * this.nX * this.nY;
+    const end4 = k % 2 === 0 ? 3 * this.nX * this.nY : this.verticesOnEdges.length;
+    this.verticesOnEdges.fill(0, start4, end4);
+  }
+  interpolate(edgeNum) {
+    const info = EdgeIdInfo[edgeNum];
+    const edgeId = 3 * this.get3dOffsetFromEdgeInfo(info) + info.e;
+    const ret = this.verticesOnEdges[edgeId];
+    if (ret > 0)
+      return ret - 1;
+    const sf = this.scalarField;
+    const sfg = this.scalarFieldGet;
+    const edge = CubeEdges[edgeNum];
+    const a5 = edge.a, b5 = edge.b;
+    const li = a5.i + this.i, lj = a5.j + this.j, lk = a5.k + this.k;
+    const hi = b5.i + this.i, hj = b5.j + this.j, hk = b5.k + this.k;
+    const v0 = sfg(sf, li, lj, lk);
+    const v1 = sfg(sf, hi, hj, hk);
+    const t2 = (this.isoLevel - v0) / (v0 - v1);
+    if (this.idField) {
+      const u = this.idFieldGet(this.idField, li, lj, lk);
+      const v3 = this.idFieldGet(this.idField, hi, hj, hk);
+      let a6 = t2 < 0.5 ? u : v3;
+      if (a6 === -1)
+        a6 = t2 < 0.5 ? v3 : u;
+      if (a6 === -2)
+        return -1;
+      this.builder.addGroup(a6);
+    } else {
+      this.builder.addGroup(0);
+    }
+    const id = this.builder.addVertex(li + t2 * (li - hi), lj + t2 * (lj - hj), lk + t2 * (lk - hk));
+    this.verticesOnEdges[edgeId] = id + 1;
+    const n0x = sfg(sf, Math.max(0, li - 1), lj, lk) - sfg(sf, Math.min(this.nX - 1, li + 1), lj, lk);
+    const n0y = sfg(sf, li, Math.max(0, lj - 1), lk) - sfg(sf, li, Math.min(this.nY - 1, lj + 1), lk);
+    const n0z = sfg(sf, li, lj, Math.max(0, lk - 1)) - sfg(sf, li, lj, Math.min(this.nZ - 1, lk + 1));
+    const n1x = sfg(sf, Math.max(0, hi - 1), hj, hk) - sfg(sf, Math.min(this.nX - 1, hi + 1), hj, hk);
+    const n1y = sfg(sf, hi, Math.max(0, hj - 1), hk) - sfg(sf, hi, Math.min(this.nY - 1, hj + 1), hk);
+    const n1z = sfg(sf, hi, hj, Math.max(0, hk - 1)) - sfg(sf, hi, hj, Math.min(this.nZ - 1, hk + 1));
+    const nx = n0x + t2 * (n0x - n1x);
+    const ny = n0y + t2 * (n0y - n1y);
+    const nz = n0z + t2 * (n0z - n1z);
+    if (this.isoLevel >= 0) {
+      this.builder.addNormal(nx, ny, nz);
+    } else {
+      this.builder.addNormal(-nx, -ny, -nz);
+    }
+    return id;
+  }
+  constructor(builder, params) {
+    this.builder = builder;
+    this.vertList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.i = 0;
+    this.j = 0;
+    this.k = 0;
+    const dims = params.scalarField.space.dimensions;
+    this.nX = dims[0];
+    this.nY = dims[1];
+    this.nZ = dims[2];
+    this.isoLevel = params.isoLevel;
+    this.scalarFieldGet = params.scalarField.space.get;
+    this.scalarField = params.scalarField.data;
+    if (params.idField) {
+      this.idField = params.idField.data;
+      this.idFieldGet = params.idField.space.get;
+    }
+    this.verticesOnEdges = new Int32Array(3 * this.nX * this.nY * 2);
+  }
+  get(i, j, k) {
+    return this.scalarFieldGet(this.scalarField, i, j, k);
+  }
+  processCell(i, j, k, edgeFilter) {
+    let tableIndex = 0;
+    if (this.get(i, j, k) < this.isoLevel)
+      tableIndex |= 1;
+    if (this.get(i + 1, j, k) < this.isoLevel)
+      tableIndex |= 2;
+    if (this.get(i + 1, j + 1, k) < this.isoLevel)
+      tableIndex |= 4;
+    if (this.get(i, j + 1, k) < this.isoLevel)
+      tableIndex |= 8;
+    if (this.get(i, j, k + 1) < this.isoLevel)
+      tableIndex |= 16;
+    if (this.get(i + 1, j, k + 1) < this.isoLevel)
+      tableIndex |= 32;
+    if (this.get(i + 1, j + 1, k + 1) < this.isoLevel)
+      tableIndex |= 64;
+    if (this.get(i, j + 1, k + 1) < this.isoLevel)
+      tableIndex |= 128;
+    if (tableIndex === 0 || tableIndex === 255)
+      return;
+    this.i = i;
+    this.j = j;
+    this.k = k;
+    const edgeInfo = EdgeTable[tableIndex];
+    if ((edgeInfo & 1) > 0)
+      this.vertList[0] = this.interpolate(0);
+    if ((edgeInfo & 2) > 0)
+      this.vertList[1] = this.interpolate(1);
+    if ((edgeInfo & 4) > 0)
+      this.vertList[2] = this.interpolate(2);
+    if ((edgeInfo & 8) > 0)
+      this.vertList[3] = this.interpolate(3);
+    if ((edgeInfo & 16) > 0)
+      this.vertList[4] = this.interpolate(4);
+    if ((edgeInfo & 32) > 0)
+      this.vertList[5] = this.interpolate(5);
+    if ((edgeInfo & 64) > 0)
+      this.vertList[6] = this.interpolate(6);
+    if ((edgeInfo & 128) > 0)
+      this.vertList[7] = this.interpolate(7);
+    if ((edgeInfo & 256) > 0)
+      this.vertList[8] = this.interpolate(8);
+    if ((edgeInfo & 512) > 0)
+      this.vertList[9] = this.interpolate(9);
+    if ((edgeInfo & 1024) > 0)
+      this.vertList[10] = this.interpolate(10);
+    if ((edgeInfo & 2048) > 0)
+      this.vertList[11] = this.interpolate(11);
+    const triInfo = TriTable[tableIndex];
+    for (let t2 = 0; t2 < triInfo.length; t2 += 3) {
+      const l = triInfo[t2], m = triInfo[t2 + 1], n = triInfo[t2 + 2];
+      if (this.isoLevel >= 0) {
+        this.builder.addTriangle(this.vertList, l, m, n, edgeFilter);
+      } else {
+        this.builder.addTriangle(this.vertList, n, m, l, edgeFilter);
+      }
+    }
+  }
+};
+
+// src/shapes/pocket-surface.ts
+var MSVTransform2 = Transformer.builderFactory("molsysviewer");
+var PocketSurfaceParams = {
+  ...Mesh.Params
+};
+function getPocketSurfaceName(atomCount2) {
+  return `Pocket Surface (${atomCount2} atoms)`;
+}
+function getColor(colors, defaultColor) {
+  return (groupId) => colors.get(groupId) ?? defaultColor;
+}
+function createPocketSurfaceShape(data, props, shape) {
+  const name = data.name;
+  return Shape.create(name, data, data.mesh, getColor(data.colors, Color(ColorNames.grey)), () => 1, () => name, shape?.transforms);
+}
+var PocketSurfaceVisuals = {
+  mesh: (_ctx, _getParams) => ShapeRepresentation(createPocketSurfaceShape, Mesh.Utils)
+};
+function getDefaultGaussianProps(options) {
+  const defaults2 = { ...DefaultGaussianDensityProps };
+  if (options?.grid?.resolution !== void 0) defaults2.resolution = options.grid.resolution;
+  if (options?.grid?.radius_offset !== void 0) defaults2.radiusOffset = options.grid.radius_offset;
+  if (options?.grid?.smoothness !== void 0) defaults2.smoothness = options.grid.smoothness;
+  return defaults2;
+}
+function normalizeMouths(input) {
+  if (!input) return [];
+  if (Array.isArray(input) && input.length > 0 && Array.isArray(input[0])) {
+    return input.map((list3) => list3.map((i) => Number(i))).filter((list3) => list3.length > 0);
+  }
+  const flat = Array.isArray(input) ? input.map((i) => Number(i)) : [];
+  return flat.length ? [flat] : [];
+}
+function createSubsetFromAtomIndices(structure, atomIndices) {
+  const wanted = new Set(atomIndices);
+  const lociElements = [];
+  for (const unit2 of structure.units) {
+    const match = [];
+    const elements = unit2.elements;
+    const count2 = OrderedSet3.size(elements);
+    for (let i = 0; i < count2; i++) {
+      const element = OrderedSet3.getAt(elements, i);
+      if (wanted.has(element)) match.push(i);
+    }
+    if (match.length) {
+      lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(match) });
+    }
+  }
+  if (lociElements.length === 0) return void 0;
+  return element_exports.toStructure(element_exports.Loci(structure, lociElements));
+}
+function buildClipPlanes(structure, options) {
+  const clipObjects = [];
+  const mouthList = normalizeMouths(options.mouth_atom_indices);
+  if (mouthList.length === 0 && options.clip_plane) {
+    clipObjects.push({
+      type: "plane",
+      invert: false,
+      position: Vec3.fromArray(Vec3(), options.clip_plane.point, 0),
+      rotation: planeRotationFromNormal(options.clip_plane.normal),
+      scale: Vec3.create(1, 1, 1),
+      transform: Mat4.identity()
+    });
+    return clipObjects;
+  }
+  const pocketCenter = centroid(structure);
+  for (const mouth of mouthList) {
+    if (!mouth || mouth.length === 0) continue;
+    const mouthStructure = createSubsetFromAtomIndices(structure, mouth);
+    if (!mouthStructure) continue;
+    const mouthCenter = centroid(mouthStructure);
+    const normal = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), mouthCenter, pocketCenter));
+    clipObjects.push({
+      type: "plane",
+      invert: false,
+      position: mouthCenter,
+      rotation: planeRotationFromNormal(normal),
+      scale: Vec3.create(1, 1, 1),
+      transform: Mat4.identity()
+    });
+  }
+  return clipObjects;
+}
+function planeRotationFromNormal(normalInput) {
+  const normal = Vec3.normalize(Vec3(), normalInput);
+  const defaultNormal = Vec3.create(0, 0, 1);
+  if (Vec3.magnitude(normal) < 1e-5) return { axis: Vec3.create(1, 0, 0), angle: 0 };
+  const axis = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), defaultNormal, normal));
+  const dot = Vec3.dot(defaultNormal, normal);
+  const angle = Math.acos(Math.min(1, Math.max(-1, dot))) * (180 / Math.PI);
+  if (Vec3.magnitude(axis) < 1e-5) return { axis: Vec3.create(1, 0, 0), angle: 0 };
+  return { axis, angle };
+}
+function centroid(structure) {
+  const center = Vec3.create(0, 0, 0);
+  let count2 = 0;
+  const p3 = Vec3();
+  for (const unit2 of structure.units) {
+    const { elements, conformation } = unit2;
+    const size4 = OrderedSet3.size(elements);
+    for (let i = 0; i < size4; i++) {
+      conformation.position(OrderedSet3.getAt(elements, i), p3);
+      Vec3.add(center, center, p3);
+      count2 += 1;
+    }
+  }
+  if (count2 > 0) Vec3.scale(center, center, 1 / count2);
+  return center;
+}
+function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
+  return Task.create("Pocket Surface Meshes", async (ctx) => {
+    const sizeTheme = PhysicalSizeTheme({ structure }, { scale: 1 });
+    const { transform, field, idField, radiusFactor, resolution, maxRadius } = await computeStructureGaussianDensity(structure, sizeTheme, props).runInContext(ctx);
+    const baseIso = Math.exp(-props.smoothness) / radiusFactor;
+    const levels = isoLevels && isoLevels.length > 0 ? isoLevels : [baseIso];
+    const surfaces = [];
+    for (const level of levels) {
+      const params = {
+        isoLevel: level,
+        scalarField: field,
+        idField
+      };
+      const surface = await computeMarchingCubesMesh2(params).runAsChild(ctx);
+      Mesh.transform(surface, transform);
+      if (webgl && !webgl.isWebGL2) {
+        Mesh.uniformTriangleGroup(surface);
+        ValueCell.updateIfChanged(surface.varyingGroup, false);
+      } else {
+        ValueCell.updateIfChanged(surface.varyingGroup, true);
+      }
+      surface.meta.resolution = resolution;
+      Mesh.computeNormals(surface);
+      surface.setBoundingSphere(structure.boundary.sphere);
+      surfaces.push(surface);
+    }
+    return surfaces;
+  });
+}
+function buildColorMap(atomIndices, scalars, colorMap) {
+  const colors = /* @__PURE__ */ new Map();
+  const defaultColor = Color(ColorNames.lightgrey);
+  if (!scalars || scalars.length !== atomIndices.length) {
+    atomIndices.forEach((id) => colors.set(id, defaultColor));
+    return colors;
+  }
+  const min4 = Math.min(...scalars);
+  const max4 = Math.max(...scalars);
+  const domain = min4 === max4 ? [min4, min4 + 1] : [min4, max4];
+  const palette = Array.isArray(colorMap) && colorMap.length > 0 ? colorMap : void 0;
+  const scale = ColorScale.create({ domain, listOrName: palette ?? "rainbow", minLabel: "min", maxLabel: "max" });
+  atomIndices.forEach((id, idx) => {
+    colors.set(id, scale.color(scalars[idx]));
+  });
+  return colors;
+}
+function createClipProps(structure, options) {
+  const objects = buildClipPlanes(structure, options);
+  if (!objects || objects.length === 0) return void 0;
+  return {
+    variant: "pixel",
+    objects
+  };
+}
+async function addPocketSurfaceFromPython(plugin, options) {
+  const structureRef = plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+  const structure = structureRef?.cell.obj?.data;
+  if (!structure) {
+    console.warn("[MolSysViewer] add_pocket_surface: no structure loaded");
+    return void 0;
+  }
+  const subset = createSubsetFromAtomIndices(structure, options.atom_indices);
+  if (!subset || subset.elementCount === 0) {
+    console.warn("[MolSysViewer] add_pocket_surface: no selected atoms");
+    return void 0;
+  }
+  const gaussianProps = getDefaultGaussianProps(options);
+  const meshes = await plugin.runTask(createGaussianSurfaceMeshes(subset, gaussianProps, options.iso_levels, plugin.canvas3d?.webgl));
+  const colors = buildColorMap(options.atom_indices, options.scalars, options.color_map);
+  const baseName = getPocketSurfaceName(options.atom_indices.length);
+  const isoLevels = options.iso_levels && options.iso_levels.length ? options.iso_levels : [void 0];
+  const isoAlphas = options.iso_alphas && options.iso_alphas.length === isoLevels.length ? options.iso_alphas : void 0;
+  const isoColors = options.iso_colors && options.iso_colors.length === isoLevels.length ? options.iso_colors : void 0;
+  const clip = createClipProps(subset, options);
+  const props = {
+    ...ParamDefinition.getDefaultValues(PocketSurfaceParams)
+  };
+  if (clip) {
+    props.clip = clip;
+  }
+  const refs = [];
+  for (let i = 0; i < meshes.length; i++) {
+    const mesh = meshes[i];
+    const alpha = isoAlphas ? isoAlphas[i] : options.alpha ?? 0.4;
+    const meshColor = isoColors ? new Map(Array.from({ length: options.atom_indices.length }, (_v, idx) => [idx, Color(isoColors[i])])) : colors;
+    const data = {
+      mesh,
+      colors: meshColor,
+      alpha,
+      name: isoLevels[i] !== void 0 ? `${baseName} (iso=${isoLevels[i]})` : baseName
+    };
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+      PocketSurface3D,
+      {
+        data,
+        props
+      },
+      { tags: options.iso_levels ? "molsysviewer:pocketsurface:multi" : "molsysviewer:pocketsurface" }
+    );
+    await PluginCommands.State.Update(plugin, {
+      state: plugin.state.data,
+      tree: builder,
+      options: { doNotLogTiming: true }
+    });
+    refs.push(node.ref);
+  }
+  return refs.length === 1 ? refs[0] : refs;
+}
+var PocketSurfaceTransformParams = {
+  data: ParamDefinition.Value(void 0),
+  props: ParamDefinition.Value(void 0)
+};
+var PocketSurface3D = MSVTransform2({
+  name: "molsysviewer-pocket-surface-3d",
+  display: { name: "Pocket Surface" },
+  from: PluginStateObject.Root,
+  to: PluginStateObject.Shape.Representation3D,
+  params: PocketSurfaceTransformParams
+})({
+  canAutoUpdate() {
+    return true;
+  },
+  apply({ params }, plugin) {
+    return Task.create("Pocket Surface", async (ctx) => {
+      const repr = PocketSurfaceRepresentation(
+        { webgl: plugin.canvas3d?.webgl, ...plugin.representation.structure.themes },
+        () => PocketSurfaceParams
+      );
+      await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
+      repr.setState({ alphaFactor: params.data.alpha });
+      return new PluginStateObject.Shape.Representation3D({ repr, sourceData: params.data }, { label: params.data.name });
+    });
+  },
+  update({ b: b5, newParams }, _plugin) {
+    return Task.create("Pocket Surface", async (ctx) => {
+      await b5.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
+      b5.data.repr.setState({ alphaFactor: newParams.data.alpha });
+      b5.data.sourceData = newParams.data;
+      return Transformer.UpdateResult.Updated;
+    });
+  }
+});
+function PocketSurfaceRepresentation(ctx, getParams) {
+  return Representation.createMulti(
+    "PocketSurface",
+    ctx,
+    getParams,
+    Representation.StateBuilder,
+    PocketSurfaceVisuals
+  );
+}
+
+// src/managers/handlers/shape-handlers.ts
+var ShapeHandlers = class {
+  constructor(plugin, registerRef) {
+    this.plugin = plugin;
+    this.registerRef = registerRef;
+  }
+  async addSphere(msg) {
+    const options = msg.options ?? {};
+    const ref = await addTransparentSphereFromPython(this.plugin, {
+      center: options.center ?? [0, 0, 0],
+      radius: options.radius ?? 10,
+      color: options.color ?? 65280,
+      alpha: options.alpha ?? 0.4
+    });
+    this.registerRef(ref, options.tag ?? msg.tag);
+  }
+  async addAlphaSphereSet(msg) {
+    const options = msg.options;
+    if (!options?.alpha_spheres?.centers || !options.alpha_spheres.radii) {
+      console.warn("[MolSysViewer] add_alpha_sphere_set missing alpha_spheres");
+      return;
+    }
+    const centers = options.alpha_spheres.centers;
+    const radii = options.alpha_spheres.radii;
+    if (!Array.isArray(centers) || !Array.isArray(radii) || centers.length !== radii.length || centers.length === 0) {
+      console.warn("[MolSysViewer] add_alpha_sphere_set inconsistent data");
+      return;
+    }
+    const alphaColor = options.alpha_spheres.color ?? 65280;
+    const alphaAlpha = options.alpha_spheres.alpha ?? 0.3;
+    const alphaSpecs = centers.map((c5, i) => ({
+      center: [c5[0], c5[1], c5[2]],
+      radius: radii[i],
+      color: alphaColor,
+      alpha: alphaAlpha
+    }));
+    const tag = options.tag ?? "molsysviewer:alpha-spheres";
+    const alphaRef = await addTransparentSpheresFromPython(this.plugin, alphaSpecs, alphaAlpha, tag);
+    this.registerRef(alphaRef, tag);
+    if (options.atom_spheres?.centers && options.atom_spheres.centers.length > 0) {
+      const atomRadius = options.atom_spheres.radius ?? 1;
+      const atomColor = options.atom_spheres.color ?? 255;
+      const atomAlpha = options.atom_spheres.alpha ?? 0.5;
+      const atomSpecs = options.atom_spheres.centers.map((c5) => ({
+        center: [c5[0], c5[1], c5[2]],
+        radius: atomRadius,
+        color: atomColor,
+        alpha: atomAlpha
+      }));
+      const atomRef = await addTransparentSpheresFromPython(this.plugin, atomSpecs, atomAlpha, tag);
+      this.registerRef(atomRef, tag);
+    }
+  }
+  async addPocketSurface(msg) {
+    const options = msg.options ?? {};
+    if (!Array.isArray(options.atom_indices) || options.atom_indices.length === 0) {
+      console.warn("[MolSysViewer] add_pocket_surface without atom_indices");
+      return;
+    }
+    try {
+      const ref = await addPocketSurfaceFromPython(this.plugin, options);
+      if (Array.isArray(ref)) {
+        ref.forEach((r) => this.registerRef(r, options.tag));
+      } else {
+        this.registerRef(ref, options.tag);
+      }
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando pocket surface", err);
+    }
+  }
+  async addPocketBlob(msg) {
+    const options = msg.options ?? {};
+    if (!options.centers || !options.radii || options.centers.length === 0 || options.radii.length === 0) {
+      console.warn("[MolSysViewer] add_pocket_blob without centers or radii");
+      return;
+    }
+    try {
+      const ref = await addPocketBlobFromPython(this.plugin, options);
+      if (Array.isArray(ref)) {
+        ref.forEach((r) => this.registerRef(r, options.tag));
+      } else {
+        this.registerRef(ref, options.tag);
+      }
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando pocket blob", err);
+    }
+  }
+  async addChannelTube(msg) {
+    const options = msg.options ?? {};
+    if (!options.centers || !options.radii || options.centers.length < 2 || options.radii.length < 2) {
+      console.warn("[MolSysViewer] add_channel_tube requires at least two centers and radii");
+      return;
+    }
+    try {
+      const ref = await addChannelTubeFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando channel tube", err);
+    }
+  }
+  async addAnisotropyEllipsoids(msg) {
+    const options = msg.options ?? {};
+    if (!options.centers && !options.atom_indices) {
+      console.warn("[MolSysViewer] add_anisotropy_ellipsoids requires centers or atom_indices");
+      return;
+    }
+    try {
+      const ref = await addAnisotropyEllipsoidsFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando anisotropy ellipsoids", err);
+    }
+  }
+  async addPharmacophore(msg) {
+    const options = msg.options ?? {};
+    if (!options.centers || !options.kinds || options.centers.length === 0 || options.kinds.length !== options.centers.length) {
+      console.warn("[MolSysViewer] add_pharmacophore_features requires centers and kinds of same length");
+      return;
+    }
+    try {
+      const ref = await addPharmacophoreFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando pharmacophore features", err);
+    }
+  }
+  async addNetworkLinks(msg) {
+    const options = msg.options ?? {};
+    try {
+      const ref = await addNetworkLinksFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando network links", err);
+    }
+  }
+  async addDisplacementVectors(msg) {
+    const options = msg.options ?? {};
+    if (!options.vectors || options.vectors.length === 0) {
+      console.warn("[MolSysViewer] add_displacement_vectors without vectors");
+      return;
+    }
+    try {
+      const ref = await addDisplacementVectorsFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando displacement vectors", err);
+    }
+  }
+  async addTetrahedra(msg) {
+    const options = msg.options ?? {};
+    if (!options.tetraCoords && !options.tetra_coords && !options.atomQuads && !options.atom_quads) {
+      console.warn("[MolSysViewer] add_tetrahedra without tetraCoords or atom_quads");
+      return;
+    }
+    try {
+      const ref = await addTetrahedraFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando tetrahedra", err);
+    }
+  }
+  async addTriangleFaces(msg) {
+    const options = msg.options ?? {};
+    if (!options.vertices && !options.atom_triplets && !options.atomTriplets) {
+      console.warn("[MolSysViewer] add_triangle_faces without vertices or atom_triplets");
+      return;
+    }
+    try {
+      const ref = await addTriangleFacesFromPython(this.plugin, options);
+      this.registerRef(ref, options.tag);
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando triangle faces", err);
+    }
+  }
+};
+
+// tests/unit/shape-handler.test.ts
+test5("shape handlers reject invalid overlay payloads without registering refs", async () => {
+  const plugin = {};
+  const registered = [];
+  const handler = new ShapeHandlers(plugin, (ref, tag) => {
+    registered.push({ ref, tag });
+  });
+  await withWarnCapture(async (warnings) => {
+    await handler.addAlphaSphereSet({ op: "add_alpha_sphere_set", options: {} });
+    await handler.addPocketSurface({ op: "add_pocket_surface", options: {} });
+    await handler.addPocketBlob({ op: "add_pocket_blob", options: {} });
+    await handler.addChannelTube({ op: "add_channel_tube", options: { centers: [[0, 0, 0]], radii: [1] } });
+    await handler.addAnisotropyEllipsoids({ op: "add_anisotropy_ellipsoids", options: {} });
+    await handler.addPharmacophore({ op: "add_pharmacophore_features", options: { centers: [[0, 0, 0]], kinds: [] } });
+    await handler.addDisplacementVectors({ op: "add_displacement_vectors", options: {} });
+    await handler.addTetrahedra({ op: "add_tetrahedra", options: {} });
+    await handler.addTriangleFaces({ op: "add_triangle_faces", options: {} });
+    assert5.strictEqual(warnings.length, 9);
+    assert5.ok(warnings.some((w) => w.includes("add_alpha_sphere_set missing alpha_spheres")));
+    assert5.ok(warnings.some((w) => w.includes("add_pocket_surface without atom_indices")));
+    assert5.ok(warnings.some((w) => w.includes("add_pocket_blob without centers or radii")));
+    assert5.ok(warnings.some((w) => w.includes("add_channel_tube requires at least two centers and radii")));
+    assert5.ok(warnings.some((w) => w.includes("add_anisotropy_ellipsoids requires centers or atom_indices")));
+    assert5.ok(warnings.some((w) => w.includes("add_pharmacophore_features requires centers and kinds of same length")));
+    assert5.ok(warnings.some((w) => w.includes("add_displacement_vectors without vectors")));
+    assert5.ok(warnings.some((w) => w.includes("add_tetrahedra without tetraCoords or atom_quads")));
+    assert5.ok(warnings.some((w) => w.includes("add_triangle_faces without vertices or atom_triplets")));
+  });
+  assert5.deepStrictEqual(registered, []);
+});
+test5("shape handler rejects inconsistent alpha sphere arrays without registering refs", async () => {
+  const plugin = {};
+  const registered = [];
+  const handler = new ShapeHandlers(plugin, (ref, tag) => {
+    registered.push({ ref, tag });
+  });
+  await withWarnCapture(async (warnings) => {
+    await handler.addAlphaSphereSet({
+      op: "add_alpha_sphere_set",
+      options: {
+        alpha_spheres: {
+          centers: [[0, 0, 0], [1, 1, 1]],
+          radii: [1]
+        }
+      }
+    });
+    assert5.strictEqual(warnings.length, 1);
+    assert5.ok(warnings[0].includes("add_alpha_sphere_set inconsistent data"));
+  });
+  assert5.deepStrictEqual(registered, []);
 });
 /*! Bundled license information:
 

@@ -137,12 +137,12 @@ It is organized by execution priority and uses three labels:
   - JS unit/e2e scaffolding exists with runnable scripts.
 
 - `In progress`
-  - JS coverage is narrow relative to runtime surface.
+  - JS coverage is still narrower than the runtime surface, but handler-level breadth is improving.
   - E2E matrix is minimal.
 
 ### Next actions
 
-- Prioritize JS unit coverage for handlers (`loader`, `state`, `shape`, `trajectory`, `scene`).
+- Extend JS unit coverage from handler guards into deeper success-path and replay/remap semantics.
 - Add at least one additional E2E path beyond region hide.
 
 ### Criteria
