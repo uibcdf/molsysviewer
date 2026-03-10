@@ -193,3 +193,23 @@ It is intentionally concise and operational.
   - Neutral naming avoids coupling test infrastructure to a single scenario and clarifies intent.
 - `Ideas`:
   - Add a short `js/tests/unit/README.md` documenting the entrypoint and handler-file layout.
+
+## 2026-03-10 — CP-2026-03-10-I
+
+- `Scope`: Extend JS unit coverage to `ShapeHandlers` guard semantics.
+- `Decisions`:
+  - Prioritize contract-level validation paths for shape ops before deeper Mol* builder success-path tests.
+  - Keep shape tests mock-light and focused on invalid payload rejection plus no-ref-registration invariants.
+- `Status`:
+  - Added `molsysviewer/js/tests/unit/shape-handler.test.ts`.
+  - Unit coverage now includes guard behavior for `alpha sphere set`, `pocket surface`, `pocket blob`, `channel tube`, `anisotropy ellipsoids`, `pharmacophore`, `displacement vectors`, `tetrahedra`, and `triangle faces`.
+- `Plan`:
+  - Re-run JS unit suite and keep the shape file as the base for later success-path registration tests.
+  - Next high-value target remains structural-edit/remap regression coverage or trajectory E2E when browser/WebGL is available.
+- `Criteria`:
+  - Invalid shape payloads must fail softly with warnings and must not register frontend refs.
+  - `devguide` remains the checkpoint ledger before selecting the next coverage increment.
+- `Perspectives`:
+  - This closes the largest missing handler-family gap in JS unit coverage without coupling tests to Mol* internals.
+- `Ideas`:
+  - Add success-path shape tests later through controlled builder seams if the runtime surface is refactored for easier injection.
