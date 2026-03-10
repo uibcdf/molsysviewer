@@ -44,11 +44,11 @@ It is organized by execution priority and uses three labels:
 
 - `In progress`
   - Behavioral stabilization and broader regression coverage for remap/replay scenarios.
-  - `remove()` rebuild/remap regression coverage now exists, but the live-edit matrix is still partial.
+  - `remove()` and `append_structures()` rebuild regressions now exist, but the live-edit matrix is still partial.
 
 ### Next actions
 
-- Extend live-edit regression coverage beyond `remove()` into `append_structures()`, `set()`, and `add()`.
+- Extend live-edit regression coverage beyond `remove()`/`append_structures()` into `set()` and `add()`.
 - Validate replay consistency across consecutive mutating operations.
 
 ### Criteria
