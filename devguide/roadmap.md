@@ -118,6 +118,7 @@ It is organized by execution priority and uses three labels:
 - `In progress`
   - Robustness tests for popup sync flows and camera sync edge cases.
   - Documentation parity for embed/export troubleshooting.
+  - Baseline export ordering and popup host bootstrap contracts are now covered, but live mirror behavior remains only partially exercised.
 
 ### Next actions
 

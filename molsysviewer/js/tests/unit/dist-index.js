@@ -21518,8 +21518,8 @@ var Column;
     return areColumnsEqual(a5, b5);
   }
   Column2.areEqual = areEqual4;
-  function indicesOf2(c5, test6) {
-    return columnIndicesOf(c5, test6);
+  function indicesOf2(c5, test7) {
+    return columnIndicesOf(c5, test7);
   }
   Column2.indicesOf = indicesOf2;
   function asArrayColumn(c5, array2) {
@@ -21773,10 +21773,10 @@ function areValuesEqual(a5, b5) {
   }
   return true;
 }
-function columnIndicesOf(c5, test6) {
+function columnIndicesOf(c5, test7) {
   const ret = [], v3 = c5.value;
   for (let i = 0, _i = c5.rowCount; i < _i; i++) {
-    if (test6(v3(i)))
+    if (test7(v3(i)))
       ret[ret.length] = i;
   }
   return ret;
@@ -22028,10 +22028,10 @@ var Table;
     return ret;
   }
   Table2.view = view2;
-  function pick2(table, schema, test6) {
+  function pick2(table, schema, test7) {
     const _view = [];
     for (let i = 0, il = table._rowCount; i < il; ++i) {
-      if (test6(i))
+      if (test7(i))
         _view.push(i);
     }
     return view2(table, schema, _view);
@@ -22131,9 +22131,9 @@ var Table;
     return row;
   }
   Table2.getRow = getRow;
-  function pickRow(table, test6) {
+  function pickRow(table, test7) {
     for (let i = 0, il = table._rowCount; i < il; ++i) {
-      if (test6(i))
+      if (test7(i))
         return getRow(table, i);
     }
   }
@@ -37456,8 +37456,8 @@ var StateSelection;
   }
   StateSelection2.ofType = ofType;
   registerModifier("ancestor", ancestor);
-  function ancestor(b5, test6) {
-    return unique(mapObject(b5, (n, s) => findAncestor(s.tree, s.cells, n.transform.ref, test6)));
+  function ancestor(b5, test7) {
+    return unique(mapObject(b5, (n, s) => findAncestor(s.tree, s.cells, n.transform.ref, test7)));
   }
   StateSelection2.ancestor = ancestor;
   registerModifier("ancestorOfType", ancestorOfType);
@@ -37476,8 +37476,8 @@ var StateSelection;
   }
   StateSelection2.withTransformer = withTransformer;
   registerModifier("root", root);
-  function root(b5, test6) {
-    return unique(mapObject(b5, (n, s) => findRoot(s.tree, s.cells, n.transform.ref, test6)));
+  function root(b5, test7) {
+    return unique(mapObject(b5, (n, s) => findRoot(s.tree, s.cells, n.transform.ref, test7)));
   }
   StateSelection2.root = root;
   registerModifier("rootOfType", rootOfType);
@@ -37490,13 +37490,13 @@ var StateSelection;
     return unique(mapObject(b5, (n, s) => s.cells.get(s.tree.transforms.get(n.transform.ref).parent)));
   }
   StateSelection2.parent = parent;
-  function _findAncestor(tree, cells, root2, test6, findClosest) {
+  function _findAncestor(tree, cells, root2, test7, findClosest) {
     let current2 = tree.transforms.get(root2);
     let ret = void 0;
     while (true) {
       current2 = tree.transforms.get(current2.parent);
       const cell = cells.get(current2.ref);
-      if (cell.obj && test6(cell)) {
+      if (cell.obj && test7(cell)) {
         ret = cell;
         if (findClosest)
           return ret;
@@ -37506,12 +37506,12 @@ var StateSelection;
       }
     }
   }
-  function findAncestor(tree, cells, root2, test6) {
-    return _findAncestor(tree, cells, root2, test6, true);
+  function findAncestor(tree, cells, root2, test7) {
+    return _findAncestor(tree, cells, root2, test7, true);
   }
   StateSelection2.findAncestor = findAncestor;
-  function findRoot(tree, cells, root2, test6) {
-    return _findAncestor(tree, cells, root2, test6, false);
+  function findRoot(tree, cells, root2, test7) {
+    return _findAncestor(tree, cells, root2, test7, false);
   }
   StateSelection2.findRoot = findRoot;
   function findAncestorWithTransformer(tree, cells, root2, transfomers) {
@@ -70452,7 +70452,7 @@ var StructureLookup3D = class {
       builder.commitUnit();
     }
   }
-  findIntoBuilderIf(x, y, z, radius, builder, test6) {
+  findIntoBuilderIf(x, y, z, radius, builder, test7) {
     const { units } = this.structure;
     const closeUnits = this.unitLookup.find(x, y, z, radius);
     if (closeUnits.count === 0)
@@ -70473,7 +70473,7 @@ var StructureLookup3D = class {
       builder.beginUnit(unit2.id);
       for (let j = 0, _j = groupResult.count; j < _j; j++) {
         loc.element = elements[groupResult.indices[j]];
-        if (test6(loc)) {
+        if (test7(loc)) {
           builder.addElement(loc.element);
         }
       }
@@ -82113,7 +82113,7 @@ var MonadicParser = class _MonadicParser {
     });
   }
   MonadicParser2.notFollowedBy = notFollowedBy;
-  function test6(predicate) {
+  function test7(predicate) {
     return new MonadicParser2((input, i) => {
       const char = input.charAt(i);
       if (i < input.length && predicate(char)) {
@@ -82123,17 +82123,17 @@ var MonadicParser = class _MonadicParser {
       }
     });
   }
-  MonadicParser2.test = test6;
+  MonadicParser2.test = test7;
   function oneOf(str11) {
-    return test6((ch) => str11.indexOf(ch) >= 0);
+    return test7((ch) => str11.indexOf(ch) >= 0);
   }
   MonadicParser2.oneOf = oneOf;
   function noneOf(str11) {
-    return test6((ch) => str11.indexOf(ch) < 0);
+    return test7((ch) => str11.indexOf(ch) < 0);
   }
   MonadicParser2.noneOf = noneOf;
   function range2(begin, end4) {
-    return test6((ch) => begin <= ch && ch <= end4).desc(begin + "-" + end4);
+    return test7((ch) => begin <= ch && ch <= end4).desc(begin + "-" + end4);
   }
   MonadicParser2.range = range2;
   function takeWhile(predicate) {
@@ -86100,13 +86100,13 @@ var lang3 = MonadicParser.createLanguage({
       });
       const rangeTest = orExpr(rangeValues);
       const listTest = valuesTest(property2, listValues);
-      let test6;
+      let test7;
       if (rangeTest && listTest) {
-        test6 = B14.core.logic.or([rangeTest, listTest]);
+        test7 = B14.core.logic.or([rangeTest, listTest]);
       } else {
-        test6 = rangeTest ? rangeTest : listTest;
+        test7 = rangeTest ? rangeTest : listTest;
       }
-      return B14.struct.generator.atomGroups({ [testLevel(property2)]: test6 });
+      return B14.struct.generator.atomGroups({ [testLevel(property2)]: test7 });
     });
   },
   Operator: function(r) {
@@ -86354,18 +86354,18 @@ var symbols = [
   }),
   // ============= FLAGS ================
   C3(MolScriptSymbolTable.core.flags.hasAny, (ctx, v3) => {
-    const test6 = v3[1](ctx);
+    const test7 = v3[1](ctx);
     const tested = v3[0](ctx);
-    if (!test6)
+    if (!test7)
       return !!tested;
-    return (tested & test6) !== 0;
+    return (tested & test7) !== 0;
   }),
   C3(MolScriptSymbolTable.core.flags.hasAll, (ctx, v3) => {
-    const test6 = v3[1](ctx);
+    const test7 = v3[1](ctx);
     const tested = v3[0](ctx);
-    if (!test6)
+    if (!test7)
       return !tested;
-    return (tested & test6) === test6;
+    return (tested & test7) === test7;
   }),
   // Structure
   // ============= TYPES ================
@@ -131520,6 +131520,255 @@ test5("shape handler rejects inconsistent alpha sphere arrays without registerin
     assert5.ok(warnings[0].includes("add_alpha_sphere_set inconsistent data"));
   });
   assert5.deepStrictEqual(registered, []);
+});
+
+// tests/unit/popup-host.test.ts
+import assert6 from "node:assert";
+import test6 from "node:test";
+
+// src/managers/popup-host.ts
+var PopupHostManager = class {
+  constructor(viewer) {
+    this.popoutWin = null;
+    this.isReady = false;
+    if (typeof viewer === "string") {
+      this.viewerJsSource = viewer;
+      return;
+    }
+    this.viewerJsSource = viewer.source ?? "";
+    this.viewerModuleUrl = viewer.moduleUrl;
+  }
+  get isOpen() {
+    return this.popoutWin && !this.popoutWin.closed;
+  }
+  async open() {
+    if (this.isOpen) {
+      this.close();
+      return;
+    }
+    let resolvedModuleUrl = null;
+    if (this.viewerModuleUrl) {
+      try {
+        resolvedModuleUrl = new URL(this.viewerModuleUrl, window.location.href).href;
+        fetch(resolvedModuleUrl, { cache: "force-cache" }).catch(() => {
+        });
+      } catch (e) {
+        resolvedModuleUrl = null;
+      }
+    }
+    this.popoutWin = window.open("", "_blank", "width=960,height=720");
+    if (!this.popoutWin) return;
+    this.isReady = false;
+    const doc = this.popoutWin.document;
+    doc.open();
+    doc.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MolSysViewer Popout</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f5f6f8; }
+    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; opacity: 0; transition: opacity 240ms ease; }
+    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #2b2f36; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
+    #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
+    @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
+    /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
+    .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    .molsysviewer-controls button,
+    .molsysviewer-controls input,
+    .molsysviewer-controls select,
+    .molsysviewer-controls textarea,
+    .molsysviewer-controls span { font-family: inherit; }
+    .molsysviewer-controls, .molsysviewer-controls * { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+    .molsysviewer-traj-input::-webkit-inner-spin-button,
+    .molsysviewer-traj-input::-webkit-outer-spin-button { -webkit-appearance: none !important; margin: 0 !important; }
+    .molsysviewer-traj-input { -moz-appearance: textfield !important; appearance: none !important; color: rgba(255,255,255,0.9); background: rgba(40,40,40,0.6); }
+    .molsysviewer-slider { background: transparent; height: 16px; border-radius: 999px; overflow: visible; }
+    .molsysviewer-slider::-webkit-slider-runnable-track { background: rgba(200,200,200,0.35) !important; height: 16px; border-radius: 999px; }
+    .molsysviewer-slider::-webkit-slider-thumb { -webkit-appearance: none !important; width: 16px; height: 16px; border-radius: 50% !important; background: rgba(0,0,0,0.5) !important; margin-top: 0px; }
+  </style>
+  ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
+</head>
+<body>
+  <div id="molsysviewer-loading"><div class="spinner"></div><div>Loading viewer\u2026</div></div>
+  <div id="molsysviewer-pop"></div>
+</body>
+</html>
+        `);
+    doc.close();
+    try {
+      const scriptEl = doc.createElement("script");
+      scriptEl.type = "module";
+      if (this.viewerModuleUrl) {
+        scriptEl.textContent = `
+                    (async () => {
+                        try {
+                            const module = await import("${resolvedModuleUrl ?? ""}");
+                            const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                            if (boot) {
+                                boot(module);
+                            } else {
+                                console.error("MolSysViewer Popout: bootPopup not found in module");
+                            }
+                        } catch (e) {
+                            console.error("MolSysViewer Popout: Boot failed", e);
+                        }
+                    })();
+                `;
+      } else {
+        if (!this.viewerJsSource) {
+          throw new Error("No viewer source code provided to PopupHostManager");
+        }
+        const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+        const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+        console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
+        scriptEl.textContent = `
+                    (async () => {
+                        try {
+                            const module = await import("${popBlobUrl}");
+                            const boot = module.bootPopup || (module.default && module.default.bootPopup);
+                            if (boot) {
+                                boot(module);
+                            } else {
+                                console.error("MolSysViewer Popout: bootPopup not found in module");
+                            }
+                        } catch (e) {
+                            console.error("MolSysViewer Popout: Boot failed", e);
+                        } finally {
+                            URL.revokeObjectURL("${popBlobUrl}");
+                        }
+                    })();
+                `;
+      }
+      doc.body.appendChild(scriptEl);
+    } catch (err) {
+      console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
+    }
+    const interval = window.setInterval(() => {
+      if (!this.popoutWin || this.popoutWin.closed) {
+        this.popoutWin = null;
+        this.isReady = false;
+        window.clearInterval(interval);
+      }
+    }, 2e3);
+  }
+  close() {
+    if (this.popoutWin) {
+      this.popoutWin.close();
+      this.popoutWin = null;
+      this.isReady = false;
+    }
+  }
+  send(type3, data) {
+    if (!this.isReady || !this.popoutWin || this.popoutWin.closed) return;
+    try {
+      this.popoutWin.postMessage({ type: type3, data, from: "host" }, "*");
+    } catch (e) {
+      console.warn("[MolSysViewer Host] Popout message failed", e);
+    }
+  }
+};
+
+// tests/unit/popup-host.test.ts
+function makePopupWindow() {
+  const appended = [];
+  const doc = {
+    html: "",
+    open() {
+    },
+    write(chunk) {
+      this.html += chunk;
+    },
+    close() {
+    },
+    createElement(_tag) {
+      return {
+        type: "",
+        textContent: ""
+      };
+    },
+    body: {
+      appendChild(node) {
+        appended.push(node);
+      }
+    }
+  };
+  const popup = {
+    closed: false,
+    document: doc,
+    Blob: class {
+      constructor(parts, options) {
+        this.parts = parts;
+        this.options = options;
+      }
+    },
+    URL: {
+      createObjectURL: () => "blob:popup-runtime",
+      revokeObjectURL: (_url) => {
+      }
+    },
+    posted: [],
+    postMessage(message, target) {
+      this.posted.push({ message, target });
+    },
+    close() {
+      this.closed = true;
+    }
+  };
+  return { popup, appended, doc };
+}
+test6("popup host resolves moduleUrl and injects module bootstrap", async () => {
+  const previousWindow = globalThis.window;
+  const previousFetch = globalThis.fetch;
+  const { popup, appended, doc } = makePopupWindow();
+  const fetched = [];
+  globalThis.fetch = (url, options) => {
+    fetched.push({ url, options });
+    return Promise.resolve({ ok: true });
+  };
+  globalThis.window = {
+    location: { href: "https://docs.example.dev/views/demo.html" },
+    open: () => popup,
+    setInterval: () => 1,
+    clearInterval: (_id) => {
+    }
+  };
+  try {
+    const manager = new PopupHostManager({ moduleUrl: "./viewer.js" });
+    await manager.open();
+    assert6.strictEqual(
+      fetched[0]?.url,
+      "https://docs.example.dev/views/viewer.js"
+    );
+    assert6.deepStrictEqual(fetched[0]?.options, { cache: "force-cache" });
+    assert6.match(doc.html, /modulepreload/);
+    assert6.match(doc.html, /https:\/\/docs\.example\.dev\/views\/viewer\.js/);
+    assert6.strictEqual(appended.length, 1);
+    assert6.match(appended[0].textContent, /bootPopup/);
+    assert6.match(appended[0].textContent, /https:\/\/docs\.example\.dev\/views\/viewer\.js/);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.fetch = previousFetch;
+  }
+});
+test6("popup host send only posts when popup is ready and open", () => {
+  const { popup } = makePopupWindow();
+  const manager = new PopupHostManager("viewer-source");
+  manager.popoutWin = popup;
+  manager.send("molsysviewer-sync-op", { op: "dummy" });
+  assert6.deepStrictEqual(popup.posted, []);
+  manager.isReady = true;
+  manager.send("molsysviewer-sync-op", { op: "dummy" });
+  assert6.deepStrictEqual(popup.posted, [
+    {
+      message: { type: "molsysviewer-sync-op", data: { op: "dummy" }, from: "host" },
+      target: "*"
+    }
+  ]);
+  popup.closed = true;
+  manager.send("molsysviewer-sync-op", { op: "ignored" });
+  assert6.strictEqual(popup.posted.length, 1);
 });
 /*! Bundled license information:
 
