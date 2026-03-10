@@ -94,11 +94,11 @@ It is organized by execution priority and uses three labels:
   - Region/layer acks from frontend to keep Python registries synchronized.
 
 - `In progress`
-  - Complex interaction tests (global hide/show + hidden regions + selective updates).
+  - Complex interaction tests are broader than before, but popup/export-connected visibility flows still need more coverage.
 
 ### Next actions
 
-- Add combined-flow tests for visibility invariants.
+- Extend coverage from core visibility invariants into popup/export-connected flows.
 - Document edge semantics with executable examples in devguide checkpoints as needed.
 
 ### Criteria
