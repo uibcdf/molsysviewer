@@ -44,12 +44,12 @@ It is organized by execution priority and uses three labels:
 
 - `In progress`
   - Behavioral stabilization and broader regression coverage for remap/replay scenarios.
-  - Single-operation rebuild regressions now exist for `remove()`, `append_structures()`, `add()`, and `set()`, but consecutive-operation coverage is still partial.
+  - Rebuild regressions now exist for `remove()`, `append_structures()`, `add()`, `set()`, and a consecutive-operation chain, but broader cross-feature coverage is still partial.
 
 ### Next actions
 
-- Add consecutive live-edit regressions and validate replay consistency after rebuild chains.
-- Validate replay consistency across consecutive mutating operations.
+- Extend coverage from rebuild mechanics into combined visibility semantics and replay-sensitive export behavior.
+- Validate replay consistency across additional user-facing flows that are not purely live-edit operations.
 
 ### Criteria
 

@@ -172,6 +172,121 @@ def test_set_rebuild_updates_coordinates_with_quantity():
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
 
 
+def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
+    monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
+
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    region = view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="frag",
+        representation="sticks",
+        skip_digestion=True,
+    )
+    region.hide(skip_digestion=True)
+
+    pocket_layer = view.shapes.add_pocket_surface(
+        atom_indices=[0, 1, 2],
+        tag="pocket",
+        skip_digestion=True,
+    )
+    pocket_layer.hide(skip_digestion=True)
+
+    view.set(element="group", selection=[0], group_name="ACE2", skip_digestion=True)
+    view.append_structures(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+    view.remove(selection=[0], skip_digestion=True)
+
+    ops = [msg.get("op") for msg in view._message_history]
+    assert ops == [
+        "clear_all",
+        "load_molsys_payload",
+        "create_layer",
+        "hide_layer",
+        "create_region",
+        "set_region_representation",
+        "hide_region",
+        "add_pocket_surface",
+        "update_visibility",
+    ]
+
+    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    assert payload_msg["multiple_structures"] is True
+    assert len(payload_msg["payload"]["structures"]) == 2
+    assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 21
+    assert payload_msg["payload"]["atoms"]["residue_name"][:5] == ["ACE2"] * 5
+
+    create_region_msg = next(msg for msg in view._message_history if msg.get("op") == "create_region")
+    assert create_region_msg["atom_indices"] == [0, 1]
+    assert view.regions["frag"].atom_indices == (0, 1)
+
+    pocket_msg = next(
+        msg
+        for msg in view._message_history
+        if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
+    )
+    assert pocket_msg["options"]["atom_indices"] == [0, 1]
+
+    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
+    assert visibility_msg["options"]["visible_atom_indices"] == list(range(21))
+
+
+def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
+    monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
+
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    region = view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="frag",
+        representation="sticks",
+        skip_digestion=True,
+    )
+    region.hide(skip_digestion=True)
+
+    pocket_layer = view.shapes.add_pocket_surface(
+        atom_indices=[0, 1, 2],
+        tag="pocket",
+        skip_digestion=True,
+    )
+    pocket_layer.hide(skip_digestion=True)
+
+    view.set(element="group", selection=[0], group_name="ACE2", skip_digestion=True)
+    view.append_structures(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+    view.remove(selection=[0], skip_digestion=True)
+
+    exported = view._clean_message_history()  # noqa: SLF001
+
+    assert [msg.get("op") for msg in exported] == [
+        "clear_all",
+        "load_molsys_payload",
+        "create_layer",
+        "hide_layer",
+        "create_region",
+        "set_region_representation",
+        "hide_region",
+        "add_pocket_surface",
+    ]
+
+    payload_msg = next(msg for msg in exported if msg.get("op") == "load_molsys_payload")
+    assert payload_msg["multiple_structures"] is True
+    assert len(payload_msg["payload"]["structures"]) == 2
+    assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 21
+
+    region_msg = next(msg for msg in exported if msg.get("op") == "create_region")
+    assert region_msg["atom_indices"] == [0, 1]
+
+    pocket_msg = next(
+        msg
+        for msg in exported
+        if msg.get("op") == "add_pocket_surface" and msg.get("options", {}).get("tag") == "pocket"
+    )
+    assert pocket_msg["options"]["atom_indices"] == [0, 1]
+
+    assert not any(msg.get("op") == "update_visibility" for msg in exported)
+
+
 def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]

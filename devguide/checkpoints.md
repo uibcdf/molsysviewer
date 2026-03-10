@@ -38,7 +38,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `remove()`: rebuild with atom-index remap,
     - `append_structures()`: rebuild without atom-index remap, multi-structure payload,
     - `add()`: rebuild with expanded atom payload,
-    - `set()`: rebuild after topological and structural edits.
+    - `set()`: rebuild after topological and structural edits,
+    - consecutive live-edit chains with replay/export assertions.
   - These regressions use real demo viewers instead of synthetic mocks.
 
 - Dev/docs workflow
@@ -58,13 +59,19 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Next Step
 
-- Add a regression for consecutive live edits and confirm replay/export safety after rebuild chains.
+- Shift the next core focus to combined visibility semantics and/or popup/export behavior outside the live-edit matrix.
 
 Why this is next:
 
-- The single-operation live-edit matrix is now covered for `remove()`, `append_structures()`, `add()`, and `set()`.
-- The next failure mode with the highest architectural risk is no longer “one operation breaks rebuild”, but “multiple live edits leave replay/history inconsistent”.
-- This also connects directly to export reliability, because HTML replay depends on `_message_history` staying coherent after rebuilds.
+- The live-edit matrix now covers:
+  - single operations,
+  - a consecutive mutation chain,
+  - and replay/export safety of the rebuilt history.
+- The next high-value core gaps are no longer centered on rebuild mechanics themselves.
+- The strongest remaining architectural risks are:
+  - complex visibility interactions,
+  - popup/popout sync behavior,
+  - broader export reliability outside the already-tested rebuild chain.
 
 ## What We Learned About `set()`
 
@@ -79,9 +86,11 @@ Why this is next:
 
 ## Immediate Plan
 
-1. Add one consecutive-mutations regression over the current live-edit matrix.
-2. Add a focused export/replay regression using rebuilt `_message_history`.
-3. Revisit any remaining unsupported `set()` attribute families only if they surface as real user-facing needs.
+1. Pick the next core cross-cutting behavior:
+   - combined visibility semantics, or
+   - popup/export synchronization behavior.
+2. Add one regression that exercises that behavior through externally visible outcomes.
+3. Revisit additional `set()` attribute families only if they become a real product need.
 
 ## Criteria
 
@@ -95,10 +104,10 @@ Why this is next:
 
 - `add()` still depends on a scoped `NUMBA_CACHE_DIR` workaround in this environment.
 - E2E breadth is still thin relative to the runtime surface.
-- Export/replay regression coverage is still lighter than live-edit coverage.
+- Popup/popout behavior is still lighter in coverage than live-edit and export behavior.
 
 ## Useful Follow-ups
 
-- Add a regression around consecutive live edits (`remove` + `append_structures`, or `add` + `remove`).
-- Add a focused export test that asserts rebuilt `_message_history` remains HTML-replay-safe.
+- Add visibility regressions that combine global show/hide with hidden regions/layers.
+- Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
