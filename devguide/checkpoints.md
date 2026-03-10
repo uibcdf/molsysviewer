@@ -213,3 +213,31 @@ It is intentionally concise and operational.
   - This closes the largest missing handler-family gap in JS unit coverage without coupling tests to Mol* internals.
 - `Ideas`:
   - Add success-path shape tests later through controlled builder seams if the runtime surface is refactored for easier injection.
+
+## 2026-03-10 — CP-2026-03-10-J
+
+- `Scope`: Harden live-edit rebuild coverage for Python-side `remove()` remap/replay flow.
+- `Decisions`:
+  - Use a real demo viewer (`molsysviewer.demo["dialanine"]`) instead of synthetic system mocks for rebuild regression coverage.
+  - Treat rebuild replay as an internal path and bypass public digestion when reapplying already-normalized region/layer/global state.
+  - Derive `multiple_structures` during rebuild from the serialized payload, not from unstable MolSysMT structure accessors.
+- `Status`:
+  - Added a regression test for `remove()` covering:
+    - `clear_all` + payload reload ordering,
+    - region atom-index remap,
+    - shape replay remap for `atom_indices`, `mouth_atom_indices`, and `atom_pairs`,
+    - dropped shapes whose atom-index payload becomes empty,
+    - preserved hidden-layer/global visibility semantics after rebuild.
+  - Fixed rebuild regressions found while exercising the real path:
+    - stale `get_n_structures()` assumption,
+    - unintended argument digestion during internal replay.
+- `Plan`:
+  - Extend live-edit coverage to `append_structures()` and `add()`/`set()` replay semantics.
+  - Reuse this file as the base for future remap/replay edge cases.
+- `Criteria`:
+  - Live edits must preserve region/layer/tag continuity and not corrupt replayable message history.
+  - Internal rebuilds must not re-digest already normalized state.
+- `Perspectives`:
+  - This starts closing the highest-risk Python-side mutation gap: rebuild correctness after atom removal.
+- `Ideas`:
+  - Add a focused export test ensuring rebuilt `_message_history` remains HTML-replay-safe after consecutive live edits.
