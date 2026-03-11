@@ -22,6 +22,11 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `"all"`: the full system loads, the global representation is hidden, and a
   region tagged `"selection"` is created for the selection.
 
+`molsysviewer.tools.basic` is now a public module. Current public helpers there include:
+
+- `concatenate_structures(...)`
+- `merge_views(...)`
+
 ### Notebook rendering
 
 `MolSysView` implements the Jupyter display hook (`_repr_mimebundle_`). This means:

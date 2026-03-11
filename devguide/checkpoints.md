@@ -92,11 +92,23 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 - `molsysviewer.tools`
   - The package now exists and starts with `molsysviewer.tools.basic.concatenate_structures(...)`.
+  - `molsysviewer.tools.basic.merge_views(...)` now exists as the second pure composition primitive.
   - This first tool is intentionally a pure operation:
     - it accepts multiple MolSysMT-compatible systems or `MolSysView` objects,
     - delegates structural concatenation to `molsysmt.concatenate_structures(...)`,
     - and returns a fresh `MolSysView`.
+  - `merge_views(...)` is intentionally view-centric:
+    - it accepts `MolSysView` objects,
+    - delegates molecular-system merging to `molsysmt.merge(...)`,
+    - imports regions/layers/shapes/visibility from all inputs,
+    - resolves tag collisions deterministically with suffixes such as `__2`,
+    - and uses the first view as the source of global representation, controls, and camera snapshot state.
   - The purpose is to grow advanced functionality without inflating the core `MolSysView` facade.
+
+- User documentation
+  - The user guide now has a dedicated `tools/` section.
+  - The first module documented is `tools.basic`.
+  - Each function is expected to get its own tutorial-style page under the owning tools module.
 
 ## Active Decisions
 
@@ -134,7 +146,8 @@ Why this is next:
 - The current `smonitor` integration is now close to exhaustive on the main public orchestration surface.
 - The next work should benefit from cleaner `argdigest` behavior on the public API instead of accumulating more migration warnings.
 - The standard test entrypoint is again reliable for package-root imports, so export/import regressions can be exercised with plain `pytest`.
-- `concatenate_structures(...)` is the correct first step because it opens `tools` with a pure composition primitive that reuses stable contracts we already hardened.
+- `concatenate_structures(...)` was the correct first step because it opened `tools` with a pure composition primitive that reused stable contracts we already hardened.
+- `merge_views(...)` is the correct second step because it defines the policy for multi-view composition explicitly instead of leaving regions/layers/shapes/tag collisions as ad hoc user work.
 
 ## What We Learned About `set()`
 
@@ -150,7 +163,7 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - continue `molsysviewer.tools` with the next pure composition/analysis operation, or
+   - continue `molsysviewer.tools` with the next pure composition/analysis operation beyond `merge_views(...)`, or
    - move to canvas interaction and picking/hover behavior.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Return to support-library integration only if a new product path exposes a real contract gap.
@@ -171,11 +184,11 @@ Why this is next:
 - The support-library hardening pass is no longer the primary blocker, but shape/detail digestion is still incomplete in absolute terms.
 - `smonitor` breadth is improved enough that remaining work should now be selective, not broad-brush.
 - `argdigest` still does not cover every public shape/detail argument; the remaining gaps should be prioritized by real product usage and warnings, not by raw parameter count.
-- `molsysviewer.tools` has only its first primitive so far; package structure and module boundaries still need to mature.
+- `molsysviewer.tools` now has two primitives, but package structure and module boundaries still need to mature.
 
 ## Useful Follow-ups
 
-- Extend `molsysviewer.tools.basic` with the next composition primitive (`merge_views(...)`) once policy decisions are written down.
+- Extend `molsysviewer.tools.basic` beyond `merge_views(...)` only when the next composition/analysis policy is explicit enough to document and test.
 - Add canvas interaction work:
   - hover,
   - pointer semantics,

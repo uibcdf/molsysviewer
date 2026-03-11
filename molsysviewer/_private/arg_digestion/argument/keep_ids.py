@@ -2,6 +2,7 @@ from ...exceptions import ArgumentError
 
 functions_with_boolean = (
         'merge.merge',
+        'merge_views.merge_views',
         'add.add',
         'add_missing_terminal_cappings.add_missing_terminal_cappings'
         )
