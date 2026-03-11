@@ -49,7 +49,7 @@ Implemented (initial `tools`)
 | Could | `remove(...)` | `MolSysView` | Implemented (experimental) | Live: remove atoms/structures; remap indices; reload payload; replay state. |
 | Could | `add(...)` | `MolSysView` | Implemented (experimental) | Live: add another system into current view; reload payload; replay state. |
 | Could | `concatenate_structures(...)` | `molsysviewer.tools.basic` | Implemented (initial) | Pure: return a new view built from multiple inputs/frames. |
-| Could | `merge_views(...)` | `molsysviewer.tools` | Planned | Pure: return a new view from multiple views (systems + scene state). |
+| Could | `merge_views(...)` | `molsysviewer.tools.basic` | Implemented (initial) | Pure: return a new view from multiple views (systems + imported scene state). |
 | Could | Geometry and analysis ops | `molsysviewer.tools` | Planned | Distances/angles/dihedrals, coordinate edits, etc. |
 
 ## Contracts (what users should be able to assume)
@@ -165,11 +165,17 @@ Minimum expected behavior:
 
 `add(...)` is a live “extend this view” operation.
 
-`merge_views(...)` is a pure “build a new view” operation and should handle:
+`merge_views(...)` is a pure “build a new view” operation and currently handles:
 
-- Tag collisions (renaming strategy).
-- Atom index remapping for all imported regions/layers/shapes.
-- A clear policy for which view’s global settings win (camera, background, global representation, etc.).
+- Tag collisions via deterministic suffixes (`__2`, `__3`, ...).
+- Atom index remapping for imported regions and atom-index-based shapes.
+- First-view-wins policy for global representation, controls, and last camera snapshot.
+
+Not yet part of the current contract:
+
+- background/spin/swing state import,
+- richer popup-linked UI state,
+- non-atom-index scene semantics that only exist in frontend memory.
 
 ## Acceptance criteria (minimal tests)
 

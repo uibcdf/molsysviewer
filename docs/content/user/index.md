@@ -10,6 +10,7 @@ If you are new here, start with {ref}`User_Intro_Installation` and {ref}`User_In
 
 introduction/index.md
 molecular_system/index.md
+tools/index.md
 viewer/index.md
 scene_management/index.md
 representations/index.md

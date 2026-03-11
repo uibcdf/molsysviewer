@@ -35,10 +35,10 @@ Direction:
 Current state:
 
 - `molsysviewer.tools.basic.concatenate_structures(...)` exists as the first pure composition primitive.
+- `molsysviewer.tools.basic.merge_views(...)` now exists as the first view-composition helper with explicit state-import policy.
 
 Planned next:
 
-- `merge_views(...)`
 - additional `tools.basic` composition helpers
 - later, analysis / structure / topology / hbonds-oriented tool modules as their responsibilities become concrete
 
@@ -103,6 +103,7 @@ These are no longer roadmap wishes; they are implemented realities:
 - broader `tools` surface
 - richer interaction and picking
 - some overlay families still need visual/behavioral refinement
+- more tools modules beyond `basic`
 - public docs still lag behind current implementation in several places
 - JS tests still do not cover the full runtime surface
 

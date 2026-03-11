@@ -97,12 +97,15 @@ It is organized by execution priority and uses three labels:
 - `In progress`
   - `molsysviewer.tools` now exists as the intended home for advanced operations that should not inflate `MolSysView`.
   - `molsysviewer.tools.basic.concatenate_structures(...)` exists as the first pure composition primitive.
+  - `molsysviewer.tools.basic.merge_views(...)` now exists as the first view-centric composition primitive.
+  - User docs now include a dedicated `tools/` section with module/function pages for `tools.basic`.
 
 ### Next actions
 
-- Add the next `tools.basic` operation only when its behavior and ownership are clear (`merge_views(...)` is the likely candidate).
+- Add the next `tools.basic` operation only when its behavior and ownership are clear beyond `merge_views(...)`.
 - Decide module boundaries intentionally (`basic`, `structure`, `topology`, `hbonds`, `build`) instead of copying MolSysMT mechanically.
 - Keep `tools` operations explicit about whether they are pure (return a new view) or live (mutate an existing one).
+- Keep user docs organized under `user/tools/<module>/<function>.md` or notebook equivalents so the tools surface can grow without scattering tutorials.
 
 ### Criteria
 
