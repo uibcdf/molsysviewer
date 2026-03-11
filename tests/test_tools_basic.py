@@ -43,6 +43,27 @@ def test_tools_basic_query_wrappers_operate_on_view():
     assert info.data.shape[0] == 1
 
 
+def test_object_api_contains_extract_and_is_composed_of():
+    view = demo["dialanine"]
+
+    assert view.contains(n_peptides=True) is True
+    assert view.is_composed_of(n_molecules=1) is True
+
+    subset = view.extract(selection=[0, 1, 2], debug_js=True)
+    assert isinstance(subset, MolSysView)
+    assert msm.get(subset._molsys, element="system", n_atoms=True, skip_digestion=True) == 3  # noqa: SLF001
+
+
+def test_region_and_whole_contains_and_is_composed_of_use_scoped_semantics():
+    view = demo["dialanine"]
+    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+
+    assert view.whole.contains(n_peptides=True) is True
+    assert view.whole.is_composed_of(n_molecules=1) is True
+    assert region.contains(selection=[0], n_atoms=True) is True
+    assert region.is_composed_of(n_atoms=3) is True
+
+
 def test_tools_basic_extract_returns_subset_view():
     view = demo["dialanine"]
 
@@ -51,6 +72,53 @@ def test_tools_basic_extract_returns_subset_view():
     assert isinstance(result, MolSysView)
     assert result is not view
     assert msm.get(result._molsys, element="system", n_atoms=True, skip_digestion=True) == 3  # noqa: SLF001
+
+
+def test_tools_basic_copy_returns_independent_view_with_scene_state():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.whole.set_representation("cartoon", skip_digestion=True)
+    view.whole.hide(skip_digestion=True)
+    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+    region.hide(skip_digestion=True)
+    pocket = view.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
+    pocket.hide(skip_digestion=True)
+    view.hide(selection=[2], skip_digestion=True)
+
+    result = tools.copy(view, debug_js=True)
+
+    assert isinstance(result, MolSysView)
+    assert result is not view
+    assert result._molsys is not view._molsys  # noqa: SLF001
+    assert set(result.regions) == {"frag"}
+    assert set(result.layers) == {"pocket"}
+    assert result.regions["frag"].atom_indices == (0, 1, 2)
+    assert result.regions["frag"]._hidden is True  # noqa: SLF001
+    assert result.layers["pocket"]._hidden is True  # noqa: SLF001
+    assert result._global_hidden is True  # noqa: SLF001
+
+
+def test_tools_basic_compare_compares_loaded_molecular_systems_only():
+    view_a = demo["dialanine"]
+    view_b = demo["dialanine"]
+    view_c = tools.extract(view_b, selection=[0, 1, 2], debug_js=True)
+
+    assert tools.compare(view_a, view_b) is True
+    assert tools.compare(view_a, view_c) is False
+    assert tools.compare(view_a, view_c, output_type="dictionary", n_atoms=False)["n_atoms"] is True
+
+
+def test_tools_basic_merge_returns_new_view_from_multiple_views():
+    view_a = demo["dialanine"]
+    view_b = demo["dialanine"]
+
+    result = tools.merge([view_a, view_b], debug_js=True)
+
+    assert isinstance(result, MolSysView)
+    assert result is not view_a
+    assert result is not view_b
+    assert msm.get(result._molsys, element="system", n_atoms=True, skip_digestion=True) == 44  # noqa: SLF001
 
 
 def test_tools_basic_live_edit_wrappers_delegate_to_view(monkeypatch):

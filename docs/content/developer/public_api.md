@@ -34,8 +34,10 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `append_structures(...)`
 - `contains(...)`
 - `is_composed_of(...)`
+- `copy(...)`
+- `compare(...)`
 - `concatenate_structures(...)`
-- `merge_views(...)`
+- `merge(...)`
 
 ### Notebook rendering
 

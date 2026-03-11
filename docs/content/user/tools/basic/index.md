@@ -20,6 +20,8 @@ add.md
 append_structures.md
 contains.md
 is_composed_of.md
+copy.md
+compare.md
 concatenate_structures.md
-merge_views.md
+merge.md
 ```
