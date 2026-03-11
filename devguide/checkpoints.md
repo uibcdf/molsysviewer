@@ -17,10 +17,10 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-- Harden `argdigest` coverage on the public API where missing digesters still create warnings or reject valid calls.
-- Use `smonitor` as a developer/QA accelerator, not just as a catalog/config dependency.
+- Resume feature implementation toward 1.0 on top of the now-hardened runtime/contracts layer.
+- Start the `molsysviewer.tools` package as the home for advanced viewer-safe operations.
 - Keep `devguide/` aligned with the real repository state.
-- Prioritize regression coverage for behavior that crosses Python <-> TypeScript boundaries, rebuild/replay flows, or support-library contracts.
+- Prioritize regression coverage for new product-facing behavior, especially where it composes multiple systems/views.
 
 ## Current State
 
@@ -90,11 +90,20 @@ Do not append dated historical entries unless a date is itself operationally rel
   - Variadic `ShapesManager` forwarding methods no longer pretend to digest `*args/**kwargs`; digestion is delegated to the concrete shape helper methods that actually own the argument contract.
   - New regression tests now fail if those core public paths emit `DigestNotDigestedWarning`.
 
+- `molsysviewer.tools`
+  - The package now exists and starts with `molsysviewer.tools.basic.concatenate_structures(...)`.
+  - This first tool is intentionally a pure operation:
+    - it accepts multiple MolSysMT-compatible systems or `MolSysView` objects,
+    - delegates structural concatenation to `molsysmt.concatenate_structures(...)`,
+    - and returns a fresh `MolSysView`.
+  - The purpose is to grow advanced functionality without inflating the core `MolSysView` facade.
+
 ## Active Decisions
 
 - Use real demo viewers when regression value depends on real MolSysMT behavior.
 - Prefer contract-level and externally observable assertions over private implementation coupling.
 - Treat `DigestNotDigestedWarning` on stable public API as integration debt, not benign noise.
+- Keep `MolSysView` small; place advanced composition/analysis operations in `molsysviewer.tools`.
 - Treat internal rebuild/replay as internal state application:
   - it must not re-digest already normalized state,
   - it must preserve replayable `_message_history`,
@@ -106,7 +115,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Next Step
 
-- Resume feature implementation on the highest-value 1.0 path, with the support-library layer now much less noisy and better instrumented.
+- Continue building out `molsysviewer.tools` and the next 1.0-facing interaction/features on top of the stabilized runtime.
 
 Why this is next:
 
@@ -125,6 +134,7 @@ Why this is next:
 - The current `smonitor` integration is now close to exhaustive on the main public orchestration surface.
 - The next work should benefit from cleaner `argdigest` behavior on the public API instead of accumulating more migration warnings.
 - The standard test entrypoint is again reliable for package-root imports, so export/import regressions can be exercised with plain `pytest`.
+- `concatenate_structures(...)` is the correct first step because it opens `tools` with a pure composition primitive that reuses stable contracts we already hardened.
 
 ## What We Learned About `set()`
 
@@ -140,10 +150,10 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - resume feature implementation on the highest-value 1.0 path, or
-   - only return to support-library integration if a new product path exposes a real contract gap.
+   - continue `molsysviewer.tools` with the next pure composition/analysis operation, or
+   - move to canvas interaction and picking/hover behavior.
 2. Add one regression that exercises that behavior through externally visible outcomes.
-3. Revisit additional `set()` attribute families only if they become a real product need.
+3. Return to support-library integration only if a new product path exposes a real contract gap.
 
 ## Criteria
 
@@ -158,12 +168,20 @@ Why this is next:
 - `add()` still depends on a scoped `NUMBA_CACHE_DIR` workaround in this environment.
 - E2E breadth is still thin relative to the runtime surface.
 - Popup/popout behavior is still lighter in coverage than live-edit, but no longer the clearest blocker for resuming implementation.
-- The support-library hardening pass is still in progress until the remaining integration cleanup is committed and documented.
+- The support-library hardening pass is no longer the primary blocker, but shape/detail digestion is still incomplete in absolute terms.
 - `smonitor` breadth is improved enough that remaining work should now be selective, not broad-brush.
 - `argdigest` still does not cover every public shape/detail argument; the remaining gaps should be prioritized by real product usage and warnings, not by raw parameter count.
+- `molsysviewer.tools` has only its first primitive so far; package structure and module boundaries still need to mature.
 
 ## Useful Follow-ups
 
+- Extend `molsysviewer.tools.basic` with the next composition primitive (`merge_views(...)`) once policy decisions are written down.
+- Add canvas interaction work:
+  - hover,
+  - pointer semantics,
+  - picking callbacks,
+  - shared highlight/selection flows.
+- Continue visual and behavioral refinement of pockets and pharmacophore overlays.
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
