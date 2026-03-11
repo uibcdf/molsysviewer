@@ -1,6 +1,6 @@
 import numpy as np
 from ...exceptions import ArgumentError
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 
 functions_where_boolean = (
     'molsysmt.basic.get.get',

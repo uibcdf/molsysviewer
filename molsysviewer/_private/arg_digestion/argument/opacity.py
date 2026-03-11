@@ -1,6 +1,6 @@
 from molsysviewer._private.exceptions import ArgumentError
 import numpy as np
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 
 def digest_opacity(opacity, caller=None):
 

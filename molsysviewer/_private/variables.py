@@ -1,5 +1,5 @@
 import numpy as np
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 
 def is_all(variable):
 
@@ -109,7 +109,7 @@ def is_compatible_with_coordinates_value(variable):
 
     if isinstance(value, (list, tuple, set)):
 
-        value = np.ndarray(value)
+        value = np.array(value)
 
     if isinstance(value, np.ndarray):
 
@@ -151,7 +151,7 @@ def is_compatible_with_coordinates(variable):
         if is_compatible_with_coordinates_value(variable):
             output = True
 
-    return True
+    return output
 
 def make_coordinates_like(variable, standardized=True):
 
@@ -181,4 +181,3 @@ def make_coordinates_like(variable, standardized=True):
         raise ValueError()
 
     return output
-

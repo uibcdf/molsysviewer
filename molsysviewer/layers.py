@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from smonitor import signal
+
 from ._private.arg_digestion import digest
 
 
@@ -32,18 +34,21 @@ class Layer:
     def _send_create(self) -> None:
         self._send("create_layer", kind=self.kind, meta=self.meta)
 
+    @signal(tags=["visibility", "layer"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
         """Show this layer (all contained visuals)."""
         self._hidden = False
         self._send("show_layer")
 
+    @signal(tags=["visibility", "layer"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         """Hide this layer (all contained visuals)."""
         self._hidden = True
         self._send("hide_layer")
 
+    @signal(tags=["layer"])
     @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         """Remove this layer and its visuals."""
@@ -53,6 +58,7 @@ class Layer:
         self._send("delete_layer")
         self._view._unregister_layer(self.tag)  # noqa: SLF001
 
+    @signal(tags=["layer"])
     @digest()
     def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
         """Change this layer's tag (and update the registry)."""

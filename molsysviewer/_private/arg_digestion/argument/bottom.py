@@ -1,6 +1,6 @@
 from ...exceptions import ArgumentError
 import numpy as np
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 from molsysviewer._private.input_arguments import can_be_selection
 from molsysviewer._private.variables import make_coordinates_like
 

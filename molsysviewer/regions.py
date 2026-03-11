@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 import molsysmt as msm
+from smonitor import signal
 from ._private.arg_digestion import digest
 
 
@@ -100,6 +101,7 @@ class Region:
 
     # --- public API ---
 
+    @signal(tags=["region", "selection"])
     @digest()
     def select(
         self,
@@ -146,6 +148,7 @@ class Region:
 
         return self._intersect_indices(selected, scope)
 
+    @signal(tags=["region", "query"])
     @digest()
     def get(
         self,
@@ -207,6 +210,7 @@ class Region:
             **kwargs,
         )
 
+    @signal(tags=["region", "query"])
     @digest()
     def info(
         self,
@@ -242,6 +246,7 @@ class Region:
             skip_digestion=skip_digestion,
         )
 
+    @signal(tags=["region", "representation"])
     @digest()
     def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Apply or update a representation for this region.
@@ -268,6 +273,7 @@ class Region:
             params=self.repr_params,
         )
 
+    @signal(tags=["region"])
     @digest()
     def new_complementary_region(self, tag: str | None = None, skip_digestion: bool = False, **kwargs: Any) -> "Region":
         """Create a new region with the complement of this region's atoms.
@@ -287,18 +293,21 @@ class Region:
             **kwargs,
         )
 
+    @signal(tags=["region", "visibility"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
         """Show this region (all attached representations)."""
         self._hidden = False
         self._send("show_region")
 
+    @signal(tags=["region", "visibility"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         """Hide this region (all attached representations)."""
         self._hidden = True
         self._send("hide_region")
 
+    @signal(tags=["region"])
     @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         """Remove this region and its representations."""

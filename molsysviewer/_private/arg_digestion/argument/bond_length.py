@@ -1,5 +1,5 @@
 import numpy as np
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
 from molsysviewer._private.variables import is_iterable
 
