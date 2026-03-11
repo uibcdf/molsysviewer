@@ -24,6 +24,16 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 
 `molsysviewer.tools.basic` is now a public module. Current public helpers there include:
 
+- `select(...)`
+- `get(...)`
+- `info(...)`
+- `extract(...)`
+- `set(...)`
+- `remove(...)`
+- `add(...)`
+- `append_structures(...)`
+- `contains(...)`
+- `is_composed_of(...)`
 - `concatenate_structures(...)`
 - `merge_views(...)`
 
