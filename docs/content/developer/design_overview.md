@@ -223,6 +223,9 @@ class MolSysView:
     def hide(self, *a, **k): return self.basic.hide(*a, **k)
     def show(self, *a, **k): return self.basic.show(*a, **k)
     def isolate(self, *a, **k): return self.basic.isolate(*a, **k)
+    def focus_selection(self, *a, **k): ...
+    def focus_region(self, *a, **k): ...
+    def make_regions_by(self, *a, **k): ...
 
     # cam
     def center_on(self, *a, **k): return self.cam.center_on(*a, **k)

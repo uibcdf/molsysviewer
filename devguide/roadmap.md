@@ -113,6 +113,7 @@ It is organized by execution priority and uses three labels:
 - Keep focus helpers (`focus_selection`, `focus_region`, `Whole.focus`, `Region.focus`) on the object side.
 - Keep region-building helpers on `MolSysView` when they create live scene objects rather than pure return values.
 - Prefer one parameterized region-building entrypoint (`make_regions_by(element=...)`) over multiple near-duplicate `split_by_*` methods.
+- Keep `make_regions_by(...)` intentionally limited to useful inspection levels (`chain`, `molecule`, `entity`) unless a stronger product need appears.
 
 ### Criteria
 
