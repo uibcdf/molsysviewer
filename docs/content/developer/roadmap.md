@@ -1,205 +1,132 @@
 # Roadmap
 
 This page is public on purpose.
-It captures planning intent, not a set of commitments.
+It captures current engineering direction toward `1.0`, not a frozen promise list.
 
-# MolSysViewer — ROADMAP (Unified and Definitive)
-_Last updated: 2025-11_
+## Current Position
 
-This unified roadmap consolidates prior planning notes into a single place.
+MolSysViewer already has a solid core:
 
----
+- Python facade centered on `MolSysView`
+- TypeScript runtime split into handlers
+- native MolSys payload loading
+- regions / layers / whole abstractions
+- live structural editing (`append_structures`, `set`, `add`, `remove`)
+- replayable HTML export
+- popup host + popup baseline synchronization
+- major scientific overlay families
 
-# Phase 0 — Architecture Reset (Completed)
+The main work is no longer “make the basic viewer exist”.
+The main work is:
 
-### Achievements
-- Full migration away from legacy JupyterLab-extension code.
-- Adoption of anywidget for modern rendering.
-- Build system based on TypeScript + esbuild.
-- Full control of the Mol* runtime via `initViewerAsync`.
-- Corrected Mol* initialization sequencing.
-- Robust, asynchronous Python ↔ JavaScript messaging.
-- First working custom shapes (transparent spheres).
+- expanding product capability,
+- stabilizing feature breadth,
+- and keeping runtime contracts solid while that surface grows.
 
----
+## Priority Toward 1.0
 
-# Phase 1 — Core Features (Active)
+### 1. Advanced Operations via `molsysviewer.tools`
 
-## 1. Molecule Input
-- [x] Load PDB/mmCIF strings
-- [x] Load from remote URLs
-- [ ] Load native MolSysMT systems
-- [ ] Load multi-frame trajectories
+Direction:
 
----
+- keep `MolSysView` relatively small;
+- grow advanced operations in `molsysviewer.tools`.
 
-## 2. Shape System (v1)
-- [x] Transparent sphere
-- [x] `add_sphere()` Python API
-- [x] `add_spheres()` vectorized API
-- [ ] Point primitives (billboards)
-- [ ] Arrows
-- [ ] Cylinders
-- [ ] Mesh loading
-- [ ] Text labels
+Current state:
 
----
+- `molsysviewer.tools.basic.concatenate_structures(...)` exists as the first pure composition primitive.
 
-## 3. Scene Management (v1)
-- [ ] Object tagging (`tag=`)
-- [ ] `viewer.clear(tag=...)`
-- [ ] Camera utilities
-- [ ] Visibility toggles for custom objects
+Planned next:
 
----
+- `merge_views(...)`
+- additional `tools.basic` composition helpers
+- later, analysis / structure / topology / hbonds-oriented tool modules as their responsibilities become concrete
 
-# Phase 1.5 — Immediate Next Steps
-(Previously in `NEXT_STEPS.md`, now formalized)
+### 2. Richer Interaction on the Canvas
 
-### Shape Grouping
-- `tag=` parameter
-- Tag registry
-- `clear(tag=...)` implementation
+High-value 1.0 direction:
 
-### New Shape Primitives
-- Billboards / points
-- Arrows
-- Cylinders
-- Mesh importers
-- 3D labels
+- hover behavior for atoms / regions / overlays
+- pointer semantics and picking
+- tooltips / lightweight UI feedback
+- callbacks or event bridges for interaction-driven workflows
+- shared highlight / selection flows
 
-### Camera Utilities
-- `center_on()`
-- `focus_on_sphere()`
-- `fit_to_bbox()`
+### 3. Overlay Maturity
 
-### Rendering Engine Enhancements
-- Vectorized `add_spheres` inside JS
-- Efficient multi-sphere representations
-- Internal shape manager (IDs, delete, visibility)
-- Debugging tools: logging, HUD text, performance stats
+Important for 1.0:
 
----
+- pockets
+- pharmacophore features
+- channel tubes
+- labels
+- additional primitives such as points / arrows / cylinders
 
-# Phase 2 — Integration with the uibcdf Ecosystem
+This means both:
 
-## TopoMT Integration
-- [ ] Alpha-sphere rendering
-- [ ] Pocket surfaces
-- [ ] Cavity rims and mouth borders
-- [ ] Feature-based color schemes
+- rendering quality,
+- and reliable behavior across replay / export / rebuild flows.
 
-## PharmacophoreMT Integration
-- [ ] Pharmacophoric spheres
-- [ ] Donor/acceptor arrow glyphs
-- [ ] Aromatic ring discs
-- [ ] Exclusion volumes
+### 4. Visibility / Export / Popup Breadth
 
-## MolSysMT Integration
-- [ ] Load MolSysMT systems directly
-- [ ] Shared selections/highlights
-- [ ] Trajectory stepping (previous, next, play, loop)
+The baseline contracts are already in place.
+What remains is broader coverage and more edge-case confidence for:
 
----
+- visibility combinations,
+- export continuity,
+- popup synchronization,
+- and interaction between these systems.
 
-# Phase 3 — UX / UI Enhancements
+### 5. Incremental Runtime Improvements
 
-- [ ] Scene inspector panel
-- [ ] Prebuilt color palettes
-- [ ] Text overlays for annotations
-- [ ] Screenshot export
-- [ ] Scene serialization to JSON
+Longer-range, but already part of the design direction:
 
----
+- more Mol*-native incremental updates
+- better trajectory/update handling
+- eventual Level B state-tree integration instead of full reload/replay in some paths
 
-# Phase 4 — Structure Module
+This is not the immediate `1.0` blocker.
 
-## Numerical Functions (`get_*`)
-- [ ] Distances
-- [ ] Angles
-- [ ] Dihedrals
-- [ ] Neighbors / contacts
-- [ ] Radius of gyration
-- [ ] PCA
-- [ ] Transformations (rotate, center, align)
+## What Is Already Done
 
-## Visual Functions (`show_*`)
-- [ ] Show distances
-- [ ] Show angles
-- [ ] Show dihedrals
-- [ ] Show neighbors
-- [ ] Show principal axes
+These are no longer roadmap wishes; they are implemented realities:
 
----
+- loading MolSysMT-compatible systems into the viewer
+- trajectory-capable MolSys payload path
+- tag-based regions / layers / shape registration
+- core camera helpers and HTML export
+- pocket / blob / tube / ellipsoid / pharmacophore / tetrahedra / triangle-face overlays
+- live editing with rebuild/replay contracts
 
-# Phase 5 — Hbonds & Topology Module
+## What Is Still Missing or Incomplete
 
-## Hydrogen Bonds
-- [ ] `get_hbonds()`
-- [ ] `show_hbonds()`
+- broader `tools` surface
+- richer interaction and picking
+- some overlay families still need visual/behavioral refinement
+- public docs still lag behind current implementation in several places
+- JS tests still do not cover the full runtime surface
 
-## Topology
-- [ ] `get_bonds()`
-- [ ] `show_bonds()`
-- [ ] Integration with MolSysMT topology tools
+## Non-Goals for the Immediate Next Step
 
----
+These are valuable, but not the next move:
 
-# Phase 6 — Advanced Shape Primitives
+- broad support-library hardening for its own sake
+- full Mol* incremental architecture rewrite
+- performance/engine expansion before the feature surface is mature
 
-- [ ] Planes
-- [ ] Advanced meshes
-- [ ] Volumetric representations
-- [ ] Scalar fields (e.g., ESP, density)
+## Immediate Next Step
 
----
+The immediate direction is:
 
-# Phase 7 — Engines & Performance
+1. keep roadmap/docs aligned with real repository state
+2. continue growing `molsysviewer.tools`
+3. move next into user-facing product features such as interaction and overlay maturity
 
-## Multi-Engine Support
-- `"molsysmt"` (default scientific engine)
-- `"molstar"` (ultrafast mass distance operations)
-- `"numpy"`
-- `"numba"`
-- `"cupy"` (GPU acceleration, future)
+## Long-Term Vision
 
-## Benchmarking Suite
-- Load times
-- Render performance
-- Shape scalability
+MolSysViewer should become the visualization layer of the UIBCDF ecosystem:
 
----
-
-# Phase 8 — Documentation, Tests & Demos
-
-- Comprehensive tutorials
-- API reference
-- Example Jupyter notebooks
-- Integration with MolSysMT, TopoMT, PharmacophoreMT
-- Unit tests and visual tests
-
----
-
-# Long-Term Vision
-
-MolSysViewer aims to become the central visualization engine of the uibcdf
-ecosystem.
-
----
-
-# Legacy Notes
-(Useful concepts preserved from older roadmaps)
-
-- Scene inspector panel
-- Clipping planes
-- Regional highlighting
-- JS → Python callbacks
-- Animation systems (time-driven)
-- Volume rendering
-
----
-
-# Current Status (Summary)
-
-MolSysViewer stands on a solid, modern, extensible foundation and is ready to
-grow into a fully capable visualization and analysis platform.
+- viewer-centric
+- MolSysMT-aware
+- strong in scientific overlays
+- robust in notebooks, exports, and synchronized multi-view workflows

@@ -90,7 +90,26 @@ It is organized by execution priority and uses three labels:
 - Keep Python option normalization deterministic and validated.
 - Keep shape ops replay-safe for exports and rebuild flow.
 
-## 4) Visibility, Regions/Layers, and Global Semantics
+## 4) Tools and Advanced Viewer-Safe Operations
+
+### Status
+
+- `In progress`
+  - `molsysviewer.tools` now exists as the intended home for advanced operations that should not inflate `MolSysView`.
+  - `molsysviewer.tools.basic.concatenate_structures(...)` exists as the first pure composition primitive.
+
+### Next actions
+
+- Add the next `tools.basic` operation only when its behavior and ownership are clear (`merge_views(...)` is the likely candidate).
+- Decide module boundaries intentionally (`basic`, `structure`, `topology`, `hbonds`, `build`) instead of copying MolSysMT mechanically.
+- Keep `tools` operations explicit about whether they are pure (return a new view) or live (mutate an existing one).
+
+### Criteria
+
+- `tools` should grow product capability without turning `MolSysView` into a grab bag.
+- Operations that compose multiple systems/views should use real demo regressions and preserve viewer-safe semantics.
+
+## 5) Visibility, Regions/Layers, and Global Semantics
 
 ### Status
 
@@ -113,7 +132,7 @@ It is organized by execution priority and uses three labels:
 - `region.hide()` must remain sticky across global show/hide cycles.
 - Whole/global operations must not accidentally mutate region-specific hidden state.
 
-## 5) Export, Embedding, and Popup
+## 6) Export, Embedding, and Popup
 
 ### Status
 
@@ -138,7 +157,7 @@ It is organized by execution priority and uses three labels:
 - Export output must be reproducible from message history.
 - Runtime source should remain decoupled from generated-artifact manual edits.
 
-## 6) Testing and Quality Gates
+## 7) Testing and Quality Gates
 
 ### Status
 
@@ -162,7 +181,7 @@ It is organized by execution priority and uses three labels:
 - Every protocol-significant behavior should be covered in either Python or JS tests.
 - Keep E2E deterministic and environment-aware (browser/WebGL constraints).
 
-## 7) Documentation and Development Memory
+## 8) Documentation and Development Memory
 
 ### Status
 

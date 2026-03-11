@@ -9,6 +9,7 @@ You treat these as public:
 
 - `molsysviewer.viewer.MolSysView`
 - `molsysviewer.new_view.new_view`
+- `molsysviewer.tools.*`
 - `molsysviewer.load.load` (convenience wrapper, if exposed)
 - `molsysviewer.demo` (demo viewers used by docs and tests)
 - `molsysviewer.config.*` (configuration and user presets)

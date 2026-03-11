@@ -19,6 +19,10 @@ Planned
 - The `molsysviewer.tools.*` toolbox module for advanced operations (multi-view composition, geometry edits, analysis).
 - “Level B” Mol* state-tree integration for incremental updates.
 
+Implemented (initial `tools`)
+- `molsysviewer.tools.basic.concatenate_structures(...)`.
+  This is the first pure composition helper and returns a fresh `MolSysView`.
+
 ## Scope and principles
 
 - **User-facing surface stays small**: we expose only what makes sense in a viewer-centric workflow.
@@ -44,7 +48,7 @@ Planned
 | Should | `set(...)` | `MolSysView` | Implemented | Live: mutate via MolSysMT; reload payload; replay state. |
 | Could | `remove(...)` | `MolSysView` | Implemented (experimental) | Live: remove atoms/structures; remap indices; reload payload; replay state. |
 | Could | `add(...)` | `MolSysView` | Implemented (experimental) | Live: add another system into current view; reload payload; replay state. |
-| Could | `concatenate_structures(...)` | `molsysviewer.tools` | Planned | Pure: return a new view built from multiple inputs/frames. |
+| Could | `concatenate_structures(...)` | `molsysviewer.tools.basic` | Implemented (initial) | Pure: return a new view built from multiple inputs/frames. |
 | Could | `merge_views(...)` | `molsysviewer.tools` | Planned | Pure: return a new view from multiple views (systems + scene state). |
 | Could | Geometry and analysis ops | `molsysviewer.tools` | Planned | Distances/angles/dihedrals, coordinate edits, etc. |
 
@@ -75,7 +79,7 @@ This avoids the silent bug where atom indices are accidentally interpreted as in
 
 ## Implementation notes (high level)
 
-### `molsysviewer.tools` (planned)
+### `molsysviewer.tools` (active direction)
 
 The `molsysviewer.tools` namespace is intended for operations that go beyond “viewer basics”, for example:
 
@@ -85,6 +89,11 @@ The `molsysviewer.tools` namespace is intended for operations that go beyond “
 
 These functions may be *pure* (return a new `MolSysView`) or *live* (mutate an existing view), but the behavior must be
 explicit in their docstrings and user-facing documentation.
+
+Current direction:
+
+- start with `tools.basic` for broadly useful composition helpers;
+- grow additional modules (`structure`, `topology`, `hbonds`, `build`) only when their responsibilities become concrete in MolSysViewer terms.
 
 ### Mol* state-tree integration (Level B, planned for v2)
 
