@@ -73,6 +73,46 @@ _ALLOWED_PRESETS = {
 }
 
 
+def _signal_value(args: tuple[Any, ...], kwargs: dict[str, Any], index: int, name: str) -> Any:
+    if name in kwargs:
+        return kwargs[name]
+    if len(args) > index:
+        return args[index]
+    return None
+
+
+def _load_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    molecular_system = _signal_value(args, kwargs, 1, "molecular_system")
+    return {"molecular_system": type(molecular_system).__name__ if molecular_system is not None else None}
+
+
+def _zoom_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {"selection": _signal_value(args, kwargs, 1, "selection")}
+
+
+def _controls_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "visible": _signal_value(args, kwargs, 1, "visible"),
+        "autohide": _signal_value(args, kwargs, 2, "autohide"),
+    }
+
+
+def _camera_snapshot_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    snapshot = _signal_value(args, kwargs, 1, "snapshot")
+    return {
+        "duration_ms": _signal_value(args, kwargs, 2, "duration_ms"),
+        "snapshot_keys": sorted(snapshot.keys()) if isinstance(snapshot, dict) else [],
+    }
+
+
+def _write_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "output_filename": _signal_value(args, kwargs, 1, "output_filename"),
+        "mode": _signal_value(args, kwargs, 5, "mode"),
+        "include_popout": _signal_value(args, kwargs, 4, "include_popout"),
+    }
+
+
 class MolSysView:
     """Mol* viewer widget with a Python-facing API.
 
@@ -417,7 +457,7 @@ class MolSysView:
         layer._send_create()  # noqa: SLF001
         return layer
 
-    @signal(tags=["viewer", "controls"])
+    @signal(tags=["viewer", "controls"], extra_factory=_controls_signal_extra)
     @digest()
     def set_controls_visible(
         self,
@@ -679,7 +719,7 @@ class MolSysView:
     # --- Public loading API ---
 
     @dep_digest('molsysmt')
-    @signal(tags=["load"])
+    @signal(tags=["load"], extra_factory=_load_signal_extra)
     @digest()
     def load(
         self,
@@ -767,7 +807,7 @@ class MolSysView:
         self.atom_mask[atom_indices] = True
         self._update_visibility_in_frontend()
 
-    @signal(tags=["camera"])
+    @signal(tags=["camera"], extra_factory=_zoom_signal_extra)
     @digest()
     def zoom(
         self,
@@ -893,7 +933,7 @@ class MolSysView:
             }
         )
 
-    @signal(tags=["camera"])
+    @signal(tags=["camera"], extra_factory=lambda args, kwargs: {"pretty": _signal_value(args, kwargs, 1, "pretty")})
     @digest()
     def get_camera_snapshot(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
         """Return the last camera snapshot received from the frontend.
@@ -909,7 +949,7 @@ class MolSysView:
             return dict(self._last_camera_snapshot)
         return json.dumps(self._last_camera_snapshot, indent=2, sort_keys=True)
 
-    @signal(tags=["camera"])
+    @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()
     def set_camera_snapshot(self, snapshot: dict, *, duration_ms: int = 0, skip_digestion: bool = False) -> None:
         """Apply a previously saved camera snapshot.
@@ -923,11 +963,12 @@ class MolSysView:
         """
         if not snapshot:
             return
+        duration_value = int(puw.get_value(duration_ms, to_unit="ms")) if puw.is_quantity(duration_ms) else int(duration_ms)
         self._send(
             {
                 "op": "set_camera_snapshot",
                 "snapshot": snapshot,
-                "duration_ms": int(duration_ms),
+                "duration_ms": duration_value,
             }
         )
 
@@ -1208,7 +1249,7 @@ class MolSysView:
 
     # --- Export helpers for docs/notebooks ---
 
-    @signal(tags=["export"])
+    @signal(tags=["export"], extra_factory=_write_html_signal_extra)
     @digest()
     def write_html(
         self,

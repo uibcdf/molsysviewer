@@ -17,9 +17,10 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-- Stabilize and expand test coverage with the highest immediate return.
+- Harden `argdigest` coverage on the public API where missing digesters still create warnings or reject valid calls.
+- Use `smonitor` as a developer/QA accelerator, not just as a catalog/config dependency.
 - Keep `devguide/` aligned with the real repository state.
-- Prioritize regression coverage for behavior that crosses Python <-> TypeScript boundaries or rebuild/replay flows.
+- Prioritize regression coverage for behavior that crosses Python <-> TypeScript boundaries, rebuild/replay flows, or support-library contracts.
 
 ## Current State
 
@@ -72,14 +73,27 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `depdigest` now runs before importing the heavier public submodules from package init.
   - `pyunitwizard` usage is being unified around `molsysviewer._pyunitwizard.puw` instead of mixing local and `molsysmt` aliases.
   - Support helpers around coordinates/units were tightened to match the actual PyUnitWizard contract.
+  - `config` now also uses the local `_pyunitwizard` instance directly instead of going back through package-root imports.
   - `smonitor` coverage has been expanded to more public wrapper APIs (`Whole`, `Region`, `Layer`, `ShapesManager`).
   - `smonitor` timeline coverage now also includes more `MolSysView` public wrappers (camera/query/edit/export), with regression evidence that these signals land in `Manager.report()["timeline"]`.
   - A structural regression now checks that public `@digest()` entrypoints across `MolSysView`, `new_view`, `Whole`, `Region`, `Layer`, and `shapes/` also carry `@signal()`.
+  - `argdigest` hardening now covers previously noisy public wrappers such as:
+    - controls visibility,
+    - camera snapshot get/set,
+    - representation presets,
+    - HTML export options,
+    - layer retagging,
+    - user preset loading,
+    - standard-units configuration.
+  - A real integration bug was fixed in `set_camera_snapshot()`: `duration_ms` is now interpreted correctly when digested through the PyUnitWizard-aware `duration_ms` digester.
+  - Variadic `ShapesManager` forwarding methods no longer pretend to digest `*args/**kwargs`; digestion is delegated to the concrete shape helper methods that actually own the argument contract.
+  - New regression tests now fail if those core public paths emit `DigestNotDigestedWarning`.
 
 ## Active Decisions
 
 - Use real demo viewers when regression value depends on real MolSysMT behavior.
 - Prefer contract-level and externally observable assertions over private implementation coupling.
+- Treat `DigestNotDigestedWarning` on stable public API as integration debt, not benign noise.
 - Treat internal rebuild/replay as internal state application:
   - it must not re-digest already normalized state,
   - it must preserve replayable `_message_history`,
@@ -87,10 +101,11 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep environment workarounds narrowly scoped to concrete failing paths, not as blanket repository policy.
 - Treat sibling support libraries (`argdigest`, `depdigest`, `pyunitwizard`, `smonitor`) as active engineering dependencies, not passive externals.
 - Keep `molsysviewer` on one local `pyunitwizard` instance/configuration path.
+- Prefer `smonitor` `extra_factory` + `SIGNALS` contracts on the main orchestration wrappers when that makes developer/QA debugging materially better.
 
 ## Next Step
 
-- Resume implementation on the highest-value 1.0 path, with core regressions now covering the main architectural contracts that were previously risky.
+- Resume feature implementation on the highest-value 1.0 path, with the support-library layer now much less noisy and better instrumented.
 
 Why this is next:
 
@@ -107,6 +122,7 @@ Why this is next:
 - The support-library layer is now in active hardening, so regressions there should be caught early instead of worked around ad hoc.
 - The second `smonitor` pass is now covering real traceability behavior, not just configuration/catalog presence.
 - The current `smonitor` integration is now close to exhaustive on the main public orchestration surface.
+- The next work should benefit from cleaner `argdigest` behavior on the public API instead of accumulating more migration warnings.
 
 ## What We Learned About `set()`
 
@@ -122,8 +138,8 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - finish any remaining support-library integration cleanup that blocks clean implementation work, or
-   - resume feature implementation on the highest-value 1.0 path.
+   - resume feature implementation on the highest-value 1.0 path, or
+   - only return to support-library integration if a new product path exposes a real contract gap.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Revisit additional `set()` attribute families only if they become a real product need.
 
@@ -141,8 +157,8 @@ Why this is next:
 - E2E breadth is still thin relative to the runtime surface.
 - Popup/popout behavior is still lighter in coverage than live-edit, but no longer the clearest blocker for resuming implementation.
 - The support-library hardening pass is still in progress until the remaining integration cleanup is committed and documented.
-- `smonitor` breadth is improved, but not yet exhaustive across every public entry point in the package.
-- Remaining `smonitor` work should now be selective, not broad-brush.
+- `smonitor` breadth is improved enough that remaining work should now be selective, not broad-brush.
+- `argdigest` still does not cover every public shape/detail argument; the remaining gaps should be prioritized by real product usage and warnings, not by raw parameter count.
 
 ## Useful Follow-ups
 

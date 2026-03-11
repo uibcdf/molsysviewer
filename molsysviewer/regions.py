@@ -246,7 +246,13 @@ class Region:
             skip_digestion=skip_digestion,
         )
 
-    @signal(tags=["region", "representation"])
+    @signal(
+        tags=["region", "representation"],
+        extra_factory=lambda args, kwargs: {
+            "representation": kwargs.get("representation", args[1] if len(args) > 1 else None),
+            "preset": kwargs.get("preset"),
+        },
+    )
     @digest()
     def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Apply or update a representation for this region.

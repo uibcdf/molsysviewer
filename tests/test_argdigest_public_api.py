@@ -1,0 +1,81 @@
+from __future__ import annotations
+
+import json
+import warnings
+
+from molsysviewer import config
+from molsysviewer.config.user_presets import load_user_presets
+from molsysviewer.demo import demo
+
+
+def _missing_digester_warnings(records) -> list[str]:
+    return [
+        str(record.message)
+        for record in records
+        if record.message.__class__.__name__ == "DigestNotDigestedWarning"
+    ]
+
+
+def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    preset_path = tmp_path / "user-presets.json"
+    preset_path.write_text(
+        json.dumps({"demo-preset": {"base": "auto", "options": {}, "rules": []}}),
+        encoding="utf-8",
+    )
+
+    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+    layer = view.new_layer(tag="audit-layer", skip_digestion=True)
+
+    with warnings.catch_warnings(record=True) as records:
+        warnings.simplefilter("always")
+        view.set_controls_visible(True, autohide=False, position=("top", "left"), position_fullscreen="bottom right")
+        view.clear_decorations(shapes=True, styles=False, labels=True)
+        view.get_camera_snapshot(pretty=True)
+        view.set_camera_snapshot({"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]}, duration_ms=125)
+        view.whole.set_representation(preset="polymer-cartoon")
+        region.set_representation(preset="polymer-cartoon")
+        layer.set_tag("audit-layer-2")
+        view.write_html(
+            tmp_path / "audit.html",
+            title="Audit",
+            include_controls=False,
+            include_popout=False,
+            inline_messages=True,
+        )
+        config.set_default_standard_units("nm, ps, K, mole, amu, e, kJ/mol, kJ/(mol*nm), kJ/(mol*nm**2), radians")
+        load_user_presets(preset_path)
+
+    assert _missing_digester_warnings(records) == []
+
+
+def test_shape_helpers_do_not_emit_missing_digester_warnings():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    with warnings.catch_warnings(record=True) as records:
+        warnings.simplefilter("always")
+        view.shapes.add_sphere(center=(0.0, 0.0, 0.0), radius=1.5, color=0x00FF00, alpha=0.3, tag="sphere-1")
+        view.shapes.add_spheres(
+            centers=[(0.0, 0.0, 0.0), (1.0, 1.0, 1.0)],
+            radii=[1.0, 1.5],
+            colors=[0x00FF00, 0x0000FF],
+            alphas=[0.2, 0.4],
+            tags=["s1", "s2"],
+        )
+        view.shapes.add_links(
+            coordinate_pairs=[
+                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]],
+                [[1.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
+            ],
+            radii=[0.1, 0.2],
+            colors=[0xFF0000, 0x00FF00],
+            color_mode="link",
+            alpha=0.5,
+            radial_segments=12,
+            tag="links",
+        )
+
+    assert _missing_digester_warnings(records) == []
