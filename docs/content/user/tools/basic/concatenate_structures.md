@@ -30,4 +30,4 @@ The resulting viewer contains the topology of the first input and the structures
 
 ## When not to use it
 
-Do not use `concatenate_structures(...)` when you want to combine different systems into one larger topology. For that case, use {doc}`merge_views`.
+Do not use `concatenate_structures(...)` when you want to combine different systems into one larger topology. For that case, use {doc}`merge`.

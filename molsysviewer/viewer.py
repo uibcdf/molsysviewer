@@ -1046,6 +1046,66 @@ class MolSysView:
             **kwargs,
         )
 
+    @signal(tags=["query"])
+    def contains(
+        self,
+        selection="all",
+        syntax="MolSysMT",
+        skip_digestion=False,
+        **kwargs,
+    ) -> bool:
+        """Check whether the loaded molecular system contains the requested features."""
+        return bool(
+            msm.contains(
+                self._molsys,
+                selection=selection,
+                syntax=syntax,
+                skip_digestion=True,
+                **kwargs,
+            )
+        )
+
+    @signal(tags=["query"])
+    def is_composed_of(
+        self,
+        selection="all",
+        syntax="MolSysMT",
+        skip_digestion=False,
+        **kwargs,
+    ) -> bool:
+        """Check whether the loaded molecular system is composed of the requested classes/counts."""
+        return bool(
+            msm.is_composed_of(
+                self._molsys,
+                selection=selection,
+                syntax=syntax,
+                skip_digestion=True,
+                **kwargs,
+            )
+        )
+
+    @signal(tags=["query"])
+    def extract(
+        self,
+        selection="all",
+        structure_indices="all",
+        *,
+        syntax="MolSysMT",
+        debug_js: bool | None = None,
+        skip_digestion: bool = False,
+    ):
+        """Return a new view built from a subset of this view."""
+        from .tools.basic.extract import extract as _extract_view
+
+        return _extract_view(
+            self,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            debug_js=debug_js,
+            skip_digestion=True,
+        )
+
     @signal(tags=["edit"])
     @digest()
     def append_structures(

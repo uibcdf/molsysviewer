@@ -49,7 +49,7 @@ Implemented (initial `tools`)
 | Could | `remove(...)` | `MolSysView` | Implemented (experimental) | Live: remove atoms/structures; remap indices; reload payload; replay state. |
 | Could | `add(...)` | `MolSysView` | Implemented (experimental) | Live: add another system into current view; reload payload; replay state. |
 | Could | `concatenate_structures(...)` | `molsysviewer.tools.basic` | Implemented (initial) | Pure: return a new view built from multiple inputs/frames. |
-| Could | `merge_views(...)` | `molsysviewer.tools.basic` | Implemented (initial) | Pure: return a new view from multiple views (systems + imported scene state). |
+| Could | `merge(...)` | `molsysviewer.tools.basic` | Implemented (initial) | Pure: return a new view from multiple views (systems + imported scene state). |
 | Could | Geometry and analysis ops | `molsysviewer.tools` | Planned | Distances/angles/dihedrals, coordinate edits, etc. |
 
 ## Contracts (what users should be able to assume)
@@ -83,7 +83,7 @@ This avoids the silent bug where atom indices are accidentally interpreted as in
 
 The `molsysviewer.tools` namespace is intended for operations that go beyond “viewer basics”, for example:
 
-- Multi-view composition (`merge_views`, `concatenate_structures`).
+- Multi-view composition (`merge`, `concatenate_structures`).
 - Analysis helpers (distances, angles, dihedrals, contact queries).
 - Geometry editing and structural manipulation that must coordinate “system mutation” with “viewer refresh”.
 
@@ -161,11 +161,11 @@ Minimum expected behavior:
 - Regions that become empty are handled explicitly (either kept as empty, hidden, or deleted—decision to be documented
   when implemented).
 
-### `add(...)` (live) vs `merge_views(...)` (pure)
+### `add(...)` (live) vs `merge(...)` (pure)
 
 `add(...)` is a live “extend this view” operation.
 
-`merge_views(...)` is a pure “build a new view” operation and currently handles:
+`merge(...)` is a pure “build a new view” operation and currently handles:
 
 - Tag collisions via deterministic suffixes (`__2`, `__3`, ...).
 - Atom index remapping for imported regions and atom-index-based shapes.

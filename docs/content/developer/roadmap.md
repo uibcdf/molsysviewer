@@ -35,7 +35,7 @@ Direction:
 Current state:
 
 - `molsysviewer.tools.basic.concatenate_structures(...)` exists as the first pure composition primitive.
-- `molsysviewer.tools.basic.merge_views(...)` now exists as the first view-composition helper with explicit state-import policy.
+- `molsysviewer.tools.basic.merge(...)` now exists as the first view-composition helper with explicit state-import policy.
 
 Planned next:
 

@@ -91,6 +91,38 @@ class Whole:
         """Show a summary table for the whole system (delegates to `MolSysView.info`)."""
         return self._view.info(*args, skip_digestion=skip_digestion, **kwargs)
 
+    @signal(tags=["query", "whole"])
+    def contains(
+        self,
+        selection="all",
+        syntax="MolSysMT",
+        skip_digestion: bool = False,
+        **kwargs: Any,
+    ):
+        """Check whether the whole system contains the requested features."""
+        return self._view.contains(
+            selection=selection,
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+            **kwargs,
+        )
+
+    @signal(tags=["query", "whole"])
+    def is_composed_of(
+        self,
+        selection="all",
+        syntax="MolSysMT",
+        skip_digestion: bool = False,
+        **kwargs: Any,
+    ):
+        """Check whether the whole system is composed of the requested classes/counts."""
+        return self._view.is_composed_of(
+            selection=selection,
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+            **kwargs,
+        )
+
     @signal(tags=["edit", "whole"])
     @digest()
     def append_structures(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):

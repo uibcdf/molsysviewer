@@ -92,17 +92,19 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 - `molsysviewer.tools`
   - The package now exists and starts with `molsysviewer.tools.basic.concatenate_structures(...)`.
-  - `molsysviewer.tools.basic.merge_views(...)` now exists as the second pure composition primitive.
+  - `molsysviewer.tools.basic.merge(...)` now exists as the second pure composition primitive.
   - `molsysviewer.tools.basic` now also exposes functional wrappers over core `MolSysView` operations:
     - `select`, `get`, `info`,
     - `extract`,
     - `set`, `remove`, `add`, `append_structures`,
     - `contains`, `is_composed_of`.
+  - `copy(view)` now exists with a scene-aware contract: it duplicates the molecular system and recreates useful scene state.
+  - `compare(view_a, view_b)` now exists with a deliberately narrower contract: it compares loaded molecular systems, not full visual scene state.
   - This first tool is intentionally a pure operation:
     - it accepts multiple MolSysMT-compatible systems or `MolSysView` objects,
     - delegates structural concatenation to `molsysmt.concatenate_structures(...)`,
     - and returns a fresh `MolSysView`.
-  - `merge_views(...)` is intentionally view-centric:
+  - `merge(...)` is intentionally view-centric:
     - it accepts `MolSysView` objects,
     - delegates molecular-system merging to `molsysmt.merge(...)`,
     - imports regions/layers/shapes/visibility from all inputs,
@@ -125,6 +127,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Let users work with `MolSysView` in both styles:
   - object-oriented (`view.get(...)`, `view.set(...)`, ...)
   - functional (`tools.basic.get(view, ...)`, `tools.basic.set(view, ...)`, ...)
+- Keep `tools.basic.compare(...)` explicitly molecular for now; if scene comparison is needed later, that should be a separately documented contract.
 - Treat internal rebuild/replay as internal state application:
   - it must not re-digest already normalized state,
   - it must preserve replayable `_message_history`,
@@ -157,7 +160,7 @@ Why this is next:
 - The next work should benefit from cleaner `argdigest` behavior on the public API instead of accumulating more migration warnings.
 - The standard test entrypoint is again reliable for package-root imports, so export/import regressions can be exercised with plain `pytest`.
 - `concatenate_structures(...)` was the correct first step because it opened `tools` with a pure composition primitive that reused stable contracts we already hardened.
-- `merge_views(...)` is the correct second step because it defines the policy for multi-view composition explicitly instead of leaving regions/layers/shapes/tag collisions as ad hoc user work.
+- `merge(...)` is the correct second step because it defines the policy for multi-view composition explicitly instead of leaving regions/layers/shapes/tag collisions as ad hoc user work.
 
 ## What We Learned About `set()`
 
@@ -173,7 +176,7 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - continue `molsysviewer.tools` with the next pure composition/analysis operation beyond `merge_views(...)`, or
+   - continue `molsysviewer.tools` with the next pure composition/analysis operation beyond `merge(...)`, or
    - move to canvas interaction and picking/hover behavior.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Return to support-library integration only if a new product path exposes a real contract gap.
@@ -198,7 +201,7 @@ Why this is next:
 
 ## Useful Follow-ups
 
-- Extend `molsysviewer.tools.basic` beyond `merge_views(...)` only when the next composition/analysis policy is explicit enough to document and test.
+- Extend `molsysviewer.tools.basic` beyond `merge(...)` only when the next composition/analysis policy is explicit enough to document and test.
 - Add canvas interaction work:
   - hover,
   - pointer semantics,

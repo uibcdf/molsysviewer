@@ -79,40 +79,7 @@ def _unique_tag(tag: str, used_tags: set[str], source_index: int) -> str:
     return candidate
 
 
-@dep_digest("molsysmt")
-@signal(tags=["tools", "basic", "view"])
-@digest()
-def merge_views(
-    views: Any,
-    *,
-    keep_ids: bool = True,
-    debug_js: bool | None = None,
-    skip_digestion: bool = False,
-) -> MolSysView:
-    """Return a new view built by merging multiple existing views.
-
-    The merged view uses the first input view as the source of global state
-    (whole representation, controls, and last camera snapshot). Regions, layers,
-    shapes, and atom visibility from all views are imported. Tag collisions are
-    resolved deterministically by suffixing later duplicates with ``__N``.
-    """
-
-    source_views = list(views)
-    merged = msm.merge(
-        [view._molsys for view in source_views],  # noqa: SLF001
-        keep_ids=keep_ids,
-        to_form="molsysmt.MolSys",
-        skip_digestion=True,
-    )
-
-    result = new_view(
-        merged,
-        selection="all",
-        structure_indices="all",
-        debug_js=debug_js,
-        skip_digestion=True,
-    )
-
+def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> None:
     primary = source_views[0]
     result.widget.show_controls = bool(getattr(primary.widget, "show_controls", True))
     result.widget.autohide_controls = bool(getattr(primary.widget, "autohide_controls", False))
@@ -203,4 +170,39 @@ def merge_views(
     if result._last_camera_snapshot:
         result.set_camera_snapshot(result._last_camera_snapshot, duration_ms=0, skip_digestion=True)
 
+
+@dep_digest("molsysmt")
+@signal(tags=["tools", "basic", "view"])
+@digest()
+def merge(
+    views: Any,
+    *,
+    keep_ids: bool = True,
+    debug_js: bool | None = None,
+    skip_digestion: bool = False,
+) -> MolSysView:
+    """Return a new view built by merging multiple existing views.
+
+    The merged view uses the first input view as the source of global state
+    (whole representation, controls, and last camera snapshot). Regions, layers,
+    shapes, and atom visibility from all views are imported. Tag collisions are
+    resolved deterministically by suffixing later duplicates with ``__N``.
+    """
+
+    source_views = list(views)
+    merged = msm.merge(
+        [view._molsys for view in source_views],  # noqa: SLF001
+        keep_ids=keep_ids,
+        to_form="molsysmt.MolSys",
+        skip_digestion=True,
+    )
+
+    result = new_view(
+        merged,
+        selection="all",
+        structure_indices="all",
+        debug_js=debug_js,
+        skip_digestion=True,
+    )
+    _import_view_state(result, source_views)
     return result

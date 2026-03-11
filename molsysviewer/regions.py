@@ -246,6 +246,66 @@ class Region:
             skip_digestion=skip_digestion,
         )
 
+    @signal(tags=["region", "query"])
+    def contains(
+        self,
+        selection="all",
+        syntax="MolSysMT",
+        skip_digestion=False,
+        **kwargs,
+    ) -> bool:
+        """Check whether this region contains the requested features."""
+        if self.atom_indices is None:
+            return self._view.contains(  # noqa: SLF001
+                selection=selection,
+                syntax=syntax,
+                skip_digestion=skip_digestion,
+                **kwargs,
+            )
+
+        scoped = self.select(
+            selection=selection,
+            element="atom",
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+        )
+        return self._view.contains(  # noqa: SLF001
+            selection=scoped,
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+            **kwargs,
+        )
+
+    @signal(tags=["region", "query"])
+    def is_composed_of(
+        self,
+        selection="all",
+        syntax="MolSysMT",
+        skip_digestion=False,
+        **kwargs,
+    ) -> bool:
+        """Check whether this region is composed of the requested classes/counts."""
+        if self.atom_indices is None:
+            return self._view.is_composed_of(  # noqa: SLF001
+                selection=selection,
+                syntax=syntax,
+                skip_digestion=skip_digestion,
+                **kwargs,
+            )
+
+        scoped = self.select(
+            selection=selection,
+            element="atom",
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+        )
+        return self._view.is_composed_of(  # noqa: SLF001
+            selection=scoped,
+            syntax=syntax,
+            skip_digestion=skip_digestion,
+            **kwargs,
+        )
+
     @signal(
         tags=["region", "representation"],
         extra_factory=lambda args, kwargs: {

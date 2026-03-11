@@ -5,7 +5,7 @@ import molsysmt as msm
 from molsysviewer import MolSysView, demo, tools
 
 
-def test_tools_basic_merge_views_merges_scene_state_and_resolves_tag_collisions():
+def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     view_a = demo["dialanine"]
     view_b = demo["dialanine"]
 
@@ -27,7 +27,7 @@ def test_tools_basic_merge_views_merges_scene_state_and_resolves_tag_collisions(
     pocket_b.hide(skip_digestion=True)
     view_b.hide(selection=[0], skip_digestion=True)
 
-    result = tools.basic.merge_views([view_a, view_b], debug_js=True)
+    result = tools.basic.merge([view_a, view_b], debug_js=True)
 
     assert isinstance(result, MolSysView)
     assert result is not view_a
