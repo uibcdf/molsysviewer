@@ -113,6 +113,22 @@ Do not append dated historical entries unless a date is itself operationally rel
   - The purpose is to grow advanced functionality without inflating the core `MolSysView` facade.
   - The package is now also part of the project’s “inspection/workbench” identity, not just its “viewer/export” identity.
 
+- Inspection-oriented object API
+  - `MolSysView` is now growing along two complementary axes:
+    - functional helpers in `molsysviewer.tools.basic`,
+    - direct object methods when the behavior is naturally scene-centric or inspection-centric.
+  - Camera/inspection helpers are now expected to live on the object side:
+    - `focus_selection(...)`,
+    - `focus_region(...)`,
+    - `Whole.focus(...)`,
+    - `Region.focus(...)`.
+  - Structural partition helpers such as `split_by_chain()` / `split_by_molecule()` / `split_by_entity()` also belong on `MolSysView`, not in `tools.basic`, because their real product value is creating region objects in the active scene.
+  - Region tags produced by viewer-managed split helpers should follow a stable policy:
+    - derive from a MolSysMT human-readable label when possible,
+    - sanitize to a replay-safe tag token,
+    - keep semantic prefixes where needed to avoid ambiguity (`molecule_...`, `entity_...`) while allowing concise chain tags,
+    - resolve collisions deterministically with suffixes such as `__2`.
+
 - User documentation
   - The user guide now has a dedicated `tools/` section.
   - The first module documented is `tools.basic`.
@@ -127,6 +143,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Let users work with `MolSysView` in both styles:
   - object-oriented (`view.get(...)`, `view.set(...)`, ...)
   - functional (`tools.basic.get(view, ...)`, `tools.basic.set(view, ...)`, ...)
+- Keep scene-centric inspection affordances on the object side even when an equivalent pure helper could exist:
+  - focus operations belong to `MolSysView` / `Whole` / `Region`,
+  - region-partition helpers belong to `MolSysView` when they create live region objects.
 - Keep `tools.basic.compare(...)` explicitly molecular for now; if scene comparison is needed later, that should be a separately documented contract.
 - Treat internal rebuild/replay as internal state application:
   - it must not re-digest already normalized state,
@@ -176,7 +195,7 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - continue `molsysviewer.tools` with the next pure composition/analysis operation beyond `merge(...)`, or
+   - continue the inspection-oriented object API with focus/splitting helpers, or
    - move to canvas interaction and picking/hover behavior.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Return to support-library integration only if a new product path exposes a real contract gap.

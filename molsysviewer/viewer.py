@@ -113,6 +113,14 @@ def _write_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> d
     }
 
 
+def _quantity_value_in_unit(value: Any, unit_name: str) -> float:
+    if isinstance(value, (int, float, np.integer, np.floating)):
+        return float(value)
+    if puw.is_unit(value):
+        value = puw.quantity(1.0, value)
+    return float(puw.get_value(value, to_unit=unit_name))
+
+
 class MolSysView:
     """Mol* viewer widget with a Python-facing API.
 
@@ -288,6 +296,106 @@ class MolSysView:
         self._layer_counter += 1
         return f"layer{self._layer_counter}"
 
+    def _slugify_region_tag(self, value: str) -> str:
+        text = re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_")
+        return text or self._next_region_tag()
+
+    def _unique_region_tag(self, base: str, used_tags: set[str] | None = None) -> str:
+        used = set(self._regions.keys()) if used_tags is None else set(used_tags) | set(self._regions.keys())
+        if base not in used:
+            return base
+        counter = 2
+        candidate = f"{base}__{counter}"
+        while candidate in used:
+            counter += 1
+            candidate = f"{base}__{counter}"
+        return candidate
+
+    def _label_for_split_region(self, *, element_label: str, item_index: int) -> str | None:
+        template = "{name}"
+        element = element_label
+        if element_label not in {"chain", "molecule", "entity"}:
+            return None
+        try:
+            label = msm.get_label(
+                self._molsys,
+                element=element,
+                selection=[item_index],
+                string=template,
+                skip_digestion=True,
+            )
+        except Exception:
+            return None
+        if isinstance(label, str) and label.strip():
+            return label
+        return None
+
+    def _split_into_regions(
+        self,
+        *,
+        selection: str | Any,
+        structure_indices: str | Any,
+        syntax: str,
+        element_label: str,
+        index_attribute: str,
+        representation: str | None = None,
+    ) -> dict[str, Region]:
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before splitting into regions.")
+
+        atom_indices = self.select(
+            selection=selection,
+            structure_indices=structure_indices,
+            element="atom",
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        if not atom_indices:
+            return {}
+
+        get_kwargs: dict[str, Any] = {index_attribute: True}
+        values = msm.get(
+            self._molsys,
+            element="atom",
+            selection=atom_indices,
+            output_type="dictionary",
+            skip_digestion=True,
+            **get_kwargs,
+        )
+        raw_indices = list(values.get(index_attribute, []))
+
+        buckets: dict[int, dict[str, Any]] = {}
+        for atom_index, item_index in zip(atom_indices, raw_indices):
+            try:
+                normalized_index = int(item_index)
+            except Exception:
+                continue
+            bucket = buckets.setdefault(normalized_index, {"atom_indices": []})
+            bucket["atom_indices"].append(int(atom_index))
+
+        created: dict[str, Region] = {}
+        used_tags: set[str] = set()
+        for item_index in sorted(buckets):
+            bucket = buckets[item_index]
+            label = self._label_for_split_region(element_label=element_label, item_index=item_index)
+            if isinstance(label, str) and label.strip():
+                slug = self._slugify_region_tag(label)
+                if element_label == "chain":
+                    base_tag = slug
+                else:
+                    base_tag = f"{element_label}_{slug}"
+            else:
+                base_tag = f"{element_label}_{item_index}"
+            tag = self._unique_region_tag(base_tag, used_tags)
+            used_tags.add(tag)
+            created[tag] = self.new_region(
+                atom_indices=bucket["atom_indices"],
+                tag=tag,
+                representation=representation,
+                skip_digestion=True,
+            )
+        return created
+
     def _normalize_representation_type(self, value: str | None) -> str | None:
         if value is None:
             return None
@@ -456,6 +564,72 @@ class MolSysView:
         self._layers[tag] = layer
         layer._send_create()  # noqa: SLF001
         return layer
+
+    @signal(tags=["region", "split"])
+    @digest()
+    def split_by_chain(
+        self,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+    ) -> dict[str, Region]:
+        """Create one region per chain in the selected subset and return them by tag."""
+        representation = self._normalize_representation_type(representation)
+        return self._split_into_regions(
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            element_label="chain",
+            index_attribute="chain_index",
+            representation=representation,
+        )
+
+    @signal(tags=["region", "split"])
+    @digest()
+    def split_by_molecule(
+        self,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+    ) -> dict[str, Region]:
+        """Create one region per molecule in the selected subset and return them by tag."""
+        representation = self._normalize_representation_type(representation)
+        return self._split_into_regions(
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            element_label="molecule",
+            index_attribute="molecule_index",
+            representation=representation,
+        )
+
+    @signal(tags=["region", "split"])
+    @digest()
+    def split_by_entity(
+        self,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+    ) -> dict[str, Region]:
+        """Create one region per entity in the selected subset and return them by tag."""
+        representation = self._normalize_representation_type(representation)
+        return self._split_into_regions(
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            element_label="entity",
+            index_attribute="entity_index",
+            representation=representation,
+        )
 
     @signal(tags=["viewer", "controls"], extra_factory=_controls_signal_extra)
     @digest()
@@ -856,9 +1030,9 @@ class MolSysView:
 
         if duration_ms is not None:
             duration = duration_ms
-        duration_ms_value = puw.get_value(duration, to_unit="ms")
-        extra_radius = round(float(puw.get_value(extra_radius, to_unit="angstroms")), 6)
-        min_radius = round(float(puw.get_value(min_radius, to_unit="angstroms")), 6)
+        duration_ms_value = _quantity_value_in_unit(duration, "ms")
+        extra_radius = round(_quantity_value_in_unit(extra_radius, "angstroms"), 6)
+        min_radius = round(_quantity_value_in_unit(min_radius, "angstroms"), 6)
 
         self._send(
             {
@@ -870,6 +1044,71 @@ class MolSysView:
                     "min_radius": float(min_radius),
                 },
             }
+        )
+
+    @signal(tags=["camera", "selection"], extra_factory=_zoom_signal_extra)
+    @digest()
+    def focus_selection(
+        self,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        duration: Any = '250 ms',
+        duration_ms: Any | None = None,
+        extra_radius: Any = '4.0 angstroms',
+        min_radius: Any = '1.0 angstroms',
+        skip_digestion: bool = False,
+    ) -> None:
+        """Focus the camera on a selection of atoms."""
+        self.zoom(
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            duration=duration,
+            duration_ms=duration_ms,
+            extra_radius=extra_radius,
+            min_radius=min_radius,
+            skip_digestion=True,
+        )
+
+    @signal(tags=["camera", "region"])
+    def focus_region(
+        self,
+        region: str | Region,
+        *,
+        duration: Any = '250 ms',
+        duration_ms: Any | None = None,
+        extra_radius: Any = '4.0 angstroms',
+        min_radius: Any = '1.0 angstroms',
+        skip_digestion: bool = False,
+    ) -> None:
+        """Focus the camera on a region identified by tag or region object."""
+        if isinstance(region, str):
+            target = self._regions.get(region)
+            if target is None:
+                raise KeyError(f"Unknown region tag: {region!r}")
+        elif isinstance(region, Region):
+            target = region
+        else:
+            raise TypeError("region must be a region tag or Region instance.")
+
+        selection: Any
+        syntax = "MolSysMT"
+        if target.atom_indices is not None:
+            selection = list(target.atom_indices)
+        else:
+            selection = target.selection
+            syntax = "MolSysMT"
+
+        self.focus_selection(
+            selection=selection,
+            syntax=syntax,
+            duration=duration,
+            duration_ms=duration_ms,
+            extra_radius=extra_radius,
+            min_radius=min_radius,
+            skip_digestion=True,
         )
 
     @signal(tags=["scene"])

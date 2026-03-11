@@ -19,6 +19,12 @@ def digest_representation(representation, caller=None):
     elif caller in {
         'molsysviewer.viewer.MolSysView.new_region',
         'molsysviewer.viewer.new_region',
+        'molsysviewer.viewer.MolSysView.split_by_chain',
+        'molsysviewer.viewer.MolSysView.split_by_molecule',
+        'molsysviewer.viewer.MolSysView.split_by_entity',
+        'molsysviewer.viewer.split_by_chain',
+        'molsysviewer.viewer.split_by_molecule',
+        'molsysviewer.viewer.split_by_entity',
         'molsysviewer.whole.Whole.set_representation',
         'molsysviewer.regions.Region.set_representation',
         'molsysviewer.whole.set_representation',

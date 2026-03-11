@@ -39,6 +39,22 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `concatenate_structures(...)`
 - `merge(...)`
 
+`MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include, in addition to the older load/query/edit surface:
+
+- `contains(...)`
+- `extract(...)`
+- `is_composed_of(...)`
+- `focus_selection(...)`
+- `focus_region(...)`
+- `split_by_chain(...)`
+- `split_by_molecule(...)`
+- `split_by_entity(...)`
+
+Related object wrappers are also part of the intended public surface:
+
+- `view.whole.focus(...)`
+- `view.regions[tag].focus(...)`
+
 ### Notebook rendering
 
 `MolSysView` implements the Jupyter display hook (`_repr_mimebundle_`). This means:

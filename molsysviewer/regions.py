@@ -306,6 +306,27 @@ class Region:
             **kwargs,
         )
 
+    @signal(tags=["region", "camera"])
+    @digest()
+    def focus(
+        self,
+        *,
+        duration: Any = '250 ms',
+        duration_ms: Any | None = None,
+        extra_radius: Any = '4.0 angstroms',
+        min_radius: Any = '1.0 angstroms',
+        skip_digestion: bool = False,
+    ) -> None:
+        """Focus the camera on this region."""
+        self._view.focus_region(
+            self,
+            duration=duration,
+            duration_ms=duration_ms,
+            extra_radius=extra_radius,
+            min_radius=min_radius,
+            skip_digestion=True,
+        )
+
     @signal(
         tags=["region", "representation"],
         extra_factory=lambda args, kwargs: {

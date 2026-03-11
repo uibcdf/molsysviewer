@@ -123,6 +123,32 @@ class Whole:
             **kwargs,
         )
 
+    @signal(tags=["camera", "whole"])
+    @digest()
+    def focus(
+        self,
+        selection="all",
+        structure_indices="all",
+        syntax="MolSysMT",
+        *,
+        duration: Any = '250 ms',
+        duration_ms: Any | None = None,
+        extra_radius: Any = '4.0 angstroms',
+        min_radius: Any = '1.0 angstroms',
+        skip_digestion: bool = False,
+    ) -> None:
+        """Focus the camera on a selection within the whole system."""
+        self._view.focus_selection(
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            duration=duration,
+            duration_ms=duration_ms,
+            extra_radius=extra_radius,
+            min_radius=min_radius,
+            skip_digestion=True,
+        )
+
     @signal(tags=["edit", "whole"])
     @digest()
     def append_structures(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
