@@ -49,6 +49,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         timeline = manager.report()["timeline"]
         keys = [entry["key"] for entry in timeline]
         tags_by_key = {entry["key"]: set(entry.get("tags", [])) for entry in timeline}
+        meta_by_key = {entry["key"]: entry.get("meta", {}) for entry in timeline}
 
         assert "molsysviewer.regions.hide" in keys
         assert "molsysviewer.whole.hide" in keys
@@ -63,6 +64,9 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "shape" in tags_by_key["molsysviewer.shapes.clear"]
         assert "camera" in tags_by_key["molsysviewer.viewer.reset_camera"]
         assert "export" in tags_by_key["molsysviewer.viewer.write_html"]
+        assert meta_by_key["molsysviewer.viewer.get_camera_snapshot"].get("pretty") is None
+        assert meta_by_key["molsysviewer.viewer.set_camera_snapshot"].get("snapshot_keys") == ["target"]
+        assert meta_by_key["molsysviewer.viewer.write_html"].get("include_popout") is False
     finally:
         manager.configure(
             profiling=previous_profiling,

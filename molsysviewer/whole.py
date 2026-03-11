@@ -16,7 +16,13 @@ class Whole:
         self._preset: str | None = None
         self._repr_params: dict[str, Any] = {}
 
-    @signal(tags=["representation", "whole"])
+    @signal(
+        tags=["representation", "whole"],
+        extra_factory=lambda args, kwargs: {
+            "representation": kwargs.get("representation", args[1] if len(args) > 1 else None),
+            "preset": kwargs.get("preset"),
+        },
+    )
     @digest()
     def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Set or update the global representation for the whole structure.

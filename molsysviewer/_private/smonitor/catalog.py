@@ -152,6 +152,13 @@ CODES = {
 }
 
 SIGNALS = {
-    "molsysviewer.viewer.MolSysView.load": {"extra_required": ["molecular_system"]},
-    "molsysviewer.viewer.MolSysView.zoom": {"extra_required": ["selection"]},
+    "molsysviewer.viewer.load": {"extra_required": ["molecular_system"]},
+    "molsysviewer.viewer.zoom": {"extra_required": ["selection"]},
+    "molsysviewer.viewer.set_controls_visible": {"extra_required": ["visible", "autohide"]},
+    "molsysviewer.viewer.get_camera_snapshot": {"extra_required": ["pretty"]},
+    "molsysviewer.viewer.set_camera_snapshot": {"extra_required": ["duration_ms", "snapshot_keys"]},
+    "molsysviewer.viewer.write_html": {"extra_required": ["output_filename", "mode", "include_popout"]},
+    "molsysviewer.whole.set_representation": {"extra_required": ["representation", "preset"]},
+    "molsysviewer.regions.set_representation": {"extra_required": ["representation", "preset"]},
+    "molsysviewer.layers.set_tag": {"extra_required": ["new_tag"]},
 }

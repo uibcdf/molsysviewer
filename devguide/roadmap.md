@@ -23,13 +23,14 @@ It is organized by execution priority and uses three labels:
 - `In progress`
   - Contract hardening by test breadth across all ops and edge paths.
   - Cross-check consistency between docs snapshots and runtime behavior.
-  - Support-library integration hardening (`depdigest`, `pyunitwizard`, `smonitor`) is active because it affects runtime behavior directly.
+  - Support-library integration hardening (`argdigest`, `depdigest`, `pyunitwizard`, `smonitor`) is active because it affects runtime behavior directly.
+  - `argdigest` now covers the main noisy public wrappers, but broader shape/detail coverage is still partial.
   - `smonitor` now has regression-backed wrapper coverage beyond config/catalog smoke tests, and the package-wide public signal map is largely enforced structurally.
 
 ### Next actions
 
 - Expand protocol-focused tests for non-trivial operations (`set_global_representation`, layer retag, clear/reset interactions).
-- Keep support-library integration aligned with sibling-library contracts, especially around bootstrap and quantity handling.
+- Keep support-library integration aligned with sibling-library contracts, especially around bootstrap, quantity handling, and public API digestion.
 - Keep contract changes additive unless versioned.
 
 ### Criteria
@@ -75,11 +76,13 @@ It is organized by execution priority and uses three labels:
 
 - `In progress`
   - Deep coverage of TS shape handler branches and error paths.
+  - Python-side digestion for overlay/detail arguments is broader than before but still not exhaustive across every shape method.
   - Docs parity for all implemented overlays.
 
 ### Next actions
 
 - Extend JS tests beyond region-hide to shape routing and tag-index lifecycle.
+- Keep filling `argdigest` gaps in shape methods only where the public call surface is actually used or warning-prone.
 - Close docs gaps where implemented APIs are still documented as placeholders.
 
 ### Criteria
@@ -98,6 +101,7 @@ It is organized by execution priority and uses three labels:
 
 - `In progress`
   - Complex interaction tests are broader than before, but popup/export-connected visibility flows still need more coverage.
+  - Support diagnostics are now strong enough that new visibility work should use `smonitor` context/contracts instead of ad hoc debugging.
 
 ### Next actions
 
@@ -145,6 +149,7 @@ It is organized by execution priority and uses three labels:
 - `In progress`
   - JS coverage is still narrower than the runtime surface, but handler-level breadth is improving.
   - E2E matrix is minimal.
+  - Public API digestion coverage now has explicit regression tests for core wrapper methods and selected shape helpers.
 
 ### Next actions
 

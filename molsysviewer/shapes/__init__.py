@@ -38,7 +38,6 @@ class ShapesManager:
         self.ph4 = PharmacophoreShapes(view)
 
     @signal(tags=["shape"])
-    @digest()
     def add_sphere(
         self,
         *args,
@@ -48,7 +47,6 @@ class ShapesManager:
         return self.spheres.add_sphere(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_spheres(
         self,
         *args,
@@ -58,7 +56,6 @@ class ShapesManager:
         return self.spheres.add_spheres(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_pocket_surface(
         self,
         *args,
@@ -68,7 +65,6 @@ class ShapesManager:
         return self.pockets.add_pocket_surface(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_set_alpha_spheres(
         self,
         *args,
@@ -78,7 +74,6 @@ class ShapesManager:
         return self.spheres.add_set_alpha_spheres(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_links(
         self,
         *args,
@@ -88,7 +83,6 @@ class ShapesManager:
         return self.links.add_links(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_displacement_vectors(
         self,
         *args,
@@ -98,7 +92,6 @@ class ShapesManager:
         return self.vectors.add_displacement_vectors(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_triangle_faces(
         self,
         *args,
@@ -108,7 +101,6 @@ class ShapesManager:
         return self.triangles.add_triangle_faces(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_tetrahedra(
         self,
         *args,
@@ -118,7 +110,6 @@ class ShapesManager:
         return self.tetrahedra.add_tetrahedra(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_pocket_blob(
         self,
         *args,
@@ -128,7 +119,6 @@ class ShapesManager:
         return self.blobs.add_pocket_blob(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_channel_tube(
         self,
         *args,
@@ -138,7 +128,6 @@ class ShapesManager:
         return self.tubes.add_channel_tube(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_anisotropy_ellipsoids(
         self,
         *args,
@@ -148,7 +137,6 @@ class ShapesManager:
         return self.ellipsoids.add_anisotropy_ellipsoids(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
-    @digest()
     def add_pharmacophore_features(
         self,
         *args,

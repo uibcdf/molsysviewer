@@ -48,7 +48,10 @@ class Layer:
         self._hidden = True
         self._send("hide_layer")
 
-    @signal(tags=["layer"])
+    @signal(
+        tags=["layer"],
+        extra_factory=lambda args, kwargs: {"new_tag": kwargs.get("new_tag", args[1] if len(args) > 1 else None)},
+    )
     @digest()
     def delete(self, skip_digestion: bool = False) -> None:
         """Remove this layer and its visuals."""
