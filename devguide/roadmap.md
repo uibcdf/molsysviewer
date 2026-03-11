@@ -145,6 +145,7 @@ It is organized by execution priority and uses three labels:
 - `Done`
   - Python test suite covers loaders, shapes, core viewer helpers, and key integration paths.
   - JS unit/e2e scaffolding exists with runnable scripts.
+  - `pytest` and `python -m pytest` now resolve the same in-repo package during test collection.
 
 - `In progress`
   - JS coverage is still narrower than the runtime surface, but handler-level breadth is improving.

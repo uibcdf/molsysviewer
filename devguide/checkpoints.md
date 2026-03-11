@@ -68,6 +68,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `devguide/` is the source of truth for active development status and handoff context.
   - `NUMBA_CACHE_DIR=/tmp/numba_cache` is no longer treated as a default global requirement.
   - A localized workaround is still needed in the current `add()` regression because that exact flow reproduces a real MolSysMT/Numba cache failure in this environment.
+  - Test bootstrap now forces the repository root onto `sys.path` via [`tests/conftest.py`](/home/diego/repos@uibcdf/molsysviewer/tests/conftest.py) so `pytest` and `python -m pytest` resolve the same in-repo `molsysviewer` package.
 
 - Support-library integration hardening
   - `depdigest` now runs before importing the heavier public submodules from package init.
@@ -123,6 +124,7 @@ Why this is next:
 - The second `smonitor` pass is now covering real traceability behavior, not just configuration/catalog presence.
 - The current `smonitor` integration is now close to exhaustive on the main public orchestration surface.
 - The next work should benefit from cleaner `argdigest` behavior on the public API instead of accumulating more migration warnings.
+- The standard test entrypoint is again reliable for package-root imports, so export/import regressions can be exercised with plain `pytest`.
 
 ## What We Learned About `set()`
 
