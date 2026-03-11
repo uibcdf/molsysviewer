@@ -68,6 +68,12 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `NUMBA_CACHE_DIR=/tmp/numba_cache` is no longer treated as a default global requirement.
   - A localized workaround is still needed in the current `add()` regression because that exact flow reproduces a real MolSysMT/Numba cache failure in this environment.
 
+- Support-library integration hardening
+  - `depdigest` now runs before importing the heavier public submodules from package init.
+  - `pyunitwizard` usage is being unified around `molsysviewer._pyunitwizard.puw` instead of mixing local and `molsysmt` aliases.
+  - Support helpers around coordinates/units were tightened to match the actual PyUnitWizard contract.
+  - `smonitor` coverage has been expanded to more public wrapper APIs (`Whole`, `Region`, `Layer`, `ShapesManager`).
+
 ## Active Decisions
 
 - Use real demo viewers when regression value depends on real MolSysMT behavior.
@@ -77,6 +83,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - it must preserve replayable `_message_history`,
   - it must preserve region/layer/tag continuity.
 - Keep environment workarounds narrowly scoped to concrete failing paths, not as blanket repository policy.
+- Treat sibling support libraries (`argdigest`, `depdigest`, `pyunitwizard`, `smonitor`) as active engineering dependencies, not passive externals.
+- Keep `molsysviewer` on one local `pyunitwizard` instance/configuration path.
 
 ## Next Step
 
@@ -94,6 +102,7 @@ Why this is next:
   - replay ordering and camera/state continuity across embedded/exported flows.
   - feature breadth toward the still-incomplete 1.0 surface.
   - functionality that is still simply not implemented yet.
+- The support-library layer is now in active hardening, so regressions there should be caught early instead of worked around ad hoc.
 
 ## What We Learned About `set()`
 
@@ -109,8 +118,8 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - resume feature implementation on the highest-value 1.0 path, or
-   - add one more regression only if a new core gap appears while implementing.
+   - finish any remaining support-library integration cleanup that blocks clean implementation work, or
+   - resume feature implementation on the highest-value 1.0 path.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Revisit additional `set()` attribute families only if they become a real product need.
 
@@ -127,9 +136,11 @@ Why this is next:
 - `add()` still depends on a scoped `NUMBA_CACHE_DIR` workaround in this environment.
 - E2E breadth is still thin relative to the runtime surface.
 - Popup/popout behavior is still lighter in coverage than live-edit, but no longer the clearest blocker for resuming implementation.
+- The support-library hardening pass is still in progress until the remaining integration cleanup is committed and documented.
 
 ## Useful Follow-ups
 
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
+- Audit any remaining public wrappers that still miss `@signal` coverage.

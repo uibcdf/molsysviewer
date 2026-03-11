@@ -44,7 +44,7 @@ def set_default_quantities_parser(form='pint', skip_digestion: bool = False):
 
 @digest()
 def set_default_standard_units(standards=['nm', 'ps', 'K', 'mole', 'amu', 'e',
-    'kJ/mol', 'kJ/(mol*nm**2)', 'N', 'degrees'], skip_digestion: bool = False):
+    'kJ/mol', 'kJ/(mol*nm)', 'kJ/(mol*nm**2)', 'radians'], skip_digestion: bool = False):
 
     from molsysviewer import pyunitwizard as puw
     puw.configure.set_standard_units(standards)
@@ -54,5 +54,4 @@ __all__.extend([
     "set_default_quantities_parser",
     "set_default_standard_units",
 ])
-
 

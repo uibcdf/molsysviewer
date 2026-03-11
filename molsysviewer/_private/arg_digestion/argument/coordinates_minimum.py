@@ -1,6 +1,6 @@
 from ...exceptions import ArgumentError
 import numpy as np
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 
 def digest_coordinates_minimum(coordinates_minimum, caller=None):
 

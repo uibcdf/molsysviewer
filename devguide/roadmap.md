@@ -23,10 +23,12 @@ It is organized by execution priority and uses three labels:
 - `In progress`
   - Contract hardening by test breadth across all ops and edge paths.
   - Cross-check consistency between docs snapshots and runtime behavior.
+  - Support-library integration hardening (`depdigest`, `pyunitwizard`, `smonitor`) is active because it affects runtime behavior directly.
 
 ### Next actions
 
 - Expand protocol-focused tests for non-trivial operations (`set_global_representation`, layer retag, clear/reset interactions).
+- Keep support-library integration aligned with sibling-library contracts, especially around bootstrap and quantity handling.
 - Keep contract changes additive unless versioned.
 
 ### Criteria

@@ -1,5 +1,5 @@
 from ...exceptions import ArgumentError
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 
 def digest_center_coordinates(center_coordinates, caller=None):
 

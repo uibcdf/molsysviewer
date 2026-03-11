@@ -1,5 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
-from molsysmt import pyunitwizard as puw
+from molsysviewer._pyunitwizard import puw
 import numpy as np
 
 functions_with_boolean = (
