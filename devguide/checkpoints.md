@@ -73,6 +73,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `pyunitwizard` usage is being unified around `molsysviewer._pyunitwizard.puw` instead of mixing local and `molsysmt` aliases.
   - Support helpers around coordinates/units were tightened to match the actual PyUnitWizard contract.
   - `smonitor` coverage has been expanded to more public wrapper APIs (`Whole`, `Region`, `Layer`, `ShapesManager`).
+  - `smonitor` timeline coverage now also includes more `MolSysView` public wrappers (camera/query/edit/export), with regression evidence that these signals land in `Manager.report()["timeline"]`.
 
 ## Active Decisions
 
@@ -103,6 +104,7 @@ Why this is next:
   - feature breadth toward the still-incomplete 1.0 surface.
   - functionality that is still simply not implemented yet.
 - The support-library layer is now in active hardening, so regressions there should be caught early instead of worked around ad hoc.
+- The second `smonitor` pass is now covering real traceability behavior, not just configuration/catalog presence.
 
 ## What We Learned About `set()`
 
@@ -137,6 +139,7 @@ Why this is next:
 - E2E breadth is still thin relative to the runtime surface.
 - Popup/popout behavior is still lighter in coverage than live-edit, but no longer the clearest blocker for resuming implementation.
 - The support-library hardening pass is still in progress until the remaining integration cleanup is committed and documented.
+- `smonitor` breadth is improved, but not yet exhaustive across every public entry point in the package.
 
 ## Useful Follow-ups
 

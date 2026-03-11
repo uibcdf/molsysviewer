@@ -828,6 +828,7 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["scene"])
     @digest()
     def clear_decorations(
         self,
@@ -851,6 +852,7 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["camera"])
     @digest()
     def reset_camera(self, skip_digestion: bool = False) -> None:
         """Reset the camera / view in the frontend."""
@@ -859,6 +861,7 @@ class MolSysView:
             "options": {},
         })
 
+    @signal(tags=["viewer"])
     @digest()
     def reset_viewer(self, skip_digestion: bool = False) -> None:
         """Fully clear the viewer and reset internal state (requires a new `load(...)`)."""
@@ -886,6 +889,7 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["camera"])
     @digest()
     def get_camera_snapshot(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
         """Return the last camera snapshot received from the frontend.
@@ -901,6 +905,7 @@ class MolSysView:
             return dict(self._last_camera_snapshot)
         return json.dumps(self._last_camera_snapshot, indent=2, sort_keys=True)
 
+    @signal(tags=["camera"])
     @digest()
     def set_camera_snapshot(self, snapshot: dict, *, duration_ms: int = 0, skip_digestion: bool = False) -> None:
         """Apply a previously saved camera snapshot.
@@ -922,6 +927,7 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["query"])
     @digest()
     def info(self,
              element='system',
@@ -940,6 +946,7 @@ class MolSysView:
             kwargs["mask"] = mask
         return msm.info(self._molsys, **kwargs)
 
+    @signal(tags=["selection"])
     @digest()
     def select(
         self,
@@ -966,6 +973,7 @@ class MolSysView:
             skip_digestion=True,
         )
 
+    @signal(tags=["query"])
     @digest()
     def get(
         self,
@@ -993,6 +1001,7 @@ class MolSysView:
             **kwargs,
         )
 
+    @signal(tags=["edit"])
     @digest()
     def append_structures(
         self,
@@ -1026,6 +1035,7 @@ class MolSysView:
         self.molecular_system = self._molsys
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
 
+    @signal(tags=["edit"])
     @digest()
     def set(
         self,
@@ -1120,6 +1130,7 @@ class MolSysView:
             value = self._normalize_set_value(attribute, raw_value)
             setter(item, value=value, skip_digestion=True, **dict_indices)
 
+    @signal(tags=["edit"])
     @digest()
     def add(
         self,
@@ -1149,6 +1160,7 @@ class MolSysView:
         self.molecular_system = self._molsys
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
 
+    @signal(tags=["edit"])
     @digest()
     def remove(
         self,
@@ -1192,6 +1204,7 @@ class MolSysView:
 
     # --- Export helpers for docs/notebooks ---
 
+    @signal(tags=["export"])
     @digest()
     def write_html(
         self,
