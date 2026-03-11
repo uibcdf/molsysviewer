@@ -3,6 +3,7 @@ from molsysviewer._private.exceptions import ArgumentError
 functions_with_boolean = (
         'molsysmt.basic.get.get',
         'molsysmt.basic.compare.compare',
+        'molsysviewer.viewer.get',
         )
 
 
@@ -27,4 +28,3 @@ def digest_n_atoms(n_atoms, caller=None):
             return n_atoms
 
     raise ArgumentError('n_atoms', value=n_atoms, caller=caller, message=None)
-

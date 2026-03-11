@@ -9,7 +9,13 @@ def digest_output_type(output_type, caller=None):
             if output_type.lower() in ['dataframe', 'short_string', 'long_string']:
                 return output_type.lower()
 
-    elif caller in ['molsysmt.basic.get.get', 'molsysviewer.viewer.MolSysView.get', 'molsysviewer.regions.Region.get']:
+    elif caller in [
+        'molsysmt.basic.get.get',
+        'molsysviewer.viewer.MolSysView.get',
+        'molsysviewer.viewer.get',
+        'molsysviewer.regions.Region.get',
+        'molsysviewer.tools.basic.get.get',
+    ]:
 
         if isinstance(output_type, str):
             if output_type.lower() in ['values', 'dictionary']:

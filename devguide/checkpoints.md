@@ -93,6 +93,11 @@ Do not append dated historical entries unless a date is itself operationally rel
 - `molsysviewer.tools`
   - The package now exists and starts with `molsysviewer.tools.basic.concatenate_structures(...)`.
   - `molsysviewer.tools.basic.merge_views(...)` now exists as the second pure composition primitive.
+  - `molsysviewer.tools.basic` now also exposes functional wrappers over core `MolSysView` operations:
+    - `select`, `get`, `info`,
+    - `extract`,
+    - `set`, `remove`, `add`, `append_structures`,
+    - `contains`, `is_composed_of`.
   - This first tool is intentionally a pure operation:
     - it accepts multiple MolSysMT-compatible systems or `MolSysView` objects,
     - delegates structural concatenation to `molsysmt.concatenate_structures(...)`,
@@ -104,11 +109,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - resolves tag collisions deterministically with suffixes such as `__2`,
     - and uses the first view as the source of global representation, controls, and camera snapshot state.
   - The purpose is to grow advanced functionality without inflating the core `MolSysView` facade.
+  - The package is now also part of the project’s “inspection/workbench” identity, not just its “viewer/export” identity.
 
 - User documentation
   - The user guide now has a dedicated `tools/` section.
   - The first module documented is `tools.basic`.
-  - Each function is expected to get its own tutorial-style page under the owning tools module.
+  - Each currently exposed `tools.basic` function now has its own user-facing page under `user/tools/basic/`.
 
 ## Active Decisions
 
@@ -116,6 +122,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Prefer contract-level and externally observable assertions over private implementation coupling.
 - Treat `DigestNotDigestedWarning` on stable public API as integration debt, not benign noise.
 - Keep `MolSysView` small; place advanced composition/analysis operations in `molsysviewer.tools`.
+- Let users work with `MolSysView` in both styles:
+  - object-oriented (`view.get(...)`, `view.set(...)`, ...)
+  - functional (`tools.basic.get(view, ...)`, `tools.basic.set(view, ...)`, ...)
 - Treat internal rebuild/replay as internal state application:
   - it must not re-digest already normalized state,
   - it must preserve replayable `_message_history`,
@@ -128,6 +137,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 ## Next Step
 
 - Continue building out `molsysviewer.tools` and the next 1.0-facing interaction/features on top of the stabilized runtime.
+- Keep pushing MolSysViewer toward a molecular-system inspection/workbench role for structural biochemistry and drug-design workflows, not only a viewer/export role.
 
 Why this is next:
 
