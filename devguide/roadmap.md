@@ -100,6 +100,7 @@ It is organized by execution priority and uses three labels:
   - `molsysviewer.tools.basic.merge(...)` now exists as the first view-centric composition primitive.
   - `molsysviewer.tools.basic` now also provides functional wrappers so users can operate on `MolSysView` in a MolSysMT-like style.
   - `molsysviewer.tools.basic.copy(...)` and `compare(...)` now extend that workbench surface.
+  - The object-side inspection API is now the preferred home for scene-centric helpers such as focus and region partitioning.
   - User docs now include a dedicated `tools/` section with module/function pages for `tools.basic`.
 
 ### Next actions
@@ -109,6 +110,8 @@ It is organized by execution priority and uses three labels:
 - Keep `tools` operations explicit about whether they are pure (return a new view) or live (mutate an existing one).
 - Keep user docs organized under `user/tools/<module>/<function>.md` or notebook equivalents so the tools surface can grow without scattering tutorials.
 - Prioritize `tools` functions that make MolSysViewer more useful as an inspection/workbench tool for molecular systems.
+- Keep focus helpers (`focus_selection`, `focus_region`, `Whole.focus`, `Region.focus`) on the object side.
+- Keep region-building helpers such as `split_by_chain()` / `split_by_molecule()` / `split_by_entity()` on `MolSysView` when they create live scene objects rather than pure return values.
 
 ### Criteria
 
