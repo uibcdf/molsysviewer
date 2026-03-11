@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from smonitor import signal
+
 from .._private.arg_digestion import digest
 
 
@@ -67,6 +69,7 @@ class TriangleFaces:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @signal(tags=["shape", "triangle"])
     @digest()
     def add_triangle_faces(
         self,

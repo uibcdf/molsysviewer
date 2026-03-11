@@ -1,4 +1,6 @@
 import pytest
+import ast
+from pathlib import Path
 
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer.demo import demo
@@ -67,3 +69,33 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
             profiling_sample_rate=previous_sample,
             profiling_buffer_size=previous_buffer,
         )
+
+
+def test_public_digest_entrypoints_have_signal_decorators():
+    targets = [
+        Path("molsysviewer/viewer.py"),
+        Path("molsysviewer/new_view.py"),
+        Path("molsysviewer/whole.py"),
+        Path("molsysviewer/regions.py"),
+        Path("molsysviewer/layers.py"),
+    ]
+    targets.extend(sorted(Path("molsysviewer/shapes").glob("*.py")))
+
+    missing: list[str] = []
+
+    for path in targets:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef):
+                decorators = [ast.unparse(deco) for deco in node.decorator_list]
+                if any("digest" in deco for deco in decorators) and not any("signal" in deco for deco in decorators):
+                    missing.append(f"{path}:{node.name}")
+            elif isinstance(node, ast.ClassDef):
+                for item in node.body:
+                    if not isinstance(item, ast.FunctionDef):
+                        continue
+                    decorators = [ast.unparse(deco) for deco in item.decorator_list]
+                    if any("digest" in deco for deco in decorators) and not any("signal" in deco for deco in decorators):
+                        missing.append(f"{path}:{node.name}.{item.name}")
+
+    assert missing == []

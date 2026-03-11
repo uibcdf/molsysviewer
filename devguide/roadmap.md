@@ -24,7 +24,7 @@ It is organized by execution priority and uses three labels:
   - Contract hardening by test breadth across all ops and edge paths.
   - Cross-check consistency between docs snapshots and runtime behavior.
   - Support-library integration hardening (`depdigest`, `pyunitwizard`, `smonitor`) is active because it affects runtime behavior directly.
-  - `smonitor` now has regression-backed wrapper coverage beyond config/catalog smoke tests, but the package-wide signal map is still incomplete.
+  - `smonitor` now has regression-backed wrapper coverage beyond config/catalog smoke tests, and the package-wide public signal map is largely enforced structurally.
 
 ### Next actions
 

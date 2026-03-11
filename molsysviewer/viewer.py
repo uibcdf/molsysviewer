@@ -83,6 +83,7 @@ class MolSysView:
         """IPython/Jupyter display hook (delegates to the underlying widget)."""
         return self.widget._repr_mimebundle_(include=include, exclude=exclude)
 
+    @signal(tags=["viewer", "init"])
     @dep_digest('anywidget')
     @dep_digest('molsysmt')
     def __init__(self, *, debug_js: bool | None = None) -> None:
@@ -399,6 +400,7 @@ class MolSysView:
         region._send_create()  # noqa: SLF001
         return region
 
+    @signal(tags=["layer"])
     @digest()
     def new_layer(
         self,
@@ -415,6 +417,7 @@ class MolSysView:
         layer._send_create()  # noqa: SLF001
         return layer
 
+    @signal(tags=["viewer", "controls"])
     @digest()
     def set_controls_visible(
         self,
@@ -746,6 +749,7 @@ class MolSysView:
         # (3) Subsequent calls without force do not return the widget
         return None
 
+    @signal(tags=["visibility"])
     @digest()
     def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
         """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""

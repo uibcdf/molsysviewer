@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from smonitor import signal
+
 from .._private.arg_digestion import digest
 
 import numpy as np
@@ -32,6 +34,7 @@ class DisplacementVectors:
             return values
         return seq
 
+    @signal(tags=["shape", "vector"])
     @digest()
     def add_displacement_vectors(
         self,
