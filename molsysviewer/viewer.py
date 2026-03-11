@@ -567,8 +567,9 @@ class MolSysView:
 
     @signal(tags=["region", "split"])
     @digest()
-    def split_by_chain(
+    def make_regions_by(
         self,
+        element: str,
         selection: str | Any = "all",
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
@@ -576,58 +577,21 @@ class MolSysView:
         representation: str | None = None,
         skip_digestion: bool = False,
     ) -> dict[str, Region]:
-        """Create one region per chain in the selected subset and return them by tag."""
+        """Create one region per selected hierarchy element and return them by tag."""
         representation = self._normalize_representation_type(representation)
+        allowed = {
+            "chain": "chain_index",
+            "molecule": "molecule_index",
+            "entity": "entity_index",
+        }
+        if element not in allowed:
+            raise ValueError(f"Unsupported element for make_regions_by: {element!r}. Allowed: {sorted(allowed)}")
         return self._split_into_regions(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
-            element_label="chain",
-            index_attribute="chain_index",
-            representation=representation,
-        )
-
-    @signal(tags=["region", "split"])
-    @digest()
-    def split_by_molecule(
-        self,
-        selection: str | Any = "all",
-        structure_indices: str | Any = "all",
-        syntax: str = "MolSysMT",
-        *,
-        representation: str | None = None,
-        skip_digestion: bool = False,
-    ) -> dict[str, Region]:
-        """Create one region per molecule in the selected subset and return them by tag."""
-        representation = self._normalize_representation_type(representation)
-        return self._split_into_regions(
-            selection=selection,
-            structure_indices=structure_indices,
-            syntax=syntax,
-            element_label="molecule",
-            index_attribute="molecule_index",
-            representation=representation,
-        )
-
-    @signal(tags=["region", "split"])
-    @digest()
-    def split_by_entity(
-        self,
-        selection: str | Any = "all",
-        structure_indices: str | Any = "all",
-        syntax: str = "MolSysMT",
-        *,
-        representation: str | None = None,
-        skip_digestion: bool = False,
-    ) -> dict[str, Region]:
-        """Create one region per entity in the selected subset and return them by tag."""
-        representation = self._normalize_representation_type(representation)
-        return self._split_into_regions(
-            selection=selection,
-            structure_indices=structure_indices,
-            syntax=syntax,
-            element_label="entity",
-            index_attribute="entity_index",
+            element_label=element,
+            index_attribute=allowed[element],
             representation=representation,
         )
 

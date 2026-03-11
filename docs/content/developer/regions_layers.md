@@ -14,17 +14,17 @@ These concepts are user-visible and must remain stable.
 - `view.new_region(selection, tag=None, representation=None, **repr_params) -> Region`
 - `view.new_layer(kind=None, tag=None, **meta) -> Layer`
 - Public registries: `view.regions` / `view.layers` (example: `view.regions["set1"].hide()`).
-- `Region`: `set_representation(...)`, `hide()/show()`, `focus()`, `delete()`, complements (`new_complementary_region()`).
+- `Region`: `set_representation(...)`, `hide()/show()`, `focus()`, `isolate()`, `delete()`, complements (`new_complementary_region()`).
 - `Layer`: `hide()/show()`, `delete()`, `set_tag()` (and possibly `merge()` in the future).
 - Whole: `view.whole` (`set_representation`, `hide()/show()`, `focus()`), not deletable and not retaggable.
-- Split helpers on the viewer: `split_by_chain()`, `split_by_molecule()`, `split_by_entity()`.
+- Region builders on the viewer: `make_regions_by(element=...)`.
 - Complements: `new_region(..., complement_of_regions=["tagA", ...] | "all")` computes complements in Python.
 
 ## Tagging policy
 
 - User-provided tags remain the strongest source of truth and must be preserved exactly unless a collision must be resolved.
 - Auto-generated fallback tags remain sequential for ad hoc objects (`region1`, `layer1`, ...).
-- For viewer-generated semantic regions such as `split_by_chain()` / `split_by_molecule()` / `split_by_entity()`, the tag should be derived from a human-readable MolSysMT label when possible and then sanitized to a stable tag token.
+- For viewer-generated semantic regions such as `make_regions_by(element="chain" | "molecule" | "entity")`, the tag should be derived from a human-readable MolSysMT label when possible and then sanitized to a stable tag token.
 - Preserve semantic clarity in generated tags: concise chain labels can stand alone (`A`), while broader classes should keep an element prefix (`molecule_peptide_0`, `entity_peptide_0`) to avoid ambiguity.
 - If two generated tags collide, resolve the collision deterministically with suffixes such as `__2`, `__3`, ...
 - Generated tags must be replay-safe and merge-safe: they should survive rebuild/export/replay and later multi-view composition without ambiguity.
