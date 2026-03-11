@@ -121,11 +121,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `focus_selection(...)`,
     - `focus_region(...)`,
     - `Whole.focus(...)`,
-    - `Region.focus(...)`.
+    - `Region.focus(...)`,
+    - `Region.show_only(...)`.
   - Structural partition helpers also belong on `MolSysView`, not in `tools.basic`, because their real product value is creating region objects in the active scene.
   - The public API for this is now one operation:
     - `make_regions_by(element=...)`
     - instead of multiple `split_by_*` entrypoints.
+    - allowed hierarchy levels are intentionally limited for now to `chain`, `molecule`, and `entity`.
   - Region tags produced by viewer-managed region-building helpers should follow a stable policy:
     - derive from a MolSysMT human-readable label when possible,
     - sanitize to a replay-safe tag token,
@@ -199,8 +201,7 @@ Why this is next:
 ## Immediate Plan
 
 1. Pick the next core cross-cutting behavior:
-   - continue the inspection-oriented object API with focus/splitting helpers, or
-   - move to canvas interaction and picking/hover behavior.
+  - move to canvas interaction and picking/hover behavior.
 2. Add one regression that exercises that behavior through externally visible outcomes.
 3. Return to support-library integration only if a new product path exposes a real contract gap.
 

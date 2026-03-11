@@ -47,12 +47,13 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `focus_selection(...)`
 - `focus_region(...)`
 - `make_regions_by(...)`
+  - limited for now to `element="chain" | "molecule" | "entity"`
 
 Related object wrappers are also part of the intended public surface:
 
 - `view.whole.focus(...)`
 - `view.regions[tag].focus(...)`
-- `view.regions[tag].isolate(...)`
+- `view.regions[tag].show_only(...)`
 
 ### Notebook rendering
 

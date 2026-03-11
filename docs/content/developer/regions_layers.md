@@ -14,10 +14,10 @@ These concepts are user-visible and must remain stable.
 - `view.new_region(selection, tag=None, representation=None, **repr_params) -> Region`
 - `view.new_layer(kind=None, tag=None, **meta) -> Layer`
 - Public registries: `view.regions` / `view.layers` (example: `view.regions["set1"].hide()`).
-- `Region`: `set_representation(...)`, `hide()/show()`, `focus()`, `isolate()`, `delete()`, complements (`new_complementary_region()`).
+- `Region`: `set_representation(...)`, `hide()/show()`, `focus()`, `show_only()`, `delete()`, complements (`new_complementary_region()`).
 - `Layer`: `hide()/show()`, `delete()`, `set_tag()` (and possibly `merge()` in the future).
 - Whole: `view.whole` (`set_representation`, `hide()/show()`, `focus()`), not deletable and not retaggable.
-- Region builders on the viewer: `make_regions_by(element=...)`.
+- Region builders on the viewer: `make_regions_by(element=...)` with `element in {"chain", "molecule", "entity"}`.
 - Complements: `new_region(..., complement_of_regions=["tagA", ...] | "all")` computes complements in Python.
 
 ## Tagging policy

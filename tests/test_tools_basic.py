@@ -108,11 +108,11 @@ def test_make_regions_by_creates_regions_with_deduplicated_tags():
     assert chains_second["A__2"].atom_indices == tuple(range(22))
 
 
-def test_region_isolate_applies_live_visibility_mask():
+def test_region_show_only_applies_live_visibility_mask():
     view = demo["dialanine"]
     region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
 
-    region.isolate()
+    region.show_only()
 
     assert view.visible_atom_indices == [0, 1, 2]
     visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")  # noqa: SLF001
