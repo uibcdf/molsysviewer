@@ -122,8 +122,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `focus_region(...)`,
     - `Whole.focus(...)`,
     - `Region.focus(...)`.
-  - Structural partition helpers such as `split_by_chain()` / `split_by_molecule()` / `split_by_entity()` also belong on `MolSysView`, not in `tools.basic`, because their real product value is creating region objects in the active scene.
-  - Region tags produced by viewer-managed split helpers should follow a stable policy:
+  - Structural partition helpers also belong on `MolSysView`, not in `tools.basic`, because their real product value is creating region objects in the active scene.
+  - The public API for this is now one operation:
+    - `make_regions_by(element=...)`
+    - instead of multiple `split_by_*` entrypoints.
+  - Region tags produced by viewer-managed region-building helpers should follow a stable policy:
     - derive from a MolSysMT human-readable label when possible,
     - sanitize to a replay-safe tag token,
     - keep semantic prefixes where needed to avoid ambiguity (`molecule_...`, `entity_...`) while allowing concise chain tags,
@@ -146,6 +149,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep scene-centric inspection affordances on the object side even when an equivalent pure helper could exist:
   - focus operations belong to `MolSysView` / `Whole` / `Region`,
   - region-partition helpers belong to `MolSysView` when they create live region objects.
+  - prefer one parameterized entrypoint (`make_regions_by(element=...)`) over multiple thin `split_by_*` variants.
 - Keep `tools.basic.compare(...)` explicitly molecular for now; if scene comparison is needed later, that should be a separately documented contract.
 - Treat internal rebuild/replay as internal state application:
   - it must not re-digest already normalized state,

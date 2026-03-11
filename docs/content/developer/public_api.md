@@ -46,14 +46,13 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `is_composed_of(...)`
 - `focus_selection(...)`
 - `focus_region(...)`
-- `split_by_chain(...)`
-- `split_by_molecule(...)`
-- `split_by_entity(...)`
+- `make_regions_by(...)`
 
 Related object wrappers are also part of the intended public surface:
 
 - `view.whole.focus(...)`
 - `view.regions[tag].focus(...)`
+- `view.regions[tag].isolate(...)`
 
 ### Notebook rendering
 

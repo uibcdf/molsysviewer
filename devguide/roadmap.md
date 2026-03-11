@@ -111,7 +111,8 @@ It is organized by execution priority and uses three labels:
 - Keep user docs organized under `user/tools/<module>/<function>.md` or notebook equivalents so the tools surface can grow without scattering tutorials.
 - Prioritize `tools` functions that make MolSysViewer more useful as an inspection/workbench tool for molecular systems.
 - Keep focus helpers (`focus_selection`, `focus_region`, `Whole.focus`, `Region.focus`) on the object side.
-- Keep region-building helpers such as `split_by_chain()` / `split_by_molecule()` / `split_by_entity()` on `MolSysView` when they create live scene objects rather than pure return values.
+- Keep region-building helpers on `MolSysView` when they create live scene objects rather than pure return values.
+- Prefer one parameterized region-building entrypoint (`make_regions_by(element=...)`) over multiple near-duplicate `split_by_*` methods.
 
 ### Criteria
 

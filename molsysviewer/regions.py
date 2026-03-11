@@ -394,6 +394,14 @@ class Region:
         self._hidden = True
         self._send("hide_region")
 
+    @signal(tags=["region", "visibility"])
+    @digest()
+    def isolate(self, skip_digestion: bool = False) -> None:
+        """Leave only this region visible in the current view."""
+        if self.atom_indices is None:
+            raise ValueError("Cannot isolate a region without known atom indices.")
+        self._view.isolate(selection=list(self.atom_indices), skip_digestion=True)
+
     @signal(tags=["region"])
     @digest()
     def delete(self, skip_digestion: bool = False) -> None:

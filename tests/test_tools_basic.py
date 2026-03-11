@@ -86,13 +86,13 @@ def test_focus_selection_focus_region_and_region_focus_emit_zoom_messages():
     assert fourth_zoom["atom_indices"] == [3, 4]
 
 
-def test_split_by_chain_molecule_and_entity_create_regions_with_deduplicated_tags():
+def test_make_regions_by_creates_regions_with_deduplicated_tags():
     view = demo["dialanine"]
 
-    chains = view.split_by_chain(representation="line")
-    molecules = view.split_by_molecule()
-    entities = view.split_by_entity()
-    chains_second = view.split_by_chain()
+    chains = view.make_regions_by("chain", representation="line")
+    molecules = view.make_regions_by("molecule")
+    entities = view.make_regions_by("entity")
+    chains_second = view.make_regions_by("chain")
 
     assert set(chains) == {"A"}
     assert chains["A"].representation == "line"
@@ -106,6 +106,17 @@ def test_split_by_chain_molecule_and_entity_create_regions_with_deduplicated_tag
 
     assert set(chains_second) == {"A__2"}
     assert chains_second["A__2"].atom_indices == tuple(range(22))
+
+
+def test_region_isolate_applies_live_visibility_mask():
+    view = demo["dialanine"]
+    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+
+    region.isolate()
+
+    assert view.visible_atom_indices == [0, 1, 2]
+    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")  # noqa: SLF001
+    assert visibility_msg["options"]["visible_atom_indices"] == [0, 1, 2]
 
 
 def test_tools_basic_extract_returns_subset_view():
