@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from smonitor import signal
+
 from .._private.arg_digestion import digest
 
 
@@ -36,6 +38,7 @@ class PocketBlobs:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+    @signal(tags=["shape", "pocket"])
     @digest()
     def add_pocket_blob(
         self,

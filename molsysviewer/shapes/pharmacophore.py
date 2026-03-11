@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from smonitor import signal
+
 from .._private.arg_digestion import digest
 
 
@@ -42,6 +44,7 @@ class PharmacophoreShapes:
             out.append([float(v[0]), float(v[1]), float(v[2])])
         return out
 
+    @signal(tags=["shape", "pharmacophore"])
     @digest()
     def add_pharmacophore_features(
         self,

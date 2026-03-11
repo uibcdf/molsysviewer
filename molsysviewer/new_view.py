@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any, Sequence, Union, Literal
 
+from smonitor import signal
+
 from .viewer import MolSysView
 from ._private.arg_digestion import digest
 from depdigest import dep_digest
@@ -11,6 +13,7 @@ Selection = Union[str, Sequence[int]]
 StructureIndices = Union[str, Sequence[int]]
 
 @dep_digest('molsysmt')
+@signal(tags=["load", "factory"])
 @digest()
 def new_view(
     molecular_system: Any,

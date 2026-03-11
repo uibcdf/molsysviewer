@@ -2,6 +2,7 @@
 
 from typing import Sequence
 import numpy as np
+from smonitor import signal
 
 from ..layers import Layer
 from .._private.arg_digestion import digest
@@ -12,6 +13,7 @@ class SphereShapes:
     def __init__(self, view) -> None:
         self._view = view
 
+    @signal(tags=["shape", "sphere"])
     @digest()
     def add_sphere(
         self,
@@ -41,6 +43,7 @@ class SphereShapes:
             self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
         return self._view._layers[tag]  # noqa: SLF001
 
+    @signal(tags=["shape", "sphere"])
     @digest()
     def add_spheres(
         self,
@@ -92,6 +95,7 @@ class SphereShapes:
             layers.append(self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t, skip_digestion=True))
         return layers
 
+    @signal(tags=["shape", "sphere"])
     @digest()
     def add_set_alpha_spheres(
         self,
@@ -145,6 +149,7 @@ class SphereShapes:
             self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
         return self._view._layers[tag]  # noqa: SLF001
 
+    @signal(tags=["shape", "sphere"])
     @digest()
     def clear(self, tag: str | None = None, skip_digestion: bool = False):
         """Delete shapes in the frontend (all or by tag)."""

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Sequence
 
+from smonitor import signal
+
 from .._private.arg_digestion import digest
 
 
@@ -35,6 +37,7 @@ class PocketSurfaces:
     def __init__(self, view) -> None:
         self._view = view
 
+    @signal(tags=["shape", "pocket"])
     @digest()
     def add_pocket_surface(
         self,

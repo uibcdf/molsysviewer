@@ -74,6 +74,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - Support helpers around coordinates/units were tightened to match the actual PyUnitWizard contract.
   - `smonitor` coverage has been expanded to more public wrapper APIs (`Whole`, `Region`, `Layer`, `ShapesManager`).
   - `smonitor` timeline coverage now also includes more `MolSysView` public wrappers (camera/query/edit/export), with regression evidence that these signals land in `Manager.report()["timeline"]`.
+  - A structural regression now checks that public `@digest()` entrypoints across `MolSysView`, `new_view`, `Whole`, `Region`, `Layer`, and `shapes/` also carry `@signal()`.
 
 ## Active Decisions
 
@@ -105,6 +106,7 @@ Why this is next:
   - functionality that is still simply not implemented yet.
 - The support-library layer is now in active hardening, so regressions there should be caught early instead of worked around ad hoc.
 - The second `smonitor` pass is now covering real traceability behavior, not just configuration/catalog presence.
+- The current `smonitor` integration is now close to exhaustive on the main public orchestration surface.
 
 ## What We Learned About `set()`
 
@@ -140,10 +142,11 @@ Why this is next:
 - Popup/popout behavior is still lighter in coverage than live-edit, but no longer the clearest blocker for resuming implementation.
 - The support-library hardening pass is still in progress until the remaining integration cleanup is committed and documented.
 - `smonitor` breadth is improved, but not yet exhaustive across every public entry point in the package.
+- Remaining `smonitor` work should now be selective, not broad-brush.
 
 ## Useful Follow-ups
 
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
-- Audit any remaining public wrappers that still miss `@signal` coverage.
+- Add targeted `smonitor` refinements only when a new public orchestration path is introduced.
