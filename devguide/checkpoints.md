@@ -156,7 +156,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the canvas suppresses the host `contextmenu`,
     - Python stores both the last context-target event and the last chosen context action event,
     - a viewer-owned context menu now exists with:
-      - `Focus Target` for structure and annotation targets,
+      - `Focus Target` for structure, annotation, and first-slice shape targets,
       - target-scoped measurement seed actions for `distance`, `angle`, and `dihedral`,
       - a secondary active-selection section with `Focus Selection` and `Clear Selection`.
   - Interactive measurement now has a first real implementation path:
@@ -174,7 +174,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - it already emits derived `atom_indices` plus `group_indices`, `chain_indices`, and `entity_indices`,
     - it now also has a narrow `annotation` slice seeded from `GroupStrip` label badges,
     - `element + annotation` now mix in one `active_selection` payload,
-    - it does not yet cover `shape`.
+    - it now also has a first narrow `shape` slice from Mol* `shape-loci`,
+    - broader shape metadata and richer shape/mixed policies still remain ahead.
   - `GroupStrip` now has a first concrete implementation slice:
     - it renders groups from the currently loaded structure,
     - groups are organized by chain,
@@ -237,8 +238,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 ## Next Step
 
 - Continue building out the interaction stack on top of the now-working context menu + measurement tool-mode path.
-- Enrich `active_selection` beyond the current element-only/group-centric slice toward the documented taxonomy:
-  - `shape`.
+- Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,
   - region overlays,

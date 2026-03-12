@@ -318,3 +318,54 @@ test("ActiveSelectionController supports annotation selections and mixes them wi
         },
     ]);
 });
+
+test("ActiveSelectionController supports shape selections", () => {
+    const events: any[] = [];
+    const controller = new ActiveSelectionController((msg) => events.push(msg));
+
+    controller.handlePrimaryClick({
+        modifiers: { shift: false },
+        current: {
+            loci: {
+                kind: "shape-loci",
+                shape: {
+                    name: "Pocket Blob",
+                    sourceData: {
+                        tag: "pocket",
+                        atom_indices: [8, 9],
+                        group_indices: [2],
+                        chain_indices: [0],
+                        entity_indices: [0],
+                    },
+                },
+            },
+        },
+    });
+
+    assert.deepStrictEqual(events, [{
+        event: "interaction_active_selection_changed",
+        source_kind: "shape",
+        element_level: "none",
+        target_level: "shape",
+        items: [{
+            source_kind: "shape",
+            shape_kind: "Pocket Blob",
+            shape_name: "Pocket Blob",
+            tag: "pocket",
+            atom_indices: [8, 9],
+            group_indices: [2],
+            chain_indices: [0],
+            entity_indices: [0],
+        }],
+        atom_indices: [8, 9],
+        group_indices: [2],
+        component_indices: [],
+        chain_indices: [0],
+        molecule_indices: [],
+        entity_indices: [0],
+        count_atoms: 2,
+        count_groups: 1,
+        count_shapes: 1,
+        count_annotations: 0,
+    }]);
+});

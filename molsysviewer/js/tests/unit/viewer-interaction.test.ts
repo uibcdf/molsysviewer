@@ -16,6 +16,26 @@ test("normalizeInteractionEvent emits empty payload when no structure loci is pr
     });
 });
 
+test("normalizeInteractionEvent extracts shape metadata from shape loci", () => {
+    assert.deepStrictEqual(normalizeInteractionEvent("click", {
+        current: {
+            loci: {
+                kind: "shape-loci",
+                shape: {
+                    name: "Pocket Blob",
+                    sourceData: { tag: "pocket", atom_indices: [8, 9] },
+                },
+            },
+        },
+    }), {
+        event: "interaction_click",
+        kind: "shape",
+        atom_indices: [8, 9],
+        shape_name: "Pocket Blob",
+        tag: "pocket",
+    });
+});
+
 test("normalizeInteractionEvent extracts atom indices from structure loci", () => {
     const loci: any = {
         kind: "element-loci",
@@ -51,6 +71,29 @@ test("normalizeContextInteractionEvent captures page coordinates and atom indice
         event: "interaction_context_menu",
         kind: "structure",
         atom_indices: [8, 9],
+        page_x: 120,
+        page_y: 240,
+    });
+});
+
+test("normalizeContextInteractionEvent captures shape context targets", () => {
+    assert.deepStrictEqual(normalizeContextInteractionEvent({
+        current: {
+            loci: {
+                kind: "shape-loci",
+                shape: {
+                    name: "Pocket Blob",
+                    sourceData: { tag: "pocket", atom_indices: [8, 9] },
+                },
+            },
+        },
+        page: [120, 240],
+    }), {
+        event: "interaction_context_menu",
+        kind: "shape",
+        atom_indices: [8, 9],
+        shape_name: "Pocket Blob",
+        tag: "pocket",
         page_x: 120,
         page_y: 240,
     });

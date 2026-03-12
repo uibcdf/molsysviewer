@@ -3,6 +3,7 @@ import type { ActiveSelectionPayload } from "../managers/active-selection";
 type BaseTarget =
     | { event: "interaction_context_menu"; kind: "empty" }
     | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[] }
+    | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
     | { event: "interaction_context_menu"; kind: "annotation"; atom_indices: number[]; tag?: string; text?: string };
 
 export type ContextMenuTarget = BaseTarget;
@@ -11,6 +12,7 @@ export type ContextMenuAction = "distance" | "angle" | "dihedral" | "focus_targe
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
+    if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
     const count = target.atom_indices.length;
     return count === 1 ? "Element (1 atom)" : `Element (${count} atoms)`;
@@ -83,6 +85,8 @@ export class ViewerContextMenu {
             this.root.appendChild(this.makeActionButton("Distance", "distance"));
             this.root.appendChild(this.makeActionButton("Angle", "angle"));
             this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
+        } else if (target.kind === "shape") {
+            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
         } else if (target.kind === "annotation") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
         } else {
