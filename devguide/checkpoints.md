@@ -155,7 +155,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - right-click without drag is captured from Mol* click events,
     - the canvas suppresses the host `contextmenu`,
     - Python stores both the last context-target event and the last chosen context action event,
-    - a minimal viewer-owned context menu now exists with seed actions for `distance`, `angle`, and `dihedral`.
+    - a viewer-owned context menu now exists with:
+      - target-scoped measurement seed actions for `distance`, `angle`, and `dihedral`,
+      - a secondary active-selection section with `Focus Selection` and `Clear Selection`.
   - Interactive measurement now has a first real implementation path:
     - menu-seeded `distance` / `angle` / `dihedral` actions start a frontend tool mode,
     - picks are forced down the Mol* element/atom path for measurement purposes,
@@ -243,6 +245,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - keep current label overlays on the strip,
   - keep the new strip-seeded `annotation` context + selection slices stable,
   - then choose between canvas annotation pickability or richer mixed-selection semantics before broadening the model further.
+- Use the current active-selection section in the context menu to make selection useful before adding more target families:
+  - `Focus Selection`,
+  - `Clear Selection`.
 - Keep pushing MolSysViewer toward a molecular-system inspection/workbench role for structural biochemistry and drug-design workflows, not only a viewer/export role.
 
 Why this is next:

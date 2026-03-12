@@ -10,3 +10,4 @@ import "./measurement-tools.test";
 import "./active-selection.test";
 import "./annotation-handler.test";
 import "./group-strip.test";
+import "./context-menu.test";

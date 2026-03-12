@@ -20,6 +20,7 @@ import { ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem } from "./active-selection";
+import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupStrip } from "../ui/group-strip";
 
 type InteractionKind = "hover" | "click" | "context";
@@ -200,6 +201,7 @@ export class MolSysViewerController {
 
     private currentStructure?: StateObjectRef; // Ref to structure root
     private loadedStructure?: LoadedStructure; // Loaded structure bundle
+    private currentActiveSelection: ActiveSelectionPayload | null = null;
 
     // Getters for scene state delegated to scene handler
     get isSpinActive() { return this.scene.isSpinActive; }
@@ -220,6 +222,7 @@ export class MolSysViewerController {
                     this.toolStatusOverlay.update({ action: null });
                 }
             } else if (msg?.event === "interaction_active_selection_changed") {
+                this.currentActiveSelection = msg;
                 this.groupStrip.updateSelection(msg);
             }
             this.notify?.(msg);
@@ -253,6 +256,14 @@ export class MolSysViewerController {
             this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
         });
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
+            if (action === "focus_selection") {
+                this.focusCurrentSelection();
+                return;
+            }
+            if (action === "clear_selection") {
+                this.activeSelection.clear();
+                return;
+            }
             this.startMeasurementTool(action);
         });
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
@@ -262,7 +273,7 @@ export class MolSysViewerController {
         registerInteractionObservers(plugin, emitInteractionEvent, (payload) => {
             const pageX = payload.page_x ?? 0;
             const pageY = payload.page_y ?? 0;
-            this.contextMenu.open(payload, pageX, pageY);
+            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection);
         }, (ev) => {
             if (!this.measurementTools.isActive()) {
                 this.activeSelection.handlePrimaryClick(ev);
@@ -342,7 +353,7 @@ export class MolSysViewerController {
             page_y: pageY,
         };
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY);
+        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection);
     }
 
     private openContextMenuForAnnotation(
@@ -357,7 +368,29 @@ export class MolSysViewerController {
             page_y: pageY,
         };
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY);
+        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection);
+    }
+
+    private focusCurrentSelection(): void {
+        const selection = this.currentActiveSelection;
+        if (!selection || selection.source_kind === "empty" || selection.atom_indices.length === 0) return;
+        const loci = this.atomIndicesToLoci(selection.atom_indices);
+        if (!loci) return;
+        this.plugin.managers.camera.focusLoci(loci);
+    }
+
+    private atomIndicesToLoci(atomIndices: number[]): StructureElement.Loci | null {
+        const structure = this.getStructureData();
+        if (!structure) return null;
+        const unit = structure.units.find((candidate) => candidate.kind === 0);
+        if (!unit) return null;
+        const unitIndices: number[] = [];
+        for (const atomIndex of atomIndices) {
+            const unitIndex = unit.elements.indexOf(atomIndex as any);
+            if (unitIndex >= 0) unitIndices.push(unitIndex);
+        }
+        if (unitIndices.length === 0) return null;
+        return StructureElement.Loci(structure, [{ unit, indices: unitIndices } as any]);
     }
 
     // Message Dispatcher
