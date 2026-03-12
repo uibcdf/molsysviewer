@@ -65,5 +65,39 @@ class AnnotationsManager:
         )
         return layer
 
+    @signal(tags=["annotation", "selection"])
+    @digest()
+    def add_label_from_active_selection(
+        self,
+        text: str,
+        *,
+        tag: str | None = None,
+        skip_digestion: bool = False,
+    ) -> Layer:
+        """Add a persistent label from the last active selection.
+
+        Current first slice:
+
+        - requires a stored active selection event,
+        - requires exactly one resolved group index,
+        - delegates to :meth:`add_label`.
+        """
+        event = self._view.get_last_active_selection_event()
+        if event is None:
+            raise ValueError("No active selection stored. Select an element before adding a label.")
+
+        group_indices = event.get("group_indices") or []
+        if len(group_indices) != 1:
+            raise ValueError(
+                "add_label_from_active_selection() currently requires an active selection resolving to exactly one group."
+            )
+
+        return self.add_label(
+            text=text,
+            group_index=[int(group_indices[0])],
+            tag=tag,
+            skip_digestion=True,
+        )
+
 
 __all__ = ["AnnotationsManager"]

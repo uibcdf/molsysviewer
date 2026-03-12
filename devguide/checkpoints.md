@@ -163,7 +163,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - a viewer-owned context menu now exists with:
       - `Focus Target` for structure, annotation, and first-slice shape targets,
       - target-scoped measurement seed actions for `distance`, `angle`, and `dihedral`,
-      - a secondary active-selection section with `Focus Selection` and `Clear Selection`.
+      - a secondary active-selection section with:
+        - `Focus Selection`
+        - `Create Region from Selection`
+        - `Add Label from Selection` when the selection resolves to exactly one group
+        - `Clear Selection`
   - Interactive measurement now has a first real implementation path:
     - menu-seeded `distance` / `angle` / `dihedral` actions start a frontend tool mode,
     - picks are forced down the Mol* element/atom path for measurement purposes,
@@ -201,6 +205,15 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `clear_decorations(..., labels=True)` now clears real frontend labels instead of a placeholder path,
     - strip label badges can now seed both `annotation` context and `annotation` active selection,
     - annotation context now has a first concrete action: `Focus Target`.
+  - The first explicit exploration -> reproducible-state bridge now exists in Python:
+    - `view.new_region_from_active_selection(...)`
+    - `view.annotations.add_label_from_active_selection(...)`
+  - The current bridge is intentionally narrow:
+    - region creation uses stored `active_selection.atom_indices`,
+    - label creation currently requires an active selection resolving to exactly one `group`.
+  - Validation note:
+    - JS regression remains green,
+    - Python regression for this slice is currently blocked by an import-time failure in the local sibling `../pyunitwizard` checkout, outside this repository.
 
 ## Active Decisions
 
@@ -241,6 +254,10 @@ Do not append dated historical entries unless a date is itself operationally rel
   - explicit text,
   - one `group` anchor,
   - no atom labels or free-point labels yet.
+- Keep the first exploration -> reproducible-state bridge narrow and explicit:
+  - active selection may become a region,
+  - active selection may become a label when it resolves to exactly one `group`,
+  - broader UI flows should come only after the Python-side contract is stable.
 - Use Mol* rather than MolSysMT as the first engine for interactive distance/angle/dihedral:
   - Mol* already owns the live picked loci and the native measurement representations,
   - MolSysMT remains appropriate for later Python-side analysis or validation, not for the first interactive gesture loop.
@@ -256,6 +273,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - selection -> label,
   - measurement -> persistent/replayable artifact,
   - and then richer mixed-selection semantics only where they help that goal.
+- The UI now exposes that direction explicitly in the active-selection context menu,
+  even though the Python-side execution path still needs revalidation once the
+  sibling `pyunitwizard` checkout is healthy again.
 - Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality only when that improves reproducible scientific workflows.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,

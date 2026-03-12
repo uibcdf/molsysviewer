@@ -574,6 +574,39 @@ class MolSysView:
         region._send_create()  # noqa: SLF001
         return region
 
+    @signal(tags=["region", "selection"])
+    @digest()
+    def new_region_from_active_selection(
+        self,
+        *,
+        tag: str | None = None,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> Region:
+        """Create a region from the last active selection event.
+
+        This is the first explicit bridge from interactive exploration to
+        reproducible viewer state. The current implementation is intentionally
+        narrow and derives the region from the stored selection atom indices.
+        """
+        event = self.get_last_active_selection_event()
+        if event is None:
+            raise ValueError("No active selection stored. Select an element before creating a region.")
+
+        atom_indices = event.get("atom_indices") or []
+        atom_indices = [int(ii) for ii in atom_indices]
+        if len(atom_indices) == 0:
+            raise ValueError("The current active selection does not resolve to any atoms.")
+
+        return self.new_region(
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            skip_digestion=True,
+            **repr_params,
+        )
+
     @signal(tags=["layer"])
     @digest()
     def new_layer(

@@ -117,6 +117,8 @@ test("ViewerContextMenu renders active selection section and selection actions",
         assert.ok(texts.includes("Focus Target"));
         assert.ok(texts.includes("Active selection: mixed (0 items)"));
         assert.ok(texts.includes("Focus Selection"));
+        assert.ok(texts.includes("Create Region from Selection"));
+        assert.ok(texts.includes("Add Label from Selection"));
         assert.ok(texts.includes("Clear Selection"));
 
         const targetButton = findNodeByText(root, "Focus Target");
@@ -159,6 +161,86 @@ test("ViewerContextMenu renders active selection section and selection actions",
             {
                 action: "focus_selection",
                 target: { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu exposes reproducible-selection actions with the right guard", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any }> = [];
+        const menu = new ViewerContextMenu(host, undefined, (action, target) => {
+            actions.push({ action, target });
+        });
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "mixed",
+                element_level: "group",
+                target_level: "mixed",
+                items: [],
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 3,
+                count_groups: 1,
+                count_shapes: 0,
+                count_annotations: 1,
+            },
+        );
+
+        let root = (menu as any).root as FakeElement;
+        assert.ok(collectTexts(root).includes("Create Region from Selection"));
+        assert.ok(collectTexts(root).includes("Add Label from Selection"));
+
+        const regionButton = findNodeByText(root, "Create Region from Selection");
+        assert.ok(regionButton);
+        regionButton!.dispatch("click");
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "element",
+                element_level: "group",
+                target_level: "none",
+                items: [],
+                atom_indices: [0, 1, 2, 3],
+                group_indices: [0, 1],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 4,
+                count_groups: 2,
+                count_shapes: 0,
+                count_annotations: 0,
+            },
+        );
+
+        root = (menu as any).root as FakeElement;
+        assert.ok(collectTexts(root).includes("Create Region from Selection"));
+        assert.ok(!collectTexts(root).includes("Add Label from Selection"));
+
+        assert.deepStrictEqual(actions, [
+            {
+                action: "create_region_from_selection",
+                target: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
             },
         ]);
 

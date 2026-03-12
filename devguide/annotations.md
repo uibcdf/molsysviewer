@@ -226,6 +226,7 @@ This should also come later.
 - actual `clear labels` support in the frontend instead of the current placeholder
 - a narrow public API:
   - `view.annotations.add_label(text=..., group_index=..., tag=...)`
+  - `view.annotations.add_label_from_active_selection(text=..., tag=...)`
 
 ### v1 should not try to solve
 

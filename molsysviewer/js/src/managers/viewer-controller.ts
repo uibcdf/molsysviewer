@@ -289,6 +289,9 @@ export class MolSysViewerController {
                 this.activeSelection.clear();
                 return;
             }
+            if (action === "create_region_from_selection" || action === "add_label_from_selection") {
+                return;
+            }
             this.startMeasurementTool(action);
         });
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
