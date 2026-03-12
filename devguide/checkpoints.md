@@ -170,8 +170,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the current implementation is now `group`-centric for element picks,
     - it already emits derived `atom_indices` plus `group_indices`, `chain_indices`, and `entity_indices`,
     - it now also has a narrow `annotation` slice seeded from `GroupStrip` label badges,
-    - annotation selection is still kept separate from element selection for now,
-    - it does not yet cover `shape` or full `mixed`.
+    - `element + annotation` now mix in one `active_selection` payload,
+    - it does not yet cover `shape`.
   - `GroupStrip` now has a first concrete implementation slice:
     - it renders groups from the currently loaded structure,
     - groups are organized by chain,
@@ -234,8 +234,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 - Continue building out the interaction stack on top of the now-working context menu + measurement tool-mode path.
 - Enrich `active_selection` beyond the current element-only/group-centric slice toward the documented taxonomy:
-  - `shape`,
-  - `mixed`.
+  - `shape`.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,
   - region overlays,

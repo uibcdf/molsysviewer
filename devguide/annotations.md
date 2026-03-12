@@ -410,7 +410,8 @@ Current first implemented slice:
 - compact strip overlays for group labels now exist
 - strip label overlays can seed `annotation` context targets
 - strip label overlays can also seed a first narrow `annotation` slice in `active_selection`
-- that selection slice is intentionally kept separate from element selection for now; full mixed selection remains later work
+- `element + annotation` can now coexist in one mixed selection payload
+- `shape` and broader mixed-selection semantics remain later work
 
 So this work is not inventing an unrelated abstraction.
 It is closing a category gap that the codebase already suggested.

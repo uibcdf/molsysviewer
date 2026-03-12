@@ -223,3 +223,81 @@ test("GroupStrip badge click selects annotation and shift-click is forwarded", (
         restore();
     }
 });
+
+test("GroupStrip can reflect mixed element and annotation selection at once", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {}, () => {});
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                chain_name: "A",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+        strip.addLabelOverlay({
+            op: "add_label",
+            tag: "notes",
+            options: { text: "Catalytic", atom_indices: [0, 1], tag: "notes" },
+        });
+
+        strip.updateSelection({
+            event: "interaction_active_selection_changed",
+            source_kind: "mixed",
+            element_level: "group",
+            target_level: "mixed",
+            items: [
+                {
+                    source_kind: "element",
+                    element_level: "group",
+                    atom_indices: [0, 1],
+                    group_indices: [0],
+                    chain_indices: [0],
+                    entity_indices: [0],
+                    group_name: "ALA 1",
+                    chain_name: "A",
+                },
+                {
+                    source_kind: "annotation",
+                    annotation_kind: "label",
+                    atom_indices: [0, 1],
+                    group_indices: [0],
+                    chain_indices: [0],
+                    entity_indices: [0],
+                    tag: "notes",
+                    text: "Catalytic",
+                },
+            ],
+            atom_indices: [0, 1],
+            group_indices: [0],
+            component_indices: [],
+            chain_indices: [0],
+            molecule_indices: [],
+            entity_indices: [0],
+            count_atoms: 2,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 1,
+        } as any);
+
+        const section = (strip as any).root.children[0] as FakeElement;
+        const row = section.children[1] as FakeElement;
+        const button = row.children[0] as FakeElement;
+        const badge = findFirstBadge(button);
+        assert.ok(button.style.background.includes("0.18"));
+        assert.ok(badge);
+        assert.strictEqual((badge as FakeElement).style.color, "#fde68a");
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});

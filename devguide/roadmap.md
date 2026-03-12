@@ -177,6 +177,7 @@ It is organized by execution priority and uses three labels:
 - Build `active_selection` after the measurement path is locally coherent, then reuse it for strips, menus, and annotation interaction.
 - Broaden `active_selection` from the first atom-centric element slice toward the documented element/shape/annotation/mixed contract.
   - `annotation` now has a first narrow slice via `GroupStrip` label badges.
+  - `element + annotation` mixed selection is now supported as the first mixed path.
 - Keep the current element slice group-centric and only add hierarchy levels when the runtime can support them cleanly.
 - Grow `GroupStrip` from the first chain-grouped selection/focus slice toward the full strip contract documented in `devguide/strips.md`.
 - Keep strip interactions converged with canvas interactions:
