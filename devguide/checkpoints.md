@@ -220,7 +220,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - they are tracked as `measurement` layers and replayed across rebuild/export.
   - Validation note:
     - JS regression remains green,
-    - Python regression for this slice is currently blocked by an import-time failure in the local sibling `../pyunitwizard` checkout, outside this repository.
+    - Python regressions for this slice now pass again after the sibling `pyunitwizard` checkout was repaired,
+    - the `new_region_from_active_selection(...)` path required one contract fix so region representations are recorded explicitly as `set_region_representation` during replay/export.
 
 ## Active Decisions
 
@@ -286,8 +287,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - measurement -> persistent/replayable artifact,
   - and then richer mixed-selection semantics only where they help that goal.
 - The UI now exposes that direction explicitly in the active-selection context menu,
-  even though the Python-side execution path still needs revalidation once the
-  sibling `pyunitwizard` checkout is healthy again.
+  and the Python-side bridge for the current narrow slice has been revalidated.
 - The measurement branch has now advanced one step further than selection/label:
   - persisted measurement ops exist in the runtime,
   - the menu now exposes a first explicit UI affordance for committing the last interactive measurement,
