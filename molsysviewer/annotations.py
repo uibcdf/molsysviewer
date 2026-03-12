@@ -60,6 +60,48 @@ class AnnotationsManager:
 
     @signal(tags=["annotation"])
     @digest()
+    def count(self, skip_digestion: bool = False) -> int:
+        """Return the number of replayable annotation records."""
+        return len(self._view._annotation_history)  # noqa: SLF001
+
+    @signal(tags=["annotation", "query"])
+    @digest()
+    def info(self, tag: str | None = None, skip_digestion: bool = False) -> dict[str, Any] | list[dict[str, Any]]:
+        """Return compact annotation metadata for one tag or all annotations."""
+
+        def summarize(record: dict[str, Any]) -> dict[str, Any]:
+            options = record.get("options")
+            if not isinstance(options, dict):
+                options = {}
+            atom_indices = options.get("atom_indices")
+            atom_indices = atom_indices if isinstance(atom_indices, list) else []
+            record_tag = record.get("tag")
+            if not isinstance(record_tag, str):
+                record_tag = options.get("tag") if isinstance(options.get("tag"), str) else None
+            layer = self._annotation_layer(record_tag) if record_tag is not None else None
+            return {
+                "kind": "label" if record.get("op") == "add_label" else "annotation",
+                "tag": record_tag,
+                "text": options.get("text"),
+                "n_atoms": len(atom_indices),
+                "atom_indices": list(atom_indices),
+                "visible": False if layer is None else not getattr(layer, "_hidden", False),
+                "active": False if layer is None else bool(getattr(layer, "_active", False)),
+            }
+
+        records = self.records(skip_digestion=True)
+        if tag is None:
+            return [summarize(record) for record in records]
+
+        for record in records:
+            summary = summarize(record)
+            if summary.get("tag") == tag:
+                return summary
+
+        raise ValueError(f"No annotation record found for tag {tag!r}.")
+
+    @signal(tags=["annotation"])
+    @digest()
     def add_label(
         self,
         text: str,

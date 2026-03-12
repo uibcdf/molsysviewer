@@ -385,9 +385,11 @@ So the minimum management surface for v1 should effectively cover:
 Current API direction is now stronger than that first minimum:
 
 - `view.annotations.tags()`
+- `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`
 - `view.annotations.records()`
+- `view.annotations.info(tag=None)`
 - `view.annotations.show(tag)`
 - `view.annotations.hide(tag)`
 - `view.annotations.delete(tag)`
@@ -397,6 +399,16 @@ Current API direction is now stronger than that first minimum:
 This is intentional.
 Annotations should be manageable through a robust Python API, not only through
 UI affordances.
+
+Two complementary inspection layers now exist by design:
+
+- `records()`
+  - low-level replay-oriented records
+- `info(tag=None)`
+  - compact user-facing summaries of current annotations
+
+That separation keeps the reproducibility layer explicit without forcing users
+to parse the raw replay records for ordinary inspection.
 
 Anything richer than that should wait until the first label slice is stable.
 

@@ -66,9 +66,11 @@ Related object wrappers are also part of the intended public surface:
 - `view.annotations.add_label(...)`
   - current first slice: persistent label on exactly one `group`
 - `view.annotations.tags()`
+- `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`
 - `view.annotations.records()`
+- `view.annotations.info(tag=None)`
 - `view.annotations.show(tag)`
 - `view.annotations.hide(tag)`
 - `view.annotations.delete(tag)`

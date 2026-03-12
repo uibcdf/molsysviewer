@@ -45,15 +45,26 @@ def test_annotation_manager_supports_query_and_layer_operations():
     view = demo["dialanine"]
     view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
 
+    assert view.annotations.count() == 1
     assert view.annotations.tags() == ["notes"]
     assert view.annotations.contains("notes") is True
     layer = view.annotations.get("notes")
     assert layer is not None
     assert layer.tag == "notes"
     assert view.annotations.records()[0]["options"]["text"] == "Group 0"
+    assert view.annotations.info("notes") == {
+        "kind": "label",
+        "tag": "notes",
+        "text": "Group 0",
+        "n_atoms": len(view.select(selection="group_index==0")),
+        "atom_indices": list(view.select(selection="group_index==0")),
+        "visible": True,
+        "active": True,
+    }
 
     view.annotations.hide("notes")
     assert view.layers["notes"]._hidden is True  # noqa: SLF001
+    assert view.annotations.info("notes")["visible"] is False
 
     view.annotations.show("notes")
     assert view.layers["notes"]._hidden is False  # noqa: SLF001
@@ -67,12 +78,16 @@ def test_annotation_manager_supports_query_and_layer_operations():
 
     view.annotations.delete("analysis-label")
     assert view.annotations.tags() == []
+    assert view.annotations.count() == 0
 
 
 def test_annotation_manager_clear_tag_and_global_clear():
     view = demo["dialanine"]
     view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
     view.annotations.add_label(text="Group 1", group_index=1, tag="notes-2")
+
+    summaries = view.annotations.info()
+    assert [item["tag"] for item in summaries] == ["notes", "notes-2"]
 
     view.annotations.clear(tag="notes")
     assert view.annotations.contains("notes") is False
@@ -82,3 +97,4 @@ def test_annotation_manager_clear_tag_and_global_clear():
     view.annotations.clear()
     assert view.annotations.tags() == []
     assert view.annotations.records() == []
+    assert view.annotations.count() == 0
