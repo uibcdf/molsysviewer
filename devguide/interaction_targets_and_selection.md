@@ -26,10 +26,11 @@ Do not use `residue` as the primary public term in this feature design.
 ### Decided
 
 - the public concept is `picking_level`
-- default behavior should tend to `group`
+- default behavior should be clearly group-centric
 - `auto` should exist as a policy name
-- in practice, current design assumes `auto` resolves to `group` most of the time
+- in practice, current design assumes `auto` resolves to `group` unless a later, explicit heuristic proves more useful
 - the default interaction mode should therefore feel group-centric
+- future user configuration may allow a persistent preferred picking level
 
 Why:
 
@@ -132,6 +133,7 @@ At a minimum, the object should be able to expose:
 - `target_level`
   - `atom | group | chain | molecule | entity | shape | mixed | none`
 - `items`
+  - selected elements retained as explicit items, not only as derived aggregated indices
 - aggregated deduplicated indices:
   - `atom_indices`
   - `group_indices`
@@ -162,6 +164,11 @@ This makes the selection useful for both:
 
 - programmatic downstream work
 - menu generation with context-sensitive actions
+
+The important rule is:
+
+- `items` preserves what was actually selected
+- aggregate index arrays are computed views over those selected items
 
 ## Metadata Returned for `group` Picks
 

@@ -20,6 +20,7 @@ Potential directions:
 - temporary force to `atom`
 - temporary force to another structural level
 - interaction with tool modes
+- persistent user preference for default picking level
 
 ### Idea under consideration
 
@@ -68,6 +69,13 @@ Operations must decide whether they apply to:
 
 This is a feature, not a bug.
 The selection model should stay rich even if some actions are narrower.
+
+One concrete consequence is that context menus and submenus may need to enable,
+disable, or split actions depending on whether the active selection is:
+
+- structural only
+- shape only
+- mixed
 
 ## Borrowed Design Principles
 
