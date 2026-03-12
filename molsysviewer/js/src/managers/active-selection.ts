@@ -1,3 +1,4 @@
+import { Structure } from "molstar/lib/mol-model/structure";
 import { StructureElement } from "molstar/lib/mol-model/structure";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 
@@ -30,6 +31,51 @@ export type ActiveSelectionPayload = {
     count_groups: number;
     count_shapes: number;
 };
+
+export function buildGroupItemsFromStructure(structure: Structure): ActiveSelectionItem[] {
+    const atomicUnit = structure.units.find((unit) => unit.kind === 0);
+    if (!atomicUnit) return [];
+
+    const model = atomicUnit.model;
+    const hierarchy = model.atomicHierarchy;
+    const residueOffsets = hierarchy.residueAtomSegments.offsets;
+    const chainIndexByAtom = hierarchy.chainAtomSegments.index;
+    const atoms = hierarchy.atoms;
+    const residues = hierarchy.residues;
+    const chains = hierarchy.chains;
+    const modelIndex = hierarchy.index;
+    const items: ActiveSelectionItem[] = [];
+
+    for (let groupIndex = 0; groupIndex < residueOffsets.length - 1; groupIndex++) {
+        const start = residueOffsets[groupIndex];
+        const end = residueOffsets[groupIndex + 1];
+        if (end <= start) continue;
+        const atomIndices: number[] = [];
+        for (let atomIndex = start; atomIndex < end; atomIndex++) {
+            atomIndices.push(atomIndex);
+        }
+        const chainIndex = chainIndexByAtom[start];
+        const entityIndex = modelIndex.getEntityFromChain(chainIndex);
+        const compId = atoms.label_comp_id.value(start);
+        const authSeqId = residues.auth_seq_id.value(groupIndex);
+        const chainName = chains.label_asym_id.value(chainIndex);
+        const entityName = chains.label_entity_id.value(chainIndex);
+        items.push({
+            source_kind: "element",
+            element_level: "group",
+            atom_indices: atomIndices,
+            group_indices: [groupIndex],
+            chain_indices: [chainIndex],
+            entity_indices: [entityIndex],
+            group_name: `${compId} ${authSeqId}`,
+            group_id: authSeqId,
+            chain_name: chainName,
+            entity_name: entityName,
+        });
+    }
+
+    return items;
+}
 
 function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
     if (!StructureElement.Loci.is(rawLoci)) return [];
@@ -170,8 +216,12 @@ export class ActiveSelectionController {
             if (!shift) this.clear();
             return;
         }
-        if (!shift) {
-            this.items = items;
+        this.setItems(items, shift);
+    }
+
+    setItems(items: ActiveSelectionItem[], additive = false): void {
+        if (!additive) {
+            this.items = [...items];
             this.emit();
             return;
         }

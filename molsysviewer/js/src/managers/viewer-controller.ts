@@ -19,6 +19,7 @@ import { ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController } from "./active-selection";
+import { GroupStrip } from "../ui/group-strip";
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -122,6 +123,7 @@ export class MolSysViewerController {
     private readonly measurementTools: MeasurementToolController;
     private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
+    private readonly groupStrip: GroupStrip;
     private readonly releaseContextMenuSuppression?: () => void;
     private lastContextLoci: any = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
@@ -206,6 +208,8 @@ export class MolSysViewerController {
                 } else {
                     this.toolStatusOverlay.update({ action: null });
                 }
+            } else if (msg?.event === "interaction_active_selection_changed") {
+                this.groupStrip.updateSelection(msg);
             }
             this.notify?.(msg);
         };
@@ -213,6 +217,12 @@ export class MolSysViewerController {
         this.toolStatusOverlay = new ToolStatusOverlay(host);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
+        this.groupStrip = new GroupStrip(host, (items, additive) => {
+            this.activeSelection.setItems(items, additive);
+        }, (item) => {
+            const loci = this.groupStrip.focusItem(item);
+            if (loci) this.plugin.managers.camera.focusLoci(loci);
+        });
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
             this.startMeasurementTool(action);
         });
@@ -271,6 +281,7 @@ export class MolSysViewerController {
     dispose(): void {
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
+        this.groupStrip.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.plugin.dispose();
@@ -382,11 +393,13 @@ export class MolSysViewerController {
         const last = structures.length ? structures[structures.length - 1] : undefined;
         if (last) {
             this.currentStructure = last.cell.transform.ref as any;
+            this.groupStrip.setStructure(last.cell.obj?.data);
             // Notify state handler that structure is ready so it can apply pending ops
             this.state.onStructureLoaded();
             this.trajectory.notifyListeners();
         } else {
             this.currentStructure = undefined;
+            this.groupStrip.setStructure(undefined);
         }
     }
 
@@ -409,6 +422,7 @@ export class MolSysViewerController {
         }
         this.loadedStructure = undefined;
         this.currentStructure = undefined;
+        this.groupStrip.setStructure(undefined);
     }
 
     // Facades for external access (e.g. from Index or Popout)
