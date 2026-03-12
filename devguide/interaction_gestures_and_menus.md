@@ -18,7 +18,7 @@ This is the implementation contract unless superseded explicitly.
 | Right click | `structure` | open context menu | no automatic change | set `context_target` | context target may seed tools |
 | Right click | `shape` | open context menu | no automatic change | set `context_target` | no automatic structural translation |
 | Right click | `empty` | optional empty-context menu or nothing | no automatic change | optional clear/update context target | keep minimal at first |
-| Middle click | any | not yet assigned | none | none | audit Mol* / browser behavior before adopting |
+| Middle click | any | deliberately outside the current contract | none | none | audit Mol* / browser behavior before adopting any product semantics |
 | Double left click | `structure` | focus target | no automatic change | none | canonical focus gesture |
 | Double left click | `shape` | focus target if possible | no automatic change | none | may focus shape bounds |
 | Double left click | `empty` | no action or view-level focus reset later | no automatic change | none | not defined yet |
@@ -38,6 +38,11 @@ This separation is important.
 A user should be able to inspect a new target via right click without losing an
 existing working selection.
 
+Important rule:
+
+- choosing a contextual analytical action may use `context_target` as the first tool pick
+- this does not require mutating `active_selection`
+
 ### Menu structure direction
 
 The preferred design is:
@@ -47,6 +52,12 @@ The preferred design is:
 - secondary section, when `active_selection` exists: actions that apply to the active selection
 
 This supports richer workflows and future submenus.
+
+It also implies that menu contents may depend on:
+
+- `context_target`
+- `active_selection`
+- and the composition of that active selection (`structure`, `shape`, or `mixed`)
 
 ## Tool / Measurement Modes
 
