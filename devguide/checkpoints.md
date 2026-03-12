@@ -30,6 +30,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `GroupStrip`,
   - `annotations`.
 - Keep `devguide/` aligned with the real repository state.
+- Keep the smoke runbook in `devguide/smoke_test.md` aligned with the real product surface before broadening interaction much further.
 - Prioritize regression coverage for new product-facing behavior, especially where it composes runtime state, layers, and rebuild/replay.
 
 ## Current State
@@ -236,6 +237,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the `new_region_from_active_selection(...)` path required one contract fix so region representations are recorded explicitly as `set_region_representation` during replay/export,
     - the UI-to-Python bridge now executes `Create Region from Selection`, `Add Label from Selection`, and `Persist Last Measurement` directly from `interaction_context_action`,
     - broader Python validation outside the annotation slice may still see sibling-checkout instability in `../molsysmt`, so package-wide reruns should be treated separately from this local block.
+  - A dedicated smoke runbook now exists in `devguide/smoke_test.md` so we can evaluate:
+    - interaction correctness,
+    - UX feel,
+    - and exploration -> reproducible-state flows together instead of as disconnected features.
+  - Current smoke automation result:
+    - `pytest tests/test_annotations.py tests/test_reproducible_interaction.py tests/test_measurements.py tests/test_interaction_events.py -q` is green,
+    - `npm --prefix molsysviewer/js run test:e2e` builds successfully but skips in this environment because Chromium launch is blocked by sandbox/crashpad constraints.
 
 ## Active Decisions
 

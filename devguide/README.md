@@ -52,11 +52,13 @@ That principle should guide prioritization throughout the repository.
    - GroupStrip direction, alternatives not chosen, first implementation scope, and future strip ideas.
 9. [**Annotations**](annotations.md)
    - Viewer taxonomy for labels/annotations, Mol* precedents, and the first annotation slice.
-10. [**Guiding Principles**](guiding_principles.md)
+10. [**Smoke Test**](smoke_test.md)
+   - Short runbook for checking interaction feel and reproducibility together.
+11. [**Guiding Principles**](guiding_principles.md)
    - Stable project ideas-alma that should guide development and usage.
-11. [**Roadmap**](roadmap.md)
+12. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-12. [**Checkpoints**](checkpoints.md)
+13. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions
