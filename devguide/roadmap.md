@@ -266,10 +266,9 @@ should grow over time as additional project-level principles become clear.
   - named selections,
   - richer selection -> annotation flows.
 - Broaden persisted measurements only after the first replayable `distance` / `angle` / `dihedral` slice is validated end to end.
-- Decide the UI commit path for persisted measurements:
-  - explicit menu action,
-  - post-measurement affordance,
-  - or notebook/Python-first workflow.
+- The explicit menu action path for persisted measurements now exists and executes.
+- The next unresolved UI bridge is `Add Label from Selection`, which needs a
+  text-entry contract before it can execute automatically.
 
 ### Criteria
 

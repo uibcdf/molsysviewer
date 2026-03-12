@@ -103,6 +103,15 @@ The same bridge now also exists for interactive measurements:
 - the viewer menu now also exposes that possibility explicitly through
   `Persist Last Measurement`
 
+Current execution status:
+
+- `Create Region from Selection` now executes the Python-side bridge directly
+  from `interaction_context_action`
+- `Persist Last Measurement` now executes the Python-side bridge directly from
+  `interaction_context_action`
+- `Add Label from Selection` still needs explicit text capture before it should
+  auto-execute from the menu
+
 It also implies that menu contents may depend on:
 
 - `context_target`
