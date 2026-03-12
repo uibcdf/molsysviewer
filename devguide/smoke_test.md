@@ -250,6 +250,11 @@ Notes:
 
 - `test:e2e` is environment-dependent and may skip if browser/WebGL support is not available.
 - A skip is an environment fact, not automatically a product failure.
+- On this workstation, the verified E2E command is:
+
+```bash
+PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e
+```
 
 ## What To Record
 

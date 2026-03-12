@@ -35,8 +35,13 @@ cd molsysviewer/js
 npm run test:e2e
 ```
 
+On this workstation, the verified command is:
+
+```bash
+PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e
+```
+
 ## Debug
 
 - Use {doc}`debugging` for message-level debugging and popout sync issues.
 - Use your browser devtools console for runtime logs.
-
