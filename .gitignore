@@ -73,6 +73,7 @@ coverage.xml
 .hypothesis/
 
 # JS test build artifacts
+molsysviewer/js/tests/dist-region-hide.js
 molsysviewer/js/tests/unit/dist-index.js
 molsysviewer/js/tests/e2e/harness.bundle.js
 molsysviewer/js/tests/e2e/region-hide.e2e.js
