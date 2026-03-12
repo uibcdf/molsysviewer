@@ -93,6 +93,13 @@ selection actions first, not as pure frontend scene mutations:
 They represent the intended bridge from exploratory interaction to explicit,
 replayable viewer artifacts.
 
+The same bridge now also exists for interactive measurements:
+
+- the last interactive `distance` / `angle` / `dihedral` can be persisted as a
+  replayable viewer artifact from Python
+- the current persistence model stores the picked atom-index bundles, not an
+  opaque frontend-only representation
+
 It also implies that menu contents may depend on:
 
 - `context_target`

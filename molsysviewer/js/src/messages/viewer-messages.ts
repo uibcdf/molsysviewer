@@ -99,6 +99,33 @@ export type AddLabelMessage = {
     };
 };
 
+export type AddDistanceMeasurementMessage = {
+    op: "add_distance_measurement";
+    tag?: string;
+    options?: {
+        picks_atom_indices?: number[][];
+        tag?: string;
+    };
+};
+
+export type AddAngleMeasurementMessage = {
+    op: "add_angle_measurement";
+    tag?: string;
+    options?: {
+        picks_atom_indices?: number[][];
+        tag?: string;
+    };
+};
+
+export type AddDihedralMeasurementMessage = {
+    op: "add_dihedral_measurement";
+    tag?: string;
+    options?: {
+        picks_atom_indices?: number[][];
+        tag?: string;
+    };
+};
+
 export type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -308,6 +335,9 @@ export type ViewerMessage =
     AddTetrahedraMessage |
     AddTriangleFacesMessage |
     AddLabelMessage |
+    AddDistanceMeasurementMessage |
+    AddAngleMeasurementMessage |
+    AddDihedralMeasurementMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |

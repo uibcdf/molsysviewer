@@ -19,6 +19,7 @@ from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .annotations import AnnotationsManager
+from .measurements import MeasurementsManager
 from .shapes import ShapesManager
 from .regions import Region
 from .whole import Whole
@@ -165,6 +166,7 @@ class MolSysView:
         self._last_measurement_created_event: dict | None = None
         self._shape_history: list[dict] = []
         self._annotation_history: list[dict] = []
+        self._measurement_history: list[dict] = []
         self._last_label: str | None = None
 
         self._regions: Dict[str, Region] = {}
@@ -190,6 +192,7 @@ class MolSysView:
 
         self.shapes = ShapesManager(self)
         self.annotations = AnnotationsManager(self)
+        self.measurements = MeasurementsManager(self)
         try:
             self.widget.autohide_controls = bool(config.autohide_controls)
         except Exception:
@@ -809,11 +812,53 @@ class MolSysView:
 
         self._annotation_history.append(dict(msg))
 
+    def _record_measurement_message(self, msg: dict) -> None:
+        op = msg.get("op")
+        if not isinstance(op, str):
+            return
+
+        if op == "delete_layer":
+            cleared_tag = msg.get("tag")
+            if not isinstance(cleared_tag, str):
+                return
+            self._measurement_history = [
+                m for m in self._measurement_history if self._tag_from_message(m) != cleared_tag
+            ]
+            return
+
+        if op == "set_layer_tag":
+            old_tag = msg.get("tag")
+            new_tag = msg.get("new_tag")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+                return
+            rewritten: list[dict] = []
+            for item in self._measurement_history:
+                tag = self._tag_from_message(item)
+                if tag != old_tag:
+                    rewritten.append(item)
+                    continue
+                updated = dict(item)
+                updated["tag"] = new_tag
+                options = updated.get("options")
+                if isinstance(options, dict):
+                    options = dict(options)
+                    options["tag"] = new_tag
+                    updated["options"] = options
+                rewritten.append(updated)
+            self._measurement_history = rewritten
+            return
+
+        if op not in {"add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
+            return
+
+        self._measurement_history.append(dict(msg))
+
     def _send(self, msg: dict) -> None:
         """Send a message to the frontend or queue it if the frontend is not ready yet."""
         self._message_history.append(msg)
         self._record_shape_message(msg)
         self._record_annotation_message(msg)
+        self._record_measurement_message(msg)
         if self._ready:
             self.widget.send(msg)
         else:
@@ -908,6 +953,28 @@ class MolSysView:
 
         return remapped
 
+    def _remap_measurement_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
+        if atom_index_map is None:
+            return msg
+        op = msg.get("op")
+        if op not in {"add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
+            return msg
+
+        remapped = dict(msg)
+        options = remapped.get("options")
+        if not isinstance(options, dict):
+            return remapped
+        options = dict(options)
+        remapped["options"] = options
+        picks = options.get("picks_atom_indices")
+        if not isinstance(picks, list):
+            return remapped
+        remapped_picks = [self._remap_indices(pick, atom_index_map) for pick in picks]
+        if any(len(pick) == 0 for pick in remapped_picks):
+            return None
+        options["picks_atom_indices"] = remapped_picks
+        return remapped
+
     def _rebuild_view_from_current_molsys(
         self,
         *,
@@ -995,6 +1062,12 @@ class MolSysView:
 
         for msg in self._annotation_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
+            if remapped is None:
+                continue
+            self._send_replay(remapped)
+
+        for msg in self._measurement_history:
+            remapped = self._remap_measurement_message(msg, atom_index_map)
             if remapped is None:
                 continue
             self._send_replay(remapped)
@@ -1276,6 +1349,7 @@ class MolSysView:
         self.whole = Whole(self)
         self._shape_history.clear()
         self._annotation_history.clear()
+        self._measurement_history.clear()
         self._last_label = None
 
         # Ask frontend to clear everything (molecule + shapes + view)

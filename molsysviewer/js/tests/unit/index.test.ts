@@ -7,6 +7,7 @@ import "./viewer-interaction.test";
 import "./popup-host.test";
 import "./popup-logic.test";
 import "./measurement-tools.test";
+import "./measurement-handler.test";
 import "./active-selection.test";
 import "./annotation-handler.test";
 import "./group-strip.test";

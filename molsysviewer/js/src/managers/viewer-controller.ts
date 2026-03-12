@@ -13,6 +13,7 @@ import { ViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
 import { AnnotationHandlers } from "./handlers/annotation-handlers";
+import { MeasurementHandlers } from "./handlers/measurement-handlers";
 import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
@@ -215,6 +216,7 @@ export class MolSysViewerController {
 
     public readonly loader: LoaderHandlers;
     public readonly annotations: AnnotationHandlers;
+    public readonly measurements: MeasurementHandlers;
     public readonly shapes: ShapeHandlers;
     public readonly scene: SceneHandlers;
     public readonly state: StateHandlers;
@@ -325,6 +327,10 @@ export class MolSysViewerController {
         this.annotations = new AnnotationHandlers(plugin, {
             getStructure: () => this.getStructureData(),
             registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
+        });
+        this.measurements = new MeasurementHandlers(plugin, {
+            getStructure: () => this.getStructureData(),
+            registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "measurement"),
         });
 
         this.scene = new SceneHandlers(plugin, host, {
@@ -468,6 +474,9 @@ export class MolSysViewerController {
                 case "add_tetrahedra": await this.shapes.addTetrahedra(msg); break;
                 case "add_triangle_faces": await this.shapes.addTriangleFaces(msg); break;
                 case "add_label": await this.annotations.addLabel(msg); break;
+                case "add_distance_measurement": await this.measurements.addDistance(msg); break;
+                case "add_angle_measurement": await this.measurements.addAngle(msg); break;
+                case "add_dihedral_measurement": await this.measurements.addDihedral(msg); break;
 
                 // Scene Ops
                 case "reset_view":
