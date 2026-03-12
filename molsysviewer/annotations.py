@@ -217,5 +217,31 @@ class AnnotationsManager:
             return
         self.delete(tag, skip_digestion=True)
 
+    @signal(tags=["annotation"])
+    @digest()
+    def set_text(self, tag: str, text: str, skip_digestion: bool = False) -> Layer:
+        """Update the text of an existing annotation label."""
+        layer = self._require_annotation_layer(tag)
+        if not isinstance(text, str) or text.strip() == "":
+            raise ValueError("set_text() requires non-empty text.")
+
+        record = self.info(tag, skip_digestion=True)
+        atom_indices = record.get("atom_indices") if isinstance(record, dict) else None
+        if not isinstance(atom_indices, list) or len(atom_indices) == 0:
+            raise ValueError(f"Annotation tag {tag!r} does not have a valid atom-index anchor.")
+
+        self._view._send(  # noqa: SLF001
+            {
+                "op": "update_label",
+                "tag": tag,
+                "options": {
+                    "tag": tag,
+                    "text": text.strip(),
+                    "atom_indices": list(atom_indices),
+                },
+            }
+        )
+        return layer
+
 
 __all__ = ["AnnotationsManager"]

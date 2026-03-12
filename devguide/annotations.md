@@ -394,6 +394,7 @@ Current API direction is now stronger than that first minimum:
 - `view.annotations.hide(tag)`
 - `view.annotations.delete(tag)`
 - `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.set_text(tag, text)`
 - `view.annotations.clear(tag=None)`
 
 This is intentional.

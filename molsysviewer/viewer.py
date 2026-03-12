@@ -823,6 +823,34 @@ class MolSysView:
             self._annotation_history = rewritten
             return
 
+        if op == "update_label":
+            updated_tag = self._tag_from_message(msg)
+            if updated_tag is None:
+                return
+            rewritten: list[dict] = []
+            for item in self._annotation_history:
+                if self._tag_from_message(item) != updated_tag:
+                    rewritten.append(item)
+                    continue
+                updated = dict(item)
+                options = updated.get("options")
+                if isinstance(options, dict):
+                    options = dict(options)
+                else:
+                    options = {}
+                new_options = msg.get("options")
+                if isinstance(new_options, dict):
+                    if "text" in new_options:
+                        options["text"] = new_options["text"]
+                    if "atom_indices" in new_options:
+                        options["atom_indices"] = new_options["atom_indices"]
+                    if "tag" in new_options:
+                        options["tag"] = new_options["tag"]
+                updated["options"] = options
+                rewritten.append(updated)
+            self._annotation_history = rewritten
+            return
+
         if op != "add_label":
             return
 
