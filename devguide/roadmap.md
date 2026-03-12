@@ -178,6 +178,8 @@ It is organized by execution priority and uses three labels:
 - Broaden `active_selection` from the first atom-centric element slice toward the documented element/shape/annotation/mixed contract.
 - Keep the current element slice group-centric and only add hierarchy levels when the runtime can support them cleanly.
 - Grow `GroupStrip` from the first chain-grouped selection/focus slice toward the full strip contract documented in `devguide/strips.md`.
+- Keep strip interactions converged with canvas interactions:
+  - hover and context menu should use the same event families instead of becoming a separate UX island.
 
 ### Criteria
 

@@ -18,7 +18,7 @@ import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handl
 import { ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
-import { ActiveSelectionController } from "./active-selection";
+import { ActiveSelectionController, ActiveSelectionItem } from "./active-selection";
 import { GroupStrip } from "../ui/group-strip";
 
 type InteractionKind = "hover" | "click" | "context";
@@ -222,6 +222,22 @@ export class MolSysViewerController {
         }, (item) => {
             const loci = this.groupStrip.focusItem(item);
             if (loci) this.plugin.managers.camera.focusLoci(loci);
+        }, (item) => {
+            if (!item) {
+                this.plugin.managers.interactivity.lociHighlights.clearHighlights();
+                emitInteractionEvent({ event: "interaction_hover", kind: "empty" });
+                return;
+            }
+            const loci = this.groupStrip.focusItem(item);
+            if (!loci) return;
+            this.plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }, false);
+            emitInteractionEvent({
+                event: "interaction_hover",
+                kind: "structure",
+                atom_indices: item.atom_indices,
+            });
+        }, (item, pageX, pageY) => {
+            this.openContextMenuForItem(item, pageX, pageY, emitInteractionEvent);
         });
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
             this.startMeasurementTool(action);
@@ -290,6 +306,26 @@ export class MolSysViewerController {
     private startMeasurementTool(action: MeasurementToolAction): void {
         if (!this.lastContextLoci) return;
         this.measurementTools.start(action, this.lastContextLoci);
+    }
+
+    private openContextMenuForItem(
+        item: ActiveSelectionItem,
+        pageX: number,
+        pageY: number,
+        emitInteractionEvent: (msg: any) => void,
+    ): void {
+        const loci = this.groupStrip.focusItem(item);
+        if (!loci) return;
+        this.lastContextLoci = loci;
+        const payload = {
+            event: "interaction_context_menu" as const,
+            kind: "structure" as const,
+            atom_indices: item.atom_indices,
+            page_x: pageX,
+            page_y: pageY,
+        };
+        emitInteractionEvent(payload);
+        this.contextMenu.open(payload, pageX, pageY);
     }
 
     // Message Dispatcher
