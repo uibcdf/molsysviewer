@@ -272,6 +272,10 @@ should grow over time as additional project-level principles become clear.
 - The next improvement is refining that inline composer or replacing it with a
   better small integrated text-entry UX without weakening the reproducibility
   contract.
+- Keep hardening `annotations` as a Python API surface, not only as a UI flow:
+  - explicit query/inspection methods,
+  - explicit show/hide/delete/rename/clear methods by tag,
+  - stable records suitable for replay-oriented debugging.
 
 ### Criteria
 

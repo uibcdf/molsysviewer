@@ -199,6 +199,14 @@ Do not append dated historical entries unless a date is itself operationally rel
     - it is still intentionally narrow and does not yet implement range selection, region overlays, tool-pick overlays, or canvas-side annotation pickability.
   - `annotations` now have a first concrete implementation slice:
     - `view.annotations.add_label(text=..., group_index=..., tag=...)` exists in Python,
+    - `view.annotations` is now also growing into a real management API instead of a creation-only entrypoint:
+      - `tags()`
+      - `contains(tag)`
+      - `get(tag)`
+      - `records()`
+      - `show(tag)` / `hide(tag)`
+      - `delete(tag)` / `set_tag(tag, new_tag)`
+      - `clear(tag=None)`
     - labels are implemented as `annotations`, not `shapes`,
     - the first slice is intentionally narrow: one persistent label anchored to one `group`,
     - labels participate in `layers` with `kind="annotation"`,
