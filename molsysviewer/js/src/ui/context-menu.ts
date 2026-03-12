@@ -7,7 +7,7 @@ type BaseTarget =
 
 export type ContextMenuTarget = BaseTarget;
 
-export type ContextMenuAction = "distance" | "angle" | "dihedral" | "focus_selection" | "clear_selection";
+export type ContextMenuAction = "distance" | "angle" | "dihedral" | "focus_target" | "focus_selection" | "clear_selection";
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
@@ -79,17 +79,12 @@ export class ViewerContextMenu {
         this.root.appendChild(header);
 
         if (target.kind === "structure") {
+            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             this.root.appendChild(this.makeActionButton("Distance", "distance"));
             this.root.appendChild(this.makeActionButton("Angle", "angle"));
             this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
         } else if (target.kind === "annotation") {
-            const note = document.createElement("div");
-            note.textContent = "Annotation actions will be added here.";
-            Object.assign(note.style, {
-                padding: "8px",
-                opacity: "0.8",
-            });
-            this.root.appendChild(note);
+            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
         } else {
             const note = document.createElement("div");
             note.textContent = "No target under cursor";

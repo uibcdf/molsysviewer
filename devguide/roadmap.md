@@ -209,6 +209,7 @@ It is organized by execution priority and uses three labels:
 - Broaden annotation interaction in controlled slices:
   - first `annotation` as `context_target` through strip overlays,
   - `annotation` now also has a first narrow `active_selection` slice through strip overlays,
+  - `annotation` context now also has a first real action through the menu: `Focus Target`,
   - later hover/pick behavior,
   - canvas annotation pickability only after that path is stable.
 - Grow the current strip overlay slice:
