@@ -20,6 +20,16 @@ That means canvas interaction must support at least:
 - measurement workflows,
 - and future Python callbacks.
 
+## Core Interaction Invariants
+
+These invariants should remain true unless a later design explicitly changes them:
+
+- hover is not persistent selection
+- focus is not selection
+- selection does not imply automatic focus
+- tool-mode picks should not overwrite general working selection by default
+- interaction payloads should stay useful in notebook contexts without requiring a heavy UI layer
+
 ## Current State
 
 Already implemented:
