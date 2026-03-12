@@ -255,7 +255,11 @@ export class MolSysViewerController {
         }, (target, pageX, pageY) => {
             this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
         });
-        this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
+        this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target) => {
+            if (action === "focus_target") {
+                this.focusTarget(target);
+                return;
+            }
             if (action === "focus_selection") {
                 this.focusCurrentSelection();
                 return;
@@ -375,6 +379,14 @@ export class MolSysViewerController {
         const selection = this.currentActiveSelection;
         if (!selection || selection.source_kind === "empty" || selection.atom_indices.length === 0) return;
         const loci = this.atomIndicesToLoci(selection.atom_indices);
+        if (!loci) return;
+        this.plugin.managers.camera.focusLoci(loci);
+    }
+
+    private focusTarget(target: { atom_indices?: number[] }): void {
+        const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+        if (atomIndices.length === 0) return;
+        const loci = this.atomIndicesToLoci(atomIndices);
         if (!loci) return;
         this.plugin.managers.camera.focusLoci(loci);
     }

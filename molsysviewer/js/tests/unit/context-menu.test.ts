@@ -114,18 +114,53 @@ test("ViewerContextMenu renders active selection section and selection actions",
         const root = (menu as any).root as FakeElement;
         const texts = collectTexts(root);
         assert.ok(texts.includes("Catalytic"));
+        assert.ok(texts.includes("Focus Target"));
         assert.ok(texts.includes("Active selection: mixed (0 items)"));
         assert.ok(texts.includes("Focus Selection"));
         assert.ok(texts.includes("Clear Selection"));
 
-        const focusButton = findNodeByText(root, "Focus Selection");
+        const targetButton = findNodeByText(root, "Focus Target");
+        assert.ok(targetButton);
+        targetButton!.dispatch("click");
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "mixed",
+                element_level: "group",
+                target_level: "mixed",
+                items: [],
+                atom_indices: [0, 1],
+                group_indices: [0],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 2,
+                count_groups: 1,
+                count_shapes: 0,
+                count_annotations: 1,
+            },
+        );
+
+        const refreshedRoot = (menu as any).root as FakeElement;
+        const focusButton = findNodeByText(refreshedRoot, "Focus Selection");
         assert.ok(focusButton);
         focusButton!.dispatch("click");
 
-        assert.deepStrictEqual(actions, [{
-            action: "focus_selection",
-            target: { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
-        }]);
+        assert.deepStrictEqual(actions, [
+            {
+                action: "focus_target",
+                target: { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
+            },
+            {
+                action: "focus_selection",
+                target: { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
+            },
+        ]);
 
         menu.dispose();
     } finally {

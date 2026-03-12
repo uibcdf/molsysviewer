@@ -75,6 +75,9 @@ Current first implemented slice:
 - it currently exposes:
   - `Focus Selection`
   - `Clear Selection`
+- the target section now also exposes a first generic action:
+  - `Focus Target`
+- for `annotation` targets, this replaces the old placeholder-only menu body
 
 This supports richer workflows and future submenus.
 

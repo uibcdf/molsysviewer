@@ -156,6 +156,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the canvas suppresses the host `contextmenu`,
     - Python stores both the last context-target event and the last chosen context action event,
     - a viewer-owned context menu now exists with:
+      - `Focus Target` for structure and annotation targets,
       - target-scoped measurement seed actions for `distance`, `angle`, and `dihedral`,
       - a secondary active-selection section with `Focus Selection` and `Clear Selection`.
   - Interactive measurement now has a first real implementation path:
@@ -192,7 +193,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - labels participate in `layers` with `kind="annotation"`,
     - labels survive export/replay/rebuild through dedicated annotation-history replay,
     - `clear_decorations(..., labels=True)` now clears real frontend labels instead of a placeholder path,
-    - strip label badges can now seed both `annotation` context and `annotation` active selection.
+    - strip label badges can now seed both `annotation` context and `annotation` active selection,
+    - annotation context now has a first concrete action: `Focus Target`.
 
 ## Active Decisions
 
