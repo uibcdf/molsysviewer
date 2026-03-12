@@ -176,6 +176,7 @@ It is organized by execution priority and uses three labels:
 - Add visible tool-mode feedback and cancellation semantics before layering richer selection state on top.
 - Build `active_selection` after the measurement path is locally coherent, then reuse it for strips, menus, and annotation interaction.
 - Broaden `active_selection` from the first atom-centric element slice toward the documented element/shape/annotation/mixed contract.
+  - `annotation` now has a first narrow slice via `GroupStrip` label badges.
 - Keep the current element slice group-centric and only add hierarchy levels when the runtime can support them cleanly.
 - Grow `GroupStrip` from the first chain-grouped selection/focus slice toward the full strip contract documented in `devguide/strips.md`.
 - Keep strip interactions converged with canvas interactions:
@@ -204,7 +205,7 @@ It is organized by execution priority and uses three labels:
 - Keep the first slice narrow and stable.
 - Broaden annotation interaction in controlled slices:
   - first `annotation` as `context_target` through strip overlays,
-  - later `annotation` in `active_selection`,
+  - `annotation` now also has a first narrow `active_selection` slice through strip overlays,
   - later hover/pick behavior,
   - canvas annotation pickability only after that path is stable.
 - Grow the current strip overlay slice:

@@ -170,3 +170,56 @@ test("GroupStrip routes badge context menu to annotation target", () => {
         restore();
     }
 });
+
+test("GroupStrip badge click selects annotation and shift-click is forwarded", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const selected: any[] = [];
+        const strip = new GroupStrip(host, (items, additive) => {
+            selected.push({ items, additive });
+        }, () => {}, () => {}, () => {}, () => {});
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                chain_name: "A",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+
+        strip.addLabelOverlay({
+            op: "add_label",
+            tag: "notes",
+            options: { text: "Catalytic", atom_indices: [0, 1], tag: "notes" },
+        });
+
+        const badge = findFirstBadge((strip as any).root);
+        assert.ok(badge);
+        badge.dispatch("click", { shiftKey: true, preventDefault() {}, stopPropagation() {} });
+
+        assert.deepStrictEqual(selected, [{
+            items: [{
+                source_kind: "annotation",
+                annotation_kind: "label",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                tag: "notes",
+                text: "Catalytic",
+            }],
+            additive: true,
+        }]);
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});

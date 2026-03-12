@@ -169,7 +169,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - active measurement tool modes do not overwrite it,
     - the current implementation is now `group`-centric for element picks,
     - it already emits derived `atom_indices` plus `group_indices`, `chain_indices`, and `entity_indices`,
-    - it is still intentionally limited to `element` targets and does not yet cover `shape`, `annotation`, or `mixed`.
+    - it now also has a narrow `annotation` slice seeded from `GroupStrip` label badges,
+    - annotation selection is still kept separate from element selection for now,
+    - it does not yet cover `shape` or full `mixed`.
   - `GroupStrip` now has a first concrete implementation slice:
     - it renders groups from the currently loaded structure,
     - groups are organized by chain,
@@ -187,7 +189,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the first slice is intentionally narrow: one persistent label anchored to one `group`,
     - labels participate in `layers` with `kind="annotation"`,
     - labels survive export/replay/rebuild through dedicated annotation-history replay,
-    - `clear_decorations(..., labels=True)` now clears real frontend labels instead of a placeholder path.
+    - `clear_decorations(..., labels=True)` now clears real frontend labels instead of a placeholder path,
+    - strip label badges can now seed both `annotation` context and `annotation` active selection.
 
 ## Active Decisions
 
@@ -232,7 +235,6 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Continue building out the interaction stack on top of the now-working context menu + measurement tool-mode path.
 - Enrich `active_selection` beyond the current element-only/group-centric slice toward the documented taxonomy:
   - `shape`,
-  - `annotation`,
   - `mixed`.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,
@@ -240,7 +242,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - tool-pick overlays.
 - Decide the next annotation-interaction step carefully:
   - keep current label overlays on the strip,
-  - use strip-seeded `annotation` context as the first real interaction slice,
+  - keep the new strip-seeded `annotation` context + selection slices stable,
   - then choose between canvas annotation pickability or richer mixed-selection semantics before broadening the model further.
 - Keep pushing MolSysViewer toward a molecular-system inspection/workbench role for structural biochemistry and drug-design workflows, not only a viewer/export role.
 

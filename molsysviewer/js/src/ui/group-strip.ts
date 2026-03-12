@@ -11,6 +11,9 @@ type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => vo
 type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 
 function selectionKey(item: ActiveSelectionItem): string {
+    if (item.source_kind === "annotation") {
+        return `${item.chain_indices.join(",")}:${item.group_indices.join(",")}:annotation:${item.tag ?? ""}`;
+    }
     return `${item.chain_indices.join(",")}:${item.group_indices.join(",")}`;
 }
 
@@ -30,7 +33,8 @@ function makeLociForItem(structure: Structure, item: ActiveSelectionItem): Struc
 export class GroupStrip {
     private readonly root: HTMLDivElement;
     private groupItems: ActiveSelectionItem[] = [];
-    private selectedKeys = new Set<string>();
+    private selectedElementKeys = new Set<string>();
+    private selectedAnnotationKeys = new Set<string>();
     private structure?: Structure;
     private readonly annotationRecords = new Map<string, Array<{ tag: string; text: string }>>();
 
@@ -73,12 +77,17 @@ export class GroupStrip {
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {
-        const next = new Set<string>();
+        const nextElements = new Set<string>();
+        const nextAnnotations = new Set<string>();
         for (const item of selection.items ?? []) {
-            if (item?.source_kind !== "element" || item?.element_level !== "group") continue;
-            next.add(selectionKey(item));
+            if (item?.source_kind === "element" && item?.element_level === "group") {
+                nextElements.add(selectionKey(item));
+            } else if (item?.source_kind === "annotation" && item?.annotation_kind === "label") {
+                nextAnnotations.add(selectionKey(item));
+            }
         }
-        this.selectedKeys = next;
+        this.selectedElementKeys = nextElements;
+        this.selectedAnnotationKeys = nextAnnotations;
         this.render();
     }
 
@@ -177,7 +186,7 @@ export class GroupStrip {
                 const key = selectionKey(item);
                 const button = document.createElement("button");
                 button.type = "button";
-                const selected = this.selectedKeys.has(key);
+                const selected = this.selectedElementKeys.has(key);
                 Object.assign(button.style, {
                     padding: "6px 8px",
                     borderRadius: "999px",
@@ -195,22 +204,37 @@ export class GroupStrip {
                 const annotationRecords = this.annotationRecords.get(key) ?? [];
                 if (annotationRecords.length > 0) {
                     const badge = document.createElement("span");
+                    const primary = annotationRecords[0];
+                    const annotationSelected = this.selectedAnnotationKeys.has(`${key}:annotation:${primary.tag ?? ""}`);
                     badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
                     Object.assign(badge.style, {
                         marginLeft: "6px",
                         padding: "1px 6px",
                         borderRadius: "999px",
-                        background: "rgba(110, 231, 183, 0.18)",
-                        color: "#b7f7dd",
+                        background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
+                        color: annotationSelected ? "#fde68a" : "#b7f7dd",
                         fontSize: "10px",
                         fontWeight: "700",
                     });
                     button.appendChild(badge);
                     button.title = annotationRecords.map((record) => record.text).join("\n");
+                    badge.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.onSelect([{
+                            source_kind: "annotation",
+                            annotation_kind: "label",
+                            atom_indices: item.atom_indices,
+                            group_indices: item.group_indices,
+                            chain_indices: item.chain_indices,
+                            entity_indices: item.entity_indices,
+                            tag: primary.tag,
+                            text: primary.text,
+                        }], !!(event as MouseEvent).shiftKey);
+                    });
                     badge.addEventListener("contextmenu", (event) => {
                         event.preventDefault();
                         event.stopPropagation();
-                        const primary = annotationRecords[0];
                         this.onAnnotationContext(
                             {
                                 event: "interaction_context_menu",

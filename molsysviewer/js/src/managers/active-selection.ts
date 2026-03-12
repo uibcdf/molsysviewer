@@ -13,13 +13,22 @@ export type ActiveSelectionItem = {
     group_id?: number | string;
     chain_name?: string;
     entity_name?: string;
+} | {
+    source_kind: "annotation";
+    annotation_kind: "label";
+    atom_indices: number[];
+    group_indices: number[];
+    chain_indices: number[];
+    entity_indices: number[];
+    tag?: string;
+    text?: string;
 };
 
 export type ActiveSelectionPayload = {
     event: "interaction_active_selection_changed";
-    source_kind: "empty" | "element";
+    source_kind: "empty" | "element" | "annotation";
     element_level: "none" | "group";
-    target_level: "none";
+    target_level: "none" | "annotation";
     items: ActiveSelectionItem[];
     atom_indices: number[];
     group_indices: number[];
@@ -30,6 +39,7 @@ export type ActiveSelectionPayload = {
     count_atoms: number;
     count_groups: number;
     count_shapes: number;
+    count_annotations: number;
 };
 
 export function buildGroupItemsFromStructure(structure: Structure): ActiveSelectionItem[] {
@@ -152,10 +162,14 @@ function emptyPayload(): ActiveSelectionPayload {
         count_atoms: 0,
         count_groups: 0,
         count_shapes: 0,
+        count_annotations: 0,
     };
 }
 
 function signature(item: ActiveSelectionItem): string {
+    if (item.source_kind === "annotation") {
+        return `${item.source_kind}:${item.annotation_kind}:${item.tag ?? ""}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
+    }
     return `${item.source_kind}:${item.element_level}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
 }
 
@@ -169,6 +183,8 @@ function appendUnique(target: number[], seen: Set<number>, values: number[]) {
 
 function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
     if (items.length === 0) return emptyPayload();
+
+    const sourceKind = items[0].source_kind;
 
     const atomIndices: number[] = [];
     const groupIndices: number[] = [];
@@ -188,9 +204,9 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
 
     return {
         event: "interaction_active_selection_changed",
-        source_kind: "element",
-        element_level: "group",
-        target_level: "none",
+        source_kind: sourceKind,
+        element_level: sourceKind === "element" ? "group" : "none",
+        target_level: sourceKind === "annotation" ? "annotation" : "none",
         items,
         atom_indices: atomIndices,
         group_indices: groupIndices,
@@ -201,6 +217,7 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
         count_atoms: atomIndices.length,
         count_groups: groupIndices.length,
         count_shapes: 0,
+        count_annotations: items.filter((item) => item.source_kind === "annotation").length,
     };
 }
 
@@ -220,7 +237,16 @@ export class ActiveSelectionController {
     }
 
     setItems(items: ActiveSelectionItem[], additive = false): void {
+        if (items.length === 0) {
+            if (!additive) this.clear();
+            return;
+        }
         if (!additive) {
+            this.items = [...items];
+            this.emit();
+            return;
+        }
+        if (this.items.length > 0 && this.items[0].source_kind !== items[0].source_kind) {
             this.items = [...items];
             this.emit();
             return;
