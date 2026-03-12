@@ -60,6 +60,11 @@ What we do not want to adopt directly:
 - direct reuse of the full Mol* `SequenceView` as-is
 - semantics tied too tightly to Mol*'s own selection manager and UI layout
 
+Possible implementation pattern to keep in mind:
+
+- MolSysViewer may still benefit from its own lightweight wrapper/adaptor layer between structural data and strip positions
+- this should be inspired by Mol*, not copied from it mechanically
+
 ## Alternatives Considered
 
 ### 1. Reuse Mol* `SequenceView` as-is
@@ -138,6 +143,10 @@ It should:
 - be synchronized with interaction state
 - support the same basic interaction contract as the 3D canvas when practical
 
+Conceptual rule:
+
+- `GroupStrip` should be treated as a second interaction surface over the same state, not just as an auxiliary read-only panel
+
 ### What each item should show
 
 At minimum:
@@ -157,6 +166,11 @@ That detail can move into:
 - lightweight inspector
 - context menu
 
+Visual principle:
+
+- the strip should remain information-dense and scannable
+- richer metadata should move into secondary UI rather than overloading each strip item
+
 ### Visual states
 
 `GroupStrip` should eventually support distinct states for:
@@ -164,6 +178,8 @@ That detail can move into:
 - hover
 - selected
 - focused
+- context target
+- tool-mode related marks when those workflows exist
 
 And later possibly:
 
@@ -176,7 +192,7 @@ And later possibly:
 Preferred first direction:
 
 - groups ordered by chain
-- likely one visual row per chain, if the density remains usable
+- preferred first layout is one visual row per chain, if density remains usable
 
 This is better than a single undifferentiated strip if multiple chains exist.
 
@@ -200,6 +216,14 @@ Important agreed rule:
 
 This keeps strip behavior aligned with the general selection contract and avoids
 weird first-interaction edge cases.
+
+Synchronization targets that should eventually be reflected in the strip:
+
+- `hover_target`
+- `active_selection`
+- `context_target`
+- `tool_selection`
+- focus state
 
 ## What Is Explicitly Not in `GroupStrip` v1
 
@@ -240,6 +264,10 @@ This is attractive because it can make contiguous-region workflows much easier
 than pure 3D picking.
 It should remain a later addition, not a requirement for `GroupStrip` v1.
 
+Another useful future behavior:
+
+- if the relevant target is outside the visible portion of the strip, the strip may later bring it into view automatically or on demand
+
 ### Possible later strip types
 
 These are not rejected forever, only deferred:
@@ -261,6 +289,11 @@ That means:
 - it should not be implemented before the `active_selection` model is clear enough
 - it should become another synchronized view over the same interaction state
 - it should not invent a separate selection model
+
+Important limitation for the first strip implementation:
+
+- `GroupStrip` v1 should not try to solve atom-level measurement picking directly
+- measurement modes may later project marks or state onto the strip, but the first strip should remain group-centric
 
 This leads to the current sequencing decision:
 
