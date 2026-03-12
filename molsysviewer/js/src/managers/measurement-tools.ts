@@ -73,6 +73,10 @@ export class MeasurementToolController {
         }
     }
 
+    isActive(): boolean {
+        return this.activeAction !== null;
+    }
+
     dispose(): void {
         this.cancel(false);
         if (typeof window !== "undefined") {

@@ -157,6 +157,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - Mol* `StructureMeasurementManager` is the calculation/rendering engine for interactive measurements,
     - Python currently observes tool-state and measurement-created events rather than driving the measurement math itself,
     - a visible in-canvas tool-status overlay now shows the active measurement mode, remaining picks, and the `Esc` cancel hint.
+  - `active_selection` now has a first concrete runtime slice:
+    - ordinary left click replaces the active selection,
+    - `Shift + left click` adds uniquely,
+    - empty left click clears,
+    - active measurement tool modes do not overwrite it,
+    - the current implementation is still intentionally atom-centric and element-only.
 
 ## Active Decisions
 
@@ -220,15 +226,14 @@ Why this is next:
 
 ## Immediate Plan
 
-1. Build `active_selection` as the next shared interaction state.
-2. Keep `active_selection` aligned with the documented interaction taxonomy:
+1. Enrich `active_selection` from the current atom-centric element-only slice toward the documented taxonomy:
   - `element`,
   - `shape`,
   - `annotation`,
   - `mixed`,
   - `empty`.
-3. Make ordinary left-click/shift-click semantics update `active_selection` without breaking the measurement tool mode path.
-4. After `active_selection` exists, use it as the base for:
+2. Lift the current element-only selection semantics from atom-level transport toward the intended group-centric contract.
+3. After that base is in place, use `active_selection` for:
   - `GroupStrip`,
   - future context-menu enrichment,
   - annotation pickability decisions,

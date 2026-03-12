@@ -18,6 +18,7 @@ import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handl
 import { ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
+import { ActiveSelectionController } from "./active-selection";
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -119,6 +120,7 @@ export function registerInteractionObservers(
 export class MolSysViewerController {
     private readonly contextMenu: ViewerContextMenu;
     private readonly measurementTools: MeasurementToolController;
+    private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly releaseContextMenuSuppression?: () => void;
     private lastContextLoci: any = null;
@@ -210,6 +212,7 @@ export class MolSysViewerController {
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
+        this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
             this.startMeasurementTool(action);
         });
@@ -222,6 +225,9 @@ export class MolSysViewerController {
             const pageY = payload.page_y ?? 0;
             this.contextMenu.open(payload, pageX, pageY);
         }, (ev) => {
+            if (!this.measurementTools.isActive()) {
+                this.activeSelection.handlePrimaryClick(ev);
+            }
             this.measurementTools.handlePrimaryClick(ev?.current?.loci);
         }, (ev) => {
             this.lastContextLoci = ev?.current?.loci ?? null;
