@@ -395,6 +395,7 @@ Current API direction is now stronger than that first minimum:
 - `view.annotations.delete(tag)`
 - `view.annotations.set_tag(tag, new_tag)`
 - `view.annotations.set_text(tag, text)`
+- `view.annotations.set_group_index(tag, group_index)`
 - `view.annotations.clear(tag=None)`
 
 This is intentional.
@@ -434,6 +435,7 @@ Current first implemented slice:
 
 - `view.annotations` now exists in Python
 - `view.annotations.add_label(...)` creates a persistent label anchored to one `group`
+- `view.annotations.set_group_index(...)` can reanchor that label to another `group` without leaving the replay-safe API surface
 - labels are replay-safe, rebuild-safe, and export-safe through annotation history replay
 - labels are layer-aware from the start (`kind="annotation"`)
 - `clear_decorations(..., labels=True)` now clears real frontend labels

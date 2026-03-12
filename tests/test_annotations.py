@@ -109,5 +109,19 @@ def test_annotation_manager_can_update_label_text_replay_safely():
     assert view.annotations.info("notes")["text"] == "After"
     assert view.annotations.records()[0]["options"]["text"] == "After"
     exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
-    assert [msg["op"] for msg in exported] == ["create_layer", "add_label"]
+    assert [msg["op"] for msg in exported] == ["add_label", "update_label"]
     assert exported[-1]["options"]["text"] == "After"
+
+
+def test_annotation_manager_can_reanchor_label_to_new_group_replay_safely():
+    view = demo["dialanine"]
+    view.annotations.add_label(text="Anchor", group_index=0, tag="notes")
+
+    expected_atom_indices = list(view.select(selection="group_index==1"))
+    view.annotations.set_group_index("notes", 1)
+
+    assert view.annotations.info("notes")["atom_indices"] == expected_atom_indices
+    assert view.annotations.records()[0]["options"]["atom_indices"] == expected_atom_indices
+    exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
+    assert [msg["op"] for msg in exported] == ["add_label", "update_label"]
+    assert exported[-1]["options"]["atom_indices"] == expected_atom_indices
