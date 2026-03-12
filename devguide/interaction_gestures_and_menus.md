@@ -76,6 +76,7 @@ Current first implemented slice:
   - `Focus Selection`
   - `Create Region from Selection`
   - `Add Label from Selection` when the current selection resolves to exactly one `group`
+  - `Persist Last Measurement` when a recent interactive measurement exists
   - `Clear Selection`
 - the target section now also exposes a first generic action:
   - `Focus Target`
@@ -99,6 +100,8 @@ The same bridge now also exists for interactive measurements:
   replayable viewer artifact from Python
 - the current persistence model stores the picked atom-index bundles, not an
   opaque frontend-only representation
+- the viewer menu now also exposes that possibility explicitly through
+  `Persist Last Measurement`
 
 It also implies that menu contents may depend on:
 

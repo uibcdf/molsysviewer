@@ -16,7 +16,13 @@ export type ContextMenuAction =
     | "focus_selection"
     | "clear_selection"
     | "create_region_from_selection"
-    | "add_label_from_selection";
+    | "add_label_from_selection"
+    | "persist_last_measurement";
+
+export type LastMeasurementSummary = {
+    action: "distance" | "angle" | "dihedral";
+    picked_count: number;
+};
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
@@ -44,6 +50,7 @@ export class ViewerContextMenu {
     private outsidePointerHandler?: (event: PointerEvent) => void;
     private currentTarget: ContextMenuTarget | null = null;
     private currentSelection: ActiveSelectionPayload | null = null;
+    private currentLastMeasurement: LastMeasurementSummary | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -73,9 +80,16 @@ export class ViewerContextMenu {
         this.host.appendChild(this.root);
     }
 
-    open(target: ContextMenuTarget, pageX: number, pageY: number, activeSelection?: ActiveSelectionPayload | null): void {
+    open(
+        target: ContextMenuTarget,
+        pageX: number,
+        pageY: number,
+        activeSelection?: ActiveSelectionPayload | null,
+        lastMeasurement?: LastMeasurementSummary | null,
+    ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
+        this.currentLastMeasurement = lastMeasurement ?? null;
         this.root.replaceChildren();
 
         const header = document.createElement("div");
@@ -132,6 +146,26 @@ export class ViewerContextMenu {
             this.root.appendChild(section);
         }
 
+        if (this.currentLastMeasurement) {
+            const section = document.createElement("div");
+            Object.assign(section.style, {
+                marginTop: "8px",
+                paddingTop: "8px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+
+            const title = document.createElement("div");
+            title.textContent = `Last measurement: ${this.currentLastMeasurement.action} (${this.currentLastMeasurement.picked_count})`;
+            Object.assign(title.style, {
+                padding: "4px 8px 8px 8px",
+                opacity: "0.82",
+                fontSize: "12px",
+            });
+            section.appendChild(title);
+            section.appendChild(this.makeActionButton("Persist Last Measurement", "persist_last_measurement"));
+            this.root.appendChild(section);
+        }
+
         const rect = this.host.getBoundingClientRect();
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
@@ -153,6 +187,7 @@ export class ViewerContextMenu {
     close(): void {
         this.currentTarget = null;
         this.currentSelection = null;
+        this.currentLastMeasurement = null;
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
     }

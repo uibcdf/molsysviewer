@@ -18,7 +18,7 @@ import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
-import { ViewerContextMenu } from "../ui/context-menu";
+import { LastMeasurementSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem } from "./active-selection";
@@ -225,6 +225,7 @@ export class MolSysViewerController {
     private currentStructure?: StateObjectRef; // Ref to structure root
     private loadedStructure?: LoadedStructure; // Loaded structure bundle
     private currentActiveSelection: ActiveSelectionPayload | null = null;
+    private lastMeasurementSummary: LastMeasurementSummary | null = null;
 
     // Getters for scene state delegated to scene handler
     get isSpinActive() { return this.scene.isSpinActive; }
@@ -247,6 +248,11 @@ export class MolSysViewerController {
             } else if (msg?.event === "interaction_active_selection_changed") {
                 this.currentActiveSelection = msg;
                 this.groupStrip.updateSelection(msg);
+            } else if (msg?.event === "interaction_measurement_created") {
+                this.lastMeasurementSummary = {
+                    action: msg.action,
+                    picked_count: msg.picked_count,
+                };
             }
             this.notify?.(msg);
         };
@@ -291,7 +297,11 @@ export class MolSysViewerController {
                 this.activeSelection.clear();
                 return;
             }
-            if (action === "create_region_from_selection" || action === "add_label_from_selection") {
+            if (
+                action === "create_region_from_selection"
+                || action === "add_label_from_selection"
+                || action === "persist_last_measurement"
+            ) {
                 return;
             }
             this.startMeasurementTool(action);
@@ -303,7 +313,7 @@ export class MolSysViewerController {
         registerInteractionObservers(plugin, emitInteractionEvent, (payload) => {
             const pageX = payload.page_x ?? 0;
             const pageY = payload.page_y ?? 0;
-            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection);
+            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
         }, (ev) => {
             if (!this.measurementTools.isActive()) {
                 this.activeSelection.handlePrimaryClick(ev);
@@ -387,7 +397,7 @@ export class MolSysViewerController {
             page_y: pageY,
         };
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection);
+        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
     }
 
     private openContextMenuForAnnotation(
@@ -402,7 +412,7 @@ export class MolSysViewerController {
             page_y: pageY,
         };
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection);
+        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
     }
 
     private focusCurrentSelection(): void {
