@@ -14,7 +14,7 @@ Implementation note:
 | --- | --- | --- | --- | --- | --- |
 | Hover | `structure` | update `hover_target`; temporary highlight | none | none | structural target level follows current picking policy |
 | Hover | `shape` | update `hover_target`; temporary highlight if viable | none | none | shape remains distinct from structure |
-| Hover | `empty` | clear hover target | none | none | no persistent mutation |
+| Hover | `empty` | clear hover target | none | none | does not clear `active_selection` |
 | Left click | `structure` | select clicked target | replace `active_selection` | none | unless `Shift` is pressed |
 | Left click + `Shift` | `structure` | add clicked target | add to `active_selection` | none | incremental selection |
 | Left click | `shape` | select clicked shape | replace `active_selection` | none | shape can be part of active selection |
@@ -26,7 +26,7 @@ Implementation note:
 | Middle click | any | deliberately outside the current contract | none | none | audit Mol* / browser behavior before adopting any product semantics |
 | Double left click | `structure` | focus target | no automatic change to `active_selection` | none | canonical focus gesture |
 | Double left click | `shape` | focus target if possible | no automatic change to `active_selection` | none | may focus shape bounds |
-| Double left click | `empty` | no action or view-level focus reset later | no automatic change | none | not defined yet |
+| Double left click | `empty` | not adopted yet | no automatic change | none | do not assume reset-by-default |
 | Double right click | any | not adopted yet | none | none | explicitly considered, intentionally deferred |
 
 ## Right Click and Context Menus
@@ -62,7 +62,12 @@ It also implies that menu contents may depend on:
 
 - `context_target`
 - `active_selection`
+- active tool/mode state
 - and the composition of that active selection (`structure`, `shape`, or `mixed`)
+
+If right click occurs on empty canvas, a future UX may still expose actions tied
+to `active_selection` or active mode state.
+That possibility remains open on purpose.
 
 ## Tool / Measurement Modes
 
@@ -82,6 +87,9 @@ When such a mode is active:
 - picks should resolve at atom level
 - picks should populate `tool_selection`
 - completion of the required number of picks should create the corresponding measure/overlay
+- the active mode should be visibly indicated
+- pick progress should be visible, e.g. `1/2`, `2/3`, `3/4`
+- `Esc` should be the expected cancellation path unless a later design replaces it explicitly
 
 ### Right-click launch pattern
 

@@ -150,6 +150,7 @@ At a minimum, the object should be able to expose:
   - `atom | group | chain | molecule | entity | shape | mixed | none`
 - `items`
   - selected elements retained as explicit items, not only as derived aggregated indices
+  - should preserve order of incorporation
 - aggregated deduplicated indices:
   - `atom_indices`
   - `group_indices`
@@ -184,7 +185,13 @@ This makes the selection useful for both:
 The important rule is:
 
 - `items` preserves what was actually selected
+- `items` preserves incorporation order
 - aggregate index arrays are computed views over those selected items
+
+Future configuration direction:
+
+- a user-facing default such as `picking_level_default` may later expose persistent policy selection
+- plausible values include `auto`, `group`, `atom`, and other structural levels if they become product-relevant
 
 ## Metadata Returned for `group` Picks
 
