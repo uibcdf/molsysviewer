@@ -213,14 +213,16 @@ This should also come later.
 
 - persistent labels as `annotations`
 - labels anchored to element targets
-- likely `group` first, with `atom` as a plausible second element level
+- `group` first
 - replay-safe/export-safe persistence
+- rebuild-safe persistence
 - integration with existing layer semantics
 - actual `clear labels` support in the frontend instead of the current placeholder
 
 ### v1 should not try to solve
 
 - every annotation subtype
+- atom-attached labels unless a concrete product need appears immediately
 - fully general shape-attached labels
 - free-floating point labels
 - rich annotation editing UI
@@ -236,6 +238,8 @@ That means a layer may contain:
 - shapes
 - annotations
 
+This is intended from the beginning, not only as a future possibility.
+
 This enables:
 
 - show/hide by layer
@@ -243,6 +247,12 @@ This enables:
 - shared analysis grouping
 
 This is preferable to creating a parallel label-only grouping system.
+
+Tag discipline should stay aligned with the rest of the viewer:
+
+- tags should be stable
+- tag-driven clear/hide/show should be deterministic
+- annotation registration should remain replay-safe
 
 ## Intended Interaction Semantics
 
@@ -261,11 +271,26 @@ This aligns with the interaction docs:
 Implications:
 
 - annotations should be valid `context_target` candidates
+- annotations should eventually be valid `hover_target` candidates when lightweight local feedback is useful
 - annotations may later participate in `active_selection`
 - annotation actions should remain distinct from shape actions
 
 The first implementation does not need full annotation-selection richness, but
 it should not block that direction.
+
+## Initial Pickability Direction
+
+Mol* defaults its built-in labels to non-pickable.
+
+For MolSysViewer, the preferred direction is more pragmatic:
+
+- labels should eventually be interactable as `annotation` targets
+- but v1 does not need to solve full pick/selection richness from the first day
+
+So the initial contract should be:
+
+- do not force annotation pickability if that would destabilize the first label slice
+- but do not design the rendering path in a way that makes annotation pickability impossible later
 
 ## Minimal Label Data Model
 
@@ -298,6 +323,12 @@ with a dedicated manager-style surface.
 Possible first API direction:
 
 - `view.annotations.add_label(...)`
+
+Likely management direction after that:
+
+- label creation should live under `view.annotations`
+- bulk visibility/clear behavior should prefer existing layer semantics
+- `clear_decorations(..., labels=True)` should remain valid as a convenience path
 
 This is a better fit than:
 
@@ -364,6 +395,11 @@ Plausible growth after the first label slice:
 - annotation participation in `active_selection`
 - annotation-driven tooltips or inspector panels
 
+`GroupStrip` alignment note:
+
+- labels are not first-class strip items in `GroupStrip` v1
+- future strip integration should happen as overlays or marks, not by changing the strip's primary element model
+
 ## Immediate Implication for Development
 
 Before implementing labels, keep these rules intact:
@@ -371,4 +407,19 @@ Before implementing labels, keep these rules intact:
 - do not add persistent labels under `shapes`
 - keep annotation semantics separate from hover tooltips
 - keep annotations layer-aware
+- keep annotation tags deterministic and replay-safe
+- keep labels safe across replay, rebuild, and export
 - keep the first annotation slice narrow and replay-safe
+
+## Technical Pattern Worth Borrowing From Mol*
+
+Mol* suggests a useful implementation pattern even if we do not copy its UI or
+representation layer wholesale:
+
+- use text-specific rendering/building primitives rather than pretending labels are ordinary meshes
+- keep label content separate from label placement
+- derive placement from element-anchored bounds/centers when possible
+
+For MolSysViewer, the strongest immediate technical lesson is:
+
+- labels should likely be built from element-derived anchor data, not improvised ad hoc geometry payloads
