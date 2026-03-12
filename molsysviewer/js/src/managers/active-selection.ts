@@ -3,14 +3,21 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 
 export type ActiveSelectionItem = {
     source_kind: "element";
-    element_level: "atom";
+    element_level: "group";
     atom_indices: number[];
+    group_indices: number[];
+    chain_indices: number[];
+    entity_indices: number[];
+    group_name?: string;
+    group_id?: number | string;
+    chain_name?: string;
+    entity_name?: string;
 };
 
 export type ActiveSelectionPayload = {
     event: "interaction_active_selection_changed";
     source_kind: "empty" | "element";
-    element_level: "none" | "atom";
+    element_level: "none" | "group";
     target_level: "none";
     items: ActiveSelectionItem[];
     atom_indices: number[];
@@ -24,22 +31,63 @@ export type ActiveSelectionPayload = {
     count_shapes: number;
 };
 
-function lociToAtomIndices(loci: any): number[] {
-    if (!StructureElement.Loci.is(loci)) return [];
-    const atomIndices: number[] = [];
-    const seen = new Set<number>();
-    for (const element of loci.elements) {
-        const size = OrderedSet.size(element.indices);
+function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
+    if (!StructureElement.Loci.is(rawLoci)) return [];
+
+    const items: ActiveSelectionItem[] = [];
+    const seen = new Set<string>();
+
+    for (const lociElement of rawLoci.elements) {
+        const unit = lociElement.unit;
+        const model = unit.model;
+        const hierarchy = model.atomicHierarchy;
+        const residueIndexByAtom = hierarchy.residueAtomSegments.index;
+        const residueOffsets = hierarchy.residueAtomSegments.offsets;
+        const chainIndexByAtom = hierarchy.chainAtomSegments.index;
+        const atoms = hierarchy.atoms;
+        const residues = hierarchy.residues;
+        const chains = hierarchy.chains;
+        const modelIndex = hierarchy.index;
+
+        const size = OrderedSet.size(lociElement.indices);
         for (let i = 0; i < size; i++) {
-            const unitIndex = OrderedSet.getAt(element.indices, i);
-            const atomIndex = element.unit.elements[unitIndex];
-            if (!seen.has(atomIndex)) {
-                seen.add(atomIndex);
-                atomIndices.push(atomIndex);
+            const unitIndex = OrderedSet.getAt(lociElement.indices, i);
+            const atomIndex = unit.elements[unitIndex];
+            const groupIndex = residueIndexByAtom[atomIndex];
+            const chainIndex = chainIndexByAtom[atomIndex];
+            const entityIndex = modelIndex.getEntityFromChain(chainIndex);
+            const key = `${model.id}:${chainIndex}:${groupIndex}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+
+            const atomIndices: number[] = [];
+            for (let j = residueOffsets[groupIndex], jl = residueOffsets[groupIndex + 1]; j < jl; j++) {
+                atomIndices.push(j);
             }
+
+            const firstAtom = residueOffsets[groupIndex];
+            const compId = atoms.label_comp_id.value(firstAtom);
+            const authSeqId = residues.auth_seq_id.value(groupIndex);
+            const chainName = chains.label_asym_id.value(chainIndex);
+            const entityName = chains.label_entity_id.value(chainIndex);
+            const groupName = `${compId} ${authSeqId}`;
+
+            items.push({
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: atomIndices,
+                group_indices: [groupIndex],
+                chain_indices: [chainIndex],
+                entity_indices: [entityIndex],
+                group_name: groupName,
+                group_id: authSeqId,
+                chain_name: chainName,
+                entity_name: entityName,
+            });
         }
     }
-    return atomIndices;
+
+    return items;
 }
 
 function emptyPayload(): ActiveSelectionPayload {
@@ -62,34 +110,50 @@ function emptyPayload(): ActiveSelectionPayload {
 }
 
 function signature(item: ActiveSelectionItem): string {
-    return `${item.source_kind}:${item.element_level}:${item.atom_indices.join(",")}`;
+    return `${item.source_kind}:${item.element_level}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
+}
+
+function appendUnique(target: number[], seen: Set<number>, values: number[]) {
+    for (const value of values) {
+        if (seen.has(value)) continue;
+        seen.add(value);
+        target.push(value);
+    }
 }
 
 function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
     if (items.length === 0) return emptyPayload();
+
     const atomIndices: number[] = [];
-    const seen = new Set<number>();
+    const groupIndices: number[] = [];
+    const chainIndices: number[] = [];
+    const entityIndices: number[] = [];
+    const seenAtoms = new Set<number>();
+    const seenGroups = new Set<number>();
+    const seenChains = new Set<number>();
+    const seenEntities = new Set<number>();
+
     for (const item of items) {
-        for (const atomIndex of item.atom_indices) {
-            if (seen.has(atomIndex)) continue;
-            seen.add(atomIndex);
-            atomIndices.push(atomIndex);
-        }
+        appendUnique(atomIndices, seenAtoms, item.atom_indices);
+        appendUnique(groupIndices, seenGroups, item.group_indices);
+        appendUnique(chainIndices, seenChains, item.chain_indices);
+        appendUnique(entityIndices, seenEntities, item.entity_indices);
     }
+
     return {
         event: "interaction_active_selection_changed",
         source_kind: "element",
-        element_level: "atom",
+        element_level: "group",
         target_level: "none",
         items,
         atom_indices: atomIndices,
-        group_indices: [],
+        group_indices: groupIndices,
         component_indices: [],
-        chain_indices: [],
+        chain_indices: chainIndices,
         molecule_indices: [],
-        entity_indices: [],
+        entity_indices: entityIndices,
         count_atoms: atomIndices.length,
-        count_groups: 0,
+        count_groups: groupIndices.length,
         count_shapes: 0,
     };
 }
@@ -101,28 +165,25 @@ export class ActiveSelectionController {
 
     handlePrimaryClick(ev: any): void {
         const shift = !!ev?.modifiers?.shift;
-        const atomIndices = lociToAtomIndices(ev?.current?.loci);
-        if (atomIndices.length === 0) {
+        const items = lociToGroupItems(ev?.current?.loci);
+        if (items.length === 0) {
             if (!shift) this.clear();
             return;
         }
-        const item: ActiveSelectionItem = {
-            source_kind: "element",
-            element_level: "atom",
-            atom_indices: atomIndices,
-        };
         if (!shift) {
-            this.items = [item];
+            this.items = items;
             this.emit();
             return;
         }
         const next = [...this.items];
         const known = new Set(next.map(signature));
-        const key = signature(item);
-        if (!known.has(key)) {
+        for (const item of items) {
+            const key = signature(item);
+            if (known.has(key)) continue;
+            known.add(key);
             next.push(item);
-            this.items = next;
         }
+        this.items = next;
         this.emit();
     }
 
