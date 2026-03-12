@@ -146,6 +146,7 @@ It should:
 Conceptual rule:
 
 - `GroupStrip` should be treated as a second interaction surface over the same state, not just as an auxiliary read-only panel
+- canvas and strip interactions should converge onto the same `active_selection` semantics instead of inventing separate selection logic
 
 ### What each item should show
 
@@ -158,6 +159,11 @@ Potential compact additions if visually useful:
 
 - `chain_name`
 - simple color or type mark
+
+Ordering rule:
+
+- strip order should follow the structural/canonical order of the loaded system
+- it should not invent an arbitrary visual ordering unrelated to the molecular hierarchy
 
 Detailed metadata should not require verbose inline text by default.
 That detail can move into:
@@ -186,6 +192,7 @@ And later possibly:
 - region marks
 - tool-mode picks
 - labels/annotations
+- more compact visual differentiation by `group_type`
 
 ### Layout direction
 
@@ -267,6 +274,10 @@ It should remain a later addition, not a requirement for `GroupStrip` v1.
 Another useful future behavior:
 
 - if the relevant target is outside the visible portion of the strip, the strip may later bring it into view automatically or on demand
+
+Another plausible future improvement:
+
+- collapse/expand behavior by chain if large systems make the strip too dense
 
 ### Possible later strip types
 
