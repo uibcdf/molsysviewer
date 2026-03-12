@@ -213,6 +213,21 @@ Why this is next:
   - shared highlight/selection.
 4. Return to support-library integration only if a new product path exposes a real contract gap.
 
+Interaction design reference:
+
+- the interaction contract now lives across:
+  - `devguide/interaction_overview.md`
+  - `devguide/interaction_targets_and_selection.md`
+  - `devguide/interaction_gestures_and_menus.md`
+  - `devguide/interaction_modifiers_and_future.md`
+- together, these pages define:
+  - target taxonomy,
+  - gesture semantics,
+  - `active_selection`,
+  - `context_target`,
+  - measurement/tool-mode planning,
+  - and tracked modifier ideas.
+
 ## Criteria
 
 - Do not treat generated JS artifacts as implementation source.
@@ -236,7 +251,7 @@ Why this is next:
 - Extend `molsysviewer.tools.basic` beyond `merge(...)` only when the next composition/analysis policy is explicit enough to document and test.
 - Add canvas interaction work:
   - `Done`: minimal hover/click event transport from Mol* to Python with atom-centric payloads.
-  - `Next`: pointer semantics, Python callbacks, and richer pick semantics for regions/shapes.
+  - `Next`: implement the richer contract now documented in the new interaction pages under `devguide/`.
 - Continue visual and behavioral refinement of pockets and pharmacophore overlays.
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.

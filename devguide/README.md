@@ -25,9 +25,17 @@ checkpoint for the next developer session. It should make clear:
    - Using ArgDigest for validation and DepDigest for environment robustness.
 3. [**SMonitor Integration**](smonitor.md)
    - Diagnostics, catalog rules, and telemetry signals.
-4. [**Roadmap**](roadmap.md)
+4. [**Interaction Overview**](interaction_overview.md)
+   - Entry point for interaction design, decisions already closed, and implementation order.
+5. [**Interaction Targets and Selection**](interaction_targets_and_selection.md)
+   - Target taxonomy, picking levels, `active_selection`, mixed selection, and group metadata.
+6. [**Interaction Gestures and Menus**](interaction_gestures_and_menus.md)
+   - Hover/click/double-click semantics, context menus, and measurement/tool-mode behavior.
+7. [**Interaction Modifiers and Future**](interaction_modifiers_and_future.md)
+   - Reserved modifiers, future ideas, borrowed patterns, and deferred questions.
+8. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-5. [**Checkpoints**](checkpoints.md)
+9. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions

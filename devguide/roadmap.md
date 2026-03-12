@@ -158,6 +158,7 @@ It is organized by execution priority and uses three labels:
 
 ### Next actions
 
+- Use the interaction pages in `devguide/` as the implementation contract for the next slices.
 - Add Python-side callback registration only after the transport contract settles.
 - Decide whether region-aware and shape-aware picks belong in the same event family or in richer payload variants.
 - Add pointer semantics and shared highlight/selection only after event ownership is clear.
