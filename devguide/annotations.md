@@ -407,6 +407,10 @@ Current first implemented slice:
 - labels are replay-safe, rebuild-safe, and export-safe through annotation history replay
 - labels are layer-aware from the start (`kind="annotation"`)
 - `clear_decorations(..., labels=True)` now clears real frontend labels
+- compact strip overlays for group labels now exist
+- strip label overlays can seed `annotation` context targets
+- strip label overlays can also seed a first narrow `annotation` slice in `active_selection`
+- that selection slice is intentionally kept separate from element selection for now; full mixed selection remains later work
 
 So this work is not inventing an unrelated abstraction.
 It is closing a category gap that the codebase already suggested.

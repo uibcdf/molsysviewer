@@ -80,6 +80,7 @@ test("ActiveSelectionController replaces, adds group items with shift, avoids du
             count_atoms: 3,
             count_groups: 1,
             count_shapes: 0,
+            count_annotations: 0,
         },
         {
             event: "interaction_active_selection_changed",
@@ -121,6 +122,7 @@ test("ActiveSelectionController replaces, adds group items with shift, avoids du
             count_atoms: 5,
             count_groups: 2,
             count_shapes: 0,
+            count_annotations: 0,
         },
         {
             event: "interaction_active_selection_changed",
@@ -162,6 +164,7 @@ test("ActiveSelectionController replaces, adds group items with shift, avoids du
             count_atoms: 5,
             count_groups: 2,
             count_shapes: 0,
+            count_annotations: 0,
         },
         {
             event: "interaction_active_selection_changed",
@@ -178,6 +181,128 @@ test("ActiveSelectionController replaces, adds group items with shift, avoids du
             count_atoms: 0,
             count_groups: 0,
             count_shapes: 0,
+            count_annotations: 0,
+        },
+    ]);
+});
+
+test("ActiveSelectionController supports annotation selections and keeps them separate from element selections", () => {
+    const events: any[] = [];
+    const controller = new ActiveSelectionController((msg) => events.push(msg));
+
+    controller.setItems([{
+        source_kind: "annotation",
+        annotation_kind: "label",
+        atom_indices: [0, 1, 2],
+        group_indices: [0],
+        chain_indices: [0],
+        entity_indices: [0],
+        tag: "notes",
+        text: "Catalytic",
+    }]);
+    controller.setItems([{
+        source_kind: "annotation",
+        annotation_kind: "label",
+        atom_indices: [0, 1, 2],
+        group_indices: [0],
+        chain_indices: [0],
+        entity_indices: [0],
+        tag: "notes",
+        text: "Catalytic",
+    }], true);
+    controller.setItems([{
+        source_kind: "element",
+        element_level: "group",
+        atom_indices: [3, 4],
+        group_indices: [1],
+        chain_indices: [0],
+        entity_indices: [0],
+        group_name: "GLY 2",
+        group_id: 2,
+        chain_name: "A",
+        entity_name: "1",
+    }], true);
+
+    assert.deepStrictEqual(events, [
+        {
+            event: "interaction_active_selection_changed",
+            source_kind: "annotation",
+            element_level: "none",
+            target_level: "annotation",
+            items: [{
+                source_kind: "annotation",
+                annotation_kind: "label",
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                tag: "notes",
+                text: "Catalytic",
+            }],
+            atom_indices: [0, 1, 2],
+            group_indices: [0],
+            component_indices: [],
+            chain_indices: [0],
+            molecule_indices: [],
+            entity_indices: [0],
+            count_atoms: 3,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 1,
+        },
+        {
+            event: "interaction_active_selection_changed",
+            source_kind: "annotation",
+            element_level: "none",
+            target_level: "annotation",
+            items: [{
+                source_kind: "annotation",
+                annotation_kind: "label",
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                tag: "notes",
+                text: "Catalytic",
+            }],
+            atom_indices: [0, 1, 2],
+            group_indices: [0],
+            component_indices: [],
+            chain_indices: [0],
+            molecule_indices: [],
+            entity_indices: [0],
+            count_atoms: 3,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 1,
+        },
+        {
+            event: "interaction_active_selection_changed",
+            source_kind: "element",
+            element_level: "group",
+            target_level: "none",
+            items: [{
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [3, 4],
+                group_indices: [1],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "GLY 2",
+                group_id: 2,
+                chain_name: "A",
+                entity_name: "1",
+            }],
+            atom_indices: [3, 4],
+            group_indices: [1],
+            component_indices: [],
+            chain_indices: [0],
+            molecule_indices: [],
+            entity_indices: [0],
+            count_atoms: 2,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 0,
         },
     ]);
 });
