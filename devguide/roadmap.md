@@ -268,9 +268,10 @@ should grow over time as additional project-level principles become clear.
 - Broaden persisted measurements only after the first replayable `distance` / `angle` / `dihedral` slice is validated end to end.
 - The explicit menu action path for persisted measurements now exists and executes.
 - The explicit menu action path for `Add Label from Selection` now also exists
-  and executes through a minimal text prompt.
-- The next improvement is replacing that prompt with a better inline or modal
-  text-entry UX without weakening the reproducibility contract.
+  and executes through a minimal inline composer.
+- The next improvement is refining that inline composer or replacing it with a
+  better small integrated text-entry UX without weakening the reproducibility
+  contract.
 
 ### Criteria
 

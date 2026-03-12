@@ -111,8 +111,9 @@ Current execution status:
   `interaction_context_action` after explicit text capture
 - `Persist Last Measurement` now executes the Python-side bridge directly from
   `interaction_context_action`
-- the current label-text capture path is intentionally minimal (`window.prompt`)
-  and should be considered replaceable UX, not a final design
+- the current label-text capture path is intentionally minimal (an inline
+  composer inside the menu) and should be considered replaceable UX, not a
+  final design
 
 It also implies that menu contents may depend on:
 
