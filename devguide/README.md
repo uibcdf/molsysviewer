@@ -35,9 +35,11 @@ checkpoint for the next developer session. It should make clear:
    - Reserved modifiers, future ideas, borrowed patterns, and deferred questions.
 8. [**Strips**](strips.md)
    - GroupStrip direction, alternatives not chosen, first implementation scope, and future strip ideas.
-9. [**Roadmap**](roadmap.md)
+9. [**Annotations**](annotations.md)
+   - Viewer taxonomy for labels/annotations, Mol* precedents, and the first annotation slice.
+10. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-10. [**Checkpoints**](checkpoints.md)
+11. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions

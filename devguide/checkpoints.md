@@ -139,12 +139,36 @@ Do not append dated historical entries unless a date is itself operationally rel
   - The first module documented is `tools.basic`.
   - Each currently exposed `tools.basic` function now has its own user-facing page under `user/tools/basic/`.
 
+- Interaction and taxonomy direction
+  - Interaction taxonomy now uses:
+    - `element`,
+    - `shape`,
+    - `annotation`,
+    - `empty`
+    instead of overloading `structure` in the interaction contract.
+  - Element hierarchy now explicitly tracks:
+    - `atom`, `group`, `component`, `chain`, `molecule`, `entity`.
+  - `devguide/annotations.md` now records the viewer taxonomy around:
+    - `elements`,
+    - `regions`,
+    - `shapes`,
+    - `annotations`,
+    - `layers`.
+  - Persistent labels are now a documented `annotations` concern, not a `shapes` concern.
+  - Mol* precedents reviewed for this design include:
+    - built-in structure labels,
+    - loci-based labels,
+    - MVS custom and annotation-driven labels,
+    - tooltip separation from persistent labels.
+
 ## Active Decisions
 
 - Use real demo viewers when regression value depends on real MolSysMT behavior.
 - Prefer contract-level and externally observable assertions over private implementation coupling.
 - Treat `DigestNotDigestedWarning` on stable public API as integration debt, not benign noise.
 - Keep `MolSysView` small; place advanced composition/analysis operations in `molsysviewer.tools`.
+- Keep the interaction contract aligned with MolSysSuite vocabulary:
+  - use `elements` / `element levels` instead of overloading `structure` in picking/selection docs.
 - Let users work with `MolSysView` in both styles:
   - object-oriented (`view.get(...)`, `view.set(...)`, ...)
   - functional (`tools.basic.get(view, ...)`, `tools.basic.set(view, ...)`, ...)
@@ -161,6 +185,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Treat sibling support libraries (`argdigest`, `depdigest`, `pyunitwizard`, `smonitor`) as active engineering dependencies, not passive externals.
 - Keep `molsysviewer` on one local `pyunitwizard` instance/configuration path.
 - Prefer `smonitor` `extra_factory` + `SIGNALS` contracts on the main orchestration wrappers when that makes developer/QA debugging materially better.
+- Keep persistent labels out of `shapes`; the category should be `annotations`.
+- Keep hover tooltips and persistent annotations as separate concerns.
+- Keep `annotations` layer-aware from the first implementation.
 
 ## Next Step
 
@@ -212,6 +239,7 @@ Why this is next:
   - shape-aware picks,
   - shared highlight/selection.
 4. Return to support-library integration only if a new product path exposes a real contract gap.
+5. Use the annotation taxonomy in `devguide/annotations.md` when label work starts; do not re-open the `shape` vs `annotation` split ad hoc.
 
 Interaction design reference:
 
