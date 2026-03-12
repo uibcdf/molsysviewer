@@ -38,6 +38,11 @@ Why:
 - it is the most useful default for structural inspection
 - it avoids overfitting interaction semantics to atomistic representations only
 
+Public-semantics rule:
+
+- representation may influence internal interpretation heuristics
+- but the public picking behavior should remain as stable and predictable as possible across representation families
+
 ### Measurement exception
 
 Measurement-oriented workflows should force atom picking.
@@ -110,6 +115,10 @@ Visibility decision still open:
 
 - `tool_selection` is definitely part of the internal interaction model
 - whether it becomes a first-class public Python object is still open
+
+Working invariant:
+
+- `tool_selection` should not overwrite `active_selection` by default
 
 ## `active_selection` Contract
 

@@ -5,6 +5,11 @@
 The following table captures the intended behavior.
 This is the implementation contract unless superseded explicitly.
 
+Implementation note:
+
+- click handling must distinguish true click from drag/navigation
+- in particular, empty-canvas click-to-clear must not trigger after camera manipulation
+
 | Gesture | Target | Default effect | Selection effect | Context effect | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Hover | `structure` | update `hover_target`; temporary highlight | none | none | structural target level follows current picking policy |
@@ -97,3 +102,13 @@ Measurement scope rule:
 
 - measurement tools operate on atom-level picks
 - shape-only picks do not satisfy a measurement pick unless a future explicit translation policy is introduced
+- any future translation from shape picks to structural picks must be explicit and shape-type aware, not a hidden global fallback
+
+## Hover Direction
+
+Hover is intentionally lightweight in the first slices.
+
+Future direction kept in scope:
+
+- hover may later feed tooltips, lightweight inspectors, or similar read-only feedback
+- this should remain additive and should not force persistent selection semantics

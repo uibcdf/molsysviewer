@@ -86,6 +86,8 @@ We are not copying UI wholesale, but we are importing useful patterns.
 
 - explicit mouse/tool modes for measurements
 - do not overload ordinary click semantics with hidden measurement behavior
+- tool modes should be visible and clearly cancelable
+- tool workflows benefit from explicit progress such as `1/2`, `2/3`, `3/4`
 
 ### From PyMOL
 
@@ -102,6 +104,7 @@ We are not copying UI wholesale, but we are importing useful patterns.
 
 - lightweight callbacks and notebook-friendly event exposure are high-value
 - picked metadata should be useful without requiring a heavy UI
+- event payloads and selection objects should stay reasonably serializable and lightweight
 
 ## What Is Still Open or Intentionally Deferred
 
