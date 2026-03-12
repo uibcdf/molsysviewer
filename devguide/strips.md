@@ -219,6 +219,7 @@ The current runtime slice now does the following:
 - right click -> opens the same viewer context menu contract used by the canvas
 - right click on a label overlay badge -> opens annotation context instead of falling through to the parent group target
 - left click on a label overlay badge -> seeds the narrow `annotation` slice of `active_selection`
+- that annotation selection can now coexist with element selection in the first mixed-selection path
 
 The current slice does **not** yet do:
 

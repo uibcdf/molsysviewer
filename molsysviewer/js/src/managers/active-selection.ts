@@ -26,9 +26,9 @@ export type ActiveSelectionItem = {
 
 export type ActiveSelectionPayload = {
     event: "interaction_active_selection_changed";
-    source_kind: "empty" | "element" | "annotation";
+    source_kind: "empty" | "element" | "annotation" | "mixed";
     element_level: "none" | "group";
-    target_level: "none" | "annotation";
+    target_level: "none" | "annotation" | "mixed";
     items: ActiveSelectionItem[];
     atom_indices: number[];
     group_indices: number[];
@@ -184,7 +184,8 @@ function appendUnique(target: number[], seen: Set<number>, values: number[]) {
 function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
     if (items.length === 0) return emptyPayload();
 
-    const sourceKind = items[0].source_kind;
+    const sourceKinds = new Set(items.map((item) => item.source_kind));
+    const sourceKind = sourceKinds.size > 1 ? "mixed" : items[0].source_kind;
 
     const atomIndices: number[] = [];
     const groupIndices: number[] = [];
@@ -205,8 +206,8 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
     return {
         event: "interaction_active_selection_changed",
         source_kind: sourceKind,
-        element_level: sourceKind === "element" ? "group" : "none",
-        target_level: sourceKind === "annotation" ? "annotation" : "none",
+        element_level: sourceKind === "element" || sourceKind === "mixed" ? "group" : "none",
+        target_level: sourceKind === "annotation" ? "annotation" : sourceKind === "mixed" ? "mixed" : "none",
         items,
         atom_indices: atomIndices,
         group_indices: groupIndices,
@@ -242,11 +243,6 @@ export class ActiveSelectionController {
             return;
         }
         if (!additive) {
-            this.items = [...items];
-            this.emit();
-            return;
-        }
-        if (this.items.length > 0 && this.items[0].source_kind !== items[0].source_kind) {
             this.items = [...items];
             this.emit();
             return;

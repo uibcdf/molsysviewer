@@ -186,7 +186,7 @@ test("ActiveSelectionController replaces, adds group items with shift, avoids du
     ]);
 });
 
-test("ActiveSelectionController supports annotation selections and keeps them separate from element selections", () => {
+test("ActiveSelectionController supports annotation selections and mixes them with element selections when added", () => {
     const events: any[] = [];
     const controller = new ActiveSelectionController((msg) => events.push(msg));
 
@@ -278,31 +278,43 @@ test("ActiveSelectionController supports annotation selections and keeps them se
         },
         {
             event: "interaction_active_selection_changed",
-            source_kind: "element",
+            source_kind: "mixed",
             element_level: "group",
-            target_level: "none",
-            items: [{
-                source_kind: "element",
-                element_level: "group",
-                atom_indices: [3, 4],
-                group_indices: [1],
-                chain_indices: [0],
-                entity_indices: [0],
-                group_name: "GLY 2",
-                group_id: 2,
-                chain_name: "A",
-                entity_name: "1",
-            }],
-            atom_indices: [3, 4],
-            group_indices: [1],
+            target_level: "mixed",
+            items: [
+                {
+                    source_kind: "annotation",
+                    annotation_kind: "label",
+                    atom_indices: [0, 1, 2],
+                    group_indices: [0],
+                    chain_indices: [0],
+                    entity_indices: [0],
+                    tag: "notes",
+                    text: "Catalytic",
+                },
+                {
+                    source_kind: "element",
+                    element_level: "group",
+                    atom_indices: [3, 4],
+                    group_indices: [1],
+                    chain_indices: [0],
+                    entity_indices: [0],
+                    group_name: "GLY 2",
+                    group_id: 2,
+                    chain_name: "A",
+                    entity_name: "1",
+                },
+            ],
+            atom_indices: [0, 1, 2, 3, 4],
+            group_indices: [0, 1],
             component_indices: [],
             chain_indices: [0],
             molecule_indices: [],
             entity_indices: [0],
-            count_atoms: 2,
-            count_groups: 1,
+            count_atoms: 5,
+            count_groups: 2,
             count_shapes: 0,
-            count_annotations: 0,
+            count_annotations: 1,
         },
     ]);
 });
