@@ -173,6 +173,8 @@ It is organized by execution priority and uses three labels:
 - Keep interactive measurement in Mol* first:
   - it already owns picked loci and measurement representations,
   - Python/MolSysMT can consume emitted results later without entering the immediate click loop.
+- Add visible tool-mode feedback and cancellation semantics before layering richer selection state on top.
+- Build `active_selection` after the measurement path is locally coherent, then reuse it for strips, menus, and annotation interaction.
 
 ### Criteria
 

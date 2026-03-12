@@ -173,7 +173,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - menu-seeded `distance` / `angle` / `dihedral` actions start a frontend tool mode,
     - picks are forced down the Mol* element/atom path for measurement purposes,
     - Mol* `StructureMeasurementManager` is the calculation/rendering engine for interactive measurements,
-    - Python currently observes tool-state and measurement-created events rather than driving the measurement math itself.
+    - Python currently observes tool-state and measurement-created events rather than driving the measurement math itself,
+    - a visible in-canvas tool-status overlay now shows the active measurement mode, remaining picks, and the `Esc` cancel hint.
 
 ## Active Decisions
 
@@ -205,10 +206,14 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Use Mol* rather than MolSysMT as the first engine for interactive distance/angle/dihedral:
   - Mol* already owns the live picked loci and the native measurement representations,
   - MolSysMT remains appropriate for later Python-side analysis or validation, not for the first interactive gesture loop.
+- Keep measurement tool feedback local-first in JS:
+  - active mode and pick progress should be visible in the canvas without requiring Python callbacks,
+  - Python still receives state/result events for inspection, automation, and notebook use.
 
 ## Next Step
 
-- Continue building out `molsysviewer.tools` and the next 1.0-facing interaction/features on top of the stabilized runtime.
+- Continue building out the interaction stack on top of the now-working context menu + measurement tool-mode path.
+- Start `active_selection` as the next shared state object before moving into `GroupStrip` and `annotations`.
 - Keep pushing MolSysViewer toward a molecular-system inspection/workbench role for structural biochemistry and drug-design workflows, not only a viewer/export role.
 
 Why this is next:
@@ -230,6 +235,22 @@ Why this is next:
 - The standard test entrypoint is again reliable for package-root imports, so export/import regressions can be exercised with plain `pytest`.
 - `concatenate_structures(...)` was the correct first step because it opened `tools` with a pure composition primitive that reused stable contracts we already hardened.
 - `merge(...)` is the correct second step because it defines the policy for multi-view composition explicitly instead of leaving regions/layers/shapes/tag collisions as ad hoc user work.
+
+## Immediate Plan
+
+1. Build `active_selection` as the next shared interaction state.
+2. Keep `active_selection` aligned with the documented interaction taxonomy:
+  - `element`,
+  - `shape`,
+  - `annotation`,
+  - `mixed`,
+  - `empty`.
+3. Make ordinary left-click/shift-click semantics update `active_selection` without breaking the measurement tool mode path.
+4. After `active_selection` exists, use it as the base for:
+  - `GroupStrip`,
+  - future context-menu enrichment,
+  - annotation pickability decisions,
+  - Python callbacks on interaction objects instead of only raw last-event snapshots.
 
 ## What We Learned About `set()`
 

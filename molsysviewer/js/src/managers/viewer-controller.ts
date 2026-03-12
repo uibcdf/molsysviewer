@@ -17,6 +17,7 @@ import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
+import { ToolStatusOverlay } from "../ui/tool-status";
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -118,6 +119,7 @@ export function registerInteractionObservers(
 export class MolSysViewerController {
     private readonly contextMenu: ViewerContextMenu;
     private readonly measurementTools: MeasurementToolController;
+    private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly releaseContextMenuSuppression?: () => void;
     private lastContextLoci: any = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
@@ -190,15 +192,32 @@ export class MolSysViewerController {
     get isDarkMode() { return this.scene.isDarkMode; }
 
     private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void) {
-        this.measurementTools = new MeasurementToolController(plugin, notify);
-        this.contextMenu = new ViewerContextMenu(host, notify, (action, _target) => {
+        const emitInteractionEvent = (msg: any) => {
+            if (msg?.event === "interaction_tool_state") {
+                if (msg?.status === "started" || msg?.status === "progress") {
+                    this.toolStatusOverlay.update({
+                        action: msg.action,
+                        pickedCount: msg.picked_count,
+                        requiredPicks: msg.required_picks,
+                        remainingPicks: msg.remaining_picks,
+                    });
+                } else {
+                    this.toolStatusOverlay.update({ action: null });
+                }
+            }
+            this.notify?.(msg);
+        };
+
+        this.toolStatusOverlay = new ToolStatusOverlay(host);
+        this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
+        this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
             this.startMeasurementTool(action);
         });
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
         if (canvas) {
             this.releaseContextMenuSuppression = suppressCanvasContextMenu(canvas as HTMLElement);
         }
-        registerInteractionObservers(plugin, notify, (payload) => {
+        registerInteractionObservers(plugin, emitInteractionEvent, (payload) => {
             const pageX = payload.page_x ?? 0;
             const pageY = payload.page_y ?? 0;
             this.contextMenu.open(payload, pageX, pageY);
@@ -245,6 +264,7 @@ export class MolSysViewerController {
 
     dispose(): void {
         this.measurementTools.dispose();
+        this.toolStatusOverlay.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.plugin.dispose();

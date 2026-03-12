@@ -82,3 +82,59 @@ test("MeasurementToolController creates a distance measurement from seeded conte
         },
     ]);
 });
+
+test("MeasurementToolController cancels active tool state and restores granularity", async () => {
+    const notifications: any[] = [];
+    const calls: string[] = [];
+    const plugin: any = {
+        managers: {
+            interactivity: {
+                props: { granularity: "residue" },
+                setProps(next: any) {
+                    this.props = { ...this.props, ...next };
+                    calls.push(`granularity:${next.granularity}`);
+                },
+            },
+            structure: {
+                measurement: {
+                    async addOrderLabels(locis: any[]) {
+                        calls.push(`order:${locis.length}`);
+                    },
+                },
+            },
+        },
+    };
+
+    const controller = new MeasurementToolController(plugin, (msg) => notifications.push(msg));
+    controller.start("angle", makeLoci([10]));
+    controller.cancel();
+    await new Promise((resolve) => setImmediate(resolve));
+    controller.dispose();
+
+    assert.deepStrictEqual(calls, [
+        "granularity:element",
+        "order:1",
+        "order:0",
+        "granularity:residue",
+    ]);
+    assert.deepStrictEqual(notifications, [
+        {
+            event: "interaction_tool_state",
+            action: "angle",
+            status: "started",
+            required_picks: 3,
+            picked_count: 1,
+            remaining_picks: 2,
+            picks_atom_indices: [[10]],
+        },
+        {
+            event: "interaction_tool_state",
+            action: "angle",
+            status: "cancelled",
+            required_picks: 3,
+            picked_count: 0,
+            remaining_picks: 3,
+            picks_atom_indices: [],
+        },
+    ]);
+});
