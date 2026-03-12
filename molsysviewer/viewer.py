@@ -159,6 +159,8 @@ class MolSysView:
         self._last_click_event: dict | None = None
         self._last_context_event: dict | None = None
         self._last_context_action_event: dict | None = None
+        self._last_tool_state_event: dict | None = None
+        self._last_measurement_created_event: dict | None = None
         self._shape_history: list[dict] = []
         self._last_label: str | None = None
 
@@ -258,6 +260,10 @@ class MolSysView:
             self._last_context_event = dict(content)
         elif event == "interaction_context_action":
             self._last_context_action_event = dict(content)
+        elif event == "interaction_tool_state":
+            self._last_tool_state_event = dict(content)
+        elif event == "interaction_measurement_created":
+            self._last_measurement_created_event = dict(content)
         elif event == "viewer_init_failed":
             reason = content.get("reason", "unknown")
             message = content.get("message") or "Mol* viewer failed to initialize."
@@ -1189,6 +1195,18 @@ class MolSysView:
         if self._last_context_action_event is None:
             return None
         return dict(self._last_context_action_event)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_tool_state_event(self) -> dict | None:
+        if self._last_tool_state_event is None:
+            return None
+        return dict(self._last_tool_state_event)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_measurement_created_event(self) -> dict | None:
+        if self._last_measurement_created_event is None:
+            return None
+        return dict(self._last_measurement_created_event)
 
     @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()

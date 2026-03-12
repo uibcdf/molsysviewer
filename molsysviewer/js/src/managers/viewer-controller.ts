@@ -16,6 +16,7 @@ import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { ViewerContextMenu } from "../ui/context-menu";
+import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -87,6 +88,8 @@ export function registerInteractionObservers(
     plugin: any,
     notify?: (msg: any) => void,
     openContextMenu?: (payload: ContextInteractionPayload) => void,
+    onPrimaryClick?: (ev: any) => void,
+    onSecondaryClick?: (ev: any) => void,
 ): void {
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
@@ -98,9 +101,11 @@ export function registerInteractionObservers(
             if (isSecondaryButton(ev)) {
                 const payload = normalizeContextInteractionEvent(ev);
                 notify?.(payload);
+                onSecondaryClick?.(ev);
                 openContextMenu?.(payload);
                 return;
             }
+            onPrimaryClick?.(ev);
             notify?.(normalizeInteractionEvent("click", ev));
         });
     }
@@ -112,7 +117,9 @@ export function registerInteractionObservers(
  */
 export class MolSysViewerController {
     private readonly contextMenu: ViewerContextMenu;
+    private readonly measurementTools: MeasurementToolController;
     private readonly releaseContextMenuSuppression?: () => void;
+    private lastContextLoci: any = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -183,7 +190,10 @@ export class MolSysViewerController {
     get isDarkMode() { return this.scene.isDarkMode; }
 
     private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void) {
-        this.contextMenu = new ViewerContextMenu(host, notify);
+        this.measurementTools = new MeasurementToolController(plugin, notify);
+        this.contextMenu = new ViewerContextMenu(host, notify, (action, _target) => {
+            this.startMeasurementTool(action);
+        });
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
         if (canvas) {
             this.releaseContextMenuSuppression = suppressCanvasContextMenu(canvas as HTMLElement);
@@ -192,6 +202,10 @@ export class MolSysViewerController {
             const pageX = payload.page_x ?? 0;
             const pageY = payload.page_y ?? 0;
             this.contextMenu.open(payload, pageX, pageY);
+        }, (ev) => {
+            this.measurementTools.handlePrimaryClick(ev?.current?.loci);
+        }, (ev) => {
+            this.lastContextLoci = ev?.current?.loci ?? null;
         });
 
         // Initialize handlers with necessary context callbacks
@@ -230,9 +244,15 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.measurementTools.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.plugin.dispose();
+    }
+
+    private startMeasurementTool(action: MeasurementToolAction): void {
+        if (!this.lastContextLoci) return;
+        this.measurementTools.start(action, this.lastContextLoci);
     }
 
     // Message Dispatcher

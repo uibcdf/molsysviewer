@@ -6,3 +6,4 @@ import "./shape-handler.test";
 import "./viewer-interaction.test";
 import "./popup-host.test";
 import "./popup-logic.test";
+import "./measurement-tools.test";

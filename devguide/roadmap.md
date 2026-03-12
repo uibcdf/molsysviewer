@@ -170,6 +170,9 @@ It is organized by execution priority and uses three labels:
 - Decide whether region-aware and shape-aware picks belong in the same event family or in richer payload variants.
 - Add pointer semantics and shared highlight/selection only after event ownership is clear.
 - Turn menu-seeded `distance` / `angle` / `dihedral` actions into real tool-mode state machines.
+- Keep interactive measurement in Mol* first:
+  - it already owns picked loci and measurement representations,
+  - Python/MolSysMT can consume emitted results later without entering the immediate click loop.
 
 ### Criteria
 

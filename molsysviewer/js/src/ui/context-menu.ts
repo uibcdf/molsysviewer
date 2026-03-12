@@ -20,6 +20,7 @@ export class ViewerContextMenu {
     constructor(
         private readonly host: HTMLElement,
         private readonly notify?: (msg: any) => void,
+        private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget) => void,
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-context-menu", "true");
@@ -125,6 +126,7 @@ export class ViewerContextMenu {
         });
         button.addEventListener("click", () => {
             if (!this.currentTarget) return;
+            this.onAction?.(action, this.currentTarget);
             this.notify?.({
                 event: "interaction_context_action",
                 action,
