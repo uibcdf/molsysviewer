@@ -224,6 +224,8 @@ This should also come later.
 - rebuild-safe persistence
 - integration with existing layer semantics
 - actual `clear labels` support in the frontend instead of the current placeholder
+- a narrow public API:
+  - `view.annotations.add_label(text=..., group_index=..., tag=...)`
 
 ### v1 should not try to solve
 
@@ -389,17 +391,25 @@ because the category boundary stays explicit and future growth remains clean.
 
 ## Relationship to Existing Code
 
-MolSysViewer already hints at labels but does not yet implement them as a
-finished category.
+MolSysViewer already hinted at labels before the first annotation slice was
+implemented.
 
-Current evidence:
+Historical evidence:
 
-- `clear_decorations(..., labels=True)` exists in Python
-- JS has a `clearLabels` placeholder
-- some shapes accept label-like payloads locally
+- `clear_decorations(..., labels=True)` existed in Python
+- JS had a `clearLabels` placeholder
+- some shapes accepted label-like payloads locally
+
+Current first implemented slice:
+
+- `view.annotations` now exists in Python
+- `view.annotations.add_label(...)` creates a persistent label anchored to one `group`
+- labels are replay-safe, rebuild-safe, and export-safe through annotation history replay
+- labels are layer-aware from the start (`kind="annotation"`)
+- `clear_decorations(..., labels=True)` now clears real frontend labels
 
 So this work is not inventing an unrelated abstraction.
-It is closing a category gap that the codebase already suggests.
+It is closing a category gap that the codebase already suggested.
 
 ## Alternatives Considered
 

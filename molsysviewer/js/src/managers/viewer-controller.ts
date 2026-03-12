@@ -11,6 +11,7 @@ import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 import { ViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
+import { AnnotationHandlers } from "./handlers/annotation-handlers";
 import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
@@ -182,6 +183,7 @@ export class MolSysViewerController {
     }
 
     public readonly loader: LoaderHandlers;
+    public readonly annotations: AnnotationHandlers;
     public readonly shapes: ShapeHandlers;
     public readonly scene: SceneHandlers;
     public readonly state: StateHandlers;
@@ -270,10 +272,14 @@ export class MolSysViewerController {
         });
 
         this.shapes = new ShapeHandlers(plugin, (ref, tag) => this.state.registerShapeRef(ref, tag));
+        this.annotations = new AnnotationHandlers(plugin, {
+            getStructure: () => this.getStructureData(),
+            registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
+        });
 
         this.scene = new SceneHandlers(plugin, host, {
             clearShapes: () => this.state.clearShapesByTag(), // clear all shapes
-            clearLabels: async () => { /* labels not fully implemented in handlers yet */ },
+            clearLabels: async () => this.annotations.clearLabels(),
             getComponents: () => this.getComponents(),
             clearShapesByTag: (tag) => this.state.clearShapesByTag(tag),
             removeLoadedStructure: () => this.removeLoadedStructure(),
@@ -366,6 +372,7 @@ export class MolSysViewerController {
                 case "add_displacement_vectors": await this.shapes.addDisplacementVectors(msg); break;
                 case "add_tetrahedra": await this.shapes.addTetrahedra(msg); break;
                 case "add_triangle_faces": await this.shapes.addTriangleFaces(msg); break;
+                case "add_label": await this.annotations.addLabel(msg); break;
 
                 // Scene Ops
                 case "reset_view":

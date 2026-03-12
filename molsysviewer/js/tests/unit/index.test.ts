@@ -8,3 +8,4 @@ import "./popup-host.test";
 import "./popup-logic.test";
 import "./measurement-tools.test";
 import "./active-selection.test";
+import "./annotation-handler.test";
