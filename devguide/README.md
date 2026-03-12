@@ -33,9 +33,11 @@ checkpoint for the next developer session. It should make clear:
    - Hover/click/double-click semantics, context menus, and measurement/tool-mode behavior.
 7. [**Interaction Modifiers and Future**](interaction_modifiers_and_future.md)
    - Reserved modifiers, future ideas, borrowed patterns, and deferred questions.
-8. [**Roadmap**](roadmap.md)
+8. [**Strips**](strips.md)
+   - GroupStrip direction, alternatives not chosen, first implementation scope, and future strip ideas.
+9. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-9. [**Checkpoints**](checkpoints.md)
+10. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions
