@@ -64,31 +64,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - popup -> host camera sync being gated by user interaction,
     - host -> popup camera sync being blocked while the popup user is interacting.
 
-- Dev/docs workflow
-  - `devguide/` is the source of truth for active development status and handoff context.
-  - `NUMBA_CACHE_DIR=/tmp/numba_cache` is no longer treated as a default global requirement.
-  - A localized workaround is still needed in the current `add()` regression because that exact flow reproduces a real MolSysMT/Numba cache failure in this environment.
-  - Test bootstrap now forces the repository root onto `sys.path` via [`tests/conftest.py`](/home/diego/repos@uibcdf/molsysviewer/tests/conftest.py) so `pytest` and `python -m pytest` resolve the same in-repo `molsysviewer` package.
-
-- Support-library integration hardening
-  - `depdigest` now runs before importing the heavier public submodules from package init.
-  - `pyunitwizard` usage is being unified around `molsysviewer._pyunitwizard.puw` instead of mixing local and `molsysmt` aliases.
-  - Support helpers around coordinates/units were tightened to match the actual PyUnitWizard contract.
-  - `config` now also uses the local `_pyunitwizard` instance directly instead of going back through package-root imports.
-  - `smonitor` coverage has been expanded to more public wrapper APIs (`Whole`, `Region`, `Layer`, `ShapesManager`).
-  - `smonitor` timeline coverage now also includes more `MolSysView` public wrappers (camera/query/edit/export), with regression evidence that these signals land in `Manager.report()["timeline"]`.
-  - A structural regression now checks that public `@digest()` entrypoints across `MolSysView`, `new_view`, `Whole`, `Region`, `Layer`, and `shapes/` also carry `@signal()`.
-  - `argdigest` hardening now covers previously noisy public wrappers such as:
-    - controls visibility,
-    - camera snapshot get/set,
-    - representation presets,
-    - HTML export options,
-    - layer retagging,
-    - user preset loading,
-    - standard-units configuration.
-  - A real integration bug was fixed in `set_camera_snapshot()`: `duration_ms` is now interpreted correctly when digested through the PyUnitWizard-aware `duration_ms` digester.
-  - Variadic `ShapesManager` forwarding methods no longer pretend to digest `*args/**kwargs`; digestion is delegated to the concrete shape helper methods that actually own the argument contract.
-  - New regression tests now fail if those core public paths emit `DigestNotDigestedWarning`.
+- **Technical & Scientific Assessment (March 2026):** Completed. The library's health, strategic workbench direction, and critical risks are now formally documented.
+- **Support-library integration hardening:** 
+    - `depdigest` now runs before importing heavier public submodules.
+    - `pyunitwizard` usage is unified.
+    - `smonitor` coverage expanded and structurally enforced.
+    - `argdigest` hardening covers core public wrappers.
+    - **Git Hygiene:** Build artifacts from JS tests (`dist-index.js`, `harness.bundle.js`, `region-hide.e2e.js`) are no longer tracked and have been added to `.gitignore`.
 
 - `molsysviewer.tools`
   - The package now exists and starts with `molsysviewer.tools.basic.concatenate_structures(...)`.
