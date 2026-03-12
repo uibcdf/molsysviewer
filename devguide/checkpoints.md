@@ -160,6 +160,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - loci-based labels,
     - MVS custom and annotation-driven labels,
     - tooltip separation from persistent labels.
+  - Mouse-navigation compatibility is now part of the interaction contract:
+    - `left drag` rotates,
+    - `right drag` pans/translates,
+    - right-click context handling must coexist with that drag behavior and suppress the host menu only inside the viewer canvas.
 
 ## Active Decisions
 
@@ -240,6 +244,7 @@ Why this is next:
   - shared highlight/selection.
 4. Return to support-library integration only if a new product path exposes a real contract gap.
 5. Use the annotation taxonomy in `devguide/annotations.md` when label work starts; do not re-open the `shape` vs `annotation` split ad hoc.
+6. When interaction implementation starts, treat click-vs-drag discrimination on both mouse buttons as part of the core contract, not a later polish task.
 
 Interaction design reference:
 
