@@ -75,12 +75,22 @@ The interaction model should distinguish four concepts:
 - never the source of persistent scene mutation by itself
 - should eventually be queryable from Python, even if the first implementation keeps it lightweight
 
+Current runtime note:
+
+- hover events already exist and are stored on the Python side
+- a stable public Python object for `hover_target` does not yet exist
+
 ### `context_target`
 
 - defined by right click / context-menu invocation
 - does not need to match `active_selection`
 - is the anchor for context menus and command launching
 - should eventually be queryable from Python, even if the first implementation only uses it internally
+
+Current runtime note:
+
+- context-menu events already exist and are stored on the Python side
+- a stable public Python object for `context_target` does not yet exist
 
 ### `active_selection`
 
@@ -103,6 +113,17 @@ The object should support at least:
 - element + shape mixtures
 - element + annotation mixtures
 - and, if needed, mixtures of element target levels before later normalization rules are finalized
+
+Current runtime note:
+
+- this is now partially real, not only aspirational
+- current slices exist for:
+  - `element`
+  - `annotation`
+  - `shape`
+  - narrow `mixed`
+- the most exercised mixed path today is `element + annotation`
+- broader mixed behavior remains intentionally incomplete
 
 ### `tool_selection`
 
@@ -128,6 +149,11 @@ Visibility decision still open:
 Working invariant:
 
 - `tool_selection` should not overwrite `active_selection` by default
+
+Current runtime note:
+
+- this invariant is already implemented for the first measurement-tool slice
+- `tool_selection` still remains an internal concept rather than a public object
 
 ## `active_selection` Contract
 
@@ -177,6 +203,29 @@ At a minimum, the object should be able to expose:
   - `count_groups`
   - `count_shapes`
 
+Current runtime note:
+
+- the current payload already exposes:
+  - `source_kind`
+  - `element_level`
+  - `target_level`
+  - `items`
+  - `atom_indices`
+  - `group_indices`
+  - `component_indices`
+  - `chain_indices`
+  - `molecule_indices`
+  - `entity_indices`
+  - `count_atoms`
+  - `count_groups`
+  - `count_shapes`
+  - `count_annotations`
+- but the current concrete item schema is still intentionally narrow:
+  - element items are `group`-level only
+  - annotation items are first-slice label items
+  - shape items depend on first-slice shape metadata carried by Mol* shape loci
+- this should still be treated as a runtime slice, not the final public Python object model
+
 ### Element aggregation rule
 
 If the selection is made at `group` level, the object should still aggregate and
@@ -204,6 +253,12 @@ Future configuration direction:
 
 - a user-facing default such as `picking_level_default` may later expose persistent policy selection
 - plausible values include `auto`, `group`, `atom`, and other element levels if they become product-relevant
+
+Current runtime note:
+
+- the product direction is group-centric
+- the runtime already behaves that way for ordinary element selection
+- measurement modes still force atom-level picking
 
 Active-selection direction:
 
@@ -237,6 +292,11 @@ Human-readable metadata should include at least:
 - `chain_name`
 - `molecule_name`
 - `entity_name`
+
+Current runtime note:
+
+- the current element-selection runtime already exposes first-slice human-readable metadata for groups, chains, and entities
+- `component_*`, `molecule_*`, and richer naming remain less complete than the target contract
 
 Potentially useful later, if reliable:
 
