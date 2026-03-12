@@ -9,17 +9,19 @@ Implementation note:
 
 - click handling must distinguish true click from drag/navigation
 - in particular, empty-canvas click-to-clear must not trigger after camera manipulation
+- hover highlight and persistent selection should remain visually distinct
 
 | Gesture | Target | Default effect | Selection effect | Context effect | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Hover | `structure` | update `hover_target`; temporary highlight | none | none | structural target level follows current picking policy |
 | Hover | `shape` | update `hover_target`; temporary highlight if viable | none | none | shape remains distinct from structure |
-| Hover | `empty` | clear hover target | none | none | does not clear `active_selection` |
+| Hover | `empty` | clear hover target | none | none | does not clear `active_selection`; may still feed lightweight local UI reset |
 | Left click | `structure` | select clicked target | replace `active_selection` | none | unless `Shift` is pressed |
 | Left click + `Shift` | `structure` | add clicked target | add to `active_selection` | none | incremental selection |
 | Left click | `shape` | select clicked shape | replace `active_selection` | none | shape can be part of active selection |
 | Left click + `Shift` | `shape` | add clicked shape | add to `active_selection` | none | may produce mixed selection |
 | Left click | `empty` | clear selection if it was a click, not a drag | clear `active_selection` | none | keep this explicit |
+| Left click + `Shift` | `empty` | no-op | no change | none | do not clear selection on additive empty click |
 | Right click | `structure` | open context menu | no automatic change | set `context_target` | context target may seed tools |
 | Right click | `shape` | open context menu | no automatic change | set `context_target` | no automatic structural translation |
 | Right click | `empty` | optional empty-context menu or nothing | no automatic change | optional clear/update context target | keep minimal at first |
@@ -47,6 +49,7 @@ Important rule:
 
 - choosing a contextual analytical action may use `context_target` as the first tool pick
 - this does not require mutating `active_selection`
+- opening or closing the context menu should not mutate scene state by itself
 
 ### Menu structure direction
 
@@ -120,3 +123,4 @@ Future direction kept in scope:
 
 - hover may later feed tooltips, lightweight inspectors, or similar read-only feedback
 - this should remain additive and should not force persistent selection semantics
+- such feedback may be satisfied partly in local JS/UI state without requiring every hover to become a heavyweight Python round-trip

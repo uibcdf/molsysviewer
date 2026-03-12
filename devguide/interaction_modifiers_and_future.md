@@ -77,6 +77,11 @@ disable, or split actions depending on whether the active selection is:
 - shape only
 - mixed
 
+Selection accumulation rule to keep in mind:
+
+- additive selection should behave like set expansion, not unchecked duplication
+- if an item is already part of the logical active selection, `Shift + click` should normally behave as a no-op unless a later toggle policy is adopted explicitly
+
 ## Borrowed Design Principles
 
 The interaction contract is intentionally informed by prior art.

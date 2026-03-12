@@ -95,6 +95,11 @@ The object should support at least:
 - shape selections
 - mixed selections
 
+`mixed` should be understood broadly enough to cover:
+
+- structure + shape mixtures
+- and, if needed, mixtures of structural target levels before later normalization rules are finalized
+
 ### `tool_selection`
 
 This is a temporary working selection for tool modes.
@@ -192,6 +197,15 @@ Future configuration direction:
 
 - a user-facing default such as `picking_level_default` may later expose persistent policy selection
 - plausible values include `auto`, `group`, `atom`, and other structural levels if they become product-relevant
+
+Active-selection direction:
+
+- `active_selection` should become an object that downstream code can act on directly
+- likely future actions include things such as:
+  - `focus`
+  - `show_only`
+  - `make_region`
+  - `info`
 
 ## Metadata Returned for `group` Picks
 
