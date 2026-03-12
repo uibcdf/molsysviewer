@@ -21,6 +21,8 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep the main product leitmotiv explicit:
   - scientific exploration is important,
   - but the outcome of that exploration should become reproducible viewer state.
+- Keep `devguide/guiding_principles.md` as the stable place for project
+  ideas-alma that should survive beyond the current checkpoint.
 - Keep the interaction stack moving in order:
   - canvas gestures/context menu,
   - measurement tool modes,

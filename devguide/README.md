@@ -17,34 +17,20 @@ checkpoint for the next developer session. It should make clear:
 - why that is the right next step,
 - and what criteria/invariants must be preserved.
 
-## Guiding Principle
+## Guiding Principles
 
 MolSysViewer is not being developed merely as an interactive molecular viewer.
 
-Its guiding idea is:
+Its guiding principles are recorded separately in:
 
-- science has an interactive and exploratory phase,
-- but science must remain reproducible.
+- [Guiding Principles](guiding_principles.md)
 
-For MolSysViewer, that means exploratory interaction is valuable only insofar as
-its scientifically meaningful outcomes can be turned into reproducible state:
+The first one already adopted is:
 
-- selections,
-- regions,
-- layers,
-- labels/annotations,
-- measurements,
-- camera/view state,
-- and exported or replayed scenes.
+- scientific work has an interactive and exploratory phase,
+- but scientific results must remain reproducible.
 
-This principle should guide prioritization:
-
-- prefer interaction features that can become replay-safe, rebuild-safe, and
-  exportable,
-- prefer turning exploration into explicit viewer state over adding ephemeral
-  UI behavior for its own sake,
-- evaluate new canvas/strip interactions by asking how they will be captured,
-  serialized, replayed, or rebuilt later.
+That principle should guide prioritization throughout the repository.
 
 ## Contents
 
@@ -66,9 +52,11 @@ This principle should guide prioritization:
    - GroupStrip direction, alternatives not chosen, first implementation scope, and future strip ideas.
 9. [**Annotations**](annotations.md)
    - Viewer taxonomy for labels/annotations, Mol* precedents, and the first annotation slice.
-10. [**Roadmap**](roadmap.md)
+10. [**Guiding Principles**](guiding_principles.md)
+   - Stable project ideas-alma that should guide development and usage.
+11. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-11. [**Checkpoints**](checkpoints.md)
+12. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions
