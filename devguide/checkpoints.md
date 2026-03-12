@@ -165,6 +165,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the current implementation is now `group`-centric for element picks,
     - it already emits derived `atom_indices` plus `group_indices`, `chain_indices`, and `entity_indices`,
     - it is still intentionally limited to `element` targets and does not yet cover `shape`, `annotation`, or `mixed`.
+  - `GroupStrip` now has a first concrete implementation slice:
+    - it renders groups from the currently loaded structure,
+    - groups are organized by chain,
+    - it mirrors `active_selection`,
+    - click / `Shift + click` from the strip updates the same active selection state used by the canvas,
+    - double click on a strip item focuses that group in the viewer,
+    - it is still intentionally narrow and does not yet implement strip hover semantics, context menus, region overlays, or annotation overlays.
 
 ## Active Decisions
 
@@ -235,8 +242,12 @@ Why this is next:
   - `mixed`,
   - `empty`.
 2. Keep lifting the current element-only selection semantics toward richer hierarchy coverage and metadata quality without inventing fake `component`/`molecule` semantics.
-3. After that base is in place, use `active_selection` for:
-  - `GroupStrip`,
+3. Broaden `GroupStrip` from the current narrow slice toward the documented interaction contract:
+  - hover synchronization,
+  - context menus,
+  - range selection,
+  - overlays for regions/annotations/tool picks.
+4. After that base is in place, use `active_selection` for:
   - future context-menu enrichment,
   - annotation pickability decisions,
   - Python callbacks on interaction objects instead of only raw last-event snapshots.

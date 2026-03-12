@@ -203,6 +203,32 @@ Preferred first direction:
 
 This is better than a single undifferentiated strip if multiple chains exist.
 
+### Current implemented slice
+
+The current runtime slice now does the following:
+
+- renders a `GroupStrip` overlay from the currently loaded structure
+- groups items by chain
+- shows compact group labels
+- mirrors the current `active_selection`
+- allows:
+  - click -> replace active selection
+  - `Shift + click` -> additive selection
+  - double click -> focus group in the viewer
+
+The current slice does **not** yet do:
+
+- strip hover synchronization
+- strip context menus
+- range selection / drag selection
+- region overlays
+- annotation overlays
+- tool-pick overlays
+
+This is intentional.
+The first goal is to prove the shared state model (`active_selection`) and the
+strip/canvas convergence, not to finish the entire strip UX in one pass.
+
 ## Interaction Rules
 
 `GroupStrip` should follow the same base interaction semantics as the canvas
