@@ -1,3 +1,5 @@
+import type { ActiveSelectionPayload } from "../managers/active-selection";
+
 type BaseTarget =
     | { event: "interaction_context_menu"; kind: "empty" }
     | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[] }
@@ -5,7 +7,7 @@ type BaseTarget =
 
 export type ContextMenuTarget = BaseTarget;
 
-export type ContextMenuAction = "distance" | "angle" | "dihedral";
+export type ContextMenuAction = "distance" | "angle" | "dihedral" | "focus_selection" | "clear_selection";
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
@@ -14,10 +16,24 @@ function targetTitle(target: ContextMenuTarget): string {
     return count === 1 ? "Element (1 atom)" : `Element (${count} atoms)`;
 }
 
+function selectionTitle(selection: ActiveSelectionPayload): string {
+    if (selection.source_kind === "mixed") {
+        return `Active selection: mixed (${selection.items.length} items)`;
+    }
+    if (selection.source_kind === "annotation") {
+        return `Active selection: annotation (${selection.count_annotations})`;
+    }
+    if (selection.source_kind === "element") {
+        return `Active selection: ${selection.count_groups} group${selection.count_groups === 1 ? "" : "s"}`;
+    }
+    return "Active selection";
+}
+
 export class ViewerContextMenu {
     private readonly root: HTMLDivElement;
     private outsidePointerHandler?: (event: PointerEvent) => void;
     private currentTarget: ContextMenuTarget | null = null;
+    private currentSelection: ActiveSelectionPayload | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -47,8 +63,9 @@ export class ViewerContextMenu {
         this.host.appendChild(this.root);
     }
 
-    open(target: ContextMenuTarget, pageX: number, pageY: number): void {
+    open(target: ContextMenuTarget, pageX: number, pageY: number, activeSelection?: ActiveSelectionPayload | null): void {
         this.currentTarget = target;
+        this.currentSelection = activeSelection ?? null;
         this.root.replaceChildren();
 
         const header = document.createElement("div");
@@ -83,6 +100,27 @@ export class ViewerContextMenu {
             this.root.appendChild(note);
         }
 
+        if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
+            const section = document.createElement("div");
+            Object.assign(section.style, {
+                marginTop: "8px",
+                paddingTop: "8px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+
+            const title = document.createElement("div");
+            title.textContent = selectionTitle(this.currentSelection);
+            Object.assign(title.style, {
+                padding: "4px 8px 8px 8px",
+                opacity: "0.82",
+                fontSize: "12px",
+            });
+            section.appendChild(title);
+            section.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+            section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
+            this.root.appendChild(section);
+        }
+
         const rect = this.host.getBoundingClientRect();
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
@@ -103,6 +141,7 @@ export class ViewerContextMenu {
 
     close(): void {
         this.currentTarget = null;
+        this.currentSelection = null;
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
     }

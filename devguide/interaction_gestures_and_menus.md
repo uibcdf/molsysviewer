@@ -69,6 +69,13 @@ The preferred design is:
 - main action section: actions that apply to `context_target`
 - secondary section, when `active_selection` exists: actions that apply to the active selection
 
+Current first implemented slice:
+
+- the secondary active-selection section is now real,
+- it currently exposes:
+  - `Focus Selection`
+  - `Clear Selection`
+
 This supports richer workflows and future submenus.
 
 It also implies that menu contents may depend on:

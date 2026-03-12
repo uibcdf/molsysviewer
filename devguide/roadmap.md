@@ -182,6 +182,8 @@ It is organized by execution priority and uses three labels:
 - Grow `GroupStrip` from the first chain-grouped selection/focus slice toward the full strip contract documented in `devguide/strips.md`.
 - Keep strip interactions converged with canvas interactions:
   - hover and context menu should use the same event families instead of becoming a separate UX island.
+- Make the active selection materially useful through the context menu before opening more target families:
+  - selection-focused actions such as `Focus Selection` and `Clear Selection` are now the first concrete slice.
 
 ### Criteria
 
