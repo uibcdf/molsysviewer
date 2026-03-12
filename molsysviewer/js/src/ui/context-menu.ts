@@ -55,6 +55,8 @@ export class ViewerContextMenu {
     private currentTarget: ContextMenuTarget | null = null;
     private currentSelection: ActiveSelectionPayload | null = null;
     private currentLastMeasurement: LastMeasurementSummary | null = null;
+    private currentPageX = 0;
+    private currentPageY = 0;
 
     constructor(
         private readonly host: HTMLElement,
@@ -94,6 +96,8 @@ export class ViewerContextMenu {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
         this.currentLastMeasurement = lastMeasurement ?? null;
+        this.currentPageX = pageX;
+        this.currentPageY = pageY;
         this.root.replaceChildren();
 
         const header = document.createElement("div");
@@ -225,6 +229,10 @@ export class ViewerContextMenu {
         });
         button.addEventListener("click", () => {
             if (!this.currentTarget) return;
+            if (action === "add_label_from_selection") {
+                this.renderLabelComposer();
+                return;
+            }
             const details = this.resolveActionDetails(action);
             if (details === null) return;
             this.onAction?.(action, this.currentTarget, details ?? undefined);
@@ -240,14 +248,119 @@ export class ViewerContextMenu {
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
-        if (action !== "add_label_from_selection") return {};
-        const promptFn = (globalThis as any)?.window?.prompt;
-        if (typeof promptFn !== "function") return null;
-        const value = promptFn("Label text", "");
-        if (typeof value !== "string") return null;
-        const text = value.trim();
-        if (text.length === 0) return null;
-        return { text };
+        return {};
+    }
+
+    private renderLabelComposer(): void {
+        if (!this.currentTarget) return;
+        this.root.replaceChildren();
+
+        const title = document.createElement("div");
+        title.textContent = "Label from selection";
+        Object.assign(title.style, {
+            padding: "6px 8px 8px 8px",
+            fontWeight: "600",
+            borderBottom: "1px solid rgba(255,255,255,0.10)",
+            marginBottom: "8px",
+        });
+        this.root.appendChild(title);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = "";
+        input.placeholder = "Label text";
+        Object.assign(input.style, {
+            display: "block",
+            width: "100%",
+            boxSizing: "border-box",
+            margin: "0 0 8px 0",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "1px solid rgba(255,255,255,0.18)",
+            background: "rgba(255,255,255,0.06)",
+            color: "#f4f4f5",
+            outline: "none",
+        });
+        this.root.appendChild(input);
+
+        const actions = document.createElement("div");
+        Object.assign(actions.style, {
+            display: "flex",
+            gap: "8px",
+        });
+
+        const save = document.createElement("button");
+        save.type = "button";
+        save.textContent = "Create Label";
+        Object.assign(save.style, {
+            flex: "1 1 auto",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "0",
+            background: "rgba(110, 231, 183, 0.18)",
+            color: "#d1fae5",
+            cursor: "pointer",
+        });
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.textContent = "Back";
+        Object.assign(cancel.style, {
+            flex: "0 0 auto",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "0",
+            background: "rgba(255,255,255,0.08)",
+            color: "#f4f4f5",
+            cursor: "pointer",
+        });
+
+        const submit = () => {
+            const text = String(input.value ?? "").trim();
+            if (text.length === 0 || !this.currentTarget) return;
+            const details = { text };
+            this.onAction?.("add_label_from_selection", this.currentTarget, details);
+            this.notify?.({
+                event: "interaction_context_action",
+                action: "add_label_from_selection",
+                context: this.currentTarget,
+                ...details,
+            });
+            this.close();
+        };
+
+        save.addEventListener("click", submit);
+        cancel.addEventListener("click", () => {
+            if (!this.currentTarget) return;
+            this.open(
+                this.currentTarget,
+                this.currentPageX,
+                this.currentPageY,
+                this.currentSelection,
+                this.currentLastMeasurement,
+            );
+        });
+        input.addEventListener("keydown", (event: any) => {
+            if (event?.key === "Enter") {
+                event.preventDefault?.();
+                submit();
+            } else if (event?.key === "Escape") {
+                event.preventDefault?.();
+                if (!this.currentTarget) return;
+                this.open(
+                    this.currentTarget,
+                    this.currentPageX,
+                    this.currentPageY,
+                    this.currentSelection,
+                    this.currentLastMeasurement,
+                );
+            }
+        });
+
+        actions.appendChild(save);
+        actions.appendChild(cancel);
+        this.root.appendChild(actions);
+        input.focus?.();
     }
 
     private detachOutsidePointerHandler(): void {

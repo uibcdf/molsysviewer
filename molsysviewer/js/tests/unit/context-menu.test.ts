@@ -4,11 +4,14 @@ import test from "node:test";
 import { ViewerContextMenu } from "../../src/ui/context-menu";
 
 class FakeElement {
+    public tagName = "DIV";
     public readonly style: Record<string, string> = {};
     public readonly children: FakeElement[] = [];
     public textContent = "";
     public title = "";
     public type = "";
+    public value = "";
+    public placeholder = "";
     public offsetWidth = 180;
     public offsetHeight = 120;
     private listeners = new Map<string, Array<(event?: any) => void>>();
@@ -24,6 +27,7 @@ class FakeElement {
     }
 
     remove() {}
+    focus() {}
     setAttribute(_name: string, _value: string) {}
     contains(target: any) {
         if (target === this) return true;
@@ -42,18 +46,26 @@ class FakeElement {
     dispatch(name: string, event?: any) {
         for (const handler of this.listeners.get(name) ?? []) handler(event);
     }
+
+    dispatchEvent(event: any) {
+        this.dispatch(event?.type ?? "", event);
+        return true;
+    }
 }
 
 function installFakeDom() {
     const previousDocument = (globalThis as any).document;
     const previousWindow = (globalThis as any).window;
     (globalThis as any).document = {
-        createElement: () => new FakeElement(),
+        createElement: (tag: string) => {
+            const el = new FakeElement();
+            el.tagName = String(tag).toUpperCase();
+            return el;
+        },
     };
     (globalThis as any).window = {
         addEventListener() {},
         removeEventListener() {},
-        prompt() { return null; },
     };
     return () => {
         (globalThis as any).document = previousDocument;
@@ -75,6 +87,15 @@ function findNodeByText(node: FakeElement, text: string): FakeElement | null {
     if (node.textContent === text) return node;
     for (const child of node.children) {
         const found = findNodeByText(child, text);
+        if (found) return found;
+    }
+    return null;
+}
+
+function findNodeByTag(node: FakeElement, tag: string): FakeElement | null {
+    if (node.tagName === tag.toUpperCase()) return node;
+    for (const child of node.children) {
+        const found = findNodeByTag(child, tag);
         if (found) return found;
     }
     return null;
@@ -171,13 +192,12 @@ test("ViewerContextMenu renders active selection section and selection actions",
     }
 });
 
-test("ViewerContextMenu prompts for label text before add-label action", () => {
+test("ViewerContextMenu opens inline label composer before add-label action", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
         const actions: Array<{ action: string; target: any; details?: any }> = [];
         const notifications: any[] = [];
-        (globalThis as any).window.prompt = () => "Catalytic group";
         const menu = new ViewerContextMenu(host, (msg) => {
             notifications.push(msg);
         }, (action, target, details) => {
@@ -212,6 +232,13 @@ test("ViewerContextMenu prompts for label text before add-label action", () => {
         assert.ok(button);
         button!.dispatch("click");
 
+        const input = findNodeByTag(root, "input");
+        assert.ok(input);
+        input!.value = "Catalytic group";
+        const confirm = findNodeByText(root, "Create Label");
+        assert.ok(confirm);
+        confirm!.dispatch("click");
+
         assert.deepStrictEqual(actions, [
             {
                 action: "add_label_from_selection",
@@ -234,13 +261,12 @@ test("ViewerContextMenu prompts for label text before add-label action", () => {
     }
 });
 
-test("ViewerContextMenu cancels add-label action when prompt returns empty text", () => {
+test("ViewerContextMenu keeps add-label local until inline text is confirmed", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
         const actions: Array<{ action: string; target: any }> = [];
         const notifications: any[] = [];
-        (globalThis as any).window.prompt = () => "   ";
         const menu = new ViewerContextMenu(host, (msg) => {
             notifications.push(msg);
         }, (action, target) => {
@@ -274,6 +300,10 @@ test("ViewerContextMenu cancels add-label action when prompt returns empty text"
         const button = findNodeByText(root, "Add Label from Selection");
         assert.ok(button);
         button!.dispatch("click");
+
+        const confirm = findNodeByText(root, "Create Label");
+        assert.ok(confirm);
+        confirm!.dispatch("click");
 
         assert.deepStrictEqual(actions, []);
         assert.deepStrictEqual(notifications, []);

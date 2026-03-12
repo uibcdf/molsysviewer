@@ -213,7 +213,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - The current bridge is intentionally narrow:
     - region creation uses stored `active_selection.atom_indices`,
     - label creation currently requires an active selection resolving to exactly one `group`,
-      and the current UI capture path is a minimal explicit text prompt.
+      and the current UI capture path is now a minimal inline composer inside the viewer menu.
     - measurement persistence currently replays the last interactive `distance` / `angle` / `dihedral` by storing its `picks_atom_indices`.
   - Measurements now also have an explicit replay/runtime path of their own:
     - Python can send `add_distance_measurement`, `add_angle_measurement`, and `add_dihedral_measurement`,
@@ -221,9 +221,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - they are tracked as `measurement` layers and replayed across rebuild/export.
   - Validation note:
     - JS regression remains green,
-    - Python regressions for this slice now pass again after the sibling `pyunitwizard` checkout was repaired,
+    - Python regressions for the earlier reproducibility slice had passed again after the sibling `pyunitwizard` checkout was repaired,
     - the `new_region_from_active_selection(...)` path required one contract fix so region representations are recorded explicitly as `set_region_representation` during replay/export,
-    - the UI-to-Python bridge now executes `Create Region from Selection`, `Add Label from Selection`, and `Persist Last Measurement` directly from `interaction_context_action`.
+    - the UI-to-Python bridge now executes `Create Region from Selection`, `Add Label from Selection`, and `Persist Last Measurement` directly from `interaction_context_action`,
+    - the latest frontend-only label-composer refinement is currently blocked from Python-side revalidation by a new external `IndentationError` in the sibling `../molsysmt` checkout (`molsysmt/_private/arg_digestion/argument/coordinates.py`).
 
 ## Active Decisions
 
@@ -293,7 +294,8 @@ Do not append dated historical entries unless a date is itself operationally rel
 - The measurement branch has now advanced one step further than selection/label:
   - persisted measurement ops exist in the runtime,
   - the menu now exposes and executes a first explicit UI affordance for committing the last interactive measurement,
-  - the remaining work is improving the current minimal label-text capture path and broadening reproducible interaction flows.
+  - the current label-text capture path has already moved from `prompt()` to a small inline composer,
+  - the remaining work is refining that composer UX and broadening reproducible interaction flows.
 - Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality only when that improves reproducible scientific workflows.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,
