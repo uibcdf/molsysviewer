@@ -162,7 +162,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `Shift + left click` adds uniquely,
     - empty left click clears,
     - active measurement tool modes do not overwrite it,
-    - the current implementation is still intentionally atom-centric and element-only.
+    - the current implementation is now `group`-centric for element picks,
+    - it already emits derived `atom_indices` plus `group_indices`, `chain_indices`, and `entity_indices`,
+    - it is still intentionally limited to `element` targets and does not yet cover `shape`, `annotation`, or `mixed`.
 
 ## Active Decisions
 
@@ -226,13 +228,13 @@ Why this is next:
 
 ## Immediate Plan
 
-1. Enrich `active_selection` from the current atom-centric element-only slice toward the documented taxonomy:
+1. Enrich `active_selection` from the current group-centric element-only slice toward the documented taxonomy:
   - `element`,
   - `shape`,
   - `annotation`,
   - `mixed`,
   - `empty`.
-2. Lift the current element-only selection semantics from atom-level transport toward the intended group-centric contract.
+2. Keep lifting the current element-only selection semantics toward richer hierarchy coverage and metadata quality without inventing fake `component`/`molecule` semantics.
 3. After that base is in place, use `active_selection` for:
   - `GroupStrip`,
   - future context-menu enrichment,
