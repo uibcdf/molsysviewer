@@ -201,9 +201,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `view.annotations.add_label(text=..., group_index=..., tag=...)` exists in Python,
     - `view.annotations` is now also growing into a real management API instead of a creation-only entrypoint:
       - `tags()`
+      - `count()`
       - `contains(tag)`
       - `get(tag)`
       - `records()`
+      - `info(tag=None)`
       - `show(tag)` / `hide(tag)`
       - `delete(tag)` / `set_tag(tag, new_tag)`
       - `clear(tag=None)`
