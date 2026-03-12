@@ -215,11 +215,11 @@ The current runtime slice now does the following:
   - click -> replace active selection
   - `Shift + click` -> additive selection
   - double click -> focus group in the viewer
+  - hover -> mirrors into viewer highlight + hover event flow
+  - right click -> opens the same viewer context menu contract used by the canvas
 
 The current slice does **not** yet do:
 
-- strip hover synchronization
-- strip context menus
 - range selection / drag selection
 - region overlays
 - annotation overlays

@@ -4,6 +4,8 @@ import { ActiveSelectionItem, ActiveSelectionPayload, buildGroupItemsFromStructu
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
 type OnFocus = (item: ActiveSelectionItem) => void;
+type OnHover = (item: ActiveSelectionItem | null) => void;
+type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
 
 function selectionKey(item: ActiveSelectionItem): string {
     return `${item.chain_indices.join(",")}:${item.group_indices.join(",")}`;
@@ -32,6 +34,8 @@ export class GroupStrip {
         private readonly host: HTMLElement,
         private readonly onSelect: OnSelect,
         private readonly onFocus: OnFocus,
+        private readonly onHover: OnHover,
+        private readonly onContext: OnContext,
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-group-strip", "true");
@@ -132,6 +136,17 @@ export class GroupStrip {
                 });
                 button.addEventListener("dblclick", () => {
                     this.onFocus(item);
+                });
+                button.addEventListener("mouseenter", () => {
+                    this.onHover(item);
+                });
+                button.addEventListener("mouseleave", () => {
+                    this.onHover(null);
+                });
+                button.addEventListener("contextmenu", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.onContext(item, (event as MouseEvent).pageX, (event as MouseEvent).pageY);
                 });
                 row.appendChild(button);
             }

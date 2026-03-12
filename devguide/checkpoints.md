@@ -171,7 +171,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - it mirrors `active_selection`,
     - click / `Shift + click` from the strip updates the same active selection state used by the canvas,
     - double click on a strip item focuses that group in the viewer,
-    - it is still intentionally narrow and does not yet implement strip hover semantics, context menus, region overlays, or annotation overlays.
+    - strip hover now mirrors into the viewer highlight path and emits the same hover event family,
+    - right click on a strip item now opens the same viewer context menu contract used by the canvas,
+    - it is still intentionally narrow and does not yet implement range selection, region overlays, or annotation overlays.
 
 ## Active Decisions
 
@@ -243,8 +245,6 @@ Why this is next:
   - `empty`.
 2. Keep lifting the current element-only selection semantics toward richer hierarchy coverage and metadata quality without inventing fake `component`/`molecule` semantics.
 3. Broaden `GroupStrip` from the current narrow slice toward the documented interaction contract:
-  - hover synchronization,
-  - context menus,
   - range selection,
   - overlays for regions/annotations/tool picks.
 4. After that base is in place, use `active_selection` for:
