@@ -312,15 +312,49 @@ Strip design reference:
 - Keep `_message_history` replay-safe for HTML export and popup/docs-lite flows.
 - Prefer evidence-based docs over inherited setup folklore.
 
-## Open Risks
+## Technical & Scientific Assessment (March 2026)
 
+This assessment captures the current health and strategic position of the library.
+
+### Engineering & Architecture
+- **Hybrid Model Success:** The choice of `anywidget` + Mol* + Python (MolSysMT) is validated. It successfully bridges high-performance WebGL rendering with a robust scientific state in Python.
+- **Replay & Export Resilience:** The `ViewerMessage` history and replay mechanism are the core strengths for scientific reproducibility and static HTML exports.
+- **Support Layer Hardening:** The integration of SMonitor/ArgDigest/DepDigest provides a professional-grade API surface, though it adds a significant maintenance overhead (the "over-engineering" risk).
+
+### Scientific Workbench Direction
+- **Inspection-Centricity:** The library is successfully moving from a "renderer" to a "workbench". The group-centric picking and measurement tools are the right steps.
+- **Taxonomy Alignment:** Strict adherence to MolSysMT hierarchy (`group`, `chain`, etc.) is a major differentiator for structural biology workflows.
+
+## Open Risks & Critical Points
+
+- **Rebuild Fragility:** The atom-index remap logic during live-edits (`remove`, `add`, `set`) is technically complex and a potential source of silent corruption if state synchronization fails.
+- **Atom vs. Group Tension:** The UX switch between atom-level (measurements) and group-level (inspection) picking needs to be seamless to avoid scientist frustration.
+- **Build Artifact Dependency:** Reliance on generated `viewer.js` adds friction to frontend development and requires strict discipline to avoid manual edit corruption.
+- **E2E Testing Gap:** Interactive breadth (clicks, gestures, tool modes) is still under-tested compared to the robust runtime/protocol coverage.
+- **large Systems Performance:** The Python-to-TS payload transfer for systems with millions of atoms is a potential bottleneck that hasn't been fully stress-tested.
+
+## Maintenance, Scalability, and Lifecycle Risks
+
+These deeper technical challenges affect the long-term sustainability of the project:
+
+### 1. Ecosystem Coupling & Maintenance Burden
+- MolSysViewer is the "integration hub" for the UIBCDF ecosystem (MolSysMT, ArgDigest, SMonitor, PyUnitWizard).
+- **Risk:** Any breaking change in sibling libraries forces an immediate update in MolSysViewer's decorators, digesters, and signals. The cost of "ecosystem synchronization" competes with feature development.
+
+### 2. Protocol Complexity & "Bus Factor"
+- The custom `ViewerMessage` protocol and its TypeScript handlers are powerful but have a steep learning curve.
+- **Risk:** Deep knowledge of the Python/JS bridge is currently concentrated. Failure to democratize this architecture through better internal documentation or simpler patterns increases project fragility.
+
+### 3. Latency vs. Consistency Policy
+- Hybrid architectures face a trade-off between instant local (JS) feedback and scientifically consistent (Python) validation.
+- **Risk:** Without a clear policy on which operations must be "local-first" vs. "round-trip-required," the user experience may feel laggy or inconsistent, especially in large-scale systems or high-latency environments.
+
+### 4. Message History Bloat & Snapshotting
+- Operations like `merge()` and consecutive live-edits grow the `_message_history`.
+- **Risk:** Static HTML exports carrying a massive replay log will suffer from slow initialization and memory bloat. A "message compaction" or "snapshotting" strategy is needed for 1.0 but is currently missing from the implementation.
 - `add()` still depends on a scoped `NUMBA_CACHE_DIR` workaround in this environment.
-- E2E breadth is still thin relative to the runtime surface.
 - Popup/popout behavior is still lighter in coverage than live-edit, but no longer the clearest blocker for resuming implementation.
-- The support-library hardening pass is no longer the primary blocker, but shape/detail digestion is still incomplete in absolute terms.
-- `smonitor` breadth is improved enough that remaining work should now be selective, not broad-brush.
 - `argdigest` still does not cover every public shape/detail argument; the remaining gaps should be prioritized by real product usage and warnings, not by raw parameter count.
-- `molsysviewer.tools` now has two primitives, but package structure and module boundaries still need to mature.
 
 ## Useful Follow-ups
 
