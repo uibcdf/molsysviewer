@@ -217,6 +217,7 @@ The current runtime slice now does the following:
   - double click -> focus group in the viewer
   - hover -> mirrors into viewer highlight + hover event flow
   - right click -> opens the same viewer context menu contract used by the canvas
+  - right click on a label overlay badge -> opens annotation context instead of falling through to the parent group target
 
 The current slice does **not** yet do:
 

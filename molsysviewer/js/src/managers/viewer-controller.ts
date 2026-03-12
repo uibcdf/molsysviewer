@@ -30,7 +30,16 @@ type InteractionPayload =
 
 type ContextInteractionPayload =
     | { event: "interaction_context_menu"; kind: "empty"; page_x?: number; page_y?: number }
-    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[]; page_x?: number; page_y?: number };
+    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[]; page_x?: number; page_y?: number }
+    | {
+        event: "interaction_context_menu";
+        kind: "annotation";
+        atom_indices: number[];
+        tag?: string;
+        text?: string;
+        page_x?: number;
+        page_y?: number;
+    };
 
 function lociToAtomIndices(loci: any): number[] {
     if (!StructureElement.Loci.is(loci)) return [];
@@ -240,6 +249,8 @@ export class MolSysViewerController {
             });
         }, (item, pageX, pageY) => {
             this.openContextMenuForItem(item, pageX, pageY, emitInteractionEvent);
+        }, (target, pageX, pageY) => {
+            this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
         });
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, _target) => {
             this.startMeasurementTool(action);
@@ -327,6 +338,21 @@ export class MolSysViewerController {
             event: "interaction_context_menu" as const,
             kind: "structure" as const,
             atom_indices: item.atom_indices,
+            page_x: pageX,
+            page_y: pageY,
+        };
+        emitInteractionEvent(payload);
+        this.contextMenu.open(payload, pageX, pageY);
+    }
+
+    private openContextMenuForAnnotation(
+        target: Extract<ContextInteractionPayload, { kind: "annotation" }>,
+        pageX: number,
+        pageY: number,
+        emitInteractionEvent: (msg: any) => void,
+    ): void {
+        const payload = {
+            ...target,
             page_x: pageX,
             page_y: pageY,
         };

@@ -29,6 +29,12 @@ class FakeElement {
         handlers.push(handler);
         this.listeners.set(name, handlers);
     }
+
+    dispatch(name: string, event?: any) {
+        for (const handler of this.listeners.get(name) ?? []) {
+            handler(event);
+        }
+    }
 }
 
 function installFakeDom() {
@@ -52,11 +58,26 @@ function findBadgeTexts(root: FakeElement): string[] {
     return out;
 }
 
+function findFirstBadge(root: FakeElement): FakeElement | null {
+    let out: FakeElement | null = null;
+    const walk = (node: FakeElement) => {
+        if (out) return;
+        const text = node.textContent.trim();
+        if (text === "L" || text.endsWith("L")) {
+            out = node;
+            return;
+        }
+        for (const child of node.children) walk(child);
+    };
+    walk(root);
+    return out;
+}
+
 test("GroupStrip displays and clears annotation overlay badges", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {});
+        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
                 source_kind: "element",
@@ -84,6 +105,65 @@ test("GroupStrip displays and clears annotation overlay badges", () => {
         strip.clearAnnotationOverlaysByTag("notes");
         badges = findBadgeTexts((strip as any).root);
         assert.strictEqual(badges.length, 0);
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupStrip routes badge context menu to annotation target", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const annotationTargets: any[] = [];
+        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {}, (target) => {
+            annotationTargets.push(target);
+        });
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                chain_name: "A",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+
+        strip.addLabelOverlay({
+            op: "add_label",
+            tag: "notes",
+            options: { text: "Catalytic", atom_indices: [0, 1], tag: "notes" },
+        });
+
+        const badge = findFirstBadge((strip as any).root);
+        assert.ok(badge);
+
+        let prevented = false;
+        let stopped = false;
+        badge.dispatch("contextmenu", {
+            pageX: 12,
+            pageY: 34,
+            preventDefault() { prevented = true; },
+            stopPropagation() { stopped = true; },
+        });
+
+        assert.deepStrictEqual(annotationTargets, [
+            {
+                event: "interaction_context_menu",
+                kind: "annotation",
+                atom_indices: [0, 1],
+                tag: "notes",
+                text: "Catalytic",
+            },
+        ]);
+        assert.strictEqual(prevented, true);
+        assert.strictEqual(stopped, true);
 
         strip.dispose();
     } finally {
