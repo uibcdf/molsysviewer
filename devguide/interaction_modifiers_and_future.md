@@ -9,6 +9,7 @@ Do not forget them during implementation.
 
 - `Shift`
   - add to active selection
+  - already implemented across canvas and `GroupStrip`
 
 ### Important future consideration
 
@@ -57,6 +58,20 @@ Why:
 - shapes are meaningful scientific objects, not mere decorations
 - excluding them from active selection would reduce MolSysViewer as an inspection tool
 - mixed selection enables richer future menus and workflows
+
+### Current runtime slice
+
+This is no longer purely future-facing:
+
+- shape targets already have a first runtime slice in:
+  - hover
+  - click
+  - context menu
+  - `active_selection`
+- `Focus Target` already works for first-slice shape targets when they expose
+  usable anchor atoms
+- richer shape metadata and broader mixed-shape semantics still remain future
+  work
 
 ### Consequence
 
@@ -129,3 +144,4 @@ We are not copying UI wholesale, but we are importing useful patterns.
 - the future `Alt`-driven selection-level chooser
 - tooltip/label behavior on hover
 - shared highlight/selection sync across popup/host
+- a better replacement for the current minimal label-text prompt
