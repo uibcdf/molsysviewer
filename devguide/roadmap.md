@@ -9,6 +9,26 @@ It is organized by execution priority and uses three labels:
 - `In progress`: partially implemented or implemented with limited coverage/docs.
 - `Planned`: not implemented yet or not stabilized.
 
+## Guiding Principle
+
+MolSysViewer is guided by a simple product idea:
+
+- scientific work has an interactive and exploratory phase,
+- but scientific results must remain reproducible.
+
+So the roadmap should not optimize for interaction breadth alone.
+It should optimize for interaction that can become explicit, replayable,
+rebuild-safe, exportable viewer state.
+
+This affects prioritization:
+
+- `selection`, `regions`, `labels`, `measurements`, `layers`, and scene state
+  matter more than ephemeral interaction for its own sake,
+- exploration should tend toward artifacts that can be reproduced later from
+  Python or exported viewer state,
+- new interaction surfaces should be judged by how well they feed that
+  reproducible model.
+
 ## 1) Core Runtime and Contracts
 
 ### Status

@@ -17,6 +17,35 @@ checkpoint for the next developer session. It should make clear:
 - why that is the right next step,
 - and what criteria/invariants must be preserved.
 
+## Guiding Principle
+
+MolSysViewer is not being developed merely as an interactive molecular viewer.
+
+Its guiding idea is:
+
+- science has an interactive and exploratory phase,
+- but science must remain reproducible.
+
+For MolSysViewer, that means exploratory interaction is valuable only insofar as
+its scientifically meaningful outcomes can be turned into reproducible state:
+
+- selections,
+- regions,
+- layers,
+- labels/annotations,
+- measurements,
+- camera/view state,
+- and exported or replayed scenes.
+
+This principle should guide prioritization:
+
+- prefer interaction features that can become replay-safe, rebuild-safe, and
+  exportable,
+- prefer turning exploration into explicit viewer state over adding ephemeral
+  UI behavior for its own sake,
+- evaluate new canvas/strip interactions by asking how they will be captured,
+  serialized, replayed, or rebuilt later.
+
 ## Contents
 
 1. [**Architecture**](architecture.md)

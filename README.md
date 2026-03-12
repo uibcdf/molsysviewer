@@ -20,6 +20,22 @@ It provides high-quality, interactive 3D rendering of molecular structures,
 custom shapes, trajectories, and scientific overlays — directly inside Jupyter
 notebooks and JupyterLab.
 
+## Guiding Idea
+
+Science has an interactive and exploratory phase, and molecular viewers are
+essential there. But science must also be reproducible.
+
+MolSysViewer is built around that tension:
+
+- interactive exploration should be easy and scientifically useful,
+- but the meaningful outcome of that exploration should be capturable as
+  reproducible viewer state.
+
+In practice, this means that selections, regions, labels, measurements, layers,
+camera state, and other scientifically relevant scene decisions should tend
+toward Python-driven, replayable, exportable, and rebuild-safe representations
+instead of remaining only ephemeral UI interactions.
+
 For users and developers, see the web documentation:
 https://www.uibcdf.org/molsysviewer
 
@@ -74,6 +90,10 @@ designed to support:
 - trajectory inspection (MolSysMT)
 - structure + annotation blends (ML predictions, scoring fields, etc.)
 - region/layer scene management and a popout mirror view
+
+It is therefore not intended to be only an interactive viewer or a publication
+image generator. Its core value is helping exploratory scientific work become
+reproducible scientific state.
 
 ### ✔ SMonitor integration
 MolSysViewer emits structured warnings and errors through **SMonitor**. This
