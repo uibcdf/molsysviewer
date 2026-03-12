@@ -208,9 +208,15 @@ Do not append dated historical entries unless a date is itself operationally rel
   - The first explicit exploration -> reproducible-state bridge now exists in Python:
     - `view.new_region_from_active_selection(...)`
     - `view.annotations.add_label_from_active_selection(...)`
+    - `view.measurements.persist_last_measurement(...)`
   - The current bridge is intentionally narrow:
     - region creation uses stored `active_selection.atom_indices`,
     - label creation currently requires an active selection resolving to exactly one `group`.
+    - measurement persistence currently replays the last interactive `distance` / `angle` / `dihedral` by storing its `picks_atom_indices`.
+  - Measurements now also have an explicit replay/runtime path of their own:
+    - Python can send `add_distance_measurement`, `add_angle_measurement`, and `add_dihedral_measurement`,
+    - JS reconstructs them through Mol* `StructureMeasurementManager`,
+    - they are tracked as `measurement` layers and replayed across rebuild/export.
   - Validation note:
     - JS regression remains green,
     - Python regression for this slice is currently blocked by an import-time failure in the local sibling `../pyunitwizard` checkout, outside this repository.
@@ -257,7 +263,12 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep the first exploration -> reproducible-state bridge narrow and explicit:
   - active selection may become a region,
   - active selection may become a label when it resolves to exactly one `group`,
+  - the last interactive measurement may become a replayable measurement artifact,
   - broader UI flows should come only after the Python-side contract is stable.
+- Keep persisted measurements as explicit viewer artifacts:
+  - persist picks, not opaque frontend state,
+  - rebuild by replaying the same measurement op through Mol*,
+  - keep them layer/tag aware like other non-element scene artifacts.
 - Use Mol* rather than MolSysMT as the first engine for interactive distance/angle/dihedral:
   - Mol* already owns the live picked loci and the native measurement representations,
   - MolSysMT remains appropriate for later Python-side analysis or validation, not for the first interactive gesture loop.
@@ -276,6 +287,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 - The UI now exposes that direction explicitly in the active-selection context menu,
   even though the Python-side execution path still needs revalidation once the
   sibling `pyunitwizard` checkout is healthy again.
+- The measurement branch has now advanced one step further than selection/label:
+  - persisted measurement ops exist in the runtime,
+  - the remaining work is to decide the cleanest UI path for committing an interactive measurement into that persisted state.
 - Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality only when that improves reproducible scientific workflows.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,

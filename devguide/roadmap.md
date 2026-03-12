@@ -251,15 +251,25 @@ should grow over time as additional project-level principles become clear.
   - `active_selection` now has a first explicit Python bridge into reproducible state:
     - `new_region_from_active_selection(...)`
     - `view.annotations.add_label_from_active_selection(...)`
+    - `view.measurements.persist_last_measurement(...)`
   - The current contract is intentionally narrow and deterministic.
+  - Persisted measurement ops now also exist in the runtime:
+    - `add_distance_measurement`
+    - `add_angle_measurement`
+    - `add_dihedral_measurement`
+    - replayed through Mol* from stored `picks_atom_indices`
 
 ### Next actions
 
 - Validate the new Python bridge once the sibling `pyunitwizard` checkout is back in a healthy importable state.
 - Add the next explicit bridge only after deciding its stable replay/rebuild/export contract:
-  - persisted measurements,
   - named selections,
   - richer selection -> annotation flows.
+- Broaden persisted measurements only after the first replayable `distance` / `angle` / `dihedral` slice is validated end to end.
+- Decide the UI commit path for persisted measurements:
+  - explicit menu action,
+  - post-measurement affordance,
+  - or notebook/Python-first workflow.
 
 ### Criteria
 

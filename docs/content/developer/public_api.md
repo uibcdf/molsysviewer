@@ -52,8 +52,11 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `get_last_click_event()`
   - current interaction payloads are intentionally minimal and atom-centric
 - `get_last_active_selection_event()`
+- `get_last_measurement_created_event()`
 - `new_region_from_active_selection(...)`
 - `view.annotations.add_label_from_active_selection(...)`
+- `view.measurements.persist_last_measurement(...)`
+  - current first slice: persist the last interactive `distance` / `angle` / `dihedral` as replayable viewer state
 
 Related object wrappers are also part of the intended public surface:
 
@@ -62,6 +65,10 @@ Related object wrappers are also part of the intended public surface:
 - `view.regions[tag].show_only(...)`
 - `view.annotations.add_label(...)`
   - current first slice: persistent label on exactly one `group`
+- `view.measurements.add_distance(...)`
+- `view.measurements.add_angle(...)`
+- `view.measurements.add_dihedral(...)`
+- `view.measurements.persist_last_measurement(...)`
 
 ### Notebook rendering
 
