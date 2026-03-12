@@ -18,6 +18,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 ## Current Focus
 
 - Continue feature implementation toward 1.0 on top of the now-hardened runtime/contracts layer.
+- Keep the main product leitmotiv explicit:
+  - scientific exploration is important,
+  - but the outcome of that exploration should become reproducible viewer state.
 - Keep the interaction stack moving in order:
   - canvas gestures/context menu,
   - measurement tool modes,
@@ -199,6 +202,14 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Active Decisions
 
+- Treat reproducibility as a primary product goal, not just a packaging/export concern.
+- Prefer features that convert exploratory interaction into replay-safe, rebuild-safe, exportable state.
+- Avoid growing interaction-only affordances without a credible path to:
+  - Python representation,
+  - replay,
+  - rebuild,
+  - export,
+  - or explicit scientific state capture.
 - Use real demo viewers when regression value depends on real MolSysMT behavior.
 - Prefer contract-level and externally observable assertions over private implementation coupling.
 - Treat `DigestNotDigestedWarning` on stable public API as integration debt, not benign noise.
@@ -237,8 +248,13 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Next Step
 
-- Continue building out the interaction stack on top of the now-working context menu + measurement tool-mode path.
-- Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality.
+- Continue building out the interaction stack, but subordinate it to reproducibility.
+- The next high-value work should increasingly convert exploration into explicit state:
+  - selection -> region,
+  - selection -> label,
+  - measurement -> persistent/replayable artifact,
+  - and then richer mixed-selection semantics only where they help that goal.
+- Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality only when that improves reproducible scientific workflows.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,
   - region overlays,
@@ -264,6 +280,10 @@ Why this is next:
   - replay ordering and camera/state continuity across embedded/exported flows.
   - feature breadth toward the still-incomplete 1.0 surface.
   - functionality that is still simply not implemented yet.
+- The core product risk is not lack of interactivity by itself.
+  It is letting interaction outrun reproducibility.
+- The next steps should therefore prefer features that preserve the project identity:
+  exploration that can be captured, replayed, rebuilt, and shared.
 - The support-library layer is now in active hardening, so regressions there should be caught early instead of worked around ad hoc.
 - The second `smonitor` pass is now covering real traceability behavior, not just configuration/catalog presence.
 - The current `smonitor` integration is now close to exhaustive on the main public orchestration surface.
