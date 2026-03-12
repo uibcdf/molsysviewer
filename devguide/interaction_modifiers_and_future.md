@@ -105,6 +105,9 @@ We are not copying UI wholesale, but we are importing useful patterns.
 
 ## What Is Still Open or Intentionally Deferred
 
+- exact public Python API for exposing `hover_target`
+- exact public Python API for exposing `context_target`
+- whether `tool_selection` becomes a first-class public object or remains internal
 - exact public Python API for exposing `active_selection`
 - exact item schema inside the selection object
 - exact menu contents and submenu layout

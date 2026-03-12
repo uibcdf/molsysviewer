@@ -19,8 +19,8 @@ This is the implementation contract unless superseded explicitly.
 | Right click | `shape` | open context menu | no automatic change | set `context_target` | no automatic structural translation |
 | Right click | `empty` | optional empty-context menu or nothing | no automatic change | optional clear/update context target | keep minimal at first |
 | Middle click | any | deliberately outside the current contract | none | none | audit Mol* / browser behavior before adopting any product semantics |
-| Double left click | `structure` | focus target | no automatic change | none | canonical focus gesture |
-| Double left click | `shape` | focus target if possible | no automatic change | none | may focus shape bounds |
+| Double left click | `structure` | focus target | no automatic change to `active_selection` | none | canonical focus gesture |
+| Double left click | `shape` | focus target if possible | no automatic change to `active_selection` | none | may focus shape bounds |
 | Double left click | `empty` | no action or view-level focus reset later | no automatic change | none | not defined yet |
 | Double right click | any | not adopted yet | none | none | explicitly considered, intentionally deferred |
 
@@ -92,3 +92,8 @@ This solves a common UX need:
 
 - right click should not overwrite `active_selection`
 - but the clicked target should still seed the analytical workflow naturally
+
+Measurement scope rule:
+
+- measurement tools operate on atom-level picks
+- shape-only picks do not satisfy a measurement pick unless a future explicit translation policy is introduced
