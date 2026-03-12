@@ -190,15 +190,24 @@ It is organized by execution priority and uses three labels:
 
 ### Status
 
-- `Planned`
-  - The codebase already hints at labels (`clear_decorations(..., labels=True)` and JS clear-label plumbing), but there is no completed annotation system yet.
+- `In progress`
+  - `annotations` now exist as a real category instead of a pure design note.
+  - The first implemented slice is narrow:
+    - `view.annotations.add_label(text=..., group_index=..., tag=...)`
+    - group-anchored persistent labels
+    - layer-aware
+    - replay/rebuild/export-safe
+    - real frontend clearing through `clear_decorations(..., labels=True)`
 
 ### Next actions
 
-- Implement a first `annotations` category instead of extending `shapes` for persistent labels.
-- Start with persistent element-anchored labels, likely `group` first.
-- Make labels replay-safe, export-safe, and layer-aware.
-- Replace the current frontend `clearLabels` placeholder with real annotation clearing behavior.
+- Keep the first slice narrow and stable.
+- Broaden annotation interaction after `active_selection` grows beyond element-only:
+  - `annotation` as `context_target`,
+  - later `annotation` in `active_selection`,
+  - later hover/pick behavior.
+- Add annotation overlays to `GroupStrip` after the strip baseline is stable.
+- Revisit atom labels, free-point labels, and shape-attached labels only after the first slice is solid.
 
 ### Criteria
 

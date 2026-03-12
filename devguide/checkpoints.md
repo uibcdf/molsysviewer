@@ -17,10 +17,15 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-- Resume feature implementation toward 1.0 on top of the now-hardened runtime/contracts layer.
-- Start the `molsysviewer.tools` package as the home for advanced viewer-safe operations.
+- Continue feature implementation toward 1.0 on top of the now-hardened runtime/contracts layer.
+- Keep the interaction stack moving in order:
+  - canvas gestures/context menu,
+  - measurement tool modes,
+  - `active_selection`,
+  - `GroupStrip`,
+  - `annotations`.
 - Keep `devguide/` aligned with the real repository state.
-- Prioritize regression coverage for new product-facing behavior, especially where it composes multiple systems/views.
+- Prioritize regression coverage for new product-facing behavior, especially where it composes runtime state, layers, and rebuild/replay.
 
 ## Current State
 
@@ -174,6 +179,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - strip hover now mirrors into the viewer highlight path and emits the same hover event family,
     - right click on a strip item now opens the same viewer context menu contract used by the canvas,
     - it is still intentionally narrow and does not yet implement range selection, region overlays, or annotation overlays.
+  - `annotations` now have a first concrete implementation slice:
+    - `view.annotations.add_label(text=..., group_index=..., tag=...)` exists in Python,
+    - labels are implemented as `annotations`, not `shapes`,
+    - the first slice is intentionally narrow: one persistent label anchored to one `group`,
+    - labels participate in `layers` with `kind="annotation"`,
+    - labels survive export/replay/rebuild through dedicated annotation-history replay,
+    - `clear_decorations(..., labels=True)` now clears real frontend labels instead of a placeholder path.
 
 ## Active Decisions
 
@@ -202,6 +214,10 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep persistent labels out of `shapes`; the category should be `annotations`.
 - Keep hover tooltips and persistent annotations as separate concerns.
 - Keep `annotations` layer-aware from the first implementation.
+- Keep the first annotation slice narrow:
+  - explicit text,
+  - one `group` anchor,
+  - no atom labels or free-point labels yet.
 - Use Mol* rather than MolSysMT as the first engine for interactive distance/angle/dihedral:
   - Mol* already owns the live picked loci and the native measurement representations,
   - MolSysMT remains appropriate for later Python-side analysis or validation, not for the first interactive gesture loop.
@@ -212,7 +228,15 @@ Do not append dated historical entries unless a date is itself operationally rel
 ## Next Step
 
 - Continue building out the interaction stack on top of the now-working context menu + measurement tool-mode path.
-- Start `active_selection` as the next shared state object before moving into `GroupStrip` and `annotations`.
+- Enrich `active_selection` beyond the current element-only/group-centric slice toward the documented taxonomy:
+  - `shape`,
+  - `annotation`,
+  - `mixed`.
+- Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
+  - range selection,
+  - region overlays,
+  - annotation overlays,
+  - tool-pick overlays.
 - Keep pushing MolSysViewer toward a molecular-system inspection/workbench role for structural biochemistry and drug-design workflows, not only a viewer/export role.
 
 Why this is next:

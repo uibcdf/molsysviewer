@@ -57,6 +57,8 @@ Related object wrappers are also part of the intended public surface:
 - `view.whole.focus(...)`
 - `view.regions[tag].focus(...)`
 - `view.regions[tag].show_only(...)`
+- `view.annotations.add_label(...)`
+  - current first slice: persistent label on exactly one `group`
 
 ### Notebook rendering
 

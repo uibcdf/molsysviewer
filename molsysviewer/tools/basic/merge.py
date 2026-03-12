@@ -33,7 +33,7 @@ def _remap_atom_pairs(pairs: Any, atom_offset: int) -> list[list[int]] | None:
     return out
 
 
-def _remap_shape_message(msg: dict[str, Any], atom_offset: int, tag_map: dict[str, str]) -> dict[str, Any]:
+def _remap_tagged_message(msg: dict[str, Any], atom_offset: int, tag_map: dict[str, str]) -> dict[str, Any]:
     remapped = dict(msg)
     options = remapped.get("options")
     if not isinstance(options, dict):
@@ -151,7 +151,11 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
                 merged_region.hide(skip_digestion=True)
 
         for shape_msg in getattr(view, "_shape_history", []):  # noqa: SLF001
-            remapped_msg = _remap_shape_message(shape_msg, atom_offset, tag_map)
+            remapped_msg = _remap_tagged_message(shape_msg, atom_offset, tag_map)
+            result._send(remapped_msg)  # noqa: SLF001
+
+        for annotation_msg in getattr(view, "_annotation_history", []):  # noqa: SLF001
+            remapped_msg = _remap_tagged_message(annotation_msg, atom_offset, tag_map)
             result._send(remapped_msg)  # noqa: SLF001
 
         for original_tag, new_tag in tag_map.items():

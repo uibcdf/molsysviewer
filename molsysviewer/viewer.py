@@ -18,6 +18,7 @@ from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
+from .annotations import AnnotationsManager
 from .shapes import ShapesManager
 from .regions import Region
 from .whole import Whole
@@ -163,6 +164,7 @@ class MolSysView:
         self._last_tool_state_event: dict | None = None
         self._last_measurement_created_event: dict | None = None
         self._shape_history: list[dict] = []
+        self._annotation_history: list[dict] = []
         self._last_label: str | None = None
 
         self._regions: Dict[str, Region] = {}
@@ -187,6 +189,7 @@ class MolSysView:
         self.structure_mask = None
 
         self.shapes = ShapesManager(self)
+        self.annotations = AnnotationsManager(self)
         try:
             self.widget.autohide_controls = bool(config.autohide_controls)
         except Exception:
@@ -659,7 +662,7 @@ class MolSysView:
 
     # --- util interno ---
 
-    def _shape_tag_from_message(self, msg: dict) -> str | None:
+    def _tag_from_message(self, msg: dict) -> str | None:
         tag = msg.get("tag")
         if isinstance(tag, str) and tag:
             return tag
@@ -675,6 +678,37 @@ class MolSysView:
         if not isinstance(op, str):
             return
 
+        if op == "delete_layer":
+            cleared_tag = msg.get("tag")
+            if not isinstance(cleared_tag, str):
+                return
+            self._shape_history = [
+                m for m in self._shape_history if self._tag_from_message(m) != cleared_tag
+            ]
+            return
+
+        if op == "set_layer_tag":
+            old_tag = msg.get("tag")
+            new_tag = msg.get("new_tag")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+                return
+            rewritten: list[dict] = []
+            for item in self._shape_history:
+                tag = self._tag_from_message(item)
+                if tag != old_tag:
+                    rewritten.append(item)
+                    continue
+                updated = dict(item)
+                updated["tag"] = new_tag
+                options = updated.get("options")
+                if isinstance(options, dict):
+                    options = dict(options)
+                    options["tag"] = new_tag
+                    updated["options"] = options
+                rewritten.append(updated)
+            self._shape_history = rewritten
+            return
+
         if op == "clear_shapes_by_tag":
             cleared_tag = msg.get("tag")
             if cleared_tag is None:
@@ -683,8 +717,11 @@ class MolSysView:
             if not isinstance(cleared_tag, str):
                 return
             self._shape_history = [
-                m for m in self._shape_history if self._shape_tag_from_message(m) != cleared_tag
+                m for m in self._shape_history if self._tag_from_message(m) != cleared_tag
             ]
+            return
+
+        if op == "add_label":
             return
 
         if not op.startswith("add_"):
@@ -692,10 +729,58 @@ class MolSysView:
 
         self._shape_history.append(dict(msg))
 
+    def _record_annotation_message(self, msg: dict) -> None:
+        op = msg.get("op")
+        if not isinstance(op, str):
+            return
+
+        if op == "clear_scene":
+            options = msg.get("options")
+            if isinstance(options, dict) and bool(options.get("labels")):
+                self._annotation_history.clear()
+            return
+
+        if op == "delete_layer":
+            cleared_tag = msg.get("tag")
+            if not isinstance(cleared_tag, str):
+                return
+            self._annotation_history = [
+                m for m in self._annotation_history if self._tag_from_message(m) != cleared_tag
+            ]
+            return
+
+        if op == "set_layer_tag":
+            old_tag = msg.get("tag")
+            new_tag = msg.get("new_tag")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+                return
+            rewritten: list[dict] = []
+            for item in self._annotation_history:
+                tag = self._tag_from_message(item)
+                if tag != old_tag:
+                    rewritten.append(item)
+                    continue
+                updated = dict(item)
+                updated["tag"] = new_tag
+                options = updated.get("options")
+                if isinstance(options, dict):
+                    options = dict(options)
+                    options["tag"] = new_tag
+                    updated["options"] = options
+                rewritten.append(updated)
+            self._annotation_history = rewritten
+            return
+
+        if op != "add_label":
+            return
+
+        self._annotation_history.append(dict(msg))
+
     def _send(self, msg: dict) -> None:
         """Send a message to the frontend or queue it if the frontend is not ready yet."""
         self._message_history.append(msg)
         self._record_shape_message(msg)
+        self._record_annotation_message(msg)
         if self._ready:
             self.widget.send(msg)
         else:
@@ -870,6 +955,12 @@ class MolSysView:
                 region.hide(skip_digestion=True)
 
         for msg in self._shape_history:
+            remapped = self._remap_shape_message(msg, atom_index_map)
+            if remapped is None:
+                continue
+            self._send_replay(remapped)
+
+        for msg in self._annotation_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
             if remapped is None:
                 continue
@@ -1111,6 +1202,8 @@ class MolSysView:
         """Clear decorative elements (shapes/styles/labels) without touching the loaded structure or camera."""
         if shapes:
             self._shape_history.clear()
+        if labels:
+            self._annotation_history.clear()
         self._send(
             {
                 "op": "clear_scene",
@@ -1149,6 +1242,7 @@ class MolSysView:
         self._global_hidden = False
         self.whole = Whole(self)
         self._shape_history.clear()
+        self._annotation_history.clear()
         self._last_label = None
 
         # Ask frontend to clear everything (molecule + shapes + view)

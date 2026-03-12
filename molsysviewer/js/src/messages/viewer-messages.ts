@@ -89,6 +89,16 @@ export type AddTriangleFacesMessage = {
     options?: TriangleFacesOptions;
 };
 
+export type AddLabelMessage = {
+    op: "add_label";
+    tag?: string;
+    options?: {
+        text?: string;
+        atom_indices?: number[];
+        tag?: string;
+    };
+};
+
 export type LoadStructureMessage = {
     op: "load_structure_from_string" | "load_pdb_string";
     data?: string;
@@ -297,6 +307,7 @@ export type ViewerMessage =
     AddDisplacementVectorsMessage |
     AddTetrahedraMessage |
     AddTriangleFacesMessage |
+    AddLabelMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |

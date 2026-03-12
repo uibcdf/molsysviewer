@@ -63,15 +63,15 @@ export class StateHandlers {
 
     constructor(private plugin: PluginContext, private callbacks: StateCallbacks) {}
 
-    registerShapeRef(ref?: StateObjectRef, tag?: string) {
+    registerTaggedRef(ref?: StateObjectRef, tag?: string, kind: string = "shape") {
         if (!ref) return;
         if (!tag) return;
         if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, new Set());
         this.tagIndex.get(tag)!.add(ref);
         
         if (!this.layerMeta.has(tag)) {
-            this.layerMeta.set(tag, { kind: "shape", meta: {} });
-            this.callbacks.notify({ event: "layer_ack", tag, kind: "shape", meta: {} });
+            this.layerMeta.set(tag, { kind, meta: {} });
+            this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
         }
         
         if (this.pendingLayerVisibility.has(tag)) {
@@ -79,6 +79,10 @@ export class StateHandlers {
             this.pendingLayerVisibility.delete(tag);
             setSubtreeVisibility(this.plugin.state.data, ref, hide);
         }
+    }
+
+    registerShapeRef(ref?: StateObjectRef, tag?: string) {
+        this.registerTaggedRef(ref, tag, "shape");
     }
 
     async updateVisibility(msg: UpdateVisibilityMessage | number[] | undefined) {
