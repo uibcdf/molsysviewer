@@ -8,7 +8,15 @@ type BaseTarget =
 
 export type ContextMenuTarget = BaseTarget;
 
-export type ContextMenuAction = "distance" | "angle" | "dihedral" | "focus_target" | "focus_selection" | "clear_selection";
+export type ContextMenuAction =
+    | "distance"
+    | "angle"
+    | "dihedral"
+    | "focus_target"
+    | "focus_selection"
+    | "clear_selection"
+    | "create_region_from_selection"
+    | "add_label_from_selection";
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
@@ -116,6 +124,10 @@ export class ViewerContextMenu {
             });
             section.appendChild(title);
             section.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+            section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
+            if (this.currentSelection.count_groups === 1) {
+                section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
+            }
             section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
             this.root.appendChild(section);
         }

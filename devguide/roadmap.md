@@ -208,6 +208,7 @@ should grow over time as additional project-level principles become clear.
   - hover and context menu should use the same event families instead of becoming a separate UX island.
 - Make the active selection materially useful through the context menu before opening more target families:
   - selection-focused actions such as `Focus Selection` and `Clear Selection` are now the first concrete slice.
+  - the next priority is not broader interaction for its own sake, but turning interaction into reproducible artifacts.
 
 ### Criteria
 
@@ -241,6 +242,29 @@ should grow over time as additional project-level principles become clear.
   - strip label overlays can already seed annotation context,
   - richer annotation overlay semantics still need design and tests.
 - Revisit atom labels, free-point labels, and shape-attached labels only after the first slice is solid.
+
+## 6.6) Exploration to Reproducible Artifacts
+
+### Status
+
+- `In progress`
+  - `active_selection` now has a first explicit Python bridge into reproducible state:
+    - `new_region_from_active_selection(...)`
+    - `view.annotations.add_label_from_active_selection(...)`
+  - The current contract is intentionally narrow and deterministic.
+
+### Next actions
+
+- Validate the new Python bridge once the sibling `pyunitwizard` checkout is back in a healthy importable state.
+- Add the next explicit bridge only after deciding its stable replay/rebuild/export contract:
+  - persisted measurements,
+  - named selections,
+  - richer selection -> annotation flows.
+
+### Criteria
+
+- The bridge from interaction to persisted state must remain explicit and reproducible.
+- Do not hide scientifically meaningful state creation behind frontend-only transient behavior.
 
 ### Criteria
 

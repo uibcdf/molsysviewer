@@ -51,6 +51,9 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `get_last_hover_event()`
 - `get_last_click_event()`
   - current interaction payloads are intentionally minimal and atom-centric
+- `get_last_active_selection_event()`
+- `new_region_from_active_selection(...)`
+- `view.annotations.add_label_from_active_selection(...)`
 
 Related object wrappers are also part of the intended public surface:
 

@@ -74,6 +74,8 @@ Current first implemented slice:
 - the secondary active-selection section is now real,
 - it currently exposes:
   - `Focus Selection`
+  - `Create Region from Selection`
+  - `Add Label from Selection` when the current selection resolves to exactly one `group`
   - `Clear Selection`
 - the target section now also exposes a first generic action:
   - `Focus Target`
@@ -81,6 +83,15 @@ Current first implemented slice:
 - for first-slice `shape` targets, `Focus Target` is also available when the shape exposes anchor atoms
 
 This supports richer workflows and future submenus.
+
+These two reproducibility-oriented actions are intentionally described as
+selection actions first, not as pure frontend scene mutations:
+
+- `Create Region from Selection`
+- `Add Label from Selection`
+
+They represent the intended bridge from exploratory interaction to explicit,
+replayable viewer artifacts.
 
 It also implies that menu contents may depend on:
 
