@@ -29,6 +29,9 @@ This affects prioritization:
 - new interaction surfaces should be judged by how well they feed that
   reproducible model.
 
+That principle is also recorded in `devguide/guiding_principles.md`, which
+should grow over time as additional project-level principles become clear.
+
 ## 1) Core Runtime and Contracts
 
 ### Status
