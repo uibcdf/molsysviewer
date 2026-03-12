@@ -168,6 +168,26 @@ It is organized by execution priority and uses three labels:
 - Keep the first interaction contract additive and easy to replay/debug.
 - Do not overfit the payload before real picking workflows exist.
 
+## 6.5) Annotations and Persistent Labels
+
+### Status
+
+- `Planned`
+  - The codebase already hints at labels (`clear_decorations(..., labels=True)` and JS clear-label plumbing), but there is no completed annotation system yet.
+
+### Next actions
+
+- Implement a first `annotations` category instead of extending `shapes` for persistent labels.
+- Start with persistent element-anchored labels, likely `group` first.
+- Make labels replay-safe, export-safe, and layer-aware.
+- Replace the current frontend `clearLabels` placeholder with real annotation clearing behavior.
+
+### Criteria
+
+- Keep persistent labels separate from hover tooltips.
+- Keep annotation taxonomy separate from shape taxonomy.
+- Keep annotation/layer semantics explicit and stable.
+
 ## 7) Export, Embedding, and Popup
 
 ### Status

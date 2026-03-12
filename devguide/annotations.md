@@ -1,0 +1,374 @@
+# Annotations
+
+This page defines the viewer taxonomy around persistent labels and related
+annotation-like objects.
+
+It exists to separate semantic visual information from geometry overlays and to
+avoid overloading `shapes` with text-like concerns.
+
+## Why This Needs Its Own Category
+
+MolSysViewer already has:
+
+- element-derived interaction targets,
+- regions,
+- shapes,
+- layers,
+- and an emerging interaction/selection model.
+
+Persistent labels do not fit cleanly inside `shapes`:
+
+- they are not primarily geometry,
+- their lifecycle is different,
+- their context actions are different,
+- their future strip/selection integration is different,
+- and Mol* itself already treats labels/text as a distinct concern.
+
+So MolSysViewer should treat them as:
+
+- `annotations`
+
+## Viewer Taxonomy
+
+The intended high-level taxonomy is:
+
+- `elements`
+- `regions`
+- `shapes`
+- `annotations`
+- `layers`
+
+### `elements`
+
+Element targets come from the molecular system.
+They are described using MolSysSuite element levels:
+
+- `atom`
+- `group`
+- `component`
+- `chain`
+- `molecule`
+- `entity`
+
+### `regions`
+
+Regions are user-defined or viewer-defined subsets of elements.
+They are not a separate target family in the molecular-system hierarchy.
+They are named, reusable subsets over element indices.
+
+### `shapes`
+
+Shapes are additional geometric objects rendered in the scene.
+Examples:
+
+- spheres
+- pocket surfaces
+- pocket blobs
+- channel tubes
+- pharmacophore geometries
+- links
+- displacement vectors
+- tetrahedra
+- triangle faces
+
+### `annotations`
+
+Annotations are persistent semantic/visual objects that are not primarily
+geometric overlays.
+
+The first annotation family should be:
+
+- `labels`
+
+Future families could include:
+
+- callouts
+- badges
+- text markers
+
+### `layers`
+
+Layers are not a content family.
+They are a grouping/control mechanism for non-element scene content.
+
+They should apply to:
+
+- shapes
+- annotations
+
+They should not redefine the underlying taxonomy.
+
+## What We Learned From Mol*
+
+Mol* already provides several useful precedents.
+
+### 1. Structure label representation
+
+Mol* has a built-in label representation:
+
+- [label.ts](/home/diego/repos@others/molstar/src/mol-repr/structure/representation/label.ts)
+- [label-text.ts](/home/diego/repos@others/molstar/src/mol-repr/structure/visual/label-text.ts)
+
+This shows that persistent text tied to molecular content is a first-class
+visual concern, not just a tooltip.
+
+Useful takeaways:
+
+- text is rendered as a dedicated visual,
+- labels can be generated at several levels,
+- labels are not just hover UI,
+- labels are intentionally non-pickable in Mol*'s default implementation.
+
+### 2. Loci-based labels
+
+Mol* also has labels built from explicit `loci` data:
+
+- [shape/loci/label.ts](/home/diego/repos@others/molstar/src/mol-repr/shape/loci/label.ts)
+
+Useful takeaways:
+
+- a label can be defined from an arbitrary set of picked/selected loci,
+- placement can come from the loci bounding sphere,
+- text is built with `TextBuilder`,
+- labels can be defined independently from the default structure representation.
+
+This is directly relevant to MolSysViewer because it suggests a clean path for:
+
+- labels anchored to element-derived selections,
+- labels anchored to regions,
+- labels anchored to future analysis results.
+
+### 3. Custom and annotation-driven labels
+
+Mol* MVS extensions include:
+
+- [custom-label/representation.ts](/home/diego/repos@others/molstar/src/extensions/mvs/components/custom-label/representation.ts)
+- [annotation-label/visual.ts](/home/diego/repos@others/molstar/src/extensions/mvs/components/annotation-label/visual.ts)
+- [annotation-tooltips-prop.ts](/home/diego/repos@others/molstar/src/extensions/mvs/components/annotation-tooltips-prop.ts)
+
+Useful takeaways:
+
+- custom text labels and annotation-driven labels are separate from tooltips,
+- grouping multiple annotation rows into one label instance is useful,
+- text content and label placement should be separable concerns,
+- tooltip behavior and persistent label behavior should not be conflated.
+
+## Core Decision
+
+Persistent labels in MolSysViewer should belong to:
+
+- `annotations`
+
+They should not be modeled as ordinary shapes.
+
+This is the key architectural decision on this page.
+
+## First Annotation Family: Labels
+
+The first concrete annotation type should be:
+
+- `label`
+
+That first slice should stay intentionally narrow.
+
+## Label Target Families
+
+The long-term design can support three target families:
+
+- element targets
+- shape targets
+- explicit point targets
+
+### Element target
+
+Examples:
+
+- a label on a `group`
+- a label on an `atom`
+- a label on a derived picked/selected element set
+
+This should be the first implementation target family.
+
+### Shape target
+
+Examples:
+
+- a label attached to a pharmacophore feature shape
+- a label attached to a pocket surface or analysis overlay
+
+This is useful, but should come later.
+
+### Point target
+
+Examples:
+
+- a label at a specific 3D coordinate
+- a label for a pocket center or geometric feature
+
+This should also come later.
+
+## First Implementation Scope
+
+### v1 should support
+
+- persistent labels as `annotations`
+- labels anchored to element targets
+- likely `group` first, with `atom` as a plausible second element level
+- replay-safe/export-safe persistence
+- integration with existing layer semantics
+- actual `clear labels` support in the frontend instead of the current placeholder
+
+### v1 should not try to solve
+
+- every annotation subtype
+- fully general shape-attached labels
+- free-floating point labels
+- rich annotation editing UI
+- annotation-aware mixed-selection behavior in full detail
+- strip-aware label overlays
+
+## Intended Layer Semantics
+
+Annotations should participate in layers.
+
+That means a layer may contain:
+
+- shapes
+- annotations
+
+This enables:
+
+- show/hide by layer
+- clear/delete by layer
+- shared analysis grouping
+
+This is preferable to creating a parallel label-only grouping system.
+
+## Intended Interaction Semantics
+
+Annotations should eventually become their own interaction target family:
+
+- `annotation`
+
+This aligns with the interaction docs:
+
+- target kinds should now be understood as:
+  - `empty`
+  - `element`
+  - `shape`
+  - `annotation`
+
+Implications:
+
+- annotations should be valid `context_target` candidates
+- annotations may later participate in `active_selection`
+- annotation actions should remain distinct from shape actions
+
+The first implementation does not need full annotation-selection richness, but
+it should not block that direction.
+
+## Minimal Label Data Model
+
+The first useful conceptual model for a label should include:
+
+- `text`
+- `tag`
+- `layer`
+- `visible`
+- `target`
+
+Where `target` in v1 is element-based.
+
+For element-based labels, the target should eventually be able to describe:
+
+- `element_level`
+- relevant index arrays
+
+This should remain aligned with the element taxonomy used elsewhere in the
+interaction contract.
+
+## Naming Direction in Python
+
+The likely Python-side home should be something like:
+
+- `view.annotations`
+
+with a dedicated manager-style surface.
+
+Possible first API direction:
+
+- `view.annotations.add_label(...)`
+
+This is a better fit than:
+
+- placing labels under `view.shapes`
+
+because the category boundary stays explicit and future growth remains clean.
+
+## Relationship to Existing Code
+
+MolSysViewer already hints at labels but does not yet implement them as a
+finished category.
+
+Current evidence:
+
+- `clear_decorations(..., labels=True)` exists in Python
+- JS has a `clearLabels` placeholder
+- some shapes accept label-like payloads locally
+
+So this work is not inventing an unrelated abstraction.
+It is closing a category gap that the codebase already suggests.
+
+## Alternatives Considered
+
+### 1. Treat labels as shapes
+
+Not chosen.
+
+Why:
+
+- conflates semantic text with geometry overlays,
+- makes future context/selection logic muddier,
+- weakens taxonomy clarity.
+
+### 2. Keep labels as one-off special cases only
+
+Not chosen.
+
+Why:
+
+- would not scale to persistent labels as a product feature,
+- would keep `clear labels` and export semantics ad hoc,
+- would not support future annotation families.
+
+### 3. Introduce `annotations`
+
+Chosen direction.
+
+Why:
+
+- matches the product direction,
+- aligns with Mol* precedents,
+- keeps the viewer taxonomy clean,
+- supports future growth without overloading `shapes`.
+
+## Future Growth
+
+Plausible growth after the first label slice:
+
+- shape-attached labels
+- explicit point labels
+- richer annotation types beyond labels
+- annotation overlays on `GroupStrip`
+- annotation-aware context menus
+- annotation participation in `active_selection`
+- annotation-driven tooltips or inspector panels
+
+## Immediate Implication for Development
+
+Before implementing labels, keep these rules intact:
+
+- do not add persistent labels under `shapes`
+- keep annotation semantics separate from hover tooltips
+- keep annotations layer-aware
+- keep the first annotation slice narrow and replay-safe
