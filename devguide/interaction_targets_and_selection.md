@@ -5,14 +5,16 @@
 Canvas interactions should distinguish these target sources:
 
 - `empty`
-- `structure`
+- `element`
 - `shape`
+- `annotation`
 
-For structural picks, MolSysViewer should interpret the raw pick into one of
+For element picks, MolSysViewer should interpret the raw pick into one of
 these target levels:
 
 - `atom`
 - `group`
+- `component`
 - `chain`
 - `molecule`
 - `entity`
@@ -35,7 +37,7 @@ Do not use `residue` as the primary public term in this feature design.
 Why:
 
 - `group` is visible and meaningful across nearly all representations
-- it is the most useful default for structural inspection
+- it is the most useful default for element-level inspection
 - it avoids overfitting interaction semantics to atomistic representations only
 
 Public-semantics rule:
@@ -91,14 +93,16 @@ It should be queryable and then usable programmatically.
 
 The object should support at least:
 
-- structural selections
+- element selections
 - shape selections
+- annotation selections
 - mixed selections
 
 `mixed` should be understood broadly enough to cover:
 
-- structure + shape mixtures
-- and, if needed, mixtures of structural target levels before later normalization rules are finalized
+- element + shape mixtures
+- element + annotation mixtures
+- and, if needed, mixtures of element target levels before later normalization rules are finalized
 
 ### `tool_selection`
 
@@ -137,12 +141,13 @@ Working invariant:
 
 ### Why mixed selection is accepted from the start
 
-- structure and shapes are both meaningful inspection targets
+- elements and shapes are both meaningful inspection targets
 - rejecting mixed selection would force a later redesign of the selection model
 - operations can decide whether they apply to:
   - the whole mixed selection,
-  - only the structural part,
+  - only the element part,
   - only the shape part,
+  - only the annotation part,
   - or not at all
 
 ### Proposed minimum shape of `active_selection`
@@ -150,9 +155,11 @@ Working invariant:
 At a minimum, the object should be able to expose:
 
 - `source_kind`
-  - `empty | structure | shape | mixed`
+  - `empty | element | shape | annotation | mixed`
+- `element_level`
+  - `atom | group | component | chain | molecule | entity | none`
 - `target_level`
-  - `atom | group | chain | molecule | entity | shape | mixed | none`
+  - `shape | annotation | mixed | none`
 - `items`
   - selected elements retained as explicit items, not only as derived aggregated indices
   - should preserve order of incorporation
@@ -170,10 +177,10 @@ At a minimum, the object should be able to expose:
   - `count_groups`
   - `count_shapes`
 
-### Structural aggregation rule
+### Element aggregation rule
 
 If the selection is made at `group` level, the object should still aggregate and
-expose derived structural indices.
+expose derived element indices.
 
 Example:
 
@@ -196,7 +203,7 @@ The important rule is:
 Future configuration direction:
 
 - a user-facing default such as `picking_level_default` may later expose persistent policy selection
-- plausible values include `auto`, `group`, `atom`, and other structural levels if they become product-relevant
+- plausible values include `auto`, `group`, `atom`, and other element levels if they become product-relevant
 
 Active-selection direction:
 
@@ -212,8 +219,8 @@ Active-selection direction:
 
 Minimum useful metadata for a group pick should include:
 
-- `source_kind: "structure"`
-- `target_level: "group"`
+- `source_kind: "element"`
+- `element_level: "group"`
 - `atom_indices`
 - `group_indices`
 - `component_indices`
@@ -238,6 +245,6 @@ Potentially useful later, if reliable:
 
 Contract note:
 
-- structural index arrays are the hard contract
+- element index arrays are the hard contract
 - human-readable names/ids should be provided whenever reliably available
 - name-like metadata should therefore be treated as strongly desired but not as the only stable source of identity

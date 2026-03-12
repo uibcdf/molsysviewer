@@ -205,7 +205,7 @@ Why this is next:
 2. Keep the first interaction slice narrow:
   - transport Mol* hover/click events to Python,
   - store the last hover/click payload on the view,
-  - keep the payload atom-centric for structure picks.
+  - keep the payload atom-centric for element picks.
 3. Delay richer interaction semantics until the transport contract is stable:
   - callbacks,
   - region-aware picks,

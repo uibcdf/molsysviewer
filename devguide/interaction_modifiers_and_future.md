@@ -18,7 +18,7 @@ This is explicitly on the roadmap and should remain visible in the design.
 Potential directions:
 
 - temporary force to `atom`
-- temporary force to another structural level
+- temporary force to another element level
 - interaction with tool modes
 - persistent user preference for default picking level
 
@@ -62,8 +62,9 @@ Why:
 
 Operations must decide whether they apply to:
 
-- structural items only
+- element items only
 - shape items only
+- annotation items only
 - mixed selections
 - or not at all
 
@@ -73,8 +74,9 @@ The selection model should stay rich even if some actions are narrower.
 One concrete consequence is that context menus and submenus may need to enable,
 disable, or split actions depending on whether the active selection is:
 
-- structural only
+- element only
 - shape only
+- annotation only
 - mixed
 
 Selection accumulation rule to keep in mind:
