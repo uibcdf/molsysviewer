@@ -53,6 +53,7 @@ function installFakeDom() {
     (globalThis as any).window = {
         addEventListener() {},
         removeEventListener() {},
+        prompt() { return null; },
     };
     return () => {
         (globalThis as any).document = previousDocument;
@@ -163,6 +164,119 @@ test("ViewerContextMenu renders active selection section and selection actions",
                 target: { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
             },
         ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu prompts for label text before add-label action", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        (globalThis as any).window.prompt = () => "Catalytic group";
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "element",
+                element_level: "group",
+                target_level: "none",
+                items: [],
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 3,
+                count_groups: 1,
+                count_shapes: 0,
+                count_annotations: 0,
+            },
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const button = findNodeByText(root, "Add Label from Selection");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            {
+                action: "add_label_from_selection",
+                target: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+                details: { text: "Catalytic group" },
+            },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "add_label_from_selection",
+                context: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+                text: "Catalytic group",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu cancels add-label action when prompt returns empty text", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any }> = [];
+        const notifications: any[] = [];
+        (globalThis as any).window.prompt = () => "   ";
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target) => {
+            actions.push({ action, target });
+        });
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "element",
+                element_level: "group",
+                target_level: "none",
+                items: [],
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 3,
+                count_groups: 1,
+                count_shapes: 0,
+                count_annotations: 0,
+            },
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const button = findNodeByText(root, "Add Label from Selection");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, []);
+        assert.deepStrictEqual(notifications, []);
 
         menu.dispose();
     } finally {

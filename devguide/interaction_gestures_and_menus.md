@@ -107,10 +107,12 @@ Current execution status:
 
 - `Create Region from Selection` now executes the Python-side bridge directly
   from `interaction_context_action`
+- `Add Label from Selection` now executes the Python-side bridge directly from
+  `interaction_context_action` after explicit text capture
 - `Persist Last Measurement` now executes the Python-side bridge directly from
   `interaction_context_action`
-- `Add Label from Selection` still needs explicit text capture before it should
-  auto-execute from the menu
+- the current label-text capture path is intentionally minimal (`window.prompt`)
+  and should be considered replaceable UX, not a final design
 
 It also implies that menu contents may depend on:
 

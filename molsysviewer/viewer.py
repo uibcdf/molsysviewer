@@ -270,6 +270,11 @@ class MolSysView:
             action = content.get("action")
             if action == "create_region_from_selection":
                 self.new_region_from_active_selection(skip_digestion=True)
+            elif action == "add_label_from_selection":
+                text = content.get("text")
+                if not isinstance(text, str) or text.strip() == "":
+                    raise ValueError("add_label_from_selection requires non-empty text.")
+                self.annotations.add_label_from_active_selection(text=text.strip(), skip_digestion=True)
             elif action == "persist_last_measurement":
                 self.measurements.persist_last_measurement(skip_digestion=True)
         elif event == "interaction_active_selection_changed":

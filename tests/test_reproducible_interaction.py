@@ -104,6 +104,43 @@ def test_add_label_from_active_selection_creates_replayable_annotation():
     ]
 
 
+def test_context_action_add_label_from_selection_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = list(view.select(selection="group_index==0"))
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_active_selection_changed",
+            "source_kind": "element",
+            "element_level": "group",
+            "target_level": "none",
+            "items": [],
+            "atom_indices": atom_indices,
+            "group_indices": [0],
+            "component_indices": [],
+            "chain_indices": [0],
+            "molecule_indices": [],
+            "entity_indices": [0],
+            "count_atoms": len(atom_indices),
+            "count_groups": 1,
+            "count_shapes": 0,
+            "count_annotations": 0,
+        }
+    )
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "add_label_from_selection",
+            "text": "Picked group",
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
+        }
+    )
+
+    assert len(view._annotation_history) == 1  # noqa: SLF001
+    msg = view._annotation_history[0]  # noqa: SLF001
+    assert msg["op"] == "add_label"
+    assert msg["options"]["text"] == "Picked group"
+
+
 def test_add_label_from_active_selection_requires_exactly_one_group():
     view = demo["dialanine"]
     event = {

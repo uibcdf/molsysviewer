@@ -267,8 +267,10 @@ should grow over time as additional project-level principles become clear.
   - richer selection -> annotation flows.
 - Broaden persisted measurements only after the first replayable `distance` / `angle` / `dihedral` slice is validated end to end.
 - The explicit menu action path for persisted measurements now exists and executes.
-- The next unresolved UI bridge is `Add Label from Selection`, which needs a
-  text-entry contract before it can execute automatically.
+- The explicit menu action path for `Add Label from Selection` now also exists
+  and executes through a minimal text prompt.
+- The next improvement is replacing that prompt with a better inline or modal
+  text-entry UX without weakening the reproducibility contract.
 
 ### Criteria
 

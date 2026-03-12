@@ -19,6 +19,10 @@ export type ContextMenuAction =
     | "add_label_from_selection"
     | "persist_last_measurement";
 
+export type ContextActionDetails = {
+    text?: string;
+};
+
 export type LastMeasurementSummary = {
     action: "distance" | "angle" | "dihedral";
     picked_count: number;
@@ -55,7 +59,7 @@ export class ViewerContextMenu {
     constructor(
         private readonly host: HTMLElement,
         private readonly notify?: (msg: any) => void,
-        private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget) => void,
+        private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget, details?: ContextActionDetails) => void,
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-context-menu", "true");
@@ -221,15 +225,29 @@ export class ViewerContextMenu {
         });
         button.addEventListener("click", () => {
             if (!this.currentTarget) return;
-            this.onAction?.(action, this.currentTarget);
+            const details = this.resolveActionDetails(action);
+            if (details === null) return;
+            this.onAction?.(action, this.currentTarget, details ?? undefined);
             this.notify?.({
                 event: "interaction_context_action",
                 action,
                 context: this.currentTarget,
+                ...(details ?? {}),
             });
             this.close();
         });
         return button;
+    }
+
+    private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
+        if (action !== "add_label_from_selection") return {};
+        const promptFn = (globalThis as any)?.window?.prompt;
+        if (typeof promptFn !== "function") return null;
+        const value = promptFn("Label text", "");
+        if (typeof value !== "string") return null;
+        const text = value.trim();
+        if (text.length === 0) return null;
+        return { text };
     }
 
     private detachOutsidePointerHandler(): void {
