@@ -55,7 +55,20 @@ The widget emits events back to Python via `widget.on_msg`:
 - `layer_ack`, `layer_deleted`
 - `registry_cleared`
 - `camera_snapshot`
+- `interaction_hover`, `interaction_click`
 - `js_log` (debug only)
+
+Current interaction contract
+
+- first slice is minimal and atom-centric
+- structure picks emit:
+  - `event`
+  - `kind: "structure"`
+  - `atom_indices`
+- empty canvas hover/click emits:
+  - `event`
+  - `kind: "empty"`
+- richer semantics for regions, shapes, callbacks, or shared highlight are deliberately deferred
 
 ## Data flow
 
@@ -167,6 +180,7 @@ The widget emits events back to Python via `widget.on_msg`, including:
 - `region_ack` / `region_deleted`
 - `layer_ack` / `layer_deleted`
 - `registry_cleared`
+- `interaction_hover` / `interaction_click`
 - `js_log` (debug only)
 
 ### Regions & layers: semantics to preserve

@@ -143,7 +143,31 @@ It is organized by execution priority and uses three labels:
 - `region.hide()` must remain sticky across global show/hide cycles.
 - Whole/global operations must not accidentally mutate region-specific hidden state.
 
-## 6) Export, Embedding, and Popup
+## 6) Canvas Interaction and Picking
+
+### Status
+
+- `In progress`
+  - The first JS -> Python interaction transport now exists for Mol* `hover` and `click`.
+  - The current contract is intentionally minimal and atom-centric:
+    - `interaction_hover`
+    - `interaction_click`
+    - `kind: "structure"` with `atom_indices`
+    - `kind: "empty"` for canvas-empty interactions
+  - Python now stores the last hover/click payload on `MolSysView`.
+
+### Next actions
+
+- Add Python-side callback registration only after the transport contract settles.
+- Decide whether region-aware and shape-aware picks belong in the same event family or in richer payload variants.
+- Add pointer semantics and shared highlight/selection only after event ownership is clear.
+
+### Criteria
+
+- Keep the first interaction contract additive and easy to replay/debug.
+- Do not overfit the payload before real picking workflows exist.
+
+## 7) Export, Embedding, and Popup
 
 ### Status
 
@@ -168,7 +192,7 @@ It is organized by execution priority and uses three labels:
 - Export output must be reproducible from message history.
 - Runtime source should remain decoupled from generated-artifact manual edits.
 
-## 7) Testing and Quality Gates
+## 8) Testing and Quality Gates
 
 ### Status
 
@@ -192,7 +216,7 @@ It is organized by execution priority and uses three labels:
 - Every protocol-significant behavior should be covered in either Python or JS tests.
 - Keep E2E deterministic and environment-aware (browser/WebGL constraints).
 
-## 8) Documentation and Development Memory
+## 9) Documentation and Development Memory
 
 ### Status
 

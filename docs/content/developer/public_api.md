@@ -48,6 +48,9 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `focus_region(...)`
 - `make_regions_by(...)`
   - limited for now to `element="chain" | "molecule" | "entity"`
+- `get_last_hover_event()`
+- `get_last_click_event()`
+  - current interaction payloads are intentionally minimal and atom-centric
 
 Related object wrappers are also part of the intended public surface:
 
