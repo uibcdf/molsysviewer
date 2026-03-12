@@ -575,6 +575,12 @@ class MolSysView:
         )
         self._regions[tag] = region
         region._send_create()  # noqa: SLF001
+        if representation is not None or repr_params:
+            region.set_representation(
+                representation,
+                skip_digestion=True,
+                **repr_params,
+            )
         return region
 
     @signal(tags=["region", "selection"])

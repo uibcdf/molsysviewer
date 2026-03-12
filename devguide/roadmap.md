@@ -261,7 +261,7 @@ should grow over time as additional project-level principles become clear.
 
 ### Next actions
 
-- Validate the new Python bridge once the sibling `pyunitwizard` checkout is back in a healthy importable state.
+- Keep the new Python bridge validated as `pyunitwizard` continues stabilizing; the current targeted regressions are green again.
 - Add the next explicit bridge only after deciding its stable replay/rebuild/export contract:
   - named selections,
   - richer selection -> annotation flows.
