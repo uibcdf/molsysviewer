@@ -78,6 +78,7 @@ Current first implemented slice:
 - the target section now also exposes a first generic action:
   - `Focus Target`
 - for `annotation` targets, this replaces the old placeholder-only menu body
+- for first-slice `shape` targets, `Focus Target` is also available when the shape exposes anchor atoms
 
 This supports richer workflows and future submenus.
 

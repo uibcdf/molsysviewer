@@ -2,6 +2,7 @@ import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { StateObjectRef } from "molstar/lib/mol-state";
 import { Structure, StructureElement } from "molstar/lib/mol-model/structure";
+import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
@@ -27,11 +28,13 @@ type InteractionKind = "hover" | "click" | "context";
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
-    | { event: "interaction_hover" | "interaction_click"; kind: "structure"; atom_indices: number[] };
+    | { event: "interaction_hover" | "interaction_click"; kind: "structure"; atom_indices: number[] }
+    | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string };
 
 type ContextInteractionPayload =
     | { event: "interaction_context_menu"; kind: "empty"; page_x?: number; page_y?: number }
     | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[]; page_x?: number; page_y?: number }
+    | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; page_x?: number; page_y?: number }
     | {
         event: "interaction_context_menu";
         kind: "annotation";
@@ -60,6 +63,20 @@ function lociToAtomIndices(loci: any): number[] {
     return atomIndices;
 }
 
+function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string; shape_name?: string } | null {
+    const shape = ShapeGroup.isLoci(loci) ? loci.shape : Shape.isLoci(loci) ? loci.shape : null;
+    if (!shape) return null;
+    const sourceData = (shape.sourceData ?? {}) as Record<string, unknown>;
+    const atomIndices = Array.isArray(sourceData.atom_indices)
+        ? sourceData.atom_indices.map((i) => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter((i) => Number.isFinite(i))
+        : [];
+    return {
+        atom_indices: atomIndices,
+        tag: typeof sourceData.tag === "string" ? sourceData.tag : undefined,
+        shape_name: shape.name,
+    };
+}
+
 export function normalizeInteractionEvent(kind: InteractionKind, ev: any): InteractionPayload {
     if (kind === "context") {
         throw new Error("Use normalizeContextInteractionEvent for context interactions");
@@ -67,6 +84,8 @@ export function normalizeInteractionEvent(kind: InteractionKind, ev: any): Inter
     const event = kind === "hover" ? "interaction_hover" : "interaction_click";
     const atomIndices = lociToAtomIndices(ev?.current?.loci);
     if (atomIndices.length === 0) {
+        const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
+        if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
         return { event, kind: "empty" };
     }
     return { event, kind: "structure", atom_indices: atomIndices };
@@ -78,6 +97,8 @@ export function normalizeContextInteractionEvent(ev: any): ContextInteractionPay
     const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
     const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
     if (atomIndices.length === 0) {
+        const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
+        if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
         return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
     }
     return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };

@@ -1,6 +1,7 @@
 import { Structure } from "molstar/lib/mol-model/structure";
 import { StructureElement } from "molstar/lib/mol-model/structure";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 
 export type ActiveSelectionItem = {
     source_kind: "element";
@@ -22,13 +23,22 @@ export type ActiveSelectionItem = {
     entity_indices: number[];
     tag?: string;
     text?: string;
+} | {
+    source_kind: "shape";
+    shape_kind: string;
+    shape_name?: string;
+    tag?: string;
+    atom_indices: number[];
+    group_indices: number[];
+    chain_indices: number[];
+    entity_indices: number[];
 };
 
 export type ActiveSelectionPayload = {
     event: "interaction_active_selection_changed";
-    source_kind: "empty" | "element" | "annotation" | "mixed";
+    source_kind: "empty" | "element" | "annotation" | "shape" | "mixed";
+    target_level: "none" | "annotation" | "shape" | "mixed";
     element_level: "none" | "group";
-    target_level: "none" | "annotation" | "mixed";
     items: ActiveSelectionItem[];
     atom_indices: number[];
     group_indices: number[];
@@ -146,6 +156,28 @@ function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
     return items;
 }
 
+function arrayOfNumbers(value: unknown): number[] {
+    return Array.isArray(value)
+        ? value.map((item) => (typeof item === "number" ? Math.trunc(item) : Number(item))).filter((item) => Number.isFinite(item))
+        : [];
+}
+
+function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
+    const shape = ShapeGroup.isLoci(rawLoci) ? rawLoci.shape : Shape.isLoci(rawLoci) ? rawLoci.shape : null;
+    if (!shape) return [];
+    const data = (shape.sourceData ?? {}) as Record<string, unknown>;
+    return [{
+        source_kind: "shape",
+        shape_kind: typeof data.kind === "string" ? data.kind : shape.name,
+        shape_name: shape.name,
+        tag: typeof data.tag === "string" ? data.tag : undefined,
+        atom_indices: arrayOfNumbers(data.atom_indices),
+        group_indices: arrayOfNumbers(data.group_indices),
+        chain_indices: arrayOfNumbers(data.chain_indices),
+        entity_indices: arrayOfNumbers(data.entity_indices),
+    }];
+}
+
 function emptyPayload(): ActiveSelectionPayload {
     return {
         event: "interaction_active_selection_changed",
@@ -169,6 +201,9 @@ function emptyPayload(): ActiveSelectionPayload {
 function signature(item: ActiveSelectionItem): string {
     if (item.source_kind === "annotation") {
         return `${item.source_kind}:${item.annotation_kind}:${item.tag ?? ""}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
+    }
+    if (item.source_kind === "shape") {
+        return `${item.source_kind}:${item.tag ?? ""}:${item.shape_name ?? item.shape_kind}`;
     }
     return `${item.source_kind}:${item.element_level}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
 }
@@ -207,7 +242,14 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
         event: "interaction_active_selection_changed",
         source_kind: sourceKind,
         element_level: sourceKind === "element" || sourceKind === "mixed" ? "group" : "none",
-        target_level: sourceKind === "annotation" ? "annotation" : sourceKind === "mixed" ? "mixed" : "none",
+        target_level:
+            sourceKind === "annotation"
+                ? "annotation"
+                : sourceKind === "shape"
+                    ? "shape"
+                    : sourceKind === "mixed"
+                        ? "mixed"
+                        : "none",
         items,
         atom_indices: atomIndices,
         group_indices: groupIndices,
@@ -217,7 +259,7 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
         entity_indices: entityIndices,
         count_atoms: atomIndices.length,
         count_groups: groupIndices.length,
-        count_shapes: 0,
+        count_shapes: items.filter((item) => item.source_kind === "shape").length,
         count_annotations: items.filter((item) => item.source_kind === "annotation").length,
     };
 }
@@ -229,7 +271,7 @@ export class ActiveSelectionController {
 
     handlePrimaryClick(ev: any): void {
         const shift = !!ev?.modifiers?.shift;
-        const items = lociToGroupItems(ev?.current?.loci);
+        const items = lociToGroupItems(ev?.current?.loci).concat(lociToShapeItems(ev?.current?.loci));
         if (items.length === 0) {
             if (!shift) this.clear();
             return;
