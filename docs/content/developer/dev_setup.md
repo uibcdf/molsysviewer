@@ -100,6 +100,12 @@ npm run test:e2e
 
 E2E requires a local Chrome/Chromium with WebGL.
 
+On this workstation, the verified recipe is:
+
+```bash
+PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e
+```
+
 ## Using Codex or other AI tools (optional)
 
 If you want to use Codex CLI as a development assistant:

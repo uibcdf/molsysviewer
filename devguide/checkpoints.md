@@ -243,7 +243,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - and exploration -> reproducible-state flows together instead of as disconnected features.
   - Current smoke automation result:
     - `pytest tests/test_annotations.py tests/test_reproducible_interaction.py tests/test_measurements.py tests/test_interaction_events.py -q` is green,
-    - `npm --prefix molsysviewer/js run test:e2e` builds successfully but skips in this environment because Chromium launch is blocked by sandbox/crashpad constraints.
+    - `PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e` is now verified as passing on this workstation.
 
 ## Active Decisions
 
