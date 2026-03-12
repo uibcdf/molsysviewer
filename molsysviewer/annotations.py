@@ -22,6 +22,42 @@ class AnnotationsManager:
             self._view._layers[tag].kind = "annotation"  # noqa: SLF001
         return self._view._layers[tag]  # noqa: SLF001
 
+    def _annotation_layer(self, tag: str) -> Layer | None:
+        layer = self._view._layers.get(tag)  # noqa: SLF001
+        if layer is None or getattr(layer, "kind", None) != "annotation":
+            return None
+        return layer
+
+    def _require_annotation_layer(self, tag: str) -> Layer:
+        layer = self._annotation_layer(tag)
+        if layer is None:
+            raise ValueError(f"No annotation layer found for tag {tag!r}.")
+        return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def tags(self, skip_digestion: bool = False) -> list[str]:
+        """Return the active annotation tags."""
+        return [tag for tag, layer in self._view._layers.items() if getattr(layer, "kind", None) == "annotation"]  # noqa: SLF001
+
+    @signal(tags=["annotation"])
+    @digest()
+    def contains(self, tag: str, skip_digestion: bool = False) -> bool:
+        """Return whether an annotation layer exists for ``tag``."""
+        return self._annotation_layer(tag) is not None
+
+    @signal(tags=["annotation"])
+    @digest()
+    def get(self, tag: str, skip_digestion: bool = False) -> Layer | None:
+        """Return the annotation layer for ``tag``, if present."""
+        return self._annotation_layer(tag)
+
+    @signal(tags=["annotation"])
+    @digest()
+    def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        """Return a copy of the current replayable annotation records."""
+        return [dict(item) for item in self._view._annotation_history]  # noqa: SLF001
+
     @signal(tags=["annotation"])
     @digest()
     def add_label(
@@ -98,6 +134,46 @@ class AnnotationsManager:
             tag=tag,
             skip_digestion=True,
         )
+
+    @signal(tags=["annotation", "visibility"])
+    @digest()
+    def show(self, tag: str, skip_digestion: bool = False) -> Layer:
+        """Show the annotation layer for ``tag``."""
+        layer = self._require_annotation_layer(tag)
+        layer.show(skip_digestion=True)
+        return layer
+
+    @signal(tags=["annotation", "visibility"])
+    @digest()
+    def hide(self, tag: str, skip_digestion: bool = False) -> Layer:
+        """Hide the annotation layer for ``tag``."""
+        layer = self._require_annotation_layer(tag)
+        layer.hide(skip_digestion=True)
+        return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def delete(self, tag: str, skip_digestion: bool = False) -> None:
+        """Delete the annotation layer for ``tag``."""
+        layer = self._require_annotation_layer(tag)
+        layer.delete(skip_digestion=True)
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> Layer:
+        """Rename an annotation layer tag."""
+        layer = self._require_annotation_layer(tag)
+        layer.set_tag(new_tag, skip_digestion=True)
+        return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def clear(self, tag: str | None = None, skip_digestion: bool = False) -> None:
+        """Clear annotations globally or remove one annotation layer by tag."""
+        if tag is None:
+            self._view.clear_decorations(shapes=False, styles=False, labels=True, skip_digestion=True)  # noqa: SLF001
+            return
+        self.delete(tag, skip_digestion=True)
 
 
 __all__ = ["AnnotationsManager"]

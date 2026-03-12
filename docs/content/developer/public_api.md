@@ -65,6 +65,15 @@ Related object wrappers are also part of the intended public surface:
 - `view.regions[tag].show_only(...)`
 - `view.annotations.add_label(...)`
   - current first slice: persistent label on exactly one `group`
+- `view.annotations.tags()`
+- `view.annotations.contains(tag)`
+- `view.annotations.get(tag)`
+- `view.annotations.records()`
+- `view.annotations.show(tag)`
+- `view.annotations.hide(tag)`
+- `view.annotations.delete(tag)`
+- `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.clear(tag=None)`
 - `view.measurements.add_distance(...)`
 - `view.measurements.add_angle(...)`
 - `view.measurements.add_dihedral(...)`

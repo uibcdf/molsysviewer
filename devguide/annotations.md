@@ -382,6 +382,22 @@ So the minimum management surface for v1 should effectively cover:
 - clear labels
 - show/hide through layers
 
+Current API direction is now stronger than that first minimum:
+
+- `view.annotations.tags()`
+- `view.annotations.contains(tag)`
+- `view.annotations.get(tag)`
+- `view.annotations.records()`
+- `view.annotations.show(tag)`
+- `view.annotations.hide(tag)`
+- `view.annotations.delete(tag)`
+- `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.clear(tag=None)`
+
+This is intentional.
+Annotations should be manageable through a robust Python API, not only through
+UI affordances.
+
 Anything richer than that should wait until the first label slice is stable.
 
 This is a better fit than:

@@ -39,3 +39,46 @@ def test_clear_decorations_labels_clears_annotation_history_only():
 
     assert view._annotation_history == []  # noqa: SLF001
     assert len(view._shape_history) == 1  # noqa: SLF001
+
+
+def test_annotation_manager_supports_query_and_layer_operations():
+    view = demo["dialanine"]
+    view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
+
+    assert view.annotations.tags() == ["notes"]
+    assert view.annotations.contains("notes") is True
+    layer = view.annotations.get("notes")
+    assert layer is not None
+    assert layer.tag == "notes"
+    assert view.annotations.records()[0]["options"]["text"] == "Group 0"
+
+    view.annotations.hide("notes")
+    assert view.layers["notes"]._hidden is True  # noqa: SLF001
+
+    view.annotations.show("notes")
+    assert view.layers["notes"]._hidden is False  # noqa: SLF001
+
+    renamed = view.annotations.set_tag("notes", "analysis-label")
+    assert renamed.tag == "analysis-label"
+    assert view.annotations.contains("notes") is False
+    assert view.annotations.contains("analysis-label") is True
+    assert view.annotations.records()[0]["tag"] == "analysis-label"
+    assert view.annotations.records()[0]["options"]["tag"] == "analysis-label"
+
+    view.annotations.delete("analysis-label")
+    assert view.annotations.tags() == []
+
+
+def test_annotation_manager_clear_tag_and_global_clear():
+    view = demo["dialanine"]
+    view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
+    view.annotations.add_label(text="Group 1", group_index=1, tag="notes-2")
+
+    view.annotations.clear(tag="notes")
+    assert view.annotations.contains("notes") is False
+    assert view.annotations.contains("notes-2") is True
+    assert [item["tag"] for item in view.annotations.records()] == ["notes-2"]
+
+    view.annotations.clear()
+    assert view.annotations.tags() == []
+    assert view.annotations.records() == []
