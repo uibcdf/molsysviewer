@@ -70,7 +70,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `pyunitwizard` usage is unified.
     - `smonitor` coverage expanded and structurally enforced.
     - `argdigest` hardening covers core public wrappers.
-    - **Git Hygiene:** Build artifacts from JS tests (`dist-index.js`, `harness.bundle.js`, `region-hide.e2e.js`) are no longer tracked and have been added to `.gitignore`.
+    - **Git Hygiene:** JS test build outputs should stay out of git. `dist-index.js`, `dist-region-hide.js`, `harness.bundle.js`, and `region-hide.e2e.js` belong in ignore rules unless there is a documented reason to version them.
 
 - `molsysviewer.tools`
   - The package now exists and starts with `molsysviewer.tools.basic.concatenate_structures(...)`.
