@@ -105,6 +105,7 @@ We are not copying UI wholesale, but we are importing useful patterns.
 - lightweight callbacks and notebook-friendly event exposure are high-value
 - picked metadata should be useful without requiring a heavy UI
 - event payloads and selection objects should stay reasonably serializable and lightweight
+- interaction feedback should feel immediate without requiring expensive state reconstruction
 
 ## What Is Still Open or Intentionally Deferred
 
