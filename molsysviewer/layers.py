@@ -57,8 +57,8 @@ class Layer:
         """Remove this layer and its visuals."""
         if not self._active:
             return
+        self._view._send({"op": "delete_layer", "tag": self.tag})  # noqa: SLF001
         self._active = False
-        self._send("delete_layer")
         self._view._unregister_layer(self.tag)  # noqa: SLF001
 
     @signal(tags=["layer"])
@@ -68,6 +68,6 @@ class Layer:
         if not self._active or new_tag == self.tag:
             return
         old_tag = self.tag
+        self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag})  # noqa: SLF001
         self.tag = new_tag
-        self._send("set_layer_tag", new_tag=new_tag)
         self._view._reregister_layer(old_tag, new_tag, self)  # noqa: SLF001

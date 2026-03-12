@@ -274,7 +274,7 @@ should grow over time as additional project-level principles become clear.
   contract.
 - Keep hardening `annotations` as a Python API surface, not only as a UI flow:
   - explicit query/inspection methods,
-  - explicit show/hide/delete/rename/text-edit/clear methods by tag,
+  - explicit show/hide/delete/rename/text-edit/reanchor/clear methods by tag,
   - stable records suitable for replay-oriented debugging,
   - compact summaries that are more useful than raw records in notebook work.
 

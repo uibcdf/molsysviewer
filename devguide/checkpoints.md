@@ -207,7 +207,7 @@ Do not append dated historical entries unless a date is itself operationally rel
       - `records()`
       - `info(tag=None)`
       - `show(tag)` / `hide(tag)`
-      - `delete(tag)` / `set_tag(tag, new_tag)` / `set_text(tag, text)`
+      - `delete(tag)` / `set_tag(tag, new_tag)` / `set_text(tag, text)` / `set_group_index(tag, group_index)`
       - `clear(tag=None)`
     - labels are implemented as `annotations`, not `shapes`,
     - the first slice is intentionally narrow: one persistent label anchored to one `group`,
@@ -231,10 +231,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - they are tracked as `measurement` layers and replayed across rebuild/export.
   - Validation note:
     - JS regression remains green,
-    - Python regressions for the earlier reproducibility slice had passed again after the sibling `pyunitwizard` checkout was repaired,
+    - Python regressions for `tests/test_annotations.py` are green again after fixing layer-tag/delete replay bookkeeping in `molsysviewer`,
+    - the latest hardening also added replay-safe label reanchoring with `view.annotations.set_group_index(...)`,
     - the `new_region_from_active_selection(...)` path required one contract fix so region representations are recorded explicitly as `set_region_representation` during replay/export,
     - the UI-to-Python bridge now executes `Create Region from Selection`, `Add Label from Selection`, and `Persist Last Measurement` directly from `interaction_context_action`,
-    - the latest frontend-only label-composer refinement is currently blocked from Python-side revalidation by a new external `IndentationError` in the sibling `../molsysmt` checkout (`molsysmt/_private/arg_digestion/argument/coordinates.py`).
+    - broader Python validation outside the annotation slice may still see sibling-checkout instability in `../molsysmt`, so package-wide reruns should be treated separately from this local block.
 
 ## Active Decisions
 

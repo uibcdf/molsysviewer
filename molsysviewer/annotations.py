@@ -34,6 +34,25 @@ class AnnotationsManager:
             raise ValueError(f"No annotation layer found for tag {tag!r}.")
         return layer
 
+    def _resolve_group_atom_indices(self, group_index: Any) -> list[int]:
+        if self._view._molsys is None:  # noqa: SLF001
+            raise ValueError("No molecular system loaded. Load a system before adding labels.")
+
+        if not isinstance(group_index, list) or len(group_index) != 1:
+            raise ValueError("Annotation label operations currently require exactly one group_index.")
+
+        group_idx = int(group_index[0])
+        atom_indices = msm.select(
+            self._view._molsys,  # noqa: SLF001
+            selection=f"group_index=={group_idx}",
+            syntax="MolSysMT",
+            skip_digestion=True,
+        )
+        atom_indices = [int(ii) for ii in atom_indices]
+        if len(atom_indices) == 0:
+            raise ValueError(f"Group index {group_idx} did not resolve to any atoms.")
+        return atom_indices
+
     @signal(tags=["annotation"])
     @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
@@ -110,22 +129,7 @@ class AnnotationsManager:
         skip_digestion: bool = False,
     ) -> Layer:
         """Add a persistent label anchored to a single group."""
-        if self._view._molsys is None:  # noqa: SLF001
-            raise ValueError("No molecular system loaded. Load a system before adding labels.")
-
-        if not isinstance(group_index, list) or len(group_index) != 1:
-            raise ValueError("add_label() currently requires exactly one group_index.")
-
-        group_idx = int(group_index[0])
-        atom_indices = msm.select(
-            self._view._molsys,  # noqa: SLF001
-            selection=f"group_index=={group_idx}",
-            syntax="MolSysMT",
-            skip_digestion=True,
-        )
-        atom_indices = [int(ii) for ii in atom_indices]
-        if len(atom_indices) == 0:
-            raise ValueError(f"Group index {group_idx} did not resolve to any atoms.")
+        atom_indices = self._resolve_group_atom_indices(group_index)
 
         layer_tag = tag or self._view._next_layer_tag()  # noqa: SLF001
         layer = self._ensure_layer(layer_tag)
@@ -237,6 +241,29 @@ class AnnotationsManager:
                 "options": {
                     "tag": tag,
                     "text": text.strip(),
+                    "atom_indices": list(atom_indices),
+                },
+            }
+        )
+        return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Layer:
+        """Reanchor an existing label to a different single group."""
+        layer = self._require_annotation_layer(tag)
+        atom_indices = self._resolve_group_atom_indices(group_index)
+        record = self.info(tag, skip_digestion=True)
+        if not isinstance(record, dict):
+            raise ValueError(f"No annotation record found for tag {tag!r}.")
+
+        self._view._send(  # noqa: SLF001
+            {
+                "op": "update_label",
+                "tag": tag,
+                "options": {
+                    "tag": tag,
+                    "text": record.get("text"),
                     "atom_indices": list(atom_indices),
                 },
             }

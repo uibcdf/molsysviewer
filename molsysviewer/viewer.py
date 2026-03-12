@@ -1354,6 +1354,11 @@ class MolSysView:
             self._shape_history.clear()
         if labels:
             self._annotation_history.clear()
+            annotation_tags = [
+                tag for tag, layer in self._layers.items() if getattr(layer, "kind", None) == "annotation"
+            ]
+            for tag in annotation_tags:
+                self._layers.pop(tag, None)
         self._send(
             {
                 "op": "clear_scene",
