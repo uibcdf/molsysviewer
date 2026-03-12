@@ -37,6 +37,12 @@ Already implemented:
 This is only the transport baseline.
 It is not yet the full interaction contract.
 
+Important implementation gap to keep visible:
+
+- the current shipped interaction bridge is still atom-centric
+- the target design documented here already assumes a richer structural contract with group-level picks
+- implementation work must therefore close that gap intentionally instead of assuming it is already solved
+
 ## Design Pages
 
 1. [**Targets and Selection**](interaction_targets_and_selection.md)
@@ -85,3 +91,17 @@ Do not try to solve all of these immediately:
 - advanced multi-step editing tools beyond measurement scaffolding
 
 The first goal is a stable and well-specified interaction contract.
+
+## Callback Direction
+
+Python-side callbacks are part of the intended interaction surface, but they are
+not yet part of the implemented contract.
+
+Working callback names to keep visible during design and implementation:
+
+- `on_hover`
+- `on_click`
+- `on_context_menu`
+- `on_tool_pick`
+
+These are placeholders, not final API commitments.

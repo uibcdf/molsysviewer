@@ -66,12 +66,14 @@ The interaction model should distinguish four concepts:
 - ephemeral
 - updated by hover
 - never the source of persistent scene mutation by itself
+- should eventually be queryable from Python, even if the first implementation keeps it lightweight
 
 ### `context_target`
 
 - defined by right click / context-menu invocation
 - does not need to match `active_selection`
 - is the anchor for context menus and command launching
+- should eventually be queryable from Python, even if the first implementation only uses it internally
 
 ### `active_selection`
 
@@ -103,6 +105,11 @@ Why separate it from `active_selection`:
 
 - measurements should not need to overwrite the user's general working selection
 - tool workflows are transient and mode-driven
+
+Visibility decision still open:
+
+- `tool_selection` is definitely part of the internal interaction model
+- whether it becomes a first-class public Python object is still open
 
 ## `active_selection` Contract
 
@@ -197,3 +204,9 @@ Potentially useful later, if reliable:
 
 - `group_type`
   - for example amino acid, nucleotide, water, ion, small molecule
+
+Contract note:
+
+- structural index arrays are the hard contract
+- human-readable names/ids should be provided whenever reliably available
+- name-like metadata should therefore be treated as strongly desired but not as the only stable source of identity
