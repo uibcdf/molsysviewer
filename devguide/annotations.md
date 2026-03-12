@@ -138,6 +138,12 @@ This is directly relevant to MolSysViewer because it suggests a clean path for:
 - labels anchored to regions,
 - labels anchored to future analysis results.
 
+For MolSysViewer this should be interpreted carefully:
+
+- labels may later be created from regions as a user-facing workflow
+- but the underlying anchor model should still resolve to element-derived anchors
+- `region` should not become a separate low-level annotation target family in v1
+
 ### 3. Custom and annotation-driven labels
 
 Mol* MVS extensions include:
@@ -309,6 +315,43 @@ For element-based labels, the target should eventually be able to describe:
 - `element_level`
 - relevant index arrays
 
+The target model should preserve:
+
+- the original anchor that the user actually labeled
+- and any derived index views needed for replay, rebuild, or later operations
+
+This mirrors a principle already present in selection design:
+
+- preserve the semantic source of the interaction
+- derive aggregate/index views second
+
+### Text policy for v1
+
+The initial label slice should assume:
+
+- explicit user-provided text
+
+Automatic text derivation from target metadata may become useful later, but it
+should not be part of the first contract.
+
+That keeps v1 predictable and avoids mixing:
+
+- placement policy
+- target identity
+- text-generation policy
+
+### Remap / invalidation policy
+
+Labels should survive replay and rebuild while their target can be remapped
+cleanly.
+
+If a rebuild or edit removes the target anchor in a way that cannot be remapped
+meaningfully, the label should:
+
+- be invalidated cleanly
+- disappear deterministically
+- and avoid leaving stale/corrupt annotation state behind
+
 This should remain aligned with the element taxonomy used elsewhere in the
 interaction contract.
 
@@ -329,6 +372,14 @@ Likely management direction after that:
 - label creation should live under `view.annotations`
 - bulk visibility/clear behavior should prefer existing layer semantics
 - `clear_decorations(..., labels=True)` should remain valid as a convenience path
+
+So the minimum management surface for v1 should effectively cover:
+
+- add label
+- clear labels
+- show/hide through layers
+
+Anything richer than that should wait until the first label slice is stable.
 
 This is a better fit than:
 
