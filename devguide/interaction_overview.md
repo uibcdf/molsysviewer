@@ -34,24 +34,45 @@ These invariants should remain true unless a later design explicitly changes the
 
 Already implemented:
 
-- minimal JS -> Python event bridge for:
+- JS -> Python interaction events for:
   - `interaction_hover`
   - `interaction_click`
-- atom-centric transport for the first slice:
-  - element picks emit `atom_indices`
-  - empty canvas emits `kind: "empty"`
-- Python stores:
-  - `get_last_hover_event()`
-  - `get_last_click_event()`
-
-This is only the transport baseline.
-It is not yet the full interaction contract.
+  - `interaction_context_menu`
+  - `interaction_context_action`
+  - `interaction_active_selection_changed`
+  - `interaction_tool_state`
+  - `interaction_measurement_created`
+- Python stores the last observed event for each of those families
+- viewer-owned context menu in the canvas
+- left-click selection and `Shift` additive selection
+- empty-click clear semantics
+- `left drag` rotate and `right drag` pan preserved
+- double-left-click focus
+- explicit measurement tool modes:
+  - `distance`
+  - `angle`
+  - `dihedral`
+- visible tool-status overlay with progress and `Esc` hint
+- first real `active_selection` runtime slices for:
+  - `element`
+  - `annotation`
+  - `shape`
+  - narrow `mixed`
+- first `GroupStrip` runtime slice synchronized with canvas interaction
+- first annotation runtime slice with persistent labels
+- first reproducible UI -> Python bridges for:
+  - selection -> region
+  - selection -> label
+  - interactive measurement -> persisted measurement artifact
 
 Important implementation gap to keep visible:
 
-- the current shipped interaction bridge is still atom-centric
-- the target design documented here already assumes a richer element-level contract with group-level picks
-- implementation work must therefore close that gap intentionally instead of assuming it is already solved
+- the runtime is now meaningfully group-centric for element selection, but the
+  full public Python object model around `active_selection`, `hover_target`,
+  `context_target`, and `tool_selection` is still not finalized
+- mixed-selection semantics are real but still intentionally narrow
+- several UX paths are deliberately minimal first slices rather than final UI
+  design, especially label-text capture
 
 ## Design Pages
 
@@ -81,33 +102,31 @@ Important implementation gap to keep visible:
 
 ## Immediate Implementation Guidance
 
-When implementation resumes, proceed in this order:
+When implementation resumes, proceed under the reproducibility-first rule:
 
-1. enrich the interaction payload so it can represent element targets at `group` level and not only raw atom lists
-2. define a first stable Python-facing representation for `active_selection`
-3. implement left-click selection replacement/add semantics
-4. implement empty-click clear semantics
-5. add right-click `context_target` and menu-launch event semantics without breaking right-drag pan
-6. implement tool-mode scaffolding for measurement workflows
-7. only after that, add richer UI polish such as temporary level choosers or hover tooltips
+1. strengthen the Python-facing object model for interaction state
+2. keep converting exploratory interaction into explicit replay-safe state
+3. improve weak UX slices only after their reproducible contract is stable
+4. then add richer interaction polish such as level choosers, tooltips, and
+   broader mixed-selection behavior
 
 ## Non-Goals for the First Implementation Pass
 
 Do not try to solve all of these immediately:
 
 - full menu UX polish
-- every modifier binding
 - fully general mixed-selection operations
 - shape-specific contextual operations for every overlay family
 - popup synchronization of interaction state
-- advanced multi-step editing tools beyond measurement scaffolding
+- advanced multi-step editing tools beyond the current measurement scaffolding
+- final polished text-entry UX for labels
 
 The first goal is a stable and well-specified interaction contract.
 
 ## Callback Direction
 
-Python-side callbacks are part of the intended interaction surface, but they are
-not yet part of the implemented contract.
+Python-side callbacks are still part of the intended interaction surface, but
+they are not yet a stabilized public callback API.
 
 Working callback names to keep visible during design and implementation:
 
