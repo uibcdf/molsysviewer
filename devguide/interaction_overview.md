@@ -73,7 +73,9 @@ Important implementation gap to keep visible:
 - left click replaces selection
 - `Shift + left click` adds to selection
 - left click on empty clears selection
-- right click opens menu without changing active selection
+- `left drag` rotates
+- `right drag` translates/pans
+- right click without drag opens menu without changing active selection
 - right click sets `context_target`
 - double left click focuses
 
@@ -85,7 +87,7 @@ When implementation resumes, proceed in this order:
 2. define a first stable Python-facing representation for `active_selection`
 3. implement left-click selection replacement/add semantics
 4. implement empty-click clear semantics
-5. add right-click `context_target` and menu-launch event semantics
+5. add right-click `context_target` and menu-launch event semantics without breaking right-drag pan
 6. implement tool-mode scaffolding for measurement workflows
 7. only after that, add richer UI polish such as temporary level choosers or hover tooltips
 
