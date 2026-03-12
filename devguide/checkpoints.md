@@ -169,6 +169,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the canvas suppresses the host `contextmenu`,
     - Python stores both the last context-target event and the last chosen context action event,
     - a minimal viewer-owned context menu now exists with seed actions for `distance`, `angle`, and `dihedral`.
+  - Interactive measurement now has a first real implementation path:
+    - menu-seeded `distance` / `angle` / `dihedral` actions start a frontend tool mode,
+    - picks are forced down the Mol* element/atom path for measurement purposes,
+    - Mol* `StructureMeasurementManager` is the calculation/rendering engine for interactive measurements,
+    - Python currently observes tool-state and measurement-created events rather than driving the measurement math itself.
 
 ## Active Decisions
 
@@ -197,6 +202,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep persistent labels out of `shapes`; the category should be `annotations`.
 - Keep hover tooltips and persistent annotations as separate concerns.
 - Keep `annotations` layer-aware from the first implementation.
+- Use Mol* rather than MolSysMT as the first engine for interactive distance/angle/dihedral:
+  - Mol* already owns the live picked loci and the native measurement representations,
+  - MolSysMT remains appropriate for later Python-side analysis or validation, not for the first interactive gesture loop.
 
 ## Next Step
 
