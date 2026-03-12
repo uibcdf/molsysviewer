@@ -412,6 +412,7 @@ export class MolSysViewerController {
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
                     break;
             }
+            this.syncStripOverlaysForMessage(msg);
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
         }
@@ -505,5 +506,27 @@ export class MolSysViewerController {
     private notifyTrajectoryState() {
         // Just a bridge if needed, but handlers can notify directly via callbacks or listeners
         // TrajectoryHandler handles its own listeners
+    }
+
+    private syncStripOverlaysForMessage(msg: ViewerMessage) {
+        switch ((msg as any).op) {
+            case "add_label":
+                this.groupStrip.addLabelOverlay(msg as any);
+                break;
+            case "clear_scene":
+                if ((msg as any).options?.labels) this.groupStrip.clearAnnotationOverlays();
+                break;
+            case "delete_layer":
+                this.groupStrip.clearAnnotationOverlaysByTag((msg as any).tag);
+                break;
+            case "set_layer_tag":
+                if (typeof (msg as any).tag === "string" && typeof (msg as any).new_tag === "string") {
+                    this.groupStrip.retagAnnotationOverlays((msg as any).tag, (msg as any).new_tag);
+                }
+                break;
+            case "clear_all":
+                this.groupStrip.clearAnnotationOverlays();
+                break;
+        }
     }
 }

@@ -206,7 +206,9 @@ It is organized by execution priority and uses three labels:
   - `annotation` as `context_target`,
   - later `annotation` in `active_selection`,
   - later hover/pick behavior.
-- Add annotation overlays to `GroupStrip` after the strip baseline is stable.
+- Grow the current strip overlay slice:
+  - compact label marks now exist on `GroupStrip`,
+  - richer annotation overlay semantics still need design and tests.
 - Revisit atom labels, free-point labels, and shape-attached labels only after the first slice is solid.
 
 ### Criteria

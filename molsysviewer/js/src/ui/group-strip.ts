@@ -1,6 +1,7 @@
 import { StructureElement, Structure } from "molstar/lib/mol-model/structure";
 
 import { ActiveSelectionItem, ActiveSelectionPayload, buildGroupItemsFromStructure } from "../managers/active-selection";
+import { AddLabelMessage } from "../messages/viewer-messages";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
 type OnFocus = (item: ActiveSelectionItem) => void;
@@ -29,6 +30,7 @@ export class GroupStrip {
     private groupItems: ActiveSelectionItem[] = [];
     private selectedKeys = new Set<string>();
     private structure?: Structure;
+    private readonly annotationRecords = new Map<string, Array<{ tag: string; text: string }>>();
 
     constructor(
         private readonly host: HTMLElement,
@@ -62,6 +64,7 @@ export class GroupStrip {
 
     setStructure(structure: Structure | undefined): void {
         this.structure = structure;
+        if (!structure) this.annotationRecords.clear();
         this.groupItems = structure ? buildGroupItemsFromStructure(structure) : [];
         this.render();
     }
@@ -74,6 +77,58 @@ export class GroupStrip {
         }
         this.selectedKeys = next;
         this.render();
+    }
+
+    addLabelOverlay(msg: AddLabelMessage): void {
+        const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
+        const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
+        const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+        if (!text || atomIndices.length === 0 || this.groupItems.length === 0) return;
+
+        const key = this.findSelectionKeyFromAtomIndices(atomIndices);
+        if (!key) return;
+        const records = this.annotationRecords.get(key) ?? [];
+        records.push({ tag, text });
+        this.annotationRecords.set(key, records);
+        this.render();
+    }
+
+    clearAnnotationOverlays(): void {
+        if (this.annotationRecords.size === 0) return;
+        this.annotationRecords.clear();
+        this.render();
+    }
+
+    clearAnnotationOverlaysByTag(tag?: string): void {
+        if (!tag) {
+            this.clearAnnotationOverlays();
+            return;
+        }
+        let changed = false;
+        for (const [key, records] of this.annotationRecords.entries()) {
+            const next = records.filter((record) => record.tag !== tag);
+            if (next.length === records.length) continue;
+            changed = true;
+            if (next.length === 0) {
+                this.annotationRecords.delete(key);
+            } else {
+                this.annotationRecords.set(key, next);
+            }
+        }
+        if (changed) this.render();
+    }
+
+    retagAnnotationOverlays(oldTag: string, newTag: string): void {
+        let changed = false;
+        for (const [key, records] of this.annotationRecords.entries()) {
+            const next = records.map((record) => {
+                if (record.tag !== oldTag) return record;
+                changed = true;
+                return { ...record, tag: newTag };
+            });
+            this.annotationRecords.set(key, next);
+        }
+        if (changed) this.render();
     }
 
     dispose(): void {
@@ -119,7 +174,6 @@ export class GroupStrip {
                 const key = selectionKey(item);
                 const button = document.createElement("button");
                 button.type = "button";
-                button.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
                 const selected = this.selectedKeys.has(key);
                 Object.assign(button.style, {
                     padding: "6px 8px",
@@ -131,6 +185,26 @@ export class GroupStrip {
                     whiteSpace: "nowrap",
                     font: "inherit",
                 });
+                const text = document.createElement("span");
+                text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
+                button.appendChild(text);
+
+                const annotationRecords = this.annotationRecords.get(key) ?? [];
+                if (annotationRecords.length > 0) {
+                    const badge = document.createElement("span");
+                    badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
+                    Object.assign(badge.style, {
+                        marginLeft: "6px",
+                        padding: "1px 6px",
+                        borderRadius: "999px",
+                        background: "rgba(110, 231, 183, 0.18)",
+                        color: "#b7f7dd",
+                        fontSize: "10px",
+                        fontWeight: "700",
+                    });
+                    button.appendChild(badge);
+                    button.title = annotationRecords.map((record) => record.text).join("\n");
+                }
                 button.addEventListener("click", (event) => {
                     this.onSelect([item], !!(event as MouseEvent).shiftKey);
                 });
@@ -159,5 +233,22 @@ export class GroupStrip {
     focusItem(item: ActiveSelectionItem): StructureElement.Loci | null {
         if (!this.structure) return null;
         return makeLociForItem(this.structure, item);
+    }
+
+    private findSelectionKeyFromAtomIndices(atomIndices: number[]): string | null {
+        const input = [...atomIndices].sort((a, b) => a - b);
+        for (const item of this.groupItems) {
+            if (item.atom_indices.length !== input.length) continue;
+            const own = [...item.atom_indices].sort((a, b) => a - b);
+            let same = true;
+            for (let i = 0; i < own.length; i++) {
+                if (own[i] !== input[i]) {
+                    same = false;
+                    break;
+                }
+            }
+            if (same) return selectionKey(item);
+        }
+        return null;
     }
 }

@@ -222,8 +222,13 @@ The current slice does **not** yet do:
 
 - range selection / drag selection
 - region overlays
-- annotation overlays
 - tool-pick overlays
+
+Annotation overlays have now started in a narrow form:
+
+- persistent group labels can project compact marks onto `GroupStrip`
+- they are still overlays, not first-class strip items
+- richer overlay semantics (hover/pick/context) remain future work
 
 This is intentional.
 The first goal is to prove the shared state model (`active_selection`) and the
