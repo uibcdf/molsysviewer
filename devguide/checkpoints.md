@@ -228,6 +228,14 @@ Interaction design reference:
   - measurement/tool-mode planning,
   - and tracked modifier ideas.
 
+Strip design reference:
+
+- `devguide/strips.md` now records:
+  - why a 1D strip matters,
+  - why `GroupStrip` is the right first strip,
+  - which alternatives were considered and rejected,
+  - and why strip work should follow immediately after `active_selection` is clarified.
+
 ## Criteria
 
 - Do not treat generated JS artifacts as implementation source.
@@ -252,6 +260,7 @@ Interaction design reference:
 - Add canvas interaction work:
   - `Done`: minimal hover/click event transport from Mol* to Python with atom-centric payloads.
   - `Next`: implement the richer contract now documented in the new interaction pages under `devguide/`.
+- Keep `GroupStrip` in scope as the first strip-style companion view once `active_selection` is concrete enough.
 - Continue visual and behavioral refinement of pockets and pharmacophore overlays.
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
