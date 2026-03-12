@@ -14,7 +14,7 @@ A strip view can make several workflows easier:
 
 - inspect groups in order along a chain or molecule
 - select continuous regions more easily than in 3D
-- cross-reference structure, sequence-like order, and active selection
+- cross-reference element order, sequence-like order, and active selection
 - provide an alternative entrypoint for focus, menus, and tool modes
 
 The reference inspiration here includes:
@@ -36,7 +36,7 @@ Why it matters:
 
 - it is fast
 - it is easy to scan
-- it supports structural inspection beyond the 3D canvas
+- it supports element-level inspection beyond the 3D canvas
 
 ### Mol*
 
@@ -46,12 +46,12 @@ Useful idea:
 
 What we want to borrow conceptually:
 
-- wrapper/adaptor logic between structure and 1D view
+- wrapper/adaptor logic between element data and 1D view
 - distinct visual states:
   - highlighted
   - selected
   - focused
-- sequence/structure synchronization
+- sequence/element synchronization
 - optional panel layout
 
 What we do not want to adopt directly:
@@ -62,7 +62,7 @@ What we do not want to adopt directly:
 
 Possible implementation pattern to keep in mind:
 
-- MolSysViewer may still benefit from its own lightweight wrapper/adaptor layer between structural data and strip positions
+- MolSysViewer may still benefit from its own lightweight wrapper/adaptor layer between element data and strip positions
 - this should be inspired by Mol*, not copied from it mechanically
 
 ## Alternatives Considered

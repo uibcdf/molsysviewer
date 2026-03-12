@@ -13,21 +13,26 @@ Implementation note:
 
 | Gesture | Target | Default effect | Selection effect | Context effect | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Hover | `structure` | update `hover_target`; temporary highlight | none | none | structural target level follows current picking policy |
-| Hover | `shape` | update `hover_target`; temporary highlight if viable | none | none | shape remains distinct from structure |
+| Hover | `element` | update `hover_target`; temporary highlight | none | none | element target level follows current picking policy |
+| Hover | `shape` | update `hover_target`; temporary highlight if viable | none | none | shape remains distinct from element picks |
+| Hover | `annotation` | update `hover_target`; temporary highlight if viable | none | none | persistent labels/callouts remain their own target family |
 | Hover | `empty` | clear hover target | none | none | does not clear `active_selection`; may still feed lightweight local UI reset |
-| Left click | `structure` | select clicked target | replace `active_selection` | none | unless `Shift` is pressed |
-| Left click + `Shift` | `structure` | add clicked target | add to `active_selection` | none | incremental selection |
+| Left click | `element` | select clicked target | replace `active_selection` | none | unless `Shift` is pressed |
+| Left click + `Shift` | `element` | add clicked target | add to `active_selection` | none | incremental selection |
 | Left click | `shape` | select clicked shape | replace `active_selection` | none | shape can be part of active selection |
 | Left click + `Shift` | `shape` | add clicked shape | add to `active_selection` | none | may produce mixed selection |
+| Left click | `annotation` | select clicked annotation | replace `active_selection` | none | annotation can be part of active selection |
+| Left click + `Shift` | `annotation` | add clicked annotation | add to `active_selection` | none | may produce mixed selection |
 | Left click | `empty` | clear selection if it was a click, not a drag | clear `active_selection` | none | keep this explicit |
 | Left click + `Shift` | `empty` | no-op | no change | none | do not clear selection on additive empty click |
-| Right click | `structure` | open context menu | no automatic change | set `context_target` | context target may seed tools |
-| Right click | `shape` | open context menu | no automatic change | set `context_target` | no automatic structural translation |
+| Right click | `element` | open context menu | no automatic change | set `context_target` | context target may seed tools |
+| Right click | `shape` | open context menu | no automatic change | set `context_target` | no automatic element translation |
+| Right click | `annotation` | open context menu | no automatic change | set `context_target` | annotation actions remain distinct from shape actions |
 | Right click | `empty` | optional empty-context menu or nothing | no automatic change | optional clear/update context target | keep minimal at first |
 | Middle click | any | deliberately outside the current contract | none | none | audit Mol* / browser behavior before adopting any product semantics |
-| Double left click | `structure` | focus target | no automatic change to `active_selection` | none | canonical focus gesture |
+| Double left click | `element` | focus target | no automatic change to `active_selection` | none | canonical focus gesture |
 | Double left click | `shape` | focus target if possible | no automatic change to `active_selection` | none | may focus shape bounds |
+| Double left click | `annotation` | focus target if possible | no automatic change to `active_selection` | none | only if the annotation has a meaningful anchor/bounds |
 | Double left click | `empty` | not adopted yet | no automatic change | none | do not assume reset-by-default |
 | Double right click | any | not adopted yet | none | none | explicitly considered, intentionally deferred |
 
@@ -66,7 +71,7 @@ It also implies that menu contents may depend on:
 - `context_target`
 - `active_selection`
 - active tool/mode state
-- and the composition of that active selection (`structure`, `shape`, or `mixed`)
+- and the composition of that active selection (`element`, `shape`, `annotation`, or `mixed`)
 
 If right click occurs on empty canvas, a future UX may still expose actions tied
 to `active_selection` or active mode state.
@@ -118,7 +123,8 @@ Measurement scope rule:
 
 - measurement tools operate on atom-level picks
 - shape-only picks do not satisfy a measurement pick unless a future explicit translation policy is introduced
-- any future translation from shape picks to structural picks must be explicit and shape-type aware, not a hidden global fallback
+- annotation-only picks do not satisfy a measurement pick unless a future explicit translation policy is introduced
+- any future translation from shape or annotation picks to element picks must be explicit and target-type aware, not a hidden global fallback
 
 Open UX note:
 

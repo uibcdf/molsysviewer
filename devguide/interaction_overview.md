@@ -38,7 +38,7 @@ Already implemented:
   - `interaction_hover`
   - `interaction_click`
 - atom-centric transport for the first slice:
-  - structure picks emit `atom_indices`
+  - element picks emit `atom_indices`
   - empty canvas emits `kind: "empty"`
 - Python stores:
   - `get_last_hover_event()`
@@ -50,7 +50,7 @@ It is not yet the full interaction contract.
 Important implementation gap to keep visible:
 
 - the current shipped interaction bridge is still atom-centric
-- the target design documented here already assumes a richer structural contract with group-level picks
+- the target design documented here already assumes a richer element-level contract with group-level picks
 - implementation work must therefore close that gap intentionally instead of assuming it is already solved
 
 ## Design Pages
@@ -64,7 +64,7 @@ Important implementation gap to keep visible:
 
 ## Closed Enough for Implementation
 
-- target taxonomy: `empty`, `structure`, `shape`
+- target taxonomy: `empty`, `element`, `shape`, `annotation`
 - public term `group`
 - default group-centric picking policy
 - measurement/tool modes force atom-level picking
@@ -81,7 +81,7 @@ Important implementation gap to keep visible:
 
 When implementation resumes, proceed in this order:
 
-1. enrich the interaction payload so it can represent structural targets at `group` level and not only raw atom lists
+1. enrich the interaction payload so it can represent element targets at `group` level and not only raw atom lists
 2. define a first stable Python-facing representation for `active_selection`
 3. implement left-click selection replacement/add semantics
 4. implement empty-click clear semantics
