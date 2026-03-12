@@ -175,6 +175,7 @@ It is organized by execution priority and uses three labels:
   - Python/MolSysMT can consume emitted results later without entering the immediate click loop.
 - Add visible tool-mode feedback and cancellation semantics before layering richer selection state on top.
 - Build `active_selection` after the measurement path is locally coherent, then reuse it for strips, menus, and annotation interaction.
+- Broaden `active_selection` from the first atom-centric element slice toward the documented element/shape/annotation/mixed contract.
 
 ### Criteria
 

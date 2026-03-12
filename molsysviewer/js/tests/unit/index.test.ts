@@ -7,3 +7,4 @@ import "./viewer-interaction.test";
 import "./popup-host.test";
 import "./popup-logic.test";
 import "./measurement-tools.test";
+import "./active-selection.test";

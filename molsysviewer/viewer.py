@@ -159,6 +159,7 @@ class MolSysView:
         self._last_click_event: dict | None = None
         self._last_context_event: dict | None = None
         self._last_context_action_event: dict | None = None
+        self._last_active_selection_event: dict | None = None
         self._last_tool_state_event: dict | None = None
         self._last_measurement_created_event: dict | None = None
         self._shape_history: list[dict] = []
@@ -260,6 +261,8 @@ class MolSysView:
             self._last_context_event = dict(content)
         elif event == "interaction_context_action":
             self._last_context_action_event = dict(content)
+        elif event == "interaction_active_selection_changed":
+            self._last_active_selection_event = dict(content)
         elif event == "interaction_tool_state":
             self._last_tool_state_event = dict(content)
         elif event == "interaction_measurement_created":
@@ -1195,6 +1198,12 @@ class MolSysView:
         if self._last_context_action_event is None:
             return None
         return dict(self._last_context_action_event)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_active_selection_event(self) -> dict | None:
+        if self._last_active_selection_event is None:
+            return None
+        return dict(self._last_active_selection_event)
 
     @signal(tags=["interaction", "query"])
     def get_last_tool_state_event(self) -> dict | None:
