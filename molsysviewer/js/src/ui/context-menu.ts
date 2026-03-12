@@ -1,6 +1,7 @@
 type BaseTarget =
     | { event: "interaction_context_menu"; kind: "empty" }
-    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[] };
+    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[] }
+    | { event: "interaction_context_menu"; kind: "annotation"; atom_indices: number[]; tag?: string; text?: string };
 
 export type ContextMenuTarget = BaseTarget;
 
@@ -8,6 +9,7 @@ export type ContextMenuAction = "distance" | "angle" | "dihedral";
 
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
+    if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
     const count = target.atom_indices.length;
     return count === 1 ? "Element (1 atom)" : `Element (${count} atoms)`;
 }
@@ -59,10 +61,18 @@ export class ViewerContextMenu {
         });
         this.root.appendChild(header);
 
-        if (target.kind !== "empty") {
+        if (target.kind === "structure") {
             this.root.appendChild(this.makeActionButton("Distance", "distance"));
             this.root.appendChild(this.makeActionButton("Angle", "angle"));
             this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
+        } else if (target.kind === "annotation") {
+            const note = document.createElement("div");
+            note.textContent = "Annotation actions will be added here.";
+            Object.assign(note.style, {
+                padding: "8px",
+                opacity: "0.8",
+            });
+            this.root.appendChild(note);
         } else {
             const note = document.createElement("div");
             note.textContent = "No target under cursor";

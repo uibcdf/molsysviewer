@@ -179,7 +179,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - strip hover now mirrors into the viewer highlight path and emits the same hover event family,
     - right click on a strip item now opens the same viewer context menu contract used by the canvas,
     - compact annotation overlays for persistent group labels now exist,
-    - it is still intentionally narrow and does not yet implement range selection, region overlays, or tool-pick overlays.
+    - right click on a strip label overlay now seeds `annotation` as a real `context_target`,
+    - it is still intentionally narrow and does not yet implement range selection, region overlays, tool-pick overlays, or canvas-side annotation pickability.
   - `annotations` now have a first concrete implementation slice:
     - `view.annotations.add_label(text=..., group_index=..., tag=...)` exists in Python,
     - labels are implemented as `annotations`, not `shapes`,
@@ -239,7 +240,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - tool-pick overlays.
 - Decide the next annotation-interaction step carefully:
   - keep current label overlays on the strip,
-  - then choose between annotation pickability/context targets or richer strip overlays before broadening the model further.
+  - use strip-seeded `annotation` context as the first real interaction slice,
+  - then choose between canvas annotation pickability or richer mixed-selection semantics before broadening the model further.
 - Keep pushing MolSysViewer toward a molecular-system inspection/workbench role for structural biochemistry and drug-design workflows, not only a viewer/export role.
 
 Why this is next:

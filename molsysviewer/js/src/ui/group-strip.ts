@@ -2,11 +2,13 @@ import { StructureElement, Structure } from "molstar/lib/mol-model/structure";
 
 import { ActiveSelectionItem, ActiveSelectionPayload, buildGroupItemsFromStructure } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
+import { ContextMenuTarget } from "./context-menu";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
 type OnFocus = (item: ActiveSelectionItem) => void;
 type OnHover = (item: ActiveSelectionItem | null) => void;
 type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
+type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 
 function selectionKey(item: ActiveSelectionItem): string {
     return `${item.chain_indices.join(",")}:${item.group_indices.join(",")}`;
@@ -38,6 +40,7 @@ export class GroupStrip {
         private readonly onFocus: OnFocus,
         private readonly onHover: OnHover,
         private readonly onContext: OnContext,
+        private readonly onAnnotationContext: OnAnnotationContext,
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-group-strip", "true");
@@ -204,6 +207,22 @@ export class GroupStrip {
                     });
                     button.appendChild(badge);
                     button.title = annotationRecords.map((record) => record.text).join("\n");
+                    badge.addEventListener("contextmenu", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const primary = annotationRecords[0];
+                        this.onAnnotationContext(
+                            {
+                                event: "interaction_context_menu",
+                                kind: "annotation",
+                                atom_indices: item.atom_indices,
+                                tag: primary.tag,
+                                text: primary.text,
+                            },
+                            (event as MouseEvent).pageX,
+                            (event as MouseEvent).pageY,
+                        );
+                    });
                 }
                 button.addEventListener("click", (event) => {
                     this.onSelect([item], !!(event as MouseEvent).shiftKey);

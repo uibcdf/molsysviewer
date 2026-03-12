@@ -456,6 +456,12 @@ Plausible growth after the first label slice:
 - annotation participation in `active_selection`
 - annotation-driven tooltips or inspector panels
 
+Current narrowing decision:
+
+- annotation-aware context begins from `GroupStrip` overlay badges before canvas label pickability
+- this gives `annotation` a real `context_target` path without yet depending on Mol* label picking semantics
+- canvas-side annotation pickability remains a later step
+
 `GroupStrip` alignment note:
 
 - labels are not first-class strip items in `GroupStrip` v1

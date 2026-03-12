@@ -202,12 +202,14 @@ It is organized by execution priority and uses three labels:
 ### Next actions
 
 - Keep the first slice narrow and stable.
-- Broaden annotation interaction after `active_selection` grows beyond element-only:
-  - `annotation` as `context_target`,
+- Broaden annotation interaction in controlled slices:
+  - first `annotation` as `context_target` through strip overlays,
   - later `annotation` in `active_selection`,
-  - later hover/pick behavior.
+  - later hover/pick behavior,
+  - canvas annotation pickability only after that path is stable.
 - Grow the current strip overlay slice:
   - compact label marks now exist on `GroupStrip`,
+  - strip label overlays can already seed annotation context,
   - richer annotation overlay semantics still need design and tests.
 - Revisit atom labels, free-point labels, and shape-attached labels only after the first slice is solid.
 
