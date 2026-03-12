@@ -249,3 +249,42 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
         restore();
     }
 });
+
+test("ViewerContextMenu exposes persist-last-measurement when recent measurement exists", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any }> = [];
+        const menu = new ViewerContextMenu(host, undefined, (action, target) => {
+            actions.push({ action, target });
+        });
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "empty" },
+            10,
+            20,
+            null,
+            { action: "distance", picked_count: 2 },
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Last measurement: distance (2)"));
+        assert.ok(texts.includes("Persist Last Measurement"));
+
+        const persistButton = findNodeByText(root, "Persist Last Measurement");
+        assert.ok(persistButton);
+        persistButton!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            {
+                action: "persist_last_measurement",
+                target: { event: "interaction_context_menu", kind: "empty" },
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});

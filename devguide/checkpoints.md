@@ -167,6 +167,7 @@ Do not append dated historical entries unless a date is itself operationally rel
         - `Focus Selection`
         - `Create Region from Selection`
         - `Add Label from Selection` when the selection resolves to exactly one group
+        - `Persist Last Measurement` when a recent interactive measurement exists
         - `Clear Selection`
   - Interactive measurement now has a first real implementation path:
     - menu-seeded `distance` / `angle` / `dihedral` actions start a frontend tool mode,
@@ -289,7 +290,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   sibling `pyunitwizard` checkout is healthy again.
 - The measurement branch has now advanced one step further than selection/label:
   - persisted measurement ops exist in the runtime,
-  - the remaining work is to decide the cleanest UI path for committing an interactive measurement into that persisted state.
+  - the menu now exposes a first explicit UI affordance for committing the last interactive measurement,
+  - the remaining work is the eventual execution bridge from that UI action into Python-side persistence.
 - Enrich `active_selection` beyond the current element/annotation/shape slices toward richer mixed behavior and metadata quality only when that improves reproducible scientific workflows.
 - Grow `GroupStrip` from the current selection/focus/hover/context slice toward:
   - range selection,
