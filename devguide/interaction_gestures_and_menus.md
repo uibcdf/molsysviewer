@@ -72,6 +72,11 @@ If right click occurs on empty canvas, a future UX may still expose actions tied
 to `active_selection` or active mode state.
 That possibility remains open on purpose.
 
+Another useful future distinction:
+
+- menu contents may differ depending on whether the `context_target` is already part of `active_selection`
+- this can support more precise actions without forcing selection mutation
+
 ## Tool / Measurement Modes
 
 The viewer should support explicit tool modes rather than overloading ordinary
@@ -114,6 +119,11 @@ Measurement scope rule:
 - measurement tools operate on atom-level picks
 - shape-only picks do not satisfy a measurement pick unless a future explicit translation policy is introduced
 - any future translation from shape picks to structural picks must be explicit and shape-type aware, not a hidden global fallback
+
+Open UX note:
+
+- a future implementation may choose whether a completed measurement exits the active tool mode immediately or remains in a repeatable mode
+- that behavior is not fixed yet
 
 ## Hover Direction
 

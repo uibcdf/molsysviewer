@@ -206,6 +206,7 @@ Active-selection direction:
   - `show_only`
   - `make_region`
   - `info`
+- it should also evolve naturally toward creating named or persistent selections/regions when that workflow is formalized
 
 ## Metadata Returned for `group` Picks
 
