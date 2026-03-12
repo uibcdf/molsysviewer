@@ -41,7 +41,19 @@ Common events
 - `region_ack` / `region_deleted`
 - `layer_ack` / `layer_deleted`
 - `registry_cleared`
+- `interaction_hover` / `interaction_click`
 - `js_log` (debug only)
+
+Interaction payloads
+
+- first slice is intentionally atom-centric and minimal
+- structure picks emit:
+  - `event`
+  - `kind: "structure"`
+  - `atom_indices`
+- empty canvas hover/click emits:
+  - `event`
+  - `kind: "empty"`
 
 ## Tags and registries
 
@@ -53,4 +65,3 @@ Tags are the common namespace across:
 
 Tag semantics must remain stable.
 See {doc}`regions_layers` for user-visible rules.
-

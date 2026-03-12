@@ -155,6 +155,8 @@ class MolSysView:
         self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
         self._last_camera_snapshot: dict | None = None
+        self._last_hover_event: dict | None = None
+        self._last_click_event: dict | None = None
         self._shape_history: list[dict] = []
         self._last_label: str | None = None
 
@@ -168,64 +170,7 @@ class MolSysView:
 
         # Register callback for JS->Python messages
         def _handle_msg(widget, content, buffers):  # type: ignore[override]
-            event = content.get("event")
-            if event == "ready":
-                self._ready = True
-                # As soon as the frontend is ready, flush the pending queue.
-                for msg in self._pending_messages:
-                    self.widget.send(msg)
-                self._pending_messages.clear()
-            elif event == "region_ack":
-                tag = content.get("tag")
-                if tag and tag in self._regions:
-                    region = self._regions[tag]
-                    region.atom_indices = content.get("atom_indices") or region.atom_indices
-                    if content.get("selection") is not None:
-                        region.selection = content.get("selection")
-            elif event == "region_deleted":
-                tag = content.get("tag")
-                if tag:
-                    self._unregister_region(tag)
-            elif event == "layer_ack":
-                tag = content.get("tag")
-                if tag and tag not in self._layers:
-                    layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
-                    self._layers[tag] = layer
-                elif tag and tag in self._layers:
-                    layer = self._layers[tag]
-                    layer.kind = content.get("kind", layer.kind)
-                    if content.get("meta"):
-                        layer.meta.update(content.get("meta"))
-            elif event == "layer_deleted":
-                tag = content.get("tag")
-                if tag:
-                    self._unregister_layer(tag)
-            elif event == "registry_cleared":
-                self._regions.clear()
-                self._layers.clear()
-                self._region_counter = 0
-                self._layer_counter = 0
-                self._global_hidden = False
-                self.whole = Whole(self)
-            elif event == "js_log" and self._debug_js:
-                level = str(content.get("level", "info")).upper()
-                message = content.get("message", "")
-                entry = {"level": level, "message": message}
-                self._js_logs.append(entry)
-                print(f"[JS {level}] {message}")
-            elif event == "camera_snapshot":
-                snapshot = content.get("snapshot")
-                if isinstance(snapshot, dict):
-                    self._last_camera_snapshot = snapshot
-            elif event == "viewer_init_failed":
-                reason = content.get("reason", "unknown")
-                message = content.get("message") or "Mol* viewer failed to initialize."
-                emit_from_catalog(
-                    CATALOG["viewer_init_failed"],
-                    package_root=PACKAGE_ROOT,
-                    meta=META,
-                    extra={"reason": reason, "message": message},
-                )
+            self._handle_frontend_event(content)
 
         self.widget.on_msg(_handle_msg)
 
@@ -253,6 +198,69 @@ class MolSysView:
             self.widget.controls_position_fullscreen = pos_fs
         except Exception:
             self.widget.controls_position_fullscreen = ["bottom", "right"]
+
+    def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
+        event = content.get("event")
+        if event == "ready":
+            self._ready = True
+            for msg in self._pending_messages:
+                self.widget.send(msg)
+            self._pending_messages.clear()
+        elif event == "region_ack":
+            tag = content.get("tag")
+            if tag and tag in self._regions:
+                region = self._regions[tag]
+                region.atom_indices = content.get("atom_indices") or region.atom_indices
+                if content.get("selection") is not None:
+                    region.selection = content.get("selection")
+        elif event == "region_deleted":
+            tag = content.get("tag")
+            if tag:
+                self._unregister_region(tag)
+        elif event == "layer_ack":
+            tag = content.get("tag")
+            if tag and tag not in self._layers:
+                layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
+                self._layers[tag] = layer
+            elif tag and tag in self._layers:
+                layer = self._layers[tag]
+                layer.kind = content.get("kind", layer.kind)
+                if content.get("meta"):
+                    layer.meta.update(content.get("meta"))
+        elif event == "layer_deleted":
+            tag = content.get("tag")
+            if tag:
+                self._unregister_layer(tag)
+        elif event == "registry_cleared":
+            self._regions.clear()
+            self._layers.clear()
+            self._region_counter = 0
+            self._layer_counter = 0
+            self._global_hidden = False
+            self.whole = Whole(self)
+        elif event == "js_log" and self._debug_js:
+            level = str(content.get("level", "info")).upper()
+            message = content.get("message", "")
+            entry = {"level": level, "message": message}
+            self._js_logs.append(entry)
+            print(f"[JS {level}] {message}")
+        elif event == "camera_snapshot":
+            snapshot = content.get("snapshot")
+            if isinstance(snapshot, dict):
+                self._last_camera_snapshot = snapshot
+        elif event == "interaction_hover":
+            self._last_hover_event = dict(content)
+        elif event == "interaction_click":
+            self._last_click_event = dict(content)
+        elif event == "viewer_init_failed":
+            reason = content.get("reason", "unknown")
+            message = content.get("message") or "Mol* viewer failed to initialize."
+            emit_from_catalog(
+                CATALOG["viewer_init_failed"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+                extra={"reason": reason, "message": message},
+            )
 
     # --- Regions / Layers registry ---
 
@@ -1151,6 +1159,18 @@ class MolSysView:
         if not pretty:
             return dict(self._last_camera_snapshot)
         return json.dumps(self._last_camera_snapshot, indent=2, sort_keys=True)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_hover_event(self) -> dict | None:
+        if self._last_hover_event is None:
+            return None
+        return dict(self._last_hover_event)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_click_event(self) -> dict | None:
+        if self._last_click_event is None:
+            return None
+        return dict(self._last_click_event)
 
     @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()

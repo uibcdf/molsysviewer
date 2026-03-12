@@ -202,8 +202,16 @@ Why this is next:
 
 1. Pick the next core cross-cutting behavior:
   - move to canvas interaction and picking/hover behavior.
-2. Add one regression that exercises that behavior through externally visible outcomes.
-3. Return to support-library integration only if a new product path exposes a real contract gap.
+2. Keep the first interaction slice narrow:
+  - transport Mol* hover/click events to Python,
+  - store the last hover/click payload on the view,
+  - keep the payload atom-centric for structure picks.
+3. Delay richer interaction semantics until the transport contract is stable:
+  - callbacks,
+  - region-aware picks,
+  - shape-aware picks,
+  - shared highlight/selection.
+4. Return to support-library integration only if a new product path exposes a real contract gap.
 
 ## Criteria
 
@@ -227,10 +235,8 @@ Why this is next:
 
 - Extend `molsysviewer.tools.basic` beyond `merge(...)` only when the next composition/analysis policy is explicit enough to document and test.
 - Add canvas interaction work:
-  - hover,
-  - pointer semantics,
-  - picking callbacks,
-  - shared highlight/selection flows.
+  - `Done`: minimal hover/click event transport from Mol* to Python with atom-centric payloads.
+  - `Next`: pointer semantics, Python callbacks, and richer pick semantics for regions/shapes.
 - Continue visual and behavioral refinement of pockets and pharmacophore overlays.
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.

@@ -1,10 +1,11 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { StateObjectRef } from "molstar/lib/mol-state";
-import { Structure } from "molstar/lib/mol-model/structure";
+import { Structure, StructureElement } from "molstar/lib/mol-model/structure";
 import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
+import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 
 import { ViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
@@ -13,6 +14,50 @@ import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
+
+type InteractionKind = "hover" | "click";
+
+type InteractionPayload =
+    | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
+    | { event: "interaction_hover" | "interaction_click"; kind: "structure"; atom_indices: number[] };
+
+function lociToAtomIndices(loci: any): number[] {
+    if (!StructureElement.Loci.is(loci)) return [];
+    const atomIndices: number[] = [];
+    const seen = new Set<number>();
+    for (const element of loci.elements) {
+        const size = OrderedSet.size(element.indices);
+        for (let i = 0; i < size; i++) {
+            const unitIndex = OrderedSet.getAt(element.indices, i);
+            const atomIndex = element.unit.elements[unitIndex];
+            if (!seen.has(atomIndex)) {
+                seen.add(atomIndex);
+                atomIndices.push(atomIndex);
+            }
+        }
+    }
+    return atomIndices;
+}
+
+export function normalizeInteractionEvent(kind: InteractionKind, ev: any): InteractionPayload {
+    const event = kind === "hover" ? "interaction_hover" : "interaction_click";
+    const atomIndices = lociToAtomIndices(ev?.current?.loci);
+    if (atomIndices.length === 0) {
+        return { event, kind: "empty" };
+    }
+    return { event, kind: "structure", atom_indices: atomIndices };
+}
+
+export function registerInteractionObservers(plugin: any, notify?: (msg: any) => void): void {
+    const hover = plugin?.behaviors?.interaction?.hover;
+    const click = plugin?.behaviors?.interaction?.click;
+    if (typeof hover?.subscribe === "function") {
+        hover.subscribe((ev: any) => notify?.(normalizeInteractionEvent("hover", ev)));
+    }
+    if (typeof click?.subscribe === "function") {
+        click.subscribe((ev: any) => notify?.(normalizeInteractionEvent("click", ev)));
+    }
+}
 
 /**
  * Controller that translates Python messages into Mol* actions and manages state refs.
@@ -89,6 +134,8 @@ export class MolSysViewerController {
     get isDarkMode() { return this.scene.isDarkMode; }
 
     private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void) {
+        registerInteractionObservers(plugin, notify);
+
         // Initialize handlers with necessary context callbacks
         
         this.state = new StateHandlers(plugin, {
