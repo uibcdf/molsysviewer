@@ -267,6 +267,11 @@ class MolSysView:
             self._last_context_event = dict(content)
         elif event == "interaction_context_action":
             self._last_context_action_event = dict(content)
+            action = content.get("action")
+            if action == "create_region_from_selection":
+                self.new_region_from_active_selection(skip_digestion=True)
+            elif action == "persist_last_measurement":
+                self.measurements.persist_last_measurement(skip_digestion=True)
         elif event == "interaction_active_selection_changed":
             self._last_active_selection_event = dict(content)
         elif event == "interaction_tool_state":

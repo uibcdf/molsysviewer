@@ -32,6 +32,40 @@ def test_new_region_from_active_selection_creates_replayable_region():
     assert "set_region_representation" in ops
 
 
+def test_context_action_create_region_from_selection_executes_python_bridge():
+    view = demo["dialanine"]
+    event = {
+        "event": "interaction_active_selection_changed",
+        "source_kind": "element",
+        "element_level": "group",
+        "target_level": "none",
+        "items": [],
+        "atom_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        "group_indices": [0],
+        "component_indices": [],
+        "chain_indices": [0],
+        "molecule_indices": [],
+        "entity_indices": [0],
+        "count_atoms": 10,
+        "count_groups": 1,
+        "count_shapes": 0,
+        "count_annotations": 0,
+    }
+    view._handle_frontend_event(event)  # noqa: SLF001
+    view._handle_frontend_event(
+        {
+            "event": "interaction_context_action",
+            "action": "create_region_from_selection",
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": event["atom_indices"]},
+        }
+    )  # noqa: SLF001
+
+    assert "region1" in view.regions
+    created = next(msg for msg in view._message_history if msg.get("op") == "create_region")  # noqa: SLF001
+    assert created["tag"] == "region1"
+    assert created["atom_indices"] == event["atom_indices"]
+
+
 def test_add_label_from_active_selection_creates_replayable_annotation():
     view = demo["dialanine"]
     atom_indices = list(view.select(selection="group_index==0"))
