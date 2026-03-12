@@ -149,12 +149,19 @@ It is organized by execution priority and uses three labels:
 
 - `In progress`
   - The first JS -> Python interaction transport now exists for Mol* `hover` and `click`.
+  - Right-click context transport now also exists as a first viewer-owned slice:
+    - host context menu suppression inside the canvas,
+    - separate context-target event,
+    - minimal viewer context menu with seed actions.
   - The current contract is intentionally minimal and atom-centric:
     - `interaction_hover`
     - `interaction_click`
+    - `interaction_context_menu`
+    - `interaction_context_action`
     - `kind: "structure"` with `atom_indices`
     - `kind: "empty"` for canvas-empty interactions
   - Python now stores the last hover/click payload on `MolSysView`.
+  - Python now also stores the last context-menu target payload and the last context-menu action payload.
 
 ### Next actions
 
@@ -162,6 +169,7 @@ It is organized by execution priority and uses three labels:
 - Add Python-side callback registration only after the transport contract settles.
 - Decide whether region-aware and shape-aware picks belong in the same event family or in richer payload variants.
 - Add pointer semantics and shared highlight/selection only after event ownership is clear.
+- Turn menu-seeded `distance` / `angle` / `dihedral` actions into real tool-mode state machines.
 
 ### Criteria
 

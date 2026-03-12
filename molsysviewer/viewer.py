@@ -157,6 +157,8 @@ class MolSysView:
         self._last_camera_snapshot: dict | None = None
         self._last_hover_event: dict | None = None
         self._last_click_event: dict | None = None
+        self._last_context_event: dict | None = None
+        self._last_context_action_event: dict | None = None
         self._shape_history: list[dict] = []
         self._last_label: str | None = None
 
@@ -252,6 +254,10 @@ class MolSysView:
             self._last_hover_event = dict(content)
         elif event == "interaction_click":
             self._last_click_event = dict(content)
+        elif event == "interaction_context_menu":
+            self._last_context_event = dict(content)
+        elif event == "interaction_context_action":
+            self._last_context_action_event = dict(content)
         elif event == "viewer_init_failed":
             reason = content.get("reason", "unknown")
             message = content.get("message") or "Mol* viewer failed to initialize."
@@ -1171,6 +1177,18 @@ class MolSysView:
         if self._last_click_event is None:
             return None
         return dict(self._last_click_event)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_context_event(self) -> dict | None:
+        if self._last_context_event is None:
+            return None
+        return dict(self._last_context_event)
+
+    @signal(tags=["interaction", "query"])
+    def get_last_context_action_event(self) -> dict | None:
+        if self._last_context_action_event is None:
+            return None
+        return dict(self._last_context_action_event)
 
     @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()

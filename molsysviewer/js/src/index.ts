@@ -458,8 +458,8 @@ export default {
             // 3. Dispose Mol* plugin to free WebGL context
             controllerPromise.then(c => {
                 try {
-                    c.plugin.dispose();
-                    console.log("[MolSysViewer] Mol* plugin disposed.");
+                    c.dispose();
+                    console.log("[MolSysViewer] Mol* controller disposed.");
                 } catch (e) {
                     console.error("[MolSysViewer] Error disposing plugin:", e);
                 }

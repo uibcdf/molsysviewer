@@ -6,6 +6,7 @@ import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/stru
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 
 import { ViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
@@ -14,12 +15,17 @@ import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
+import { ViewerContextMenu } from "../ui/context-menu";
 
-type InteractionKind = "hover" | "click";
+type InteractionKind = "hover" | "click" | "context";
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
     | { event: "interaction_hover" | "interaction_click"; kind: "structure"; atom_indices: number[] };
+
+type ContextInteractionPayload =
+    | { event: "interaction_context_menu"; kind: "empty"; page_x?: number; page_y?: number }
+    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[]; page_x?: number; page_y?: number };
 
 function lociToAtomIndices(loci: any): number[] {
     if (!StructureElement.Loci.is(loci)) return [];
@@ -40,6 +46,9 @@ function lociToAtomIndices(loci: any): number[] {
 }
 
 export function normalizeInteractionEvent(kind: InteractionKind, ev: any): InteractionPayload {
+    if (kind === "context") {
+        throw new Error("Use normalizeContextInteractionEvent for context interactions");
+    }
     const event = kind === "hover" ? "interaction_hover" : "interaction_click";
     const atomIndices = lociToAtomIndices(ev?.current?.loci);
     if (atomIndices.length === 0) {
@@ -48,14 +57,52 @@ export function normalizeInteractionEvent(kind: InteractionKind, ev: any): Inter
     return { event, kind: "structure", atom_indices: atomIndices };
 }
 
-export function registerInteractionObservers(plugin: any, notify?: (msg: any) => void): void {
+export function normalizeContextInteractionEvent(ev: any): ContextInteractionPayload {
+    const atomIndices = lociToAtomIndices(ev?.current?.loci);
+    const page = ev?.page;
+    const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
+    const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
+    if (atomIndices.length === 0) {
+        return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
+    }
+    return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };
+}
+
+function isSecondaryButton(ev: any): boolean {
+    return ev?.button === ButtonsType.Flag.Secondary;
+}
+
+export function suppressCanvasContextMenu(canvas: Pick<HTMLElement, "addEventListener">): () => void {
+    const onContextMenu = (event: Event) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    canvas.addEventListener("contextmenu", onContextMenu);
+    return () => {
+        (canvas as HTMLElement).removeEventListener?.("contextmenu", onContextMenu);
+    };
+}
+
+export function registerInteractionObservers(
+    plugin: any,
+    notify?: (msg: any) => void,
+    openContextMenu?: (payload: ContextInteractionPayload) => void,
+): void {
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
     if (typeof hover?.subscribe === "function") {
         hover.subscribe((ev: any) => notify?.(normalizeInteractionEvent("hover", ev)));
     }
     if (typeof click?.subscribe === "function") {
-        click.subscribe((ev: any) => notify?.(normalizeInteractionEvent("click", ev)));
+        click.subscribe((ev: any) => {
+            if (isSecondaryButton(ev)) {
+                const payload = normalizeContextInteractionEvent(ev);
+                notify?.(payload);
+                openContextMenu?.(payload);
+                return;
+            }
+            notify?.(normalizeInteractionEvent("click", ev));
+        });
     }
 }
 
@@ -64,6 +111,8 @@ export function registerInteractionObservers(plugin: any, notify?: (msg: any) =>
  * Refactored to use specialized handlers for better maintainability.
  */
 export class MolSysViewerController {
+    private readonly contextMenu: ViewerContextMenu;
+    private readonly releaseContextMenuSuppression?: () => void;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -134,7 +183,16 @@ export class MolSysViewerController {
     get isDarkMode() { return this.scene.isDarkMode; }
 
     private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void) {
-        registerInteractionObservers(plugin, notify);
+        this.contextMenu = new ViewerContextMenu(host, notify);
+        const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
+        if (canvas) {
+            this.releaseContextMenuSuppression = suppressCanvasContextMenu(canvas as HTMLElement);
+        }
+        registerInteractionObservers(plugin, notify, (payload) => {
+            const pageX = payload.page_x ?? 0;
+            const pageY = payload.page_y ?? 0;
+            this.contextMenu.open(payload, pageX, pageY);
+        });
 
         // Initialize handlers with necessary context callbacks
         
@@ -169,6 +227,12 @@ export class MolSysViewerController {
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState()
         });
+    }
+
+    dispose(): void {
+        this.contextMenu.dispose();
+        this.releaseContextMenuSuppression?.();
+        this.plugin.dispose();
     }
 
     // Message Dispatcher

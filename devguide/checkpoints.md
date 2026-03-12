@@ -164,6 +164,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `left drag` rotates,
     - `right drag` pans/translates,
     - right-click context handling must coexist with that drag behavior and suppress the host menu only inside the viewer canvas.
+  - The first concrete context-menu bridge now exists:
+    - right-click without drag is captured from Mol* click events,
+    - the canvas suppresses the host `contextmenu`,
+    - Python stores both the last context-target event and the last chosen context action event,
+    - a minimal viewer-owned context menu now exists with seed actions for `distance`, `angle`, and `dihedral`.
 
 ## Active Decisions
 
@@ -238,10 +243,11 @@ Why this is next:
   - store the last hover/click payload on the view,
   - keep the payload atom-centric for element picks.
 3. Delay richer interaction semantics until the transport contract is stable:
-  - callbacks,
+  - active selection wiring,
   - region-aware picks,
   - shape-aware picks,
-  - shared highlight/selection.
+  - shared highlight/selection,
+  - real tool-mode state instead of menu-seeded placeholder actions.
 4. Return to support-library integration only if a new product path exposes a real contract gap.
 5. Use the annotation taxonomy in `devguide/annotations.md` when label work starts; do not re-open the `shape` vs `annotation` split ad hoc.
 6. When interaction implementation starts, treat click-vs-drag discrimination on both mouse buttons as part of the core contract, not a later polish task.

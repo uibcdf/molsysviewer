@@ -1,7 +1,13 @@
 import assert from "node:assert";
 import test from "node:test";
+import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 
-import { normalizeInteractionEvent, registerInteractionObservers } from "../../src/managers/viewer-controller";
+import {
+    normalizeContextInteractionEvent,
+    normalizeInteractionEvent,
+    registerInteractionObservers,
+    suppressCanvasContextMenu,
+} from "../../src/managers/viewer-controller";
 
 test("normalizeInteractionEvent emits empty payload when no structure loci is present", () => {
     assert.deepStrictEqual(normalizeInteractionEvent("hover", { current: { loci: { kind: "shape-loci" } } }), {
@@ -32,8 +38,27 @@ test("normalizeInteractionEvent extracts atom indices from structure loci", () =
     });
 });
 
+test("normalizeContextInteractionEvent captures page coordinates and atom indices", () => {
+    const loci: any = {
+        kind: "element-loci",
+        elements: [{ unit: { elements: [8, 9] }, indices: [0, 1] }],
+    };
+
+    assert.deepStrictEqual(normalizeContextInteractionEvent({
+        current: { loci },
+        page: [120, 240],
+    }), {
+        event: "interaction_context_menu",
+        kind: "structure",
+        atom_indices: [8, 9],
+        page_x: 120,
+        page_y: 240,
+    });
+});
+
 test("registerInteractionObservers forwards hover and click notifications", () => {
     const notifications: any[] = [];
+    const menuEvents: any[] = [];
     const subscriptions: Record<string, (ev: any) => void> = {};
     const plugin: any = {
         behaviors: {
@@ -52,7 +77,7 @@ test("registerInteractionObservers forwards hover and click notifications", () =
         },
     };
 
-    registerInteractionObservers(plugin, (msg: any) => notifications.push(msg));
+    registerInteractionObservers(plugin, (msg: any) => notifications.push(msg), (msg: any) => menuEvents.push(msg));
 
     subscriptions.hover({
         current: {
@@ -63,9 +88,37 @@ test("registerInteractionObservers forwards hover and click notifications", () =
         },
     });
     subscriptions.click({ current: { loci: null } });
+    subscriptions.click({
+        button: ButtonsType.Flag.Secondary,
+        current: { loci: { kind: "element-loci", elements: [{ unit: { elements: [7] }, indices: [0] }] } },
+        page: [50, 60],
+    });
 
     assert.deepStrictEqual(notifications, [
         { event: "interaction_hover", kind: "structure", atom_indices: [4, 5] },
         { event: "interaction_click", kind: "empty" },
+        { event: "interaction_context_menu", kind: "structure", atom_indices: [7], page_x: 50, page_y: 60 },
     ]);
+    assert.deepStrictEqual(menuEvents, [
+        { event: "interaction_context_menu", kind: "structure", atom_indices: [7], page_x: 50, page_y: 60 },
+    ]);
+});
+
+test("suppressCanvasContextMenu prevents the host context menu on canvas", () => {
+    let listener: ((event: any) => void) | undefined;
+    const canvas: any = {
+        addEventListener(type: string, cb: (event: any) => void) {
+            if (type === "contextmenu") listener = cb;
+        },
+        removeEventListener(_type: string, _cb: (event: any) => void) {},
+    };
+    const prevented = { defaultPrevented: false, propagationStopped: false };
+
+    suppressCanvasContextMenu(canvas);
+    listener?.({
+        preventDefault() { prevented.defaultPrevented = true; },
+        stopPropagation() { prevented.propagationStopped = true; },
+    });
+
+    assert.deepStrictEqual(prevented, { defaultPrevented: true, propagationStopped: true });
 });
