@@ -207,7 +207,7 @@ Do not append dated historical entries unless a date is itself operationally rel
       - `records()`
       - `info(tag=None)`
       - `show(tag)` / `hide(tag)`
-      - `delete(tag)` / `set_tag(tag, new_tag)`
+      - `delete(tag)` / `set_tag(tag, new_tag)` / `set_text(tag, text)`
       - `clear(tag=None)`
     - labels are implemented as `annotations`, not `shapes`,
     - the first slice is intentionally narrow: one persistent label anchored to one `group`,

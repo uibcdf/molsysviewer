@@ -75,6 +75,7 @@ Related object wrappers are also part of the intended public surface:
 - `view.annotations.hide(tag)`
 - `view.annotations.delete(tag)`
 - `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.set_text(tag, text)`
 - `view.annotations.clear(tag=None)`
 - `view.measurements.add_distance(...)`
 - `view.measurements.add_angle(...)`

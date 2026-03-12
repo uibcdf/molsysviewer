@@ -98,3 +98,16 @@ def test_annotation_manager_clear_tag_and_global_clear():
     assert view.annotations.tags() == []
     assert view.annotations.records() == []
     assert view.annotations.count() == 0
+
+
+def test_annotation_manager_can_update_label_text_replay_safely():
+    view = demo["dialanine"]
+    view.annotations.add_label(text="Before", group_index=0, tag="notes")
+
+    view.annotations.set_text("notes", "After")
+
+    assert view.annotations.info("notes")["text"] == "After"
+    assert view.annotations.records()[0]["options"]["text"] == "After"
+    exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
+    assert [msg["op"] for msg in exported] == ["create_layer", "add_label"]
+    assert exported[-1]["options"]["text"] == "After"

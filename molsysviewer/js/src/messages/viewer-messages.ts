@@ -99,6 +99,16 @@ export type AddLabelMessage = {
     };
 };
 
+export type UpdateLabelMessage = {
+    op: "update_label";
+    tag?: string;
+    options?: {
+        text?: string;
+        atom_indices?: number[];
+        tag?: string;
+    };
+};
+
 export type AddDistanceMeasurementMessage = {
     op: "add_distance_measurement";
     tag?: string;
@@ -335,6 +345,7 @@ export type ViewerMessage =
     AddTetrahedraMessage |
     AddTriangleFacesMessage |
     AddLabelMessage |
+    UpdateLabelMessage |
     AddDistanceMeasurementMessage |
     AddAngleMeasurementMessage |
     AddDihedralMeasurementMessage |

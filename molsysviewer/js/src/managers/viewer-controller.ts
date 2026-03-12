@@ -484,6 +484,7 @@ export class MolSysViewerController {
                 case "add_tetrahedra": await this.shapes.addTetrahedra(msg); break;
                 case "add_triangle_faces": await this.shapes.addTriangleFaces(msg); break;
                 case "add_label": await this.annotations.addLabel(msg); break;
+                case "update_label": await this.annotations.updateLabel(msg); break;
                 case "add_distance_measurement": await this.measurements.addDistance(msg); break;
                 case "add_angle_measurement": await this.measurements.addAngle(msg); break;
                 case "add_dihedral_measurement": await this.measurements.addDihedral(msg); break;
