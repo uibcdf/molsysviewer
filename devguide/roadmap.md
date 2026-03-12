@@ -250,24 +250,18 @@ It is organized by execution priority and uses three labels:
 - Every protocol-significant behavior should be covered in either Python or JS tests.
 - Keep E2E deterministic and environment-aware (browser/WebGL constraints).
 
-## 9) Documentation and Development Memory
+## 10) Strategic Directions (2026)
 
-### Status
+To reach a successful **1.0 release**, these three pillars must be prioritized over further support-layer abstractions.
 
-- `Done`
-  - Strong developer docs for architecture/protocol/public API.
-  - Canonical infra guides integrated (SMonitor/ArgDigest/DepDigest/PyUnitWizard).
+### 1. Close the Interaction & E2E Gap
+- The value of MolSysViewer lies in how it feels to interact with it.
+- **Priority:** Implement more complex E2E tests simulating real scientific workflows (e.g., "identify a binding site, select it, label it, and measure distances").
 
-- `In progress`
-  - Multiple user/developer pages remain placeholders.
-  - Historical docs and current docs can diverge in status wording.
+### 2. GroupStrip: The 1D Navigation Pivot
+- The 1D strip view (`GroupStrip`) is a primary differentiator. It's the key tool for navigating long proteins or complex systems where the 3D scene is cluttered.
+- **Priority:** Ensure the strip is synchronized with the 3D canvas from day one, using the shared `active_selection` model.
 
-### Next actions
-
-- Use `devguide/` checkpoints as authoritative development memory.
-- Keep roadmap and checkpoints synchronized with executed work.
-
-### Criteria
-
-- Development decisions must be logged in `devguide/checkpoints.md`.
-- Roadmap status must reflect repository reality, not aspirational-only lists.
+### 3. Documentation for the "Scientific Workbench"
+- The documentation must shift from API reference to case-study-driven tutorials.
+- **Priority:** Create "Workbench Tutorials" (e.g., "How to analyze pocket contacts") that showcase the library as an integrated tool for structural biochemistry and drug design.
