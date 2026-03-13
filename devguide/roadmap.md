@@ -205,6 +205,9 @@ should grow over time as additional project-level principles become clear.
   - `shape` now has a first narrow slice via Mol* `shape-loci`.
 - Keep the current element slice group-centric and only add hierarchy levels when the runtime can support them cleanly.
 - Grow `GroupStrip` from the first chain-grouped selection/focus slice toward the full strip contract documented in `devguide/strips.md`.
+- The next strip step should be a `GroupPanel` evolution, not more investment in a permanently visible lower band.
+- Keep `chain` as the first organizer, but plan explicit visual cues for `component` and `molecule`.
+- Do not assume middle-click is available for the panel toggle; Mol* already uses the middle/wheel path for camera behavior.
 - Keep strip interactions converged with canvas interactions:
   - hover and context menu should use the same event families instead of becoming a separate UX island.
 - Make the active selection materially useful through the context menu before opening more target families:
@@ -256,6 +259,7 @@ should grow over time as additional project-level principles become clear.
   - `active_selection.save(tag=...)`
 - `view.selections` now exists as the first persistent named-selection surface.
 - Persistent selections can now be restored into `active_selection` via API, and the next UX step is to use the context menu as the first browser-side activator for those saved selections.
+- After saved-selection activation is in place, the next context-menu broadening should prioritize relevant `regions`, then richer `annotations`, and only later carefully-scoped `shapes` actions.
 - The context menu now also exposes `Save Selection`, backed by the same Python-side reproducible API.
   - The current contract is intentionally narrow and deterministic.
   - Persisted measurement ops now also exist in the runtime:
