@@ -35,6 +35,38 @@ class MeasurementsManager:
         )
         return layer
 
+    def records(self) -> list[dict]:
+        return [dict(record) for record in self._view._measurement_history]  # noqa: SLF001
+
+    def count(self) -> int:
+        return len(self._view._measurement_history)  # noqa: SLF001
+
+    def info(self, tag: str | None = None) -> list[dict]:
+        items: list[dict] = []
+        for record in self._view._measurement_history:  # noqa: SLF001
+            layer_tag = record.get("tag")
+            if tag is not None and layer_tag != tag:
+                continue
+            op = record.get("op")
+            kind = {
+                "add_distance_measurement": "distance",
+                "add_angle_measurement": "angle",
+                "add_dihedral_measurement": "dihedral",
+            }.get(op, "measurement")
+            picks = record.get("options", {}).get("picks_atom_indices", [])
+            layer = self._view._layers.get(layer_tag)  # noqa: SLF001
+            items.append(
+                {
+                    "kind": kind,
+                    "tag": layer_tag,
+                    "n_picks": len(picks) if isinstance(picks, list) else 0,
+                    "picks_atom_indices": [list(item) for item in picks] if isinstance(picks, list) else [],
+                    "visible": False if layer is None else not getattr(layer, "_hidden", False),
+                    "active": False if layer is None else bool(getattr(layer, "_active", False)),
+                }
+            )
+        return items
+
     @signal(tags=["measurement"])
     @digest()
     def add_distance(

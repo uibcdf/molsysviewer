@@ -56,6 +56,9 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `new_region_from_active_selection(...)`
 - `view.annotations.add_label_from_active_selection(...)`
 - `view.measurements.persist_last_measurement(...)`
+ - `view.measurements.count()`
+ - `view.measurements.records()`
+ - `view.measurements.info()`
   - current first slice: persist the last interactive `distance` / `angle` / `dihedral` as replayable viewer state
 
 Related object wrappers are also part of the intended public surface:

@@ -204,9 +204,6 @@ Suggested checks:
 view.measurements.info()
 ```
 
-If `info()` does not exist yet on measurements, at minimum inspect the exported
-message history relevant to measurement ops.
-
 ### 9. Exercise annotation API robustness
 
 After creating a label from the UI, check:
