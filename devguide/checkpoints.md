@@ -36,6 +36,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Keep `devguide/` aligned with the real repository state.
 - Treat `selections` as a first-class category distinct from `regions`; do not collapse them just because both derive from atom subsets.
 - Keep the smoke runbook in `devguide/smoke_test.md` aligned with the real product surface before broadening interaction much further.
+- `Save Selection` is now live-smoke verified both when the menu opens on empty canvas and when it opens on a structural context target; the earlier accidental fallthrough into measurement picking is fixed.
 - Prioritize regression coverage for new product-facing behavior, especially where it composes runtime state, layers, and rebuild/replay.
 
 ## Current State

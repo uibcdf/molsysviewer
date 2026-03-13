@@ -135,6 +135,7 @@ interaction behavior.
 - `active selection -> named selection`
   - UI action exists and executes through Python into reproducible viewer state
   - automated regression exists
+  - live smoke now verifies the context-menu flow both from empty-canvas context and from a structural context target
 - `active selection -> label`
   - UI action exists and executes through Python into reproducible viewer state
 - `interactive measurement -> persisted measurement`

@@ -62,6 +62,11 @@ function selectionTitle(selection: ActiveSelectionPayload): string {
     return "Active selection";
 }
 
+function selectionSummary(selection: ActiveSelectionPayload | null): string {
+    if (!selection || selection.source_kind === "empty") return "Current selection";
+    return `Stored as ${selection.count_atoms} atom${selection.count_atoms === 1 ? "" : "s"}`;
+}
+
 export class ViewerContextMenu {
     private readonly root: HTMLDivElement;
     private outsidePointerHandler?: (event: PointerEvent) => void;
@@ -387,14 +392,23 @@ export class ViewerContextMenu {
         this.root.replaceChildren();
 
         const title = document.createElement("div");
-        title.textContent = "Save active selection";
+        title.textContent = "Save Selection";
         Object.assign(title.style, {
             padding: "6px 8px 8px 8px",
             fontWeight: "600",
             borderBottom: "1px solid rgba(255,255,255,0.10)",
-            marginBottom: "8px",
+            marginBottom: "6px",
         });
         this.root.appendChild(title);
+
+        const subtitle = document.createElement("div");
+        subtitle.textContent = selectionSummary(this.currentSelection);
+        Object.assign(subtitle.style, {
+            padding: "0 8px 8px 8px",
+            opacity: "0.82",
+            fontSize: "12px",
+        });
+        this.root.appendChild(subtitle);
 
         const input = document.createElement("input");
         input.type = "text";

@@ -305,9 +305,7 @@ test("ViewerContextMenu opens inline selection composer before save-selection ac
         const input = findNodeByTag(root, "input");
         assert.ok(input);
         input!.value = "picked";
-        const confirm = findNodeByText(root, "Save Selection");
-        assert.ok(confirm);
-        confirm!.dispatch("click");
+        input!.dispatch("keydown", { key: "Enter", preventDefault() {} });
 
         assert.deepStrictEqual(actions, [
             {
