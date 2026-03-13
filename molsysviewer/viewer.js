@@ -145020,8 +145020,14 @@ var GroupStrip = class {
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-group-strip", "true");
     Object.assign(this.root.style, {
-      minWidth: "0",
-      display: "block"
+      minWidth: "120px",
+      maxWidth: "150px",
+      maxHeight: "200px",
+      overflowY: "auto",
+      overflowX: "hidden",
+      display: "block",
+      flex: "0 0 auto",
+      paddingRight: "4px"
     });
     this.section = document.createElement("div");
     this.section.style.marginBottom = "10px";
@@ -145035,7 +145041,8 @@ var GroupStrip = class {
     this.row = document.createElement("div");
     Object.assign(this.row.style, {
       display: "flex",
-      flexWrap: "wrap",
+      flexDirection: "column",
+      flexWrap: "nowrap",
       gap: "6px"
     });
     this.section.appendChild(this.title);
@@ -145137,7 +145144,9 @@ var GroupStrip = class {
         color: "inherit",
         cursor: "pointer",
         whiteSpace: "nowrap",
-        font: "inherit"
+        font: "inherit",
+        width: "100%",
+        textAlign: "left"
       });
       const text = document.createElement("span");
       text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
@@ -145267,8 +145276,9 @@ var GroupPanel = class {
       right: "14px",
       bottom: "14px",
       display: "none",
-      maxHeight: "140px",
-      overflow: "auto",
+      maxHeight: "220px",
+      overflowX: "auto",
+      overflowY: "hidden",
       padding: "10px",
       borderRadius: "14px",
       border: "1px solid rgba(255,255,255,0.14)",
@@ -145277,7 +145287,11 @@ var GroupPanel = class {
       boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
       zIndex: "16",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-      fontSize: "12px"
+      fontSize: "12px",
+      alignItems: "stretch",
+      gap: "10px",
+      flexDirection: "row",
+      flexWrap: "nowrap"
     });
     this.host.appendChild(this.root);
   }
@@ -145350,7 +145364,7 @@ var GroupPanel = class {
       strip.dispose();
       this.strips.delete(chain2);
     }
-    this.root.style.display = this.structure && grouped.size > 0 ? "block" : "none";
+    this.root.style.display = this.structure && grouped.size > 0 ? "flex" : "none";
     if (!this.structure || grouped.size === 0) return;
     for (const [chain2, chainItems] of grouped.entries()) {
       let strip = this.strips.get(chain2);
