@@ -105,6 +105,44 @@ def test_context_action_save_selection_executes_python_bridge():
     assert records[0]["atom_indices"] == atom_indices
 
 
+def test_context_action_activate_selection_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = list(view.select(selection="group_index==1"))
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_active_selection_changed",
+            "source_kind": "element",
+            "element_level": "group",
+            "target_level": "none",
+            "items": [],
+            "atom_indices": atom_indices,
+            "group_indices": [1],
+            "component_indices": [],
+            "chain_indices": [0],
+            "molecule_indices": [],
+            "entity_indices": [0],
+            "count_atoms": len(atom_indices),
+            "count_groups": 1,
+            "count_shapes": 0,
+            "count_annotations": 0,
+        }
+    )
+    view.active_selection.save("picked")
+    view.active_selection.clear()
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "activate_selection",
+            "tag": "picked",
+            "context": {"event": "interaction_context_menu", "kind": "empty"},
+        }
+    )
+
+    assert view.active_selection.group_indices == [1]
+    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+
+
 def test_add_label_from_active_selection_creates_replayable_annotation():
     view = demo["dialanine"]
     atom_indices = list(view.select(selection="group_index==0"))

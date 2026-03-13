@@ -144038,6 +144038,7 @@ var ViewerContextMenu = class {
     this.currentTarget = null;
     this.currentSelection = null;
     this.currentLastMeasurement = null;
+    this.currentSavedSelections = [];
     this.currentPageX = 0;
     this.currentPageY = 0;
     this.root = document.createElement("div");
@@ -144062,10 +144063,11 @@ var ViewerContextMenu = class {
     });
     this.host.appendChild(this.root);
   }
-  open(target, pageX, pageY, activeSelection, lastMeasurement) {
+  open(target, pageX, pageY, activeSelection, lastMeasurement, savedSelections) {
     this.currentTarget = target;
     this.currentSelection = activeSelection ?? null;
     this.currentLastMeasurement = lastMeasurement ?? null;
+    this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
     this.currentPageX = pageX;
     this.currentPageY = pageY;
     this.root.replaceChildren();
@@ -144139,6 +144141,26 @@ var ViewerContextMenu = class {
       section.appendChild(this.makeActionButton("Persist Last Measurement", "persist_last_measurement"));
       this.root.appendChild(section);
     }
+    if (this.currentSavedSelections.length > 0) {
+      const section = document.createElement("div");
+      Object.assign(section.style, {
+        marginTop: "8px",
+        paddingTop: "8px",
+        borderTop: "1px solid rgba(255,255,255,0.10)"
+      });
+      const title = document.createElement("div");
+      title.textContent = "Saved selections";
+      Object.assign(title.style, {
+        padding: "4px 8px 8px 8px",
+        opacity: "0.82",
+        fontSize: "12px"
+      });
+      section.appendChild(title);
+      for (const selection of this.currentSavedSelections) {
+        section.appendChild(this.makeSavedSelectionButton(selection));
+      }
+      this.root.appendChild(section);
+    }
     const rect = this.host.getBoundingClientRect();
     this.root.style.display = "block";
     const menuWidth = this.root.offsetWidth || 180;
@@ -144159,6 +144181,7 @@ var ViewerContextMenu = class {
     this.currentTarget = null;
     this.currentSelection = null;
     this.currentLastMeasurement = null;
+    this.currentSavedSelections = [];
     this.root.style.display = "none";
     this.detachOutsidePointerHandler();
   }
@@ -144198,6 +144221,9 @@ var ViewerContextMenu = class {
         this.renderSelectionComposer();
         return;
       }
+      if (action === "activate_selection") {
+        return;
+      }
       const details = this.resolveActionDetails(action);
       if (details === null) return;
       this.onAction?.(action, this.currentTarget, details ?? void 0);
@@ -144206,6 +144232,44 @@ var ViewerContextMenu = class {
         action,
         context: this.currentTarget,
         ...details ?? {}
+      });
+      this.close();
+    });
+    return button;
+  }
+  makeSavedSelectionButton(selection) {
+    const label2 = `${selection.tag} \xB7 ${selection.atom_count} atom${selection.atom_count === 1 ? "" : "s"}`;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label2;
+    button.setAttribute("data-molsysviewer-saved-selection", selection.tag);
+    Object.assign(button.style, {
+      display: "block",
+      width: "100%",
+      padding: "8px 10px",
+      margin: "0",
+      border: "0",
+      borderRadius: "8px",
+      background: "transparent",
+      color: "inherit",
+      textAlign: "left",
+      cursor: "pointer"
+    });
+    button.addEventListener("pointerenter", () => {
+      button.style.background = "rgba(255,255,255,0.10)";
+    });
+    button.addEventListener("pointerleave", () => {
+      button.style.background = "transparent";
+    });
+    button.addEventListener("click", () => {
+      if (!this.currentTarget) return;
+      const details = { tag: selection.tag };
+      this.onAction?.("activate_selection", this.currentTarget, details);
+      this.notify?.({
+        event: "interaction_context_action",
+        action: "activate_selection",
+        context: this.currentTarget,
+        ...details
       });
       this.close();
     });
@@ -145383,6 +145447,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.lastHoverLoci = null;
     this.lastHoverPayload = null;
     this.lastPrimaryGroupClick = null;
+    this.savedSelections = [];
     // Loaded structure bundle
     this.currentActiveSelection = null;
     this.lastMeasurementSummary = null;
@@ -145444,6 +145509,9 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       if (action === "focus_selection") {
         this.focusCurrentSelection();
+        return;
+      }
+      if (action === "activate_selection") {
         return;
       }
       if (action === "clear_selection") {
@@ -145509,7 +145577,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const pageX = payload.page_x ?? 0;
       const pageY = payload.page_y ?? 0;
       emitInteractionEvent(payload);
-      this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+      this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
     }, (ev) => {
       this.lastHoverLoci = ev?.current?.loci ?? null;
       this.lastHoverPayload = normalizeInteractionEvent("hover", ev);
@@ -145664,7 +145732,7 @@ var MolSysViewerController = class _MolSysViewerController {
       page_y: pageY
     };
     emitInteractionEvent(payload);
-    this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+    this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
   }
   openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent) {
     const payload = {
@@ -145673,7 +145741,7 @@ var MolSysViewerController = class _MolSysViewerController {
       page_y: pageY
     };
     emitInteractionEvent(payload);
-    this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+    this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
   }
   focusCurrentSelection() {
     const selection = this.currentActiveSelection;
@@ -145688,6 +145756,25 @@ var MolSysViewerController = class _MolSysViewerController {
     const loci = this.atomIndicesToLoci(atomIndices);
     if (!loci) return;
     this.plugin.managers.camera.focusLoci(loci);
+  }
+  upsertSavedSelection(msg) {
+    const tag = typeof msg?.tag === "string" ? msg.tag : null;
+    if (!tag) return;
+    const atomCount2 = Array.isArray(msg?.atom_indices) ? msg.atom_indices.length : 0;
+    const next = this.savedSelections.filter((item2) => item2.tag !== tag);
+    next.push({ tag, atom_count: atomCount2 });
+    this.savedSelections = next.sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+  }
+  renameSavedSelection(msg) {
+    const tag = typeof msg?.tag === "string" ? msg.tag : null;
+    const newTag = typeof msg?.new_tag === "string" ? msg.new_tag : null;
+    if (!tag || !newTag) return;
+    this.savedSelections = this.savedSelections.map((item2) => item2.tag === tag ? { ...item2, tag: newTag } : item2).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+  }
+  deleteSavedSelection(msg) {
+    const tag = typeof msg?.tag === "string" ? msg.tag : null;
+    if (!tag) return;
+    this.savedSelections = this.savedSelections.filter((item2) => item2.tag !== tag);
   }
   handlePotentialDoubleClickFocus(ev) {
     if (!!ev?.modifiers?.shift) return;
@@ -145898,9 +145985,16 @@ var MolSysViewerController = class _MolSysViewerController {
           );
           break;
         case "save_selection":
+          this.upsertSavedSelection(msg);
+          break;
         case "set_selection_tag":
+          this.renameSavedSelection(msg);
+          break;
         case "delete_selection":
+          this.deleteSavedSelection(msg);
+          break;
         case "clear_selections":
+          this.savedSelections = [];
           break;
         // Trajectory Ops
         case "step_trajectory":
