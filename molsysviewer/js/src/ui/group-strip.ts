@@ -1,6 +1,6 @@
 import { StructureElement, Structure } from "molstar/lib/mol-model/structure";
 
-import { ActiveSelectionItem, ActiveSelectionPayload, buildGroupItemsFromStructure } from "../managers/active-selection";
+import { ActiveSelectionItem, ActiveSelectionPayload } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 
@@ -32,6 +32,9 @@ function makeLociForItem(structure: Structure, item: ActiveSelectionItem): Struc
 
 export class GroupStrip {
     private readonly root: HTMLDivElement;
+    private readonly section: HTMLDivElement;
+    private readonly title: HTMLDivElement;
+    private readonly row: HTMLDivElement;
     private groupItems: ActiveSelectionItem[] = [];
     private selectedElementKeys = new Set<string>();
     private selectedAnnotationKeys = new Set<string>();
@@ -40,6 +43,7 @@ export class GroupStrip {
 
     constructor(
         private readonly host: HTMLElement,
+        private readonly chainLabel: string,
         private readonly onSelect: OnSelect,
         private readonly onFocus: OnFocus,
         private readonly onHover: OnHover,
@@ -49,30 +53,38 @@ export class GroupStrip {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-group-strip", "true");
         Object.assign(this.root.style, {
-            position: "absolute",
-            left: "14px",
-            right: "14px",
-            bottom: "14px",
-            display: "none",
-            maxHeight: "140px",
-            overflow: "auto",
-            padding: "10px",
-            borderRadius: "14px",
-            border: "1px solid rgba(255,255,255,0.14)",
-            background: "rgba(18, 18, 22, 0.92)",
-            color: "#f4f4f5",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
-            zIndex: "16",
-            fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-            fontSize: "12px",
+            minWidth: "0",
+            display: "block",
         });
+
+        this.section = document.createElement("div");
+        this.section.style.marginBottom = "10px";
+
+        this.title = document.createElement("div");
+        Object.assign(this.title.style, {
+            fontWeight: "700",
+            marginBottom: "6px",
+            opacity: "0.9",
+        });
+        this.title.textContent = `Chain ${this.chainLabel}`;
+
+        this.row = document.createElement("div");
+        Object.assign(this.row.style, {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "6px",
+        });
+
+        this.section.appendChild(this.title);
+        this.section.appendChild(this.row);
+        this.root.appendChild(this.section);
         this.host.appendChild(this.root);
     }
 
-    setStructure(structure: Structure | undefined): void {
+    setData(structure: Structure | undefined, items: ActiveSelectionItem[]): void {
         this.structure = structure;
+        this.groupItems = items;
         if (!structure) this.annotationRecords.clear();
-        this.groupItems = structure ? buildGroupItemsFromStructure(structure) : [];
         this.render();
     }
 
@@ -143,146 +155,112 @@ export class GroupStrip {
         if (changed) this.render();
     }
 
+    focusItem(item: ActiveSelectionItem): StructureElement.Loci | null {
+        if (!this.structure) return null;
+        return makeLociForItem(this.structure, item);
+    }
+
     dispose(): void {
         this.root.remove();
     }
 
     private render(): void {
-        this.root.replaceChildren();
-        if (!this.structure || this.groupItems.length === 0) {
-            this.root.style.display = "none";
-            return;
-        }
-        this.root.style.display = "block";
+        this.row.replaceChildren();
+        this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
+        if (!this.structure || this.groupItems.length === 0) return;
 
-        const grouped = new Map<string, ActiveSelectionItem[]>();
         for (const item of this.groupItems) {
-            const chain = item.chain_name ?? "?";
-            if (!grouped.has(chain)) grouped.set(chain, []);
-            grouped.get(chain)!.push(item);
-        }
-
-        for (const [chain, items] of grouped.entries()) {
-            const section = document.createElement("div");
-            section.style.marginBottom = "10px";
-
-            const title = document.createElement("div");
-            title.textContent = `Chain ${chain}`;
-            Object.assign(title.style, {
-                fontWeight: "700",
-                marginBottom: "6px",
-                opacity: "0.9",
+            const key = selectionKey(item);
+            const button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute("data-molsysviewer-group-item", "true");
+            button.setAttribute("data-chain-name", item.chain_name ?? "");
+            button.setAttribute("data-group-name", item.group_name ?? "");
+            const selected = this.selectedElementKeys.has(key);
+            Object.assign(button.style, {
+                padding: "6px 8px",
+                borderRadius: "999px",
+                border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
+                background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
+                color: "inherit",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                font: "inherit",
             });
-            section.appendChild(title);
+            const text = document.createElement("span");
+            text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
+            button.appendChild(text);
 
-            const row = document.createElement("div");
-            Object.assign(row.style, {
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "6px",
-            });
-
-            for (const item of items) {
-                const key = selectionKey(item);
-                const button = document.createElement("button");
-                button.type = "button";
-                button.setAttribute("data-molsysviewer-group-item", "true");
-                button.setAttribute("data-chain-name", item.chain_name ?? "");
-                button.setAttribute("data-group-name", item.group_name ?? "");
-                const selected = this.selectedElementKeys.has(key);
-                Object.assign(button.style, {
-                    padding: "6px 8px",
+            const annotationRecords = this.annotationRecords.get(key) ?? [];
+            if (annotationRecords.length > 0) {
+                const badge = document.createElement("span");
+                const primary = annotationRecords[0];
+                const annotationSelected = this.selectedAnnotationKeys.has(`${key}:annotation:${primary.tag ?? ""}`);
+                badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
+                Object.assign(badge.style, {
+                    marginLeft: "6px",
+                    padding: "1px 6px",
                     borderRadius: "999px",
-                    border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
-                    background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
-                    color: "inherit",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    font: "inherit",
+                    background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
+                    color: annotationSelected ? "#fde68a" : "#b7f7dd",
+                    fontSize: "10px",
+                    fontWeight: "700",
                 });
-                const text = document.createElement("span");
-                text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
-                button.appendChild(text);
-
-                const annotationRecords = this.annotationRecords.get(key) ?? [];
-                if (annotationRecords.length > 0) {
-                    const badge = document.createElement("span");
-                    const primary = annotationRecords[0];
-                    const annotationSelected = this.selectedAnnotationKeys.has(`${key}:annotation:${primary.tag ?? ""}`);
-                    badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
-                    Object.assign(badge.style, {
-                        marginLeft: "6px",
-                        padding: "1px 6px",
-                        borderRadius: "999px",
-                        background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
-                        color: annotationSelected ? "#fde68a" : "#b7f7dd",
-                        fontSize: "10px",
-                        fontWeight: "700",
-                    });
-                    button.appendChild(badge);
-                    button.title = annotationRecords.map((record) => record.text).join("\n");
-                    badge.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        this.onSelect([{
-                            source_kind: "annotation",
-                            annotation_kind: "label",
+                button.appendChild(badge);
+                button.title = annotationRecords.map((record) => record.text).join("\n");
+                badge.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.onSelect([{
+                        source_kind: "annotation",
+                        annotation_kind: "label",
+                        atom_indices: item.atom_indices,
+                        group_indices: item.group_indices,
+                        chain_indices: item.chain_indices,
+                        entity_indices: item.entity_indices,
+                        tag: primary.tag,
+                        text: primary.text,
+                    }], !!(event as MouseEvent).shiftKey);
+                });
+                badge.addEventListener("contextmenu", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.onAnnotationContext(
+                        {
+                            event: "interaction_context_menu",
+                            kind: "annotation",
                             atom_indices: item.atom_indices,
-                            group_indices: item.group_indices,
-                            chain_indices: item.chain_indices,
-                            entity_indices: item.entity_indices,
                             tag: primary.tag,
                             text: primary.text,
-                        }], !!(event as MouseEvent).shiftKey);
-                    });
-                    badge.addEventListener("contextmenu", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        this.onAnnotationContext(
-                            {
-                                event: "interaction_context_menu",
-                                kind: "annotation",
-                                atom_indices: item.atom_indices,
-                                tag: primary.tag,
-                                text: primary.text,
-                            },
-                            (event as MouseEvent).pageX,
-                            (event as MouseEvent).pageY,
-                        );
-                    });
-                }
-                button.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.onSelect([item], !!(event as MouseEvent).shiftKey);
+                        },
+                        (event as MouseEvent).pageX,
+                        (event as MouseEvent).pageY,
+                    );
                 });
-                button.addEventListener("dblclick", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.onFocus(item);
-                });
-                button.addEventListener("mouseenter", () => {
-                    this.onHover(item);
-                });
-                button.addEventListener("mouseleave", () => {
-                    this.onHover(null);
-                });
-                button.addEventListener("contextmenu", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.onContext(item, (event as MouseEvent).pageX, (event as MouseEvent).pageY);
-                });
-                row.appendChild(button);
             }
-
-            section.appendChild(row);
-            this.root.appendChild(section);
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.onSelect([item], !!(event as MouseEvent).shiftKey);
+            });
+            button.addEventListener("dblclick", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.onFocus(item);
+            });
+            button.addEventListener("mouseenter", () => {
+                this.onHover(item);
+            });
+            button.addEventListener("mouseleave", () => {
+                this.onHover(null);
+            });
+            button.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.onContext(item, (event as MouseEvent).pageX, (event as MouseEvent).pageY);
+            });
+            this.row.appendChild(button);
         }
-    }
-
-    focusItem(item: ActiveSelectionItem): StructureElement.Loci | null {
-        if (!this.structure) return null;
-        return makeLociForItem(this.structure, item);
     }
 
     private findSelectionKeyFromAtomIndices(atomIndices: number[]): string | null {

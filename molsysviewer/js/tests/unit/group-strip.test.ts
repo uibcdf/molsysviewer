@@ -77,7 +77,7 @@ test("GroupStrip displays and clears annotation overlay badges", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {}, () => {});
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
                 source_kind: "element",
@@ -117,7 +117,7 @@ test("GroupStrip routes badge context menu to annotation target", () => {
     try {
         const host = new FakeElement() as any;
         const annotationTargets: any[] = [];
-        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {}, (target) => {
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, (target) => {
             annotationTargets.push(target);
         });
         (strip as any).groupItems = [
@@ -176,7 +176,7 @@ test("GroupStrip badge click selects annotation and shift-click is forwarded", (
     try {
         const host = new FakeElement() as any;
         const selected: any[] = [];
-        const strip = new GroupStrip(host, (items, additive) => {
+        const strip = new GroupStrip(host, "A", (items, additive) => {
             selected.push({ items, additive });
         }, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
@@ -228,7 +228,7 @@ test("GroupStrip can reflect mixed element and annotation selection at once", ()
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, () => {}, () => {});
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
                 source_kind: "element",
@@ -307,7 +307,7 @@ test("GroupStrip routes group context menu to element target", () => {
     try {
         const host = new FakeElement() as any;
         const targets: any[] = [];
-        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, (item, pageX, pageY) => {
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, (item, pageX, pageY) => {
             targets.push({ item, pageX, pageY });
         }, () => {});
         (strip as any).groupItems = [

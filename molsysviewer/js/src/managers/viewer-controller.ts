@@ -25,7 +25,7 @@ import { MeasurementToolAction, MeasurementToolController } from "./measurement-
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
-import { GroupStrip } from "../ui/group-strip";
+import { GroupPanel } from "../ui/group-panel";
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -291,7 +291,7 @@ export class MolSysViewerController {
     private readonly measurementTools: MeasurementToolController;
     private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
-    private readonly groupStrip: GroupStrip;
+    private readonly groupPanel: GroupPanel;
     private readonly releaseContextMenuSuppression?: () => void;
     private readonly releaseGlobalEscapeHandler?: () => void;
     private lastContextLoci: any = null;
@@ -387,7 +387,7 @@ export class MolSysViewerController {
                 }
             } else if (msg?.event === "interaction_active_selection_changed") {
                 this.currentActiveSelection = msg;
-                this.groupStrip.updateSelection(msg);
+                this.groupPanel.updateSelection(msg);
                 this.syncVisualSelection(msg);
             } else if (msg?.event === "interaction_measurement_created") {
                 this.lastMeasurementSummary = {
@@ -401,10 +401,10 @@ export class MolSysViewerController {
         this.toolStatusOverlay = new ToolStatusOverlay(host);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
-        this.groupStrip = new GroupStrip(host, (items, additive) => {
+        this.groupPanel = new GroupPanel(host, (items, additive) => {
             this.activeSelection.setItems(items, additive);
         }, (item) => {
-            const loci = this.groupStrip.focusItem(item);
+            const loci = this.groupPanel.focusItem(item);
             if (loci) this.plugin.managers.camera.focusLoci(loci);
         }, (item) => {
             if (!item) {
@@ -412,7 +412,7 @@ export class MolSysViewerController {
                 emitInteractionEvent({ event: "interaction_hover", kind: "empty" });
                 return;
             }
-            const loci = this.groupStrip.focusItem(item);
+            const loci = this.groupPanel.focusItem(item);
             if (!loci) return;
             this.plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }, false);
             emitInteractionEvent({
@@ -568,7 +568,7 @@ export class MolSysViewerController {
     dispose(): void {
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
-        this.groupStrip.dispose();
+        this.groupPanel.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.releaseGlobalEscapeHandler?.();
