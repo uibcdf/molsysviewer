@@ -243,7 +243,7 @@ Preferred first direction:
 
 - groups ordered by chain
 - the current adopted direction is one vertical strip-column per chain
-- each chain strip should be independently scrollable
+- each chain strip should be independently scrollable and use the full useful panel height
 - the earlier one-row-per-chain horizontal layout is no longer the intended direction
 
 This is better than a single undifferentiated strip if multiple chains exist.

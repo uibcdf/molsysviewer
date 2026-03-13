@@ -566,7 +566,7 @@ The current adopted container direction is:
 
 - `GroupPanel` docked laterally on the left
 - collapsed by default
-- a small chevron tab (`>`) reveals it
-- an internal chevron (`<`) collapses it again
+- the chevron tab is physically attached to the panel and remains visible as the only exposed part when collapsed
+- the panel slides as one piece, so the tab behaves like a true sidebar handle
 
 This is preferred over a permanent lower band because it preserves canvas area while keeping the strip tool quickly reachable.

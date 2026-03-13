@@ -209,3 +209,11 @@ interaction behavior.
 - future discussion of a distinct `bond` target policy
 - future discussion of `focus` versus optional `focus marker`
 - future richer gesture policy for range selection, without overloading `Shift`
+
+## GroupPanel Layout
+
+### Implemented
+
+- `GroupPanel` is now a left sliding sidebar
+- when collapsed, only the chevron tab remains visible
+- each `GroupStrip` is rendered as a full-height vertical column with its own scroll
