@@ -336,6 +336,11 @@ export type ClearActiveSelectionMessage = {
     op: "clear_active_selection";
 };
 
+export type SetActiveSelectionMessage = {
+    op: "set_active_selection";
+    atom_indices?: number[];
+};
+
 export type SaveSelectionMessage = {
     op: "save_selection";
     tag: string;
@@ -416,6 +421,7 @@ export type ViewerMessage =
     SetCameraSnapshotMessage |
     RequestCameraSnapshotMessage |
     ClearActiveSelectionMessage |
+    SetActiveSelectionMessage |
     SaveSelectionMessage |
     SetSelectionTagMessage |
     DeleteSelectionMessage |

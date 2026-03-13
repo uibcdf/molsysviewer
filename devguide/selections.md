@@ -71,6 +71,7 @@ The first slice should be intentionally narrow.
 ### Public per-selection wrapper
 
 - `view.selections[tag].info()`
+- `view.selections[tag].activate()`
 - `view.selections[tag].focus(...)`
 - `view.selections[tag].new_region(...)`
 - `view.selections[tag].add_label(...)`
@@ -82,6 +83,12 @@ The first slice should be intentionally narrow.
 `active_selection` should provide:
 
 - `save(tag=...)`
+
+Persistent selections should also be able to restore themselves into the
+interactive workflow:
+
+- `view.selections.activate(tag)`
+- `view.selections[tag].activate()`
 
 That keeps the main reproducible workflow short and explicit.
 

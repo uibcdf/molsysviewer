@@ -764,6 +764,12 @@ export class MolSysViewerController {
                 case "clear_active_selection":
                     this.activeSelection.clear();
                     break;
+                case "set_active_selection":
+                    this.activeSelection.setFromAtomIndices(
+                        Array.isArray(msg.atom_indices) ? msg.atom_indices : [],
+                        this.getStructureData(),
+                    );
+                    break;
                 case "save_selection":
                 case "set_selection_tag":
                 case "delete_selection":
