@@ -20,7 +20,7 @@ import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
-import { LastMeasurementSummary, ViewerContextMenu } from "../ui/context-menu";
+import { LastMeasurementSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem, lociToGroupItems } from "./active-selection";
@@ -298,6 +298,7 @@ export class MolSysViewerController {
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
+    private savedSelections: SavedSelectionSummary[] = [];
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -433,6 +434,9 @@ export class MolSysViewerController {
                 this.focusCurrentSelection();
                 return;
             }
+            if (action === "activate_selection") {
+                return;
+            }
             if (action === "clear_selection") {
                 this.activeSelection.clear();
                 return;
@@ -501,7 +505,7 @@ export class MolSysViewerController {
             const pageX = payload.page_x ?? 0;
             const pageY = payload.page_y ?? 0;
             emitInteractionEvent(payload);
-            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
             this.lastHoverPayload = normalizeInteractionEvent("hover", ev);
@@ -608,7 +612,7 @@ export class MolSysViewerController {
             page_y: pageY,
         };
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
     }
 
     private openContextMenuForAnnotation(
@@ -623,7 +627,7 @@ export class MolSysViewerController {
             page_y: pageY,
         };
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
     }
 
     private focusCurrentSelection(): void {
@@ -640,6 +644,29 @@ export class MolSysViewerController {
         const loci = this.atomIndicesToLoci(atomIndices);
         if (!loci) return;
         this.plugin.managers.camera.focusLoci(loci);
+    }
+
+    private upsertSavedSelection(msg: any): void {
+        const tag = typeof msg?.tag === "string" ? msg.tag : null;
+        if (!tag) return;
+        const atomCount = Array.isArray(msg?.atom_indices) ? msg.atom_indices.length : 0;
+        const next = this.savedSelections.filter((item) => item.tag !== tag);
+        next.push({ tag, atom_count: atomCount });
+        this.savedSelections = next.sort((a, b) => a.tag.localeCompare(b.tag));
+    }
+
+    private renameSavedSelection(msg: any): void {
+        const tag = typeof msg?.tag === "string" ? msg.tag : null;
+        const newTag = typeof msg?.new_tag === "string" ? msg.new_tag : null;
+        if (!tag || !newTag) return;
+        this.savedSelections = this.savedSelections.map((item) => item.tag === tag ? { ...item, tag: newTag } : item)
+            .sort((a, b) => a.tag.localeCompare(b.tag));
+    }
+
+    private deleteSavedSelection(msg: any): void {
+        const tag = typeof msg?.tag === "string" ? msg.tag : null;
+        if (!tag) return;
+        this.savedSelections = this.savedSelections.filter((item) => item.tag !== tag);
     }
 
     private handlePotentialDoubleClickFocus(ev: any): void {
@@ -771,9 +798,16 @@ export class MolSysViewerController {
                     );
                     break;
                 case "save_selection":
+                    this.upsertSavedSelection(msg);
+                    break;
                 case "set_selection_tag":
+                    this.renameSavedSelection(msg);
+                    break;
                 case "delete_selection":
+                    this.deleteSavedSelection(msg);
+                    break;
                 case "clear_selections":
+                    this.savedSelections = [];
                     break;
 
                 // Trajectory Ops

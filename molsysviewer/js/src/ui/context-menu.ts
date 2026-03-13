@@ -20,6 +20,7 @@ export type ContextMenuAction =
     | "dihedral"
     | "focus_target"
     | "focus_selection"
+    | "activate_selection"
     | "save_selection"
     | "clear_selection"
     | "create_region_from_selection"
@@ -34,6 +35,11 @@ export type ContextActionDetails = {
 export type LastMeasurementSummary = {
     action: "distance" | "angle" | "dihedral";
     picked_count: number;
+};
+
+export type SavedSelectionSummary = {
+    tag: string;
+    atom_count: number;
 };
 
 function targetTitle(target: ContextMenuTarget): string {
@@ -73,6 +79,7 @@ export class ViewerContextMenu {
     private currentTarget: ContextMenuTarget | null = null;
     private currentSelection: ActiveSelectionPayload | null = null;
     private currentLastMeasurement: LastMeasurementSummary | null = null;
+    private currentSavedSelections: SavedSelectionSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
 
@@ -110,10 +117,12 @@ export class ViewerContextMenu {
         pageY: number,
         activeSelection?: ActiveSelectionPayload | null,
         lastMeasurement?: LastMeasurementSummary | null,
+        savedSelections?: SavedSelectionSummary[] | null,
     ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
         this.currentLastMeasurement = lastMeasurement ?? null;
+        this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
         this.currentPageX = pageX;
         this.currentPageY = pageY;
         this.root.replaceChildren();
@@ -194,6 +203,29 @@ export class ViewerContextMenu {
             this.root.appendChild(section);
         }
 
+        if (this.currentSavedSelections.length > 0) {
+            const section = document.createElement("div");
+            Object.assign(section.style, {
+                marginTop: "8px",
+                paddingTop: "8px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+
+            const title = document.createElement("div");
+            title.textContent = "Saved selections";
+            Object.assign(title.style, {
+                padding: "4px 8px 8px 8px",
+                opacity: "0.82",
+                fontSize: "12px",
+            });
+            section.appendChild(title);
+
+            for (const selection of this.currentSavedSelections) {
+                section.appendChild(this.makeSavedSelectionButton(selection));
+            }
+            this.root.appendChild(section);
+        }
+
         const rect = this.host.getBoundingClientRect();
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
@@ -216,6 +248,7 @@ export class ViewerContextMenu {
         this.currentTarget = null;
         this.currentSelection = null;
         this.currentLastMeasurement = null;
+        this.currentSavedSelections = [];
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
     }
@@ -257,6 +290,9 @@ export class ViewerContextMenu {
                 this.renderSelectionComposer();
                 return;
             }
+            if (action === "activate_selection") {
+                return;
+            }
             const details = this.resolveActionDetails(action);
             if (details === null) return;
             this.onAction?.(action, this.currentTarget, details ?? undefined);
@@ -265,6 +301,45 @@ export class ViewerContextMenu {
                 action,
                 context: this.currentTarget,
                 ...(details ?? {}),
+            });
+            this.close();
+        });
+        return button;
+    }
+
+    private makeSavedSelectionButton(selection: SavedSelectionSummary): HTMLButtonElement {
+        const label = `${selection.tag} · ${selection.atom_count} atom${selection.atom_count === 1 ? "" : "s"}`;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.setAttribute("data-molsysviewer-saved-selection", selection.tag);
+        Object.assign(button.style, {
+            display: "block",
+            width: "100%",
+            padding: "8px 10px",
+            margin: "0",
+            border: "0",
+            borderRadius: "8px",
+            background: "transparent",
+            color: "inherit",
+            textAlign: "left",
+            cursor: "pointer",
+        });
+        button.addEventListener("pointerenter", () => {
+            button.style.background = "rgba(255,255,255,0.10)";
+        });
+        button.addEventListener("pointerleave", () => {
+            button.style.background = "transparent";
+        });
+        button.addEventListener("click", () => {
+            if (!this.currentTarget) return;
+            const details = { tag: selection.tag };
+            this.onAction?.("activate_selection", this.currentTarget, details);
+            this.notify?.({
+                event: "interaction_context_action",
+                action: "activate_selection",
+                context: this.currentTarget,
+                ...details,
             });
             this.close();
         });
