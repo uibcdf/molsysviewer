@@ -16,6 +16,7 @@ export interface AnnotationCallbacks {
 export class AnnotationHandlers {
     private readonly labelRefs = new Set<StateObjectRef>();
     private readonly refsByTag = new Map<string, Set<StateObjectRef>>();
+    private readonly specsByTag = new Map<string, { text: string; atom_indices: number[]; tag: string }>();
 
     constructor(
         private readonly plugin: PluginContext,
@@ -32,6 +33,7 @@ export class AnnotationHandlers {
             : [];
         const tag = msg.tag ?? msg.options?.tag ?? "annotation";
         if (!text.trim() || atomIndices.length === 0) return;
+        this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag });
 
         const loci = this.buildLociFromAtomIndices(structure, atomIndices);
         if (!loci) return;
@@ -101,6 +103,25 @@ export class AnnotationHandlers {
                 removeParentGhosts: true,
             }))
         );
+    }
+
+    async setVisibility(tag: string, visible: boolean) {
+        if (!visible) {
+            await this.clearLabelByTag(tag);
+            return;
+        }
+        if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
+        const spec = this.specsByTag.get(tag);
+        if (!spec) return;
+        await this.addLabel({
+            op: "add_label",
+            tag,
+            options: {
+                text: spec.text,
+                atom_indices: [...spec.atom_indices],
+                tag,
+            },
+        });
     }
 
     private buildLociFromAtomIndices(structure: Structure, atomIndices: number[]) {

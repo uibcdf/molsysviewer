@@ -47,6 +47,7 @@ export interface StateCallbacks {
     getCurrentStructureRef: () => StateObjectRef | undefined;
     getComponents: () => StructureComponentRef[];
     notify: (msg: any) => void;
+    setManagedLayerVisibility?: (tag: string, kind: string, visible: boolean) => Promise<boolean>;
 }
 
 export class StateHandlers {
@@ -599,6 +600,14 @@ export class StateHandlers {
 
     private async toggleLayerVisibility(tag: string | undefined, hide: boolean) {
         const layerTag = tag ?? "layer";
+        const kind = this.layerMeta.get(layerTag)?.kind;
+        if ((kind === "annotation" || kind === "measurement") && this.callbacks.setManagedLayerVisibility) {
+            const handled = await this.callbacks.setManagedLayerVisibility(layerTag, kind, !hide);
+            if (handled) {
+                this.pendingLayerVisibility.delete(layerTag);
+                return;
+            }
+        }
         const refs = this.tagIndex.get(layerTag);
         if (!refs || refs.size === 0) {
             this.pendingLayerVisibility.set(layerTag, hide);

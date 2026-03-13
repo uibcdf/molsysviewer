@@ -43,7 +43,7 @@ function clickEvent(selectedAtoms: number[], shift = false): any {
     };
 }
 
-test("ActiveSelectionController replaces, adds group items with shift, avoids duplicates, and clears on empty click", () => {
+test("ActiveSelectionController replaces, toggles group items with shift, and clears on empty click", () => {
     const events: any[] = [];
     const controller = new ActiveSelectionController((msg) => events.push(msg));
 
@@ -129,40 +129,26 @@ test("ActiveSelectionController replaces, adds group items with shift, avoids du
             source_kind: "element",
             element_level: "group",
             target_level: "none",
-            items: [
-                {
-                    source_kind: "element",
-                    element_level: "group",
-                    atom_indices: [0, 1, 2],
-                    group_indices: [0],
-                    chain_indices: [0],
-                    entity_indices: [0],
-                    group_name: "ALA 1",
-                    group_id: 1,
-                    chain_name: "A",
-                    entity_name: "1",
-                },
-                {
-                    source_kind: "element",
-                    element_level: "group",
-                    atom_indices: [3, 4],
-                    group_indices: [1],
-                    chain_indices: [0],
-                    entity_indices: [0],
-                    group_name: "GLY 2",
-                    group_id: 2,
-                    chain_name: "A",
-                    entity_name: "1",
-                },
-            ],
-            atom_indices: [0, 1, 2, 3, 4],
-            group_indices: [0, 1],
+            items: [{
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                group_id: 1,
+                chain_name: "A",
+                entity_name: "1",
+            }],
+            atom_indices: [0, 1, 2],
+            group_indices: [0],
             component_indices: [],
             chain_indices: [0],
             molecule_indices: [],
             entity_indices: [0],
-            count_atoms: 5,
-            count_groups: 2,
+            count_atoms: 3,
+            count_groups: 1,
             count_shapes: 0,
             count_annotations: 0,
         },

@@ -252,9 +252,13 @@ export class GroupStrip {
                     });
                 }
                 button.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
                     this.onSelect([item], !!(event as MouseEvent).shiftKey);
                 });
-                button.addEventListener("dblclick", () => {
+                button.addEventListener("dblclick", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
                     this.onFocus(item);
                 });
                 button.addEventListener("mouseenter", () => {

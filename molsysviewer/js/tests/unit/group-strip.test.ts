@@ -301,3 +301,61 @@ test("GroupStrip can reflect mixed element and annotation selection at once", ()
         restore();
     }
 });
+
+test("GroupStrip routes group context menu to element target", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const targets: any[] = [];
+        const strip = new GroupStrip(host, () => {}, () => {}, () => {}, (item, pageX, pageY) => {
+            targets.push({ item, pageX, pageY });
+        }, () => {});
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                chain_name: "A",
+                entity_name: "1",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+
+        const button = (((strip as any).root.children[0] as FakeElement).children[1] as FakeElement).children[0] as FakeElement;
+        let prevented = false;
+        let stopped = false;
+        button.dispatch("contextmenu", {
+            pageX: 20,
+            pageY: 40,
+            preventDefault() { prevented = true; },
+            stopPropagation() { stopped = true; },
+        });
+
+        assert.deepStrictEqual(targets, [{
+            item: {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                chain_name: "A",
+                entity_name: "1",
+            },
+            pageX: 20,
+            pageY: 40,
+        }]);
+        assert.strictEqual(prevented, true);
+        assert.strictEqual(stopped, true);
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});

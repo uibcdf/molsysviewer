@@ -302,12 +302,20 @@ export class ActiveSelectionController {
             return;
         }
         const next = [...this.items];
-        const known = new Set(next.map(signature));
+        const indexByKey = new Map(next.map((item, index) => [signature(item), index] as const));
         for (const item of items) {
             const key = signature(item);
-            if (known.has(key)) continue;
-            known.add(key);
+            const existingIndex = indexByKey.get(key);
+            if (existingIndex !== undefined) {
+                if (item.source_kind === "element") {
+                    next.splice(existingIndex, 1);
+                    indexByKey.clear();
+                    next.forEach((candidate, index) => indexByKey.set(signature(candidate), index));
+                }
+                continue;
+            }
             next.push(item);
+            indexByKey.set(key, next.length - 1);
         }
         this.items = next;
         this.emit();
