@@ -54,6 +54,8 @@ That principle should guide prioritization throughout the repository.
    - GroupStrip direction, alternatives not chosen, first implementation scope, and future strip ideas.
 10. [**Annotations**](annotations.md)
    - Viewer taxonomy for labels/annotations, Mol* precedents, and the first annotation slice.
+11. [**Selections**](selections.md)
+   - Persistent named selections as a category distinct from regions.
 11. [**Smoke Test**](smoke_test.md)
    - Short runbook for checking interaction feel and reproducibility together.
 12. [**Guiding Principles**](guiding_principles.md)

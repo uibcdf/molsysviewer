@@ -27,6 +27,8 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
 
     region = view.new_region_from_active_selection(tag="picked", representation="ball_and_stick")
     assert region.tag == "picked"
+    saved = view.active_selection.save("picked-selection")
+    assert saved.tag == "picked-selection"
 
     label_layer = view.annotations.add_label_from_active_selection(text="Seed", tag="notes")
     assert label_layer.tag == "notes"
@@ -53,6 +55,7 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
 
     assert ops[0] == "load_molsys_payload"
     assert "create_region" in ops
+    assert "save_selection" in ops
     assert "set_region_representation" in ops
     assert "add_label" in ops
     assert "update_label" in ops
@@ -63,6 +66,10 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
 
     region_msg = next(msg for msg in messages if msg.get("op") == "create_region" and msg.get("tag") == "picked")
     assert region_msg["atom_indices"] == atom_indices
+
+    selection_msg = next(msg for msg in messages if msg.get("op") == "save_selection" and msg.get("tag") == "picked-selection")
+    assert selection_msg["atom_indices"] == atom_indices
+    assert selection_msg["group_indices"] == [1]
 
     region_repr_msg = next(
         msg for msg in messages if msg.get("op") == "set_region_representation" and msg.get("tag") == "picked"

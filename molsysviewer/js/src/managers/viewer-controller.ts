@@ -763,6 +763,11 @@ export class MolSysViewerController {
                 case "clear_active_selection":
                     this.activeSelection.clear();
                     break;
+                case "save_selection":
+                case "set_selection_tag":
+                case "delete_selection":
+                case "clear_selections":
+                    break;
 
                 // Trajectory Ops
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;

@@ -23,6 +23,7 @@ rebuild-safe, exportable viewer state.
 This affects prioritization:
 
 - `selection`, `regions`, `labels`, `measurements`, `layers`, and scene state
+- `selections` should now be treated as their own persistent category, not as a thin alias for `regions`
   matter more than ephemeral interaction for its own sake,
 - exploration should tend toward artifacts that can be reproduced later from
   Python or exported viewer state,
@@ -248,10 +249,12 @@ should grow over time as additional project-level principles become clear.
 ### Status
 
 - `In progress`
-  - `active_selection` now has a first explicit Python bridge into reproducible state:
-    - `new_region_from_active_selection(...)`
-    - `view.annotations.add_label_from_active_selection(...)`
-    - `view.measurements.persist_last_measurement(...)`
+- `active_selection` now has a first explicit Python bridge into reproducible state:
+  - `new_region_from_active_selection(...)`
+  - `view.annotations.add_label_from_active_selection(...)`
+  - `view.measurements.persist_last_measurement(...)`
+  - `active_selection.save(tag=...)`
+- `view.selections` now exists as the first persistent named-selection surface.
   - The current contract is intentionally narrow and deterministic.
   - Persisted measurement ops now also exist in the runtime:
     - `add_distance_measurement`
