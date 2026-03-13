@@ -336,6 +336,36 @@ export type ClearActiveSelectionMessage = {
     op: "clear_active_selection";
 };
 
+export type SaveSelectionMessage = {
+    op: "save_selection";
+    tag: string;
+    source_kind?: string;
+    element_level?: string;
+    target_level?: string;
+    items?: Record<string, unknown>[];
+    atom_indices?: number[];
+    group_indices?: number[];
+    component_indices?: number[];
+    chain_indices?: number[];
+    molecule_indices?: number[];
+    entity_indices?: number[];
+};
+
+export type SetSelectionTagMessage = {
+    op: "set_selection_tag";
+    tag?: string;
+    new_tag: string;
+};
+
+export type DeleteSelectionMessage = {
+    op: "delete_selection";
+    tag?: string;
+};
+
+export type ClearSelectionsMessage = {
+    op: "clear_selections";
+};
+
 export type ViewerMessage =
     AddSphereMessage |
     AddAlphaSphereSetMessage |
@@ -386,4 +416,8 @@ export type ViewerMessage =
     SetCameraSnapshotMessage |
     RequestCameraSnapshotMessage |
     ClearActiveSelectionMessage |
+    SaveSelectionMessage |
+    SetSelectionTagMessage |
+    DeleteSelectionMessage |
+    ClearSelectionsMessage |
     Record<string, unknown>;

@@ -59,6 +59,19 @@ If you rename, remove, or change behavior here, you update docs and add tests.
   - `focus(...)`
   - `new_region(...)`
   - `add_label(...)`
+  - `save(...)`
+- `view.selections`
+  - `add(...)`
+  - `add_from_active_selection(...)`
+  - `tags()`
+  - `count()`
+  - `contains(tag)`
+  - `get(tag)`
+  - `records()`
+  - `info(tag=None)`
+  - `set_tag(tag, new_tag)`
+  - `delete(tag)`
+  - `clear(tag=None)`
 - `get_last_measurement_created_event()`
 - `new_region_from_active_selection(...)`
 - `view.annotations.add_label_from_active_selection(...)`
@@ -73,6 +86,12 @@ Related object wrappers are also part of the intended public surface:
 - `view.whole.focus(...)`
 - `view.regions[tag].focus(...)`
 - `view.regions[tag].show_only(...)`
+- `view.selections[tag].info()`
+- `view.selections[tag].focus(...)`
+- `view.selections[tag].new_region(...)`
+- `view.selections[tag].add_label(...)`
+- `view.selections[tag].set_tag(...)`
+- `view.selections[tag].delete()`
 - `view.annotations.add_label(...)`
   - current first slice: persistent label on exactly one `group`
 - `view.annotations.tags()`

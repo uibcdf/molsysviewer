@@ -21,6 +21,7 @@ from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .annotations import AnnotationsManager
 from .active_selection import ActiveSelection
 from .measurements import MeasurementsManager
+from .selections import SelectionsManager, Selection
 from .shapes import ShapesManager
 from .regions import Region
 from .whole import Whole
@@ -168,10 +169,12 @@ class MolSysView:
         self._shape_history: list[dict] = []
         self._annotation_history: list[dict] = []
         self._measurement_history: list[dict] = []
+        self._selection_history: list[dict] = []
         self._last_label: str | None = None
 
         self._regions: Dict[str, Region] = {}
         self._layers: Dict[str, Layer] = {}
+        self._selections: Dict[str, Selection] = {}
         self._region_counter = 0
         self._layer_counter = 0
         self._global_hidden = False
@@ -195,6 +198,7 @@ class MolSysView:
         self.annotations = AnnotationsManager(self)
         self.active_selection = ActiveSelection(self)
         self.measurements = MeasurementsManager(self)
+        self.selections = SelectionsManager(self)
         try:
             self.widget.autohide_controls = bool(config.autohide_controls)
         except Exception:
@@ -311,6 +315,11 @@ class MolSysView:
     def layers(self) -> Mapping[str, Layer]:
         """Public registry of layers (non-structural visuals)."""
         return self._layers
+
+    @property
+    def selections_registry(self) -> Mapping[str, Selection]:
+        """Public registry of persistent named selection wrappers."""
+        return self._selections
 
     @property
     def molsys(self):
@@ -899,12 +908,50 @@ class MolSysView:
 
         self._measurement_history.append(dict(msg))
 
+    def _record_selection_message(self, msg: dict) -> None:
+        op = msg.get("op")
+        if not isinstance(op, str):
+            return
+
+        if op == "clear_selections":
+            self._selection_history.clear()
+            return
+
+        if op == "delete_selection":
+            cleared_tag = msg.get("tag")
+            if not isinstance(cleared_tag, str):
+                return
+            self._selection_history = [m for m in self._selection_history if m.get("tag") != cleared_tag]
+            return
+
+        if op == "set_selection_tag":
+            old_tag = msg.get("tag")
+            new_tag = msg.get("new_tag")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
+                return
+            rewritten: list[dict] = []
+            for item in self._selection_history:
+                if item.get("tag") != old_tag:
+                    rewritten.append(item)
+                    continue
+                updated = dict(item)
+                updated["tag"] = new_tag
+                rewritten.append(updated)
+            self._selection_history = rewritten
+            return
+
+        if op != "save_selection":
+            return
+
+        self._selection_history.append(dict(msg))
+
     def _send(self, msg: dict) -> None:
         """Send a message to the frontend or queue it if the frontend is not ready yet."""
         self._message_history.append(msg)
         self._record_shape_message(msg)
         self._record_annotation_message(msg)
         self._record_measurement_message(msg)
+        self._record_selection_message(msg)
         if self._ready:
             self.widget.send(msg)
         else:
@@ -1021,6 +1068,21 @@ class MolSysView:
         options["picks_atom_indices"] = remapped_picks
         return remapped
 
+    def _remap_selection_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
+        if atom_index_map is None:
+            return msg
+        if msg.get("op") != "save_selection":
+            return msg
+        atom_indices = msg.get("atom_indices")
+        if not isinstance(atom_indices, list):
+            return dict(msg)
+        remapped = self._remap_indices(atom_indices, atom_index_map)
+        if len(remapped) == 0:
+            return None
+        updated = dict(msg)
+        updated["atom_indices"] = remapped
+        return updated
+
     def _rebuild_view_from_current_molsys(
         self,
         *,
@@ -1117,6 +1179,20 @@ class MolSysView:
             if remapped is None:
                 continue
             self._send_replay(remapped)
+
+        rewritten_selections: list[dict] = []
+        for msg in self._selection_history:
+            remapped = self._remap_selection_message(msg, atom_index_map)
+            if remapped is None:
+                continue
+            rewritten_selections.append(remapped)
+            self._send_replay(remapped)
+        self._selection_history = rewritten_selections
+        self._selections = {
+            tag: selection
+            for tag, selection in self._selections.items()
+            if any(record.get("tag") == tag for record in self._selection_history)
+        }
 
         self._update_visibility_in_frontend()
 
@@ -1394,6 +1470,7 @@ class MolSysView:
         self.structure_mask = None
         self._regions.clear()
         self._layers.clear()
+        self._selections.clear()
         self._region_counter = 0
         self._layer_counter = 0
         self._global_hidden = False
@@ -1401,6 +1478,7 @@ class MolSysView:
         self._shape_history.clear()
         self._annotation_history.clear()
         self._measurement_history.clear()
+        self._selection_history.clear()
         self._last_label = None
 
         # Ask frontend to clear everything (molecule + shapes + view)

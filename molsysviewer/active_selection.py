@@ -155,5 +155,11 @@ class ActiveSelection:
             skip_digestion=True,
         )
 
+    @signal(tags=["selection"])
+    @digest()
+    def save(self, tag: str, skip_digestion: bool = False):
+        """Persist the current active selection as a named selection."""
+        return self._view.selections.add_from_active_selection(tag=tag, skip_digestion=True)
+
 
 __all__ = ["ActiveSelection"]

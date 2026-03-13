@@ -34,6 +34,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - what has already been verified in smoke,
   - and what still needs re-checking.
 - Keep `devguide/` aligned with the real repository state.
+- Treat `selections` as a first-class category distinct from `regions`; do not collapse them just because both derive from atom subsets.
 - Keep the smoke runbook in `devguide/smoke_test.md` aligned with the real product surface before broadening interaction much further.
 - Prioritize regression coverage for new product-facing behavior, especially where it composes runtime state, layers, and rebuild/replay.
 
@@ -247,6 +248,14 @@ Do not append dated historical entries unless a date is itself operationally rel
       - `focus(...)`
       - `new_region(...)`
       - `add_label(...)`
+      - `save(...)`
+  - `selections` now exist as a first-class persistent category:
+    - `view.selections.add_from_active_selection(tag=...)`
+    - `view.selections.records()`, `count()`, `info()`
+    - per-selection wrappers with `focus(...)`, `new_region(...)`, and `add_label(...)`
+    - selections are stored by `atom_indices` and treat derived hierarchy indices as summaries
+    - they do not create scene representation automatically
+    - they replay/export as explicit non-visual viewer messages
     - this turns the selection into a real object of work instead of a raw event payload
   - The current bridge is intentionally narrow:
     - region creation uses stored `active_selection.atom_indices`,
