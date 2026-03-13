@@ -145834,7 +145834,7 @@ var MolSysViewerController = class _MolSysViewerController {
     return () => window.removeEventListener("keydown", onKeyDown, true);
   }
   openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent) {
-    const loci = this.groupStrip.focusItem(item2);
+    const loci = this.groupPanel.focusItem(item2);
     if (!loci) return;
     this.lastContextLoci = loci;
     const payload = {
@@ -146144,12 +146144,12 @@ var MolSysViewerController = class _MolSysViewerController {
     const last4 = structures.length ? structures[structures.length - 1] : void 0;
     if (last4) {
       this.currentStructure = last4.cell.transform.ref;
-      this.groupStrip.setStructure(last4.cell.obj?.data);
+      this.groupPanel.setStructure(last4.cell.obj?.data);
       this.state.onStructureLoaded();
       this.trajectory.notifyListeners();
     } else {
       this.currentStructure = void 0;
-      this.groupStrip.setStructure(void 0);
+      this.groupPanel.setStructure(void 0);
     }
   }
   async removeLoadedStructure() {

@@ -601,7 +601,7 @@ export class MolSysViewerController {
         pageY: number,
         emitInteractionEvent: (msg: any) => void,
     ): void {
-        const loci = this.groupStrip.focusItem(item);
+        const loci = this.groupPanel.focusItem(item);
         if (!loci) return;
         this.lastContextLoci = loci;
         const payload = {
@@ -844,13 +844,13 @@ export class MolSysViewerController {
         const last = structures.length ? structures[structures.length - 1] : undefined;
         if (last) {
             this.currentStructure = last.cell.transform.ref as any;
-            this.groupStrip.setStructure(last.cell.obj?.data);
+            this.groupPanel.setStructure(last.cell.obj?.data);
             // Notify state handler that structure is ready so it can apply pending ops
             this.state.onStructureLoaded();
             this.trajectory.notifyListeners();
         } else {
             this.currentStructure = undefined;
-            this.groupStrip.setStructure(undefined);
+            this.groupPanel.setStructure(undefined);
         }
     }
 
