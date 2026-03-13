@@ -231,6 +231,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the first slice is intentionally narrow: one persistent label anchored to one `group`,
     - labels participate in `layers` with `kind="annotation"`,
     - labels survive export/replay/rebuild through dedicated annotation-history replay,
+    - live `hide()/show()` on annotation layers is now verified in notebook smoke and is implemented through explicit artifact removal/rebuild, not only generic subtree visibility,
     - `clear_decorations(..., labels=True)` now clears real frontend labels instead of a placeholder path,
     - strip label badges can now seed both `annotation` context and `annotation` active selection,
     - annotation context now has a first concrete action: `Focus Target`.
@@ -251,6 +252,18 @@ Do not append dated historical entries unless a date is itself operationally rel
       - `count()`
       - `records()`
       - `info()`
+  - `_build_export_messages()` now has an integral regression over the current reproducible workbench surface:
+    - `create_region`
+    - `set_region_representation`
+    - `add_label`
+    - `update_label`
+    - `add_distance_measurement`
+    - `add_angle_measurement`
+    - `add_dihedral_measurement`
+    - `set_camera_snapshot`
+  - measurement APIs now also have nominal argdigest coverage for their explicit
+    atom-pick arguments (`atom_indices_a` ... `atom_indices_d`), removing the
+    warning path that the integral export regression exposed
   - Region creation from active selection is now confirmed as a reproducibility
     operation first:
     - it creates a real region object and export messages,

@@ -140370,6 +140370,7 @@ var AnnotationHandlers = class {
     this.callbacks = callbacks;
     this.labelRefs = /* @__PURE__ */ new Set();
     this.refsByTag = /* @__PURE__ */ new Map();
+    this.specsByTag = /* @__PURE__ */ new Map();
   }
   async addLabel(msg) {
     const structure = this.callbacks.getStructure();
@@ -140378,6 +140379,7 @@ var AnnotationHandlers = class {
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
     const tag = msg.tag ?? msg.options?.tag ?? "annotation";
     if (!text.trim() || atomIndices.length === 0) return;
+    this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag });
     const loci = this.buildLociFromAtomIndices(structure, atomIndices);
     if (!loci) return;
     const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
@@ -140442,6 +140444,24 @@ var AnnotationHandlers = class {
       }))
     );
   }
+  async setVisibility(tag, visible) {
+    if (!visible) {
+      await this.clearLabelByTag(tag);
+      return;
+    }
+    if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
+    const spec = this.specsByTag.get(tag);
+    if (!spec) return;
+    await this.addLabel({
+      op: "add_label",
+      tag,
+      options: {
+        text: spec.text,
+        atom_indices: [...spec.atom_indices],
+        tag
+      }
+    });
+  }
   buildLociFromAtomIndices(structure, atomIndices) {
     const selectionBuilder = StructureSelection.LinearBuilder(structure);
     const set4 = new Set(atomIndices);
@@ -140475,6 +140495,8 @@ var MeasurementHandlers = class {
     this.plugin = plugin;
     this.callbacks = callbacks;
     this.measurementRefs = /* @__PURE__ */ new Set();
+    this.refsByTag = /* @__PURE__ */ new Map();
+    this.specsByTag = /* @__PURE__ */ new Map();
   }
   async addDistance(msg) {
     await this.addMeasurement(msg, "distance");
@@ -140489,6 +140511,7 @@ var MeasurementHandlers = class {
     if (this.measurementRefs.size === 0) return;
     const refs = Array.from(this.measurementRefs);
     this.measurementRefs.clear();
+    this.refsByTag.clear();
     await Promise.all(
       refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
         state: this.plugin.state.data,
@@ -140497,11 +140520,50 @@ var MeasurementHandlers = class {
       }))
     );
   }
+  async clearMeasurementByTag(tag) {
+    const refs = Array.from(this.refsByTag.get(tag) ?? []);
+    if (refs.length === 0) return;
+    this.refsByTag.delete(tag);
+    for (const ref of refs) {
+      this.measurementRefs.delete(ref);
+    }
+    await Promise.all(
+      refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
+        state: this.plugin.state.data,
+        ref,
+        removeParentGhosts: true
+      }))
+    );
+  }
+  async setVisibility(tag, visible) {
+    if (!visible) {
+      await this.clearMeasurementByTag(tag);
+      return;
+    }
+    if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
+    const spec = this.specsByTag.get(tag);
+    if (!spec) return;
+    if (spec.op === "add_distance_measurement") {
+      await this.addDistance(spec);
+    } else if (spec.op === "add_angle_measurement") {
+      await this.addAngle(spec);
+    } else {
+      await this.addDihedral(spec);
+    }
+  }
   async addMeasurement(msg, kind) {
     const structure = this.callbacks.getStructure();
     if (!structure) return;
     const picks = Array.isArray(msg.options?.picks_atom_indices) ? msg.options.picks_atom_indices : [];
     const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+    this.specsByTag.set(tag, {
+      op: msg.op,
+      tag,
+      options: {
+        tag,
+        picks_atom_indices: picks.map((item2) => Array.isArray(item2) ? [...item2] : [])
+      }
+    });
     const locis = picks.map((pick2) => this.buildLociFromAtomIndices(structure, pick2)).filter(Boolean);
     const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
     if (locis.length !== expected) return;
@@ -140526,10 +140588,16 @@ var MeasurementHandlers = class {
     if (!added) return;
     if (added.selection?.ref) {
       this.measurementRefs.add(added.selection.ref);
+      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+      refs.add(added.selection.ref);
+      this.refsByTag.set(tag, refs);
       this.callbacks.registerRef(added.selection.ref, tag);
     }
     if (added.representation?.ref) {
       this.measurementRefs.add(added.representation.ref);
+      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+      refs.add(added.representation.ref);
+      this.refsByTag.set(tag, refs);
       this.callbacks.registerRef(added.representation.ref, tag);
     }
   }
@@ -143722,6 +143790,14 @@ var StateHandlers = class {
   }
   async toggleLayerVisibility(tag, hide) {
     const layerTag = tag ?? "layer";
+    const kind = this.layerMeta.get(layerTag)?.kind;
+    if ((kind === "annotation" || kind === "measurement") && this.callbacks.setManagedLayerVisibility) {
+      const handled = await this.callbacks.setManagedLayerVisibility(layerTag, kind, !hide);
+      if (handled) {
+        this.pendingLayerVisibility.delete(layerTag);
+        return;
+      }
+    }
     const refs = this.tagIndex.get(layerTag);
     if (!refs || refs.size === 0) {
       this.pendingLayerVisibility.set(layerTag, hide);
@@ -144675,12 +144751,20 @@ var ActiveSelectionController = class {
       return;
     }
     const next = [...this.items];
-    const known = new Set(next.map(signature));
+    const indexByKey = new Map(next.map((item2, index) => [signature(item2), index]));
     for (const item2 of items) {
       const key2 = signature(item2);
-      if (known.has(key2)) continue;
-      known.add(key2);
+      const existingIndex = indexByKey.get(key2);
+      if (existingIndex !== void 0) {
+        if (item2.source_kind === "element") {
+          next.splice(existingIndex, 1);
+          indexByKey.clear();
+          next.forEach((candidate, index) => indexByKey.set(signature(candidate), index));
+        }
+        continue;
+      }
       next.push(item2);
+      indexByKey.set(key2, next.length - 1);
     }
     this.items = next;
     this.emit();
@@ -144916,9 +145000,13 @@ var GroupStrip = class {
           });
         }
         button.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
           this.onSelect([item2], !!event.shiftKey);
         });
-        button.addEventListener("dblclick", () => {
+        button.addEventListener("dblclick", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
           this.onFocus(item2);
         });
         button.addEventListener("mouseenter", () => {
@@ -145084,6 +145172,10 @@ function suppressCanvasContextMenu(host, ...targets) {
     secondaryPressInsideHost = false;
   };
   const onContextMenu = (event) => {
+    const target = event.target;
+    const canMatchElement = typeof Element !== "undefined" && target instanceof Element;
+    if (canMatchElement && target.closest("[data-molsysviewer-group-strip]")) return;
+    if (canMatchElement && target.closest("[data-molsysviewer-context-menu]")) return;
     if (!secondaryPressInsideHost && !isInsideHost(event)) return;
     event.preventDefault();
     event.stopPropagation();
@@ -145129,6 +145221,16 @@ function registerInteractionObservers(plugin, notify, openContextMenu, onPrimary
     });
   }
 }
+function createMolSysViewerPluginSpec() {
+  const spec = DefaultPluginSpec();
+  const behaviors = (spec.behaviors ?? []).filter(
+    (behavior) => behavior.transformer !== PluginBehaviors.Camera.FocusLoci && behavior.transformer !== PluginBehaviors.Representation.FocusLoci
+  );
+  return {
+    ...spec,
+    behaviors
+  };
+}
 var MolSysViewerController = class _MolSysViewerController {
   constructor(plugin, host, notify) {
     this.plugin = plugin;
@@ -145137,6 +145239,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.lastContextLoci = null;
     this.lastHoverLoci = null;
     this.lastHoverPayload = null;
+    this.lastPrimaryGroupClick = null;
     // Loaded structure bundle
     this.currentActiveSelection = null;
     this.lastMeasurementSummary = null;
@@ -145155,6 +145258,7 @@ var MolSysViewerController = class _MolSysViewerController {
       } else if (msg?.event === "interaction_active_selection_changed") {
         this.currentActiveSelection = msg;
         this.groupStrip.updateSelection(msg);
+        this.syncVisualSelection(msg);
       } else if (msg?.event === "interaction_measurement_created") {
         this.lastMeasurementSummary = {
           action: msg.action,
@@ -145212,9 +145316,11 @@ var MolSysViewerController = class _MolSysViewerController {
     if (canvas) {
       this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, canvas);
     }
+    this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
     registerInteractionObservers(plugin, emitInteractionEvent, void 0, (ev) => {
       if (!this.measurementTools.isActive()) {
         this.activeSelection.handlePrimaryClick(ev);
+        this.handlePotentialDoubleClickFocus(ev);
       }
       this.measurementTools.handlePrimaryClick(ev?.current?.loci);
     }, (ev) => {
@@ -145270,7 +145376,18 @@ var MolSysViewerController = class _MolSysViewerController {
       getLoadedStructure: () => this.loadedStructure,
       getCurrentStructureRef: () => this.currentStructure,
       getComponents: () => this.getComponents(),
-      notify: (msg) => this.notify?.(msg)
+      notify: (msg) => this.notify?.(msg),
+      setManagedLayerVisibility: async (tag, kind, visible) => {
+        if (kind === "annotation") {
+          await this.annotations.setVisibility(tag, visible);
+          return true;
+        }
+        if (kind === "measurement") {
+          await this.measurements.setVisibility(tag, visible);
+          return true;
+        }
+        return false;
+      }
     });
     this.shapes = new ShapeHandlers(plugin, (ref, tag) => this.state.registerShapeRef(ref, tag));
     this.annotations = new AnnotationHandlers(plugin, {
@@ -145337,7 +145454,7 @@ var MolSysViewerController = class _MolSysViewerController {
     } else if (existingCanvas.parentElement !== target) {
       target.appendChild(existingCanvas);
     }
-    const plugin = new PluginContext(DefaultPluginSpec());
+    const plugin = new PluginContext(createMolSysViewerPluginSpec());
     await plugin.init();
     const init = plugin.initViewerAsync ?? plugin.initViewer;
     let ok = false;
@@ -145371,11 +145488,26 @@ var MolSysViewerController = class _MolSysViewerController {
     this.groupStrip.dispose();
     this.contextMenu.dispose();
     this.releaseContextMenuSuppression?.();
+    this.releaseGlobalEscapeHandler?.();
     this.plugin.dispose();
   }
   startMeasurementTool(action) {
     if (!this.lastContextLoci) return;
     this.measurementTools.start(action, this.lastContextLoci);
+  }
+  installGlobalEscapeHandler() {
+    const onKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      if (this.measurementTools.isActive()) return;
+      if (this.currentActiveSelection?.source_kind !== "empty") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.activeSelection.clear();
+        this.contextMenu.close();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
   }
   openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent) {
     const loci = this.groupStrip.focusItem(item2);
@@ -145414,6 +145546,23 @@ var MolSysViewerController = class _MolSysViewerController {
     if (!loci) return;
     this.plugin.managers.camera.focusLoci(loci);
   }
+  handlePotentialDoubleClickFocus(ev) {
+    if (!!ev?.modifiers?.shift) return;
+    const items = lociToGroupItems(ev?.current?.loci);
+    if (items.length !== 1) {
+      this.lastPrimaryGroupClick = null;
+      return;
+    }
+    const item2 = items[0];
+    const key2 = `${item2.chain_indices.join(",")}:${item2.group_indices.join(",")}`;
+    const time = Date.now();
+    if (this.lastPrimaryGroupClick && this.lastPrimaryGroupClick.key === key2 && time - this.lastPrimaryGroupClick.time <= 400) {
+      this.lastPrimaryGroupClick = null;
+      this.focusTarget({ atom_indices: item2.atom_indices });
+      return;
+    }
+    this.lastPrimaryGroupClick = { key: key2, time };
+  }
   atomIndicesToLoci(atomIndices) {
     const structure = this.getStructureData();
     if (!structure) return null;
@@ -145426,6 +145575,20 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     if (unitIndices.length === 0) return null;
     return element_exports.Loci(structure, [{ unit: unit2, indices: unitIndices }]);
+  }
+  syncVisualSelection(selection) {
+    this.plugin.managers.interactivity.lociSelects.deselectAll();
+    if (!selection || selection.source_kind === "empty" || selection.items.length === 0) return;
+    const orderedItems = [...selection.items].sort((a8, b8) => {
+      const left = a8.group_indices[0] ?? a8.atom_indices[0] ?? Number.MAX_SAFE_INTEGER;
+      const right = b8.group_indices[0] ?? b8.atom_indices[0] ?? Number.MAX_SAFE_INTEGER;
+      return left - right;
+    });
+    for (const item2 of orderedItems) {
+      const loci = this.atomIndicesToLoci(item2.atom_indices);
+      if (!loci) continue;
+      this.plugin.managers.interactivity.lociSelects.select({ loci }, true);
+    }
   }
   // Message Dispatcher
   async handleMessage(msg) {

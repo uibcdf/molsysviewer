@@ -3,11 +3,13 @@ import test from "node:test";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 
 import {
+    createMolSysViewerPluginSpec,
     normalizeContextInteractionEvent,
     normalizeInteractionEvent,
     registerInteractionObservers,
     suppressCanvasContextMenu,
 } from "../../src/managers/viewer-controller";
+import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
 
 test("normalizeInteractionEvent emits empty payload when no structure loci is present", () => {
     assert.deepStrictEqual(normalizeInteractionEvent("hover", { current: { loci: { kind: "shape-loci" } } }), {
@@ -189,4 +191,14 @@ test("suppressCanvasContextMenu prevents the host context menu on canvas", () =>
     }
 
     assert.deepStrictEqual(prevented, { defaultPrevented: true, propagationStopped: true });
+});
+
+test("createMolSysViewerPluginSpec disables primary focus bindings", () => {
+    const spec = createMolSysViewerPluginSpec();
+    const focusBehaviors = (spec.behaviors ?? []).filter((behavior: any) =>
+        behavior.transformer === PluginBehaviors.Camera.FocusLoci
+        || behavior.transformer === PluginBehaviors.Representation.FocusLoci
+    );
+
+    assert.strictEqual(focusBehaviors.length, 0);
 });

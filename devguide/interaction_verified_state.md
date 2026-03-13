@@ -157,6 +157,25 @@ interaction behavior.
   - `set_text()`
   - `set_group_index()`
   - `clear()`
+- UI-created labels now survive a live `hide()/show()` round-trip through the
+  Python API on the notebook canvas
+
+## Export / Replay
+
+### Verified
+
+- `_build_export_messages()` now has an integral regression covering a realistic
+  reproducible workbench state with:
+  - `create_region`
+  - `set_region_representation`
+  - `add_label`
+  - `update_label`
+  - `add_distance_measurement`
+  - `add_angle_measurement`
+  - `add_dihedral_measurement`
+  - `set_camera_snapshot`
+- `measurements` no longer emit `DigestNotDigestedWarning` for the explicit
+  atom-pick arguments used by the reproducible API surface
 
 ## Known Open Points
 

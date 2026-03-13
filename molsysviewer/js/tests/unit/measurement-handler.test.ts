@@ -41,3 +41,48 @@ test("MeasurementHandlers delegates replayable distance measurement to Mol*", as
         { ref: "repr-ref", tag: "m1" },
     ]);
 });
+
+test("MeasurementHandlers.setVisibility rebuilds persisted measurements from stored spec", async () => {
+    const calls: any[] = [];
+    const fakeMeasurement = {
+        async addDistance(_a: any, _b: any, _opts: any) {
+            calls.push(true);
+            return {
+                selection: { ref: "sel-ref" },
+                representation: { ref: "repr-ref" },
+            };
+        },
+    };
+    const plugin = { managers: { structure: { measurement: fakeMeasurement } }, state: { data: {} } } as any;
+    const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
+    const removed: string[] = [];
+    const originalRemove = PluginCommands.State.RemoveObject;
+    (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
+        removed.push(params.ref);
+    };
+
+    try {
+        const handlers = new MeasurementHandlers(plugin, {
+            getStructure: () => ({ units: [] } as any),
+            registerRef: () => void 0,
+        });
+        (handlers as any).buildLociFromAtomIndices = (_structure: any, atomIndices: number[]) => ({ atomIndices });
+
+        await handlers.addDistance({
+            op: "add_distance_measurement",
+            tag: "m1",
+            options: {
+                tag: "m1",
+                picks_atom_indices: [[0], [1]],
+            },
+        });
+
+        await handlers.setVisibility("m1", false);
+        await handlers.setVisibility("m1", true);
+
+        assert.deepStrictEqual(removed, ["sel-ref", "repr-ref"]);
+        assert.strictEqual(calls.length, 2);
+    } finally {
+        (PluginCommands.State as any).RemoveObject = originalRemove;
+    }
+});

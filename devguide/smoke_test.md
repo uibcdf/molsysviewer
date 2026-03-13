@@ -223,6 +223,8 @@ Expected:
 - every operation updates the live viewer state coherently,
 - no drift between frontend and Python registries,
 - no replay/export corruption.
+- live `hide()/show()` is now expected to work on notebook-created labels,
+  not only in unit tests.
 
 ### 10. Check export/replay sanity
 
@@ -238,6 +240,13 @@ Expected:
 - persisted measurements are present as measurement ops,
 - regions remain represented through the normal replay contract,
 - no obvious contradictory stale operations remain after edits.
+
+There is now an integral Python regression for this export surface covering:
+
+- region creation + representation,
+- label creation + update,
+- distance / angle / dihedral measurements,
+- camera snapshot.
 
 ## Automated Portion
 

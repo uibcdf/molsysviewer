@@ -1,5 +1,6 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
+import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
 import { StateObjectRef } from "molstar/lib/mol-state";
 import { Structure, StructureElement } from "molstar/lib/mol-model/structure";
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
@@ -209,6 +210,10 @@ export function suppressCanvasContextMenu(host: ContextMenuHost, ...targets: Con
     };
 
     const onContextMenu = (event: Event) => {
+        const target = event.target;
+        const canMatchElement = typeof Element !== "undefined" && target instanceof Element;
+        if (canMatchElement && target.closest("[data-molsysviewer-group-strip]")) return;
+        if (canMatchElement && target.closest("[data-molsysviewer-context-menu]")) return;
         if (!secondaryPressInsideHost && !isInsideHost(event)) return;
         event.preventDefault();
         event.stopPropagation();
@@ -265,6 +270,18 @@ export function registerInteractionObservers(
     }
 }
 
+export function createMolSysViewerPluginSpec() {
+    const spec = DefaultPluginSpec();
+    const behaviors = (spec.behaviors ?? []).filter((behavior: any) =>
+        behavior.transformer !== PluginBehaviors.Camera.FocusLoci
+        && behavior.transformer !== PluginBehaviors.Representation.FocusLoci
+    );
+    return {
+        ...spec,
+        behaviors,
+    };
+}
+
 /**
  * Controller that translates Python messages into Mol* actions and manages state refs.
  * Refactored to use specialized handlers for better maintainability.
@@ -276,9 +293,11 @@ export class MolSysViewerController {
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly groupStrip: GroupStrip;
     private readonly releaseContextMenuSuppression?: () => void;
+    private readonly releaseGlobalEscapeHandler?: () => void;
     private lastContextLoci: any = null;
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
+    private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -313,7 +332,7 @@ export class MolSysViewerController {
             target.appendChild(existingCanvas);
         }
 
-        const plugin = new PluginContext(DefaultPluginSpec());
+        const plugin = new PluginContext(createMolSysViewerPluginSpec());
         await plugin.init();
 
         const init = (plugin as any).initViewerAsync ?? (plugin as any).initViewer;
@@ -368,6 +387,7 @@ export class MolSysViewerController {
             } else if (msg?.event === "interaction_active_selection_changed") {
                 this.currentActiveSelection = msg;
                 this.groupStrip.updateSelection(msg);
+                this.syncVisualSelection(msg);
             } else if (msg?.event === "interaction_measurement_created") {
                 this.lastMeasurementSummary = {
                     action: msg.action,
@@ -430,9 +450,11 @@ export class MolSysViewerController {
         if (canvas) {
             this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, canvas as HTMLElement);
         }
+        this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
         registerInteractionObservers(plugin, emitInteractionEvent, undefined, (ev) => {
             if (!this.measurementTools.isActive()) {
                 this.activeSelection.handlePrimaryClick(ev);
+                this.handlePotentialDoubleClickFocus(ev);
             }
             this.measurementTools.handlePrimaryClick(ev?.current?.loci);
         }, (ev) => {
@@ -491,7 +513,18 @@ export class MolSysViewerController {
             getLoadedStructure: () => this.loadedStructure,
             getCurrentStructureRef: () => this.currentStructure,
             getComponents: () => this.getComponents(),
-            notify: (msg) => this.notify?.(msg)
+            notify: (msg) => this.notify?.(msg),
+            setManagedLayerVisibility: async (tag, kind, visible) => {
+                if (kind === "annotation") {
+                    await this.annotations.setVisibility(tag, visible);
+                    return true;
+                }
+                if (kind === "measurement") {
+                    await this.measurements.setVisibility(tag, visible);
+                    return true;
+                }
+                return false;
+            }
         });
 
         this.shapes = new ShapeHandlers(plugin, (ref, tag) => this.state.registerShapeRef(ref, tag));
@@ -533,12 +566,28 @@ export class MolSysViewerController {
         this.groupStrip.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
+        this.releaseGlobalEscapeHandler?.();
         this.plugin.dispose();
     }
 
     private startMeasurementTool(action: MeasurementToolAction): void {
         if (!this.lastContextLoci) return;
         this.measurementTools.start(action, this.lastContextLoci);
+    }
+
+    private installGlobalEscapeHandler(): () => void {
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== "Escape") return;
+            if (this.measurementTools.isActive()) return;
+            if (this.currentActiveSelection?.source_kind !== "empty") {
+                event.preventDefault();
+                event.stopPropagation();
+                this.activeSelection.clear();
+                this.contextMenu.close();
+            }
+        };
+        window.addEventListener("keydown", onKeyDown, true);
+        return () => window.removeEventListener("keydown", onKeyDown, true);
     }
 
     private openContextMenuForItem(
@@ -592,6 +641,24 @@ export class MolSysViewerController {
         this.plugin.managers.camera.focusLoci(loci);
     }
 
+    private handlePotentialDoubleClickFocus(ev: any): void {
+        if (!!ev?.modifiers?.shift) return;
+        const items = lociToGroupItems(ev?.current?.loci);
+        if (items.length !== 1) {
+            this.lastPrimaryGroupClick = null;
+            return;
+        }
+        const item = items[0];
+        const key = `${item.chain_indices.join(",")}:${item.group_indices.join(",")}`;
+        const time = Date.now();
+        if (this.lastPrimaryGroupClick && this.lastPrimaryGroupClick.key === key && time - this.lastPrimaryGroupClick.time <= 400) {
+            this.lastPrimaryGroupClick = null;
+            this.focusTarget({ atom_indices: item.atom_indices });
+            return;
+        }
+        this.lastPrimaryGroupClick = { key, time };
+    }
+
     private atomIndicesToLoci(atomIndices: number[]): StructureElement.Loci | null {
         const structure = this.getStructureData();
         if (!structure) return null;
@@ -604,6 +671,21 @@ export class MolSysViewerController {
         }
         if (unitIndices.length === 0) return null;
         return StructureElement.Loci(structure, [{ unit, indices: unitIndices } as any]);
+    }
+
+    private syncVisualSelection(selection: ActiveSelectionPayload): void {
+        this.plugin.managers.interactivity.lociSelects.deselectAll();
+        if (!selection || selection.source_kind === "empty" || selection.items.length === 0) return;
+        const orderedItems = [...selection.items].sort((a, b) => {
+            const left = a.group_indices[0] ?? a.atom_indices[0] ?? Number.MAX_SAFE_INTEGER;
+            const right = b.group_indices[0] ?? b.atom_indices[0] ?? Number.MAX_SAFE_INTEGER;
+            return left - right;
+        });
+        for (const item of orderedItems) {
+            const loci = this.atomIndicesToLoci(item.atom_indices);
+            if (!loci) continue;
+            this.plugin.managers.interactivity.lociSelects.select({ loci }, true);
+        }
     }
 
     // Message Dispatcher
