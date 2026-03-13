@@ -145005,8 +145005,9 @@ function makeLociForItem(structure, item2) {
   return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
 }
 var GroupStrip = class {
-  constructor(host, onSelect, onFocus, onHover, onContext, onAnnotationContext) {
+  constructor(host, chainLabel, onSelect, onFocus, onHover, onContext, onAnnotationContext) {
     this.host = host;
+    this.chainLabel = chainLabel;
     this.onSelect = onSelect;
     this.onFocus = onFocus;
     this.onHover = onHover;
@@ -145019,29 +145020,33 @@ var GroupStrip = class {
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-group-strip", "true");
     Object.assign(this.root.style, {
-      position: "absolute",
-      left: "14px",
-      right: "14px",
-      bottom: "14px",
-      display: "none",
-      maxHeight: "140px",
-      overflow: "auto",
-      padding: "10px",
-      borderRadius: "14px",
-      border: "1px solid rgba(255,255,255,0.14)",
-      background: "rgba(18, 18, 22, 0.92)",
-      color: "#f4f4f5",
-      boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
-      zIndex: "16",
-      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-      fontSize: "12px"
+      minWidth: "0",
+      display: "block"
     });
+    this.section = document.createElement("div");
+    this.section.style.marginBottom = "10px";
+    this.title = document.createElement("div");
+    Object.assign(this.title.style, {
+      fontWeight: "700",
+      marginBottom: "6px",
+      opacity: "0.9"
+    });
+    this.title.textContent = `Chain ${this.chainLabel}`;
+    this.row = document.createElement("div");
+    Object.assign(this.row.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "6px"
+    });
+    this.section.appendChild(this.title);
+    this.section.appendChild(this.row);
+    this.root.appendChild(this.section);
     this.host.appendChild(this.root);
   }
-  setStructure(structure) {
+  setData(structure, items) {
     this.structure = structure;
+    this.groupItems = items;
     if (!structure) this.annotationRecords.clear();
-    this.groupItems = structure ? buildGroupItemsFromStructure(structure) : [];
     this.render();
   }
   updateSelection(selection) {
@@ -145105,137 +145110,108 @@ var GroupStrip = class {
     }
     if (changed) this.render();
   }
+  focusItem(item2) {
+    if (!this.structure) return null;
+    return makeLociForItem(this.structure, item2);
+  }
   dispose() {
     this.root.remove();
   }
   render() {
-    this.root.replaceChildren();
-    if (!this.structure || this.groupItems.length === 0) {
-      this.root.style.display = "none";
-      return;
-    }
-    this.root.style.display = "block";
-    const grouped = /* @__PURE__ */ new Map();
+    this.row.replaceChildren();
+    this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
+    if (!this.structure || this.groupItems.length === 0) return;
     for (const item2 of this.groupItems) {
-      const chain2 = item2.chain_name ?? "?";
-      if (!grouped.has(chain2)) grouped.set(chain2, []);
-      grouped.get(chain2).push(item2);
-    }
-    for (const [chain2, items] of grouped.entries()) {
-      const section = document.createElement("div");
-      section.style.marginBottom = "10px";
-      const title = document.createElement("div");
-      title.textContent = `Chain ${chain2}`;
-      Object.assign(title.style, {
-        fontWeight: "700",
-        marginBottom: "6px",
-        opacity: "0.9"
+      const key2 = selectionKey(item2);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("data-molsysviewer-group-item", "true");
+      button.setAttribute("data-chain-name", item2.chain_name ?? "");
+      button.setAttribute("data-group-name", item2.group_name ?? "");
+      const selected = this.selectedElementKeys.has(key2);
+      Object.assign(button.style, {
+        padding: "6px 8px",
+        borderRadius: "999px",
+        border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
+        background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
+        color: "inherit",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        font: "inherit"
       });
-      section.appendChild(title);
-      const row = document.createElement("div");
-      Object.assign(row.style, {
-        display: "flex",
-        flexWrap: "wrap",
-        gap: "6px"
-      });
-      for (const item2 of items) {
-        const key2 = selectionKey(item2);
-        const button = document.createElement("button");
-        button.type = "button";
-        button.setAttribute("data-molsysviewer-group-item", "true");
-        button.setAttribute("data-chain-name", item2.chain_name ?? "");
-        button.setAttribute("data-group-name", item2.group_name ?? "");
-        const selected = this.selectedElementKeys.has(key2);
-        Object.assign(button.style, {
-          padding: "6px 8px",
+      const text = document.createElement("span");
+      text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
+      button.appendChild(text);
+      const annotationRecords = this.annotationRecords.get(key2) ?? [];
+      if (annotationRecords.length > 0) {
+        const badge = document.createElement("span");
+        const primary = annotationRecords[0];
+        const annotationSelected = this.selectedAnnotationKeys.has(`${key2}:annotation:${primary.tag ?? ""}`);
+        badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
+        Object.assign(badge.style, {
+          marginLeft: "6px",
+          padding: "1px 6px",
           borderRadius: "999px",
-          border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
-          background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
-          color: "inherit",
-          cursor: "pointer",
-          whiteSpace: "nowrap",
-          font: "inherit"
+          background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
+          color: annotationSelected ? "#fde68a" : "#b7f7dd",
+          fontSize: "10px",
+          fontWeight: "700"
         });
-        const text = document.createElement("span");
-        text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
-        button.appendChild(text);
-        const annotationRecords = this.annotationRecords.get(key2) ?? [];
-        if (annotationRecords.length > 0) {
-          const badge = document.createElement("span");
-          const primary = annotationRecords[0];
-          const annotationSelected = this.selectedAnnotationKeys.has(`${key2}:annotation:${primary.tag ?? ""}`);
-          badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
-          Object.assign(badge.style, {
-            marginLeft: "6px",
-            padding: "1px 6px",
-            borderRadius: "999px",
-            background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
-            color: annotationSelected ? "#fde68a" : "#b7f7dd",
-            fontSize: "10px",
-            fontWeight: "700"
-          });
-          button.appendChild(badge);
-          button.title = annotationRecords.map((record2) => record2.text).join("\n");
-          badge.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.onSelect([{
-              source_kind: "annotation",
-              annotation_kind: "label",
+        button.appendChild(badge);
+        button.title = annotationRecords.map((record2) => record2.text).join("\n");
+        badge.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onSelect([{
+            source_kind: "annotation",
+            annotation_kind: "label",
+            atom_indices: item2.atom_indices,
+            group_indices: item2.group_indices,
+            chain_indices: item2.chain_indices,
+            entity_indices: item2.entity_indices,
+            tag: primary.tag,
+            text: primary.text
+          }], !!event.shiftKey);
+        });
+        badge.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onAnnotationContext(
+            {
+              event: "interaction_context_menu",
+              kind: "annotation",
               atom_indices: item2.atom_indices,
-              group_indices: item2.group_indices,
-              chain_indices: item2.chain_indices,
-              entity_indices: item2.entity_indices,
               tag: primary.tag,
               text: primary.text
-            }], !!event.shiftKey);
-          });
-          badge.addEventListener("contextmenu", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.onAnnotationContext(
-              {
-                event: "interaction_context_menu",
-                kind: "annotation",
-                atom_indices: item2.atom_indices,
-                tag: primary.tag,
-                text: primary.text
-              },
-              event.pageX,
-              event.pageY
-            );
-          });
-        }
-        button.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.onSelect([item2], !!event.shiftKey);
+            },
+            event.pageX,
+            event.pageY
+          );
         });
-        button.addEventListener("dblclick", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.onFocus(item2);
-        });
-        button.addEventListener("mouseenter", () => {
-          this.onHover(item2);
-        });
-        button.addEventListener("mouseleave", () => {
-          this.onHover(null);
-        });
-        button.addEventListener("contextmenu", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.onContext(item2, event.pageX, event.pageY);
-        });
-        row.appendChild(button);
       }
-      section.appendChild(row);
-      this.root.appendChild(section);
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onSelect([item2], !!event.shiftKey);
+      });
+      button.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onFocus(item2);
+      });
+      button.addEventListener("mouseenter", () => {
+        this.onHover(item2);
+      });
+      button.addEventListener("mouseleave", () => {
+        this.onHover(null);
+      });
+      button.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onContext(item2, event.pageX, event.pageY);
+      });
+      this.row.appendChild(button);
     }
-  }
-  focusItem(item2) {
-    if (!this.structure) return null;
-    return makeLociForItem(this.structure, item2);
   }
   findSelectionKeyFromAtomIndices(atomIndices) {
     const input = [...atomIndices].sort((a8, b8) => a8 - b8);
@@ -145252,6 +145228,143 @@ var GroupStrip = class {
       if (same) return selectionKey(item2);
     }
     return null;
+  }
+};
+
+// src/ui/group-panel.ts
+var GroupPanel = class {
+  constructor(host, onSelect, onFocus, onHover, onContext, onAnnotationContext) {
+    this.host = host;
+    this.onSelect = onSelect;
+    this.onFocus = onFocus;
+    this.onHover = onHover;
+    this.onContext = onContext;
+    this.onAnnotationContext = onAnnotationContext;
+    this.strips = /* @__PURE__ */ new Map();
+    this.currentSelection = {
+      event: "interaction_active_selection_changed",
+      source_kind: "empty",
+      target_level: "none",
+      element_level: "none",
+      items: [],
+      atom_indices: [],
+      group_indices: [],
+      component_indices: [],
+      chain_indices: [],
+      molecule_indices: [],
+      entity_indices: [],
+      count_atoms: 0,
+      count_groups: 0,
+      count_shapes: 0,
+      count_annotations: 0
+    };
+    this.annotationMessages = [];
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-group-panel", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      left: "14px",
+      right: "14px",
+      bottom: "14px",
+      display: "none",
+      maxHeight: "140px",
+      overflow: "auto",
+      padding: "10px",
+      borderRadius: "14px",
+      border: "1px solid rgba(255,255,255,0.14)",
+      background: "rgba(18, 18, 22, 0.92)",
+      color: "#f4f4f5",
+      boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
+      zIndex: "16",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "12px"
+    });
+    this.host.appendChild(this.root);
+  }
+  setStructure(structure) {
+    this.structure = structure;
+    if (!structure) this.annotationMessages.length = 0;
+    this.render();
+  }
+  updateSelection(selection) {
+    this.currentSelection = selection;
+    for (const strip of this.strips.values()) {
+      strip.updateSelection(selection);
+    }
+  }
+  addLabelOverlay(msg) {
+    this.annotationMessages.push(msg);
+    for (const strip of this.strips.values()) {
+      strip.addLabelOverlay(msg);
+    }
+  }
+  clearAnnotationOverlays() {
+    this.annotationMessages.length = 0;
+    for (const strip of this.strips.values()) {
+      strip.clearAnnotationOverlays();
+    }
+  }
+  clearAnnotationOverlaysByTag(tag) {
+    if (!tag) {
+      this.clearAnnotationOverlays();
+      return;
+    }
+    for (let index = this.annotationMessages.length - 1; index >= 0; index--) {
+      if (this.annotationMessages[index].tag === tag || this.annotationMessages[index].options?.tag === tag) {
+        this.annotationMessages.splice(index, 1);
+      }
+    }
+    for (const strip of this.strips.values()) {
+      strip.clearAnnotationOverlaysByTag(tag);
+    }
+  }
+  retagAnnotationOverlays(oldTag, newTag) {
+    for (const message of this.annotationMessages) {
+      if (message.tag === oldTag) message.tag = newTag;
+      if (message.options?.tag === oldTag) message.options.tag = newTag;
+    }
+    for (const strip of this.strips.values()) {
+      strip.retagAnnotationOverlays(oldTag, newTag);
+    }
+  }
+  focusItem(item2) {
+    const chainName = item2.chain_name ?? "?";
+    return this.strips.get(chainName)?.focusItem(item2) ?? null;
+  }
+  dispose() {
+    for (const strip of this.strips.values()) strip.dispose();
+    this.strips.clear();
+    this.root.remove();
+  }
+  render() {
+    const grouped = /* @__PURE__ */ new Map();
+    const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
+    for (const item2 of items) {
+      const chain2 = item2.chain_name ?? "?";
+      if (!grouped.has(chain2)) grouped.set(chain2, []);
+      grouped.get(chain2).push(item2);
+    }
+    const nextChains = new Set(grouped.keys());
+    for (const [chain2, strip] of this.strips.entries()) {
+      if (nextChains.has(chain2)) continue;
+      strip.dispose();
+      this.strips.delete(chain2);
+    }
+    this.root.style.display = this.structure && grouped.size > 0 ? "block" : "none";
+    if (!this.structure || grouped.size === 0) return;
+    for (const [chain2, chainItems] of grouped.entries()) {
+      let strip = this.strips.get(chain2);
+      if (!strip) {
+        strip = new GroupStrip(this.root, chain2, this.onSelect, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+        this.strips.set(chain2, strip);
+      }
+      strip.setData(this.structure, chainItems);
+      strip.updateSelection(this.currentSelection);
+      strip.clearAnnotationOverlays();
+      for (const message of this.annotationMessages) {
+        strip.addLabelOverlay(message);
+      }
+    }
   }
 };
 
@@ -145465,7 +145578,7 @@ var MolSysViewerController = class _MolSysViewerController {
         }
       } else if (msg?.event === "interaction_active_selection_changed") {
         this.currentActiveSelection = msg;
-        this.groupStrip.updateSelection(msg);
+        this.groupPanel.updateSelection(msg);
         this.syncVisualSelection(msg);
       } else if (msg?.event === "interaction_measurement_created") {
         this.lastMeasurementSummary = {
@@ -145478,10 +145591,10 @@ var MolSysViewerController = class _MolSysViewerController {
     this.toolStatusOverlay = new ToolStatusOverlay(host);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
     this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
-    this.groupStrip = new GroupStrip(host, (items, additive) => {
+    this.groupPanel = new GroupPanel(host, (items, additive) => {
       this.activeSelection.setItems(items, additive);
     }, (item2) => {
-      const loci = this.groupStrip.focusItem(item2);
+      const loci = this.groupPanel.focusItem(item2);
       if (loci) this.plugin.managers.camera.focusLoci(loci);
     }, (item2) => {
       if (!item2) {
@@ -145489,7 +145602,7 @@ var MolSysViewerController = class _MolSysViewerController {
         emitInteractionEvent({ event: "interaction_hover", kind: "empty" });
         return;
       }
-      const loci = this.groupStrip.focusItem(item2);
+      const loci = this.groupPanel.focusItem(item2);
       if (!loci) return;
       this.plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }, false);
       emitInteractionEvent({
@@ -145696,7 +145809,7 @@ var MolSysViewerController = class _MolSysViewerController {
   dispose() {
     this.measurementTools.dispose();
     this.toolStatusOverlay.dispose();
-    this.groupStrip.dispose();
+    this.groupPanel.dispose();
     this.contextMenu.dispose();
     this.releaseContextMenuSuppression?.();
     this.releaseGlobalEscapeHandler?.();

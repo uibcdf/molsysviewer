@@ -142,6 +142,7 @@ So the direction already chosen is:
 - do not keep the strip permanently attached to the lower edge of the canvas
 - evolve toward a show/hide `GroupPanel`
 - keep `GroupStrip` as the internal interaction unit
+- the current runtime now already uses a `GroupPanel` container with one concrete `GroupStrip` per chain
 
 ## What `GroupStrip` Represents
 
@@ -163,7 +164,12 @@ Instead:
 
 ### Scope
 
-The first implementation should be intentionally narrow.
+The current implementation has now crossed the first structural threshold:
+
+- it no longer renders a single monolithic strip body
+- it renders a `GroupPanel` container with multiple `GroupStrip` instances, one per chain
+
+The first implementation should still remain intentionally narrow.
 
 It should:
 
@@ -237,6 +243,7 @@ Preferred first direction:
 
 - groups ordered by chain
 - preferred first layout is one visual row per chain, if density remains usable
+- this is now the implemented runtime layout
 
 This is better than a single undifferentiated strip if multiple chains exist.
 

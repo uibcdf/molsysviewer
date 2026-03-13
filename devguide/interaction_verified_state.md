@@ -69,10 +69,11 @@ interaction behavior.
   - opens the viewer-owned context menu
   - no host JupyterLab menu conflict appears in the popup surface
 
-## GroupStrip
+## GroupPanel / GroupStrip
 
 ### Verified
 
+- the runtime now uses a `GroupPanel` container with one `GroupStrip` per chain
 - `left click`
   - selects the corresponding `group`
 - `Shift + left click`
