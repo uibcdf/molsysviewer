@@ -558,3 +558,15 @@ These deeper technical challenges affect the long-term sustainability of the pro
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
 - Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
 - Add targeted `smonitor` refinements only when a new public orchestration path is introduced.
+
+
+## Current Panel Direction
+
+The current adopted container direction is:
+
+- `GroupPanel` docked laterally on the left
+- collapsed by default
+- a small chevron tab (`>`) reveals it
+- an internal chevron (`<`) collapses it again
+
+This is preferred over a permanent lower band because it preserves canvas area while keeping the strip tool quickly reachable.

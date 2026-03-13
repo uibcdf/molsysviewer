@@ -62,9 +62,14 @@ test("GroupPanel creates one GroupStrip per chain", () => {
             },
         }}] } as any;
         panel.setStructure(structure);
-        const stripRoots = host.children[0].children.filter((child) => child.getAttribute?.('data-molsysviewer-group-strip') === 'true');
+        const root = host.children[0];
+        const body = root.children[0];
+        const toggle = root.children[1];
+        const stripRoots = body.children.filter((child) => child.getAttribute?.('data-molsysviewer-group-strip') === 'true');
         assert.strictEqual(stripRoots.length, 2);
-        assert.strictEqual(host.children[0].style.display, 'flex');
+        assert.strictEqual(root.style.display, 'flex');
+        assert.strictEqual(toggle.textContent, '>');
+        assert.strictEqual(body.style.transform, 'translateX(-100%)');
         panel.dispose();
     } finally {
         restore();

@@ -252,9 +252,8 @@ Current design preference:
 
 - keep `chain` as the primary organizer
 - move away from a permanent bottom band
-- keep open whether the panel should be:
-  - docked laterally
-  - or floating/acoplable
+- current adopted direction: left lateral sliding panel
+- keep open whether a future variant should also allow a floating/acoplable mode
 
 What is already decided is the negative case:
 
