@@ -66,6 +66,45 @@ def test_context_action_create_region_from_selection_executes_python_bridge():
     assert created["atom_indices"] == event["atom_indices"]
 
 
+def test_context_action_save_selection_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = list(view.select(selection="group_index==0"))
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_active_selection_changed",
+            "source_kind": "element",
+            "element_level": "group",
+            "target_level": "none",
+            "items": [],
+            "atom_indices": atom_indices,
+            "group_indices": [0],
+            "component_indices": [],
+            "chain_indices": [0],
+            "molecule_indices": [],
+            "entity_indices": [0],
+            "count_atoms": len(atom_indices),
+            "count_groups": 1,
+            "count_shapes": 0,
+            "count_annotations": 0,
+        }
+    )
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "save_selection",
+            "tag": "picked",
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
+        }
+    )
+
+    assert view.selections.contains("picked") is True
+    records = view.selections.records()
+    assert len(records) == 1
+    assert records[0]["op"] == "save_selection"
+    assert records[0]["tag"] == "picked"
+    assert records[0]["atom_indices"] == atom_indices
+
+
 def test_add_label_from_active_selection_creates_replayable_annotation():
     view = demo["dialanine"]
     atom_indices = list(view.select(selection="group_index==0"))

@@ -102,6 +102,7 @@ interaction behavior.
   - `Dihedral`
 - on active selection, it supports:
   - `Focus Selection`
+  - `Save Selection`
   - `Create Region from Selection`
   - `Add Label from Selection`
   - `Clear Selection`
@@ -131,6 +132,9 @@ interaction behavior.
 
 - `active selection -> region`
   - UI action exists and executes through Python into reproducible viewer state
+- `active selection -> named selection`
+  - UI action exists and executes through Python into reproducible viewer state
+  - automated regression exists
 - `active selection -> label`
   - UI action exists and executes through Python into reproducible viewer state
 - `interactive measurement -> persisted measurement`

@@ -20,6 +20,7 @@ export type ContextMenuAction =
     | "dihedral"
     | "focus_target"
     | "focus_selection"
+    | "save_selection"
     | "clear_selection"
     | "create_region_from_selection"
     | "add_label_from_selection"
@@ -27,6 +28,7 @@ export type ContextMenuAction =
 
 export type ContextActionDetails = {
     text?: string;
+    tag?: string;
 };
 
 export type LastMeasurementSummary = {
@@ -158,6 +160,7 @@ export class ViewerContextMenu {
             });
             section.appendChild(title);
             section.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+            section.appendChild(this.makeActionButton("Save Selection", "save_selection"));
             section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
             if (this.currentSelection.count_groups === 1) {
                 section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
@@ -243,6 +246,10 @@ export class ViewerContextMenu {
             if (!this.currentTarget) return;
             if (action === "add_label_from_selection") {
                 this.renderLabelComposer();
+                return;
+            }
+            if (action === "save_selection") {
+                this.renderSelectionComposer();
                 return;
             }
             const details = this.resolveActionDetails(action);
@@ -335,6 +342,118 @@ export class ViewerContextMenu {
             this.notify?.({
                 event: "interaction_context_action",
                 action: "add_label_from_selection",
+                context: this.currentTarget,
+                ...details,
+            });
+            this.close();
+        };
+
+        save.addEventListener("click", submit);
+        cancel.addEventListener("click", () => {
+            if (!this.currentTarget) return;
+            this.open(
+                this.currentTarget,
+                this.currentPageX,
+                this.currentPageY,
+                this.currentSelection,
+                this.currentLastMeasurement,
+            );
+        });
+        input.addEventListener("keydown", (event: any) => {
+            if (event?.key === "Enter") {
+                event.preventDefault?.();
+                submit();
+            } else if (event?.key === "Escape") {
+                event.preventDefault?.();
+                if (!this.currentTarget) return;
+                this.open(
+                    this.currentTarget,
+                    this.currentPageX,
+                    this.currentPageY,
+                    this.currentSelection,
+                    this.currentLastMeasurement,
+                );
+            }
+        });
+
+        actions.appendChild(save);
+        actions.appendChild(cancel);
+        this.root.appendChild(actions);
+        input.focus?.();
+    }
+
+    private renderSelectionComposer(): void {
+        if (!this.currentTarget) return;
+        this.root.replaceChildren();
+
+        const title = document.createElement("div");
+        title.textContent = "Save active selection";
+        Object.assign(title.style, {
+            padding: "6px 8px 8px 8px",
+            fontWeight: "600",
+            borderBottom: "1px solid rgba(255,255,255,0.10)",
+            marginBottom: "8px",
+        });
+        this.root.appendChild(title);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = "";
+        input.placeholder = "Selection tag";
+        Object.assign(input.style, {
+            display: "block",
+            width: "100%",
+            boxSizing: "border-box",
+            margin: "0 0 8px 0",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "1px solid rgba(255,255,255,0.18)",
+            background: "rgba(255,255,255,0.06)",
+            color: "#f4f4f5",
+            outline: "none",
+        });
+        this.root.appendChild(input);
+
+        const actions = document.createElement("div");
+        Object.assign(actions.style, {
+            display: "flex",
+            gap: "8px",
+        });
+
+        const save = document.createElement("button");
+        save.type = "button";
+        save.textContent = "Save Selection";
+        Object.assign(save.style, {
+            flex: "1 1 auto",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "0",
+            background: "rgba(147, 197, 253, 0.18)",
+            color: "#dbeafe",
+            cursor: "pointer",
+        });
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.textContent = "Back";
+        Object.assign(cancel.style, {
+            flex: "0 0 auto",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "0",
+            background: "rgba(255,255,255,0.08)",
+            color: "#f4f4f5",
+            cursor: "pointer",
+        });
+
+        const submit = () => {
+            const tag = String(input.value ?? "").trim();
+            if (tag.length === 0 || !this.currentTarget) return;
+            const details = { tag };
+            this.onAction?.("save_selection", this.currentTarget, details);
+            this.notify?.({
+                event: "interaction_context_action",
+                action: "save_selection",
                 context: this.currentTarget,
                 ...details,
             });

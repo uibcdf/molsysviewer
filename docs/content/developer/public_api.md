@@ -111,6 +111,7 @@ Related object wrappers are also part of the intended public surface:
 - `view.measurements.add_angle(...)`
 - `view.measurements.add_dihedral(...)`
 - `view.measurements.persist_last_measurement(...)`
+- `view.selections.add_from_active_selection(...)`
 
 ### Notebook rendering
 

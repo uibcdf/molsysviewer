@@ -139,6 +139,7 @@ test("ViewerContextMenu renders active selection section and selection actions",
         assert.ok(texts.includes("Focus Target"));
         assert.ok(texts.includes("Active selection: mixed (0 items)"));
         assert.ok(texts.includes("Focus Selection"));
+        assert.ok(texts.includes("Save Selection"));
         assert.ok(texts.includes("Create Region from Selection"));
         assert.ok(texts.includes("Add Label from Selection"));
         assert.ok(texts.includes("Clear Selection"));
@@ -252,6 +253,75 @@ test("ViewerContextMenu opens inline label composer before add-label action", ()
                 action: "add_label_from_selection",
                 context: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
                 text: "Catalytic group",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu opens inline selection composer before save-selection action", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        menu.open(
+            { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "element",
+                element_level: "group",
+                target_level: "none",
+                items: [],
+                atom_indices: [0, 1, 2],
+                group_indices: [0],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 3,
+                count_groups: 1,
+                count_shapes: 0,
+                count_annotations: 0,
+            },
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const button = findNodeByText(root, "Save Selection");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        const input = findNodeByTag(root, "input");
+        assert.ok(input);
+        input!.value = "picked";
+        const confirm = findNodeByText(root, "Save Selection");
+        assert.ok(confirm);
+        confirm!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            {
+                action: "save_selection",
+                target: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+                details: { tag: "picked" },
+            },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "save_selection",
+                context: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
+                tag: "picked",
             },
         ]);
 

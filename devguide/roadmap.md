@@ -255,6 +255,7 @@ should grow over time as additional project-level principles become clear.
   - `view.measurements.persist_last_measurement(...)`
   - `active_selection.save(tag=...)`
 - `view.selections` now exists as the first persistent named-selection surface.
+- The context menu now also exposes `Save Selection`, backed by the same Python-side reproducible API.
   - The current contract is intentionally narrow and deterministic.
   - Persisted measurement ops now also exist in the runtime:
     - `add_distance_measurement`

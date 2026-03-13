@@ -256,6 +256,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - selections are stored by `atom_indices` and treat derived hierarchy indices as summaries
     - they do not create scene representation automatically
     - they replay/export as explicit non-visual viewer messages
+  - The context menu now also exposes `Save Selection` from `active_selection`.
+    - It uses an inline tag composer instead of `prompt()`.
+    - The UI -> Python bridge executes `active_selection.save(tag=...)`.
     - this turns the selection into a real object of work instead of a raw event payload
   - The current bridge is intentionally narrow:
     - region creation uses stored `active_selection.atom_indices`,
