@@ -13,8 +13,11 @@ type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: num
 
 export class GroupPanel {
     private readonly root: HTMLDivElement;
+    private readonly toggleButton: HTMLButtonElement;
+    private readonly body: HTMLDivElement;
     private readonly strips = new Map<string, GroupStrip>();
     private structure?: Structure;
+    private expanded = false;
     private currentSelection: ActiveSelectionPayload = {
         event: "interaction_active_selection_changed",
         source_kind: "empty",
@@ -46,27 +49,72 @@ export class GroupPanel {
         this.root.setAttribute("data-molsysviewer-group-panel", "true");
         Object.assign(this.root.style, {
             position: "absolute",
-            left: "14px",
-            right: "14px",
+            left: "0",
+            top: "14px",
             bottom: "14px",
             display: "none",
-            maxHeight: "220px",
-            overflowX: "auto",
-            overflowY: "hidden",
-            padding: "10px",
-            borderRadius: "14px",
-            border: "1px solid rgba(255,255,255,0.14)",
-            background: "rgba(18, 18, 22, 0.92)",
-            color: "#f4f4f5",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
+            alignItems: "stretch",
+            pointerEvents: "none",
             zIndex: "16",
+        });
+
+        this.toggleButton = document.createElement("button");
+        this.toggleButton.type = "button";
+        this.toggleButton.setAttribute("data-molsysviewer-group-panel-toggle", "true");
+        Object.assign(this.toggleButton.style, {
+            pointerEvents: "auto",
+            alignSelf: "center",
+            marginLeft: "0",
+            width: "26px",
+            height: "54px",
+            border: "1px solid rgba(255,255,255,0.16)",
+            borderLeft: "0",
+            borderRadius: "0 10px 10px 0",
+            background: "rgba(18, 18, 22, 0.94)",
+            color: "#f4f4f5",
+            boxShadow: "0 10px 24px rgba(0,0,0,0.24)",
+            cursor: "pointer",
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-            fontSize: "12px",
+            fontSize: "16px",
+            fontWeight: "700",
+        });
+        this.toggleButton.textContent = ">";
+        this.toggleButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.expanded = !this.expanded;
+            this.applyExpandedState();
+        });
+
+        this.body = document.createElement("div");
+        this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
+        Object.assign(this.body.style, {
+            pointerEvents: "auto",
+            display: "flex",
             alignItems: "stretch",
             gap: "10px",
             flexDirection: "row",
             flexWrap: "nowrap",
+            width: "240px",
+            maxWidth: "240px",
+            height: "100%",
+            overflowX: "auto",
+            overflowY: "hidden",
+            padding: "10px",
+            borderRadius: "0 14px 14px 0",
+            border: "1px solid rgba(255,255,255,0.14)",
+            borderLeft: "0",
+            background: "rgba(18, 18, 22, 0.92)",
+            color: "#f4f4f5",
+            boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
+            fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+            fontSize: "12px",
+            transform: "translateX(-100%)",
+            transition: "transform 160ms ease",
         });
+
+        this.root.appendChild(this.body);
+        this.root.appendChild(this.toggleButton);
         this.host.appendChild(this.root);
     }
 
@@ -133,6 +181,11 @@ export class GroupPanel {
         this.root.remove();
     }
 
+    private applyExpandedState(): void {
+        this.toggleButton.textContent = this.expanded ? "<" : ">";
+        this.body.style.transform = this.expanded ? "translateX(0)" : "translateX(-100%)";
+    }
+
     private render(): void {
         const grouped = new Map<string, ActiveSelectionItem[]>();
         const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
@@ -155,7 +208,7 @@ export class GroupPanel {
         for (const [chain, chainItems] of grouped.entries()) {
             let strip = this.strips.get(chain);
             if (!strip) {
-                strip = new GroupStrip(this.root, chain, this.onSelect, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+                strip = new GroupStrip(this.body, chain, this.onSelect, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
                 this.strips.set(chain, strip);
             }
             strip.setData(this.structure, chainItems);
@@ -165,5 +218,6 @@ export class GroupPanel {
                 strip.addLabelOverlay(message);
             }
         }
+        this.applyExpandedState();
     }
 }
