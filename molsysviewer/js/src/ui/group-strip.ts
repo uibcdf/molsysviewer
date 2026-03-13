@@ -55,16 +55,23 @@ export class GroupStrip {
         Object.assign(this.root.style, {
             minWidth: "120px",
             maxWidth: "150px",
-            maxHeight: "200px",
-            overflowY: "auto",
+            height: "100%",
+            overflowY: "hidden",
             overflowX: "hidden",
-            display: "block",
+            display: "flex",
             flex: "0 0 auto",
             paddingRight: "4px",
         });
 
         this.section = document.createElement("div");
-        this.section.style.marginBottom = "10px";
+        Object.assign(this.section.style, {
+            marginBottom: "10px",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "0",
+            height: "100%",
+            width: "100%",
+        });
 
         this.title = document.createElement("div");
         Object.assign(this.title.style, {
@@ -80,6 +87,10 @@ export class GroupStrip {
             flexDirection: "column",
             flexWrap: "nowrap",
             gap: "6px",
+            overflowY: "auto",
+            overflowX: "hidden",
+            minHeight: "0",
+            flex: "1 1 auto",
         });
 
         this.section.appendChild(this.title);

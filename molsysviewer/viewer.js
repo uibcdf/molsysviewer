@@ -145022,15 +145022,22 @@ var GroupStrip = class {
     Object.assign(this.root.style, {
       minWidth: "120px",
       maxWidth: "150px",
-      maxHeight: "200px",
-      overflowY: "auto",
+      height: "100%",
+      overflowY: "hidden",
       overflowX: "hidden",
-      display: "block",
+      display: "flex",
       flex: "0 0 auto",
       paddingRight: "4px"
     });
     this.section = document.createElement("div");
-    this.section.style.marginBottom = "10px";
+    Object.assign(this.section.style, {
+      marginBottom: "10px",
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "0",
+      height: "100%",
+      width: "100%"
+    });
     this.title = document.createElement("div");
     Object.assign(this.title.style, {
       fontWeight: "700",
@@ -145043,7 +145050,11 @@ var GroupStrip = class {
       display: "flex",
       flexDirection: "column",
       flexWrap: "nowrap",
-      gap: "6px"
+      gap: "6px",
+      overflowY: "auto",
+      overflowX: "hidden",
+      minHeight: "0",
+      flex: "1 1 auto"
     });
     this.section.appendChild(this.title);
     this.section.appendChild(this.row);
@@ -145271,15 +145282,20 @@ var GroupPanel = class {
     this.annotationMessages = [];
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-group-panel", "true");
+    const panelWidth = 240;
+    const tabWidth = 26;
     Object.assign(this.root.style, {
       position: "absolute",
       left: "0",
       top: "14px",
       bottom: "14px",
+      width: `${panelWidth + tabWidth}px`,
       display: "none",
       alignItems: "stretch",
-      pointerEvents: "none",
-      zIndex: "16"
+      pointerEvents: "auto",
+      zIndex: "16",
+      transform: `translateX(-${panelWidth}px)`,
+      transition: "transform 160ms ease"
     });
     this.toggleButton = document.createElement("button");
     this.toggleButton.type = "button";
@@ -145289,6 +145305,7 @@ var GroupPanel = class {
       alignSelf: "center",
       marginLeft: "0",
       width: "26px",
+      minWidth: "26px",
       height: "54px",
       border: "1px solid rgba(255,255,255,0.16)",
       borderLeft: "0",
@@ -145318,6 +145335,7 @@ var GroupPanel = class {
       flexDirection: "row",
       flexWrap: "nowrap",
       width: "240px",
+      minWidth: "240px",
       maxWidth: "240px",
       height: "100%",
       overflowX: "auto",
@@ -145330,9 +145348,7 @@ var GroupPanel = class {
       color: "#f4f4f5",
       boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-      fontSize: "12px",
-      transform: "translateX(-100%)",
-      transition: "transform 160ms ease"
+      fontSize: "12px"
     });
     this.root.appendChild(this.body);
     this.root.appendChild(this.toggleButton);
@@ -145394,8 +145410,9 @@ var GroupPanel = class {
     this.root.remove();
   }
   applyExpandedState() {
+    const panelWidth = 240;
     this.toggleButton.textContent = this.expanded ? "<" : ">";
-    this.body.style.transform = this.expanded ? "translateX(0)" : "translateX(-100%)";
+    this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(-${panelWidth}px)`;
   }
   render() {
     const grouped = /* @__PURE__ */ new Map();
