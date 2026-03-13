@@ -242,8 +242,9 @@ So chain order alone is not enough to communicate structural organization.
 Preferred first direction:
 
 - groups ordered by chain
-- preferred first layout is one visual row per chain, if density remains usable
-- this is now the implemented runtime layout
+- the current adopted direction is one vertical strip-column per chain
+- each chain strip should be independently scrollable
+- the earlier one-row-per-chain horizontal layout is no longer the intended direction
 
 This is better than a single undifferentiated strip if multiple chains exist.
 
@@ -448,3 +449,15 @@ It supports the broader product direction for MolSysViewer:
 - but a molecular inspection workbench
 
 That is why it belongs in the medium-term path toward `1.0`.
+
+
+## Updated Layout Direction
+
+The current preferred direction is now:
+
+- `GroupPanel` as a container of vertical `GroupStrip` columns
+- one strip-column per `chain`
+- each strip independently scrollable
+- denser cells with compact overlays
+
+This should scale better than the earlier lower horizontal strip rows.

@@ -53,8 +53,14 @@ export class GroupStrip {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-group-strip", "true");
         Object.assign(this.root.style, {
-            minWidth: "0",
+            minWidth: "120px",
+            maxWidth: "150px",
+            maxHeight: "200px",
+            overflowY: "auto",
+            overflowX: "hidden",
             display: "block",
+            flex: "0 0 auto",
+            paddingRight: "4px",
         });
 
         this.section = document.createElement("div");
@@ -71,7 +77,8 @@ export class GroupStrip {
         this.row = document.createElement("div");
         Object.assign(this.row.style, {
             display: "flex",
-            flexWrap: "wrap",
+            flexDirection: "column",
+            flexWrap: "nowrap",
             gap: "6px",
         });
 
@@ -186,6 +193,8 @@ export class GroupStrip {
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 font: "inherit",
+                width: "100%",
+                textAlign: "left",
             });
             const text = document.createElement("span");
             text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;

@@ -50,8 +50,9 @@ export class GroupPanel {
             right: "14px",
             bottom: "14px",
             display: "none",
-            maxHeight: "140px",
-            overflow: "auto",
+            maxHeight: "220px",
+            overflowX: "auto",
+            overflowY: "hidden",
             padding: "10px",
             borderRadius: "14px",
             border: "1px solid rgba(255,255,255,0.14)",
@@ -61,6 +62,10 @@ export class GroupPanel {
             zIndex: "16",
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
             fontSize: "12px",
+            alignItems: "stretch",
+            gap: "10px",
+            flexDirection: "row",
+            flexWrap: "nowrap",
         });
         this.host.appendChild(this.root);
     }
@@ -144,7 +149,7 @@ export class GroupPanel {
             this.strips.delete(chain);
         }
 
-        this.root.style.display = this.structure && grouped.size > 0 ? "block" : "none";
+        this.root.style.display = this.structure && grouped.size > 0 ? "flex" : "none";
         if (!this.structure || grouped.size === 0) return;
 
         for (const [chain, chainItems] of grouped.entries()) {
