@@ -276,6 +276,11 @@ class MolSysView:
             action = content.get("action")
             if action == "create_region_from_selection":
                 self.new_region_from_active_selection(skip_digestion=True)
+            elif action == "save_selection":
+                tag = content.get("tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("save_selection requires non-empty tag.")
+                self.active_selection.save(tag=tag.strip(), skip_digestion=True)
             elif action == "add_label_from_selection":
                 text = content.get("text")
                 if not isinstance(text, str) or text.strip() == "":

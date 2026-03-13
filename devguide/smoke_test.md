@@ -38,13 +38,14 @@ Current smoke scope:
 
 1. Canvas selection and navigation
 2. Context menu behavior
-3. Interactive measurements
-4. Active selection -> region
-5. Active selection -> label
-6. Interactive measurement -> persisted measurement
-7. GroupStrip synchronization
-8. Annotation API sanity after UI-created labels
-9. Export/replay sanity for the newly created artifacts
+3. Active selection -> named selection
+4. Interactive measurements
+5. Active selection -> region
+6. Active selection -> label
+7. Interactive measurement -> persisted measurement
+8. GroupStrip synchronization
+9. Annotation API sanity after UI-created labels
+10. Export/replay sanity for the newly created artifacts
 
 ## Recommended Test System
 
@@ -115,7 +116,27 @@ Expected:
 - `right click` in the strip opens the same context-menu family
 - `double click` in the strip focuses the group
 
-### 5. Check label creation from selection
+### 5. Check named selection creation from selection
+
+Workflow:
+
+- select one or more groups
+- open the context menu
+- choose `Save Selection`
+- enter a tag in the inline composer
+
+Expected:
+
+- a persistent named selection is stored
+- it does not create a visual representation automatically
+- Python API sees it:
+
+```python
+view.selections.info()
+view.selections.records()
+```
+
+### 6. Check label creation from selection
 
 Workflow:
 
@@ -136,7 +157,7 @@ view.annotations.info()
 view.annotations.records()
 ```
 
-### 6. Check region creation from selection
+### 7. Check region creation from selection
 
 Workflow:
 
@@ -158,7 +179,7 @@ Suggested quick check:
 view.regions
 ```
 
-### 7. Check interactive measurement
+### 8. Check interactive measurement
 
 Workflow:
 
@@ -185,7 +206,7 @@ Expected event shape:
 - `picked_count` matches the required pick count
 - `picks_atom_indices` stores the picked atoms in a replay-safe form
 
-### 8. Persist the last measurement
+### 9. Persist the last measurement
 
 Workflow:
 
@@ -204,7 +225,7 @@ Suggested checks:
 view.measurements.info()
 ```
 
-### 9. Exercise annotation API robustness
+### 10. Exercise annotation API robustness
 
 After creating a label from the UI, check:
 
@@ -226,7 +247,7 @@ Expected:
 - live `hide()/show()` is now expected to work on notebook-created labels,
   not only in unit tests.
 
-### 10. Check export/replay sanity
+### 11. Check export/replay sanity
 
 Suggested checks:
 
@@ -236,6 +257,7 @@ msgs = view._build_export_messages()
 
 Expected:
 
+- saved selections are present as explicit non-visual selection ops,
 - created labels are present as annotation ops,
 - persisted measurements are present as measurement ops,
 - regions remain represented through the normal replay contract,
@@ -243,6 +265,7 @@ Expected:
 
 There is now an integral Python regression for this export surface covering:
 
+- saved selection creation,
 - region creation + representation,
 - label creation + update,
 - distance / angle / dihedral measurements,
