@@ -1,0 +1,156 @@
+# Interaction Verified State
+
+This page is the operational source of truth for interaction behavior that is
+already implemented and has been checked in practice.
+
+It is intentionally different from the interaction design/spec documents:
+
+- `interaction_overview.md`
+- `interaction_targets_and_selection.md`
+- `interaction_gestures_and_menus.md`
+- `interaction_modifiers_and_future.md`
+
+Those documents describe the intended contract and future direction.
+This page records what is actually working now, what has already been verified,
+and what still needs confirmation or correction.
+
+Update this page whenever smoke testing changes the confidence level of an
+interaction behavior.
+
+## Status Vocabulary
+
+- `implemented`: code exists, but it has not been re-verified recently in the
+  real notebook/browser flow.
+- `verified`: confirmed manually in live smoke and/or by stable automated
+  coverage.
+- `pending`: intended behavior exists in the contract, but the implementation is
+  missing or still known to be unreliable.
+
+## Main Notebook Canvas
+
+### Verified
+
+- `left drag`
+  - rotates the scene
+- `right drag`
+  - pans/translates the scene
+  - does not open the JupyterLab host menu
+- `right click` on empty canvas
+  - opens the viewer-owned context menu
+  - does not open the JupyterLab host menu
+- `right click` on atoms and visible bonds/links
+  - resolves to the default `group` target
+  - bond/link fragments no longer fall back to `No target under cursor`
+- `left click`
+  - selects the clicked `group`
+- `Shift + left click`
+  - adds another `group`
+  - toggles off a previously selected `group`
+- `Esc`
+  - clears `active_selection` when no measurement tool mode is active
+- selection visual state
+  - the current `selection` marker is visible again
+  - multi-selection no longer depends on click order
+
+### Implemented But Not Yet Re-verified
+
+- `double left click`
+  - intended behavior: camera `focus` on the clicked `group`
+  - current status: implementation changed to use Mol* click stream semantics
+    instead of DOM-native `dblclick`
+  - needs live re-check in the notebook after the latest fix
+
+## Popup Canvas
+
+### Verified
+
+- `left drag`
+  - rotates the scene
+- `right drag`
+  - pans/translates the scene
+- `right click`
+  - opens the viewer-owned context menu
+  - no host JupyterLab menu conflict appears in the popup surface
+
+## GroupStrip
+
+### Verified
+
+- `left click`
+  - selects the corresponding `group`
+- `Shift + left click`
+  - adds a `group`
+  - toggles off a selected `group`
+- `hover`
+  - mirrors into viewer highlight
+- `double click`
+  - triggers camera `focus`
+
+### Implemented But Not Yet Re-verified
+
+- `right click`
+  - intended behavior: opens the same viewer-owned context menu used by the
+    canvas
+  - a notebook-host suppression bug was fixed after smoke found the regression
+  - needs one more live confirmation after the latest fix
+
+## Context Menu
+
+### Verified
+
+- opens on the main notebook canvas without leaking the host menu
+- opens on the popup canvas
+- shows the correct empty-canvas message
+- on structural targets, it supports:
+  - `Focus Target`
+  - `Distance`
+  - `Angle`
+  - `Dihedral`
+- on active selection, it supports:
+  - `Focus Selection`
+  - `Create Region from Selection`
+  - `Add Label from Selection`
+  - `Clear Selection`
+- for recent interactive measurements, it supports:
+  - `Persist Last Measurement`
+
+## Reproducibility Bridges
+
+### Verified
+
+- `active selection -> region`
+  - UI action exists and executes through Python into reproducible viewer state
+- `active selection -> label`
+  - UI action exists and executes through Python into reproducible viewer state
+- `interactive measurement -> persisted measurement`
+  - UI action exists and executes through Python into reproducible viewer state
+
+## Annotations
+
+### Verified
+
+- persistent labels exist as `annotations`, not `shapes`
+- labels created from UI appear in the scene
+- labels are reflected as overlays in `GroupStrip`
+- labels participate in replay/export/rebuild
+- labels can be managed by Python API:
+  - `tags()`
+  - `count()`
+  - `contains()`
+  - `get()`
+  - `records()`
+  - `info()`
+  - `show()/hide()`
+  - `delete()`
+  - `set_tag()`
+  - `set_text()`
+  - `set_group_index()`
+  - `clear()`
+
+## Known Open Points
+
+- live re-verification of notebook-canvas `double left click -> focus`
+- live re-verification of `GroupStrip` `right click`
+- future discussion of a distinct `bond` target policy
+- future discussion of `focus` versus optional `focus marker`
+- future richer gesture policy for range selection, without overloading `Shift`

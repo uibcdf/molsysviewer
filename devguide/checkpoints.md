@@ -29,6 +29,10 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `active_selection`,
   - `GroupStrip`,
   - `annotations`.
+- Keep `devguide/interaction_verified_state.md` as the operational truth for:
+  - what interaction behaviors are really implemented,
+  - what has already been verified in smoke,
+  - and what still needs re-checking.
 - Keep `devguide/` aligned with the real repository state.
 - Keep the smoke runbook in `devguide/smoke_test.md` aligned with the real product surface before broadening interaction much further.
 - Prioritize regression coverage for new product-facing behavior, especially where it composes runtime state, layers, and rebuild/replay.
@@ -153,7 +157,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - loci-based labels,
     - MVS custom and annotation-driven labels,
     - tooltip separation from persistent labels.
-  - Mouse-navigation compatibility is now part of the interaction contract:
+- Mouse-navigation compatibility is now part of the interaction contract:
     - `left drag` rotates,
     - `right drag` pans/translates,
     - right-click context handling must coexist with that drag behavior and suppress the host menu only inside the viewer canvas.
@@ -161,7 +165,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the host `contextmenu` conflict is resolved in both the main notebook canvas and the popup canvas,
     - `right drag` now pans without leaking the host menu in both surfaces,
     - `right click` now opens the viewer-owned menu in both surfaces,
-    - the remaining canvas-side picking hardening is specifically about bond/edge fragments resolving consistently to the default `group` target.
+  - the remaining canvas-side picking hardening is specifically about bond/edge fragments resolving consistently to the default `group` target.
+  - live smoke has now also confirmed:
+    - canvas `left click`, additive `Shift + click`, `Esc`, and order-independent selection visuals,
+    - popup canvas context behavior,
+    - `GroupStrip` click / additive click / hover / double-click,
+    - while notebook-canvas `double click -> focus` and `GroupStrip` `right click` need one more live re-check after the latest fixes.
   - The first concrete context-menu bridge now exists:
     - right-click without drag is captured from Mol* click events,
     - the canvas suppresses the host `contextmenu`,
