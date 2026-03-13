@@ -60,6 +60,38 @@ class Selection:
             skip_digestion=True,
         )
 
+    @signal(tags=["selection"])
+    @digest()
+    def activate(self, skip_digestion: bool = False):
+        """Restore this persistent selection as the current active selection."""
+        info = self.info(skip_digestion=True)
+        atom_indices = info.get("atom_indices") or []
+        if not isinstance(atom_indices, list) or len(atom_indices) == 0:
+            raise ValueError(f"Selection {self.tag!r} does not resolve to any atoms.")
+        self._view._send({  # noqa: SLF001
+            "op": "set_active_selection",
+            "atom_indices": list(atom_indices),
+        })
+        payload = {
+            "event": "interaction_active_selection_changed",
+            "source_kind": "element",
+            "element_level": "group",
+            "target_level": "none",
+            "items": [],
+            "atom_indices": list(info.get("atom_indices") or []),
+            "group_indices": list(info.get("group_indices") or []),
+            "component_indices": list(info.get("component_indices") or []),
+            "chain_indices": list(info.get("chain_indices") or []),
+            "molecule_indices": list(info.get("molecule_indices") or []),
+            "entity_indices": list(info.get("entity_indices") or []),
+            "count_atoms": int(info.get("n_atoms") or 0),
+            "count_groups": len(list(info.get("group_indices") or [])),
+            "count_shapes": 0,
+            "count_annotations": 0,
+        }
+        self._view._last_active_selection_event = payload  # noqa: SLF001
+        return self._view.active_selection  # noqa: SLF001
+
     @signal(tags=["selection", "region"])
     @digest()
     def new_region(
@@ -166,6 +198,15 @@ class SelectionsManager:
     def count(self, skip_digestion: bool = False) -> int:
         """Return the number of persistent selections."""
         return len(self._view._selection_history)  # noqa: SLF001
+
+    @signal(tags=["selection"])
+    @digest()
+    def activate(self, tag: str, skip_digestion: bool = False):
+        """Restore a persistent selection as the current active selection."""
+        selection = self.get(tag, skip_digestion=True)
+        if selection is None:
+            raise ValueError(f"No persistent selection found for tag {tag!r}.")
+        return selection.activate(skip_digestion=True)
 
     @signal(tags=["selection", "query"])
     @digest()

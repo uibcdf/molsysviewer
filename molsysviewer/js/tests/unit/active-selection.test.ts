@@ -305,6 +305,62 @@ test("ActiveSelectionController supports annotation selections and mixes them wi
     ]);
 });
 
+test("ActiveSelectionController can rebuild a group-centric selection from atom indices", () => {
+    const events: any[] = [];
+    const controller = new ActiveSelectionController((msg) => events.push(msg));
+    const structure: any = {
+        units: [{
+            kind: 0,
+            elements: fullElements,
+            model: {
+                id: "model-1",
+                atomicHierarchy: {
+                    residueAtomSegments: { index: residueIndexByAtom, offsets: residueOffsets },
+                    chainAtomSegments: { index: chainIndexByAtom },
+                    atoms: { label_comp_id: { value: (i: number) => labelCompId[residueIndexByAtom[i]] } },
+                    residues: { auth_seq_id: { value: (i: number) => authSeqId[i] } },
+                    chains: {
+                        label_asym_id: { value: (i: number) => labelAsymId[i] },
+                        label_entity_id: { value: (i: number) => labelEntityId[i] },
+                    },
+                    index: { getEntityFromChain: (_i: number) => 0 },
+                },
+            },
+        }],
+    };
+
+    controller.setFromAtomIndices([3, 4], structure);
+
+    assert.deepStrictEqual(events, [{
+        event: "interaction_active_selection_changed",
+        source_kind: "element",
+        element_level: "group",
+        target_level: "none",
+        items: [{
+            source_kind: "element",
+            element_level: "group",
+            atom_indices: [3, 4],
+            group_indices: [1],
+            chain_indices: [0],
+            entity_indices: [0],
+            group_name: "GLY 2",
+            group_id: 2,
+            chain_name: "A",
+            entity_name: "1",
+        }],
+        atom_indices: [3, 4],
+        group_indices: [1],
+        component_indices: [],
+        chain_indices: [0],
+        molecule_indices: [],
+        entity_indices: [0],
+        count_atoms: 2,
+        count_groups: 1,
+        count_shapes: 0,
+        count_annotations: 0,
+    }]);
+});
+
 test("ActiveSelectionController supports shape selections", () => {
     const events: any[] = [];
     const controller = new ActiveSelectionController((msg) => events.push(msg));

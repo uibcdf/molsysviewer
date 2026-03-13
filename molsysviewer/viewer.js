@@ -144893,6 +144893,29 @@ var ActiveSelectionController = class {
     this.items = [];
     this.emit();
   }
+  setFromAtomIndices(atomIndices, structure) {
+    if (!structure || atomIndices.length === 0) {
+      this.clear();
+      return;
+    }
+    const unit2 = structure.units.find((candidate) => candidate.kind === 0);
+    if (!unit2) {
+      this.clear();
+      return;
+    }
+    const unitIndices = [];
+    for (const atomIndex of atomIndices) {
+      const unitIndex = unit2.elements.indexOf(atomIndex);
+      if (unitIndex >= 0) unitIndices.push(unitIndex);
+    }
+    if (unitIndices.length === 0) {
+      this.clear();
+      return;
+    }
+    const loci = element_exports.Loci(structure, [{ unit: unit2, indices: unitIndices }]);
+    const items = lociToGroupItems(loci);
+    this.setItems(items, false);
+  }
   emit() {
     this.notify?.(buildPayload(this.items));
   }
@@ -145867,6 +145890,12 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "clear_active_selection":
           this.activeSelection.clear();
+          break;
+        case "set_active_selection":
+          this.activeSelection.setFromAtomIndices(
+            Array.isArray(msg.atom_indices) ? msg.atom_indices : [],
+            this.getStructureData()
+          );
           break;
         case "save_selection":
         case "set_selection_tag":

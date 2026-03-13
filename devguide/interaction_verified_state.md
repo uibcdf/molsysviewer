@@ -153,6 +153,10 @@ interaction behavior.
   - `focus(...)`
   - `new_region(...)`
   - `add_label(...)`
+  - `save(...)`
+- persistent selections can now be restored back into the interactive workflow via:
+  - `view.selections.activate(tag)`
+  - `view.selections[tag].activate()`
 - `clear()` now clears both:
   - Python-side cached selection state
   - frontend runtime active selection

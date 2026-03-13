@@ -326,6 +326,30 @@ export class ActiveSelectionController {
         this.emit();
     }
 
+    setFromAtomIndices(atomIndices: number[], structure: Structure | null | undefined): void {
+        if (!structure || atomIndices.length === 0) {
+            this.clear();
+            return;
+        }
+        const unit = structure.units.find((candidate) => candidate.kind === 0);
+        if (!unit) {
+            this.clear();
+            return;
+        }
+        const unitIndices: number[] = [];
+        for (const atomIndex of atomIndices) {
+            const unitIndex = unit.elements.indexOf(atomIndex as any);
+            if (unitIndex >= 0) unitIndices.push(unitIndex);
+        }
+        if (unitIndices.length === 0) {
+            this.clear();
+            return;
+        }
+        const loci = StructureElement.Loci(structure, [{ unit, indices: unitIndices } as any]);
+        const items = lociToGroupItems(loci);
+        this.setItems(items, false);
+    }
+
     private emit(): void {
         this.notify?.(buildPayload(this.items));
     }

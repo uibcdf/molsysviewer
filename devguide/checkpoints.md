@@ -250,6 +250,7 @@ Do not append dated historical entries unless a date is itself operationally rel
       - `new_region(...)`
       - `add_label(...)`
       - `save(...)`
+    - persistent selections can now be restored into `active_selection` via `view.selections.activate(tag)` and `view.selections[tag].activate()`
   - `selections` now exist as a first-class persistent category:
     - `view.selections.add_from_active_selection(tag=...)`
     - `view.selections.records()`, `count()`, `info()`

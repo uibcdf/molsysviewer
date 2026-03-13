@@ -63,6 +63,7 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `view.selections`
   - `add(...)`
   - `add_from_active_selection(...)`
+  - `activate(...)`
   - `tags()`
   - `count()`
   - `contains(tag)`
@@ -87,6 +88,7 @@ Related object wrappers are also part of the intended public surface:
 - `view.regions[tag].focus(...)`
 - `view.regions[tag].show_only(...)`
 - `view.selections[tag].info()`
+- `view.selections[tag].activate()`
 - `view.selections[tag].focus(...)`
 - `view.selections[tag].new_region(...)`
 - `view.selections[tag].add_label(...)`

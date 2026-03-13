@@ -68,6 +68,32 @@ def test_persistent_selection_supports_focus_region_and_label():
     assert view.annotations.contains("picked-label") is True
 
 
+def test_persistent_selection_can_restore_itself_as_active_selection():
+    view = demo["dialanine"]
+    _seed_group_selection(view, 1)
+    selection = view.active_selection.save("picked")
+    view.active_selection.clear()
+
+    restored = selection.activate()
+
+    assert restored is view.active_selection
+    assert view.active_selection.info()["source_kind"] == "element"
+    assert view.active_selection.group_indices == [1]
+    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+
+
+def test_selections_manager_can_activate_by_tag():
+    view = demo["dialanine"]
+    _seed_group_selection(view, 2)
+    view.active_selection.save("picked")
+    view.active_selection.clear()
+
+    restored = view.selections.activate("picked")
+
+    assert restored is view.active_selection
+    assert view.active_selection.group_indices == [2]
+
+
 def test_persistent_selection_rename_delete_and_clear_update_records():
     view = demo["dialanine"]
     _seed_group_selection(view, 1)
