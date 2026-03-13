@@ -116,6 +116,14 @@ async function run() {
         await controller.handleMessage({ op: "hide_region", tag: "region1" });
     }, PDB_TEXT);
 
+    await page.waitForSelector('[data-molsysviewer-group-strip="true"]', { timeout: 60000 });
+    const firstGroup = page.locator('[data-molsysviewer-group-item="true"]').first();
+    await firstGroup.click({ button: "right" });
+    await page.waitForSelector('[data-molsysviewer-context-menu="true"]', { timeout: 60000 });
+    const menuTitle = await page.locator('[data-molsysviewer-context-menu-title="true"]').textContent();
+    assert.ok(menuTitle && menuTitle !== "Canvas", `Expected a group context menu title, got: ${menuTitle}`);
+    assert.ok(!String(menuTitle).includes("No target under cursor"), `Unexpected empty-target menu title: ${menuTitle}`);
+
     await page.evaluate(async pdb => {
         const controller = (window as any).__controller;
         if (!controller) throw new Error("Controller not available for second scenario");

@@ -2,7 +2,13 @@ import type { ActiveSelectionPayload } from "../managers/active-selection";
 
 type BaseTarget =
     | { event: "interaction_context_menu"; kind: "empty" }
-    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[] }
+    | {
+        event: "interaction_context_menu";
+        kind: "structure";
+        atom_indices: number[];
+        group_name?: string;
+        chain_name?: string;
+    }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
     | { event: "interaction_context_menu"; kind: "annotation"; atom_indices: number[]; tag?: string; text?: string };
 
@@ -32,6 +38,11 @@ function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
     if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
+    if (target.group_name?.trim()) {
+        return target.chain_name?.trim()
+            ? `${target.group_name.trim()} · chain ${target.chain_name.trim()}`
+            : target.group_name.trim();
+    }
     const count = target.atom_indices.length;
     return count === 1 ? "Element (1 atom)" : `Element (${count} atoms)`;
 }
@@ -101,6 +112,7 @@ export class ViewerContextMenu {
         this.root.replaceChildren();
 
         const header = document.createElement("div");
+        header.setAttribute("data-molsysviewer-context-menu-title", "true");
         header.textContent = targetTitle(target);
         Object.assign(header.style, {
             padding: "6px 8px 8px 8px",

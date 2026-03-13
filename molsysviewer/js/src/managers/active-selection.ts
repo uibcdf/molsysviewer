@@ -1,5 +1,6 @@
 import { Structure } from "molstar/lib/mol-model/structure";
 import { StructureElement } from "molstar/lib/mol-model/structure";
+import { Loci } from "molstar/lib/mol-model/loci";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 
@@ -97,23 +98,34 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
     return items;
 }
 
-function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
-    if (!StructureElement.Loci.is(rawLoci)) return [];
+function normalizeToElementLoci(rawLoci: any): any {
+    if (StructureElement.Loci.is(rawLoci)) return rawLoci;
+    try {
+        return Loci.normalize(rawLoci, "element", true);
+    } catch {
+        return rawLoci;
+    }
+}
+
+export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
+    const loci = normalizeToElementLoci(rawLoci);
+    if (!StructureElement.Loci.is(loci)) return [];
 
     const items: ActiveSelectionItem[] = [];
     const seen = new Set<string>();
 
-    for (const lociElement of rawLoci.elements) {
+    for (const lociElement of loci.elements) {
         const unit = lociElement.unit;
         const model = unit.model;
-        const hierarchy = model.atomicHierarchy;
+        const hierarchy = model?.atomicHierarchy;
+        const modelIndex = hierarchy?.index;
+        if (!hierarchy || !modelIndex) continue;
         const residueIndexByAtom = hierarchy.residueAtomSegments.index;
         const residueOffsets = hierarchy.residueAtomSegments.offsets;
         const chainIndexByAtom = hierarchy.chainAtomSegments.index;
         const atoms = hierarchy.atoms;
         const residues = hierarchy.residues;
         const chains = hierarchy.chains;
-        const modelIndex = hierarchy.index;
 
         const size = OrderedSet.size(lociElement.indices);
         for (let i = 0; i < size; i++) {

@@ -157,6 +157,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `left drag` rotates,
     - `right drag` pans/translates,
     - right-click context handling must coexist with that drag behavior and suppress the host menu only inside the viewer canvas.
+  - Manual smoke in JupyterLab now confirms:
+    - the host `contextmenu` conflict is resolved in both the main notebook canvas and the popup canvas,
+    - `right drag` now pans without leaking the host menu in both surfaces,
+    - `right click` now opens the viewer-owned menu in both surfaces,
+    - the remaining canvas-side picking hardening is specifically about bond/edge fragments resolving consistently to the default `group` target.
   - The first concrete context-menu bridge now exists:
     - right-click without drag is captured from Mol* click events,
     - the canvas suppresses the host `contextmenu`,
@@ -244,6 +249,10 @@ Do not append dated historical entries unless a date is itself operationally rel
   - Current smoke automation result:
     - `pytest tests/test_annotations.py tests/test_reproducible_interaction.py tests/test_measurements.py tests/test_interaction_events.py -q` is green,
     - `PW_CHROMIUM_BIN=/usr/bin/google-chrome npm --prefix molsysviewer/js run test:e2e` is now verified as passing on this workstation.
+  - Immediate smoke follow-up:
+    - after the latest `Bond.Loci -> element loci` normalization, recheck `right click` on visible bonds/links in the main notebook canvas,
+    - expected behavior: those clicks should now resolve to the same `group`-centric context target as atom clicks,
+    - if not, inspect the exact Mol* loci returned for bond fragments in notebook embedding before broadening interaction further.
 
 ## Active Decisions
 
