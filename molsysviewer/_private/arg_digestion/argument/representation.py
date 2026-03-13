@@ -21,6 +21,8 @@ def digest_representation(representation, caller=None):
         'molsysviewer.viewer.new_region',
         'molsysviewer.viewer.MolSysView.new_region_from_active_selection',
         'molsysviewer.viewer.new_region_from_active_selection',
+        'molsysviewer.active_selection.ActiveSelection.new_region',
+        'molsysviewer.active_selection.new_region',
         'molsysviewer.viewer.MolSysView.make_regions_by',
         'molsysviewer.viewer.make_regions_by',
         'molsysviewer.whole.Whole.set_representation',

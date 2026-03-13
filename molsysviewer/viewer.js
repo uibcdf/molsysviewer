@@ -145745,6 +145745,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_camera_snapshot":
           await this.setCameraSnapshot(msg.snapshot, msg.duration_ms);
           break;
+        case "clear_active_selection":
+          this.activeSelection.clear();
+          break;
         // Trajectory Ops
         case "step_trajectory":
           await this.trajectory.stepTrajectory(msg);

@@ -52,6 +52,13 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `get_last_click_event()`
   - current interaction payloads are intentionally minimal and atom-centric
 - `get_last_active_selection_event()`
+- `active_selection`
+  - `info()`
+  - `is_empty()`
+  - `clear()`
+  - `focus(...)`
+  - `new_region(...)`
+  - `add_label(...)`
 - `get_last_measurement_created_event()`
 - `new_region_from_active_selection(...)`
 - `view.annotations.add_label_from_active_selection(...)`

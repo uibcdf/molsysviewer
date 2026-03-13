@@ -760,6 +760,9 @@ export class MolSysViewerController {
                 case "hide_global": await this.state.hideGlobal(msg); break;
                 case "zoom": await this.state.zoom(msg); break;
                 case "set_camera_snapshot": await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms); break;
+                case "clear_active_selection":
+                    this.activeSelection.clear();
+                    break;
 
                 // Trajectory Ops
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;

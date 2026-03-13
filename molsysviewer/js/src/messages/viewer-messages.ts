@@ -332,6 +332,10 @@ export type RequestCameraSnapshotMessage = {
     op: "request_camera_snapshot";
 };
 
+export type ClearActiveSelectionMessage = {
+    op: "clear_active_selection";
+};
+
 export type ViewerMessage =
     AddSphereMessage |
     AddAlphaSphereSetMessage |
@@ -381,4 +385,5 @@ export type ViewerMessage =
     ZoomMessage |
     SetCameraSnapshotMessage |
     RequestCameraSnapshotMessage |
+    ClearActiveSelectionMessage |
     Record<string, unknown>;
