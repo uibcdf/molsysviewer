@@ -129,6 +129,7 @@ Expected:
 
 - a persistent named selection is stored
 - it does not create a visual representation automatically
+- the same composer appears whether the menu opens on empty canvas or on a structural context target
 - Python API sees it:
 
 ```python

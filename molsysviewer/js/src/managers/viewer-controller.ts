@@ -438,7 +438,8 @@ export class MolSysViewerController {
                 return;
             }
             if (
-                action === "create_region_from_selection"
+                action === "save_selection"
+                || action === "create_region_from_selection"
                 || action === "add_label_from_selection"
                 || action === "persist_last_measurement"
             ) {
