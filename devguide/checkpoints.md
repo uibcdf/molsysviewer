@@ -247,6 +247,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - Python can send `add_distance_measurement`, `add_angle_measurement`, and `add_dihedral_measurement`,
     - JS reconstructs them through Mol* `StructureMeasurementManager`,
     - they are tracked as `measurement` layers and replayed across rebuild/export.
+    - `view.measurements` now also has a minimum inspection surface:
+      - `count()`
+      - `records()`
+      - `info()`
   - Region creation from active selection is now confirmed as a reproducibility
     operation first:
     - it creates a real region object and export messages,

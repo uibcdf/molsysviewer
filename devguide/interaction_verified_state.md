@@ -120,6 +120,10 @@ interaction behavior.
   - `picked_count`
   - `picks_atom_indices`
 - `Persist Last Measurement` is part of the implemented reproducibility bridge
+- `view.measurements` now exposes minimum inspection helpers:
+  - `count()`
+  - `records()`
+  - `info()`
 
 ## Reproducibility Bridges
 
