@@ -239,6 +239,15 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `view.new_region_from_active_selection(...)`
     - `view.annotations.add_label_from_active_selection(...)`
     - `view.measurements.persist_last_measurement(...)`
+  - `active_selection` is no longer only a cached frontend event:
+    - `view.active_selection` now exists as a public Python wrapper with:
+      - `info()`
+      - `is_empty()`
+      - `clear()`
+      - `focus(...)`
+      - `new_region(...)`
+      - `add_label(...)`
+    - this turns the selection into a real object of work instead of a raw event payload
   - The current bridge is intentionally narrow:
     - region creation uses stored `active_selection.atom_indices`,
     - label creation currently requires an active selection resolving to exactly one `group`,

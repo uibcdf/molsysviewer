@@ -355,3 +355,40 @@ test("ActiveSelectionController supports shape selections", () => {
         count_annotations: 0,
     }]);
 });
+
+test("ActiveSelectionController clear emits the empty payload", () => {
+    const events: any[] = [];
+    const controller = new ActiveSelectionController((msg) => events.push(msg));
+
+    controller.setItems([{
+        source_kind: "element",
+        element_level: "group",
+        atom_indices: [0, 1, 2],
+        group_indices: [0],
+        chain_indices: [0],
+        entity_indices: [0],
+        group_name: "ALA 1",
+        group_id: 1,
+        chain_name: "A",
+        entity_name: "1",
+    }]);
+    controller.clear();
+
+    assert.deepStrictEqual(events.at(-1), {
+        event: "interaction_active_selection_changed",
+        source_kind: "empty",
+        element_level: "none",
+        target_level: "none",
+        items: [],
+        atom_indices: [],
+        group_indices: [],
+        component_indices: [],
+        chain_indices: [],
+        molecule_indices: [],
+        entity_indices: [],
+        count_atoms: 0,
+        count_groups: 0,
+        count_shapes: 0,
+        count_annotations: 0,
+    });
+});

@@ -136,6 +136,22 @@ interaction behavior.
 - `interactive measurement -> persisted measurement`
   - UI action exists and executes through Python into reproducible viewer state
 
+## Active Selection API
+
+### Verified
+
+- `view.active_selection` now exists as a public Python wrapper
+- current minimum surface:
+  - `info()`
+  - `is_empty()`
+  - `clear()`
+  - `focus(...)`
+  - `new_region(...)`
+  - `add_label(...)`
+- `clear()` now clears both:
+  - Python-side cached selection state
+  - frontend runtime active selection
+
 ## Annotations
 
 ### Verified

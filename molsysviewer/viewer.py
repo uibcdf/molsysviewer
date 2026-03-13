@@ -19,6 +19,7 @@ from ._private.variables import is_all
 from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .annotations import AnnotationsManager
+from .active_selection import ActiveSelection
 from .measurements import MeasurementsManager
 from .shapes import ShapesManager
 from .regions import Region
@@ -192,6 +193,7 @@ class MolSysView:
 
         self.shapes = ShapesManager(self)
         self.annotations = AnnotationsManager(self)
+        self.active_selection = ActiveSelection(self)
         self.measurements = MeasurementsManager(self)
         try:
             self.widget.autohide_controls = bool(config.autohide_controls)
