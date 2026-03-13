@@ -169,8 +169,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - live smoke has now also confirmed:
     - canvas `left click`, additive `Shift + click`, `Esc`, and order-independent selection visuals,
     - popup canvas context behavior,
-    - `GroupStrip` click / additive click / hover / double-click,
-    - while notebook-canvas `double click -> focus` and `GroupStrip` `right click` need one more live re-check after the latest fixes.
+    - notebook-canvas `double click -> focus`,
+    - `GroupStrip` click / additive click / hover / right-click / double-click.
   - The first concrete context-menu bridge now exists:
     - right-click without drag is captured from Mol* click events,
     - the canvas suppresses the host `contextmenu`,

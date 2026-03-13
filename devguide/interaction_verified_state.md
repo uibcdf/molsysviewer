@@ -52,13 +52,10 @@ interaction behavior.
   - the current `selection` marker is visible again
   - multi-selection no longer depends on click order
 
-### Implemented But Not Yet Re-verified
+### Verified
 
 - `double left click`
-  - intended behavior: camera `focus` on the clicked `group`
-  - current status: implementation changed to use Mol* click stream semantics
-    instead of DOM-native `dblclick`
-  - needs live re-check in the notebook after the latest fix
+  - triggers camera `focus` on the clicked `group`
 
 ## Popup Canvas
 
@@ -86,13 +83,10 @@ interaction behavior.
 - `double click`
   - triggers camera `focus`
 
-### Implemented But Not Yet Re-verified
+### Verified
 
 - `right click`
-  - intended behavior: opens the same viewer-owned context menu used by the
-    canvas
-  - a notebook-host suppression bug was fixed after smoke found the regression
-  - needs one more live confirmation after the latest fix
+  - opens the same viewer-owned context menu used by the canvas
 
 ## Context Menu
 
@@ -149,8 +143,6 @@ interaction behavior.
 
 ## Known Open Points
 
-- live re-verification of notebook-canvas `double left click -> focus`
-- live re-verification of `GroupStrip` `right click`
 - future discussion of a distinct `bond` target policy
 - future discussion of `focus` versus optional `focus marker`
 - future richer gesture policy for range selection, without overloading `Shift`
