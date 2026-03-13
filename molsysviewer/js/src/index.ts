@@ -1,6 +1,6 @@
 // src/index.ts
 
-import { MolSysViewerController } from "./managers/viewer-controller";
+import { MolSysViewerController, suppressCanvasContextMenu } from "./managers/viewer-controller";
 import { ViewerMessage } from "./messages/viewer-messages";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
@@ -213,6 +213,7 @@ export default {
             width: "100%", height: "100%", minHeight: "400px", position: "relative",
             touchAction: "none", cursor: "default" // Default cursor
         });
+        const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
         
         // Track user interaction for "Master/Slave" camera sync logic
         let isUserInteracting = false;
@@ -451,6 +452,7 @@ export default {
             window.removeEventListener("pointercancel", onPointerUpOrCancel);
             target.removeEventListener("pointerdown", onPointerDown);
             target.removeEventListener("wheel", onWheel);
+            releaseNotebookContextMenuSuppression();
 
             // 2. Remove model listeners
             model.off("msg:custom", onCustomMsg);

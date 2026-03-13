@@ -148,20 +148,45 @@ test("registerInteractionObservers forwards hover and click notifications", () =
 });
 
 test("suppressCanvasContextMenu prevents the host context menu on canvas", () => {
-    let listener: ((event: any) => void) | undefined;
+    const listeners: Array<(event: any) => void> = [];
     const canvas: any = {
-        addEventListener(type: string, cb: (event: any) => void) {
-            if (type === "contextmenu") listener = cb;
+        addEventListener(type: string, cb: (event: any) => void, capture?: boolean) {
+            if (type === "contextmenu" && capture === true) listeners.push(cb);
         },
-        removeEventListener(_type: string, _cb: (event: any) => void) {},
+        removeEventListener(_type: string, _cb: (event: any) => void, _capture?: boolean) {},
+    };
+    const host: any = {
+        contains(target: any) { return target === hostTarget; },
+        addEventListener(type: string, cb: (event: any) => void, capture?: boolean) {
+            if (type === "contextmenu" && capture === true) listeners.push(cb);
+        },
+        removeEventListener(_type: string, _cb: (event: any) => void, _capture?: boolean) {},
+    };
+    const hostTarget = { kind: "host-target" };
+    const globalListeners: Record<string, ((event: any) => void)[]> = {};
+    const previousWindow = (globalThis as any).window;
+    (globalThis as any).window = {
+        addEventListener(type: string, cb: (event: any) => void, capture?: boolean) {
+            if (capture !== true) return;
+            (globalListeners[type] ??= []).push(cb);
+        },
+        removeEventListener(_type: string, _cb: (event: any) => void, _capture?: boolean) {},
     };
     const prevented = { defaultPrevented: false, propagationStopped: false };
 
-    suppressCanvasContextMenu(canvas);
-    listener?.({
-        preventDefault() { prevented.defaultPrevented = true; },
-        stopPropagation() { prevented.propagationStopped = true; },
-    });
+    try {
+        suppressCanvasContextMenu(host, canvas);
+        for (const listener of globalListeners.pointerdown ?? []) {
+            listener({ button: 2, target: hostTarget });
+        }
+        for (const listener of listeners) listener({
+            target: hostTarget,
+            preventDefault() { prevented.defaultPrevented = true; },
+            stopPropagation() { prevented.propagationStopped = true; },
+        });
+    } finally {
+        (globalThis as any).window = previousWindow;
+    }
 
     assert.deepStrictEqual(prevented, { defaultPrevented: true, propagationStopped: true });
 });

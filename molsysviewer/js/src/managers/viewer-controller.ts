@@ -3,6 +3,7 @@ import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { StateObjectRef } from "molstar/lib/mol-state";
 import { Structure, StructureElement } from "molstar/lib/mol-model/structure";
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
+import { Loci } from "molstar/lib/mol-model/loci";
 import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
@@ -21,7 +22,7 @@ import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handl
 import { LastMeasurementSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
-import { ActiveSelectionController, ActiveSelectionItem } from "./active-selection";
+import { ActiveSelectionController, ActiveSelectionItem, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupStrip } from "../ui/group-strip";
 
@@ -29,12 +30,34 @@ type InteractionKind = "hover" | "click" | "context";
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
-    | { event: "interaction_hover" | "interaction_click"; kind: "structure"; atom_indices: number[] }
+    | {
+        event: "interaction_hover" | "interaction_click";
+        kind: "structure";
+        atom_indices: number[];
+        group_indices?: number[];
+        chain_indices?: number[];
+        entity_indices?: number[];
+        group_name?: string;
+        chain_name?: string;
+        entity_name?: string;
+    }
     | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string };
 
 type ContextInteractionPayload =
     | { event: "interaction_context_menu"; kind: "empty"; page_x?: number; page_y?: number }
-    | { event: "interaction_context_menu"; kind: "structure"; atom_indices: number[]; page_x?: number; page_y?: number }
+    | {
+        event: "interaction_context_menu";
+        kind: "structure";
+        atom_indices: number[];
+        group_indices?: number[];
+        chain_indices?: number[];
+        entity_indices?: number[];
+        group_name?: string;
+        chain_name?: string;
+        entity_name?: string;
+        page_x?: number;
+        page_y?: number;
+    }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; page_x?: number; page_y?: number }
     | {
         event: "interaction_context_menu";
@@ -46,11 +69,21 @@ type ContextInteractionPayload =
         page_y?: number;
     };
 
+function normalizeToElementLoci(loci: any): any {
+    if (StructureElement.Loci.is(loci)) return loci;
+    try {
+        return Loci.normalize(loci, "element", true);
+    } catch {
+        return loci;
+    }
+}
+
 function lociToAtomIndices(loci: any): number[] {
-    if (!StructureElement.Loci.is(loci)) return [];
+    const normalized = normalizeToElementLoci(loci);
+    if (!StructureElement.Loci.is(normalized)) return [];
     const atomIndices: number[] = [];
     const seen = new Set<number>();
-    for (const element of loci.elements) {
+    for (const element of normalized.elements) {
         const size = OrderedSet.size(element.indices);
         for (let i = 0; i < size; i++) {
             const unitIndex = OrderedSet.getAt(element.indices, i);
@@ -78,45 +111,126 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
     };
 }
 
+function normalizeContextPayloadFromLoci(loci: any, page_x?: number, page_y?: number): ContextInteractionPayload {
+    const groupItems = lociToGroupItems(loci);
+    const atomIndices = lociToAtomIndices(loci);
+    if (groupItems.length === 0) {
+        if (atomIndices.length > 0) {
+            return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };
+        }
+        const shapeTarget = shapeTargetFromLoci(loci);
+        if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
+        return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
+    }
+    const item = groupItems[0];
+    return {
+        event: "interaction_context_menu",
+        kind: "structure",
+        atom_indices: item.atom_indices,
+        group_indices: item.group_indices,
+        chain_indices: item.chain_indices,
+        entity_indices: item.entity_indices,
+        group_name: item.group_name,
+        chain_name: item.chain_name,
+        entity_name: item.entity_name,
+        page_x,
+        page_y,
+    };
+}
+
 export function normalizeInteractionEvent(kind: InteractionKind, ev: any): InteractionPayload {
     if (kind === "context") {
         throw new Error("Use normalizeContextInteractionEvent for context interactions");
     }
     const event = kind === "hover" ? "interaction_hover" : "interaction_click";
+    const groupItems = lociToGroupItems(ev?.current?.loci);
     const atomIndices = lociToAtomIndices(ev?.current?.loci);
-    if (atomIndices.length === 0) {
+    if (groupItems.length === 0) {
+        if (atomIndices.length > 0) {
+            return { event, kind: "structure", atom_indices: atomIndices };
+        }
         const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
         if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
         return { event, kind: "empty" };
     }
-    return { event, kind: "structure", atom_indices: atomIndices };
+    const item = groupItems[0];
+    return {
+        event,
+        kind: "structure",
+        atom_indices: item.atom_indices,
+        group_indices: item.group_indices,
+        chain_indices: item.chain_indices,
+        entity_indices: item.entity_indices,
+        group_name: item.group_name,
+        chain_name: item.chain_name,
+        entity_name: item.entity_name,
+    };
 }
 
-export function normalizeContextInteractionEvent(ev: any): ContextInteractionPayload {
-    const atomIndices = lociToAtomIndices(ev?.current?.loci);
+export function normalizeContextInteractionEvent(ev: any, fallbackLoci?: any): ContextInteractionPayload {
+    const loci = ev?.current?.loci ?? fallbackLoci;
     const page = ev?.page;
     const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
     const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
-    if (atomIndices.length === 0) {
-        const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
-        if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
-        return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
-    }
-    return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };
+    return normalizeContextPayloadFromLoci(loci, page_x, page_y);
 }
 
 function isSecondaryButton(ev: any): boolean {
     return ev?.button === ButtonsType.Flag.Secondary;
 }
 
-export function suppressCanvasContextMenu(canvas: Pick<HTMLElement, "addEventListener">): () => void {
+type ContextMenuSuppressTarget = Pick<HTMLElement, "addEventListener" | "removeEventListener">;
+
+type ContextMenuHost = ContextMenuSuppressTarget & Pick<HTMLElement, "contains">;
+
+export function suppressCanvasContextMenu(host: ContextMenuHost, ...targets: ContextMenuSuppressTarget[]): () => void {
+    let secondaryPressInsideHost = false;
+    const globalTarget = typeof window !== "undefined" ? window : undefined;
+
+    const isInsideHost = (event: Event): boolean => {
+        const target = event.target;
+        if (target != null && host.contains(target as Node)) return true;
+        const composedPath = (event as Event & { composedPath?: () => EventTarget[] }).composedPath;
+        if (typeof composedPath === "function") {
+            return composedPath.call(event).includes(host as unknown as EventTarget);
+        }
+        return false;
+    };
+
+    const onPointerDown = (event: Event) => {
+        const pointer = event as Event & { button?: number };
+        if (pointer.button === 2 && isInsideHost(event)) {
+            secondaryPressInsideHost = true;
+        }
+    };
+
+    const clearSecondaryPress = () => {
+        secondaryPressInsideHost = false;
+    };
+
     const onContextMenu = (event: Event) => {
+        if (!secondaryPressInsideHost && !isInsideHost(event)) return;
         event.preventDefault();
         event.stopPropagation();
+        secondaryPressInsideHost = false;
     };
-    canvas.addEventListener("contextmenu", onContextMenu);
+
+    for (const target of [host, ...targets]) {
+        target.addEventListener("contextmenu", onContextMenu, true);
+    }
+    globalTarget?.addEventListener("pointerdown", onPointerDown, true);
+    globalTarget?.addEventListener("pointerup", clearSecondaryPress, true);
+    globalTarget?.addEventListener("pointercancel", clearSecondaryPress, true);
+    globalTarget?.addEventListener("contextmenu", onContextMenu, true);
+
     return () => {
-        (canvas as HTMLElement).removeEventListener?.("contextmenu", onContextMenu);
+        for (const target of [host, ...targets]) {
+            target.removeEventListener?.("contextmenu", onContextMenu, true);
+        }
+        globalTarget?.removeEventListener("pointerdown", onPointerDown, true);
+        globalTarget?.removeEventListener("pointerup", clearSecondaryPress, true);
+        globalTarget?.removeEventListener("pointercancel", clearSecondaryPress, true);
+        globalTarget?.removeEventListener("contextmenu", onContextMenu, true);
     };
 }
 
@@ -126,11 +240,15 @@ export function registerInteractionObservers(
     openContextMenu?: (payload: ContextInteractionPayload) => void,
     onPrimaryClick?: (ev: any) => void,
     onSecondaryClick?: (ev: any) => void,
+    onHover?: (ev: any) => void,
 ): void {
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
     if (typeof hover?.subscribe === "function") {
-        hover.subscribe((ev: any) => notify?.(normalizeInteractionEvent("hover", ev)));
+        hover.subscribe((ev: any) => {
+            onHover?.(ev);
+            notify?.(normalizeInteractionEvent("hover", ev));
+        });
     }
     if (typeof click?.subscribe === "function") {
         click.subscribe((ev: any) => {
@@ -159,6 +277,8 @@ export class MolSysViewerController {
     private readonly groupStrip: GroupStrip;
     private readonly releaseContextMenuSuppression?: () => void;
     private lastContextLoci: any = null;
+    private lastHoverLoci: any = null;
+    private lastHoverPayload: InteractionPayload | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -308,19 +428,60 @@ export class MolSysViewerController {
         });
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
         if (canvas) {
-            this.releaseContextMenuSuppression = suppressCanvasContextMenu(canvas as HTMLElement);
+            this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, canvas as HTMLElement);
         }
-        registerInteractionObservers(plugin, emitInteractionEvent, (payload) => {
-            const pageX = payload.page_x ?? 0;
-            const pageY = payload.page_y ?? 0;
-            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
-        }, (ev) => {
+        registerInteractionObservers(plugin, emitInteractionEvent, undefined, (ev) => {
             if (!this.measurementTools.isActive()) {
                 this.activeSelection.handlePrimaryClick(ev);
             }
             this.measurementTools.handlePrimaryClick(ev?.current?.loci);
         }, (ev) => {
             this.lastContextLoci = ev?.current?.loci ?? null;
+            const page = ev?.page;
+            const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
+            const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
+            let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
+            if (typeof page_x === "number" && typeof page_y === "number") {
+                const pickData = this.plugin.canvas3d?.identify?.([page_x, page_y] as any);
+                const pickedLoci = pickData ? this.plugin.canvas3d?.getLoci?.(pickData.id)?.loci : null;
+                if (pickedLoci) {
+                    payload = normalizeContextPayloadFromLoci(pickedLoci, page_x, page_y);
+                }
+            }
+            if (payload.kind === "empty" && this.lastHoverPayload && this.lastHoverPayload.kind !== "empty") {
+                if (this.lastHoverPayload.kind === "structure") {
+                    payload = {
+                        event: "interaction_context_menu",
+                        kind: "structure",
+                        atom_indices: this.lastHoverPayload.atom_indices,
+                        group_indices: this.lastHoverPayload.group_indices,
+                        chain_indices: this.lastHoverPayload.chain_indices,
+                        entity_indices: this.lastHoverPayload.entity_indices,
+                        group_name: this.lastHoverPayload.group_name,
+                        chain_name: this.lastHoverPayload.chain_name,
+                        entity_name: this.lastHoverPayload.entity_name,
+                        page_x: payload.page_x,
+                        page_y: payload.page_y,
+                    };
+                } else if (this.lastHoverPayload.kind === "shape") {
+                    payload = {
+                        event: "interaction_context_menu",
+                        kind: "shape",
+                        atom_indices: this.lastHoverPayload.atom_indices,
+                        tag: this.lastHoverPayload.tag,
+                        shape_name: this.lastHoverPayload.shape_name,
+                        page_x: payload.page_x,
+                        page_y: payload.page_y,
+                    };
+                }
+            }
+            const pageX = payload.page_x ?? 0;
+            const pageY = payload.page_y ?? 0;
+            emitInteractionEvent(payload);
+            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+        }, (ev) => {
+            this.lastHoverLoci = ev?.current?.loci ?? null;
+            this.lastHoverPayload = normalizeInteractionEvent("hover", ev);
         });
 
         // Initialize handlers with necessary context callbacks

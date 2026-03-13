@@ -53636,12 +53636,12 @@ function getAtomicResidueCount(structure) {
   }
   return atomicResidueCount;
 }
-(function(Structure4) {
-  Structure4.Empty = create3([]);
+(function(Structure6) {
+  Structure6.Empty = create3([]);
   function Loci3(structure) {
     return { kind: "structure-loci", structure };
   }
-  Structure4.Loci = Loci3;
+  Structure6.Loci = Loci3;
   function toStructureElementLoci(structure) {
     const elements = [];
     for (const unit2 of structure.units) {
@@ -53649,29 +53649,29 @@ function getAtomicResidueCount(structure) {
     }
     return element_exports.Loci(structure, elements);
   }
-  Structure4.toStructureElementLoci = toStructureElementLoci;
+  Structure6.toStructureElementLoci = toStructureElementLoci;
   function toSubStructureElementLoci(parent, structure) {
     return StructureSelection.toLociWithSourceUnits(StructureSelection.Singletons(parent, structure));
   }
-  Structure4.toSubStructureElementLoci = toSubStructureElementLoci;
+  Structure6.toSubStructureElementLoci = toSubStructureElementLoci;
   function isLoci(x) {
     return !!x && x.kind === "structure-loci";
   }
-  Structure4.isLoci = isLoci;
+  Structure6.isLoci = isLoci;
   function areLociEqual(a8, b8) {
     return a8.structure === b8.structure;
   }
-  Structure4.areLociEqual = areLociEqual;
+  Structure6.areLociEqual = areLociEqual;
   function isLociEmpty(loci) {
     return loci.structure.isEmpty;
   }
-  Structure4.isLociEmpty = isLociEmpty;
+  Structure6.isLociEmpty = isLociEmpty;
   function remapLoci(loci, structure) {
     if (structure === loci.structure)
       return loci;
     return Loci3(structure);
   }
-  Structure4.remapLoci = remapLoci;
+  Structure6.remapLoci = remapLoci;
   function create3(units, props = {}) {
     const unitMap = IntMap.Mutable();
     const unitIndexMap = IntMap.Mutable();
@@ -53737,12 +53737,12 @@ function getAtomicResidueCount(structure) {
       state.representativeModel = props.representativeModel;
     else if (props.parent)
       state.representativeModel = props.parent.representativeModel;
-    return new Structure4(units, unitMap, unitIndexMap, state);
+    return new Structure6(units, unitMap, unitIndexMap, state);
   }
-  Structure4.create = create3;
+  Structure6.create = create3;
   async function ofTrajectory(trajectory, ctx) {
     if (trajectory.frameCount === 0)
-      return Structure4.Empty;
+      return Structure6.Empty;
     const units = [];
     let first4 = void 0;
     let count3 = 0;
@@ -53762,7 +53762,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { representativeModel: first4, label: first4.label });
   }
-  Structure4.ofTrajectory = ofTrajectory;
+  Structure6.ofTrajectory = ofTrajectory;
   function ofModel(model, props = {}) {
     const chains2 = model.atomicHierarchy.chainAtomSegments;
     const { index } = model.atomicHierarchy;
@@ -53823,7 +53823,7 @@ function getAtomicResidueCount(structure) {
     }
     return builder.getStructure();
   }
-  Structure4.ofModel = ofModel;
+  Structure6.ofModel = ofModel;
   function isWaterChain(model, chainIndex2) {
     const e = model.atomicHierarchy.index.getEntityFromChain(chainIndex2);
     return model.entities.data.type.value(e) === "water";
@@ -53850,7 +53850,7 @@ function getAtomicResidueCount(structure) {
     const newCS = SymmetryOperator.compose(SymmetryOperator.create(cs.name, transform2, cs), cs);
     return create3(units, { parent: s, coordinateSystem: newCS });
   }
-  Structure4.transform = transform;
+  Structure6.transform = transform;
   function instances(s, transforms) {
     for (const t5 of transforms) {
       if (!Mat4.isRotationAndTranslation(t5, SymmetryOperator.RotationTranslationEpsilon)) {
@@ -53872,7 +53872,7 @@ function getAtomicResidueCount(structure) {
     }
     return create3(units, { parent: s });
   }
-  Structure4.instances = instances;
+  Structure6.instances = instances;
   class StructureBuilder2 {
     beginChainGroup() {
       this.chainGroupId++;
@@ -53928,19 +53928,19 @@ function getAtomicResidueCount(structure) {
       this.singleElementUnits = /* @__PURE__ */ new Map();
     }
   }
-  Structure4.StructureBuilder = StructureBuilder2;
+  Structure6.StructureBuilder = StructureBuilder2;
   function Builder(props = {}) {
     return new StructureBuilder2(props);
   }
-  Structure4.Builder = Builder;
+  Structure6.Builder = Builder;
   function hashCode6(s) {
     return s.hashCode;
   }
-  Structure4.hashCode = hashCode6;
+  Structure6.hashCode = hashCode6;
   function conformationHash(s) {
     return hashString2(s.units.map((u2) => Unit.conformationId(u2)).join("|"));
   }
-  Structure4.conformationHash = conformationHash;
+  Structure6.conformationHash = conformationHash;
   function areUnitIdsEqual(a8, b8) {
     if (a8 === b8)
       return true;
@@ -53955,7 +53955,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure4.areUnitIdsEqual = areUnitIdsEqual;
+  Structure6.areUnitIdsEqual = areUnitIdsEqual;
   function areUnitIdsAndIndicesEqual(a8, b8) {
     if (a8 === b8)
       return true;
@@ -53967,7 +53967,7 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure4.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
+  Structure6.areUnitIdsAndIndicesEqual = areUnitIdsAndIndicesEqual;
   function areHierarchiesEqual(a8, b8) {
     if (a8.hashCode !== b8.hashCode)
       return false;
@@ -53980,19 +53980,19 @@ function getAtomicResidueCount(structure) {
     }
     return true;
   }
-  Structure4.areHierarchiesEqual = areHierarchiesEqual;
+  Structure6.areHierarchiesEqual = areHierarchiesEqual;
   function areEquivalent(a8, b8) {
     return a8 === b8 || a8.hashCode === b8.hashCode && StructureSymmetry.areTransformGroupsEquivalent(a8.unitSymmetryGroups, b8.unitSymmetryGroups);
   }
-  Structure4.areEquivalent = areEquivalent;
+  Structure6.areEquivalent = areEquivalent;
   function areRootsEquivalent(a8, b8) {
     return areEquivalent(a8.root, b8.root);
   }
-  Structure4.areRootsEquivalent = areRootsEquivalent;
+  Structure6.areRootsEquivalent = areRootsEquivalent;
   function areRootsEqual(a8, b8) {
     return a8.root === b8.root;
   }
-  Structure4.areRootsEqual = areRootsEqual;
+  Structure6.areRootsEqual = areRootsEqual;
   class ElementLocationIterator {
     move() {
       this.advance();
@@ -54033,7 +54033,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure4.ElementLocationIterator = ElementLocationIterator;
+  Structure6.ElementLocationIterator = ElementLocationIterator;
   const distVec = Vec3();
   function unitElementMinDistance(unit2, p6, eRadius) {
     const { elements, conformation: c8 } = unit2, dV = distVec;
@@ -54057,7 +54057,7 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure4.minDistanceToPoint = minDistanceToPoint;
+  Structure6.minDistanceToPoint = minDistanceToPoint;
   const distPivot = Vec3();
   function distance(a8, b8) {
     if (a8.elementCount === 0 || b8.elementCount === 0)
@@ -54076,15 +54076,15 @@ function getAtomicResidueCount(structure) {
     }
     return minD;
   }
-  Structure4.distance = distance;
+  Structure6.distance = distance;
   function elementDescription(s) {
     return s.elementCount === 1 ? "1 element" : `${s.elementCount} elements`;
   }
-  Structure4.elementDescription = elementDescription;
+  Structure6.elementDescription = elementDescription;
   function validUnitPair(s, a8, b8) {
     return s.masterModel ? a8.model === b8.model || a8.model === s.masterModel || b8.model === s.masterModel : a8.model === b8.model;
   }
-  Structure4.validUnitPair = validUnitPair;
+  Structure6.validUnitPair = validUnitPair;
   function eachUnitPair(structure, callback, props) {
     const { maxRadius, validUnit, validUnitPair: validUnitPair2 } = props;
     if (!structure.units.some((u2) => validUnit(u2)))
@@ -54110,7 +54110,7 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure4.eachUnitPair = eachUnitPair;
+  Structure6.eachUnitPair = eachUnitPair;
   ;
   function eachAtomicHierarchyElement(structure, { chain: chain2, residue: residue2, atom: atom2 }) {
     const l = element_exports.Location.create(structure);
@@ -54146,8 +54146,8 @@ function getAtomicResidueCount(structure) {
       }
     }
   }
-  Structure4.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
-  Structure4.DefaultSizeThresholds = {
+  Structure6.eachAtomicHierarchyElement = eachAtomicHierarchyElement;
+  Structure6.DefaultSizeThresholds = {
     /** Must be lower to be small */
     smallResidueCount: 10,
     /** Must be lower to be medium */
@@ -54180,9 +54180,9 @@ function getAtomicResidueCount(structure) {
     Size2[Size2["Large"] = 2] = "Large";
     Size2[Size2["Huge"] = 3] = "Huge";
     Size2[Size2["Gigantic"] = 4] = "Gigantic";
-  })(Size = Structure4.Size || (Structure4.Size = {}));
+  })(Size = Structure6.Size || (Structure6.Size = {}));
   function getSize(structure, thresholds = {}, residueCountFactor = 1) {
-    const t5 = { ...Structure4.DefaultSizeThresholds, ...thresholds };
+    const t5 = { ...Structure6.DefaultSizeThresholds, ...thresholds };
     if (structure.polymerResidueCount >= t5.largeResidueCount * residueCountFactor) {
       if (hasHighSymmetry(structure, t5)) {
         return Size.Huge;
@@ -54199,18 +54199,18 @@ function getAtomicResidueCount(structure) {
       return Size.Large;
     }
   }
-  Structure4.getSize = getSize;
-  Structure4.Index = CustomStructureProperty.createSimple("index", "root");
-  Structure4.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
+  Structure6.getSize = getSize;
+  Structure6.Index = CustomStructureProperty.createSimple("index", "root");
+  Structure6.MaxIndex = CustomStructureProperty.createSimple("max_index", "root");
   const PrincipalAxesProp = "__PrincipalAxes__";
   function getPrincipalAxes2(structure) {
     if (structure.currentPropertyData[PrincipalAxesProp])
       return structure.currentPropertyData[PrincipalAxesProp];
-    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure4.toStructureElementLoci(structure));
+    const principalAxes = element_exports.Loci.getPrincipalAxes(Structure6.toStructureElementLoci(structure));
     structure.currentPropertyData[PrincipalAxesProp] = principalAxes;
     return principalAxes;
   }
-  Structure4.getPrincipalAxes = getPrincipalAxes2;
+  Structure6.getPrincipalAxes = getPrincipalAxes2;
 })(Structure || (Structure = {}));
 
 // node_modules/molstar/lib/mol-script/runtime/query/base.js
@@ -74001,20 +74001,20 @@ var PluginStateObject;
     class Trajectory extends PluginStateObject2.Create({ name: "Trajectory", typeClass: "Object" }) {
     }
     Molecule2.Trajectory = Trajectory;
-    class Structure4 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
+    class Structure6 extends PluginStateObject2.Create({ name: "Structure", typeClass: "Object" }) {
     }
-    Molecule2.Structure = Structure4;
-    (function(Structure5) {
+    Molecule2.Structure = Structure6;
+    (function(Structure7) {
       class Representation3D extends CreateRepresentation3D({ name: "Structure 3D" }) {
       }
-      Structure5.Representation3D = Representation3D;
+      Structure7.Representation3D = Representation3D;
       class Representation3DState extends PluginStateObject2.Create({ name: "Structure 3D State", typeClass: "Object" }) {
       }
-      Structure5.Representation3DState = Representation3DState;
+      Structure7.Representation3DState = Representation3DState;
       class Selections extends PluginStateObject2.Create({ name: "Selections", typeClass: "Object" }) {
       }
-      Structure5.Selections = Selections;
-    })(Structure4 = Molecule2.Structure || (Molecule2.Structure = {}));
+      Structure7.Selections = Selections;
+    })(Structure6 = Molecule2.Structure || (Molecule2.Structure = {}));
   })(Molecule = PluginStateObject2.Molecule || (PluginStateObject2.Molecule = {}));
   let Volume2;
   (function(Volume3) {
@@ -140363,6 +140363,205 @@ var LoaderHandlers = class {
   }
 };
 
+// src/managers/handlers/annotation-handlers.ts
+var AnnotationHandlers = class {
+  constructor(plugin, callbacks) {
+    this.plugin = plugin;
+    this.callbacks = callbacks;
+    this.labelRefs = /* @__PURE__ */ new Set();
+    this.refsByTag = /* @__PURE__ */ new Map();
+  }
+  async addLabel(msg) {
+    const structure = this.callbacks.getStructure();
+    if (!structure) return;
+    const text = typeof msg.options?.text === "string" ? msg.options.text : "";
+    const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
+    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+    if (!text.trim() || atomIndices.length === 0) return;
+    const loci = this.buildLociFromAtomIndices(structure, atomIndices);
+    if (!loci) return;
+    const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
+      selectionTags: [tag],
+      reprTags: [tag],
+      labelParams: { customText: text }
+    });
+    if (!added) return;
+    if (added.selection?.ref) {
+      this.labelRefs.add(added.selection.ref);
+      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+      refs.add(added.selection.ref);
+      this.refsByTag.set(tag, refs);
+      this.callbacks.registerRef(added.selection.ref, tag);
+    }
+    if (added.representation?.ref) {
+      this.labelRefs.add(added.representation.ref);
+      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+      refs.add(added.representation.ref);
+      this.refsByTag.set(tag, refs);
+      this.callbacks.registerRef(added.representation.ref, tag);
+    }
+  }
+  async updateLabel(msg) {
+    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+    await this.clearLabelByTag(tag);
+    await this.addLabel({
+      op: "add_label",
+      tag,
+      options: {
+        text: msg.options?.text,
+        atom_indices: msg.options?.atom_indices,
+        tag
+      }
+    });
+  }
+  async clearLabels() {
+    if (this.labelRefs.size === 0) return;
+    const refs = Array.from(this.labelRefs);
+    this.labelRefs.clear();
+    this.refsByTag.clear();
+    await Promise.all(
+      refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
+        state: this.plugin.state.data,
+        ref,
+        removeParentGhosts: true
+      }))
+    );
+  }
+  async clearLabelByTag(tag) {
+    const refs = Array.from(this.refsByTag.get(tag) ?? []);
+    if (refs.length === 0) return;
+    this.refsByTag.delete(tag);
+    for (const ref of refs) {
+      this.labelRefs.delete(ref);
+    }
+    await Promise.all(
+      refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
+        state: this.plugin.state.data,
+        ref,
+        removeParentGhosts: true
+      }))
+    );
+  }
+  buildLociFromAtomIndices(structure, atomIndices) {
+    const selectionBuilder = StructureSelection.LinearBuilder(structure);
+    const set4 = new Set(atomIndices);
+    let added = false;
+    for (const unit2 of structure.units) {
+      if (!Unit.isAtomic(unit2)) continue;
+      const elements = unit2.elements;
+      const elementCount = OrderedSet2.size(elements);
+      if (elementCount === 0) continue;
+      const matched = [];
+      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+        const elementIndex = OrderedSet2.getAt(elements, ordinal);
+        if (set4.has(elementIndex)) matched.push(elementIndex);
+      }
+      if (matched.length === 0) continue;
+      added = true;
+      matched.sort((a8, b8) => a8 - b8);
+      const subset = matched.length === elementCount ? elements : SortedArray.ofSortedArray(matched);
+      const childUnit = unit2.getChild(subset);
+      const subStructure = Structure.create([childUnit], { parent: structure });
+      selectionBuilder.add(subStructure);
+    }
+    if (!added) return void 0;
+    return StructureSelection.toLociWithSourceUnits(selectionBuilder.getSelection());
+  }
+};
+
+// src/managers/handlers/measurement-handlers.ts
+var MeasurementHandlers = class {
+  constructor(plugin, callbacks) {
+    this.plugin = plugin;
+    this.callbacks = callbacks;
+    this.measurementRefs = /* @__PURE__ */ new Set();
+  }
+  async addDistance(msg) {
+    await this.addMeasurement(msg, "distance");
+  }
+  async addAngle(msg) {
+    await this.addMeasurement(msg, "angle");
+  }
+  async addDihedral(msg) {
+    await this.addMeasurement(msg, "dihedral");
+  }
+  async clearMeasurements() {
+    if (this.measurementRefs.size === 0) return;
+    const refs = Array.from(this.measurementRefs);
+    this.measurementRefs.clear();
+    await Promise.all(
+      refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
+        state: this.plugin.state.data,
+        ref,
+        removeParentGhosts: true
+      }))
+    );
+  }
+  async addMeasurement(msg, kind) {
+    const structure = this.callbacks.getStructure();
+    if (!structure) return;
+    const picks = Array.isArray(msg.options?.picks_atom_indices) ? msg.options.picks_atom_indices : [];
+    const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+    const locis = picks.map((pick2) => this.buildLociFromAtomIndices(structure, pick2)).filter(Boolean);
+    const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
+    if (locis.length !== expected) return;
+    const measurement = this.plugin.managers.structure.measurement;
+    let added;
+    if (kind === "distance") {
+      added = await measurement.addDistance(locis[0], locis[1], {
+        selectionTags: [tag],
+        reprTags: [tag]
+      });
+    } else if (kind === "angle") {
+      added = await measurement.addAngle(locis[0], locis[1], locis[2], {
+        selectionTags: [tag],
+        reprTags: [tag]
+      });
+    } else {
+      added = await measurement.addDihedral(locis[0], locis[1], locis[2], locis[3], {
+        selectionTags: [tag],
+        reprTags: [tag]
+      });
+    }
+    if (!added) return;
+    if (added.selection?.ref) {
+      this.measurementRefs.add(added.selection.ref);
+      this.callbacks.registerRef(added.selection.ref, tag);
+    }
+    if (added.representation?.ref) {
+      this.measurementRefs.add(added.representation.ref);
+      this.callbacks.registerRef(added.representation.ref, tag);
+    }
+  }
+  buildLociFromAtomIndices(structure, atomIndices) {
+    const selectionBuilder = StructureSelection.LinearBuilder(structure);
+    const set4 = new Set(
+      (Array.isArray(atomIndices) ? atomIndices : []).map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i))
+    );
+    let added = false;
+    for (const unit2 of structure.units) {
+      if (!Unit.isAtomic(unit2)) continue;
+      const elements = unit2.elements;
+      const elementCount = OrderedSet2.size(elements);
+      if (elementCount === 0) continue;
+      const matched = [];
+      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+        const elementIndex = OrderedSet2.getAt(elements, ordinal);
+        if (set4.has(elementIndex)) matched.push(elementIndex);
+      }
+      if (matched.length === 0) continue;
+      added = true;
+      matched.sort((a8, b8) => a8 - b8);
+      const subset = matched.length === elementCount ? elements : SortedArray.ofSortedArray(matched);
+      const childUnit = unit2.getChild(subset);
+      const subStructure = Structure.create([childUnit], { parent: structure });
+      selectionBuilder.add(subStructure);
+    }
+    if (!added) return void 0;
+    return StructureSelection.toLociWithSourceUnits(selectionBuilder.getSelection());
+  }
+};
+
 // src/shapes/index.ts
 var MSVTransform = Transformer.builderFactory("molsysviewer");
 var TransparentSphereParams = {
@@ -143052,20 +143251,23 @@ var StateHandlers = class {
     this.pendingRegions = [];
     this.requestedGlobalHidden = null;
   }
-  registerShapeRef(ref, tag) {
+  registerTaggedRef(ref, tag, kind = "shape") {
     if (!ref) return;
     if (!tag) return;
     if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, /* @__PURE__ */ new Set());
     this.tagIndex.get(tag).add(ref);
     if (!this.layerMeta.has(tag)) {
-      this.layerMeta.set(tag, { kind: "shape", meta: {} });
-      this.callbacks.notify({ event: "layer_ack", tag, kind: "shape", meta: {} });
+      this.layerMeta.set(tag, { kind, meta: {} });
+      this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
     }
     if (this.pendingLayerVisibility.has(tag)) {
       const hide = this.pendingLayerVisibility.get(tag);
       this.pendingLayerVisibility.delete(tag);
       setSubtreeVisibility(this.plugin.state.data, ref, hide);
     }
+  }
+  registerShapeRef(ref, tag) {
+    this.registerTaggedRef(ref, tag, "shape");
   }
   async updateVisibility(msg) {
     const indices2 = Array.isArray(msg) || msg === void 0 ? msg : msg.options?.visible_atom_indices;
@@ -143725,12 +143927,1344 @@ var TrajectoryHandlers = class {
   }
 };
 
+// src/ui/context-menu.ts
+function targetTitle(target) {
+  if (target.kind === "empty") return "Canvas";
+  if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
+  if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
+  if (target.group_name?.trim()) {
+    return target.chain_name?.trim() ? `${target.group_name.trim()} \xB7 chain ${target.chain_name.trim()}` : target.group_name.trim();
+  }
+  const count3 = target.atom_indices.length;
+  return count3 === 1 ? "Element (1 atom)" : `Element (${count3} atoms)`;
+}
+function selectionTitle(selection) {
+  if (selection.source_kind === "mixed") {
+    return `Active selection: mixed (${selection.items.length} items)`;
+  }
+  if (selection.source_kind === "annotation") {
+    return `Active selection: annotation (${selection.count_annotations})`;
+  }
+  if (selection.source_kind === "element") {
+    return `Active selection: ${selection.count_groups} group${selection.count_groups === 1 ? "" : "s"}`;
+  }
+  return "Active selection";
+}
+var ViewerContextMenu = class {
+  constructor(host, notify, onAction) {
+    this.host = host;
+    this.notify = notify;
+    this.onAction = onAction;
+    this.currentTarget = null;
+    this.currentSelection = null;
+    this.currentLastMeasurement = null;
+    this.currentPageX = 0;
+    this.currentPageY = 0;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-context-menu", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      display: "none",
+      minWidth: "180px",
+      maxWidth: "240px",
+      padding: "6px",
+      borderRadius: "10px",
+      border: "1px solid rgba(255,255,255,0.15)",
+      background: "rgba(26, 26, 30, 0.96)",
+      color: "#f4f4f5",
+      boxShadow: "0 16px 40px rgba(0,0,0,0.35)",
+      zIndex: "20",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "13px"
+    });
+    this.root.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    this.host.appendChild(this.root);
+  }
+  open(target, pageX, pageY, activeSelection, lastMeasurement) {
+    this.currentTarget = target;
+    this.currentSelection = activeSelection ?? null;
+    this.currentLastMeasurement = lastMeasurement ?? null;
+    this.currentPageX = pageX;
+    this.currentPageY = pageY;
+    this.root.replaceChildren();
+    const header2 = document.createElement("div");
+    header2.setAttribute("data-molsysviewer-context-menu-title", "true");
+    header2.textContent = targetTitle(target);
+    Object.assign(header2.style, {
+      padding: "6px 8px 8px 8px",
+      fontWeight: "600",
+      borderBottom: "1px solid rgba(255,255,255,0.10)",
+      marginBottom: "6px"
+    });
+    this.root.appendChild(header2);
+    if (target.kind === "structure") {
+      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+      this.root.appendChild(this.makeActionButton("Distance", "distance"));
+      this.root.appendChild(this.makeActionButton("Angle", "angle"));
+      this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
+    } else if (target.kind === "shape") {
+      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+    } else if (target.kind === "annotation") {
+      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+    } else {
+      const note = document.createElement("div");
+      note.textContent = "No target under cursor";
+      Object.assign(note.style, {
+        padding: "8px",
+        opacity: "0.8"
+      });
+      this.root.appendChild(note);
+    }
+    if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
+      const section = document.createElement("div");
+      Object.assign(section.style, {
+        marginTop: "8px",
+        paddingTop: "8px",
+        borderTop: "1px solid rgba(255,255,255,0.10)"
+      });
+      const title = document.createElement("div");
+      title.textContent = selectionTitle(this.currentSelection);
+      Object.assign(title.style, {
+        padding: "4px 8px 8px 8px",
+        opacity: "0.82",
+        fontSize: "12px"
+      });
+      section.appendChild(title);
+      section.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
+      section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
+      if (this.currentSelection.count_groups === 1) {
+        section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
+      }
+      section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
+      this.root.appendChild(section);
+    }
+    if (this.currentLastMeasurement) {
+      const section = document.createElement("div");
+      Object.assign(section.style, {
+        marginTop: "8px",
+        paddingTop: "8px",
+        borderTop: "1px solid rgba(255,255,255,0.10)"
+      });
+      const title = document.createElement("div");
+      title.textContent = `Last measurement: ${this.currentLastMeasurement.action} (${this.currentLastMeasurement.picked_count})`;
+      Object.assign(title.style, {
+        padding: "4px 8px 8px 8px",
+        opacity: "0.82",
+        fontSize: "12px"
+      });
+      section.appendChild(title);
+      section.appendChild(this.makeActionButton("Persist Last Measurement", "persist_last_measurement"));
+      this.root.appendChild(section);
+    }
+    const rect = this.host.getBoundingClientRect();
+    this.root.style.display = "block";
+    const menuWidth = this.root.offsetWidth || 180;
+    const menuHeight = this.root.offsetHeight || 120;
+    const left = Math.min(Math.max(0, pageX - rect.left), Math.max(0, rect.width - menuWidth));
+    const top = Math.min(Math.max(0, pageY - rect.top), Math.max(0, rect.height - menuHeight));
+    this.root.style.left = `${left}px`;
+    this.root.style.top = `${top}px`;
+    this.detachOutsidePointerHandler();
+    this.outsidePointerHandler = (event) => {
+      const targetNode = event.target;
+      if (targetNode && this.root.contains(targetNode)) return;
+      this.close();
+    };
+    window.addEventListener("pointerdown", this.outsidePointerHandler, true);
+  }
+  close() {
+    this.currentTarget = null;
+    this.currentSelection = null;
+    this.currentLastMeasurement = null;
+    this.root.style.display = "none";
+    this.detachOutsidePointerHandler();
+  }
+  dispose() {
+    this.close();
+    this.root.remove();
+  }
+  makeActionButton(label2, action) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label2;
+    Object.assign(button.style, {
+      display: "block",
+      width: "100%",
+      padding: "8px 10px",
+      margin: "0",
+      border: "0",
+      borderRadius: "8px",
+      background: "transparent",
+      color: "inherit",
+      textAlign: "left",
+      cursor: "pointer"
+    });
+    button.addEventListener("pointerenter", () => {
+      button.style.background = "rgba(255,255,255,0.10)";
+    });
+    button.addEventListener("pointerleave", () => {
+      button.style.background = "transparent";
+    });
+    button.addEventListener("click", () => {
+      if (!this.currentTarget) return;
+      if (action === "add_label_from_selection") {
+        this.renderLabelComposer();
+        return;
+      }
+      const details = this.resolveActionDetails(action);
+      if (details === null) return;
+      this.onAction?.(action, this.currentTarget, details ?? void 0);
+      this.notify?.({
+        event: "interaction_context_action",
+        action,
+        context: this.currentTarget,
+        ...details ?? {}
+      });
+      this.close();
+    });
+    return button;
+  }
+  resolveActionDetails(action) {
+    return {};
+  }
+  renderLabelComposer() {
+    if (!this.currentTarget) return;
+    this.root.replaceChildren();
+    const title = document.createElement("div");
+    title.textContent = "Label from selection";
+    Object.assign(title.style, {
+      padding: "6px 8px 8px 8px",
+      fontWeight: "600",
+      borderBottom: "1px solid rgba(255,255,255,0.10)",
+      marginBottom: "8px"
+    });
+    this.root.appendChild(title);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = "";
+    input.placeholder = "Label text";
+    Object.assign(input.style, {
+      display: "block",
+      width: "100%",
+      boxSizing: "border-box",
+      margin: "0 0 8px 0",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      border: "1px solid rgba(255,255,255,0.18)",
+      background: "rgba(255,255,255,0.06)",
+      color: "#f4f4f5",
+      outline: "none"
+    });
+    this.root.appendChild(input);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, {
+      display: "flex",
+      gap: "8px"
+    });
+    const save = document.createElement("button");
+    save.type = "button";
+    save.textContent = "Create Label";
+    Object.assign(save.style, {
+      flex: "1 1 auto",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      border: "0",
+      background: "rgba(110, 231, 183, 0.18)",
+      color: "#d1fae5",
+      cursor: "pointer"
+    });
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = "Back";
+    Object.assign(cancel.style, {
+      flex: "0 0 auto",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      border: "0",
+      background: "rgba(255,255,255,0.08)",
+      color: "#f4f4f5",
+      cursor: "pointer"
+    });
+    const submit = () => {
+      const text = String(input.value ?? "").trim();
+      if (text.length === 0 || !this.currentTarget) return;
+      const details = { text };
+      this.onAction?.("add_label_from_selection", this.currentTarget, details);
+      this.notify?.({
+        event: "interaction_context_action",
+        action: "add_label_from_selection",
+        context: this.currentTarget,
+        ...details
+      });
+      this.close();
+    };
+    save.addEventListener("click", submit);
+    cancel.addEventListener("click", () => {
+      if (!this.currentTarget) return;
+      this.open(
+        this.currentTarget,
+        this.currentPageX,
+        this.currentPageY,
+        this.currentSelection,
+        this.currentLastMeasurement
+      );
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event?.key === "Enter") {
+        event.preventDefault?.();
+        submit();
+      } else if (event?.key === "Escape") {
+        event.preventDefault?.();
+        if (!this.currentTarget) return;
+        this.open(
+          this.currentTarget,
+          this.currentPageX,
+          this.currentPageY,
+          this.currentSelection,
+          this.currentLastMeasurement
+        );
+      }
+    });
+    actions.appendChild(save);
+    actions.appendChild(cancel);
+    this.root.appendChild(actions);
+    input.focus?.();
+  }
+  detachOutsidePointerHandler() {
+    if (!this.outsidePointerHandler) return;
+    window.removeEventListener("pointerdown", this.outsidePointerHandler, true);
+    this.outsidePointerHandler = void 0;
+  }
+};
+
+// src/managers/measurement-tools.ts
+function lociToAtomIndices(loci) {
+  const atomIndices = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const element of loci.elements) {
+    const size4 = OrderedSet2.size(element.indices);
+    for (let i = 0; i < size4; i++) {
+      const unitIndex = OrderedSet2.getAt(element.indices, i);
+      const atomIndex = element.unit.elements[unitIndex];
+      if (!seen.has(atomIndex)) {
+        seen.add(atomIndex);
+        atomIndices.push(atomIndex);
+      }
+    }
+  }
+  return atomIndices;
+}
+function normalizeToElementLoci(rawLoci) {
+  if (element_exports.Loci.is(rawLoci) && !Loci2.isEmpty(rawLoci)) {
+    return rawLoci;
+  }
+  const normalized2 = Loci2.normalize(rawLoci, "element", true);
+  return element_exports.Loci.is(normalized2) && !Loci2.isEmpty(normalized2) ? normalized2 : null;
+}
+function requiredPicks(action) {
+  switch (action) {
+    case "distance":
+      return 2;
+    case "angle":
+      return 3;
+    case "dihedral":
+      return 4;
+  }
+}
+var MeasurementToolController = class {
+  constructor(plugin, notify) {
+    this.plugin = plugin;
+    this.notify = notify;
+    this.activeAction = null;
+    this.picks = [];
+    this.previousGranularity = null;
+    this.keydownHandler = (event) => {
+      if (event.key !== "Escape") return;
+      if (!this.activeAction) return;
+      this.cancel();
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", this.keydownHandler, true);
+    }
+  }
+  isActive() {
+    return this.activeAction !== null;
+  }
+  dispose() {
+    this.cancel(false);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("keydown", this.keydownHandler, true);
+    }
+  }
+  start(action, rawLoci) {
+    const loci = normalizeToElementLoci(rawLoci);
+    if (!loci) return;
+    if (this.activeAction) this.cancel(false);
+    this.previousGranularity = this.plugin?.managers?.interactivity?.props?.granularity ?? null;
+    this.plugin?.managers?.interactivity?.setProps?.({ granularity: "element" });
+    this.activeAction = action;
+    this.picks = [loci];
+    void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.(this.picks);
+    this.emitState("started", action);
+  }
+  handlePrimaryClick(rawLoci) {
+    if (!this.activeAction) return;
+    const loci = normalizeToElementLoci(rawLoci);
+    if (!loci) return;
+    this.picks = [...this.picks, loci];
+    void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.(this.picks);
+    const action = this.activeAction;
+    const needed = requiredPicks(action);
+    if (this.picks.length < needed) {
+      this.emitState("progress", action);
+      return;
+    }
+    void this.complete(action);
+  }
+  cancel(notify = true) {
+    if (!this.activeAction) return;
+    const action = this.activeAction;
+    void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.([]);
+    this.restoreGranularity();
+    this.activeAction = null;
+    this.picks = [];
+    if (notify) {
+      this.notify?.({
+        event: "interaction_tool_state",
+        action,
+        status: "cancelled",
+        required_picks: requiredPicks(action),
+        picked_count: 0,
+        remaining_picks: requiredPicks(action),
+        picks_atom_indices: []
+      });
+    }
+  }
+  async complete(action) {
+    const picks = [...this.picks];
+    const measurement = this.plugin?.managers?.structure?.measurement;
+    if (action === "distance") {
+      await measurement?.addDistance?.(picks[0], picks[1]);
+    } else if (action === "angle") {
+      await measurement?.addAngle?.(picks[0], picks[1], picks[2]);
+    } else {
+      await measurement?.addDihedral?.(picks[0], picks[1], picks[2], picks[3]);
+    }
+    await measurement?.addOrderLabels?.([]);
+    this.notify?.({
+      event: "interaction_measurement_created",
+      action,
+      picked_count: picks.length,
+      picks_atom_indices: picks.map((loci) => lociToAtomIndices(loci))
+    });
+    this.notify?.({
+      event: "interaction_tool_state",
+      action,
+      status: "completed",
+      required_picks: requiredPicks(action),
+      picked_count: picks.length,
+      remaining_picks: 0,
+      picks_atom_indices: picks.map((loci) => lociToAtomIndices(loci))
+    });
+    this.restoreGranularity();
+    this.activeAction = null;
+    this.picks = [];
+  }
+  emitState(status, action) {
+    const required = requiredPicks(action);
+    this.notify?.({
+      event: "interaction_tool_state",
+      action,
+      status,
+      required_picks: required,
+      picked_count: this.picks.length,
+      remaining_picks: Math.max(0, required - this.picks.length),
+      picks_atom_indices: this.picks.map((loci) => lociToAtomIndices(loci))
+    });
+  }
+  restoreGranularity() {
+    if (this.previousGranularity !== null && this.previousGranularity !== void 0) {
+      this.plugin?.managers?.interactivity?.setProps?.({ granularity: this.previousGranularity });
+    }
+    this.previousGranularity = null;
+  }
+};
+
+// src/ui/tool-status.ts
+function actionLabel(action) {
+  switch (action) {
+    case "distance":
+      return "Distance";
+    case "angle":
+      return "Angle";
+    case "dihedral":
+      return "Dihedral";
+  }
+}
+var ToolStatusOverlay = class {
+  constructor(host) {
+    this.host = host;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-tool-status", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      left: "14px",
+      top: "14px",
+      display: "none",
+      maxWidth: "280px",
+      padding: "10px 12px",
+      borderRadius: "12px",
+      border: "1px solid rgba(255,255,255,0.16)",
+      background: "rgba(18, 18, 22, 0.92)",
+      color: "#f4f4f5",
+      boxShadow: "0 12px 28px rgba(0,0,0,0.28)",
+      zIndex: "18",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "12px",
+      lineHeight: "1.4",
+      pointerEvents: "none"
+    });
+    this.host.appendChild(this.root);
+  }
+  update(state) {
+    if (state.action === null) {
+      this.root.style.display = "none";
+      this.root.replaceChildren();
+      return;
+    }
+    const title = document.createElement("div");
+    title.textContent = `${actionLabel(state.action)} tool`;
+    Object.assign(title.style, {
+      fontWeight: "700",
+      marginBottom: "4px"
+    });
+    const detail = document.createElement("div");
+    detail.textContent = `Pick ${state.remainingPicks} more atom${state.remainingPicks === 1 ? "" : "s"} (${state.pickedCount}/${state.requiredPicks})`;
+    detail.style.opacity = "0.95";
+    const hint = document.createElement("div");
+    hint.textContent = "Esc cancels";
+    Object.assign(hint.style, {
+      marginTop: "6px",
+      opacity: "0.72",
+      fontSize: "11px"
+    });
+    this.root.replaceChildren(title, detail, hint);
+    this.root.style.display = "block";
+  }
+  dispose() {
+    this.root.remove();
+  }
+};
+
+// src/managers/active-selection.ts
+function buildGroupItemsFromStructure(structure) {
+  const atomicUnit = structure.units.find((unit2) => unit2.kind === 0);
+  if (!atomicUnit) return [];
+  const model = atomicUnit.model;
+  const hierarchy = model.atomicHierarchy;
+  const residueOffsets = hierarchy.residueAtomSegments.offsets;
+  const chainIndexByAtom = hierarchy.chainAtomSegments.index;
+  const atoms2 = hierarchy.atoms;
+  const residues2 = hierarchy.residues;
+  const chains2 = hierarchy.chains;
+  const modelIndex = hierarchy.index;
+  const items = [];
+  for (let groupIndex = 0; groupIndex < residueOffsets.length - 1; groupIndex++) {
+    const start4 = residueOffsets[groupIndex];
+    const end4 = residueOffsets[groupIndex + 1];
+    if (end4 <= start4) continue;
+    const atomIndices = [];
+    for (let atomIndex = start4; atomIndex < end4; atomIndex++) {
+      atomIndices.push(atomIndex);
+    }
+    const chainIndex2 = chainIndexByAtom[start4];
+    const entityIndex2 = modelIndex.getEntityFromChain(chainIndex2);
+    const compId3 = atoms2.label_comp_id.value(start4);
+    const authSeqId = residues2.auth_seq_id.value(groupIndex);
+    const chainName = chains2.label_asym_id.value(chainIndex2);
+    const entityName = chains2.label_entity_id.value(chainIndex2);
+    items.push({
+      source_kind: "element",
+      element_level: "group",
+      atom_indices: atomIndices,
+      group_indices: [groupIndex],
+      chain_indices: [chainIndex2],
+      entity_indices: [entityIndex2],
+      group_name: `${compId3} ${authSeqId}`,
+      group_id: authSeqId,
+      chain_name: chainName,
+      entity_name: entityName
+    });
+  }
+  return items;
+}
+function normalizeToElementLoci2(rawLoci) {
+  if (element_exports.Loci.is(rawLoci)) return rawLoci;
+  try {
+    return Loci2.normalize(rawLoci, "element", true);
+  } catch {
+    return rawLoci;
+  }
+}
+function lociToGroupItems(rawLoci) {
+  const loci = normalizeToElementLoci2(rawLoci);
+  if (!element_exports.Loci.is(loci)) return [];
+  const items = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const lociElement of loci.elements) {
+    const unit2 = lociElement.unit;
+    const model = unit2.model;
+    const hierarchy = model?.atomicHierarchy;
+    const modelIndex = hierarchy?.index;
+    if (!hierarchy || !modelIndex) continue;
+    const residueIndexByAtom = hierarchy.residueAtomSegments.index;
+    const residueOffsets = hierarchy.residueAtomSegments.offsets;
+    const chainIndexByAtom = hierarchy.chainAtomSegments.index;
+    const atoms2 = hierarchy.atoms;
+    const residues2 = hierarchy.residues;
+    const chains2 = hierarchy.chains;
+    const size4 = OrderedSet2.size(lociElement.indices);
+    for (let i = 0; i < size4; i++) {
+      const unitIndex = OrderedSet2.getAt(lociElement.indices, i);
+      const atomIndex = unit2.elements[unitIndex];
+      const groupIndex = residueIndexByAtom[atomIndex];
+      const chainIndex2 = chainIndexByAtom[atomIndex];
+      const entityIndex2 = modelIndex.getEntityFromChain(chainIndex2);
+      const key2 = `${model.id}:${chainIndex2}:${groupIndex}`;
+      if (seen.has(key2)) continue;
+      seen.add(key2);
+      const atomIndices = [];
+      for (let j = residueOffsets[groupIndex], jl = residueOffsets[groupIndex + 1]; j < jl; j++) {
+        atomIndices.push(j);
+      }
+      const firstAtom = residueOffsets[groupIndex];
+      const compId3 = atoms2.label_comp_id.value(firstAtom);
+      const authSeqId = residues2.auth_seq_id.value(groupIndex);
+      const chainName = chains2.label_asym_id.value(chainIndex2);
+      const entityName = chains2.label_entity_id.value(chainIndex2);
+      const groupName = `${compId3} ${authSeqId}`;
+      items.push({
+        source_kind: "element",
+        element_level: "group",
+        atom_indices: atomIndices,
+        group_indices: [groupIndex],
+        chain_indices: [chainIndex2],
+        entity_indices: [entityIndex2],
+        group_name: groupName,
+        group_id: authSeqId,
+        chain_name: chainName,
+        entity_name: entityName
+      });
+    }
+  }
+  return items;
+}
+function arrayOfNumbers(value) {
+  return Array.isArray(value) ? value.map((item2) => typeof item2 === "number" ? Math.trunc(item2) : Number(item2)).filter((item2) => Number.isFinite(item2)) : [];
+}
+function lociToShapeItems(rawLoci) {
+  const shape = ShapeGroup.isLoci(rawLoci) ? rawLoci.shape : Shape.isLoci(rawLoci) ? rawLoci.shape : null;
+  if (!shape) return [];
+  const data = shape.sourceData ?? {};
+  return [{
+    source_kind: "shape",
+    shape_kind: typeof data.kind === "string" ? data.kind : shape.name,
+    shape_name: shape.name,
+    tag: typeof data.tag === "string" ? data.tag : void 0,
+    atom_indices: arrayOfNumbers(data.atom_indices),
+    group_indices: arrayOfNumbers(data.group_indices),
+    chain_indices: arrayOfNumbers(data.chain_indices),
+    entity_indices: arrayOfNumbers(data.entity_indices)
+  }];
+}
+function emptyPayload() {
+  return {
+    event: "interaction_active_selection_changed",
+    source_kind: "empty",
+    element_level: "none",
+    target_level: "none",
+    items: [],
+    atom_indices: [],
+    group_indices: [],
+    component_indices: [],
+    chain_indices: [],
+    molecule_indices: [],
+    entity_indices: [],
+    count_atoms: 0,
+    count_groups: 0,
+    count_shapes: 0,
+    count_annotations: 0
+  };
+}
+function signature(item2) {
+  if (item2.source_kind === "annotation") {
+    return `${item2.source_kind}:${item2.annotation_kind}:${item2.tag ?? ""}:${item2.group_indices.join(",")}:${item2.chain_indices.join(",")}`;
+  }
+  if (item2.source_kind === "shape") {
+    return `${item2.source_kind}:${item2.tag ?? ""}:${item2.shape_name ?? item2.shape_kind}`;
+  }
+  return `${item2.source_kind}:${item2.element_level}:${item2.group_indices.join(",")}:${item2.chain_indices.join(",")}`;
+}
+function appendUnique(target, seen, values2) {
+  for (const value of values2) {
+    if (seen.has(value)) continue;
+    seen.add(value);
+    target.push(value);
+  }
+}
+function buildPayload(items) {
+  if (items.length === 0) return emptyPayload();
+  const sourceKinds = new Set(items.map((item2) => item2.source_kind));
+  const sourceKind = sourceKinds.size > 1 ? "mixed" : items[0].source_kind;
+  const atomIndices = [];
+  const groupIndices = [];
+  const chainIndices = [];
+  const entityIndices = [];
+  const seenAtoms = /* @__PURE__ */ new Set();
+  const seenGroups = /* @__PURE__ */ new Set();
+  const seenChains = /* @__PURE__ */ new Set();
+  const seenEntities = /* @__PURE__ */ new Set();
+  for (const item2 of items) {
+    appendUnique(atomIndices, seenAtoms, item2.atom_indices);
+    appendUnique(groupIndices, seenGroups, item2.group_indices);
+    appendUnique(chainIndices, seenChains, item2.chain_indices);
+    appendUnique(entityIndices, seenEntities, item2.entity_indices);
+  }
+  return {
+    event: "interaction_active_selection_changed",
+    source_kind: sourceKind,
+    element_level: sourceKind === "element" || sourceKind === "mixed" ? "group" : "none",
+    target_level: sourceKind === "annotation" ? "annotation" : sourceKind === "shape" ? "shape" : sourceKind === "mixed" ? "mixed" : "none",
+    items,
+    atom_indices: atomIndices,
+    group_indices: groupIndices,
+    component_indices: [],
+    chain_indices: chainIndices,
+    molecule_indices: [],
+    entity_indices: entityIndices,
+    count_atoms: atomIndices.length,
+    count_groups: groupIndices.length,
+    count_shapes: items.filter((item2) => item2.source_kind === "shape").length,
+    count_annotations: items.filter((item2) => item2.source_kind === "annotation").length
+  };
+}
+var ActiveSelectionController = class {
+  constructor(notify) {
+    this.notify = notify;
+    this.items = [];
+  }
+  handlePrimaryClick(ev) {
+    const shift2 = !!ev?.modifiers?.shift;
+    const items = lociToGroupItems(ev?.current?.loci).concat(lociToShapeItems(ev?.current?.loci));
+    if (items.length === 0) {
+      if (!shift2) this.clear();
+      return;
+    }
+    this.setItems(items, shift2);
+  }
+  setItems(items, additive = false) {
+    if (items.length === 0) {
+      if (!additive) this.clear();
+      return;
+    }
+    if (!additive) {
+      this.items = [...items];
+      this.emit();
+      return;
+    }
+    const next = [...this.items];
+    const known = new Set(next.map(signature));
+    for (const item2 of items) {
+      const key2 = signature(item2);
+      if (known.has(key2)) continue;
+      known.add(key2);
+      next.push(item2);
+    }
+    this.items = next;
+    this.emit();
+  }
+  clear() {
+    this.items = [];
+    this.emit();
+  }
+  emit() {
+    this.notify?.(buildPayload(this.items));
+  }
+};
+
+// src/ui/group-strip.ts
+function selectionKey(item2) {
+  if (item2.source_kind === "annotation") {
+    return `${item2.chain_indices.join(",")}:${item2.group_indices.join(",")}:annotation:${item2.tag ?? ""}`;
+  }
+  return `${item2.chain_indices.join(",")}:${item2.group_indices.join(",")}`;
+}
+function makeLociForItem(structure, item2) {
+  const unit2 = structure.units.find((candidate) => candidate.kind === 0);
+  if (!unit2) return null;
+  const indices2 = [];
+  const unitElements = unit2.elements;
+  for (const atomIndex of item2.atom_indices) {
+    const unitIndex = unitElements.indexOf(atomIndex);
+    if (unitIndex >= 0) indices2.push(unitIndex);
+  }
+  if (indices2.length === 0) return null;
+  return element_exports.Loci(structure, [{ unit: unit2, indices: indices2 }]);
+}
+var GroupStrip = class {
+  constructor(host, onSelect, onFocus, onHover, onContext, onAnnotationContext) {
+    this.host = host;
+    this.onSelect = onSelect;
+    this.onFocus = onFocus;
+    this.onHover = onHover;
+    this.onContext = onContext;
+    this.onAnnotationContext = onAnnotationContext;
+    this.groupItems = [];
+    this.selectedElementKeys = /* @__PURE__ */ new Set();
+    this.selectedAnnotationKeys = /* @__PURE__ */ new Set();
+    this.annotationRecords = /* @__PURE__ */ new Map();
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-group-strip", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      left: "14px",
+      right: "14px",
+      bottom: "14px",
+      display: "none",
+      maxHeight: "140px",
+      overflow: "auto",
+      padding: "10px",
+      borderRadius: "14px",
+      border: "1px solid rgba(255,255,255,0.14)",
+      background: "rgba(18, 18, 22, 0.92)",
+      color: "#f4f4f5",
+      boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
+      zIndex: "16",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "12px"
+    });
+    this.host.appendChild(this.root);
+  }
+  setStructure(structure) {
+    this.structure = structure;
+    if (!structure) this.annotationRecords.clear();
+    this.groupItems = structure ? buildGroupItemsFromStructure(structure) : [];
+    this.render();
+  }
+  updateSelection(selection) {
+    const nextElements = /* @__PURE__ */ new Set();
+    const nextAnnotations = /* @__PURE__ */ new Set();
+    for (const item2 of selection.items ?? []) {
+      if (item2?.source_kind === "element" && item2?.element_level === "group") {
+        nextElements.add(selectionKey(item2));
+      } else if (item2?.source_kind === "annotation" && item2?.annotation_kind === "label") {
+        nextAnnotations.add(selectionKey(item2));
+      }
+    }
+    this.selectedElementKeys = nextElements;
+    this.selectedAnnotationKeys = nextAnnotations;
+    this.render();
+  }
+  addLabelOverlay(msg) {
+    const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
+    const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
+    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+    if (!text || atomIndices.length === 0 || this.groupItems.length === 0) return;
+    const key2 = this.findSelectionKeyFromAtomIndices(atomIndices);
+    if (!key2) return;
+    const records = this.annotationRecords.get(key2) ?? [];
+    records.push({ tag, text });
+    this.annotationRecords.set(key2, records);
+    this.render();
+  }
+  clearAnnotationOverlays() {
+    if (this.annotationRecords.size === 0) return;
+    this.annotationRecords.clear();
+    this.render();
+  }
+  clearAnnotationOverlaysByTag(tag) {
+    if (!tag) {
+      this.clearAnnotationOverlays();
+      return;
+    }
+    let changed = false;
+    for (const [key2, records] of this.annotationRecords.entries()) {
+      const next = records.filter((record2) => record2.tag !== tag);
+      if (next.length === records.length) continue;
+      changed = true;
+      if (next.length === 0) {
+        this.annotationRecords.delete(key2);
+      } else {
+        this.annotationRecords.set(key2, next);
+      }
+    }
+    if (changed) this.render();
+  }
+  retagAnnotationOverlays(oldTag, newTag) {
+    let changed = false;
+    for (const [key2, records] of this.annotationRecords.entries()) {
+      const next = records.map((record2) => {
+        if (record2.tag !== oldTag) return record2;
+        changed = true;
+        return { ...record2, tag: newTag };
+      });
+      this.annotationRecords.set(key2, next);
+    }
+    if (changed) this.render();
+  }
+  dispose() {
+    this.root.remove();
+  }
+  render() {
+    this.root.replaceChildren();
+    if (!this.structure || this.groupItems.length === 0) {
+      this.root.style.display = "none";
+      return;
+    }
+    this.root.style.display = "block";
+    const grouped = /* @__PURE__ */ new Map();
+    for (const item2 of this.groupItems) {
+      const chain2 = item2.chain_name ?? "?";
+      if (!grouped.has(chain2)) grouped.set(chain2, []);
+      grouped.get(chain2).push(item2);
+    }
+    for (const [chain2, items] of grouped.entries()) {
+      const section = document.createElement("div");
+      section.style.marginBottom = "10px";
+      const title = document.createElement("div");
+      title.textContent = `Chain ${chain2}`;
+      Object.assign(title.style, {
+        fontWeight: "700",
+        marginBottom: "6px",
+        opacity: "0.9"
+      });
+      section.appendChild(title);
+      const row = document.createElement("div");
+      Object.assign(row.style, {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "6px"
+      });
+      for (const item2 of items) {
+        const key2 = selectionKey(item2);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.setAttribute("data-molsysviewer-group-item", "true");
+        button.setAttribute("data-chain-name", item2.chain_name ?? "");
+        button.setAttribute("data-group-name", item2.group_name ?? "");
+        const selected = this.selectedElementKeys.has(key2);
+        Object.assign(button.style, {
+          padding: "6px 8px",
+          borderRadius: "999px",
+          border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
+          background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
+          color: "inherit",
+          cursor: "pointer",
+          whiteSpace: "nowrap",
+          font: "inherit"
+        });
+        const text = document.createElement("span");
+        text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
+        button.appendChild(text);
+        const annotationRecords = this.annotationRecords.get(key2) ?? [];
+        if (annotationRecords.length > 0) {
+          const badge = document.createElement("span");
+          const primary = annotationRecords[0];
+          const annotationSelected = this.selectedAnnotationKeys.has(`${key2}:annotation:${primary.tag ?? ""}`);
+          badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
+          Object.assign(badge.style, {
+            marginLeft: "6px",
+            padding: "1px 6px",
+            borderRadius: "999px",
+            background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
+            color: annotationSelected ? "#fde68a" : "#b7f7dd",
+            fontSize: "10px",
+            fontWeight: "700"
+          });
+          button.appendChild(badge);
+          button.title = annotationRecords.map((record2) => record2.text).join("\n");
+          badge.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onSelect([{
+              source_kind: "annotation",
+              annotation_kind: "label",
+              atom_indices: item2.atom_indices,
+              group_indices: item2.group_indices,
+              chain_indices: item2.chain_indices,
+              entity_indices: item2.entity_indices,
+              tag: primary.tag,
+              text: primary.text
+            }], !!event.shiftKey);
+          });
+          badge.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onAnnotationContext(
+              {
+                event: "interaction_context_menu",
+                kind: "annotation",
+                atom_indices: item2.atom_indices,
+                tag: primary.tag,
+                text: primary.text
+              },
+              event.pageX,
+              event.pageY
+            );
+          });
+        }
+        button.addEventListener("click", (event) => {
+          this.onSelect([item2], !!event.shiftKey);
+        });
+        button.addEventListener("dblclick", () => {
+          this.onFocus(item2);
+        });
+        button.addEventListener("mouseenter", () => {
+          this.onHover(item2);
+        });
+        button.addEventListener("mouseleave", () => {
+          this.onHover(null);
+        });
+        button.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onContext(item2, event.pageX, event.pageY);
+        });
+        row.appendChild(button);
+      }
+      section.appendChild(row);
+      this.root.appendChild(section);
+    }
+  }
+  focusItem(item2) {
+    if (!this.structure) return null;
+    return makeLociForItem(this.structure, item2);
+  }
+  findSelectionKeyFromAtomIndices(atomIndices) {
+    const input = [...atomIndices].sort((a8, b8) => a8 - b8);
+    for (const item2 of this.groupItems) {
+      if (item2.atom_indices.length !== input.length) continue;
+      const own = [...item2.atom_indices].sort((a8, b8) => a8 - b8);
+      let same = true;
+      for (let i = 0; i < own.length; i++) {
+        if (own[i] !== input[i]) {
+          same = false;
+          break;
+        }
+      }
+      if (same) return selectionKey(item2);
+    }
+    return null;
+  }
+};
+
 // src/managers/viewer-controller.ts
+function normalizeToElementLoci3(loci) {
+  if (element_exports.Loci.is(loci)) return loci;
+  try {
+    return Loci2.normalize(loci, "element", true);
+  } catch {
+    return loci;
+  }
+}
+function lociToAtomIndices2(loci) {
+  const normalized2 = normalizeToElementLoci3(loci);
+  if (!element_exports.Loci.is(normalized2)) return [];
+  const atomIndices = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const element of normalized2.elements) {
+    const size4 = OrderedSet2.size(element.indices);
+    for (let i = 0; i < size4; i++) {
+      const unitIndex = OrderedSet2.getAt(element.indices, i);
+      const atomIndex = element.unit.elements[unitIndex];
+      if (!seen.has(atomIndex)) {
+        seen.add(atomIndex);
+        atomIndices.push(atomIndex);
+      }
+    }
+  }
+  return atomIndices;
+}
+function shapeTargetFromLoci(loci) {
+  const shape = ShapeGroup.isLoci(loci) ? loci.shape : Shape.isLoci(loci) ? loci.shape : null;
+  if (!shape) return null;
+  const sourceData = shape.sourceData ?? {};
+  const atomIndices = Array.isArray(sourceData.atom_indices) ? sourceData.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
+  return {
+    atom_indices: atomIndices,
+    tag: typeof sourceData.tag === "string" ? sourceData.tag : void 0,
+    shape_name: shape.name
+  };
+}
+function normalizeContextPayloadFromLoci(loci, page_x, page_y) {
+  const groupItems = lociToGroupItems(loci);
+  const atomIndices = lociToAtomIndices2(loci);
+  if (groupItems.length === 0) {
+    if (atomIndices.length > 0) {
+      return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };
+    }
+    const shapeTarget = shapeTargetFromLoci(loci);
+    if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
+    return { event: "interaction_context_menu", kind: "empty", page_x, page_y };
+  }
+  const item2 = groupItems[0];
+  return {
+    event: "interaction_context_menu",
+    kind: "structure",
+    atom_indices: item2.atom_indices,
+    group_indices: item2.group_indices,
+    chain_indices: item2.chain_indices,
+    entity_indices: item2.entity_indices,
+    group_name: item2.group_name,
+    chain_name: item2.chain_name,
+    entity_name: item2.entity_name,
+    page_x,
+    page_y
+  };
+}
+function normalizeInteractionEvent(kind, ev) {
+  if (kind === "context") {
+    throw new Error("Use normalizeContextInteractionEvent for context interactions");
+  }
+  const event = kind === "hover" ? "interaction_hover" : "interaction_click";
+  const groupItems = lociToGroupItems(ev?.current?.loci);
+  const atomIndices = lociToAtomIndices2(ev?.current?.loci);
+  if (groupItems.length === 0) {
+    if (atomIndices.length > 0) {
+      return { event, kind: "structure", atom_indices: atomIndices };
+    }
+    const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
+    if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
+    return { event, kind: "empty" };
+  }
+  const item2 = groupItems[0];
+  return {
+    event,
+    kind: "structure",
+    atom_indices: item2.atom_indices,
+    group_indices: item2.group_indices,
+    chain_indices: item2.chain_indices,
+    entity_indices: item2.entity_indices,
+    group_name: item2.group_name,
+    chain_name: item2.chain_name,
+    entity_name: item2.entity_name
+  };
+}
+function normalizeContextInteractionEvent(ev, fallbackLoci) {
+  const loci = ev?.current?.loci ?? fallbackLoci;
+  const page = ev?.page;
+  const page_x = typeof page?.[0] === "number" ? page[0] : void 0;
+  const page_y = typeof page?.[1] === "number" ? page[1] : void 0;
+  return normalizeContextPayloadFromLoci(loci, page_x, page_y);
+}
+function isSecondaryButton(ev) {
+  return ev?.button === ButtonsType.Flag.Secondary;
+}
+function suppressCanvasContextMenu(host, ...targets) {
+  let secondaryPressInsideHost = false;
+  const globalTarget = typeof window !== "undefined" ? window : void 0;
+  const isInsideHost = (event) => {
+    const target = event.target;
+    if (target != null && host.contains(target)) return true;
+    const composedPath = event.composedPath;
+    if (typeof composedPath === "function") {
+      return composedPath.call(event).includes(host);
+    }
+    return false;
+  };
+  const onPointerDown = (event) => {
+    const pointer = event;
+    if (pointer.button === 2 && isInsideHost(event)) {
+      secondaryPressInsideHost = true;
+    }
+  };
+  const clearSecondaryPress = () => {
+    secondaryPressInsideHost = false;
+  };
+  const onContextMenu = (event) => {
+    if (!secondaryPressInsideHost && !isInsideHost(event)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    secondaryPressInsideHost = false;
+  };
+  for (const target of [host, ...targets]) {
+    target.addEventListener("contextmenu", onContextMenu, true);
+  }
+  globalTarget?.addEventListener("pointerdown", onPointerDown, true);
+  globalTarget?.addEventListener("pointerup", clearSecondaryPress, true);
+  globalTarget?.addEventListener("pointercancel", clearSecondaryPress, true);
+  globalTarget?.addEventListener("contextmenu", onContextMenu, true);
+  return () => {
+    for (const target of [host, ...targets]) {
+      target.removeEventListener?.("contextmenu", onContextMenu, true);
+    }
+    globalTarget?.removeEventListener("pointerdown", onPointerDown, true);
+    globalTarget?.removeEventListener("pointerup", clearSecondaryPress, true);
+    globalTarget?.removeEventListener("pointercancel", clearSecondaryPress, true);
+    globalTarget?.removeEventListener("contextmenu", onContextMenu, true);
+  };
+}
+function registerInteractionObservers(plugin, notify, openContextMenu, onPrimaryClick, onSecondaryClick, onHover) {
+  const hover = plugin?.behaviors?.interaction?.hover;
+  const click2 = plugin?.behaviors?.interaction?.click;
+  if (typeof hover?.subscribe === "function") {
+    hover.subscribe((ev) => {
+      onHover?.(ev);
+      notify?.(normalizeInteractionEvent("hover", ev));
+    });
+  }
+  if (typeof click2?.subscribe === "function") {
+    click2.subscribe((ev) => {
+      if (isSecondaryButton(ev)) {
+        const payload = normalizeContextInteractionEvent(ev);
+        notify?.(payload);
+        onSecondaryClick?.(ev);
+        openContextMenu?.(payload);
+        return;
+      }
+      onPrimaryClick?.(ev);
+      notify?.(normalizeInteractionEvent("click", ev));
+    });
+  }
+}
 var MolSysViewerController = class _MolSysViewerController {
   constructor(plugin, host, notify) {
     this.plugin = plugin;
     this.host = host;
     this.notify = notify;
+    this.lastContextLoci = null;
+    this.lastHoverLoci = null;
+    this.lastHoverPayload = null;
+    // Loaded structure bundle
+    this.currentActiveSelection = null;
+    this.lastMeasurementSummary = null;
+    const emitInteractionEvent = (msg) => {
+      if (msg?.event === "interaction_tool_state") {
+        if (msg?.status === "started" || msg?.status === "progress") {
+          this.toolStatusOverlay.update({
+            action: msg.action,
+            pickedCount: msg.picked_count,
+            requiredPicks: msg.required_picks,
+            remainingPicks: msg.remaining_picks
+          });
+        } else {
+          this.toolStatusOverlay.update({ action: null });
+        }
+      } else if (msg?.event === "interaction_active_selection_changed") {
+        this.currentActiveSelection = msg;
+        this.groupStrip.updateSelection(msg);
+      } else if (msg?.event === "interaction_measurement_created") {
+        this.lastMeasurementSummary = {
+          action: msg.action,
+          picked_count: msg.picked_count
+        };
+      }
+      this.notify?.(msg);
+    };
+    this.toolStatusOverlay = new ToolStatusOverlay(host);
+    this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
+    this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
+    this.groupStrip = new GroupStrip(host, (items, additive) => {
+      this.activeSelection.setItems(items, additive);
+    }, (item2) => {
+      const loci = this.groupStrip.focusItem(item2);
+      if (loci) this.plugin.managers.camera.focusLoci(loci);
+    }, (item2) => {
+      if (!item2) {
+        this.plugin.managers.interactivity.lociHighlights.clearHighlights();
+        emitInteractionEvent({ event: "interaction_hover", kind: "empty" });
+        return;
+      }
+      const loci = this.groupStrip.focusItem(item2);
+      if (!loci) return;
+      this.plugin.managers.interactivity.lociHighlights.highlightOnly({ loci }, false);
+      emitInteractionEvent({
+        event: "interaction_hover",
+        kind: "structure",
+        atom_indices: item2.atom_indices
+      });
+    }, (item2, pageX, pageY) => {
+      this.openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent);
+    }, (target, pageX, pageY) => {
+      this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
+    });
+    this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target) => {
+      if (action === "focus_target") {
+        this.focusTarget(target);
+        return;
+      }
+      if (action === "focus_selection") {
+        this.focusCurrentSelection();
+        return;
+      }
+      if (action === "clear_selection") {
+        this.activeSelection.clear();
+        return;
+      }
+      if (action === "create_region_from_selection" || action === "add_label_from_selection" || action === "persist_last_measurement") {
+        return;
+      }
+      this.startMeasurementTool(action);
+    });
+    const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
+    if (canvas) {
+      this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, canvas);
+    }
+    registerInteractionObservers(plugin, emitInteractionEvent, void 0, (ev) => {
+      if (!this.measurementTools.isActive()) {
+        this.activeSelection.handlePrimaryClick(ev);
+      }
+      this.measurementTools.handlePrimaryClick(ev?.current?.loci);
+    }, (ev) => {
+      this.lastContextLoci = ev?.current?.loci ?? null;
+      const page = ev?.page;
+      const page_x = typeof page?.[0] === "number" ? page[0] : void 0;
+      const page_y = typeof page?.[1] === "number" ? page[1] : void 0;
+      let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
+      if (typeof page_x === "number" && typeof page_y === "number") {
+        const pickData = this.plugin.canvas3d?.identify?.([page_x, page_y]);
+        const pickedLoci = pickData ? this.plugin.canvas3d?.getLoci?.(pickData.id)?.loci : null;
+        if (pickedLoci) {
+          payload = normalizeContextPayloadFromLoci(pickedLoci, page_x, page_y);
+        }
+      }
+      if (payload.kind === "empty" && this.lastHoverPayload && this.lastHoverPayload.kind !== "empty") {
+        if (this.lastHoverPayload.kind === "structure") {
+          payload = {
+            event: "interaction_context_menu",
+            kind: "structure",
+            atom_indices: this.lastHoverPayload.atom_indices,
+            group_indices: this.lastHoverPayload.group_indices,
+            chain_indices: this.lastHoverPayload.chain_indices,
+            entity_indices: this.lastHoverPayload.entity_indices,
+            group_name: this.lastHoverPayload.group_name,
+            chain_name: this.lastHoverPayload.chain_name,
+            entity_name: this.lastHoverPayload.entity_name,
+            page_x: payload.page_x,
+            page_y: payload.page_y
+          };
+        } else if (this.lastHoverPayload.kind === "shape") {
+          payload = {
+            event: "interaction_context_menu",
+            kind: "shape",
+            atom_indices: this.lastHoverPayload.atom_indices,
+            tag: this.lastHoverPayload.tag,
+            shape_name: this.lastHoverPayload.shape_name,
+            page_x: payload.page_x,
+            page_y: payload.page_y
+          };
+        }
+      }
+      const pageX = payload.page_x ?? 0;
+      const pageY = payload.page_y ?? 0;
+      emitInteractionEvent(payload);
+      this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+    }, (ev) => {
+      this.lastHoverLoci = ev?.current?.loci ?? null;
+      this.lastHoverPayload = normalizeInteractionEvent("hover", ev);
+    });
     this.state = new StateHandlers(plugin, {
       getStructure: () => this.getStructureData(),
       getLoadedStructure: () => this.loadedStructure,
@@ -143739,11 +145273,18 @@ var MolSysViewerController = class _MolSysViewerController {
       notify: (msg) => this.notify?.(msg)
     });
     this.shapes = new ShapeHandlers(plugin, (ref, tag) => this.state.registerShapeRef(ref, tag));
+    this.annotations = new AnnotationHandlers(plugin, {
+      getStructure: () => this.getStructureData(),
+      registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation")
+    });
+    this.measurements = new MeasurementHandlers(plugin, {
+      getStructure: () => this.getStructureData(),
+      registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "measurement")
+    });
     this.scene = new SceneHandlers(plugin, host, {
       clearShapes: () => this.state.clearShapesByTag(),
       // clear all shapes
-      clearLabels: async () => {
-      },
+      clearLabels: async () => this.annotations.clearLabels(),
       getComponents: () => this.getComponents(),
       clearShapesByTag: (tag) => this.state.clearShapesByTag(tag),
       removeLoadedStructure: () => this.removeLoadedStructure(),
@@ -143763,6 +145304,28 @@ var MolSysViewerController = class _MolSysViewerController {
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState()
     });
+  }
+  static showInitFailureOverlay(target, message) {
+    const overlay = document.createElement("div");
+    overlay.setAttribute("data-molsysviewer-error", "webgl");
+    Object.assign(overlay.style, {
+      position: "absolute",
+      inset: "0",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+      textAlign: "center",
+      background: "rgba(10, 10, 10, 0.78)",
+      color: "#f2f2f2",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "14px",
+      lineHeight: "1.4",
+      zIndex: "10",
+      pointerEvents: "none"
+    });
+    overlay.textContent = message;
+    target.appendChild(overlay);
   }
   static async create(target, notify, existingCanvas) {
     const canvas = existingCanvas ?? document.createElement("canvas");
@@ -143784,10 +145347,14 @@ var MolSysViewerController = class _MolSysViewerController {
     } else {
       console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
     }
-    if (!ok) console.error("[MolSysViewer] Failed to init Mol* viewer");
+    if (!ok) {
+      const message = "WebGL unavailable / GPU driver mismatch. Mol* viewer failed to initialize.";
+      console.error("[MolSysViewer] Failed to init Mol* viewer");
+      _MolSysViewerController.showInitFailureOverlay(target, message);
+      notify?.({ event: "viewer_init_failed", reason: "webgl", message });
+    }
     return new _MolSysViewerController(plugin, target, notify);
   }
-  // Loaded structure bundle
   // Getters for scene state delegated to scene handler
   get isSpinActive() {
     return this.scene.isSpinActive;
@@ -143797,6 +145364,68 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   get isDarkMode() {
     return this.scene.isDarkMode;
+  }
+  dispose() {
+    this.measurementTools.dispose();
+    this.toolStatusOverlay.dispose();
+    this.groupStrip.dispose();
+    this.contextMenu.dispose();
+    this.releaseContextMenuSuppression?.();
+    this.plugin.dispose();
+  }
+  startMeasurementTool(action) {
+    if (!this.lastContextLoci) return;
+    this.measurementTools.start(action, this.lastContextLoci);
+  }
+  openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent) {
+    const loci = this.groupStrip.focusItem(item2);
+    if (!loci) return;
+    this.lastContextLoci = loci;
+    const payload = {
+      event: "interaction_context_menu",
+      kind: "structure",
+      atom_indices: item2.atom_indices,
+      page_x: pageX,
+      page_y: pageY
+    };
+    emitInteractionEvent(payload);
+    this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+  }
+  openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent) {
+    const payload = {
+      ...target,
+      page_x: pageX,
+      page_y: pageY
+    };
+    emitInteractionEvent(payload);
+    this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary);
+  }
+  focusCurrentSelection() {
+    const selection = this.currentActiveSelection;
+    if (!selection || selection.source_kind === "empty" || selection.atom_indices.length === 0) return;
+    const loci = this.atomIndicesToLoci(selection.atom_indices);
+    if (!loci) return;
+    this.plugin.managers.camera.focusLoci(loci);
+  }
+  focusTarget(target) {
+    const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+    if (atomIndices.length === 0) return;
+    const loci = this.atomIndicesToLoci(atomIndices);
+    if (!loci) return;
+    this.plugin.managers.camera.focusLoci(loci);
+  }
+  atomIndicesToLoci(atomIndices) {
+    const structure = this.getStructureData();
+    if (!structure) return null;
+    const unit2 = structure.units.find((candidate) => candidate.kind === 0);
+    if (!unit2) return null;
+    const unitIndices = [];
+    for (const atomIndex of atomIndices) {
+      const unitIndex = unit2.elements.indexOf(atomIndex);
+      if (unitIndex >= 0) unitIndices.push(unitIndex);
+    }
+    if (unitIndices.length === 0) return null;
+    return element_exports.Loci(structure, [{ unit: unit2, indices: unitIndices }]);
   }
   // Message Dispatcher
   async handleMessage(msg) {
@@ -143862,6 +145491,21 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "add_triangle_faces":
           await this.shapes.addTriangleFaces(msg);
+          break;
+        case "add_label":
+          await this.annotations.addLabel(msg);
+          break;
+        case "update_label":
+          await this.annotations.updateLabel(msg);
+          break;
+        case "add_distance_measurement":
+          await this.measurements.addDistance(msg);
+          break;
+        case "add_angle_measurement":
+          await this.measurements.addAngle(msg);
+          break;
+        case "add_dihedral_measurement":
+          await this.measurements.addDihedral(msg);
           break;
         // Scene Ops
         case "reset_view":
@@ -143952,6 +145596,7 @@ var MolSysViewerController = class _MolSysViewerController {
           console.warn("[MolSysViewer] unknown op:", msg.op, msg);
           break;
       }
+      this.syncStripOverlaysForMessage(msg);
     } catch (error2) {
       console.error("[MolSysViewer] Error handling message:", msg, error2);
     }
@@ -143972,10 +145617,12 @@ var MolSysViewerController = class _MolSysViewerController {
     const last4 = structures.length ? structures[structures.length - 1] : void 0;
     if (last4) {
       this.currentStructure = last4.cell.transform.ref;
+      this.groupStrip.setStructure(last4.cell.obj?.data);
       this.state.onStructureLoaded();
       this.trajectory.notifyListeners();
     } else {
       this.currentStructure = void 0;
+      this.groupStrip.setStructure(void 0);
     }
   }
   async removeLoadedStructure() {
@@ -143997,6 +145644,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.loadedStructure = void 0;
     this.currentStructure = void 0;
+    this.groupStrip.setStructure(void 0);
   }
   // Facades for external access (e.g. from Index or Popout)
   async resetView() {
@@ -144047,6 +145695,27 @@ var MolSysViewerController = class _MolSysViewerController {
     }
   }
   notifyTrajectoryState() {
+  }
+  syncStripOverlaysForMessage(msg) {
+    switch (msg.op) {
+      case "add_label":
+        this.groupStrip.addLabelOverlay(msg);
+        break;
+      case "clear_scene":
+        if (msg.options?.labels) this.groupStrip.clearAnnotationOverlays();
+        break;
+      case "delete_layer":
+        this.groupStrip.clearAnnotationOverlaysByTag(msg.tag);
+        break;
+      case "set_layer_tag":
+        if (typeof msg.tag === "string" && typeof msg.new_tag === "string") {
+          this.groupStrip.retagAnnotationOverlays(msg.tag, msg.new_tag);
+        }
+        break;
+      case "clear_all":
+        this.groupStrip.clearAnnotationOverlays();
+        break;
+    }
   }
 };
 
@@ -145258,6 +146927,7 @@ var index_default = {
       cursor: "default"
       // Default cursor
     });
+    const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
     let isUserInteracting = false;
     let wheelTimeout = null;
     const onPointerDown = () => {
@@ -145421,6 +147091,15 @@ var index_default = {
     console.log("[MolSysViewer] widget render init");
     sendLog("info", "[MolSysViewer] widget render init");
     const onCustomMsg = (msg) => {
+      if (msg && msg.op === "request_camera_snapshot") {
+        controllerPromise.then((c8) => {
+          const snapshot = c8.getCameraSnapshot();
+          if (snapshot) {
+            model.send({ event: "camera_snapshot", snapshot });
+          }
+        });
+        return;
+      }
       enqueueMessage(msg, { syncToPopup: true });
     };
     model.on("msg:custom", onCustomMsg);
@@ -145434,11 +147113,12 @@ var index_default = {
       window.removeEventListener("pointercancel", onPointerUpOrCancel);
       target.removeEventListener("pointerdown", onPointerDown);
       target.removeEventListener("wheel", onWheel);
+      releaseNotebookContextMenuSuppression();
       model.off("msg:custom", onCustomMsg);
       controllerPromise.then((c8) => {
         try {
-          c8.plugin.dispose();
-          console.log("[MolSysViewer] Mol* plugin disposed.");
+          c8.dispose();
+          console.log("[MolSysViewer] Mol* controller disposed.");
         } catch (e) {
           console.error("[MolSysViewer] Error disposing plugin:", e);
         }

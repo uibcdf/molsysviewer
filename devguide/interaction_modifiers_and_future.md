@@ -142,6 +142,8 @@ We are not copying UI wholesale, but we are importing useful patterns.
 - exact mapping details of `auto` for every representation family
 - exact modifier strategy beyond `Shift`
 - the future `Alt`-driven selection-level chooser
+- whether a future explicit `bond` picking policy/target is needed beyond the
+  default group-centric behavior on visible bonds
 - tooltip/label behavior on hover
 - shared highlight/selection sync across popup/host
 - a better replacement for the current minimal label-text prompt

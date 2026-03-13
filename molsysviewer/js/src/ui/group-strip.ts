@@ -186,6 +186,9 @@ export class GroupStrip {
                 const key = selectionKey(item);
                 const button = document.createElement("button");
                 button.type = "button";
+                button.setAttribute("data-molsysviewer-group-item", "true");
+                button.setAttribute("data-chain-name", item.chain_name ?? "");
+                button.setAttribute("data-group-name", item.group_name ?? "");
                 const selected = this.selectedElementKeys.has(key);
                 Object.assign(button.style, {
                     padding: "6px 8px",

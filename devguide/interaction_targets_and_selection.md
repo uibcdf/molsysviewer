@@ -39,6 +39,12 @@ Why:
 - `group` is visible and meaningful across nearly all representations
 - it is the most useful default for element-level inspection
 - it avoids overfitting interaction semantics to atomistic representations only
+- visible bonds/links should follow that same default policy:
+  - under the default group-centric policy, clicking a bond fragment should
+    resolve to the enclosing `group`, not to `empty`
+  - a future explicit `bond` policy/target may be useful, but it should be
+    modeled as its own semantic target instead of overloading `atom` with
+    fragile half-bond heuristics
 
 Public-semantics rule:
 
