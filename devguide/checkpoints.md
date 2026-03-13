@@ -171,6 +171,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - popup canvas context behavior,
     - notebook-canvas `double click -> focus`,
     - `GroupStrip` click / additive click / hover / right-click / double-click.
+    - interactive `distance` measurement UX is clear in live smoke,
+    - `get_last_measurement_created_event()` now yields the expected replay-safe
+      payload shape with `action`, `picked_count`, and `picks_atom_indices`.
   - The first concrete context-menu bridge now exists:
     - right-click without drag is captured from Mol* click events,
     - the canvas suppresses the host `contextmenu`,
@@ -244,6 +247,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - Python can send `add_distance_measurement`, `add_angle_measurement`, and `add_dihedral_measurement`,
     - JS reconstructs them through Mol* `StructureMeasurementManager`,
     - they are tracked as `measurement` layers and replayed across rebuild/export.
+  - Region creation from active selection is now confirmed as a reproducibility
+    operation first:
+    - it creates a real region object and export messages,
+    - but does not imply an immediate visual change unless a representation/show
+      path is also applied.
   - Validation note:
     - JS regression remains green,
     - Python regressions for `tests/test_annotations.py` are green again after fixing layer-tag/delete replay bookkeeping in `molsysviewer`,
