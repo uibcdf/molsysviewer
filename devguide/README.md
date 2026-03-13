@@ -48,17 +48,19 @@ That principle should guide prioritization throughout the repository.
    - Hover/click/double-click semantics, context menus, and measurement/tool-mode behavior.
 7. [**Interaction Modifiers and Future**](interaction_modifiers_and_future.md)
    - Reserved modifiers, future ideas, borrowed patterns, and deferred questions.
-8. [**Strips**](strips.md)
+8. [**Interaction Verified State**](interaction_verified_state.md)
+   - Operational truth of what gestures and interaction surfaces are already implemented and smoke-verified.
+9. [**Strips**](strips.md)
    - GroupStrip direction, alternatives not chosen, first implementation scope, and future strip ideas.
-9. [**Annotations**](annotations.md)
+10. [**Annotations**](annotations.md)
    - Viewer taxonomy for labels/annotations, Mol* precedents, and the first annotation slice.
-10. [**Smoke Test**](smoke_test.md)
+11. [**Smoke Test**](smoke_test.md)
    - Short runbook for checking interaction feel and reproducibility together.
-11. [**Guiding Principles**](guiding_principles.md)
+12. [**Guiding Principles**](guiding_principles.md)
    - Stable project ideas-alma that should guide development and usage.
-12. [**Roadmap**](roadmap.md)
+13. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-13. [**Checkpoints**](checkpoints.md)
+14. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
 
 ## Standards and Conventions
