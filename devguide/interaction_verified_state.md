@@ -108,6 +108,19 @@ interaction behavior.
 - for recent interactive measurements, it supports:
   - `Persist Last Measurement`
 
+## Interactive Measurements
+
+### Verified
+
+- the measurement tool modes feel clear in live smoke
+- measurements appear in the scene where expected
+- `view.get_last_measurement_created_event()` reports a coherent replay-safe
+  payload:
+  - `action`
+  - `picked_count`
+  - `picks_atom_indices`
+- `Persist Last Measurement` is part of the implemented reproducibility bridge
+
 ## Reproducibility Bridges
 
 ### Verified

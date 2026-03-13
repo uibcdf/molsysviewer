@@ -149,6 +149,8 @@ Expected:
 - a region is created
 - it is usable from Python
 - it survives the normal viewer state model
+- creating the region does not necessarily imply an immediate visual change
+  unless a representation/show action is also applied
 
 Suggested quick check:
 
@@ -176,6 +178,12 @@ Suggested check:
 ```python
 view.get_last_measurement_created_event()
 ```
+
+Expected event shape:
+
+- `action` matches the chosen measurement mode
+- `picked_count` matches the required pick count
+- `picks_atom_indices` stores the picked atoms in a replay-safe form
 
 ### 8. Persist the last measurement
 
