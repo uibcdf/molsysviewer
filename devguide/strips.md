@@ -115,6 +115,34 @@ MolSysSuite terms and `group` is the central unit across:
 - ligands
 - other small structural groups
 
+## Evolving Container: `GroupPanel`
+
+The current strip implementation proved the interaction contract, but it should
+not be treated as the final product shape.
+
+The next design step is to distinguish:
+
+- `GroupPanel`
+  - the container that can be shown/hidden
+  - may later be docked or float
+- `GroupStrip`
+  - the strip unit rendered inside that panel
+  - most naturally one strip per `chain`
+
+This is needed because the current always-visible lower strip does not scale
+well as product UI:
+
+- it steals canvas space permanently
+- it can hide useful references such as axes
+- it does not scale to large proteins plus waters/ions/ligands
+- each group currently consumes too much space
+
+So the direction already chosen is:
+
+- do not keep the strip permanently attached to the lower edge of the canvas
+- evolve toward a show/hide `GroupPanel`
+- keep `GroupStrip` as the internal interaction unit
+
 ## What `GroupStrip` Represents
 
 `GroupStrip` should represent structural groups only.
@@ -193,6 +221,15 @@ And later possibly:
 - tool-mode picks
 - labels/annotations
 - more compact visual differentiation by `group_type`
+- compact marks for `component`
+- secondary cues for `molecule`
+
+This last point matters because:
+
+- a single chain may contain multiple molecules
+- a molecule may be disconnected and therefore have more than one component
+
+So chain order alone is not enough to communicate structural organization.
 
 ### Layout direction
 
@@ -202,6 +239,36 @@ Preferred first direction:
 - preferred first layout is one visual row per chain, if density remains usable
 
 This is better than a single undifferentiated strip if multiple chains exist.
+
+Current design preference:
+
+- keep `chain` as the primary organizer
+- move away from a permanent bottom band
+- keep open whether the panel should be:
+  - docked laterally
+  - or floating/acoplable
+
+What is already decided is the negative case:
+
+- do not keep the final product as a permanently visible horizontal strip at
+  the bottom of the canvas
+
+## Why Middle Click Is Not the Default Toggle
+
+Mol* already uses the middle/wheel button path for camera interaction:
+
+- wheel scroll: zoom
+- middle drag: focus-and-zoom behavior
+
+So `middle click` should not be adopted as the primary `GroupPanel` toggle for
+now. It is too close to existing navigation semantics and risks conflicting
+with camera behavior.
+
+Preferred near-term direction:
+
+- explicit UI affordance for showing/hiding the panel
+- optional keyboard shortcut later
+- revisit middle-click only if we explicitly decide to override Mol* behavior
 
 ### Current implemented slice
 
@@ -236,6 +303,23 @@ Annotation overlays have now started in a narrow form:
 This is intentional.
 The first goal is to prove the shared state model (`active_selection`) and the
 strip/canvas convergence, not to finish the entire strip UX in one pass.
+
+## Preferred Demos For The Next Implementation Trial
+
+The next strip/panel implementation trial should not rely only on
+`demo["dialanine"]`.
+
+Better demos already available in `molsysviewer.demo` are:
+
+- `demo["1TCD"]`
+  - richer protein-style sequence/group context
+- `demo["181L"]`
+  - useful second compact real structure with more realistic strip pressure
+- `demo["chicken_villin_HP35"]`
+  - useful for stress-testing density and panel ergonomics beyond toy systems
+
+`dialanine` remains useful for unit-level sanity, but not for validating the
+next panel/strip product direction.
 
 ## Interaction Rules
 
