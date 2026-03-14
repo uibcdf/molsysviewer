@@ -49,7 +49,6 @@ export class GroupPanel {
         this.root.setAttribute("data-molsysviewer-group-panel", "true");
         const panelWidth = 240;
         const tabWidth = 26;
-        const panelOffset = panelWidth + 1;
         Object.assign(this.root.style, {
             position: "absolute",
             left: "0",
@@ -60,7 +59,7 @@ export class GroupPanel {
             alignItems: "stretch",
             pointerEvents: "auto",
             zIndex: "16",
-            transform: `translateX(-${panelOffset}px)`,
+            transform: `translateX(-${panelWidth}px)`,
             transition: "transform 160ms ease",
         });
 
@@ -105,6 +104,7 @@ export class GroupPanel {
             width: "240px",
             minWidth: "240px",
             maxWidth: "240px",
+            boxSizing: "border-box",
             height: "100%",
             overflowX: "auto",
             overflowY: "hidden",
@@ -188,9 +188,9 @@ export class GroupPanel {
     }
 
     private applyExpandedState(): void {
-        const panelOffset = 241;
+        const panelWidth = 240;
         this.toggleButton.textContent = this.expanded ? "<" : ">";
-        this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(-${panelOffset}px)`;
+        this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(-${panelWidth}px)`;
     }
 
     private render(): void {

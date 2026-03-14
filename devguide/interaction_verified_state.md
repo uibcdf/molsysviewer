@@ -217,3 +217,4 @@ interaction behavior.
 - `GroupPanel` is now a left sliding sidebar
 - when collapsed, only the chevron tab remains visible
 - each `GroupStrip` is rendered as a full-height vertical column with its own scroll
+- the notebook/docs embedding clips viewer overflow so sidebar motion does not create host-cell scrollbars or canvas blinking

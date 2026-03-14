@@ -145284,7 +145284,6 @@ var GroupPanel = class {
     this.root.setAttribute("data-molsysviewer-group-panel", "true");
     const panelWidth = 240;
     const tabWidth = 26;
-    const panelOffset = panelWidth + 1;
     Object.assign(this.root.style, {
       position: "absolute",
       left: "0",
@@ -145295,7 +145294,7 @@ var GroupPanel = class {
       alignItems: "stretch",
       pointerEvents: "auto",
       zIndex: "16",
-      transform: `translateX(-${panelOffset}px)`,
+      transform: `translateX(-${panelWidth}px)`,
       transition: "transform 160ms ease"
     });
     this.toggleButton = document.createElement("button");
@@ -145338,6 +145337,7 @@ var GroupPanel = class {
       width: "240px",
       minWidth: "240px",
       maxWidth: "240px",
+      boxSizing: "border-box",
       height: "100%",
       overflowX: "auto",
       overflowY: "hidden",
@@ -145411,9 +145411,9 @@ var GroupPanel = class {
     this.root.remove();
   }
   applyExpandedState() {
-    const panelOffset = 241;
+    const panelWidth = 240;
     this.toggleButton.textContent = this.expanded ? "<" : ">";
-    this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(-${panelOffset}px)`;
+    this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(-${panelWidth}px)`;
   }
   render() {
     const grouped = /* @__PURE__ */ new Map();
@@ -147396,7 +147396,8 @@ async function bootDocsView(opts) {
     minHeight: "400px",
     position: "relative",
     touchAction: "none",
-    cursor: "default"
+    cursor: "default",
+    overflow: "hidden"
   });
   let isUserInteracting = false;
   let wheelTimeout = null;
@@ -147531,7 +147532,8 @@ var index_default = {
       minHeight: "400px",
       position: "relative",
       touchAction: "none",
-      cursor: "default"
+      cursor: "default",
+      overflow: "hidden"
       // Default cursor
     });
     const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);

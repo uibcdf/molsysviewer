@@ -568,5 +568,6 @@ The current adopted container direction is:
 - collapsed by default
 - the chevron tab is physically attached to the panel and remains visible as the only exposed part when collapsed
 - the panel slides as one piece, so the tab behaves like a true sidebar handle
+- the notebook embedding now clips viewer overflow explicitly so the sliding panel does not provoke output-cell scrollbars or canvas blink/reflow loops
 
 This is preferred over a permanent lower band because it preserves canvas area while keeping the strip tool quickly reachable.

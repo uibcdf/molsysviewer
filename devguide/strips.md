@@ -143,6 +143,7 @@ So the direction already chosen is:
 - evolve toward a show/hide `GroupPanel`
 - keep `GroupStrip` as the internal interaction unit
 - the current runtime now already uses a `GroupPanel` container with one concrete `GroupStrip` per chain
+- treat the panel as an internal overlay of the viewer root, not as layout that may expand the surrounding notebook/output cell
 
 ## What `GroupStrip` Represents
 

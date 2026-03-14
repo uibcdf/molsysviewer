@@ -55,7 +55,7 @@ export async function bootDocsView(opts: {
     const target = document.createElement("div");
     Object.assign(target.style, {
         width: "100%", height: "100%", minHeight: "400px", position: "relative",
-        touchAction: "none", cursor: "default"
+        touchAction: "none", cursor: "default", overflow: "hidden"
     });
 
     // Track user interaction for camera sync logic
@@ -211,7 +211,7 @@ export default {
         const target = document.createElement("div");
         Object.assign(target.style, {
             width: "100%", height: "100%", minHeight: "400px", position: "relative",
-            touchAction: "none", cursor: "default" // Default cursor
+            touchAction: "none", cursor: "default", overflow: "hidden" // Default cursor
         });
         const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
         
