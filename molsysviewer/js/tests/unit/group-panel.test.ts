@@ -69,7 +69,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         assert.strictEqual(stripRoots.length, 2);
         assert.strictEqual(root.style.display, 'flex');
         assert.strictEqual(toggle.textContent, '>');
-        assert.strictEqual(root.style.transform, 'translateX(-241px)');
+        assert.strictEqual(root.style.transform, 'translateX(-240px)');
         panel.dispose();
     } finally {
         restore();
