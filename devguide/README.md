@@ -64,6 +64,16 @@ That principle should guide prioritization throughout the repository.
    - Strategic goals and upcoming development phases.
 14. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
+15. [**Vision for v1.0**](v1_vision_and_styles.md)
+   - Architectural vision, user personas, and the concept of scientific Styles.
+
+## Workbench Tutorials (Planned)
+
+To bridge the gap between API reference and real-world scientific usage, the following case-study-driven tutorials are prioritized for the v1.0 release:
+
+- **Pocket Contact Analysis**: Identifying a binding pocket, using the `GroupStrip` for hierarchical selection, labeling residues, and measuring key distances.
+- **Complex System Navigation**: Managing systems with multiple chains, ligands, and solvent molecules using the new hierarchical `GroupPanel` and selection tools.
+- **Structural Mutation Replay**: Demonstrating how annotations and measurements survive structural rebuilds when modifying systems from Python.
 
 ## Standards and Conventions
 
