@@ -123,6 +123,20 @@ Do not try to solve all of these immediately:
 
 The first goal is a stable and well-specified interaction contract.
 
+## Tool Lifecycle and Cancellation
+
+Any multi-step interaction (measurements, multi-pick tools) must follow these rules:
+
+- **Visual Feedback**: A persistent status banner or overlay must be visible while a tool is active, showing:
+  - the current tool name (e.g., "Distance Measurement"),
+  - progress (e.g., "Pick 1 of 2"),
+  - and instructions for cancellation.
+- **Escape Key**: The `Esc` key is the universal cancellation signal. Pressing `Esc` must:
+  - immediately terminate the current tool mode,
+  - clear any partial picks,
+  - and restore the default interaction state (camera controls and group selection).
+- **Cursor State**: Optionally, the mouse cursor should change to indicate a "picking" state when a tool is active.
+
 ## Callback Direction
 
 Python-side callbacks are still part of the intended interaction surface, but

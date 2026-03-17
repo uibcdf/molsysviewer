@@ -302,6 +302,7 @@ The current runtime slice now does the following:
 
 The current slice does **not** yet do:
 
+- **Collapsible Hierarchy**: Add the ability to collapse/expand Molecule and Component containers to handle large systems efficiently.
 - range selection / drag selection
 - region overlays
 - tool-pick overlays
