@@ -61,28 +61,28 @@ class PocketSurfaces:
             raise ValueError("atom_indices is required and cannot be empty")
 
         options: dict = {
-            "atom_indices": [int(i) for i in atom_indices],
+            "atom_indices": atom_indices,
         }
 
         if scalars is not None:
-            options["scalars"] = [float(s) for s in scalars]
+            options["scalars"] = scalars
         if grid is not None:
-            options["grid"] = dict(grid)
+            options["grid"] = grid
         if alpha is not None:
-            options["alpha"] = float(alpha)
+            options["alpha"] = alpha
         if iso_levels is not None:
-            options["iso_levels"] = [float(v) for v in iso_levels]
+            options["iso_levels"] = iso_levels
         if iso_colors is not None:
-            options["iso_colors"] = [int(c) for c in iso_colors]
+            options["iso_colors"] = iso_colors
         if iso_alphas is not None:
-            options["iso_alphas"] = [float(a) for a in iso_alphas]
+            options["iso_alphas"] = iso_alphas
         if color_map is not None:
             options["color_map"] = color_map
 
         if mouth_atom_indices is not None:
             options["mouth_atom_indices"] = _normalize_mouths(mouth_atom_indices)
         elif clip_plane is not None:
-            options["clip_plane"] = dict(clip_plane)
+            options["clip_plane"] = clip_plane
 
         tag = tag or self._view._next_layer_tag()  # noqa: SLF001
         options["tag"] = tag

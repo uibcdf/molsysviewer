@@ -38,6 +38,10 @@ export interface MolSysAtomPayload {
     chain_id?: string[];
     entity_id?: string[];
     formal_charge?: number[];
+    molecule_id?: number[];
+    molecule_name?: string[];
+    component_id?: number[];
+    component_name?: string[];
 }
 
 export interface MolSysStructurePayload {
@@ -179,7 +183,13 @@ export async function loadStructureFromMolSysPayload(
         {
             kind: "mol-viewer:molsysmt",
             name: label ?? "MolSysMT",
-            data: payload.meta ?? {},
+            data: {
+                ...(payload.meta ?? {}),
+                molecule_id: payload.atoms.molecule_id,
+                molecule_name: payload.atoms.molecule_name,
+                component_id: payload.atoms.component_id,
+                component_name: payload.atoms.component_name,
+            },
         }
     );
 
@@ -233,6 +243,11 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structur
     const entityIds = ensureStringArray(atoms.entity_id, atomCount, () => "1");
     const charges = ensureNumericArray(atoms.formal_charge, atomCount, () => 0);
 
+    const molId = ensureNumericArray(atoms.molecule_id, atomCount, () => 0);
+    const molName = ensureStringArray(atoms.molecule_name, atomCount, () => "Molecule");
+    const compId = ensureNumericArray(atoms.component_id, atomCount, () => 0);
+    const compName = ensureStringArray(atoms.component_name, atomCount, () => "Component");
+
     const { x, y, z } = splitPositions(structure, atomCount);
 
     return Table.ofPartialColumns(BasicSchema.atom_site, {
@@ -257,7 +272,13 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structur
         Cartn_y: Column.ofFloatArray(y),
         Cartn_z: Column.ofFloatArray(z),
         group_PDB: Column.ofConst("HETATM", atomCount, Column.Schema.str),
-    }, atomCount);
+        // Add custom columns for hierarchy
+        // Note: we use names that won't conflict with standard CIF but Mol* can carry
+        ["molsys_molecule_id" as any]: Column.ofIntArray(molId),
+        ["molsys_molecule_name" as any]: Column.ofStringArray(molName),
+        ["molsys_component_id" as any]: Column.ofIntArray(compId),
+        ["molsys_component_name" as any]: Column.ofStringArray(compName),
+    } as any, atomCount);
 }
 
 function splitPositions(frame: MolSysStructurePayload, atomCount: number) {

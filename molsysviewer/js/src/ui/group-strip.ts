@@ -5,16 +5,22 @@ import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
+type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
 type OnFocus = (item: ActiveSelectionItem) => void;
 type OnHover = (item: ActiveSelectionItem | null) => void;
 type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
 type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 
 function selectionKey(item: ActiveSelectionItem): string {
+    const molPart = item.molecule_indices?.join(",") ?? "0";
+    const compPart = item.component_indices?.join(",") ?? "0";
+    const chainPart = item.chain_indices?.join(",") ?? "0";
+    const groupPart = item.group_indices?.join(",") ?? "0";
+    
     if (item.source_kind === "annotation") {
-        return `${item.chain_indices.join(",")}:${item.group_indices.join(",")}:annotation:${item.tag ?? ""}`;
+        return `${molPart}:${compPart}:${chainPart}:${groupPart}:annotation:${item.tag ?? ""}`;
     }
-    return `${item.chain_indices.join(",")}:${item.group_indices.join(",")}`;
+    return `${molPart}:${compPart}:${chainPart}:${groupPart}`;
 }
 
 function makeLociForItem(structure: Structure, item: ActiveSelectionItem): StructureElement.Loci | null {
@@ -45,6 +51,7 @@ export class GroupStrip {
         private readonly host: HTMLElement,
         private readonly chainLabel: string,
         private readonly onSelect: OnSelect,
+        private readonly onInteraction: OnInteraction,
         private readonly onFocus: OnFocus,
         private readonly onHover: OnHover,
         private readonly onContext: OnContext,
@@ -74,6 +81,7 @@ export class GroupStrip {
         });
 
         this.title = document.createElement("div");
+        this.title.setAttribute("data-molsysviewer-group-strip-title", this.chainLabel);
         Object.assign(this.title.style, {
             fontWeight: "700",
             marginBottom: "6px",
@@ -187,99 +195,204 @@ export class GroupStrip {
         this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
         if (!this.structure || this.groupItems.length === 0) return;
 
-        for (const item of this.groupItems) {
-            const key = selectionKey(item);
-            const button = document.createElement("button");
-            button.type = "button";
-            button.setAttribute("data-molsysviewer-group-item", "true");
-            button.setAttribute("data-chain-name", item.chain_name ?? "");
-            button.setAttribute("data-group-name", item.group_name ?? "");
-            const selected = this.selectedElementKeys.has(key);
-            Object.assign(button.style, {
-                padding: "6px 8px",
-                borderRadius: "999px",
-                border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
-                background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
-                color: "inherit",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                font: "inherit",
-                width: "100%",
-                textAlign: "left",
-            });
-            const text = document.createElement("span");
-            text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
-            button.appendChild(text);
+        // Group items hierarchically: Molecule -> Component -> Residues
+        const hierarchy = new Map<number, Map<number, ActiveSelectionItem[]>>();
+        const moleculeNames = new Map<number, string>();
+        const componentNames = new Map<number, string>();
 
-            const annotationRecords = this.annotationRecords.get(key) ?? [];
-            if (annotationRecords.length > 0) {
-                const badge = document.createElement("span");
-                const primary = annotationRecords[0];
-                const annotationSelected = this.selectedAnnotationKeys.has(`${key}:annotation:${primary.tag ?? ""}`);
-                badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
-                Object.assign(badge.style, {
-                    marginLeft: "6px",
-                    padding: "1px 6px",
-                    borderRadius: "999px",
-                    background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
-                    color: annotationSelected ? "#fde68a" : "#b7f7dd",
-                    fontSize: "10px",
-                    fontWeight: "700",
+        for (const item of this.groupItems) {
+            const molId = item.molecule_indices[0] ?? 0;
+            const compId = item.component_indices[0] ?? 0;
+            if (!hierarchy.has(molId)) hierarchy.set(molId, new Map());
+            if (!hierarchy.get(molId)!.has(compId)) hierarchy.get(molId)!.set(compId, []);
+            hierarchy.get(molId)!.get(compId)!.push(item);
+            if (item.molecule_name) moleculeNames.set(molId, item.molecule_name);
+            if (item.component_name) componentNames.set(compId, item.component_name);
+        }
+
+        const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
+
+        for (const [molId, components] of hierarchy.entries()) {
+            const molBox = document.createElement("div");
+            const molColor = COLORS[molId % COLORS.length];
+            Object.assign(molBox.style, {
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+                paddingLeft: "8px",
+                marginLeft: "2px",
+                borderLeft: `3px solid ${molColor}44`, // Molecule border (semi-transparent)
+                borderRadius: "4px 0 0 4px",
+                marginBottom: "8px",
+                position: "relative",
+            });
+            molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
+
+            // Add invisible clickable area for molecule selection
+            const molHandle = document.createElement("div");
+            Object.assign(molHandle.style, {
+                position: "absolute",
+                left: "-10px",
+                top: "0",
+                bottom: "0",
+                width: "14px",
+                cursor: "pointer",
+                zIndex: "2",
+            });
+            molHandle.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const mouseEvent = event as MouseEvent;
+                const allItems = Array.from(components.values()).flat();
+                if (allItems.length > 0) {
+                    this.onInteraction(allItems[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
+                    if (allItems.length > 1) {
+                        this.onSelect(allItems, true);
+                    }
+                }
+            });
+            molBox.appendChild(molHandle);
+
+            for (const [compId, items] of components.entries()) {
+                const compBox = document.createElement("div");
+                const compColor = COLORS[compId % COLORS.length];
+                Object.assign(compBox.style, {
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                    paddingLeft: "8px",
+                    marginLeft: "2px",
+                    borderLeft: `2px solid ${compColor}aa`, // Component border (more opaque)
+                    borderRadius: "2px 0 0 2px",
+                    position: "relative",
                 });
-                button.appendChild(badge);
-                button.title = annotationRecords.map((record) => record.text).join("\n");
-                badge.addEventListener("click", (event) => {
+                compBox.title = `Component: ${componentNames.get(compId) ?? compId}`;
+
+                // Add invisible clickable area for component selection
+                const compHandle = document.createElement("div");
+                Object.assign(compHandle.style, {
+                    position: "absolute",
+                    left: "-8px",
+                    top: "0",
+                    bottom: "0",
+                    width: "10px",
+                    cursor: "pointer",
+                    zIndex: "3",
+                });
+                compHandle.addEventListener("click", (event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    this.onSelect([{
-                        source_kind: "annotation",
-                        annotation_kind: "label",
-                        atom_indices: item.atom_indices,
-                        group_indices: item.group_indices,
-                        chain_indices: item.chain_indices,
-                        entity_indices: item.entity_indices,
-                        tag: primary.tag,
-                        text: primary.text,
-                    }], !!(event as MouseEvent).shiftKey);
+                    const mouseEvent = event as MouseEvent;
+                    if (items.length > 0) {
+                        this.onInteraction(items[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
+                        if (items.length > 1) {
+                            this.onSelect(items, true);
+                        }
+                    }
                 });
-                badge.addEventListener("contextmenu", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.onAnnotationContext(
-                        {
-                            event: "interaction_context_menu",
-                            kind: "annotation",
-                            atom_indices: item.atom_indices,
-                            tag: primary.tag,
-                            text: primary.text,
-                        },
-                        (event as MouseEvent).pageX,
-                        (event as MouseEvent).pageY,
-                    );
-                });
+                compBox.appendChild(compHandle);
+
+                for (const item of items) {
+                    const key = selectionKey(item);
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.setAttribute("data-molsysviewer-group-item", "true");
+                    button.setAttribute("data-chain-name", item.chain_name ?? "");
+                    button.setAttribute("data-group-name", item.group_name ?? "");
+                    const selected = this.selectedElementKeys.has(key);
+                    Object.assign(button.style, {
+                        padding: "4px 8px",
+                        borderRadius: "999px",
+                        border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
+                        background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
+                        color: "inherit",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        font: "inherit",
+                        width: "100%",
+                        textAlign: "left",
+                        fontSize: "11px",
+                    });
+                    const text = document.createElement("span");
+                    text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
+                    button.appendChild(text);
+
+                    const annotationRecords = this.annotationRecords.get(key) ?? [];
+                    if (annotationRecords.length > 0) {
+                        const badge = document.createElement("span");
+                        const primary = annotationRecords[0];
+                        const annotationSelected = this.selectedAnnotationKeys.has(`${key}:annotation:${primary.tag ?? ""}`);
+                        badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
+                        Object.assign(badge.style, {
+                            marginLeft: "6px",
+                            padding: "1px 6px",
+                            borderRadius: "999px",
+                            background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
+                            color: annotationSelected ? "#fde68a" : "#b7f7dd",
+                            fontSize: "10px",
+                            fontWeight: "700",
+                        });
+                        button.appendChild(badge);
+                        button.title = annotationRecords.map((record) => record.text).join("\n");
+                        badge.addEventListener("click", (event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            this.onSelect([{
+                                source_kind: "annotation",
+                                annotation_kind: "label",
+                                atom_indices: item.atom_indices,
+                                group_indices: item.group_indices,
+                                component_indices: item.component_indices,
+                                chain_indices: item.chain_indices,
+                                molecule_indices: item.molecule_indices,
+                                entity_indices: item.entity_indices,
+                                tag: primary.tag,
+                                text: primary.text,
+                            }], !!(event as MouseEvent).shiftKey);
+                        });
+                        badge.addEventListener("contextmenu", (event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            this.onAnnotationContext(
+                                {
+                                    event: "interaction_context_menu",
+                                    kind: "annotation",
+                                    atom_indices: item.atom_indices,
+                                    tag: primary.tag,
+                                    text: primary.text,
+                                },
+                                (event as MouseEvent).pageX,
+                                (event as MouseEvent).pageY,
+                            );
+                        });
+                    }
+                    button.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const mouseEvent = event as MouseEvent;
+                        this.onInteraction(item, { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
+                    });
+                    button.addEventListener("dblclick", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.onFocus(item);
+                    });
+                    button.addEventListener("mouseenter", () => {
+                        this.onHover(item);
+                    });
+                    button.addEventListener("mouseleave", () => {
+                        this.onHover(null);
+                    });
+                    button.addEventListener("contextmenu", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.onContext(item, (event as MouseEvent).pageX, (event as MouseEvent).pageY);
+                    });
+                    compBox.appendChild(button);
+                }
+                molBox.appendChild(compBox);
             }
-            button.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onSelect([item], !!(event as MouseEvent).shiftKey);
-            });
-            button.addEventListener("dblclick", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onFocus(item);
-            });
-            button.addEventListener("mouseenter", () => {
-                this.onHover(item);
-            });
-            button.addEventListener("mouseleave", () => {
-                this.onHover(null);
-            });
-            button.addEventListener("contextmenu", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.onContext(item, (event as MouseEvent).pageX, (event as MouseEvent).pageY);
-            });
-            this.row.appendChild(button);
+            this.row.appendChild(molBox);
         }
     }
 

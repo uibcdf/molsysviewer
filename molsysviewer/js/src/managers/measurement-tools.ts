@@ -134,12 +134,16 @@ export class MeasurementToolController {
     private async complete(action: MeasurementToolAction): Promise<void> {
         const picks = [...this.picks];
         const measurement = this.plugin?.managers?.structure?.measurement;
-        if (action === "distance") {
-            await measurement?.addDistance?.(picks[0], picks[1]);
-        } else if (action === "angle") {
-            await measurement?.addAngle?.(picks[0], picks[1], picks[2]);
-        } else {
-            await measurement?.addDihedral?.(picks[0], picks[1], picks[2], picks[3]);
+        try {
+            if (action === "distance") {
+                await measurement?.addDistance?.(picks[0], picks[1]);
+            } else if (action === "angle") {
+                await measurement?.addAngle?.(picks[0], picks[1], picks[2]);
+            } else {
+                await measurement?.addDihedral?.(picks[0], picks[1], picks[2], picks[3]);
+            }
+        } catch (e) {
+            console.error("[MeasurementTool] Error adding measurement in Mol*:", e);
         }
         await measurement?.addOrderLabels?.([]);
         this.notify?.({

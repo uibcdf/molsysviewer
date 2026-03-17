@@ -551,13 +551,45 @@ These deeper technical challenges affect the long-term sustainability of the pro
 - Extend `molsysviewer.tools.basic` beyond `merge(...)` only when the next composition/analysis policy is explicit enough to document and test.
 - Add canvas interaction work:
   - `Done`: minimal hover/click event transport from Mol* to Python with atom-centric payloads.
+  - `Done`: `active_selection` integration with `GroupStrip` and `GroupPanel`.
+  - `Done`: annotation (label) synchronization between Mol* and `GroupPanel` (badge overlays).
   - `Next`: implement the richer contract now documented in the new interaction pages under `devguide/`.
 - Keep `GroupStrip` in scope as the first strip-style companion view once `active_selection` is concrete enough.
 - Continue visual and behavioral refinement of pockets and pharmacophore overlays.
 - Add popup/popout sync regressions around camera/state replay if the harness can support them.
 - Add export regressions that mix camera snapshots, visibility cleaning, and replay ordering.
-- Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable.
+- Expand JS tests from guards into more success-path and replay-sensitive behavior where seams are controllable:
+  - `Done`: added `group-panel-interaction.e2e.ts` verifying load -> select -> label flow with Google Chrome.
 - Add targeted `smonitor` refinements only when a new public orchestration path is introduced.
+
+### Progress March 2026 (Mid-Month Update)
+
+- **Interaction & E2E:**
+  - Added `group-panel-interaction.e2e.ts` verifying load -> select -> label flow.
+  - Added `measurements-interaction.e2e.ts` verifying Distance and Angle measurement tools from the context menu.
+  - Added `hierarchy-interaction.e2e.ts` verifying hierarchical Molecule/Component selection in the GroupStrip.
+  - Implemented Range Selection using `Shift + Alt + click` both in the 3D canvas and GroupStrip.
+  - Added cross-view anchor synchronization for range selection.
+  - Enforced usage of `google-chrome` for E2E tests to ensure WebGL availability.
+- **Structural Rebuild Robustness:**
+  - Fixed a critical gap where specialized history lists (shapes, annotations, measurements) were not updated with remapped indices during a structural rebuild.
+  - Corrected `_record_shape_message` to prevent duplicate replaying of measurements and labels.
+  - Verified that hierarchical metadata (Molecule/Component) survives structural modifications and is correctly re-emitted to the frontend.
+  - Validated persistence of annotations, measurements, and saved selections across structural edits via stress test (`test_rebuild_persistence.py`).
+- **GroupStrip Hierarchy:**
+  - Implemented nested visualization (Molecule -> Component -> Group) in the `GroupPanel` using colored left-border lines.
+  - Enabled hierarchical selection: clicking on the molecule or component border markers selects all child atoms.
+  - Enriched the Python-to-JS payload with `molecule_index` and `component_index` data from MolSysMT.
+  - Persisted hierarchical metadata in Mol* via custom `atom_site` columns.
+- **Annotation Sync:**
+  - Fixed gap where `add_label` messages were not notifying the `GroupPanel`.
+  - Labels now show up as "L" badges in the `GroupStrip`.
+- **ArgDigest Coverage (Shapes):**
+  - Implemented missing digestors for complex shape arguments: `iso_levels`, `iso_colors`, `iso_alphas`, `eigenvalues`, `eigenvectors`, `tensors`.
+  - Refactorized `PocketSurfaces` and `AnisotropyEllipsoids` to remove manual normalization, simplifying the Python API and improving robustness.
+- **Testability & Infrastructure:**
+  - Added data attributes to UI components for stable E2E selection.
+  - Updated E2E harness to maintain a message history log (`__messages`).
 
 
 ## Current Panel Direction

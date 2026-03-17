@@ -224,6 +224,7 @@ This should also come later.
 - rebuild-safe persistence
 - integration with existing layer semantics
 - actual `clear labels` support in the frontend instead of the current placeholder
+- **integration with `GroupStrip` via badge overlays ("L")**
 - a narrow public API:
   - `view.annotations.add_label(text=..., group_index=..., tag=...)`
   - `view.annotations.add_label_from_active_selection(text=..., tag=...)`
