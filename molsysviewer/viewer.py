@@ -794,7 +794,7 @@ class MolSysView:
             ]
             return
 
-        if op == "add_label":
+        if op in {"add_label", "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
             return
 
         if not op.startswith("add_"):
@@ -1104,9 +1104,23 @@ class MolSysView:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
 
         from .loaders.load_molsysmt import _serialize_molsys_payload
+        import molsysmt as msm
 
         viewer_json = self._molsys.to_form("molsysmt.ViewerJSON")
-        payload = _serialize_molsys_payload(viewer_json)
+
+        # Extract hierarchy indices from MolSysMT to enrich the payload during rebuild
+        molecule_indices = msm.get(self._molsys, element="atom", molecule_index=True, skip_digestion=True)
+        component_indices = msm.get(self._molsys, element="atom", component_index=True, skip_digestion=True)
+        molecule_names = msm.get(self._molsys, element="atom", molecule_name=True, skip_digestion=True)
+        component_names = msm.get(self._molsys, element="atom", component_name=True, skip_digestion=True)
+
+        payload = _serialize_molsys_payload(
+            viewer_json,
+            molecule_indices=molecule_indices,
+            component_indices=component_indices,
+            molecule_names=molecule_names,
+            component_names=component_names
+        )
         if payload is None:
             raise ValueError("Unable to serialize MolSysMT viewer payload")
 
@@ -1172,23 +1186,32 @@ class MolSysView:
             if getattr(region, "_hidden", False):
                 region.hide(skip_digestion=True)
 
+        new_shape_history: list[dict] = []
         for msg in self._shape_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
             if remapped is None:
                 continue
+            new_shape_history.append(remapped)
             self._send_replay(remapped)
+        self._shape_history = new_shape_history
 
+        new_annotation_history: list[dict] = []
         for msg in self._annotation_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
             if remapped is None:
                 continue
+            new_annotation_history.append(remapped)
             self._send_replay(remapped)
+        self._annotation_history = new_annotation_history
 
+        new_measurement_history: list[dict] = []
         for msg in self._measurement_history:
             remapped = self._remap_measurement_message(msg, atom_index_map)
             if remapped is None:
                 continue
+            new_measurement_history.append(remapped)
             self._send_replay(remapped)
+        self._measurement_history = new_measurement_history
 
         rewritten_selections: list[dict] = []
         for msg in self._selection_history:

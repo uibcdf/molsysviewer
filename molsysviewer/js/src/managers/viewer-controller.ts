@@ -23,7 +23,7 @@ import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handl
 import { LastMeasurementSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
-import { ActiveSelectionController, ActiveSelectionItem, lociToGroupItems } from "./active-selection";
+import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
 
@@ -403,6 +403,8 @@ export class MolSysViewerController {
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
         this.groupPanel = new GroupPanel(host, (items, additive) => {
             this.activeSelection.setItems(items, additive);
+        }, (item, modifiers) => {
+            this.activeSelection.handleItemClick(item, modifiers);
         }, (item) => {
             const loci = this.groupPanel.focusItem(item);
             if (loci) this.plugin.managers.camera.focusLoci(loci);
@@ -536,6 +538,7 @@ export class MolSysViewerController {
         this.annotations = new AnnotationHandlers(plugin, {
             getStructure: () => this.getStructureData(),
             registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
+            addLabelOverlay: (msg) => this.groupPanel.addLabelOverlay(msg),
         });
         this.measurements = new MeasurementHandlers(plugin, {
             getStructure: () => this.getStructureData(),
@@ -544,9 +547,16 @@ export class MolSysViewerController {
 
         this.scene = new SceneHandlers(plugin, host, {
             clearShapes: () => this.state.clearShapesByTag(), // clear all shapes
-            clearLabels: async () => this.annotations.clearLabels(),
+            clearLabels: async () => {
+                await this.annotations.clearLabels();
+                this.groupPanel.clearAnnotationOverlays();
+            },
             getComponents: () => this.getComponents(),
-            clearShapesByTag: (tag) => this.state.clearShapesByTag(tag),
+            clearShapesByTag: (tag) => {
+                this.state.clearShapesByTag(tag);
+                this.groupPanel.clearAnnotationOverlaysByTag(tag);
+                this.annotations.clearLabelByTag(tag);
+            },
             removeLoadedStructure: () => this.removeLoadedStructure(),
             notify: (msg) => this.notify?.(msg)
         });
@@ -843,14 +853,19 @@ export class MolSysViewerController {
         const structures = this.plugin.managers.structure.hierarchy.current.structures;
         const last = structures.length ? structures[structures.length - 1] : undefined;
         if (last) {
+            const structure = last.cell.obj?.data;
             this.currentStructure = last.cell.transform.ref as any;
-            this.groupPanel.setStructure(last.cell.obj?.data);
+            this.groupPanel.setStructure(structure);
+            if (structure) {
+                this.activeSelection.setAllAvailableItems(buildGroupItemsFromStructure(structure));
+            }
             // Notify state handler that structure is ready so it can apply pending ops
             this.state.onStructureLoaded();
             this.trajectory.notifyListeners();
         } else {
             this.currentStructure = undefined;
             this.groupPanel.setStructure(undefined);
+            this.activeSelection.setAllAvailableItems([]);
         }
     }
 

@@ -20,6 +20,7 @@ Implementation note:
 | Hover | `empty` | clear hover target | none | none | does not clear `active_selection`; may still feed lightweight local UI reset |
 | Left click | `element` | select clicked target | replace `active_selection` | none | unless `Shift` is pressed |
 | Left click + `Shift` | `element` | add clicked target | add to `active_selection` | none | incremental selection |
+| Left click + `Shift` + `Alt` | `element` | select range from anchor | add range to `active_selection` | none | range selection within same chain |
 | Left click | `shape` | select clicked shape | replace `active_selection` | none | shape can be part of active selection |
 | Left click + `Shift` | `shape` | add clicked shape | add to `active_selection` | none | may produce mixed selection |
 | Left click | `annotation` | select clicked annotation | replace `active_selection` | none | annotation can be part of active selection |

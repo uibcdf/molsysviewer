@@ -97,10 +97,10 @@ should grow over time as additional project-level principles become clear.
     - pharmacophore features,
     - links, vectors, triangle faces, tetrahedra.
   - Tag-based registration for selective clear/hide.
+  - Exhaustive Python-side digestion for major overlay/detail arguments (PocketSurfaces, AnisotropyEllipsoids).
 
 - `In progress`
   - Deep coverage of TS shape handler branches and error paths.
-  - Python-side digestion for overlay/detail arguments is broader than before but still not exhaustive across every shape method.
   - Docs parity for all implemented overlays.
 
 ### Next actions

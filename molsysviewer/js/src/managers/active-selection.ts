@@ -9,18 +9,24 @@ export type ActiveSelectionItem = {
     element_level: "group";
     atom_indices: number[];
     group_indices: number[];
+    component_indices: number[];
     chain_indices: number[];
+    molecule_indices: number[];
     entity_indices: number[];
     group_name?: string;
     group_id?: number | string;
+    component_name?: string;
     chain_name?: string;
+    molecule_name?: string;
     entity_name?: string;
 } | {
     source_kind: "annotation";
     annotation_kind: "label";
     atom_indices: number[];
     group_indices: number[];
+    component_indices: number[];
     chain_indices: number[];
+    molecule_indices: number[];
     entity_indices: number[];
     tag?: string;
     text?: string;
@@ -31,7 +37,9 @@ export type ActiveSelectionItem = {
     tag?: string;
     atom_indices: number[];
     group_indices: number[];
+    component_indices: number[];
     chain_indices: number[];
+    molecule_indices: number[];
     entity_indices: number[];
 };
 
@@ -59,6 +67,14 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
 
     const model = atomicUnit.model;
     const hierarchy = model.atomicHierarchy;
+    let atomSite: any = undefined;
+    
+    if (model.sourceData.kind === "mmCIF") {
+        atomSite = (model.sourceData.data as any).db?.atom_site;
+    } else if (model.sourceData.kind === "mol-viewer:molsysmt") {
+        atomSite = model.sourceData.data;
+    }
+
     const residueOffsets = hierarchy.residueAtomSegments.offsets;
     const chainIndexByAtom = hierarchy.chainAtomSegments.index;
     const atoms = hierarchy.atoms;
@@ -66,6 +82,12 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
     const chains = hierarchy.chains;
     const modelIndex = hierarchy.index;
     const items: ActiveSelectionItem[] = [];
+
+    // Safe access to custom hierarchy columns
+    const molIdCol = (atomSite as any)?.molsys_molecule_id || (atomSite as any)?.molecule_id;
+    const molNameCol = (atomSite as any)?.molsys_molecule_name || (atomSite as any)?.molecule_name;
+    const compIdCol = (atomSite as any)?.molsys_component_id || (atomSite as any)?.component_id;
+    const compNameCol = (atomSite as any)?.molsys_component_name || (atomSite as any)?.component_name;
 
     for (let groupIndex = 0; groupIndex < residueOffsets.length - 1; groupIndex++) {
         const start = residueOffsets[groupIndex];
@@ -81,16 +103,32 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
         const authSeqId = residues.auth_seq_id.value(groupIndex);
         const chainName = chains.label_asym_id.value(chainIndex);
         const entityName = chains.label_entity_id.value(chainIndex);
+
+        const getValue = (col: any, idx: number) => {
+            if (!col) return undefined;
+            if (typeof col.value === "function") return col.value(idx);
+            return col[idx];
+        };
+
+        const molId = getValue(molIdCol, start) ?? 0;
+        const molName = getValue(molNameCol, start) ?? "Molecule";
+        const compIndex = getValue(compIdCol, start) ?? 0;
+        const compName = getValue(compNameCol, start) ?? "Component";
+
         items.push({
             source_kind: "element",
             element_level: "group",
             atom_indices: atomIndices,
             group_indices: [groupIndex],
+            component_indices: [compIndex],
             chain_indices: [chainIndex],
+            molecule_indices: [molId],
             entity_indices: [entityIndex],
             group_name: `${compId} ${authSeqId}`,
             group_id: authSeqId,
+            component_name: compName,
             chain_name: chainName,
+            molecule_name: molName,
             entity_name: entityName,
         });
     }
@@ -119,6 +157,15 @@ export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
         const model = unit.model;
         const hierarchy = model?.atomicHierarchy;
         const modelIndex = hierarchy?.index;
+        let atomSite: any = undefined;
+        
+        if (model.sourceData.kind === "mmCIF") {
+            atomSite = (model.sourceData.data as any).db?.atom_site;
+        } else if (model.sourceData.kind === "mol-viewer:molsysmt") {
+            atomSite = model.sourceData.data;
+        }
+
+
         if (!hierarchy || !modelIndex) continue;
         const residueIndexByAtom = hierarchy.residueAtomSegments.index;
         const residueOffsets = hierarchy.residueAtomSegments.offsets;
@@ -126,6 +173,12 @@ export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
         const atoms = hierarchy.atoms;
         const residues = hierarchy.residues;
         const chains = hierarchy.chains;
+
+        // Safe access to custom hierarchy columns
+        const molIdCol = (atomSite as any)?.molsys_molecule_id || (atomSite as any)?.molecule_id;
+        const molNameCol = (atomSite as any)?.molsys_molecule_name || (atomSite as any)?.molecule_name;
+        const compIdCol = (atomSite as any)?.molsys_component_id || (atomSite as any)?.component_id;
+        const compNameCol = (atomSite as any)?.molsys_component_name || (atomSite as any)?.component_name;
 
         const size = OrderedSet.size(lociElement.indices);
         for (let i = 0; i < size; i++) {
@@ -150,16 +203,31 @@ export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
             const entityName = chains.label_entity_id.value(chainIndex);
             const groupName = `${compId} ${authSeqId}`;
 
+            const getValue = (col: any, idx: number) => {
+                if (!col) return undefined;
+                if (typeof col.value === "function") return col.value(idx);
+                return col[idx];
+            };
+
+            const molId = getValue(molIdCol, atomIndex) ?? 0;
+            const molName = getValue(molNameCol, atomIndex) ?? "Molecule";
+            const compIndex = getValue(compIdCol, atomIndex) ?? 0;
+            const compName = getValue(compNameCol, atomIndex) ?? "Component";
+
             items.push({
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: atomIndices,
                 group_indices: [groupIndex],
+                component_indices: [compIndex],
                 chain_indices: [chainIndex],
+                molecule_indices: [molId],
                 entity_indices: [entityIndex],
                 group_name: groupName,
                 group_id: authSeqId,
+                component_name: compName,
                 chain_name: chainName,
+                molecule_name: molName,
                 entity_name: entityName,
             });
         }
@@ -185,7 +253,9 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
         tag: typeof data.tag === "string" ? data.tag : undefined,
         atom_indices: arrayOfNumbers(data.atom_indices),
         group_indices: arrayOfNumbers(data.group_indices),
+        component_indices: [],
         chain_indices: arrayOfNumbers(data.chain_indices),
+        molecule_indices: [],
         entity_indices: arrayOfNumbers(data.entity_indices),
     }];
 }
@@ -236,17 +306,23 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
 
     const atomIndices: number[] = [];
     const groupIndices: number[] = [];
+    const componentIndices: number[] = [];
     const chainIndices: number[] = [];
+    const moleculeIndices: number[] = [];
     const entityIndices: number[] = [];
     const seenAtoms = new Set<number>();
     const seenGroups = new Set<number>();
+    const seenComponents = new Set<number>();
     const seenChains = new Set<number>();
+    const seenMolecules = new Set<number>();
     const seenEntities = new Set<number>();
 
     for (const item of items) {
         appendUnique(atomIndices, seenAtoms, item.atom_indices);
         appendUnique(groupIndices, seenGroups, item.group_indices);
+        appendUnique(componentIndices, seenComponents, item.component_indices);
         appendUnique(chainIndices, seenChains, item.chain_indices);
+        appendUnique(moleculeIndices, seenMolecules, item.molecule_indices);
         appendUnique(entityIndices, seenEntities, item.entity_indices);
     }
 
@@ -265,9 +341,9 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
         items,
         atom_indices: atomIndices,
         group_indices: groupIndices,
-        component_indices: [],
+        component_indices: componentIndices,
         chain_indices: chainIndices,
-        molecule_indices: [],
+        molecule_indices: moleculeIndices,
         entity_indices: entityIndices,
         count_atoms: atomIndices.length,
         count_groups: groupIndices.length,
@@ -278,20 +354,83 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
 
 export class ActiveSelectionController {
     private items: ActiveSelectionItem[] = [];
+    private allAvailableItems: ActiveSelectionItem[] = [];
+    private anchorItem: ActiveSelectionItem | null = null;
 
     constructor(private readonly notify?: (msg: any) => void) {}
 
-    handlePrimaryClick(ev: any): void {
-        const shift = !!ev?.modifiers?.shift;
-        const items = lociToGroupItems(ev?.current?.loci).concat(lociToShapeItems(ev?.current?.loci));
-        if (items.length === 0) {
-            if (!shift) this.clear();
-            return;
-        }
-        this.setItems(items, shift);
+    setAllAvailableItems(items: ActiveSelectionItem[]): void {
+        this.allAvailableItems = items;
     }
 
-    setItems(items: ActiveSelectionItem[], additive = false): void {
+    handlePrimaryClick(ev: any): void {
+        const shift = !!ev?.modifiers?.shift;
+        const alt = !!ev?.modifiers?.alt;
+        const pickedItems = lociToGroupItems(ev?.current?.loci).concat(lociToShapeItems(ev?.current?.loci));
+        
+        if (pickedItems.length === 0) {
+            if (!shift) {
+                this.clear();
+                this.anchorItem = null;
+            }
+            return;
+        }
+
+        const current = pickedItems[0]; // Take first pick for simplicity in range logic
+
+        if (shift && alt && this.anchorItem && this.anchorItem.source_kind === "element" && current.source_kind === "element") {
+            // Range selection logic
+            if (this.anchorItem.chain_name === current.chain_name) {
+                const rangeItems = this.getRangeItems(this.anchorItem, current);
+                console.log(`[ActiveSelection] range items found: ${rangeItems.length}`);
+                if (rangeItems.length > 0) {
+                    this.setItems(rangeItems, true, true);
+                    // Do not update anchor on range selection to allow expanding the range
+                    return;
+                }
+            }
+        }
+
+        // Default behavior: single or additive selection
+        this.setItems(pickedItems, shift);
+        this.anchorItem = current;
+    }
+
+    handleItemClick(item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }): void {
+        const { shift, alt } = modifiers;
+
+        if (shift && alt && this.anchorItem && this.anchorItem.source_kind === "element" && item.source_kind === "element") {
+            if (this.anchorItem.chain_name === item.chain_name) {
+                const rangeItems = this.getRangeItems(this.anchorItem, item);
+                if (rangeItems.length > 0) {
+                    this.setItems(rangeItems, true, true);
+                    return;
+                }
+            }
+        }
+
+        this.setItems([item], shift);
+        this.anchorItem = item;
+    }
+
+    private getRangeItems(anchor: ActiveSelectionItem, target: ActiveSelectionItem): ActiveSelectionItem[] {
+        // Find indices in allAvailableItems based on group index and chain name
+        const anchorIdx = this.allAvailableItems.findIndex(i => 
+            i.chain_name === anchor.chain_name && i.group_indices[0] === anchor.group_indices[0]
+        );
+        const targetIdx = this.allAvailableItems.findIndex(i => 
+            i.chain_name === target.chain_name && i.group_indices[0] === target.group_indices[0]
+        );
+
+        if (anchorIdx === -1 || targetIdx === -1) return [];
+
+        const start = Math.min(anchorIdx, targetIdx);
+        const end = Math.max(anchorIdx, targetIdx);
+        
+        return this.allAvailableItems.slice(start, end + 1);
+    }
+
+    setItems(items: ActiveSelectionItem[], additive = false, isRange = false): void {
         if (items.length === 0) {
             if (!additive) this.clear();
             return;
@@ -307,7 +446,7 @@ export class ActiveSelectionController {
             const key = signature(item);
             const existingIndex = indexByKey.get(key);
             if (existingIndex !== undefined) {
-                if (item.source_kind === "element") {
+                if (item.source_kind === "element" && !isRange) {
                     next.splice(existingIndex, 1);
                     indexByKey.clear();
                     next.forEach((candidate, index) => indexByKey.set(signature(candidate), index));

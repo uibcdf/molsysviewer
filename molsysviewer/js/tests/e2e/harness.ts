@@ -7,10 +7,13 @@ declare global {
 
 export async function createController(targetId = "root") {
     const target = document.getElementById(targetId) ?? document.body;
-    return await MolSysViewerController.create(target, msg => {
-        // Expose last message for debugging if needed
+    (window as any).__messages = [];
+    const controller = await MolSysViewerController.create(target, msg => {
         (window as any).__lastMessage = msg;
+        (window as any).__messages.push(msg);
     });
+    (window as any).__controller = controller;
+    return controller;
 }
 
 if (typeof window !== "undefined") {

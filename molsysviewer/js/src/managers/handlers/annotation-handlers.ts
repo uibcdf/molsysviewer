@@ -11,6 +11,7 @@ import { AddLabelMessage, UpdateLabelMessage } from "../../messages/viewer-messa
 export interface AnnotationCallbacks {
     getStructure: () => Structure | undefined;
     registerRef: (ref?: StateObjectRef, tag?: string) => void;
+    addLabelOverlay: (msg: AddLabelMessage) => void;
 }
 
 export class AnnotationHandlers {
@@ -34,6 +35,9 @@ export class AnnotationHandlers {
         const tag = msg.tag ?? msg.options?.tag ?? "annotation";
         if (!text.trim() || atomIndices.length === 0) return;
         this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag });
+
+        // Notify UI overlay (strips)
+        this.callbacks.addLabelOverlay(msg);
 
         const loci = this.buildLociFromAtomIndices(structure, atomIndices);
         if (!loci) return;

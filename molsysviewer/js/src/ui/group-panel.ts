@@ -6,6 +6,7 @@ import { ContextMenuTarget } from "./context-menu";
 import { GroupStrip } from "./group-strip";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
+type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
 type OnFocus = (item: ActiveSelectionItem) => void;
 type OnHover = (item: ActiveSelectionItem | null) => void;
 type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
@@ -40,6 +41,7 @@ export class GroupPanel {
     constructor(
         private readonly host: HTMLElement,
         private readonly onSelect: OnSelect,
+        private readonly onInteraction: OnInteraction,
         private readonly onFocus: OnFocus,
         private readonly onHover: OnHover,
         private readonly onContext: OnContext,
@@ -215,7 +217,7 @@ export class GroupPanel {
         for (const [chain, chainItems] of grouped.entries()) {
             let strip = this.strips.get(chain);
             if (!strip) {
-                strip = new GroupStrip(this.body, chain, this.onSelect, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+                strip = new GroupStrip(this.body, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
                 this.strips.set(chain, strip);
             }
             strip.setData(this.structure, chainItems);

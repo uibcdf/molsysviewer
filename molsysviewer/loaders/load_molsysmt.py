@@ -74,7 +74,19 @@ def load_from_molsysmt(
 
     viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
 
-    payload = _serialize_molsys_payload(viewer_json)
+    # Extract hierarchy indices from MolSysMT to enrich the payload
+    molecule_indices = msm.get(view._molsys, element="atom", molecule_index=True, skip_digestion=True)
+    component_indices = msm.get(view._molsys, element="atom", component_index=True, skip_digestion=True)
+    molecule_names = msm.get(view._molsys, element="atom", molecule_name=True, skip_digestion=True)
+    component_names = msm.get(view._molsys, element="atom", component_name=True, skip_digestion=True)
+
+    payload = _serialize_molsys_payload(
+        viewer_json,
+        molecule_indices=molecule_indices,
+        component_indices=component_indices,
+        molecule_names=molecule_names,
+        component_names=component_names
+    )
     if payload is None:
         raise ValueError("Unable to serialize MolSysMT viewer payload")
     if n_structures is None:
@@ -93,7 +105,13 @@ def load_from_molsysmt(
     return view
 
 
-def _serialize_molsys_payload(viewer_json: Any) -> dict[str, Any] | None:
+def _serialize_molsys_payload(
+    viewer_json: Any,
+    molecule_indices: Any = None,
+    component_indices: Any = None,
+    molecule_names: Any = None,
+    component_names: Any = None
+) -> dict[str, Any] | None:
     """Convert MolSysMT ViewerJSON (new schema) into the MolSysPayload expected by the JS layer."""
     # Accept ViewerJSON object or plain dict
     data: dict[str, Any]
@@ -140,6 +158,12 @@ def _serialize_molsys_payload(viewer_json: Any) -> dict[str, Any] | None:
     element_symbol = _column(atoms_block.get("element_symbol"), lambda _i: "C", str)
     formal_charge = _column(atoms_block.get("formal_charge"), lambda _i: 0, int)
 
+    # Hierarchy metadata from MolSysMT
+    mol_id = _column(molecule_indices, lambda _i: 0, int)
+    mol_name = _column(molecule_names, lambda _i: "Molecule", str)
+    comp_id = _column(component_indices, lambda _i: 0, int)
+    comp_name = _column(component_names, lambda _i: "Component", str)
+
     structures_payload = _extract_structures(structures, n_atoms)
     if not structures_payload:
         return None
@@ -156,6 +180,10 @@ def _serialize_molsys_payload(viewer_json: Any) -> dict[str, Any] | None:
             "entity_id": entity_id,
             "element_symbol": element_symbol,
             "formal_charge": formal_charge,
+            "molecule_id": mol_id,
+            "molecule_name": mol_name,
+            "component_id": comp_id,
+            "component_name": comp_name,
         },
         "structures": structures_payload,
     }

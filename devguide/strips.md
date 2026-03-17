@@ -284,11 +284,15 @@ The current runtime slice now does the following:
 
 - renders a `GroupStrip` overlay from the currently loaded structure
 - groups items by chain
+- **NEW: visualizes the hierarchy within each chain (Molecule -> Component -> Groups) using nested left-border lines.**
+- **NEW: hierarchical selection by clicking on the molecule/component border markers.**
+- **NEW: range selection within a chain using `Shift + Alt + click`.**
 - shows compact group labels
 - mirrors the current `active_selection`
 - allows:
   - click -> replace active selection
   - `Shift + click` -> additive selection
+  - `Shift + Alt + click` -> range selection (additive)
   - double click -> focus group in the viewer
   - hover -> mirrors into viewer highlight + hover event flow
 - right click -> opens the same viewer context menu contract used by the canvas
@@ -302,11 +306,14 @@ The current slice does **not** yet do:
 - region overlays
 - tool-pick overlays
 
-Annotation overlays have now started in a narrow form:
+Annotation overlays are now functional:
+- persistent group labels project compact marks ("L" badges) onto `GroupStrip`.
+- badges are synchronized with the `add_label` workflow (validated via E2E).
+- they support:
+  - left click -> seeds `annotation` slice in `active_selection`.
+  - right click -> opens annotation-specific context menu.
+- multiple labels on the same group show a count (e.g., "2L").
 
-- persistent group labels can project compact marks onto `GroupStrip`
-- they are still overlays, not first-class strip items
-- richer overlay semantics (hover/pick/context) remain future work
 
 This is intentional.
 The first goal is to prove the shared state model (`active_selection`) and the
