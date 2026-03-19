@@ -44,6 +44,44 @@ Do not append dated historical entries unless a date is itself operationally rel
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.
 - Do not adopt middle-click as the default `GroupPanel` toggle for now; Mol* already uses the middle/wheel path for camera behavior.
 - Prioritize regression coverage for new product-facing behavior, especially where it composes runtime state, layers, and rebuild/replay.
+- A direct code-vs-checkpoint review now confirms that the current reproducible interaction slice is materially present in code and covered by the targeted local regression block.
+- The reproducible interaction workflow now also has an explicit integrated regression covering:
+  - saved selection
+  - region
+  - label
+  - persisted measurement
+  together in export/replay and after `remove()` remap.
+- The clearest next implementation gap is no longer the selection/annotation/measurement bridge itself, but the missing first-class `styles` layer above the current `representation` / `preset` / `user_preset` base.
+- That `styles` gap now has a first concrete Python-side slice:
+  - `Style`
+  - `view.styles`
+  - explicit style registry
+  - explicit `_molsysviewer.py` loading support
+  - canonical built-in scene-style battery
+- The next `styles` gap is no longer basic API existence.
+  It is the future scene-look layer:
+  - clarify `default-look` and `illustrative` as visual looks, not structural recipes
+  - preserve the distinction between structural targeting and visual styling
+  - avoid opening canvas authoring or a second runtime protocol too early
+- The canvas/popup UX direction should now be treated as explicitly decided at the principle level:
+  - resting canvas as clean as possible
+  - only two main interaction doors:
+    - right-click context menu
+    - panel mode
+  - only three permanent meta-controls:
+    - panel
+    - fullscreen
+    - popup
+  - trajectory scrubber remains the one justified always-visible data control when a trajectory exists
+  - panel mode should likely converge first on:
+    - `Navigate`
+    - `Workbench`
+  - tabs are the preferred first panel navigator
+  - a discreet carousel remains a possible later/configurable navigator variant
+- The detailed record of canvas/popup UX decisions, still-open UX questions,
+  and alternatives intentionally kept alive should now live in:
+  - `devguide/canvas_minimal_ux.md`
+  - do not let that discussion disappear into chat history only
 
 ## Current State
 
@@ -143,6 +181,45 @@ Do not append dated historical entries unless a date is itself operationally rel
   - The user guide now has a dedicated `tools/` section.
   - The first module documented is `tools.basic`.
   - Each currently exposed `tools.basic` function now has its own user-facing page under `user/tools/basic/`.
+  - Developer docs now also document the first explicit style/configuration path:
+    - `Style`
+    - `view.styles`
+    - explicit project config loading via `_molsysviewer.py`
+
+- Styles and configuration
+  - The first public `Style` slice now exists in Python:
+    - `Style`
+    - `view.styles.apply(...)`
+    - `view.styles.current()`
+    - `view.styles.info()`
+  - A second Python-side slice now also exists:
+    - registry methods such as `add()`, `get()`, `tags()`, `records()`
+    - application by tag
+    - explicit project-config loading via `view.styles.load_project_config(...)`
+  - The first canonical built-in battery is now exposed directly through the API:
+    - `default`
+    - `polymer-cartoon`
+    - `polymer-and-ligand`
+    - `atomic-detail`
+    - `coarse-surface`
+    - `empty`
+  - Current implementation rule:
+    - these styles are still backed by the existing global representation pathway,
+      not by a new frontend protocol
+  - Current configuration rule:
+    - `_molsysviewer.py` support is explicit-load only for now
+    - there is no ambient discovery yet
+    - explicit user calls still win over project defaults
+  - Current architectural rule:
+    - MolSysMT remains the canonical source of structural targeting semantics
+    - MolSysViewer styles define visual treatment
+    - future targeted styles should compose with MolSysMT-compatible selection
+      semantics or stable MolSysViewer selection-derived objects
+  - Current future-facing rule:
+    - `default-look` and `illustrative` should be treated as future scene-look
+      targets
+    - they should not be collapsed prematurely into the current structural
+      recipe battery
 
 - Interaction and taxonomy direction
   - Interaction taxonomy now uses:
@@ -153,6 +230,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     instead of overloading `structure` in the interaction contract.
   - Element hierarchy now explicitly tracks:
     - `atom`, `group`, `component`, `chain`, `molecule`, `entity`.
+  - The first lightweight public wrappers now exist for:
+    - `view.hover_target`
+    - `view.context_target`
+  - Current wrapper rule:
+    - query-oriented only
+    - do not overdesign them yet into a richer object model than current runtime payloads justify
   - `devguide/annotations.md` now records the viewer taxonomy around:
     - `elements`,
     - `regions`,
@@ -392,6 +475,10 @@ Do not append dated historical entries unless a date is itself operationally rel
   - range selection,
   - region overlays,
   - tool-pick overlays.
+- Formalize the path from current representation mechanics into the future `styles` model:
+  - today the repository has real `representation`, `preset`, and `user_preset` support,
+  - but it does not yet have a public first-class `Style` object or `Scene Style` / `Focus Style` runtime contract,
+  - so the next design/implementation step should define that first narrow reproducible slice explicitly rather than treating the vision page as if it were already implemented.
 - Decide the next annotation-interaction step carefully:
   - keep current label overlays on the strip,
   - keep the new strip-seeded `annotation` context + selection slices stable,

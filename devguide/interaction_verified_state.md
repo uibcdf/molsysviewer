@@ -83,6 +83,10 @@ interaction behavior.
   - mirrors into viewer highlight
 - `double click`
   - triggers camera `focus`
+- current visual strip states now distinguish at least:
+  - active selection
+  - annotation selection badges
+  - context target, with a discrete marker for structure and annotation targets
 
 ### Verified
 
@@ -162,6 +166,20 @@ interaction behavior.
 - `clear()` now clears both:
   - Python-side cached selection state
   - frontend runtime active selection
+
+## Hover And Context Targets
+
+### Verified
+
+- `view.hover_target` now exists as a lightweight public Python wrapper
+- `view.context_target` now exists as a lightweight public Python wrapper
+- current minimum surface for both:
+  - `info()`
+  - `is_empty()`
+- current first slice intentionally remains query-oriented
+- legacy/raw event getters still exist and remain valid:
+  - `get_last_hover_event()`
+  - `get_last_context_event()`
 
 ## Annotations
 

@@ -4,8 +4,10 @@ Representations control how the molecular system is drawn (cartoon, sticks, surf
 
 Use this section to learn:
 
+- how scene-level styles relate to representations,
 - which representation types are available, and
-- which built-in presets you can apply.
+- which built-in presets you can apply,
+- and how scene-level styles are starting to build on top of them.
 
 If you want to organize the scene (whole vs regions, tags, layers), see {doc}`../scene_management/index`.
 
@@ -13,6 +15,7 @@ If you want to organize the scene (whole vs regions, tags, layers), see {doc}`..
 :hidden:
 :maxdepth: 2
 
+styles
 types
 presets
 user_presets

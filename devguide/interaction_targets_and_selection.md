@@ -84,7 +84,12 @@ The interaction model should distinguish four concepts:
 Current runtime note:
 
 - hover events already exist and are stored on the Python side
-- a stable public Python object for `hover_target` does not yet exist
+- a first lightweight public Python object now exists as `view.hover_target`
+- current first slice is intentionally query-only:
+  - `info()`
+  - `is_empty()`
+  - simple fields such as `kind` and `atom_indices`
+- richer behavior and stronger typed target semantics still remain ahead
 
 ### `context_target`
 
@@ -96,7 +101,12 @@ Current runtime note:
 Current runtime note:
 
 - context-menu events already exist and are stored on the Python side
-- a stable public Python object for `context_target` does not yet exist
+- a first lightweight public Python object now exists as `view.context_target`
+- current first slice is intentionally query-only:
+  - `info()`
+  - `is_empty()`
+  - simple fields such as `kind`, `atom_indices`, `tag`, `text`, `page_x`, and `page_y`
+- action launching still continues to flow through the existing context-menu event bridge
 
 ### `active_selection`
 

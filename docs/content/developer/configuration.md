@@ -1,14 +1,191 @@
 # Configuration (Python)
 
-This page documents public configuration knobs in `molsysviewer.config.*`.
-It is a placeholder and will be expanded as the configuration surface stabilizes.
+This page documents the current public configuration surface in
+`molsysviewer.config.*` and the explicit project-level `_molsysviewer.py`
+pattern.
 
 ## What belongs here
 
 - Viewer defaults (controls visibility, autohide, control positions).
 - Export defaults (docs-lite runtime URL selection, embed behavior).
 - User presets loading (`load_user_presets`).
+- Explicit project config loading for `_molsysviewer.py` (`load_project_config`).
 - SMonitor configuration (`_smonitor.py`, catalog, metadata).
+
+## Runtime Defaults In `molsysviewer.config`
+
+Current built-in viewer defaults live in:
+
+- `molsysviewer.config.show_controls`
+- `molsysviewer.config.autohide_controls`
+- `molsysviewer.config.controls_position`
+- `molsysviewer.config.controls_position_fullscreen`
+
+These are simple Python module-level defaults.
+
+## User Presets
+
+Representation presets can be loaded explicitly from JSON or YAML with:
+
+```python
+from molsysviewer.config import load_user_presets
+
+load_user_presets("user-presets.json")
+```
+
+These presets participate in the current representation/style base and can be
+used through:
+
+- `view.whole.set_representation(preset="...")`
+- `Style(user_preset="...")`
+
+## Explicit Project Config With `_molsysviewer.py`
+
+MolSysViewer now supports an explicit project-level configuration file pattern:
+
+- `_molsysviewer.py`
+
+This support is intentionally conservative:
+
+- there is no ambient auto-discovery yet
+- the file is only loaded when the user requests it explicitly
+- explicit notebook/script calls still win over project defaults
+
+## Recommended `_molsysviewer.py` Shape
+
+The first supported contract is intentionally small:
+
+```python
+from molsysviewer import Style
+
+DEFAULT_SCENE_STYLE = Style(
+    preset="polymer-cartoon",
+    name="default-polymer",
+)
+
+STYLES = {
+    "publication": Style(
+        preset="polymer-cartoon",
+        name="publication",
+    ),
+    "atomic": Style(
+        preset="atomic-detail",
+        name="atomic",
+    ),
+}
+```
+
+Supported names:
+
+- `DEFAULT_SCENE_STYLE`
+  - optional single `Style`
+- `STYLES`
+  - optional mapping `tag -> Style`
+
+## Loading Project Config Explicitly
+
+You can load the file directly:
+
+```python
+from molsysviewer.config import load_project_config
+
+data = load_project_config("_molsysviewer.py")
+```
+
+That returns validated data without mutating a viewer instance.
+
+## Applying Project Config To A Viewer
+
+The higher-level entrypoint is:
+
+```python
+from molsysviewer import demo
+
+view = demo["dialanine"]
+view.styles.load_project_config("_molsysviewer.py", apply_default=False)
+```
+
+This registers `STYLES` on `view.styles` without changing the current scene.
+
+If you want the default scene style to be applied too:
+
+```python
+view.styles.load_project_config("_molsysviewer.py", apply_default=True)
+```
+
+That explicit flag is important.
+
+The design rule is:
+
+- loading config should not silently mutate the scene unless the caller asks for it
+
+## Style API Examples
+
+Programmatic use remains the primary source of truth.
+
+### Apply a built-in canonical scene recipe
+
+```python
+view.styles.apply(tag="polymer-and-ligand")
+```
+
+### Register and apply a custom style
+
+```python
+from molsysviewer import Style
+
+view.styles.add(
+    "inspection",
+    Style(preset="atomic-detail", name="Inspection"),
+    description="Local atomistic inspection baseline",
+)
+
+view.styles.apply(tag="inspection")
+```
+
+### Apply a style object directly
+
+```python
+from molsysviewer import Style
+
+view.styles.apply(
+    style=Style(
+        preset="coarse-surface",
+        name="Large System Overview",
+    )
+)
+```
+
+## Built-In Canonical Scene Recipes
+
+MolSysViewer now exposes a small curated built-in style battery through
+`view.styles`.
+
+Current canonical built-ins are:
+
+- `default`
+- `polymer-cartoon`
+- `polymer-and-ligand`
+- `atomic-detail`
+- `coarse-surface`
+- `empty`
+
+You can inspect them with:
+
+```python
+view.styles.builtin_tags()
+view.styles.builtin_records()
+```
+
+## Configuration Rule
+
+Keep this rule in mind:
+
+- Python defines
+- project config registers
+- canvas applies or previews later
+
+That ordering is deliberate and preserves reproducibility.
 
 ## Cross-links
 

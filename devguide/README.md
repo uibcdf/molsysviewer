@@ -56,16 +56,28 @@ That principle should guide prioritization throughout the repository.
    - Viewer taxonomy for labels/annotations, Mol* precedents, and the first annotation slice.
 11. [**Selections**](selections.md)
    - Persistent named selections as a category distinct from regions.
-11. [**Smoke Test**](smoke_test.md)
+12. [**Smoke Test**](smoke_test.md)
    - Short runbook for checking interaction feel and reproducibility together.
-12. [**Guiding Principles**](guiding_principles.md)
+13. [**Guiding Principles**](guiding_principles.md)
    - Stable project ideas-alma that should guide development and usage.
-13. [**Roadmap**](roadmap.md)
+14. [**Development Mantra**](development_mantra.md)
+   - Short identity guide: differentiation, health assessment, risks, and the decision filter to avoid drift.
+15. [**Roadmap**](roadmap.md)
    - Strategic goals and upcoming development phases.
-14. [**Checkpoints**](checkpoints.md)
+16. [**Checkpoints**](checkpoints.md)
    - Current handoff checkpoint: active status, decisions, next steps, and constraints.
-15. [**Vision for v1.0**](v1_vision_and_styles.md)
+17. [**Vision for v1.0**](v1_vision_and_styles.md)
    - Architectural vision, user personas, and the concept of scientific Styles.
+18. [**Styles: First Slice**](styles_first_slice.md)
+   - Narrow technical contract for introducing the first public `Style` object on top of the existing representation/preset base.
+19. [**Styles: Second Slice And Project Config**](styles_second_slice_and_project_config.md)
+   - Priority order for style interaction channels and the proposed `_molsysviewer.py` path for embedders.
+20. [**Style Battery And Future Ideas**](style_battery_and_future_ideas.md)
+   - Canonical first battery of scene recipes and tracked future directions inspired by Mol* and nglview.
+21. [**Scene Look Styles Direction**](scene_look_styles_direction.md)
+   - Clarifies the future distinction between scene recipes and visual looks such as `default-look` and `illustrative`.
+22. [**Canvas Minimal UX**](canvas_minimal_ux.md)
+   - Minimalist canvas/popup UX direction: only two interaction doors, three permanent meta-controls, and panel mode as the structured workspace entrypoint.
 
 ## Workbench Tutorials (Planned)
 

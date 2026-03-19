@@ -287,8 +287,13 @@ The current runtime slice now does the following:
 - **NEW: visualizes the hierarchy within each chain (Molecule -> Component -> Groups) using nested left-border lines.**
 - **NEW: hierarchical selection by clicking on the molecule/component border markers.**
 - **NEW: range selection within a chain using `Shift + Alt + click`.**
+- **NEW: compact visible captions now expose `molecule` and `component` identity directly in the strip.**
+- **NEW: molecule/component sections can now be collapsed and expanded locally inside the strip.**
 - shows compact group labels
 - mirrors the current `active_selection`
+- now also reflects `context_target` with a discrete visual marker for:
+  - structural group targets
+  - annotation badge targets
 - allows:
   - click -> replace active selection
   - `Shift + click` -> additive selection
@@ -302,7 +307,6 @@ The current runtime slice now does the following:
 
 The current slice does **not** yet do:
 
-- **Collapsible Hierarchy**: Add the ability to collapse/expand Molecule and Component containers to handle large systems efficiently.
 - range selection / drag selection
 - region overlays
 - tool-pick overlays
