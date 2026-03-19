@@ -58,6 +58,10 @@ Do not append dated historical entries unless a date is itself operationally rel
       - maybe later `Show/Hide`
   - do not let these menus grow into rich editors or type-specific browsers
 - The strip work has now crossed into a real `GroupPanel` + multiple-`GroupStrip` runtime.
+- `GroupPanel` has now taken a first practical step toward the future `Navigate` panel:
+  - it uses a reusable panel shell
+  - it exposes an explicit `Navigate` title
+  - but it still behaves as the current drawer-style strip container, not yet the final shared `panel mode`
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.
 - Do not adopt middle-click as the default `GroupPanel` toggle for now; Mol* already uses the middle/wheel path for camera behavior.
