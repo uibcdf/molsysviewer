@@ -1,9 +1,11 @@
 import { PanelShell } from "./panel-shell";
 
 type WorkbenchItem = {
+    key?: string;
     title: string;
     subtitle?: string;
     hidden?: boolean;
+    active?: boolean;
     onActivate?: () => void;
 };
 
@@ -172,15 +174,22 @@ export class WorkbenchPanel {
     private makeRow(item: WorkbenchItem): HTMLDivElement {
         const row = document.createElement("div");
         row.setAttribute("data-molsysviewer-workbench-item", "true");
+        if (item.key) row.setAttribute("data-molsysviewer-workbench-item-key", item.key);
+        if (item.active) row.setAttribute("data-molsysviewer-workbench-item-active", "true");
         Object.assign(row.style, {
             display: "flex",
             flexDirection: "column",
             gap: "2px",
             padding: "6px 8px",
             borderRadius: "8px",
-            background: item.hidden ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.06)",
+            background: item.active
+                ? "rgba(255,255,255,0.12)"
+                : item.hidden
+                    ? "rgba(255,255,255,0.03)"
+                    : "rgba(255,255,255,0.06)",
             color: item.hidden ? "rgba(244,244,245,0.58)" : "#f4f4f5",
             cursor: item.onActivate ? "pointer" : "default",
+            outline: item.active ? "1px solid rgba(255,255,255,0.16)" : "none",
         });
         if (item.onActivate) {
             row.addEventListener("click", (event) => {
