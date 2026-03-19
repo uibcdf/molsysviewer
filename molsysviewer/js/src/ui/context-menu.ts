@@ -20,6 +20,7 @@ export type ContextMenuAction =
     | "dihedral"
     | "focus_target"
     | "focus_region"
+    | "delete_annotation"
     | "focus_selection"
     | "activate_selection"
     | "save_selection"
@@ -159,6 +160,9 @@ export class ViewerContextMenu {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
         } else if (target.kind === "annotation") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            if (target.tag?.trim()) {
+                this.root.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
+            }
         } else {
             const note = document.createElement("div");
             note.textContent = "No target under cursor";
@@ -423,6 +427,11 @@ export class ViewerContextMenu {
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
+        if (action === "delete_annotation") {
+            const tag = this.currentTarget?.kind === "annotation" ? this.currentTarget.tag : undefined;
+            if (!tag || tag.trim() === "") return null;
+            return { tag };
+        }
         return {};
     }
 
