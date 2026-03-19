@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 pytest.importorskip("anywidget")
@@ -6,38 +8,44 @@ pytest.importorskip("traitlets")
 from molsysviewer import MolSysView
 
 
-def test_write_html_prefers_anywidget_embed(monkeypatch, tmp_path):
+def test_export_html_namespace_delegates(monkeypatch, tmp_path):
     view = MolSysView(debug_js=True)
-    # Capture outgoing widget sends to avoid side effects
-    view.widget.send = lambda _msg: None  # type: ignore
-
     called = {}
 
-    # Stub out the anywidget embed helper to avoid writing files during the test.
-    def fake_embed(path, views, title=None, **_kwargs):
-        called["path"] = path
-        called["views"] = views
-        called["title"] = title
+    def fake_impl(output_filename, **kwargs):
+        called["output_filename"] = output_filename
+        called["kwargs"] = kwargs
 
-    # Simulate viewer actions so history is serialized
-    view._send({"op": "dummy"})
-    view._send({"op": "update_visibility", "options": {"visible_atom_indices": [0, 1, 2]}})
-
-    # Anywidget does not expose an embed helper; we intercept the write to inspect state.
-    monkeypatch.setattr(view, "_build_standalone_html", lambda title: "HTML")
+    monkeypatch.setattr(view, "_write_html_impl", fake_impl)
 
     outfile = tmp_path / "out.html"
-    with monkeypatch.context() as m:
-        # Patch the file write to avoid IO and capture title/path
-        def fake_write_html(self, output_filename, title=""):
-            fake_embed(output_filename, [self.widget], title=title)
-            # ensure initial_messages were cleaned before export
-            self.widget.initial_messages = self._clean_message_history()
+    view.export.html(str(outfile), title="TestTitle", include_controls=False, include_popout=False, mode="lite")
 
-        m.setattr(view.__class__, "write_html", fake_write_html)
-        view.write_html(str(outfile), title="TestTitle")
+    assert called["output_filename"] == str(outfile)
+    assert called["kwargs"] == {
+        "title": "TestTitle",
+        "include_controls": False,
+        "include_popout": False,
+        "mode": "lite",
+        "inline_messages": True,
+    }
 
-    assert called["path"] == str(outfile)
-    assert called["views"] == [view.widget]
-    assert called["title"] == "TestTitle"
-    assert view.widget.initial_messages == [{"op": "dummy"}]
+
+def test_write_html_warns_and_delegates(monkeypatch, tmp_path):
+    view = MolSysView(debug_js=True)
+    called = {}
+
+    def fake_impl(output_filename, **kwargs):
+        called["output_filename"] = output_filename
+        called["kwargs"] = kwargs
+
+    monkeypatch.setattr(view, "_write_html_impl", fake_impl)
+
+    outfile = tmp_path / "deprecated.html"
+    with warnings.catch_warnings(record=True) as records:
+        warnings.simplefilter("always")
+        view.write_html(str(outfile), title="Old API")
+
+    assert called["output_filename"] == str(outfile)
+    assert called["kwargs"]["title"] == "Old API"
+    assert any(isinstance(record.message, DeprecationWarning) for record in records)

@@ -182,9 +182,19 @@ See also
 - {doc}`protocol_and_payloads`
 - {doc}`regions_layers`
 
-## Exports (HTML lite)
+## Exports
 
-`MolSysView.write_html(..., mode="lite")` is a public, user-facing export mode.
+Preferred export surface:
+
+- `view.export.html(...)`
+- `view.export.image(...)`
+
+Compatibility aliases:
+
+- `MolSysView.write_html(...)` is deprecated in favor of `view.export.html(...)`
+- `MolSysView.export_image(...)` is deprecated in favor of `view.export.image(...)`
+
+`view.export.html(..., mode="lite")` is a public, user-facing export mode.
 It must remain reproducible.
 
 If you change:
