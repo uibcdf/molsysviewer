@@ -267,6 +267,10 @@ Current practical bridge state:
   - explicit `Navigate` identity
   - explicit `Workbench` identity
   - cleaner separation between panel chrome and panel content
+  - `Navigate` now also exposes first lightweight live sections below `Structure`:
+    - `Active`
+    - `Saved`
+    - `Regions`
   - real `Workbench` sections and empty states already scaffolded
   - minimal controller wiring for `Workbench` rows based on live runtime summaries
   - first row-level primary action already present when structural anchoring is available:

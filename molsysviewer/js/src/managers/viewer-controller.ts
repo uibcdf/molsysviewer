@@ -607,6 +607,7 @@ export class MolSysViewerController {
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState()
         });
+        this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
     }
 
@@ -913,6 +914,7 @@ export class MolSysViewerController {
                     break;
             }
             this.applyWorkbenchMessage(msg);
+            this.refreshNavigatePanel();
             this.refreshWorkbenchPanel();
             this.syncStripOverlaysForMessage(msg);
         } catch (error) {
@@ -941,6 +943,7 @@ export class MolSysViewerController {
             const structure = last.cell.obj?.data;
             this.currentStructure = last.cell.transform.ref as any;
             this.groupPanel.setStructure(structure);
+            this.refreshNavigatePanel();
             this.workbenchPanel.setVisible(Boolean(structure));
             if (structure) {
                 this.activeSelection.setAllAvailableItems(buildGroupItemsFromStructure(structure));
@@ -951,6 +954,7 @@ export class MolSysViewerController {
         } else {
             this.currentStructure = undefined;
             this.groupPanel.setStructure(undefined);
+            this.refreshNavigatePanel();
             this.workbenchPanel.setVisible(false);
             this.activeSelection.setAllAvailableItems([]);
         }
@@ -1213,6 +1217,17 @@ export class MolSysViewerController {
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
+    }
+
+    private refreshNavigatePanel(): void {
+        this.groupPanel.setSavedSelections(this.savedSelections);
+        this.groupPanel.setRegions(
+            this.state.getRegionSummaries().map((item) => ({
+                tag: item.tag,
+                atom_count: item.atom_count,
+                hidden: item.hidden,
+            }))
+        );
     }
 
     // Facades for external access (e.g. from Index or Popout)

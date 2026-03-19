@@ -62,6 +62,11 @@ Do not append dated historical entries unless a date is itself operationally rel
   - it uses a reusable panel shell
   - it exposes an explicit `Navigate` title
   - but it still behaves as the current drawer-style strip container, not yet the final shared `panel mode`
+  - it now also exposes first lightweight live summary sections:
+    - `Active`
+    - `Saved`
+    - `Regions`
+  - these are still list-style summaries, not yet a richer interactive inventory
 - `WorkbenchPanel` now also exists as a real shell-based runtime scaffold:
   - same panel shell family
   - explicit `Workbench` identity

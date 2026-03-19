@@ -12,13 +12,23 @@ type OnFocus = (item: ActiveSelectionItem) => void;
 type OnHover = (item: ActiveSelectionItem | null) => void;
 type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
 type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
+type SavedSelectionSummary = { tag: string; atom_count: number };
+type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
+type SummarySectionKey = "active" | "saved" | "regions";
+type SummarySectionView = {
+    root: HTMLDivElement;
+    list: HTMLDivElement;
+    empty: HTMLDivElement;
+};
 
 export class GroupPanel {
     private readonly root: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
     private readonly body: HTMLDivElement;
+    private readonly structureSection: HTMLDivElement;
     private readonly shell: PanelShell;
     private readonly strips = new Map<string, GroupStrip>();
+    private readonly summarySections: Record<SummarySectionKey, SummarySectionView>;
     private structure?: Structure;
     private expanded = false;
     private currentSelection: ActiveSelectionPayload = {
@@ -41,6 +51,8 @@ export class GroupPanel {
     private readonly annotationMessages: AddLabelMessage[] = [];
     private currentContextTarget: ContextMenuTarget | null = null;
     private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
+    private savedSelections: SavedSelectionSummary[] = [];
+    private regions: RegionSummary[] = [];
 
     constructor(
         private readonly host: HTMLElement,
@@ -67,6 +79,31 @@ export class GroupPanel {
         });
 
         this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
+        Object.assign(this.body.style, {
+            flexDirection: "column",
+            overflowX: "hidden",
+            overflowY: "auto",
+            gap: "8px",
+        });
+
+        this.structureSection = document.createElement("div");
+        this.structureSection.setAttribute("data-molsysviewer-group-panel-section", "structure");
+        Object.assign(this.structureSection.style, {
+            display: "flex",
+            flexDirection: "row",
+            gap: "10px",
+            overflowX: "auto",
+            overflowY: "hidden",
+            minHeight: "96px",
+        });
+        this.body.appendChild(this.makeSectionHeader("Structure"));
+        this.body.appendChild(this.structureSection);
+
+        this.summarySections = {
+            active: this.createSummarySection("Active", "No active selection."),
+            saved: this.createSummarySection("Saved", "No saved selections yet."),
+            regions: this.createSummarySection("Regions", "No regions yet."),
+        };
     }
 
     setStructure(structure: Structure | undefined): void {
@@ -80,6 +117,17 @@ export class GroupPanel {
         for (const strip of this.strips.values()) {
             strip.updateSelection(selection);
         }
+        this.renderSummaries();
+    }
+
+    setSavedSelections(items: SavedSelectionSummary[]): void {
+        this.savedSelections = [...items];
+        this.renderSummaries();
+    }
+
+    setRegions(items: RegionSummary[]): void {
+        this.regions = [...items];
+        this.renderSummaries();
     }
 
     updateContextTarget(target: ContextMenuTarget | null): void {
@@ -168,7 +216,7 @@ export class GroupPanel {
         for (const [chain, chainItems] of grouped.entries()) {
             let strip = this.strips.get(chain);
             if (!strip) {
-                strip = new GroupStrip(this.body, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+                strip = new GroupStrip(this.structureSection, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
                 this.strips.set(chain, strip);
             }
             strip.setData(this.structure, chainItems);
@@ -181,11 +229,132 @@ export class GroupPanel {
             }
         }
         this.applyExpandedState();
+        this.renderSummaries();
     }
 
     private captureCollapseState(): void {
         for (const [chain, strip] of this.strips.entries()) {
             this.collapseStateByChain.set(chain, strip.getCollapseState());
+        }
+    }
+
+    private makeSectionHeader(title: string): HTMLDivElement {
+        const header = document.createElement("div");
+        header.setAttribute("data-molsysviewer-group-panel-section-title", title.toLowerCase());
+        Object.assign(header.style, {
+            fontSize: "11px",
+            fontWeight: "700",
+            color: "rgba(244,244,245,0.88)",
+        });
+        header.textContent = title;
+        return header;
+    }
+
+    private createSummarySection(title: string, emptyText: string): SummarySectionView {
+        const key = title.toLowerCase() as SummarySectionKey;
+        const section = document.createElement("div");
+        section.setAttribute("data-molsysviewer-group-panel-section", key);
+        Object.assign(section.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+            padding: "8px",
+            borderRadius: "10px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.06)",
+        });
+        section.appendChild(this.makeSectionHeader(title));
+
+        const list = document.createElement("div");
+        Object.assign(list.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+        });
+
+        const empty = document.createElement("div");
+        empty.setAttribute("data-molsysviewer-group-panel-empty", key);
+        Object.assign(empty.style, {
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.56)",
+        });
+        empty.textContent = emptyText;
+
+        section.appendChild(list);
+        section.appendChild(empty);
+        this.body.appendChild(section);
+        return { root: section, list, empty };
+    }
+
+    private renderSummaries(): void {
+        this.renderSummaryItems(
+            this.summarySections.active,
+            this.currentSelection.source_kind === "empty"
+                ? []
+                : [{
+                    title: `${this.currentSelection.count_atoms} atoms`,
+                    subtitle: `${this.currentSelection.source_kind} · ${this.currentSelection.target_level}`,
+                }]
+        );
+        this.renderSummaryItems(
+            this.summarySections.saved,
+            this.savedSelections
+                .slice()
+                .sort((a, b) => a.tag.localeCompare(b.tag))
+                .map((item) => ({
+                    title: item.tag,
+                    subtitle: `${item.atom_count} atoms`,
+                }))
+        );
+        this.renderSummaryItems(
+            this.summarySections.regions,
+            this.regions
+                .slice()
+                .sort((a, b) => a.tag.localeCompare(b.tag))
+                .map((item) => ({
+                    title: item.tag,
+                    subtitle: item.hidden ? `${item.atom_count} atoms · hidden` : `${item.atom_count} atoms`,
+                }))
+        );
+    }
+
+    private renderSummaryItems(section: SummarySectionView, items: Array<{ title: string; subtitle: string }>): void {
+        section.list.replaceChildren();
+        if (items.length === 0) {
+            section.empty.style.display = "block";
+            return;
+        }
+        section.empty.style.display = "none";
+        for (const item of items) {
+            const row = document.createElement("div");
+            row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+            Object.assign(row.style, {
+                display: "flex",
+                flexDirection: "column",
+                gap: "2px",
+                padding: "6px 8px",
+                borderRadius: "8px",
+                background: "rgba(255,255,255,0.06)",
+                color: "#f4f4f5",
+            });
+
+            const title = document.createElement("div");
+            Object.assign(title.style, {
+                fontSize: "12px",
+                fontWeight: "600",
+            });
+            title.textContent = item.title;
+
+            const subtitle = document.createElement("div");
+            Object.assign(subtitle.style, {
+                fontSize: "11px",
+                color: "rgba(244,244,245,0.68)",
+            });
+            subtitle.textContent = item.subtitle;
+
+            row.appendChild(title);
+            row.appendChild(subtitle);
+            section.list.appendChild(row);
         }
     }
 }
