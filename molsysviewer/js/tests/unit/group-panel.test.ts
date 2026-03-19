@@ -49,11 +49,12 @@ function installFakeDom() {
     };
 }
 
-function findFirstByAttribute(root: FakeElement, attributeName: string): FakeElement | null {
+function findFirstByAttribute(root: FakeElement, attributeName: string, value?: string): FakeElement | null {
     let out: FakeElement | null = null;
     const walk = (node: FakeElement) => {
         if (out) return;
-        if (node.getAttribute(attributeName) !== undefined) {
+        const attr = node.getAttribute(attributeName);
+        if (attr !== undefined && (value === undefined || attr === value)) {
             out = node;
             return;
         }
@@ -65,6 +66,29 @@ function findFirstByAttribute(root: FakeElement, attributeName: string): FakeEle
 
 function findFirstGroupButton(root: FakeElement): FakeElement | null {
     return findFirstByAttribute(root, "data-molsysviewer-group-item");
+}
+
+function collectByAttribute(root: FakeElement, attributeName: string, value?: string): FakeElement[] {
+    const out: FakeElement[] = [];
+    const walk = (node: FakeElement) => {
+        const attr = node.getAttribute(attributeName);
+        if (attr !== undefined && (value === undefined || attr === value)) {
+            out.push(node);
+        }
+        for (const child of node.children) walk(child);
+    };
+    walk(root);
+    return out;
+}
+
+function firstText(node: FakeElement | null | undefined): string {
+    if (!node) return "";
+    if (node.textContent) return node.textContent;
+    for (const child of node.children) {
+        const text = firstText(child);
+        if (text) return text;
+    }
+    return "";
 }
 
 test("GroupPanel creates one GroupStrip per chain", () => {
@@ -100,7 +124,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         const title = findFirstByAttribute(root, "data-molsysviewer-group-panel-title");
         const body = findFirstByAttribute(root, "data-molsysviewer-group-panel-body");
         const toggle = root.children[1];
-        const stripRoots = body?.children.filter((child) => child.getAttribute?.('data-molsysviewer-group-strip') === 'true') ?? [];
+        const stripRoots = collectByAttribute(root, 'data-molsysviewer-group-strip', 'true');
         assert.strictEqual(stripRoots.length, 2);
         assert.ok(shell);
         assert.ok(title);
@@ -108,6 +132,73 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         assert.strictEqual(root.style.display, 'flex');
         assert.strictEqual(toggle.textContent, '>');
         assert.strictEqual(root.style.transform, 'translateX(-240px)');
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel renders active, saved, and region summaries", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const structure = { units: [{ kind: 0, model: {
+            sourceData: {
+                kind: "mol-viewer:molsysmt",
+                data: {
+                    molsys_molecule_id: [0, 0],
+                    molsys_molecule_name: ["Peptide", "Peptide"],
+                    molsys_component_id: [0, 0],
+                    molsys_component_name: ["Protein", "Protein"],
+                },
+            },
+            atomicHierarchy: {
+                residueAtomSegments: { offsets: [0, 2] },
+                chainAtomSegments: { index: [0, 0] },
+                atoms: { label_comp_id: { value: (_i: number) => 'ALA' } },
+                residues: { auth_seq_id: { value: (i: number) => i + 1 } },
+                chains: {
+                    label_asym_id: { value: (_i: number) => 'A' },
+                    label_entity_id: { value: (_i: number) => '0' },
+                },
+                index: { getEntityFromChain: (_i: number) => 0 },
+            },
+        }}] } as any;
+        panel.setStructure(structure);
+        panel.updateSelection({
+            event: "interaction_active_selection_changed",
+            source_kind: "selection",
+            target_level: "group",
+            element_level: "atom",
+            items: [],
+            atom_indices: [0, 1],
+            group_indices: [0],
+            component_indices: [0],
+            chain_indices: [0],
+            molecule_indices: [0],
+            entity_indices: [0],
+            count_atoms: 2,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 0,
+        });
+        panel.setSavedSelections([{ tag: "site_a", atom_count: 2 }]);
+        panel.setRegions([{ tag: "binding", atom_count: 2, hidden: true }]);
+
+        const root = host.children[0];
+        const activeSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "active");
+        const savedSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "saved");
+        const regionsSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "regions");
+        const summaryItems = collectByAttribute(root, "data-molsysviewer-group-panel-summary-item", "true").map((node) => firstText(node));
+
+        assert.ok(activeSection);
+        assert.ok(savedSection);
+        assert.ok(regionsSection);
+        assert.ok(summaryItems.includes("2 atoms"));
+        assert.ok(summaryItems.includes("site_a"));
+        assert.ok(summaryItems.includes("binding"));
+
         panel.dispose();
     } finally {
         restore();
