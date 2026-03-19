@@ -15,4 +15,5 @@ molsysmt
 molstar
 units
 configuration
+project_configuration
 ```

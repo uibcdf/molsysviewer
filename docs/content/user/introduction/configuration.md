@@ -12,6 +12,12 @@ This page focuses on the `molsysviewer.config` module: what you can customize, a
 - Many options can also be changed **per viewer instance** (for example, you can show/hide the on-canvas UI for a single
   viewer without changing your global defaults).
 
+There are now three distinct customization layers worth keeping separate:
+
+- `molsysviewer.config.*` for module-level defaults
+- `view.styles` for scene baselines on a concrete viewer
+- `_molsysviewer.py` for explicit project-level style catalogs
+
 In a notebook, it is common to set configuration once near the top of the notebook and then create one or more views.
 
 ## On-canvas controls
@@ -62,3 +68,35 @@ The quick workflow is:
 3. Apply them with `preset="..."` in `whole` or `regions`.
 
 See {doc}`../representations/user_presets`.
+
+## Scene styles
+
+Scene styles are a higher-level vocabulary for reusable viewer baselines.
+
+Use them when you want to say "start from this known scene recipe" instead of
+setting low-level representations directly each time.
+
+Examples:
+
+```python
+from molsysviewer import Style
+
+view.styles.apply(tag="polymer-cartoon")
+view.styles.add("inspection", Style(preset="atomic-detail"))
+```
+
+See {doc}`../representations/styles`.
+
+## Project configuration with `_molsysviewer.py`
+
+If you are embedding MolSysViewer in a larger codebase, you can also keep a
+project-level `_molsysviewer.py` file with:
+
+- `DEFAULT_SCENE_STYLE`
+- `STYLES`
+
+This support is explicit-load only for now.
+
+That means MolSysViewer will not auto-discover the file silently.
+
+See {doc}`project_configuration`.

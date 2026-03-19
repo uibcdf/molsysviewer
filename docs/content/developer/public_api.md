@@ -13,8 +13,18 @@ You treat these as public:
 - `molsysviewer.load.load` (convenience wrapper, if exposed)
 - `molsysviewer.demo` (demo viewers used by docs and tests)
 - `molsysviewer.config.*` (configuration and user presets)
+- `molsysviewer.config.load_project_config`
+- `molsysviewer.styles.Style`
+- `molsysviewer.styles.BUILTIN_SCENE_STYLES`
 
 If you rename, remove, or change behavior here, you update docs and add tests.
+
+Current scope clarification for `Style`:
+
+- the current public slice is scene-recipe oriented
+- it is still backed by the existing whole-representation pathway
+- it does not yet include an independent scene-look layer such as
+  `default-look` or `illustrative`
 
 `new_view(...)` includes a convenience argument `load_mode`:
 
@@ -51,7 +61,28 @@ If you rename, remove, or change behavior here, you update docs and add tests.
 - `get_last_hover_event()`
 - `get_last_click_event()`
   - current interaction payloads are intentionally minimal and atom-centric
+- `hover_target`
+  - `info()`
+  - `is_empty()`
+- `context_target`
+  - `info()`
+  - `is_empty()`
 - `get_last_active_selection_event()`
+- `styles`
+  - `add(tag, style, ...)`
+  - `apply(...)`
+  - `builtin_tags()`
+  - `builtin_records()`
+  - `contains(tag)`
+  - `get(tag)`
+  - `get_builtin(tag)`
+  - `tags()`
+  - `records()`
+  - `count()`
+  - `clear(tag=None)`
+  - `current()`
+  - `info()`
+  - `load_project_config(path, apply_default=False)`
 - `active_selection`
   - `info()`
   - `is_empty()`

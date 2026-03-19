@@ -22,6 +22,14 @@ To achieve excellence, we design for two distinct but perfectly synchronized pat
 - **Requirement**: A lightweight, comfortable, and conceptually solid interface.
 - **Ideal**: High-level tools (GroupPanel, Context Menus, Tool Banners) that perform complex scientific actions without exposing the underlying graphic engine's internal state.
 
+Current refinement of that ideal:
+
+- the resting canvas should remain as clean as possible
+- the primary visual surface should be the molecular system itself
+- structured user interaction should enter mainly through:
+  - right click
+  - panel mode
+
 **The Bridge**: The state is unified. An action in the API appears in the UI, and a measurement taken with the mouse is accessible via the Python API (`view.measurements.records()`).
 
 ---
@@ -35,6 +43,41 @@ While Mol* uses "Presets" as macro-commands to setup representations, MolSysView
 - **Compositional Model**:
     - **Scene Styles (Exclusive)**: Define the base look (Default, Dark, Atomic Detail) and reset the scene.
     - **Focus Styles (Cumulative)**: Add layers of meaning (e.g., `+ Hydrophobicity`, `+ H-Bonds`) over existing selections without clearing the base scene.
+
+## Current Status
+
+This page is still primarily a vision and design-direction document.
+
+Important status clarification:
+
+- the repository already has real support for:
+  - a public Python `Style` object
+  - a public `view.styles` manager
+  - a Python-side style registry
+  - explicit project-level `_molsysviewer.py` loading for scene-style catalogs
+  - global and region `representation`
+  - built-in `preset`
+  - Python-side `user_preset`
+- these mechanics are already replay/export/rebuild-relevant
+- but the current implementation is still only the first scene-style slice
+- there is not yet a full realization of the broader model described on this page
+  - no first-class visual-look layer
+  - no focus-style family
+  - no rule-based style system
+  - no canvas style authoring
+
+So, for current development, this document should be read as:
+
+- a target architectural direction,
+- grounded on real existing style and representation mechanics,
+- but still ahead of the currently implemented first slice
+
+The next healthy steps are still incremental:
+
+1. keep hardening the first stable reproducible `Style` contract on top of the
+   current representation/preset base
+2. define the first explicit visual-look slice without breaking that base
+3. only then move toward richer focus and rule-based styles
 
 ### 3.2 Structure of a Style Object
 - **Declarative (Easy Path)**: A simple constructor for 80% of use cases (e.g., `Style(representation='surface', color='electrostatic')`).
