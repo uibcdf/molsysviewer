@@ -8,6 +8,7 @@ type WorkbenchItem = {
     active?: boolean;
     context?: boolean;
     onActivate?: () => void;
+    onToggleVisibility?: () => void;
 };
 
 type SceneSummary = {
@@ -21,6 +22,7 @@ type SectionView = {
     root: HTMLDivElement;
     list: HTMLDivElement;
     empty: HTMLDivElement;
+    marker: HTMLSpanElement;
 };
 
 export class WorkbenchPanel {
@@ -29,6 +31,7 @@ export class WorkbenchPanel {
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
     private readonly sections: Record<WorkbenchSectionKey, SectionView>;
+    private readonly sectionExpanded: Record<WorkbenchSectionKey, boolean>;
     private expanded = false;
 
     constructor(private readonly host: HTMLElement) {
@@ -79,6 +82,12 @@ export class WorkbenchPanel {
             shapes: this.createSection("Shapes", "No shapes yet."),
             scene: this.createSection("Scene", "No scene style selected."),
         };
+        this.sectionExpanded = {
+            annotations: true,
+            measurements: true,
+            shapes: true,
+            scene: true,
+        };
 
         this.applyExpandedState();
         this.setVisible(false);
@@ -90,14 +99,17 @@ export class WorkbenchPanel {
 
     setAnnotations(items: WorkbenchItem[]): void {
         this.renderItems(this.sections.annotations, items);
+        this.applySectionExpandedState("annotations");
     }
 
     setMeasurements(items: WorkbenchItem[]): void {
         this.renderItems(this.sections.measurements, items);
+        this.applySectionExpandedState("measurements");
     }
 
     setShapes(items: WorkbenchItem[]): void {
         this.renderItems(this.sections.shapes, items);
+        this.applySectionExpandedState("shapes");
     }
 
     setScene(summary: SceneSummary | null): void {
@@ -105,6 +117,7 @@ export class WorkbenchPanel {
         if (summary?.styleTag) items.push({ title: `Style: ${summary.styleTag}` });
         if (summary?.preset) items.push({ title: `Preset: ${summary.preset}` });
         this.renderItems(this.sections.scene, items);
+        this.applySectionExpandedState("scene");
     }
 
     dispose(): void {
@@ -117,8 +130,9 @@ export class WorkbenchPanel {
     }
 
     private createSection(title: string, emptyText: string): SectionView {
+        const key = title.toLowerCase() as WorkbenchSectionKey;
         const section = document.createElement("div");
-        section.setAttribute("data-molsysviewer-workbench-section", title.toLowerCase());
+        section.setAttribute("data-molsysviewer-workbench-section", key);
         Object.assign(section.style, {
             display: "flex",
             flexDirection: "column",
@@ -129,13 +143,41 @@ export class WorkbenchPanel {
             border: "1px solid rgba(255,255,255,0.06)",
         });
 
-        const header = document.createElement("div");
+        const header = document.createElement("button");
+        header.type = "button";
+        header.setAttribute("data-molsysviewer-workbench-section-toggle", key);
         Object.assign(header.style, {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "8px",
             fontSize: "11px",
             fontWeight: "700",
             color: "rgba(244,244,245,0.88)",
+            background: "transparent",
+            border: "0",
+            padding: "0",
+            cursor: "pointer",
+            textAlign: "left",
         });
-        header.textContent = title;
+        const headerTitle = document.createElement("span");
+        headerTitle.textContent = title;
+        const headerMarker = document.createElement("span");
+        headerMarker.setAttribute("data-molsysviewer-workbench-section-marker", key);
+        headerMarker.textContent = "−";
+        Object.assign(headerMarker.style, {
+            color: "rgba(244,244,245,0.52)",
+            fontSize: "12px",
+            lineHeight: "1",
+        });
+        header.appendChild(headerTitle);
+        header.appendChild(headerMarker);
+        header.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.sectionExpanded[key] = !this.sectionExpanded[key];
+            this.applySectionExpandedState(key);
+        });
 
         const list = document.createElement("div");
         Object.assign(list.style, {
@@ -157,7 +199,7 @@ export class WorkbenchPanel {
         section.appendChild(empty);
         this.body.appendChild(section);
 
-        return { root: section, list, empty };
+        return { root: section, list, empty, marker: headerMarker };
     }
 
     private renderItems(section: SectionView, items: WorkbenchItem[]): void {
@@ -170,6 +212,15 @@ export class WorkbenchPanel {
         for (const item of items) {
             section.list.appendChild(this.makeRow(item));
         }
+    }
+
+    private applySectionExpandedState(key: WorkbenchSectionKey): void {
+        const section = this.sections[key];
+        const expanded = this.sectionExpanded[key];
+        section.marker.textContent = expanded ? "−" : "+";
+        section.list.style.display = expanded ? "flex" : "none";
+        const hasItems = section.list.children.length > 0;
+        section.empty.style.display = expanded && !hasItems ? "block" : "none";
     }
 
     private makeRow(item: WorkbenchItem): HTMLDivElement {
@@ -207,13 +258,46 @@ export class WorkbenchPanel {
             });
         }
 
+        const top = document.createElement("div");
+        Object.assign(top.style, {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "8px",
+        });
+
         const title = document.createElement("div");
         Object.assign(title.style, {
             fontSize: "12px",
             fontWeight: "600",
+            flex: "1 1 auto",
         });
         title.textContent = item.title;
-        row.appendChild(title);
+        top.appendChild(title);
+
+        if (item.onToggleVisibility) {
+            const visibilityButton = document.createElement("button");
+            visibilityButton.type = "button";
+            visibilityButton.setAttribute("data-molsysviewer-workbench-item-visibility", item.hidden ? "hidden" : "visible");
+            visibilityButton.textContent = item.hidden ? "Show" : "Hide";
+            Object.assign(visibilityButton.style, {
+                fontSize: "10px",
+                color: "rgba(244,244,245,0.72)",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.10)",
+                borderRadius: "999px",
+                padding: "1px 6px",
+                cursor: "pointer",
+            });
+            visibilityButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                item.onToggleVisibility?.();
+            });
+            top.appendChild(visibilityButton);
+        }
+
+        row.appendChild(top);
 
         if (item.subtitle) {
             const subtitle = document.createElement("div");

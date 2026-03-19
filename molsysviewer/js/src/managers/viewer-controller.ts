@@ -1168,6 +1168,9 @@ export class MolSysViewerController {
                         this.refreshWorkbenchPanel();
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
+                    onToggleVisibility: () => {
+                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
+                    },
                 }))
         );
         this.workbenchPanel.setMeasurements(
@@ -1184,6 +1187,9 @@ export class MolSysViewerController {
                         this.refreshWorkbenchPanel();
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
+                    onToggleVisibility: () => {
+                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
+                    },
                 }))
         );
         this.workbenchPanel.setShapes(
@@ -1201,6 +1207,9 @@ export class MolSysViewerController {
                         this.refreshWorkbenchPanel();
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
+                    onToggleVisibility: () => {
+                        void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
+                    },
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);

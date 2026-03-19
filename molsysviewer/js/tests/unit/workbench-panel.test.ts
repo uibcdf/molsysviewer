@@ -9,16 +9,19 @@ class FakeElement {
     public textContent = "";
     public title = "";
     public type = "";
+    public parent: FakeElement | null = null;
     private attributes = new Map<string, string>();
     private listeners = new Map<string, Array<(event?: any) => void>>();
 
     appendChild(child: FakeElement) {
+        child.parent = this;
         this.children.push(child);
         return child;
     }
 
     replaceChildren(...children: FakeElement[]) {
         this.children.length = 0;
+        for (const child of children) child.parent = this;
         this.children.push(...children);
     }
 
@@ -62,6 +65,15 @@ function findFirstByAttribute(root: FakeElement, attributeName: string, value?: 
     };
     walk(root);
     return out;
+}
+
+function findFirstText(node: FakeElement): string {
+    if (node.textContent) return node.textContent;
+    for (const child of node.children) {
+        const text = findFirstText(child);
+        if (text) return text;
+    }
+    return "";
 }
 
 test("WorkbenchPanel renders titled shell and empty sections", () => {
@@ -112,13 +124,13 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         collect(root);
 
         assert.strictEqual(items.length, 5);
-        assert.strictEqual(items[0].children[0]?.textContent, "Picked label");
+        assert.strictEqual(findFirstText(items[0]), "Picked label");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-active"), "true");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-context"), "true");
-        assert.strictEqual(items[1].children[0]?.textContent, "Distance");
-        assert.strictEqual(items[2].children[0]?.textContent, "Pocket");
-        assert.strictEqual(items[3].children[0]?.textContent, "Style: polymer-and-ligand");
-        assert.strictEqual(items[4].children[0]?.textContent, "Preset: atomic-detail");
+        assert.strictEqual(findFirstText(items[1]), "Distance");
+        assert.strictEqual(findFirstText(items[2]), "Pocket");
+        assert.strictEqual(findFirstText(items[3]), "Style: polymer-and-ligand");
+        assert.strictEqual(findFirstText(items[4]), "Preset: atomic-detail");
 
         panel.dispose();
     } finally {
@@ -141,6 +153,71 @@ test("WorkbenchPanel rows trigger activation when provided", () => {
         assert.ok(row);
         row?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(activated, 1);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("WorkbenchPanel rows expose visibility toggle when provided", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new WorkbenchPanel(host);
+        let toggled = 0;
+
+        panel.setVisible(true);
+        panel.setAnnotations([{
+            title: "Picked label",
+            subtitle: "group 12",
+            hidden: true,
+            onToggleVisibility: () => { toggled += 1; },
+        }]);
+
+        const root = host.children[0];
+        const button = findFirstByAttribute(root, "data-molsysviewer-workbench-item-visibility", "hidden");
+        assert.ok(button);
+        assert.strictEqual(button?.textContent, "Show");
+        button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(toggled, 1);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("WorkbenchPanel sections can collapse and expand", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new WorkbenchPanel(host);
+
+        panel.setVisible(true);
+        panel.setAnnotations([{ title: "Picked label", subtitle: "group 12" }]);
+
+        const root = host.children[0];
+        const toggle = findFirstByAttribute(root, "data-molsysviewer-workbench-section-toggle", "annotations");
+        const marker = findFirstByAttribute(root, "data-molsysviewer-workbench-section-marker", "annotations");
+        const section = findFirstByAttribute(root, "data-molsysviewer-workbench-section", "annotations");
+        const row = findFirstByAttribute(root, "data-molsysviewer-workbench-item");
+        assert.ok(toggle);
+        assert.ok(marker);
+        assert.ok(section);
+        assert.ok(row);
+        const list = section?.children[1];
+        assert.ok(list);
+        assert.strictEqual(list?.style.display, "flex");
+        assert.strictEqual(marker?.textContent, "−");
+
+        toggle?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(list?.style.display, "none");
+        assert.strictEqual(marker?.textContent, "+");
+
+        toggle?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(list?.style.display, "flex");
+        assert.strictEqual(marker?.textContent, "−");
 
         panel.dispose();
     } finally {
