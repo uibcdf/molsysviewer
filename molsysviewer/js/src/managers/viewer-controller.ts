@@ -306,6 +306,7 @@ export class MolSysViewerController {
     private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean; atomIndices: number[] }>();
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
+    private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -964,6 +965,7 @@ export class MolSysViewerController {
             this.workbenchMeasurements.clear();
             this.workbenchShapes.clear();
             this.workbenchScene = null;
+            this.workbenchActive = null;
             return;
         }
 
@@ -972,6 +974,8 @@ export class MolSysViewerController {
             if (options.labels) this.workbenchAnnotations.clear();
             if (options.shapes) this.workbenchShapes.clear();
             if (options.styles) this.workbenchScene = null;
+            if (this.workbenchActive?.section === "annotations" && options.labels) this.workbenchActive = null;
+            if (this.workbenchActive?.section === "shapes" && options.shapes) this.workbenchActive = null;
             return;
         }
 
@@ -1063,6 +1067,7 @@ export class MolSysViewerController {
             this.workbenchAnnotations.delete(tag);
             this.workbenchMeasurements.delete(tag);
             this.workbenchShapes.delete(tag);
+            if (this.workbenchActive?.tag === tag) this.workbenchActive = null;
             return;
         }
 
@@ -1074,16 +1079,25 @@ export class MolSysViewerController {
                 const item = this.workbenchAnnotations.get(oldTag)!;
                 this.workbenchAnnotations.delete(oldTag);
                 this.workbenchAnnotations.set(newTag, item);
+                if (this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === oldTag) {
+                    this.workbenchActive = { section: "annotations", tag: newTag };
+                }
             }
             if (this.workbenchMeasurements.has(oldTag)) {
                 const item = this.workbenchMeasurements.get(oldTag)!;
                 this.workbenchMeasurements.delete(oldTag);
                 this.workbenchMeasurements.set(newTag, item);
+                if (this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === oldTag) {
+                    this.workbenchActive = { section: "measurements", tag: newTag };
+                }
             }
             if (this.workbenchShapes.has(oldTag)) {
                 const item = this.workbenchShapes.get(oldTag)!;
                 this.workbenchShapes.delete(oldTag);
                 this.workbenchShapes.set(newTag, item);
+                if (this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === oldTag) {
+                    this.workbenchActive = { section: "shapes", tag: newTag };
+                }
             }
             return;
         }
@@ -1110,30 +1124,48 @@ export class MolSysViewerController {
             Array.from(this.workbenchAnnotations.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([tag, item]) => ({
+                    key: tag,
                     title: item.text,
                     subtitle: tag,
                     hidden: item.hidden,
-                    onActivate: item.atomIndices.length > 0 ? () => this.focusTarget({ atom_indices: item.atomIndices }) : undefined,
+                    active: this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === tag,
+                    onActivate: item.atomIndices.length > 0 ? () => {
+                        this.workbenchActive = { section: "annotations", tag };
+                        this.refreshWorkbenchPanel();
+                        this.focusTarget({ atom_indices: item.atomIndices });
+                    } : undefined,
                 }))
         );
         this.workbenchPanel.setMeasurements(
             Array.from(this.workbenchMeasurements.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([tag, item]) => ({
+                    key: tag,
                     title: item.kind[0].toUpperCase() + item.kind.slice(1),
                     subtitle: `${tag} · ${item.picks} picks`,
                     hidden: item.hidden,
-                    onActivate: item.atomIndices.length > 0 ? () => this.focusTarget({ atom_indices: item.atomIndices }) : undefined,
+                    active: this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === tag,
+                    onActivate: item.atomIndices.length > 0 ? () => {
+                        this.workbenchActive = { section: "measurements", tag };
+                        this.refreshWorkbenchPanel();
+                        this.focusTarget({ atom_indices: item.atomIndices });
+                    } : undefined,
                 }))
         );
         this.workbenchPanel.setShapes(
             Array.from(this.workbenchShapes.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([tag, item]) => ({
+                    key: tag,
                     title: item.title,
                     subtitle: item.subtitle ? `${tag} · ${item.subtitle}` : tag,
                     hidden: item.hidden,
-                    onActivate: item.atomIndices.length > 0 ? () => this.focusTarget({ atom_indices: item.atomIndices }) : undefined,
+                    active: this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === tag,
+                    onActivate: item.atomIndices.length > 0 ? () => {
+                        this.workbenchActive = { section: "shapes", tag };
+                        this.refreshWorkbenchPanel();
+                        this.focusTarget({ atom_indices: item.atomIndices });
+                    } : undefined,
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
