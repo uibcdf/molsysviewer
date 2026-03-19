@@ -20,7 +20,7 @@ import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
-import { LastMeasurementSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
+import { LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
@@ -428,9 +428,17 @@ export class MolSysViewerController {
         }, (target, pageX, pageY) => {
             this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
         });
-        this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target) => {
+        this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
             if (action === "focus_target") {
                 this.focusTarget(target);
+                return;
+            }
+            if (action === "focus_region") {
+                const tag = typeof details?.tag === "string" ? details.tag : null;
+                if (!tag) return;
+                const region = this.state.getRegionSummaries().find((item) => item.tag === tag);
+                if (!region) return;
+                this.focusTarget({ atom_indices: region.atom_indices });
                 return;
             }
             if (action === "focus_selection") {
@@ -510,7 +518,15 @@ export class MolSysViewerController {
             this.lastContextPayload = payload;
             this.groupPanel.updateContextTarget(payload);
             emitInteractionEvent(payload);
-            this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
+            this.contextMenu.open(
+                payload,
+                pageX,
+                pageY,
+                this.currentActiveSelection,
+                this.lastMeasurementSummary,
+                this.savedSelections,
+                this.getRelevantRegionSummaries(payload),
+            );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
             this.lastHoverPayload = normalizeInteractionEvent("hover", ev);
@@ -627,7 +643,15 @@ export class MolSysViewerController {
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
+        this.contextMenu.open(
+            payload,
+            pageX,
+            pageY,
+            this.currentActiveSelection,
+            this.lastMeasurementSummary,
+            this.savedSelections,
+            this.getRelevantRegionSummaries(payload),
+        );
     }
 
     private openContextMenuForAnnotation(
@@ -644,7 +668,15 @@ export class MolSysViewerController {
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
         emitInteractionEvent(payload);
-        this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
+        this.contextMenu.open(
+            payload,
+            pageX,
+            pageY,
+            this.currentActiveSelection,
+            this.lastMeasurementSummary,
+            this.savedSelections,
+            this.getRelevantRegionSummaries(payload),
+        );
     }
 
     private focusCurrentSelection(): void {
@@ -661,6 +693,15 @@ export class MolSysViewerController {
         const loci = this.atomIndicesToLoci(atomIndices);
         if (!loci) return;
         this.plugin.managers.camera.focusLoci(loci);
+    }
+
+    private getRelevantRegionSummaries(target: { atom_indices?: number[] }): RegionSummary[] {
+        const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+        if (atomIndices.length === 0) return [];
+        const targetSet = new Set(atomIndices);
+        return this.state
+            .getRegionSummaries()
+            .filter((region) => region.atom_indices.some((idx) => targetSet.has(idx)));
     }
 
     private upsertSavedSelection(msg: any): void {

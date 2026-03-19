@@ -230,6 +230,60 @@ test("ViewerContextMenu renders saved selections and emits activate_selection", 
     }
 });
 
+test("ViewerContextMenu renders relevant regions and emits focus_region", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "structure" as const, atom_indices: [3, 4, 5] };
+        menu.open(
+            target,
+            10,
+            20,
+            null,
+            null,
+            null,
+            [
+                { tag: "siteA", atom_indices: [4, 5, 6], atom_count: 3, hidden: false },
+                { tag: "siteB", atom_indices: [10, 11], atom_count: 2, hidden: true },
+            ],
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Regions"));
+        assert.ok(texts.includes("siteA · 3 atoms"));
+        assert.ok(texts.includes("siteB · 2 atoms · hidden"));
+
+        const button = findNodeByText(root, "siteA · 3 atoms");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "focus_region", target, details: { tag: "siteA" } },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "focus_region",
+                context: target,
+                tag: "siteA",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu opens inline label composer before add-label action", () => {
     const restore = installFakeDom();
     try {

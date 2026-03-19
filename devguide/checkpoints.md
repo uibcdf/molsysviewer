@@ -39,6 +39,11 @@ Do not append dated historical entries unless a date is itself operationally rel
 - `Save Selection` is now live-smoke verified both when the menu opens on empty canvas and when it opens on a structural context target; the earlier accidental fallthrough into measurement picking is fixed.
 - Saved persistent selections can now be restored back into `active_selection` via API, and the context menu now has a saved-selection section ready to expose that bridge live.
 - Next context-menu expansion should favor relevant persistent workbench objects in this order: `regions`, then richer `annotations`, then carefully-scoped `shapes`; avoid turning the menu into a general browser of every object.
+- The first `regions` slice is now present in the context menu:
+  - only relevant overlapping regions are shown
+  - the first action is deliberately narrow:
+    - `Focus Region`
+  - defer richer region actions until this small slice proves useful and stays clean
 - The strip work has now crossed into a real `GroupPanel` + multiple-`GroupStrip` runtime.
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.

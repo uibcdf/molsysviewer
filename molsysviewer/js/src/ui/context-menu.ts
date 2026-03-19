@@ -19,6 +19,7 @@ export type ContextMenuAction =
     | "angle"
     | "dihedral"
     | "focus_target"
+    | "focus_region"
     | "focus_selection"
     | "activate_selection"
     | "save_selection"
@@ -40,6 +41,14 @@ export type LastMeasurementSummary = {
 export type SavedSelectionSummary = {
     tag: string;
     atom_count: number;
+};
+
+export type RegionSummary = {
+    tag: string;
+    atom_indices: number[];
+    atom_count: number;
+    selection?: string;
+    hidden: boolean;
 };
 
 function targetTitle(target: ContextMenuTarget): string {
@@ -80,6 +89,7 @@ export class ViewerContextMenu {
     private currentSelection: ActiveSelectionPayload | null = null;
     private currentLastMeasurement: LastMeasurementSummary | null = null;
     private currentSavedSelections: SavedSelectionSummary[] = [];
+    private currentRegions: RegionSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
 
@@ -118,11 +128,13 @@ export class ViewerContextMenu {
         activeSelection?: ActiveSelectionPayload | null,
         lastMeasurement?: LastMeasurementSummary | null,
         savedSelections?: SavedSelectionSummary[] | null,
+        regions?: RegionSummary[] | null,
     ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
         this.currentLastMeasurement = lastMeasurement ?? null;
         this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
+        this.currentRegions = Array.isArray(regions) ? [...regions] : [];
         this.currentPageX = pageX;
         this.currentPageY = pageY;
         this.root.replaceChildren();
@@ -226,6 +238,29 @@ export class ViewerContextMenu {
             this.root.appendChild(section);
         }
 
+        if (this.currentRegions.length > 0) {
+            const section = document.createElement("div");
+            Object.assign(section.style, {
+                marginTop: "8px",
+                paddingTop: "8px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+
+            const title = document.createElement("div");
+            title.textContent = "Regions";
+            Object.assign(title.style, {
+                padding: "4px 8px 8px 8px",
+                opacity: "0.82",
+                fontSize: "12px",
+            });
+            section.appendChild(title);
+
+            for (const region of this.currentRegions) {
+                section.appendChild(this.makeRegionButton(region));
+            }
+            this.root.appendChild(section);
+        }
+
         const rect = this.host.getBoundingClientRect();
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
@@ -249,6 +284,7 @@ export class ViewerContextMenu {
         this.currentSelection = null;
         this.currentLastMeasurement = null;
         this.currentSavedSelections = [];
+        this.currentRegions = [];
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
     }
@@ -338,6 +374,46 @@ export class ViewerContextMenu {
             this.notify?.({
                 event: "interaction_context_action",
                 action: "activate_selection",
+                context: this.currentTarget,
+                ...details,
+            });
+            this.close();
+        });
+        return button;
+    }
+
+    private makeRegionButton(region: RegionSummary): HTMLButtonElement {
+        const suffix = region.hidden ? " · hidden" : "";
+        const label = `${region.tag} · ${region.atom_count} atom${region.atom_count === 1 ? "" : "s"}${suffix}`;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.setAttribute("data-molsysviewer-region", region.tag);
+        Object.assign(button.style, {
+            display: "block",
+            width: "100%",
+            padding: "8px 10px",
+            margin: "0",
+            border: "0",
+            borderRadius: "8px",
+            background: "transparent",
+            color: region.hidden ? "rgba(244,244,245,0.72)" : "inherit",
+            textAlign: "left",
+            cursor: "pointer",
+        });
+        button.addEventListener("pointerenter", () => {
+            button.style.background = "rgba(255,255,255,0.10)";
+        });
+        button.addEventListener("pointerleave", () => {
+            button.style.background = "transparent";
+        });
+        button.addEventListener("click", () => {
+            if (!this.currentTarget) return;
+            const details = { tag: region.tag };
+            this.onAction?.("focus_region", this.currentTarget, details);
+            this.notify?.({
+                event: "interaction_context_action",
+                action: "focus_region",
                 context: this.currentTarget,
                 ...details,
             });

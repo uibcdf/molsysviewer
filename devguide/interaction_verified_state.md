@@ -113,6 +113,11 @@ interaction behavior.
   - `Clear Selection`
 - for recent interactive measurements, it supports:
   - `Persist Last Measurement`
+- for structural context targets, it now also exposes a first lightweight
+  persistent-workbench bridge for relevant `regions`:
+  - a `Regions` section appears when stored regions overlap the context target
+  - the first action is intentionally narrow:
+    - `Focus Region`
 
 ## Interactive Measurements
 
