@@ -70,7 +70,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `Measurements`
     - `Shapes`
     - `Scene`
-  - currently still a scaffold with empty states / simple rows, not yet integrated into a shared navigator or controller wiring
+  - now wired into the controller as a minimal right-side drawer
+  - currently populated from a lightweight controller-side summary model:
+    - annotation text + tag
+    - measurement kind + pick count
+    - shape title/tag
+    - scene preset/representation summary
+  - still not yet integrated into a shared navigator or final `panel mode`
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.
 - Do not adopt middle-click as the default `GroupPanel` toggle for now; Mol* already uses the middle/wheel path for camera behavior.
