@@ -271,6 +271,9 @@ Current practical bridge state:
   - minimal controller wiring for `Workbench` rows based on live runtime summaries
   - first row-level primary action already present when structural anchoring is available:
     - click row -> focus target
+  - `Workbench` rows now also expose first local visual states:
+    - `active`
+    - `context` for tagged annotations/shapes while the menu is open
 
 ## First Container Direction For Panel Mode
 

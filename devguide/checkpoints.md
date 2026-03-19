@@ -82,6 +82,12 @@ Do not append dated historical entries unless a date is itself operationally rel
       - annotations
       - measurements
       - shapes only when `atom_indices` are present in the layer metadata
+  - row state has also started to align with the shared panel/canvas language:
+    - `active` row state now exists in the runtime
+    - `context` row state now also exists in the runtime for:
+      - annotations with tag
+      - shapes with tag
+    - this is still a local drawer-era implementation, not yet the final shared `panel mode` state model
   - still not yet integrated into a shared navigator or final `panel mode`
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.
@@ -125,6 +131,39 @@ Do not append dated historical entries unless a date is itself operationally rel
   and alternatives intentionally kept alive should now live in:
   - `devguide/canvas_minimal_ux.md`
   - do not let that discussion disappear into chat history only
+
+## Near-Term Route To 1.0
+
+The current preferred route to 1.0 is incremental and workbench-first:
+
+1. keep the reproducible scene/state model hard and boring:
+   - export/replay
+   - rebuild/remap
+   - popup sync
+   - persistent artifacts
+2. keep the canvas minimal:
+   - right click
+   - panel mode
+   - three meta-controls only
+3. converge the current drawer-era runtime toward the two-panel workbench model:
+   - `Navigate`
+   - `Workbench`
+4. strengthen row/list semantics before inventing richer chrome:
+   - primary action
+   - `active`
+   - `context`
+   - later `hidden` / visibility treatment where appropriate
+5. finish the first healthy `styles` story before opening richer look systems:
+   - stable scene styles now
+   - scene looks later
+   - focus styles later still
+6. add a first serious image-export story on top of the same reproducible scene model
+7. only after that, consider the shared panel navigator, standalone host, and richer publication-oriented layers
+
+Working rule:
+
+- do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell
+- first make the existing workbench slices coherent, reproducible, and pleasant
 
 ## Current State
 

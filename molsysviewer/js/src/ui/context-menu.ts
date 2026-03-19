@@ -99,6 +99,7 @@ export class ViewerContextMenu {
         private readonly host: HTMLElement,
         private readonly notify?: (msg: any) => void,
         private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget, details?: ContextActionDetails) => void,
+        private readonly onClose?: () => void,
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-context-menu", "true");
@@ -288,6 +289,7 @@ export class ViewerContextMenu {
     }
 
     close(): void {
+        const wasOpen = this.root.style.display !== "none";
         this.currentTarget = null;
         this.currentSelection = null;
         this.currentLastMeasurement = null;
@@ -295,6 +297,7 @@ export class ViewerContextMenu {
         this.currentRegions = [];
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
+        if (wasOpen) this.onClose?.();
     }
 
     dispose(): void {

@@ -6,6 +6,7 @@ type WorkbenchItem = {
     subtitle?: string;
     hidden?: boolean;
     active?: boolean;
+    context?: boolean;
     onActivate?: () => void;
 };
 
@@ -176,6 +177,7 @@ export class WorkbenchPanel {
         row.setAttribute("data-molsysviewer-workbench-item", "true");
         if (item.key) row.setAttribute("data-molsysviewer-workbench-item-key", item.key);
         if (item.active) row.setAttribute("data-molsysviewer-workbench-item-active", "true");
+        if (item.context) row.setAttribute("data-molsysviewer-workbench-item-context", "true");
         Object.assign(row.style, {
             display: "flex",
             flexDirection: "column",
@@ -184,12 +186,18 @@ export class WorkbenchPanel {
             borderRadius: "8px",
             background: item.active
                 ? "rgba(255,255,255,0.12)"
+                : item.context
+                    ? "rgba(255,255,255,0.08)"
                 : item.hidden
                     ? "rgba(255,255,255,0.03)"
                     : "rgba(255,255,255,0.06)",
             color: item.hidden ? "rgba(244,244,245,0.58)" : "#f4f4f5",
             cursor: item.onActivate ? "pointer" : "default",
-            outline: item.active ? "1px solid rgba(255,255,255,0.16)" : "none",
+            outline: item.active
+                ? "1px solid rgba(255,255,255,0.16)"
+                : item.context
+                    ? "1px solid rgba(255,255,255,0.10)"
+                    : "none",
         });
         if (item.onActivate) {
             row.addEventListener("click", (event) => {
