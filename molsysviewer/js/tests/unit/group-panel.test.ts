@@ -95,7 +95,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {});
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         const structure = { units: [{ kind: 0, model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
@@ -142,7 +142,7 @@ test("GroupPanel renders active, saved, and region summaries", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         const structure = { units: [{ kind: 0, model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
@@ -209,7 +209,7 @@ test("GroupPanel preserves collapse state when strips are recreated", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         const structure = { units: [{ kind: 0, model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
@@ -245,6 +245,67 @@ test("GroupPanel preserves collapse state when strips are recreated", () => {
 
         const remountedRoot = host.children[0];
         assert.strictEqual(findFirstGroupButton(remountedRoot), null);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel saved and region summaries trigger their primary actions", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let restoredTag: string | null = null;
+        let focusedRegion: string | null = null;
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (tag) => { restoredTag = tag; },
+            (tag) => { focusedRegion = tag; },
+        );
+        const structure = { units: [{ kind: 0, model: {
+            sourceData: {
+                kind: "mol-viewer:molsysmt",
+                data: {
+                    molsys_molecule_id: [0, 0],
+                    molsys_molecule_name: ["Peptide", "Peptide"],
+                    molsys_component_id: [0, 0],
+                    molsys_component_name: ["Protein", "Protein"],
+                },
+            },
+            atomicHierarchy: {
+                residueAtomSegments: { offsets: [0, 2] },
+                chainAtomSegments: { index: [0, 0] },
+                atoms: { label_comp_id: { value: (_i: number) => 'ALA' } },
+                residues: { auth_seq_id: { value: (i: number) => i + 1 } },
+                chains: {
+                    label_asym_id: { value: (_i: number) => 'A' },
+                    label_entity_id: { value: (_i: number) => '0' },
+                },
+                index: { getEntityFromChain: (_i: number) => 0 },
+            },
+        }}] } as any;
+        panel.setStructure(structure);
+        panel.setSavedSelections([{ tag: "site_a", atom_count: 2 }]);
+        panel.setRegions([{ tag: "binding", atom_count: 2, hidden: false }]);
+
+        const root = host.children[0];
+        const summaryItems = collectByAttribute(root, "data-molsysviewer-group-panel-summary-item", "true");
+        const savedItem = summaryItems.find((node) => firstText(node) === "site_a");
+        const regionItem = summaryItems.find((node) => firstText(node) === "binding");
+
+        assert.ok(savedItem);
+        assert.ok(regionItem);
+        savedItem?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        regionItem?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(restoredTag, "site_a");
+        assert.strictEqual(focusedRegion, "binding");
 
         panel.dispose();
     } finally {

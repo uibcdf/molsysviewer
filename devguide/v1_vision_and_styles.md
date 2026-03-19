@@ -92,6 +92,34 @@ The next healthy steps are still incremental:
 
 ## 4. Architectural Decisions: Separation of Concerns
 
+### 4.0 Core Workbench vs Ecosystem Add-Ons
+
+MolSysViewer is part of the broader **MolSysSuite** ecosystem.
+
+That means `MolSysViewer 1.0` should be designed not only as a good standalone
+core workbench for structural analysis, but also as the common visual substrate
+for more domain-specific libraries such as:
+
+- `TopoMT`
+- `PharmacophoreMT`
+- `ElasNetMT`
+
+The preferred architectural rule is:
+
+- keep the core viewer/workbench strong and generic
+- let domain-specific growth arrive through optional add-ons
+
+Those add-ons should most naturally surface themselves as:
+
+- additional panels
+- optional context actions
+- optional shape/overlay providers
+
+The 1.0 implication is important:
+
+- even if 1.0 ships without real plugins, it should already leave extension
+  entry points and validate them through a plugin template or plugin tests
+
 ### 4.1 Navigation vs. Management (The "Map vs. Inventory" Argument)
 - **GroupPanel (Navigation)**: Acting as the "Map." We intentionally chose **nested left-border lines** instead of full bounding boxes. 
     - *Argument*: Lines are "economically" cheaper in terms of screen real estate and less visually invasive, maintaining readability in narrow sidebars while still conveying hierarchy.

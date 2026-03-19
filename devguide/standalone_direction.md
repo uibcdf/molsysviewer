@@ -192,3 +192,37 @@ early:
 - what should count as the first reusable saved session format for standalone
 - how much app chrome is acceptable before the standalone host stops feeling
   like “the same MolSysViewer”
+
+## Two-Screen / Auxiliary-Window Direction
+
+This idea should remain visible for future evaluation:
+
+- in standalone mode, it may be very valuable to support a **main canvas
+  window** plus a **secondary panel/workbench window**
+
+This would fit well for users working with:
+
+- two monitors
+- monitor + projector
+- screen-sharing setups where the molecular scene should stay clean and large
+  while controls live elsewhere
+
+The intended spirit would be:
+
+- one window dedicated to the main molecular canvas
+- another auxiliary window dedicated to:
+  - `Navigate`
+  - `Workbench`
+  - and perhaps later add-on panels
+
+This should not replace the canonical single-window experience.
+It should remain an optional advanced host mode.
+
+The same idea may later be evaluated for notebook/popup use too:
+
+- one popup for the main canvas
+- another popup or auxiliary host for panel mode
+
+This is not a near-term implementation target.
+But it is worth preserving because it could become one of the strongest
+advanced-use host layouts once standalone exists.

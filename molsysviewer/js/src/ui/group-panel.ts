@@ -14,6 +14,7 @@ type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => vo
 type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 type SavedSelectionSummary = { tag: string; atom_count: number };
 type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
+type SummaryItem = { title: string; subtitle: string; onActivate?: () => void };
 type SummarySectionKey = "active" | "saved" | "regions";
 type SummarySectionView = {
     root: HTMLDivElement;
@@ -62,6 +63,8 @@ export class GroupPanel {
         private readonly onHover: OnHover,
         private readonly onContext: OnContext,
         private readonly onAnnotationContext: OnAnnotationContext,
+        private readonly onActivateSavedSelection: (tag: string) => void,
+        private readonly onFocusRegion: (tag: string) => void,
     ) {
         this.shell = new PanelShell(this.host, { title: "Navigate", width: 240, toggleWidth: 26 });
         this.root = this.shell.root;
@@ -304,6 +307,7 @@ export class GroupPanel {
                 .map((item) => ({
                     title: item.tag,
                     subtitle: `${item.atom_count} atoms`,
+                    onActivate: () => this.onActivateSavedSelection(item.tag),
                 }))
         );
         this.renderSummaryItems(
@@ -314,11 +318,12 @@ export class GroupPanel {
                 .map((item) => ({
                     title: item.tag,
                     subtitle: item.hidden ? `${item.atom_count} atoms · hidden` : `${item.atom_count} atoms`,
+                    onActivate: () => this.onFocusRegion(item.tag),
                 }))
         );
     }
 
-    private renderSummaryItems(section: SummarySectionView, items: Array<{ title: string; subtitle: string }>): void {
+    private renderSummaryItems(section: SummarySectionView, items: SummaryItem[]): void {
         section.list.replaceChildren();
         if (items.length === 0) {
             section.empty.style.display = "block";
@@ -336,7 +341,15 @@ export class GroupPanel {
                 borderRadius: "8px",
                 background: "rgba(255,255,255,0.06)",
                 color: "#f4f4f5",
+                cursor: item.onActivate ? "pointer" : "default",
             });
+            if (item.onActivate) {
+                row.addEventListener("click", (event) => {
+                    event.preventDefault?.();
+                    event.stopPropagation?.();
+                    item.onActivate?.();
+                });
+            }
 
             const title = document.createElement("div");
             Object.assign(title.style, {
