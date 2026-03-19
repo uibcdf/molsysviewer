@@ -265,6 +265,32 @@ def test_context_action_delete_annotation_executes_python_bridge():
     assert view.annotations.count() == 0
 
 
+def test_context_action_delete_shape_executes_python_bridge():
+    view = demo["dialanine"]
+    view.shapes.add_sphere(center=[0.0, 0.0, 0.0], radius=1.0, tag="shape-1")
+
+    assert "shape-1" in view.layers
+    assert len(view._shape_history) == 1  # noqa: SLF001
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "delete_shape",
+            "tag": "shape-1",
+            "context": {
+                "event": "interaction_context_menu",
+                "kind": "shape",
+                "atom_indices": [],
+                "tag": "shape-1",
+                "shape_name": "Sphere",
+            },
+        }
+    )
+
+    assert "shape-1" not in view.layers
+    assert view._shape_history == []  # noqa: SLF001
+
+
 def test_add_label_from_active_selection_requires_exactly_one_group():
     view = demo["dialanine"]
     event = {
