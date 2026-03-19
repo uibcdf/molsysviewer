@@ -105,6 +105,9 @@ interaction behavior.
   - `Distance`
   - `Angle`
   - `Dihedral`
+- on annotation targets, it now supports:
+  - `Focus Target`
+  - `Delete Annotation`
 - on active selection, it supports:
   - `Focus Selection`
   - `Save Selection`

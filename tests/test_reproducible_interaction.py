@@ -241,6 +241,30 @@ def test_context_action_add_label_from_selection_executes_python_bridge():
     assert msg["options"]["text"] == "Picked group"
 
 
+def test_context_action_delete_annotation_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = list(view.select(selection="group_index==0"))
+    view.annotations.add_label(text="Picked group", group_index=0, tag="picked-label")
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "delete_annotation",
+            "tag": "picked-label",
+            "context": {
+                "event": "interaction_context_menu",
+                "kind": "annotation",
+                "atom_indices": atom_indices,
+                "tag": "picked-label",
+                "text": "Picked group",
+            },
+        }
+    )
+
+    assert view.annotations.contains("picked-label") is False
+    assert view.annotations.count() == 0
+
+
 def test_add_label_from_active_selection_requires_exactly_one_group():
     view = demo["dialanine"]
     event = {

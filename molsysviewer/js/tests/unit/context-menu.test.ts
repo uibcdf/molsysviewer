@@ -193,6 +193,48 @@ test("ViewerContextMenu renders active selection section and selection actions",
     }
 });
 
+test("ViewerContextMenu renders delete action for annotation targets", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "annotation" as const, atom_indices: [0, 1], tag: "notes", text: "Catalytic" };
+        menu.open(target, 10, 20, null, null, null, null);
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Focus Target"));
+        assert.ok(texts.includes("Delete Annotation"));
+
+        const button = findNodeByText(root, "Delete Annotation");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "delete_annotation", target, details: { tag: "notes" } },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "delete_annotation",
+                context: target,
+                tag: "notes",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu renders saved selections and emits activate_selection", () => {
     const restore = installFakeDom();
     try {
