@@ -26,6 +26,7 @@ import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
+import { WorkbenchPanel } from "../ui/workbench-panel";
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -292,6 +293,7 @@ export class MolSysViewerController {
     private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly groupPanel: GroupPanel;
+    private readonly workbenchPanel: WorkbenchPanel;
     private readonly releaseContextMenuSuppression?: () => void;
     private readonly releaseGlobalEscapeHandler?: () => void;
     private lastContextLoci: any = null;
@@ -300,6 +302,10 @@ export class MolSysViewerController {
     private lastHoverPayload: InteractionPayload | null = null;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionSummary[] = [];
+    private readonly workbenchAnnotations = new Map<string, { text: string; hidden: boolean }>();
+    private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean }>();
+    private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean }>();
+    private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -428,6 +434,7 @@ export class MolSysViewerController {
         }, (target, pageX, pageY) => {
             this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
         });
+        this.workbenchPanel = new WorkbenchPanel(host);
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
             if (action === "focus_target") {
                 this.focusTarget(target);
@@ -594,12 +601,14 @@ export class MolSysViewerController {
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState()
         });
+        this.refreshWorkbenchPanel();
     }
 
     dispose(): void {
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
         this.groupPanel.dispose();
+        this.workbenchPanel.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.releaseGlobalEscapeHandler?.();
@@ -879,6 +888,8 @@ export class MolSysViewerController {
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
                     break;
             }
+            this.applyWorkbenchMessage(msg);
+            this.refreshWorkbenchPanel();
             this.syncStripOverlaysForMessage(msg);
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
@@ -906,6 +917,7 @@ export class MolSysViewerController {
             const structure = last.cell.obj?.data;
             this.currentStructure = last.cell.transform.ref as any;
             this.groupPanel.setStructure(structure);
+            this.workbenchPanel.setVisible(Boolean(structure));
             if (structure) {
                 this.activeSelection.setAllAvailableItems(buildGroupItemsFromStructure(structure));
             }
@@ -915,6 +927,7 @@ export class MolSysViewerController {
         } else {
             this.currentStructure = undefined;
             this.groupPanel.setStructure(undefined);
+            this.workbenchPanel.setVisible(false);
             this.activeSelection.setAllAvailableItems([]);
         }
     }
@@ -939,6 +952,169 @@ export class MolSysViewerController {
         this.loadedStructure = undefined;
         this.currentStructure = undefined;
         this.groupStrip.setStructure(undefined);
+        this.workbenchPanel.setVisible(false);
+    }
+
+    private applyWorkbenchMessage(msg: ViewerMessage): void {
+        const op = (msg as any)?.op;
+        if (typeof op !== "string") return;
+
+        if (op === "clear_all") {
+            this.workbenchAnnotations.clear();
+            this.workbenchMeasurements.clear();
+            this.workbenchShapes.clear();
+            this.workbenchScene = null;
+            return;
+        }
+
+        if (op === "clear_scene") {
+            const options = (msg as any).options ?? {};
+            if (options.labels) this.workbenchAnnotations.clear();
+            if (options.shapes) this.workbenchShapes.clear();
+            if (options.styles) this.workbenchScene = null;
+            return;
+        }
+
+        if (op === "add_label") {
+            const tag = (msg as any).tag ?? (msg as any).options?.tag;
+            const text = (msg as any).options?.text;
+            if (typeof tag === "string" && typeof text === "string" && text.trim()) {
+                this.workbenchAnnotations.set(tag, { text: text.trim(), hidden: false });
+            }
+            return;
+        }
+
+        if (op === "update_label") {
+            const tag = (msg as any).tag ?? (msg as any).options?.tag;
+            const existing = typeof tag === "string" ? this.workbenchAnnotations.get(tag) : undefined;
+            if (!existing || typeof tag !== "string") return;
+            const nextText = (msg as any).options?.text;
+            this.workbenchAnnotations.set(tag, {
+                text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
+                hidden: existing.hidden,
+            });
+            return;
+        }
+
+        if (op === "add_distance_measurement" || op === "add_angle_measurement" || op === "add_dihedral_measurement") {
+            const tag = (msg as any).tag ?? (msg as any).options?.tag;
+            const picks = Array.isArray((msg as any).options?.picks_atom_indices) ? (msg as any).options.picks_atom_indices.length : 0;
+            const kind = op === "add_distance_measurement" ? "distance" : op === "add_angle_measurement" ? "angle" : "dihedral";
+            if (typeof tag === "string") {
+                this.workbenchMeasurements.set(tag, { kind, picks, hidden: false });
+            }
+            return;
+        }
+
+        if (op === "create_layer") {
+            const tag = (msg as any).tag;
+            const kind = (msg as any).kind;
+            const meta = (msg as any).meta ?? {};
+            if (typeof tag === "string" && kind === "shape") {
+                const title =
+                    typeof meta.shape_name === "string" && meta.shape_name.trim()
+                        ? meta.shape_name.trim()
+                        : typeof meta.label === "string" && meta.label.trim()
+                            ? meta.label.trim()
+                            : "Shape";
+                const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : undefined;
+                this.workbenchShapes.set(tag, { title, subtitle, hidden: false });
+            }
+            return;
+        }
+
+        if (op === "hide_layer" || op === "show_layer") {
+            const tag = (msg as any).tag;
+            if (typeof tag !== "string") return;
+            const hidden = op === "hide_layer";
+            if (this.workbenchAnnotations.has(tag)) {
+                const item = this.workbenchAnnotations.get(tag)!;
+                this.workbenchAnnotations.set(tag, { ...item, hidden });
+            }
+            if (this.workbenchMeasurements.has(tag)) {
+                const item = this.workbenchMeasurements.get(tag)!;
+                this.workbenchMeasurements.set(tag, { ...item, hidden });
+            }
+            if (this.workbenchShapes.has(tag)) {
+                const item = this.workbenchShapes.get(tag)!;
+                this.workbenchShapes.set(tag, { ...item, hidden });
+            }
+            return;
+        }
+
+        if (op === "delete_layer") {
+            const tag = (msg as any).tag;
+            if (typeof tag !== "string") return;
+            this.workbenchAnnotations.delete(tag);
+            this.workbenchMeasurements.delete(tag);
+            this.workbenchShapes.delete(tag);
+            return;
+        }
+
+        if (op === "set_layer_tag") {
+            const oldTag = (msg as any).tag;
+            const newTag = (msg as any).new_tag;
+            if (typeof oldTag !== "string" || typeof newTag !== "string") return;
+            if (this.workbenchAnnotations.has(oldTag)) {
+                const item = this.workbenchAnnotations.get(oldTag)!;
+                this.workbenchAnnotations.delete(oldTag);
+                this.workbenchAnnotations.set(newTag, item);
+            }
+            if (this.workbenchMeasurements.has(oldTag)) {
+                const item = this.workbenchMeasurements.get(oldTag)!;
+                this.workbenchMeasurements.delete(oldTag);
+                this.workbenchMeasurements.set(newTag, item);
+            }
+            if (this.workbenchShapes.has(oldTag)) {
+                const item = this.workbenchShapes.get(oldTag)!;
+                this.workbenchShapes.delete(oldTag);
+                this.workbenchShapes.set(newTag, item);
+            }
+            return;
+        }
+
+        if (op === "set_global_representation") {
+            const styleTag =
+                typeof (msg as any).user_preset?.name === "string"
+                    ? (msg as any).user_preset.name
+                    : typeof (msg as any).preset === "string"
+                        ? (msg as any).preset
+                        : undefined;
+            const preset =
+                typeof (msg as any).preset === "string"
+                    ? (msg as any).preset
+                    : typeof (msg as any).representation === "string"
+                        ? (msg as any).representation
+                        : undefined;
+            this.workbenchScene = styleTag || preset ? { styleTag, preset } : null;
+        }
+    }
+
+    private refreshWorkbenchPanel(): void {
+        this.workbenchPanel.setAnnotations(
+            Array.from(this.workbenchAnnotations.entries())
+                .sort(([left], [right]) => left.localeCompare(right))
+                .map(([tag, item]) => ({ title: item.text, subtitle: tag, hidden: item.hidden }))
+        );
+        this.workbenchPanel.setMeasurements(
+            Array.from(this.workbenchMeasurements.entries())
+                .sort(([left], [right]) => left.localeCompare(right))
+                .map(([tag, item]) => ({
+                    title: item.kind[0].toUpperCase() + item.kind.slice(1),
+                    subtitle: `${tag} · ${item.picks} picks`,
+                    hidden: item.hidden,
+                }))
+        );
+        this.workbenchPanel.setShapes(
+            Array.from(this.workbenchShapes.entries())
+                .sort(([left], [right]) => left.localeCompare(right))
+                .map(([tag, item]) => ({
+                    title: item.title,
+                    subtitle: item.subtitle ? `${tag} · ${item.subtitle}` : tag,
+                    hidden: item.hidden,
+                }))
+        );
+        this.workbenchPanel.setScene(this.workbenchScene);
     }
 
     // Facades for external access (e.g. from Index or Popout)
