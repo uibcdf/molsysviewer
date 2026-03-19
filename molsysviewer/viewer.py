@@ -2264,8 +2264,25 @@ class MolSysView:
 
     def _clean_message_history(self) -> list[dict]:
         """Remove redundant messages to keep exports lean."""
+        deleted_dead_layer_tags = {
+            msg.get("tag")
+            for msg in self._message_history
+            if msg.get("op") == "delete_layer"
+            and isinstance(msg.get("tag"), str)
+            and msg.get("tag") not in self.layers
+        }
+        dead_layer_ops = {
+            "add_label",
+            "update_label",
+            "create_layer",
+            "show_layer",
+            "hide_layer",
+            "delete_layer",
+        }
         cleaned: list[dict] = []
         for msg in self._message_history:
+            if msg.get("op") in dead_layer_ops and msg.get("tag") in deleted_dead_layer_tags:
+                continue
             if msg.get("op") == "update_visibility":
                 opts = msg.get("options") or {}
                 vis = opts.get("visible_atom_indices")
