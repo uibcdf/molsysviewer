@@ -235,6 +235,48 @@ test("ViewerContextMenu renders delete action for annotation targets", () => {
     }
 });
 
+test("ViewerContextMenu renders delete action for shape targets", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "shape" as const, atom_indices: [0, 1], tag: "pocket-shape", shape_name: "Pocket Surface" };
+        menu.open(target, 10, 20, null, null, null, null);
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Focus Target"));
+        assert.ok(texts.includes("Delete Shape"));
+
+        const button = findNodeByText(root, "Delete Shape");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "delete_shape", target, details: { tag: "pocket-shape" } },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "delete_shape",
+                context: target,
+                tag: "pocket-shape",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu renders saved selections and emits activate_selection", () => {
     const restore = installFakeDom();
     try {

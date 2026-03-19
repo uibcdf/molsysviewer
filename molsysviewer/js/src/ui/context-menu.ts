@@ -21,6 +21,7 @@ export type ContextMenuAction =
     | "focus_target"
     | "focus_region"
     | "delete_annotation"
+    | "delete_shape"
     | "focus_selection"
     | "activate_selection"
     | "save_selection"
@@ -158,6 +159,9 @@ export class ViewerContextMenu {
             this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
         } else if (target.kind === "shape") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            if (target.tag?.trim()) {
+                this.root.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+            }
         } else if (target.kind === "annotation") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             if (target.tag?.trim()) {
@@ -427,8 +431,11 @@ export class ViewerContextMenu {
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
-        if (action === "delete_annotation") {
-            const tag = this.currentTarget?.kind === "annotation" ? this.currentTarget.tag : undefined;
+        if (action === "delete_annotation" || action === "delete_shape") {
+            const tag =
+                this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape"
+                    ? this.currentTarget.tag
+                    : undefined;
             if (!tag || tag.trim() === "") return null;
             return { tag };
         }

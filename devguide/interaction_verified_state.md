@@ -108,6 +108,9 @@ interaction behavior.
 - on annotation targets, it now supports:
   - `Focus Target`
   - `Delete Annotation`
+- on shape targets with stable tags, it now supports:
+  - `Focus Target`
+  - `Delete Shape`
 - on active selection, it supports:
   - `Focus Selection`
   - `Save Selection`

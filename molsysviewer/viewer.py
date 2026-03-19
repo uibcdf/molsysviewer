@@ -309,6 +309,14 @@ class MolSysView:
                 if not isinstance(tag, str) or tag.strip() == "":
                     raise ValueError("delete_annotation requires non-empty tag.")
                 self.annotations.delete(tag.strip(), skip_digestion=True)
+            elif action == "delete_shape":
+                tag = content.get("tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("delete_shape requires non-empty tag.")
+                layer = self._layers.get(tag.strip())
+                if layer is None:
+                    raise ValueError(f"No layer found for shape tag {tag!r}.")
+                layer.delete(skip_digestion=True)
             elif action == "persist_last_measurement":
                 self.measurements.persist_last_measurement(skip_digestion=True)
         elif event == "interaction_active_selection_changed":

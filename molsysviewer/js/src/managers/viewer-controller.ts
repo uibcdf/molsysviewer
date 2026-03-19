@@ -454,6 +454,7 @@ export class MolSysViewerController {
             }
             if (
                 action === "delete_annotation"
+                || action === "delete_shape"
                 || action === "save_selection"
                 || action === "create_region_from_selection"
                 || action === "add_label_from_selection"
