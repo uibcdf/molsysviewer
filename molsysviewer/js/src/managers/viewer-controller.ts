@@ -295,6 +295,7 @@ export class MolSysViewerController {
     private readonly releaseContextMenuSuppression?: () => void;
     private readonly releaseGlobalEscapeHandler?: () => void;
     private lastContextLoci: any = null;
+    private lastContextPayload: ContextInteractionPayload | null = null;
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
@@ -506,6 +507,8 @@ export class MolSysViewerController {
             }
             const pageX = payload.page_x ?? 0;
             const pageY = payload.page_y ?? 0;
+            this.lastContextPayload = payload;
+            this.groupPanel.updateContextTarget(payload);
             emitInteractionEvent(payload);
             this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
         }, (ev) => {
@@ -621,6 +624,8 @@ export class MolSysViewerController {
             page_x: pageX,
             page_y: pageY,
         };
+        this.lastContextPayload = payload;
+        this.groupPanel.updateContextTarget(payload);
         emitInteractionEvent(payload);
         this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
     }
@@ -636,6 +641,8 @@ export class MolSysViewerController {
             page_x: pageX,
             page_y: pageY,
         };
+        this.lastContextPayload = payload;
+        this.groupPanel.updateContextTarget(payload);
         emitInteractionEvent(payload);
         this.contextMenu.open(payload, pageX, pageY, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections);
     }

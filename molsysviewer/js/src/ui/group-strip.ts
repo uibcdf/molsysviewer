@@ -36,6 +36,13 @@ function makeLociForItem(structure: Structure, item: ActiveSelectionItem): Struc
     return StructureElement.Loci(structure, [{ unit, indices } as any]);
 }
 
+function buildHierarchyCaption(kind: "molecule" | "component", index: number, name?: string): string {
+    const prefix = kind === "molecule" ? "M" : "C";
+    const cleanName = typeof name === "string" ? name.trim() : "";
+    if (cleanName.length === 0) return `${prefix}${index}`;
+    return `${prefix} ${cleanName}`;
+}
+
 export class GroupStrip {
     private readonly root: HTMLDivElement;
     private readonly section: HTMLDivElement;
@@ -46,6 +53,9 @@ export class GroupStrip {
     private selectedAnnotationKeys = new Set<string>();
     private structure?: Structure;
     private readonly annotationRecords = new Map<string, Array<{ tag: string; text: string }>>();
+    private readonly collapsedMolecules = new Set<number>();
+    private readonly collapsedComponents = new Set<string>();
+    private currentContextTarget: ContextMenuTarget | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -129,6 +139,30 @@ export class GroupStrip {
         this.render();
     }
 
+    updateContextTarget(target: ContextMenuTarget | null): void {
+        this.currentContextTarget = target;
+        this.render();
+    }
+
+    getCollapseState(): { molecules: number[]; components: string[] } {
+        return {
+            molecules: Array.from(this.collapsedMolecules.values()).sort((a, b) => a - b),
+            components: Array.from(this.collapsedComponents.values()).sort(),
+        };
+    }
+
+    setCollapseState(state?: { molecules?: number[]; components?: string[] } | null): void {
+        this.collapsedMolecules.clear();
+        this.collapsedComponents.clear();
+        for (const molecule of state?.molecules ?? []) {
+            if (typeof molecule === "number") this.collapsedMolecules.add(molecule);
+        }
+        for (const component of state?.components ?? []) {
+            if (typeof component === "string") this.collapsedComponents.add(component);
+        }
+        this.render();
+    }
+
     addLabelOverlay(msg: AddLabelMessage): void {
         const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
         const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
@@ -201,8 +235,10 @@ export class GroupStrip {
         const componentNames = new Map<number, string>();
 
         for (const item of this.groupItems) {
-            const molId = item.molecule_indices[0] ?? 0;
-            const compId = item.component_indices[0] ?? 0;
+            const moleculeIndices = Array.isArray(item.molecule_indices) ? item.molecule_indices : [];
+            const componentIndices = Array.isArray(item.component_indices) ? item.component_indices : [];
+            const molId = moleculeIndices[0] ?? 0;
+            const compId = componentIndices[0] ?? 0;
             if (!hierarchy.has(molId)) hierarchy.set(molId, new Map());
             if (!hierarchy.get(molId)!.has(compId)) hierarchy.get(molId)!.set(compId, []);
             hierarchy.get(molId)!.get(compId)!.push(item);
@@ -215,6 +251,7 @@ export class GroupStrip {
         for (const [molId, components] of hierarchy.entries()) {
             const molBox = document.createElement("div");
             const molColor = COLORS[molId % COLORS.length];
+            const moleculeCollapsed = this.collapsedMolecules.has(molId);
             Object.assign(molBox.style, {
                 display: "flex",
                 flexDirection: "column",
@@ -227,6 +264,39 @@ export class GroupStrip {
                 position: "relative",
             });
             molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
+
+            const molCaption = document.createElement("div");
+            molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
+            molCaption.textContent = `${moleculeCollapsed ? ">" : "v"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
+            Object.assign(molCaption.style, {
+                alignSelf: "flex-start",
+                marginLeft: "2px",
+                marginBottom: "2px",
+                padding: "1px 6px",
+                borderRadius: "999px",
+                background: `${molColor}22`,
+                color: molColor,
+                fontSize: "9px",
+                fontWeight: "700",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+                maxWidth: "100%",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+            });
+            molCaption.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (this.collapsedMolecules.has(molId)) {
+                    this.collapsedMolecules.delete(molId);
+                } else {
+                    this.collapsedMolecules.add(molId);
+                }
+                this.render();
+            });
+            molBox.appendChild(molCaption);
 
             // Add invisible clickable area for molecule selection
             const molHandle = document.createElement("div");
@@ -253,9 +323,16 @@ export class GroupStrip {
             });
             molBox.appendChild(molHandle);
 
+            if (moleculeCollapsed) {
+                this.row.appendChild(molBox);
+                continue;
+            }
+
             for (const [compId, items] of components.entries()) {
                 const compBox = document.createElement("div");
                 const compColor = COLORS[compId % COLORS.length];
+                const componentKey = `${molId}:${compId}`;
+                const componentCollapsed = this.collapsedComponents.has(componentKey);
                 Object.assign(compBox.style, {
                     display: "flex",
                     flexDirection: "column",
@@ -267,6 +344,39 @@ export class GroupStrip {
                     position: "relative",
                 });
                 compBox.title = `Component: ${componentNames.get(compId) ?? compId}`;
+
+                const compCaption = document.createElement("div");
+                compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId));
+                compCaption.textContent = `${componentCollapsed ? ">" : "v"} ${buildHierarchyCaption("component", compId, componentNames.get(compId))}`;
+                Object.assign(compCaption.style, {
+                    alignSelf: "flex-start",
+                    marginLeft: "2px",
+                    marginBottom: "2px",
+                    padding: "1px 5px",
+                    borderRadius: "999px",
+                    background: `${compColor}20`,
+                    color: compColor,
+                    fontSize: "9px",
+                    fontWeight: "700",
+                    letterSpacing: "0.03em",
+                    textTransform: "uppercase",
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                });
+                compCaption.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (this.collapsedComponents.has(componentKey)) {
+                        this.collapsedComponents.delete(componentKey);
+                    } else {
+                        this.collapsedComponents.add(componentKey);
+                    }
+                    this.render();
+                });
+                compBox.appendChild(compCaption);
 
                 // Add invisible clickable area for component selection
                 const compHandle = document.createElement("div");
@@ -292,6 +402,11 @@ export class GroupStrip {
                 });
                 compBox.appendChild(compHandle);
 
+                if (componentCollapsed) {
+                    molBox.appendChild(compBox);
+                    continue;
+                }
+
                 for (const item of items) {
                     const key = selectionKey(item);
                     const button = document.createElement("button");
@@ -300,11 +415,24 @@ export class GroupStrip {
                     button.setAttribute("data-chain-name", item.chain_name ?? "");
                     button.setAttribute("data-group-name", item.group_name ?? "");
                     const selected = this.selectedElementKeys.has(key);
+                    const contextSelected =
+                        this.currentContextTarget?.kind === "structure"
+                        && Array.isArray(this.currentContextTarget.atom_indices)
+                        && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key;
                     Object.assign(button.style, {
                         padding: "4px 8px",
                         borderRadius: "999px",
-                        border: selected ? "1px solid rgba(255,255,255,0.38)" : "1px solid rgba(255,255,255,0.12)",
-                        background: selected ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
+                        border: selected
+                            ? "1px solid rgba(255,255,255,0.38)"
+                            : contextSelected
+                                ? "1px solid rgba(251, 191, 36, 0.48)"
+                                : "1px solid rgba(255,255,255,0.12)",
+                        background: selected
+                            ? "rgba(255,255,255,0.18)"
+                            : contextSelected
+                                ? "rgba(251, 191, 36, 0.12)"
+                                : "rgba(255,255,255,0.06)",
+                        boxShadow: contextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
                         color: "inherit",
                         cursor: "pointer",
                         whiteSpace: "nowrap",
@@ -322,15 +450,27 @@ export class GroupStrip {
                         const badge = document.createElement("span");
                         const primary = annotationRecords[0];
                         const annotationSelected = this.selectedAnnotationKeys.has(`${key}:annotation:${primary.tag ?? ""}`);
+                        const annotationContextSelected =
+                            this.currentContextTarget?.kind === "annotation"
+                            && this.currentContextTarget.tag === primary.tag;
                         badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
                         Object.assign(badge.style, {
                             marginLeft: "6px",
                             padding: "1px 6px",
                             borderRadius: "999px",
-                            background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : "rgba(110, 231, 183, 0.18)",
-                            color: annotationSelected ? "#fde68a" : "#b7f7dd",
+                            background: annotationSelected
+                                ? "rgba(250, 204, 21, 0.22)"
+                                : annotationContextSelected
+                                    ? "rgba(251, 191, 36, 0.16)"
+                                    : "rgba(110, 231, 183, 0.18)",
+                            color: annotationSelected
+                                ? "#fde68a"
+                                : annotationContextSelected
+                                    ? "#fcd34d"
+                                    : "#b7f7dd",
                             fontSize: "10px",
                             fontWeight: "700",
+                            boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none",
                         });
                         button.appendChild(badge);
                         button.title = annotationRecords.map((record) => record.text).join("\n");

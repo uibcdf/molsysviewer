@@ -31,6 +31,8 @@ def digest_representation(representation, caller=None):
         'molsysviewer.regions.Region.set_representation',
         'molsysviewer.whole.set_representation',
         'molsysviewer.regions.set_representation',
+        'molsysviewer.styles.StylesManager.apply',
+        'molsysviewer.styles.apply',
     }:
         if representation is None:
             return representation

@@ -20,8 +20,10 @@ from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .annotations import AnnotationsManager
 from .active_selection import ActiveSelection
+from .interaction_targets import InteractionTarget
 from .measurements import MeasurementsManager
 from .selections import SelectionsManager, Selection
+from .styles import StylesManager
 from .shapes import ShapesManager
 from .regions import Region
 from .whole import Whole
@@ -180,6 +182,17 @@ class MolSysView:
         self._global_hidden = False
 
         self.whole = Whole(self)
+        self.styles = StylesManager(self)
+        self.hover_target = InteractionTarget(
+            self,
+            event_getter_name="get_last_hover_event",
+            empty_event_name="interaction_hover",
+        )
+        self.context_target = InteractionTarget(
+            self,
+            event_getter_name="get_last_context_event",
+            empty_event_name="interaction_context_menu",
+        )
 
         # Register callback for JS->Python messages
         def _handle_msg(widget, content, buffers):  # type: ignore[override]

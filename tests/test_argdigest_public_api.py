@@ -6,6 +6,7 @@ import warnings
 from molsysviewer import config
 from molsysviewer.config.user_presets import load_user_presets
 from molsysviewer.demo import demo
+from molsysviewer.styles import Style
 
 
 def _missing_digester_warnings(records) -> list[str]:
@@ -25,6 +26,21 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         json.dumps({"demo-preset": {"base": "auto", "options": {}, "rules": []}}),
         encoding="utf-8",
     )
+    project_config_path = tmp_path / "_molsysviewer.py"
+    project_config_path.write_text(
+        "\n".join(
+            [
+                "from molsysviewer import Style",
+                "",
+                'DEFAULT_SCENE_STYLE = Style(preset="polymer-cartoon", name="Default Polymer")',
+                "STYLES = {",
+                '    "publication": Style(preset="polymer-cartoon", name="Publication"),',
+                "}",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
 
     region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
     layer = view.new_layer(tag="audit-layer", skip_digestion=True)
@@ -36,6 +52,9 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.get_camera_snapshot(pretty=True)
         view.set_camera_snapshot({"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]}, duration_ms=125)
         view.whole.set_representation(preset="polymer-cartoon")
+        view.styles.apply(style=Style(preset="polymer-cartoon", name="Polymers"))
+        view.styles.add("publication", Style(preset="polymer-cartoon"), description="Publication baseline", source="runtime")
+        view.styles.load_project_config(str(project_config_path), apply_default=False)
         region.set_representation(preset="polymer-cartoon")
         layer.set_tag("audit-layer-2")
         view.write_html(

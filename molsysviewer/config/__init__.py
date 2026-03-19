@@ -17,6 +17,7 @@ controls_position = ["top", "right"]
 controls_position_fullscreen = ["bottom", "right"]
 
 from .user_presets import user_presets, load_user_presets
+from .project_config import load_project_config
 from .._private.arg_digestion import digest
 
 __all__ = [
@@ -26,6 +27,7 @@ __all__ = [
     "controls_position_fullscreen",
     "user_presets",
     "load_user_presets",
+    "load_project_config",
 ]
 
 # PyUnitWizard configuration for quantities with units.
