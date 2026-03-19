@@ -274,6 +274,9 @@ Current practical bridge state:
   - `Workbench` rows now also expose first local visual states:
     - `active`
     - `context` for tagged annotations/shapes while the menu is open
+  - `Workbench` rows now also expose a first minimal persistent affordance:
+    - per-row visibility toggle for tagged annotations, measurements, and shapes
+  - `Workbench` sections can now collapse/expand locally
 
 ## First Container Direction For Panel Mode
 

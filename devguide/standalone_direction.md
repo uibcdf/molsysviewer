@@ -11,6 +11,10 @@ It is not a commitment to implement it immediately.
 It is a design direction that should help keep current decisions compatible with
 that future.
 
+It also now carries an explicit sequencing decision:
+
+- **standalone should be the last major implementation step before `1.0.0`**
+
 ## Core Idea
 
 MolSysViewer should be able, in the future, to run as:
@@ -135,7 +139,8 @@ The order should stay:
 
 1. strengthen the workbench
 2. strengthen the UX model
-3. add a standalone host
+3. strengthen the first serious image-export story
+4. add a standalone host as the final pre-`1.0.0` host step
 
 Not the reverse.
 
@@ -160,8 +165,12 @@ The preferred direction is:
 - **standalone as another host for the same workbench**
 - **CLI-first before full app ambitions**
 
-This should remain a medium-term direction, not an immediate implementation
-priority.
+So the direction is now:
+
+- not immediate,
+- but not vague either,
+- and explicitly reserved for the final pre-`1.0.0` stage once the workbench
+  and export model are already mature.
 
 ## Open Questions
 

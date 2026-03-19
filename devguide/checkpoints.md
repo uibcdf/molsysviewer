@@ -88,6 +88,10 @@ Do not append dated historical entries unless a date is itself operationally rel
       - annotations with tag
       - shapes with tag
     - this is still a local drawer-era implementation, not yet the final shared `panel mode` state model
+  - row affordances have now grown one more careful step:
+    - tagged annotations, measurements, and shapes now expose a minimal visibility toggle
+      through the existing `show_layer` / `hide_layer` path
+    - workbench sections can now collapse/expand locally to reduce vertical noise
   - still not yet integrated into a shared navigator or final `panel mode`
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.
@@ -152,13 +156,19 @@ The current preferred route to 1.0 is incremental and workbench-first:
    - primary action
    - `active`
    - `context`
-   - later `hidden` / visibility treatment where appropriate
+   - `hidden` / visibility treatment where appropriate
+   - local section collapse before a richer navigator
 5. finish the first healthy `styles` story before opening richer look systems:
    - stable scene styles now
    - scene looks later
    - focus styles later still
 6. add a first serious image-export story on top of the same reproducible scene model
-7. only after that, consider the shared panel navigator, standalone host, and richer publication-oriented layers
+7. only after that, consider the shared panel navigator and richer publication-oriented layers
+8. treat standalone as the final major pre-`1.0.0` step:
+   - same workbench
+   - same scene/state model
+   - CLI-first host
+   - no forked UX
 
 Working rule:
 
