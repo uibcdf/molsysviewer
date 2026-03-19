@@ -37,6 +37,8 @@ export class GroupPanel {
         count_annotations: 0,
     };
     private readonly annotationMessages: AddLabelMessage[] = [];
+    private currentContextTarget: ContextMenuTarget | null = null;
+    private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
 
     constructor(
         private readonly host: HTMLElement,
@@ -139,6 +141,13 @@ export class GroupPanel {
         }
     }
 
+    updateContextTarget(target: ContextMenuTarget | null): void {
+        this.currentContextTarget = target;
+        for (const strip of this.strips.values()) {
+            strip.updateContextTarget(target);
+        }
+    }
+
     addLabelOverlay(msg: AddLabelMessage): void {
         this.annotationMessages.push(msg);
         for (const strip of this.strips.values()) {
@@ -184,6 +193,7 @@ export class GroupPanel {
     }
 
     dispose(): void {
+        this.captureCollapseState();
         for (const strip of this.strips.values()) strip.dispose();
         this.strips.clear();
         this.root.remove();
@@ -196,6 +206,7 @@ export class GroupPanel {
     }
 
     private render(): void {
+        this.captureCollapseState();
         const grouped = new Map<string, ActiveSelectionItem[]>();
         const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
         for (const item of items) {
@@ -207,6 +218,7 @@ export class GroupPanel {
         const nextChains = new Set(grouped.keys());
         for (const [chain, strip] of this.strips.entries()) {
             if (nextChains.has(chain)) continue;
+            this.collapseStateByChain.set(chain, strip.getCollapseState());
             strip.dispose();
             this.strips.delete(chain);
         }
@@ -221,12 +233,20 @@ export class GroupPanel {
                 this.strips.set(chain, strip);
             }
             strip.setData(this.structure, chainItems);
+            strip.setCollapseState(this.collapseStateByChain.get(chain));
             strip.updateSelection(this.currentSelection);
+            strip.updateContextTarget(this.currentContextTarget);
             strip.clearAnnotationOverlays();
             for (const message of this.annotationMessages) {
                 strip.addLabelOverlay(message);
             }
         }
         this.applyExpandedState();
+    }
+
+    private captureCollapseState(): void {
+        for (const [chain, strip] of this.strips.entries()) {
+            this.collapseStateByChain.set(chain, strip.getCollapseState());
+        }
     }
 }

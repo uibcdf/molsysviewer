@@ -9,6 +9,7 @@ class FakeElement {
     public textContent = "";
     public title = "";
     public type = "";
+    public readonly attributes: Record<string, string> = {};
     private listeners = new Map<string, Array<(event?: any) => void>>();
 
     appendChild(child: FakeElement) {
@@ -22,7 +23,9 @@ class FakeElement {
     }
 
     remove() {}
-    setAttribute(_name: string, _value: string) {}
+    setAttribute(name: string, value: string) {
+        this.attributes[name] = value;
+    }
 
     addEventListener(name: string, handler: (event?: any) => void) {
         const handlers = this.listeners.get(name) ?? [];
@@ -73,17 +76,58 @@ function findFirstBadge(root: FakeElement): FakeElement | null {
     return out;
 }
 
+function collectTexts(root: FakeElement): string[] {
+    const out: string[] = [];
+    const walk = (node: FakeElement) => {
+        const text = node.textContent.trim();
+        if (text) out.push(text);
+        for (const child of node.children) walk(child);
+    };
+    walk(root);
+    return out;
+}
+
+function findFirstGroupButton(root: FakeElement): FakeElement | null {
+    let out: FakeElement | null = null;
+    const walk = (node: FakeElement) => {
+        if (out) return;
+        if (node.attributes["data-molsysviewer-group-item"] === "true") {
+            out = node;
+            return;
+        }
+        for (const child of node.children) walk(child);
+    };
+    walk(root);
+    return out;
+}
+
+function findFirstByAttribute(root: FakeElement, attributeName: string): FakeElement | null {
+    let out: FakeElement | null = null;
+    const walk = (node: FakeElement) => {
+        if (out) return;
+        if (node.attributes[attributeName] !== undefined) {
+            out = node;
+            return;
+        }
+        for (const child of node.children) walk(child);
+    };
+    walk(root);
+    return out;
+}
+
 test("GroupStrip displays and clears annotation overlay badges", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {});
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
                 chain_indices: [0],
                 entity_indices: [0],
                 group_name: "ALA 1",
@@ -117,7 +161,7 @@ test("GroupStrip routes badge context menu to annotation target", () => {
     try {
         const host = new FakeElement() as any;
         const annotationTargets: any[] = [];
-        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, (target) => {
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {}, (target) => {
             annotationTargets.push(target);
         });
         (strip as any).groupItems = [
@@ -126,6 +170,8 @@ test("GroupStrip routes badge context menu to annotation target", () => {
                 element_level: "group",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
                 chain_indices: [0],
                 entity_indices: [0],
                 group_name: "ALA 1",
@@ -178,13 +224,15 @@ test("GroupStrip badge click selects annotation and shift-click is forwarded", (
         const selected: any[] = [];
         const strip = new GroupStrip(host, "A", (items, additive) => {
             selected.push({ items, additive });
-        }, () => {}, () => {}, () => {}, () => {});
+        }, () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
                 chain_indices: [0],
                 entity_indices: [0],
                 group_name: "ALA 1",
@@ -210,7 +258,9 @@ test("GroupStrip badge click selects annotation and shift-click is forwarded", (
                 annotation_kind: "label",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
                 chain_indices: [0],
+                molecule_indices: [],
                 entity_indices: [0],
                 tag: "notes",
                 text: "Catalytic",
@@ -228,13 +278,15 @@ test("GroupStrip can reflect mixed element and annotation selection at once", ()
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {});
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
                 chain_indices: [0],
                 entity_indices: [0],
                 group_name: "ALA 1",
@@ -260,7 +312,9 @@ test("GroupStrip can reflect mixed element and annotation selection at once", ()
                     element_level: "group",
                     atom_indices: [0, 1],
                     group_indices: [0],
+                    component_indices: [],
                     chain_indices: [0],
+                    molecule_indices: [],
                     entity_indices: [0],
                     group_name: "ALA 1",
                     chain_name: "A",
@@ -270,7 +324,9 @@ test("GroupStrip can reflect mixed element and annotation selection at once", ()
                     annotation_kind: "label",
                     atom_indices: [0, 1],
                     group_indices: [0],
+                    component_indices: [],
                     chain_indices: [0],
+                    molecule_indices: [],
                     entity_indices: [0],
                     tag: "notes",
                     text: "Catalytic",
@@ -288,11 +344,10 @@ test("GroupStrip can reflect mixed element and annotation selection at once", ()
             count_annotations: 1,
         } as any);
 
-        const section = (strip as any).root.children[0] as FakeElement;
-        const row = section.children[1] as FakeElement;
-        const button = row.children[0] as FakeElement;
+        const button = findFirstGroupButton((strip as any).root);
+        assert.ok(button);
         const badge = findFirstBadge(button);
-        assert.ok(button.style.background.includes("0.18"));
+        assert.ok((button as FakeElement).style.background.includes("0.18"));
         assert.ok(badge);
         assert.strictEqual((badge as FakeElement).style.color, "#fde68a");
 
@@ -307,7 +362,7 @@ test("GroupStrip routes group context menu to element target", () => {
     try {
         const host = new FakeElement() as any;
         const targets: any[] = [];
-        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, (item, pageX, pageY) => {
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, (item, pageX, pageY) => {
             targets.push({ item, pageX, pageY });
         }, () => {});
         (strip as any).groupItems = [
@@ -316,6 +371,8 @@ test("GroupStrip routes group context menu to element target", () => {
                 element_level: "group",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
                 chain_indices: [0],
                 entity_indices: [0],
                 group_name: "ALA 1",
@@ -326,10 +383,11 @@ test("GroupStrip routes group context menu to element target", () => {
         (strip as any).structure = {};
         (strip as any).render();
 
-        const button = (((strip as any).root.children[0] as FakeElement).children[1] as FakeElement).children[0] as FakeElement;
+        const button = findFirstGroupButton((strip as any).root);
+        assert.ok(button);
         let prevented = false;
         let stopped = false;
-        button.dispatch("contextmenu", {
+        (button as FakeElement).dispatch("contextmenu", {
             pageX: 20,
             pageY: 40,
             preventDefault() { prevented = true; },
@@ -342,6 +400,8 @@ test("GroupStrip routes group context menu to element target", () => {
                 element_level: "group",
                 atom_indices: [0, 1],
                 group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
                 chain_indices: [0],
                 entity_indices: [0],
                 group_name: "ALA 1",
@@ -353,6 +413,138 @@ test("GroupStrip routes group context menu to element target", () => {
         }]);
         assert.strictEqual(prevented, true);
         assert.strictEqual(stopped, true);
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupStrip renders compact visible molecule and component captions", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                component_indices: [2],
+                molecule_indices: [1],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                component_name: "Protein",
+                molecule_name: "Peptide",
+                chain_name: "A",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+
+        const texts = collectTexts((strip as any).root);
+        assert.ok(texts.some((text) => text.includes("M Peptide")));
+        assert.ok(texts.some((text) => text.includes("C Protein")));
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupStrip can collapse and expand molecule and component sections", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                component_indices: [2],
+                molecule_indices: [1],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                component_name: "Protein",
+                molecule_name: "Peptide",
+                chain_name: "A",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+
+        assert.ok(findFirstGroupButton((strip as any).root));
+
+        const componentCaption = findFirstByAttribute((strip as any).root, "data-molsysviewer-group-strip-component-caption");
+        assert.ok(componentCaption);
+        (componentCaption as FakeElement).dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(findFirstGroupButton((strip as any).root), null);
+
+        (componentCaption as FakeElement).dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.ok(findFirstGroupButton((strip as any).root));
+
+        const moleculeCaption = findFirstByAttribute((strip as any).root, "data-molsysviewer-group-strip-molecule-caption");
+        assert.ok(moleculeCaption);
+        (moleculeCaption as FakeElement).dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(findFirstGroupButton((strip as any).root), null);
+
+        strip.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupStrip marks structure and annotation context targets discreetly", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const strip = new GroupStrip(host, "A", () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        (strip as any).groupItems = [
+            {
+                source_kind: "element",
+                element_level: "group",
+                atom_indices: [0, 1],
+                group_indices: [0],
+                component_indices: [],
+                molecule_indices: [],
+                chain_indices: [0],
+                entity_indices: [0],
+                group_name: "ALA 1",
+                chain_name: "A",
+            },
+        ];
+        (strip as any).structure = {};
+        (strip as any).render();
+        strip.addLabelOverlay({
+            op: "add_label",
+            tag: "notes",
+            options: { text: "Catalytic", atom_indices: [0, 1], tag: "notes" },
+        });
+
+        strip.updateContextTarget({
+            event: "interaction_context_menu",
+            kind: "structure",
+            atom_indices: [0, 1],
+        });
+        const button = findFirstGroupButton((strip as any).root);
+        assert.ok(button);
+        assert.ok((button as FakeElement).style.background.includes("251, 191, 36"));
+
+        strip.updateContextTarget({
+            event: "interaction_context_menu",
+            kind: "annotation",
+            atom_indices: [0, 1],
+            tag: "notes",
+            text: "Catalytic",
+        });
+        const badge = findFirstBadge((strip as any).root);
+        assert.ok(badge);
+        assert.strictEqual((badge as FakeElement).style.color, "#fcd34d");
 
         strip.dispose();
     } finally {

@@ -56,6 +56,8 @@ class Whole:
         if user_preset_payload is not None:
             payload["user_preset"] = user_preset_payload
         self._view._send(payload)  # noqa: SLF001
+        if hasattr(self._view, "styles"):
+            self._view.styles._clear_cached_name()  # noqa: SLF001
 
     @signal(tags=["visibility", "whole"])
     @digest()
