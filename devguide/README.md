@@ -78,6 +78,8 @@ That principle should guide prioritization throughout the repository.
    - Clarifies the future distinction between scene recipes and visual looks such as `default-look` and `illustrative`.
 22. [**Canvas Minimal UX**](canvas_minimal_ux.md)
    - Minimalist canvas/popup UX direction: only two interaction doors, three permanent meta-controls, and panel mode as the structured workspace entrypoint.
+23. [**Standalone Direction**](standalone_direction.md)
+   - Medium-term direction for a CLI/standalone host built on the same workbench and reproducible runtime, not a separate product.
 
 ## Workbench Tutorials (Planned)
 
