@@ -44,6 +44,19 @@ Do not append dated historical entries unless a date is itself operationally rel
   - the first action is deliberately narrow:
     - `Focus Region`
   - defer richer region actions until this small slice proves useful and stays clean
+- For `annotations` and `shapes`, keep the same discipline:
+  - small target-specific menus
+  - immediate actions only
+  - likely ceiling:
+    - annotation:
+      - `Focus`
+      - `Delete`
+      - maybe later `Show/Hide`
+    - shape:
+      - `Focus`
+      - `Delete`
+      - maybe later `Show/Hide`
+  - do not let these menus grow into rich editors or type-specific browsers
 - The strip work has now crossed into a real `GroupPanel` + multiple-`GroupStrip` runtime.
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.

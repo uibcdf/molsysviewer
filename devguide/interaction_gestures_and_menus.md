@@ -116,6 +116,22 @@ Current execution status:
   composer inside the menu) and should be considered replaceable UX, not a
   final design
 
+Current growth limit for target-specific context menus:
+
+- `annotation` targets should likely remain small and focused around:
+  - `Focus Target`
+  - `Delete Annotation`
+  - possibly later `Show/Hide`
+  - only much later, if justified:
+    - `Edit Text`
+    - `Reanchor`
+- `shape` targets should likely remain even narrower:
+  - `Focus Target`
+  - `Delete Shape`
+  - possibly later `Show/Hide`
+- avoid turning either target family menu into a rich editor or a per-type
+  operation browser
+
 It also implies that menu contents may depend on:
 
 - `context_target`
