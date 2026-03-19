@@ -80,6 +80,8 @@ That principle should guide prioritization throughout the repository.
    - Minimalist canvas/popup UX direction: only two interaction doors, three permanent meta-controls, and panel mode as the structured workspace entrypoint.
 23. [**Standalone Direction**](standalone_direction.md)
    - Medium-term direction for a CLI/standalone host built on the same workbench and reproducible runtime, not a separate product.
+24. [**Image Export Direction**](image_export_direction.md)
+   - Work lines, roadmap, premium/publication goals, and open questions for image export on top of the current Mol* runtime.
 
 ## Workbench Tutorials (Planned)
 
