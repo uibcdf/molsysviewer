@@ -41,6 +41,14 @@ interface RegionEntry {
     hidden?: boolean;
 }
 
+export interface RegionSummary {
+    tag: string;
+    atom_indices: number[];
+    atom_count: number;
+    selection?: string;
+    hidden: boolean;
+}
+
 export interface StateCallbacks {
     getStructure: () => Structure | undefined;
     getLoadedStructure: () => LoadedStructure | undefined;
@@ -84,6 +92,18 @@ export class StateHandlers {
 
     registerShapeRef(ref?: StateObjectRef, tag?: string) {
         this.registerTaggedRef(ref, tag, "shape");
+    }
+
+    getRegionSummaries(): RegionSummary[] {
+        return Array.from(this.regionIndex.entries())
+            .map(([tag, entry]) => ({
+                tag,
+                atom_indices: [...entry.atomIndices],
+                atom_count: entry.atomIndices.length,
+                selection: entry.selection,
+                hidden: !!entry.hidden,
+            }))
+            .sort((a, b) => a.tag.localeCompare(b.tag));
     }
 
     async updateVisibility(msg: UpdateVisibilityMessage | number[] | undefined) {
