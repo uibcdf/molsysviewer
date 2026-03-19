@@ -269,6 +269,8 @@ Current practical bridge state:
   - cleaner separation between panel chrome and panel content
   - real `Workbench` sections and empty states already scaffolded
   - minimal controller wiring for `Workbench` rows based on live runtime summaries
+  - first row-level primary action already present when structural anchoring is available:
+    - click row -> focus target
 
 ## First Container Direction For Panel Mode
 

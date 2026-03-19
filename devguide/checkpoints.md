@@ -76,6 +76,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - measurement kind + pick count
     - shape title/tag
     - scene preset/representation summary
+  - first row action now exists where the runtime has safe structural anchors:
+    - click row -> focus target
+    - currently reliable for:
+      - annotations
+      - measurements
+      - shapes only when `atom_indices` are present in the layer metadata
   - still not yet integrated into a shared navigator or final `panel mode`
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.

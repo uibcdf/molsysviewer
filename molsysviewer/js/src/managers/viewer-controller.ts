@@ -302,9 +302,9 @@ export class MolSysViewerController {
     private lastHoverPayload: InteractionPayload | null = null;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionSummary[] = [];
-    private readonly workbenchAnnotations = new Map<string, { text: string; hidden: boolean }>();
-    private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean }>();
-    private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean }>();
+    private readonly workbenchAnnotations = new Map<string, { text: string; hidden: boolean; atomIndices: number[] }>();
+    private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean; atomIndices: number[] }>();
+    private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
@@ -978,8 +978,11 @@ export class MolSysViewerController {
         if (op === "add_label") {
             const tag = (msg as any).tag ?? (msg as any).options?.tag;
             const text = (msg as any).options?.text;
+            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
+                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                : [];
             if (typeof tag === "string" && typeof text === "string" && text.trim()) {
-                this.workbenchAnnotations.set(tag, { text: text.trim(), hidden: false });
+                this.workbenchAnnotations.set(tag, { text: text.trim(), hidden: false, atomIndices });
             }
             return;
         }
@@ -989,19 +992,28 @@ export class MolSysViewerController {
             const existing = typeof tag === "string" ? this.workbenchAnnotations.get(tag) : undefined;
             if (!existing || typeof tag !== "string") return;
             const nextText = (msg as any).options?.text;
+            const nextAtomIndices = Array.isArray((msg as any).options?.atom_indices)
+                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                : existing.atomIndices;
             this.workbenchAnnotations.set(tag, {
                 text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
                 hidden: existing.hidden,
+                atomIndices: nextAtomIndices,
             });
             return;
         }
 
         if (op === "add_distance_measurement" || op === "add_angle_measurement" || op === "add_dihedral_measurement") {
             const tag = (msg as any).tag ?? (msg as any).options?.tag;
-            const picks = Array.isArray((msg as any).options?.picks_atom_indices) ? (msg as any).options.picks_atom_indices.length : 0;
+            const picksArray = Array.isArray((msg as any).options?.picks_atom_indices) ? (msg as any).options.picks_atom_indices : [];
+            const picks = picksArray.length;
+            const atomIndices = Array.from(new Set(
+                picksArray.flatMap((item: unknown) => Array.isArray(item) ? item : [])
+                    .filter((value: unknown) => typeof value === "number")
+            ));
             const kind = op === "add_distance_measurement" ? "distance" : op === "add_angle_measurement" ? "angle" : "dihedral";
             if (typeof tag === "string") {
-                this.workbenchMeasurements.set(tag, { kind, picks, hidden: false });
+                this.workbenchMeasurements.set(tag, { kind, picks, hidden: false, atomIndices });
             }
             return;
         }
@@ -1018,7 +1030,10 @@ export class MolSysViewerController {
                             ? meta.label.trim()
                             : "Shape";
                 const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : undefined;
-                this.workbenchShapes.set(tag, { title, subtitle, hidden: false });
+                const atomIndices = Array.isArray(meta.atom_indices)
+                    ? meta.atom_indices.filter((value: unknown) => typeof value === "number")
+                    : [];
+                this.workbenchShapes.set(tag, { title, subtitle, hidden: false, atomIndices });
             }
             return;
         }
@@ -1094,7 +1109,12 @@ export class MolSysViewerController {
         this.workbenchPanel.setAnnotations(
             Array.from(this.workbenchAnnotations.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
-                .map(([tag, item]) => ({ title: item.text, subtitle: tag, hidden: item.hidden }))
+                .map(([tag, item]) => ({
+                    title: item.text,
+                    subtitle: tag,
+                    hidden: item.hidden,
+                    onActivate: item.atomIndices.length > 0 ? () => this.focusTarget({ atom_indices: item.atomIndices }) : undefined,
+                }))
         );
         this.workbenchPanel.setMeasurements(
             Array.from(this.workbenchMeasurements.entries())
@@ -1103,6 +1123,7 @@ export class MolSysViewerController {
                     title: item.kind[0].toUpperCase() + item.kind.slice(1),
                     subtitle: `${tag} · ${item.picks} picks`,
                     hidden: item.hidden,
+                    onActivate: item.atomIndices.length > 0 ? () => this.focusTarget({ atom_indices: item.atomIndices }) : undefined,
                 }))
         );
         this.workbenchPanel.setShapes(
@@ -1112,6 +1133,7 @@ export class MolSysViewerController {
                     title: item.title,
                     subtitle: item.subtitle ? `${tag} · ${item.subtitle}` : tag,
                     hidden: item.hidden,
+                    onActivate: item.atomIndices.length > 0 ? () => this.focusTarget({ atom_indices: item.atomIndices }) : undefined,
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
