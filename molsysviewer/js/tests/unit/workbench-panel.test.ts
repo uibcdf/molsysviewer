@@ -98,7 +98,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         const panel = new WorkbenchPanel(host);
 
         panel.setVisible(true);
-        panel.setAnnotations([{ key: "notes", title: "Picked label", subtitle: "group 12", active: true }]);
+        panel.setAnnotations([{ key: "notes", title: "Picked label", subtitle: "group 12", active: true, context: true }]);
         panel.setMeasurements([{ title: "Distance", subtitle: "3.2 A" }]);
         panel.setShapes([{ title: "Pocket", subtitle: "surface", hidden: true }]);
         panel.setScene({ styleTag: "polymer-and-ligand", preset: "atomic-detail" });
@@ -114,6 +114,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         assert.strictEqual(items.length, 5);
         assert.strictEqual(items[0].children[0]?.textContent, "Picked label");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-active"), "true");
+        assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-context"), "true");
         assert.strictEqual(items[1].children[0]?.textContent, "Distance");
         assert.strictEqual(items[2].children[0]?.textContent, "Pocket");
         assert.strictEqual(items[3].children[0]?.textContent, "Style: polymer-and-ligand");

@@ -307,6 +307,7 @@ export class MolSysViewerController {
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
+    private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -471,6 +472,9 @@ export class MolSysViewerController {
                 return;
             }
             this.startMeasurementTool(action);
+        }, () => {
+            this.workbenchContext = null;
+            this.refreshWorkbenchPanel();
         });
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
         if (canvas) {
@@ -527,6 +531,7 @@ export class MolSysViewerController {
             const pageY = payload.page_y ?? 0;
             this.lastContextPayload = payload;
             this.groupPanel.updateContextTarget(payload);
+            this.syncWorkbenchContextFromPayload(payload);
             emitInteractionEvent(payload);
             this.contextMenu.open(
                 payload,
@@ -654,6 +659,7 @@ export class MolSysViewerController {
         };
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
+        this.syncWorkbenchContextFromPayload(payload);
         emitInteractionEvent(payload);
         this.contextMenu.open(
             payload,
@@ -679,6 +685,7 @@ export class MolSysViewerController {
         };
         this.lastContextPayload = payload;
         this.groupPanel.updateContextTarget(payload);
+        this.syncWorkbenchContextFromPayload(payload);
         emitInteractionEvent(payload);
         this.contextMenu.open(
             payload,
@@ -705,6 +712,22 @@ export class MolSysViewerController {
         const loci = this.atomIndicesToLoci(atomIndices);
         if (!loci) return;
         this.plugin.managers.camera.focusLoci(loci);
+    }
+
+    private syncWorkbenchContextFromPayload(payload: ContextInteractionPayload | null): void {
+        if (!payload) {
+            this.workbenchContext = null;
+            this.refreshWorkbenchPanel();
+            return;
+        }
+        if (payload.kind === "annotation" && typeof payload.tag === "string") {
+            this.workbenchContext = { section: "annotations", tag: payload.tag };
+        } else if (payload.kind === "shape" && typeof payload.tag === "string") {
+            this.workbenchContext = { section: "shapes", tag: payload.tag };
+        } else {
+            this.workbenchContext = null;
+        }
+        this.refreshWorkbenchPanel();
     }
 
     private getRelevantRegionSummaries(target: { atom_indices?: number[] }): RegionSummary[] {
@@ -966,6 +989,7 @@ export class MolSysViewerController {
             this.workbenchShapes.clear();
             this.workbenchScene = null;
             this.workbenchActive = null;
+            this.workbenchContext = null;
             return;
         }
 
@@ -976,6 +1000,8 @@ export class MolSysViewerController {
             if (options.styles) this.workbenchScene = null;
             if (this.workbenchActive?.section === "annotations" && options.labels) this.workbenchActive = null;
             if (this.workbenchActive?.section === "shapes" && options.shapes) this.workbenchActive = null;
+            if (this.workbenchContext?.section === "annotations" && options.labels) this.workbenchContext = null;
+            if (this.workbenchContext?.section === "shapes" && options.shapes) this.workbenchContext = null;
             return;
         }
 
@@ -1068,6 +1094,7 @@ export class MolSysViewerController {
             this.workbenchMeasurements.delete(tag);
             this.workbenchShapes.delete(tag);
             if (this.workbenchActive?.tag === tag) this.workbenchActive = null;
+            if (this.workbenchContext?.tag === tag) this.workbenchContext = null;
             return;
         }
 
@@ -1081,6 +1108,9 @@ export class MolSysViewerController {
                 this.workbenchAnnotations.set(newTag, item);
                 if (this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === oldTag) {
                     this.workbenchActive = { section: "annotations", tag: newTag };
+                }
+                if (this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === oldTag) {
+                    this.workbenchContext = { section: "annotations", tag: newTag };
                 }
             }
             if (this.workbenchMeasurements.has(oldTag)) {
@@ -1097,6 +1127,9 @@ export class MolSysViewerController {
                 this.workbenchShapes.set(newTag, item);
                 if (this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === oldTag) {
                     this.workbenchActive = { section: "shapes", tag: newTag };
+                }
+                if (this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === oldTag) {
+                    this.workbenchContext = { section: "shapes", tag: newTag };
                 }
             }
             return;
@@ -1129,6 +1162,7 @@ export class MolSysViewerController {
                     subtitle: tag,
                     hidden: item.hidden,
                     active: this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === tag,
+                    context: this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
                         this.workbenchActive = { section: "annotations", tag };
                         this.refreshWorkbenchPanel();
@@ -1161,6 +1195,7 @@ export class MolSysViewerController {
                     subtitle: item.subtitle ? `${tag} · ${item.subtitle}` : tag,
                     hidden: item.hidden,
                     active: this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === tag,
+                    context: this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
                         this.workbenchActive = { section: "shapes", tag };
                         this.refreshWorkbenchPanel();
