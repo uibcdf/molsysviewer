@@ -34,6 +34,11 @@ Do not append dated historical entries unless a date is itself operationally rel
   - what has already been verified in smoke,
   - and what still needs re-checking.
 - Keep `devguide/` aligned with the real repository state.
+- Keep the emerging MolSysSuite add-on direction explicit:
+  - `MolSysViewer` 1.0 should stay as a strong core workbench
+  - domain-specific ecosystem growth should prefer optional add-ons
+  - even before real plugins exist, 1.0 should leave extension entry points and
+    validate them with at least a plugin test or plugin template
 - Treat `selections` as a first-class category distinct from `regions`; do not collapse them just because both derive from atom subsets.
 - Keep the smoke runbook in `devguide/smoke_test.md` aligned with the real product surface before broadening interaction much further.
 - `Save Selection` is now live-smoke verified both when the menu opens on empty canvas and when it opens on a structural context target; the earlier accidental fallthrough into measurement picking is fixed.
@@ -67,6 +72,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `Saved`
     - `Regions`
   - these are still list-style summaries, not yet a richer interactive inventory
+  - first primary actions now exist there too:
+    - click `Saved` row -> restore `active_selection`
+    - click `Regions` row -> focus region
 - `WorkbenchPanel` now also exists as a real shell-based runtime scaffold:
   - same panel shell family
   - explicit `Workbench` identity
@@ -174,6 +182,10 @@ The current preferred route to 1.0 is incremental and workbench-first:
    - same scene/state model
    - CLI-first host
    - no forked UX
+9. before calling `1.0.0`, ensure the core is add-on-compatible even if no real
+   MolSysSuite plugin ships yet:
+   - explicit extension points
+   - and at least a plugin test or plugin template
 
 Working rule:
 

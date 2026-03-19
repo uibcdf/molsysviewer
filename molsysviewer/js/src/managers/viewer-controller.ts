@@ -27,6 +27,7 @@ import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStru
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
 import { WorkbenchPanel } from "../ui/workbench-panel";
+type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
 
@@ -301,7 +302,7 @@ export class MolSysViewerController {
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
-    private savedSelections: SavedSelectionSummary[] = [];
+    private savedSelections: SavedSelectionRecord[] = [];
     private readonly workbenchAnnotations = new Map<string, { text: string; hidden: boolean; atomIndices: number[] }>();
     private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean; atomIndices: number[] }>();
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
@@ -435,6 +436,14 @@ export class MolSysViewerController {
             this.openContextMenuForItem(item, pageX, pageY, emitInteractionEvent);
         }, (target, pageX, pageY) => {
             this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
+        }, (tag) => {
+            const saved = this.savedSelections.find((item) => item.tag === tag);
+            if (!saved) return;
+            this.activeSelection.setFromAtomIndices(saved.atom_indices, this.getStructureData());
+        }, (tag) => {
+            const region = this.state.getRegionSummaries().find((item) => item.tag === tag);
+            if (!region) return;
+            this.focusTarget({ atom_indices: region.atom_indices });
         });
         this.workbenchPanel = new WorkbenchPanel(host);
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
@@ -539,7 +548,7 @@ export class MolSysViewerController {
                 pageY,
                 this.currentActiveSelection,
                 this.lastMeasurementSummary,
-                this.savedSelections,
+                this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
                 this.getRelevantRegionSummaries(payload),
             );
         }, (ev) => {
@@ -668,7 +677,7 @@ export class MolSysViewerController {
             pageY,
             this.currentActiveSelection,
             this.lastMeasurementSummary,
-            this.savedSelections,
+            this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
             this.getRelevantRegionSummaries(payload),
         );
     }
@@ -694,7 +703,7 @@ export class MolSysViewerController {
             pageY,
             this.currentActiveSelection,
             this.lastMeasurementSummary,
-            this.savedSelections,
+            this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
             this.getRelevantRegionSummaries(payload),
         );
     }
@@ -743,9 +752,12 @@ export class MolSysViewerController {
     private upsertSavedSelection(msg: any): void {
         const tag = typeof msg?.tag === "string" ? msg.tag : null;
         if (!tag) return;
-        const atomCount = Array.isArray(msg?.atom_indices) ? msg.atom_indices.length : 0;
+        const atomIndices = Array.isArray(msg?.atom_indices)
+            ? msg.atom_indices.filter((value: unknown) => typeof value === "number")
+            : [];
+        const atomCount = atomIndices.length;
         const next = this.savedSelections.filter((item) => item.tag !== tag);
-        next.push({ tag, atom_count: atomCount });
+        next.push({ tag, atom_count: atomCount, atom_indices: atomIndices });
         this.savedSelections = next.sort((a, b) => a.tag.localeCompare(b.tag));
     }
 

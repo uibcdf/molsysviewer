@@ -254,6 +254,23 @@ as separate concerns:
 - one shared panel-content registry
 - one swappable navigator
 
+This should also stay compatible with optional ecosystem add-ons:
+
+- the built-in target remains `Navigate` + `Workbench`
+- but the panel-mode architecture should not assume there can only ever be two
+  panels
+- optional MolSysSuite add-ons should normally surface themselves through this
+  same panel-mode system, not through new permanent canvas chrome
+
+Future host-layout note:
+
+- the canonical experience is still one canvas host with panel mode inside it
+- but a future standalone or popup-based advanced mode may allow panel mode to
+  live in an auxiliary window on a second screen while the main canvas remains
+  alone in the primary window
+- if that ever happens, it should be treated as an optional host layout, not as
+  a replacement for the canonical minimal single-window model
+
 Current practical bridge state:
 
 - the runtime still has only one real panel implementation:
@@ -271,6 +288,9 @@ Current practical bridge state:
     - `Active`
     - `Saved`
     - `Regions`
+  - `Navigate` now also has its first lightweight row actions:
+    - click `Saved` -> restore `active_selection`
+    - click `Regions` -> focus region
   - real `Workbench` sections and empty states already scaffolded
   - minimal controller wiring for `Workbench` rows based on live runtime summaries
   - first row-level primary action already present when structural anchoring is available:
