@@ -4,6 +4,7 @@ import { ActiveSelectionItem, ActiveSelectionPayload, buildGroupItemsFromStructu
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 import { GroupStrip } from "./group-strip";
+import { PanelShell } from "./panel-shell";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
 type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
@@ -16,6 +17,7 @@ export class GroupPanel {
     private readonly root: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
     private readonly body: HTMLDivElement;
+    private readonly shell: PanelShell;
     private readonly strips = new Map<string, GroupStrip>();
     private structure?: Structure;
     private expanded = false;
@@ -49,46 +51,14 @@ export class GroupPanel {
         private readonly onContext: OnContext,
         private readonly onAnnotationContext: OnAnnotationContext,
     ) {
-        this.root = document.createElement("div");
-        this.root.setAttribute("data-molsysviewer-group-panel", "true");
-        const panelWidth = 240;
-        const tabWidth = 26;
-        Object.assign(this.root.style, {
-            position: "absolute",
-            left: "0",
-            top: "14px",
-            bottom: "14px",
-            width: `${panelWidth + tabWidth}px`,
-            display: "none",
-            alignItems: "stretch",
-            pointerEvents: "auto",
-            zIndex: "16",
-            transform: `translateX(-${panelWidth}px)`,
-            transition: "transform 160ms ease",
-        });
+        this.shell = new PanelShell(this.host, { title: "Navigate", width: 240, toggleWidth: 26 });
+        this.root = this.shell.root;
+        this.toggleButton = this.shell.toggleButton;
+        this.body = this.shell.content;
 
-        this.toggleButton = document.createElement("button");
-        this.toggleButton.type = "button";
+        this.root.setAttribute("data-molsysviewer-group-panel", "true");
         this.toggleButton.setAttribute("data-molsysviewer-group-panel-toggle", "true");
-        Object.assign(this.toggleButton.style, {
-            pointerEvents: "auto",
-            alignSelf: "center",
-            marginLeft: "0",
-            width: "26px",
-            minWidth: "26px",
-            height: "54px",
-            border: "1px solid rgba(255,255,255,0.16)",
-            borderLeft: "0",
-            borderRadius: "0 10px 10px 0",
-            background: "rgba(18, 18, 22, 0.94)",
-            color: "#f4f4f5",
-            boxShadow: "0 10px 24px rgba(0,0,0,0.24)",
-            cursor: "pointer",
-            fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-            fontSize: "16px",
-            fontWeight: "700",
-        });
-        this.toggleButton.textContent = ">";
+        this.shell.titleElement.setAttribute("data-molsysviewer-group-panel-title", "true");
         this.toggleButton.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -96,36 +66,7 @@ export class GroupPanel {
             this.applyExpandedState();
         });
 
-        this.body = document.createElement("div");
         this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
-        Object.assign(this.body.style, {
-            pointerEvents: "auto",
-            display: "flex",
-            alignItems: "stretch",
-            gap: "10px",
-            flexDirection: "row",
-            flexWrap: "nowrap",
-            width: "240px",
-            minWidth: "240px",
-            maxWidth: "240px",
-            boxSizing: "border-box",
-            height: "100%",
-            overflowX: "auto",
-            overflowY: "hidden",
-            padding: "10px",
-            borderRadius: "0 14px 14px 0",
-            border: "1px solid rgba(255,255,255,0.14)",
-            borderLeft: "0",
-            background: "rgba(18, 18, 22, 0.92)",
-            color: "#f4f4f5",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
-            fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-            fontSize: "12px",
-        });
-
-        this.root.appendChild(this.body);
-        this.root.appendChild(this.toggleButton);
-        this.host.appendChild(this.root);
     }
 
     setStructure(structure: Structure | undefined): void {
@@ -196,13 +137,11 @@ export class GroupPanel {
         this.captureCollapseState();
         for (const strip of this.strips.values()) strip.dispose();
         this.strips.clear();
-        this.root.remove();
+        this.shell.dispose();
     }
 
     private applyExpandedState(): void {
-        const panelWidth = 240;
-        this.toggleButton.textContent = this.expanded ? "<" : ">";
-        this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(-${panelWidth}px)`;
+        this.shell.setExpanded(this.expanded);
     }
 
     private render(): void {
@@ -223,7 +162,7 @@ export class GroupPanel {
             this.strips.delete(chain);
         }
 
-        this.root.style.display = this.structure && grouped.size > 0 ? "flex" : "none";
+        this.shell.setVisible(Boolean(this.structure) && grouped.size > 0);
         if (!this.structure || grouped.size === 0) return;
 
         for (const [chain, chainItems] of grouped.entries()) {
