@@ -263,6 +263,7 @@ def test_context_action_delete_annotation_executes_python_bridge():
 
     assert view.annotations.contains("picked-label") is False
     assert view.annotations.count() == 0
+    assert [msg for msg in view._build_export_messages() if msg.get("tag") == "picked-label"] == []  # noqa: SLF001
 
 
 def test_context_action_delete_shape_executes_python_bridge():
@@ -289,6 +290,7 @@ def test_context_action_delete_shape_executes_python_bridge():
 
     assert "shape-1" not in view.layers
     assert view._shape_history == []  # noqa: SLF001
+    assert [msg for msg in view._build_export_messages() if msg.get("tag") == "shape-1"] == []  # noqa: SLF001
 
 
 def test_add_label_from_active_selection_requires_exactly_one_group():
