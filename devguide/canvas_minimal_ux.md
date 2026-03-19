@@ -258,11 +258,16 @@ Current practical bridge state:
 
 - the runtime still has only one real panel implementation:
   - `GroupPanel`
-- that panel is still drawer-like, not yet the final centered floating `panel mode`
+- the runtime now has two real panel implementations:
+  - `GroupPanel`
+  - `WorkbenchPanel`
+- both are still drawer-like, not yet the final centered floating `panel mode`
 - but it has now taken a first structural step toward the future model:
   - reusable shell chrome
   - explicit `Navigate` identity
+  - explicit `Workbench` identity
   - cleaner separation between panel chrome and panel content
+  - real `Workbench` sections and empty states already scaffolded
 
 ## First Container Direction For Panel Mode
 
