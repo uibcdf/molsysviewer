@@ -123,3 +123,25 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         restore();
     }
 });
+
+test("WorkbenchPanel rows trigger activation when provided", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new WorkbenchPanel(host);
+        let activated = 0;
+
+        panel.setVisible(true);
+        panel.setAnnotations([{ title: "Picked label", subtitle: "group 12", onActivate: () => { activated += 1; } }]);
+
+        const root = host.children[0];
+        const row = findFirstByAttribute(root, "data-molsysviewer-workbench-item");
+        assert.ok(row);
+        row?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(activated, 1);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});

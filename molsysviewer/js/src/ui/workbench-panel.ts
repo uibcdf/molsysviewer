@@ -4,6 +4,7 @@ type WorkbenchItem = {
     title: string;
     subtitle?: string;
     hidden?: boolean;
+    onActivate?: () => void;
 };
 
 type SceneSummary = {
@@ -179,7 +180,15 @@ export class WorkbenchPanel {
             borderRadius: "8px",
             background: item.hidden ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.06)",
             color: item.hidden ? "rgba(244,244,245,0.58)" : "#f4f4f5",
+            cursor: item.onActivate ? "pointer" : "default",
         });
+        if (item.onActivate) {
+            row.addEventListener("click", (event) => {
+                event.preventDefault?.();
+                event.stopPropagation?.();
+                item.onActivate?.();
+            });
+        }
 
         const title = document.createElement("div");
         Object.assign(title.style, {
