@@ -1264,6 +1264,24 @@ export class MolSysViewerController {
         return this.plugin.canvas3d?.camera.getSnapshot?.();
     }
 
+    async getImageDataUri(options?: { width?: number; height?: number; transparent?: boolean }): Promise<string | undefined> {
+        const helper = this.plugin.helpers.viewportScreenshot;
+        if (!helper) return void 0;
+
+        const width = Number(options?.width);
+        const height = Number(options?.height);
+        const useCustomResolution = Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0;
+        helper.behaviors.values.next({
+            ...helper.values,
+            transparent: !!options?.transparent,
+            format: { name: "png", params: {} },
+            resolution: useCustomResolution
+                ? { name: "custom", params: { width: Math.trunc(width), height: Math.trunc(height) } }
+                : { name: "viewport", params: {} },
+        });
+        return await helper.getImageDataUri();
+    }
+
     async setCameraSnapshot(snapshot?: Camera.Snapshot, durationMs?: number) {
         if (!snapshot) return;
         try {

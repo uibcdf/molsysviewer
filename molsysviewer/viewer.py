@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Mapping
+import base64
 import time
 import inspect
 import json
 import re
+import warnings
 
 import molsysmt as msm
 import numpy as np
@@ -20,6 +22,7 @@ from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .annotations import AnnotationsManager
 from .active_selection import ActiveSelection
+from .exports import ExportManager
 from .interaction_targets import InteractionTarget
 from .measurements import MeasurementsManager
 from .selections import SelectionsManager, Selection
@@ -161,6 +164,7 @@ class MolSysView:
         self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
         self._last_camera_snapshot: dict | None = None
+        self._last_image_export_event: dict | None = None
         self._last_hover_event: dict | None = None
         self._last_click_event: dict | None = None
         self._last_context_event: dict | None = None
@@ -183,6 +187,7 @@ class MolSysView:
 
         self.whole = Whole(self)
         self.styles = StylesManager(self)
+        self.export = ExportManager(self)
         self.hover_target = InteractionTarget(
             self,
             event_getter_name="get_last_hover_event",
@@ -278,6 +283,8 @@ class MolSysView:
             snapshot = content.get("snapshot")
             if isinstance(snapshot, dict):
                 self._last_camera_snapshot = snapshot
+        elif event == "image_export":
+            self._last_image_export_event = dict(content)
         elif event == "interaction_hover":
             self._last_hover_event = dict(content)
         elif event == "interaction_click":
@@ -1966,9 +1973,7 @@ class MolSysView:
 
     # --- Export helpers for docs/notebooks ---
 
-    @signal(tags=["export"], extra_factory=_write_html_signal_extra)
-    @digest()
-    def write_html(
+    def _write_html_impl(
         self,
         output_filename: str,
         *,
@@ -2031,6 +2036,40 @@ class MolSysView:
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
 
+    @signal(tags=["export", "html"])
+    @digest()
+    def write_html(
+        self,
+        output_filename: str,
+        *,
+        title: str = "MolSysViewer",
+        include_controls: bool = True,
+        include_popout: bool = True,
+        mode: str = "standalone",
+        inline_messages: bool = True,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Deprecated alias for :meth:`view.export.html`.
+
+        Notes
+        -----
+        ``write_html(...)`` remains supported for compatibility, but new code
+        should prefer ``view.export.html(...)``.
+        """
+        warnings.warn(
+            "MolSysView.write_html(...) is deprecated; prefer view.export.html(...).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._write_html_impl(
+            output_filename,
+            title=title,
+            include_controls=include_controls,
+            include_popout=include_popout,
+            mode=mode,
+            inline_messages=inline_messages,
+        )
+
     def _request_camera_snapshot(self, timeout_s: float = 0.35) -> bool:
         """Ask the frontend for a camera snapshot (best-effort)."""
         if not self._ready:
@@ -2049,6 +2088,83 @@ class MolSysView:
                 return True
             time.sleep(0.01)
         return False
+
+    def _request_image_export(
+        self,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        transparent: bool = False,
+        timeout_s: float = 2.0,
+    ) -> dict | None:
+        """Ask the frontend for an image export (best-effort)."""
+        if not self._ready:
+            return None
+        previous = self._last_image_export_event
+        payload: dict[str, Any] = {"op": "request_image_export", "transparent": bool(transparent)}
+        if width_px is not None:
+            payload["width"] = int(width_px)
+        if height_px is not None:
+            payload["height"] = int(height_px)
+        try:
+            self.widget.send(payload)
+        except Exception:
+            return None
+        if timeout_s <= 0:
+            return self._last_image_export_event
+        deadline = time.monotonic() + timeout_s
+        while time.monotonic() < deadline:
+            current = self._last_image_export_event
+            if current is not None and current is not previous:
+                return dict(current)
+            time.sleep(0.01)
+        return None
+
+    def _export_image_impl(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        transparent: bool = False,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Export the current viewer scene as a PNG image file."""
+        event = self._request_image_export(width_px=width_px, height_px=height_px, transparent=transparent)
+        if not event:
+            raise RuntimeError("Image export requires a live ready frontend.")
+
+        data_uri = event.get("data_uri")
+        if not isinstance(data_uri, str) or not data_uri.startswith("data:image/png;base64,"):
+            raise RuntimeError("Frontend image export did not return a PNG data URI.")
+
+        image_bytes = base64.b64decode(data_uri.split(",", 1)[1])
+        with open(output_filename, "wb") as f:
+            f.write(image_bytes)
+
+    @signal(tags=["export", "image"])
+    @digest()
+    def export_image(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        transparent: bool = False,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Deprecated alias for :meth:`view.export.image`."""
+        warnings.warn(
+            "MolSysView.export_image(...) is deprecated; prefer view.export.image(...).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._export_image_impl(
+            output_filename,
+            width_px=width_px,
+            height_px=height_px,
+            transparent=transparent,
+        )
 
     def _load_anywidget_bundle(self) -> str:
         """Return the JS bundle for anywidget if available to inline in exports."""

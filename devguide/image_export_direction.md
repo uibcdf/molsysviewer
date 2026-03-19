@@ -127,6 +127,19 @@ Minimum expected features:
 
 This is the minimum useful layer.
 
+Current status:
+
+- the first real slice now exists in the repository as Python `view.export.image(...)`
+- legacy `view.export_image(...)` remains as a deprecated compatibility alias
+- current implemented scope:
+  - PNG
+  - optional `width_px` / `height_px`
+  - optional transparent background
+  - live frontend required
+- current implementation note:
+  - it is backed by Mol*'s real viewport screenshot helper
+  - not by a naive `canvas.toDataURL()` capture of whatever happens to be on screen
+
 ### 2. High-Resolution Export
 
 High-quality figures need more than canvas capture.
@@ -277,7 +290,7 @@ The preferred roadmap is:
 
 ### Phase 1: Essential Export
 
-- `export_image()`
+- `view.export.image()`
 - PNG
 - explicit size
 - current camera
@@ -316,7 +329,7 @@ To avoid drift, it is useful to keep a very short priority map:
 
 ### Now
 
-- real `export_image()` API
+- real `view.export.image()` API
 - PNG
 - explicit size
 - transparent/solid background
@@ -341,7 +354,7 @@ To avoid drift, it is useful to keep a very short priority map:
 
 These likely offer the best return early:
 
-- real `export_image()` API
+- real `view.export.image()` API
 - transparent background export
 - supersampled export
 - camera snapshot reuse
@@ -357,7 +370,7 @@ public directions are already visible.
 Examples worth keeping in mind:
 
 ```python
-view.export_image("figure.png", width=2400, height=1800, background="transparent", scale=2)
+view.export.image("figure.png", width_px=2400, height_px=1800, transparent=True)
 ```
 
 and later perhaps:
@@ -455,7 +468,7 @@ This keeps the canvas calm while still making export a first-class capability.
 These questions are worth tracking, but should not be answered too quickly:
 
 - what should be the first public image export API:
-  - `view.export_image(...)`
+  - `view.export.image(...)`
   - `view.figures.export(...)`
   - both eventually
 - should the first export target be only PNG, or also SVG/PDF-friendly

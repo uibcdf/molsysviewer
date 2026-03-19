@@ -6,7 +6,12 @@ def digest_mode(mode, caller=None):
         if caller.startswith('molsysmt.file'):
             if mode in ['auto', 'read', 'write']:
                 return mode
-        if caller in {"molsysviewer.viewer.write_html", "molsysviewer.viewer.MolSysView.write_html"}:
+        if caller in {
+            "molsysviewer.viewer.write_html",
+            "molsysviewer.viewer.MolSysView.write_html",
+            "molsysviewer.exports.html",
+            "molsysviewer.exports.ExportManager.html",
+        }:
             if mode in ["standalone", "lite"]:
                 return mode
 

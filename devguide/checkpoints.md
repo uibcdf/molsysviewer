@@ -148,6 +148,14 @@ Do not append dated historical entries unless a date is itself operationally rel
   and alternatives intentionally kept alive should now live in:
   - `devguide/canvas_minimal_ux.md`
   - do not let that discussion disappear into chat history only
+- The first serious image-export slice now exists:
+  - Python `view.export.image(...)`
+  - PNG output
+  - optional explicit pixel size
+  - optional transparent background
+  - backed by Mol*'s real viewport screenshot helper rather than naive canvas capture
+  - legacy `view.export_image(...)` remains as a deprecated compatibility alias
+  - still no richer figure recipe/spec yet
 
 ## Near-Term Route To 1.0
 
@@ -176,16 +184,20 @@ The current preferred route to 1.0 is incremental and workbench-first:
    - scene looks later
    - focus styles later still
 6. add a first serious image-export story on top of the same reproducible scene model
-7. only after that, consider the shared panel navigator and richer publication-oriented layers
-8. treat standalone as the final major pre-`1.0.0` step:
+7. harden that image-export story toward:
+   - camera/composition reuse
+   - publication looks
+   - figure recipes/specs
+8. only after that, consider the shared panel navigator and richer publication-oriented layers
+9. treat standalone as the final major pre-`1.0.0` step:
    - same workbench
    - same scene/state model
    - CLI-first host
    - no forked UX
-9. before calling `1.0.0`, ensure the core is add-on-compatible even if no real
-   MolSysSuite plugin ships yet:
-   - explicit extension points
-   - and at least a plugin test or plugin template
+10. before calling `1.0.0`, ensure the core is add-on-compatible even if no real
+    MolSysSuite plugin ships yet:
+    - explicit extension points
+    - and at least a plugin test or plugin template
 
 Working rule:
 

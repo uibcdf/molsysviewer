@@ -432,6 +432,26 @@ export default {
                 });
                 return;
             }
+            if (msg && (msg as any).op === "request_image_export") {
+                controllerPromise.then(async c => {
+                    const data_uri = await c.getImageDataUri({
+                        width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
+                        height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
+                        transparent: !!(msg as any).transparent,
+                    });
+                    if (typeof data_uri === "string" && data_uri) {
+                        model.send({
+                            event: "image_export",
+                            data_uri,
+                            transparent: !!(msg as any).transparent,
+                            width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
+                            height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
+                            format: "png",
+                        });
+                    }
+                });
+                return;
+            }
             enqueueMessage(msg, { syncToPopup: true });
         };
 

@@ -47,6 +47,11 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
 
     with warnings.catch_warnings(record=True) as records:
         warnings.simplefilter("always")
+        view._request_image_export = lambda **_kwargs: {  # type: ignore[attr-defined]  # noqa: SLF001
+            "event": "image_export",
+            "format": "png",
+            "data_uri": "data:image/png;base64,iVBORw0KGgo=",
+        }
         view.set_controls_visible(True, autohide=False, position=("top", "left"), position_fullscreen="bottom right")
         view.clear_decorations(shapes=True, styles=False, labels=True)
         view.get_camera_snapshot(pretty=True)
@@ -57,12 +62,18 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.styles.load_project_config(str(project_config_path), apply_default=False)
         region.set_representation(preset="polymer-cartoon")
         layer.set_tag("audit-layer-2")
-        view.write_html(
+        view.export.html(
             tmp_path / "audit.html",
             title="Audit",
             include_controls=False,
             include_popout=False,
             inline_messages=True,
+        )
+        view.export.image(
+            tmp_path / "audit.png",
+            width_px=640,
+            height_px=480,
+            transparent=True,
         )
         config.set_default_standard_units("nm, ps, K, mole, amu, e, kJ/mol, kJ/(mol*nm), kJ/(mol*nm**2), radians")
         load_user_presets(preset_path)

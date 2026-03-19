@@ -332,6 +332,13 @@ export type RequestCameraSnapshotMessage = {
     op: "request_camera_snapshot";
 };
 
+export type RequestImageExportMessage = {
+    op: "request_image_export";
+    width?: number;
+    height?: number;
+    transparent?: boolean;
+};
+
 export type ClearActiveSelectionMessage = {
     op: "clear_active_selection";
 };
@@ -420,6 +427,7 @@ export type ViewerMessage =
     ZoomMessage |
     SetCameraSnapshotMessage |
     RequestCameraSnapshotMessage |
+    RequestImageExportMessage |
     ClearActiveSelectionMessage |
     SetActiveSelectionMessage |
     SaveSelectionMessage |
