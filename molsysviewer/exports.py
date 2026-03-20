@@ -61,6 +61,7 @@ class ExportManager:
         height_px: int | None = None,
         scale: float = 1.0,
         transparent: bool = False,
+        preset: str = "current",
         camera_snapshot: dict[str, Any] | None = None,
         skip_digestion: bool = False,
     ) -> None:
@@ -71,5 +72,6 @@ class ExportManager:
             height_px=height_px,
             scale=scale,
             transparent=transparent,
+            preset=preset,
             camera_snapshot=camera_snapshot,
         )

@@ -1410,6 +1410,7 @@ export class MolSysViewerController {
         height?: number;
         scale?: number;
         transparent?: boolean;
+        preset?: string;
         cameraSnapshot?: Camera.Snapshot;
     }): Promise<string | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
@@ -1427,8 +1428,22 @@ export class MolSysViewerController {
         const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
         const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
         const currentSnapshot = options?.cameraSnapshot ? this.getCameraSnapshot() : void 0;
+        const preset = typeof options?.preset === "string" ? options.preset : "current";
+        const targetBackgroundMode =
+            !options?.transparent && preset === "publication-light"
+                ? "light"
+                : !options?.transparent && preset === "publication-dark"
+                    ? "dark"
+                    : void 0;
+        const shouldRestoreBackground = targetBackgroundMode
+            ? (targetBackgroundMode === "dark" && !this.scene.isDarkMode)
+                || (targetBackgroundMode === "light" && this.scene.isDarkMode)
+            : false;
 
         try {
+            if (targetBackgroundMode && shouldRestoreBackground) {
+                await this.scene.toggleBackground(targetBackgroundMode);
+            }
             if (options?.cameraSnapshot) {
                 await this.setCameraSnapshot(options.cameraSnapshot, 0);
             }
@@ -1442,6 +1457,9 @@ export class MolSysViewerController {
         } finally {
             if (options?.cameraSnapshot && currentSnapshot) {
                 await this.setCameraSnapshot(currentSnapshot, 0);
+            }
+            if (targetBackgroundMode && shouldRestoreBackground) {
+                await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
             }
         }
     }

@@ -2109,6 +2109,7 @@ class MolSysView:
         height_px: int | None = None,
         scale: float = 1.0,
         transparent: bool = False,
+        preset: str = "current",
         camera_snapshot: dict | None = None,
         timeout_s: float = 2.0,
     ) -> dict | None:
@@ -2120,6 +2121,7 @@ class MolSysView:
             "op": "request_image_export",
             "transparent": bool(transparent),
             "scale": float(scale),
+            "preset": str(preset),
         }
         if width_px is not None:
             payload["width"] = int(width_px)
@@ -2149,6 +2151,7 @@ class MolSysView:
         height_px: int | None = None,
         scale: float = 1.0,
         transparent: bool = False,
+        preset: str = "current",
         camera_snapshot: dict | None = None,
         skip_digestion: bool = False,
     ) -> None:
@@ -2158,6 +2161,7 @@ class MolSysView:
             height_px=height_px,
             scale=scale,
             transparent=transparent,
+            preset=preset,
             camera_snapshot=camera_snapshot,
         )
         if not event:

@@ -394,6 +394,12 @@ Post-`0.11.0` export work:
 - `view.export.image(...)` now also accepts `camera_snapshot=...`
 - the explicit snapshot should be treated as a reproducible figure/export aid,
   not merely as another UI convenience parameter
+- `view.export.image(...)` now also accepts a first small `preset=...` surface:
+  - `current`
+  - `publication-light`
+  - `publication-dark`
+- in the current implementation that preset only controls reversible background
+  treatment during the capture itself
 
 ## Current State
 

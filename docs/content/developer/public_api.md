@@ -192,6 +192,17 @@ Preferred export surface:
 `view.export.image(...)` may receive an explicit `camera_snapshot=...` when the
 export should use a saved camera rather than the live current viewport.
 
+`view.export.image(...)` also accepts a first small export-oriented
+`preset=...` surface:
+
+- `current`
+- `publication-light`
+- `publication-dark`
+
+At this stage these presets are intentionally modest. They currently steer only
+the background treatment used during the capture itself, and the live viewer
+state is restored immediately after export.
+
 `view.export.html(..., mode="lite")` is a public, user-facing export mode.
 It must remain reproducible.
 
