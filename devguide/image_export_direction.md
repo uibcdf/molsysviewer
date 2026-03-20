@@ -134,6 +134,7 @@ Current status:
 - current implemented scope:
   - PNG
   - optional `width_px` / `height_px`
+  - optional `scale` multiplier for higher-resolution output
   - optional transparent background
   - live frontend required
 - current implementation note:

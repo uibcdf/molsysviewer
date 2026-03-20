@@ -2094,6 +2094,7 @@ class MolSysView:
         *,
         width_px: int | None = None,
         height_px: int | None = None,
+        scale: float = 1.0,
         transparent: bool = False,
         timeout_s: float = 2.0,
     ) -> dict | None:
@@ -2101,7 +2102,11 @@ class MolSysView:
         if not self._ready:
             return None
         previous = self._last_image_export_event
-        payload: dict[str, Any] = {"op": "request_image_export", "transparent": bool(transparent)}
+        payload: dict[str, Any] = {
+            "op": "request_image_export",
+            "transparent": bool(transparent),
+            "scale": float(scale),
+        }
         if width_px is not None:
             payload["width"] = int(width_px)
         if height_px is not None:
@@ -2126,11 +2131,17 @@ class MolSysView:
         *,
         width_px: int | None = None,
         height_px: int | None = None,
+        scale: float = 1.0,
         transparent: bool = False,
         skip_digestion: bool = False,
     ) -> None:
         """Export the current viewer scene as a PNG image file."""
-        event = self._request_image_export(width_px=width_px, height_px=height_px, transparent=transparent)
+        event = self._request_image_export(
+            width_px=width_px,
+            height_px=height_px,
+            scale=scale,
+            transparent=transparent,
+        )
         if not event:
             raise RuntimeError("Image export requires a live ready frontend.")
 
@@ -2150,6 +2161,7 @@ class MolSysView:
         *,
         width_px: int | None = None,
         height_px: int | None = None,
+        scale: float = 1.0,
         transparent: bool = False,
         skip_digestion: bool = False,
     ) -> None:
@@ -2163,6 +2175,7 @@ class MolSysView:
             output_filename,
             width_px=width_px,
             height_px=height_px,
+            scale=scale,
             transparent=transparent,
         )
 

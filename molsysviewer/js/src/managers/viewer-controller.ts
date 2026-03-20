@@ -1264,20 +1264,26 @@ export class MolSysViewerController {
         return this.plugin.canvas3d?.camera.getSnapshot?.();
     }
 
-    async getImageDataUri(options?: { width?: number; height?: number; transparent?: boolean }): Promise<string | undefined> {
+    async getImageDataUri(options?: { width?: number; height?: number; scale?: number; transparent?: boolean }): Promise<string | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
         if (!helper) return void 0;
 
         const width = Number(options?.width);
         const height = Number(options?.height);
+        const scale = Number(options?.scale);
+        const validScale = Number.isFinite(scale) && scale > 0 ? scale : 1;
         const useCustomResolution = Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0;
+        const viewportWidth = this.plugin.canvas3d?.webgl.gl.drawingBufferWidth ?? 0;
+        const viewportHeight = this.plugin.canvas3d?.webgl.gl.drawingBufferHeight ?? 0;
+        const targetWidth = useCustomResolution ? width : viewportWidth;
+        const targetHeight = useCustomResolution ? height : viewportHeight;
+        const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
+        const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
         helper.behaviors.values.next({
             ...helper.values,
             transparent: !!options?.transparent,
             format: { name: "png", params: {} },
-            resolution: useCustomResolution
-                ? { name: "custom", params: { width: Math.trunc(width), height: Math.trunc(height) } }
-                : { name: "viewport", params: {} },
+            resolution: { name: "custom", params: { width: scaledWidth, height: scaledHeight } },
         });
         return await helper.getImageDataUri();
     }

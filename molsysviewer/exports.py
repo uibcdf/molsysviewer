@@ -44,6 +44,7 @@ class ExportManager:
         *,
         width_px: int | None = None,
         height_px: int | None = None,
+        scale: float = 1.0,
         transparent: bool = False,
         skip_digestion: bool = False,
     ) -> None:
@@ -52,5 +53,6 @@ class ExportManager:
             output_filename,
             width_px=width_px,
             height_px=height_px,
+            scale=scale,
             transparent=transparent,
         )

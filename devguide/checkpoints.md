@@ -152,6 +152,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - Python `view.export.image(...)`
   - PNG output
   - optional explicit pixel size
+  - optional `scale` multiplier for higher-resolution export
   - optional transparent background
   - backed by Mol*'s real viewport screenshot helper rather than naive canvas capture
   - legacy `view.export_image(...)` remains as a deprecated compatibility alias
