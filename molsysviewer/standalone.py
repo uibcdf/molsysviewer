@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 from pathlib import Path
 import tempfile
 import webbrowser
@@ -10,6 +11,103 @@ from .addons import addons as global_addons
 from .demo import demo
 from .new_view import new_view
 from .viewer import MolSysView
+
+
+def _empty_host_overlay_html(title: str) -> str:
+    demo_names = ", ".join(sorted(demo.keys()))
+    escaped_title = html.escape(title)
+    escaped_demos = html.escape(demo_names)
+    return f"""
+<style>
+  #molsysviewer-standalone0-empty {{
+    position: fixed;
+    inset: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 9999;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }}
+  #molsysviewer-standalone0-empty .molsysviewer-standalone0-card {{
+    max-width: 720px;
+    padding: 24px 28px;
+    border-radius: 18px;
+    background: rgba(18, 24, 33, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(244, 244, 245, 0.96);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.30);
+    backdrop-filter: blur(8px);
+  }}
+  #molsysviewer-standalone0-empty h1 {{
+    margin: 0 0 10px;
+    font-size: 28px;
+    line-height: 1.1;
+  }}
+  #molsysviewer-standalone0-empty p {{
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(244, 244, 245, 0.82);
+  }}
+  #molsysviewer-standalone0-empty .molsysviewer-standalone0-grid {{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }}
+  #molsysviewer-standalone0-empty .molsysviewer-standalone0-tile {{
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }}
+  #molsysviewer-standalone0-empty .molsysviewer-standalone0-label {{
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(244, 244, 245, 0.60);
+  }}
+  #molsysviewer-standalone0-empty code {{
+    font-size: 12px;
+    color: rgba(236, 253, 245, 0.96);
+  }}
+</style>
+<div id="molsysviewer-standalone0-empty">
+  <div class="molsysviewer-standalone0-card">
+    <h1>{escaped_title}</h1>
+    <p>This standalone 0 host is open but no molecular system has been loaded yet.</p>
+    <p>Next step: add a real loader flow for files and identifiers. For now, use the CLI with a source or a demo.</p>
+    <div class="molsysviewer-standalone0-grid">
+      <div class="molsysviewer-standalone0-tile">
+        <span class="molsysviewer-standalone0-label">Load a demo</span>
+        <code>molsysviewer dialanine --demo</code>
+      </div>
+      <div class="molsysviewer-standalone0-tile">
+        <span class="molsysviewer-standalone0-label">Export only</span>
+        <code>molsysviewer --no-browser --output /tmp/view.html</code>
+      </div>
+      <div class="molsysviewer-standalone0-tile">
+        <span class="molsysviewer-standalone0-label">Known demos</span>
+        <code>{escaped_demos}</code>
+      </div>
+    </div>
+  </div>
+</div>
+"""
+
+
+def _inject_empty_host_overlay(output_path: Path, title: str) -> None:
+    text = output_path.read_text(encoding="utf-8")
+    overlay = _empty_host_overlay_html(title)
+    if "</body>" in text:
+        text = text.replace("</body>", f"{overlay}\n</body>")
+    else:
+        text = text + overlay
+    output_path.write_text(text, encoding="utf-8")
 
 
 def _resolve_view(
@@ -92,6 +190,8 @@ def build_standalone0_html(
         include_popout=include_popout,
         mode="standalone",
     )
+    if molecular_system is None:
+        _inject_empty_host_overlay(output_path, title)
     return str(output_path)
 
 
