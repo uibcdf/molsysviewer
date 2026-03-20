@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from molsysviewer import MolSysView
+from molsysviewer import FigureSpec, MolSysView
 
 
 def test_request_image_export_sends_message_when_ready():
@@ -179,6 +179,64 @@ def test_export_figure_dark_background_maps_to_publication_dark(monkeypatch, tmp
     assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
     assert calls[0]["transparent"] is False
     assert calls[0]["preset"] == "publication-dark"
+
+
+def test_export_figure_uses_figure_spec_defaults(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+    spec = FigureSpec(width_px=1200, height_px=900, scale=3.0, background="dark", preset="publication-dark")
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append(kwargs)
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    outfile = tmp_path / "figure-spec.png"
+    view.export.figure(str(outfile), figure_spec=spec)
+
+    assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls == [
+        {
+            "width_px": 1200,
+            "height_px": 900,
+            "scale": 3.0,
+            "transparent": False,
+            "preset": "publication-dark",
+            "camera_snapshot": None,
+            "skip_digestion": True,
+        }
+    ]
+
+
+def test_export_figure_allows_explicit_overrides_over_figure_spec(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+    spec = FigureSpec(width_px=1200, height_px=900, scale=3.0, background="dark", preset="publication-dark")
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append(kwargs)
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    outfile = tmp_path / "figure-spec-override.png"
+    view.export.figure(str(outfile), figure_spec=spec, width_px=800, background="transparent")
+
+    assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls == [
+        {
+            "width_px": 800,
+            "height_px": 900,
+            "scale": 3.0,
+            "transparent": True,
+            "preset": "current",
+            "camera_snapshot": None,
+            "skip_digestion": True,
+        }
+    ]
 
 
 def test_frontend_image_export_event_is_recorded():

@@ -163,6 +163,14 @@ Do not append dated historical entries unless a date is itself operationally rel
   - optional transparent background
   - backed by Mol*'s real viewport screenshot helper rather than naive canvas capture
   - still no richer figure recipe/spec yet
+- The figure-export story has also advanced one more careful step:
+  - `view.export.figure(...)` now exists as the first explicit figure-oriented
+    wrapper above raw image export
+  - a first minimal reusable `FigureSpec` now exists on the Python side
+  - that recipe layer is still intentionally modest:
+    - export-facing only
+    - no detached project format yet
+    - no independent frontend protocol yet
 
 ## Near-Term Route To 1.0
 
