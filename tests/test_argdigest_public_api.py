@@ -97,6 +97,15 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
             preset="publication-light",
             camera_snapshot={"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]},
         )
+        view.export.figure(
+            tmp_path / "audit-figure.png",
+            width_px=800,
+            height_px=600,
+            scale=2.0,
+            background="white",
+            preset="publication-light",
+            camera_snapshot={"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]},
+        )
         config.set_default_standard_units("nm, ps, K, mole, amu, e, kJ/mol, kJ/(mol*nm), kJ/(mol*nm**2), radians")
         load_user_presets(preset_path)
         addons.clear()

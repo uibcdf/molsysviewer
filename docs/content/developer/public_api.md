@@ -188,6 +188,7 @@ Preferred export surface:
 
 - `view.export.html(...)`
 - `view.export.image(...)`
+- `view.export.figure(...)`
 
 `view.export.image(...)` may receive an explicit `camera_snapshot=...` when the
 export should use a saved camera rather than the live current viewport.
@@ -202,6 +203,17 @@ export should use a saved camera rather than the live current viewport.
 At this stage these presets are intentionally modest. They currently steer only
 the background treatment used during the capture itself, and the live viewer
 state is restored immediately after export.
+
+`view.export.figure(...)` is now the first explicit figure-oriented wrapper above
+raw image export. It currently provides:
+
+- stronger default `scale`
+- a `background=...` surface (`white`, `dark`, `transparent`, `current`)
+- figure-oriented preset defaults
+
+It is still intentionally modest and should be treated as the first step toward
+the future richer `figure` export contract, not as the final publication export
+system.
 
 `view.export.html(..., mode="lite")` is a public, user-facing export mode.
 It must remain reproducible.

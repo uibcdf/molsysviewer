@@ -114,6 +114,73 @@ def test_export_image_forwards_preset(monkeypatch, tmp_path: Path):
     ]
 
 
+def test_export_figure_uses_figure_defaults(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    fake_png = "data:image/png;base64,iVBORw0KGgo="
+    calls = []
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append(kwargs)
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    outfile = tmp_path / "figure-defaults.png"
+    view.export.figure(str(outfile))
+
+    assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls == [
+        {
+            "width_px": None,
+            "height_px": None,
+            "scale": 2.0,
+            "transparent": False,
+            "preset": "publication-light",
+            "camera_snapshot": None,
+            "skip_digestion": True,
+        }
+    ]
+
+
+def test_export_figure_transparent_background_uses_current_preset(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append(kwargs)
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    outfile = tmp_path / "figure-transparent.png"
+    view.export.figure(str(outfile), background="transparent")
+
+    assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls[0]["transparent"] is True
+    assert calls[0]["preset"] == "current"
+
+
+def test_export_figure_dark_background_maps_to_publication_dark(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append(kwargs)
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    outfile = tmp_path / "figure-dark.png"
+    view.export.figure(str(outfile), background="dark")
+
+    assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls[0]["transparent"] is False
+    assert calls[0]["preset"] == "publication-dark"
+
+
 def test_frontend_image_export_event_is_recorded():
     view = MolSysView(debug_js=True)
     event = {

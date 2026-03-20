@@ -314,6 +314,7 @@ The preferred roadmap is:
 - outline/occlusion tuning
 - better label treatment
 - explicit figure-oriented presets
+- first explicit `view.export.figure()` wrapper above raw image export
 
 ### Phase 4: Figure Spec
 
@@ -347,6 +348,7 @@ To avoid drift, it is useful to keep a very short priority map:
 - stronger label treatment
 - figure-oriented export defaults
 - richer export presets beyond background-only capture control
+- stronger `figure` wrapper semantics beyond simple image capture
 
 ### Later
 
@@ -390,6 +392,22 @@ view.figures.export(
     scale=4,
 )
 ```
+
+Current practical bridge state now also includes:
+
+```python
+view.export.figure(
+    "figure.png",
+    width_px=2400,
+    height_px=1800,
+    background="white",
+    preset="publication-light",
+    scale=2.0,
+)
+```
+
+This is not yet the final figure system. It is the first explicit wrapper that
+maps a figure-oriented request onto the current image export runtime.
 
 The key is not the exact spelling yet.
 The key is that the API should:
