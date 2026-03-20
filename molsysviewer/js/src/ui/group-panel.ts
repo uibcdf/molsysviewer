@@ -55,6 +55,7 @@ export class GroupPanel {
     private savedSelections: SavedSelectionSummary[] = [];
     private regions: RegionSummary[] = [];
     private onExpandedChange?: (expanded: boolean) => void;
+    private onNavigateToWorkbench?: () => void;
 
     constructor(
         private readonly host: HTMLElement,
@@ -67,7 +68,7 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
     ) {
-        this.shell = new PanelShell(this.host, { title: "Navigate", width: 240, toggleWidth: 26 });
+        this.shell = new PanelShell(this.host, { title: "Navigate", width: 240, toggleWidth: 26, navButtonLabel: "Workbench" });
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
         this.body = this.shell.content;
@@ -80,6 +81,11 @@ export class GroupPanel {
             event.stopPropagation();
             this.expanded = !this.expanded;
             this.applyExpandedState();
+        });
+        this.shell.navButton?.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onNavigateToWorkbench?.();
         });
 
         this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
@@ -131,6 +137,11 @@ export class GroupPanel {
 
     setOnExpandedChange(callback: ((expanded: boolean) => void) | undefined): void {
         this.onExpandedChange = callback;
+    }
+
+    setOnNavigateToWorkbench(callback: (() => void) | undefined): void {
+        this.onNavigateToWorkbench = callback;
+        this.shell.setNavButtonLabel(callback ? "Workbench" : undefined);
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {

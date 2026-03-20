@@ -2,12 +2,15 @@ type PanelShellOptions = {
     title: string;
     width?: number;
     toggleWidth?: number;
+    navButtonLabel?: string;
 };
 
 export class PanelShell {
     public readonly root: HTMLDivElement;
     public readonly panel: HTMLDivElement;
     public readonly titleElement: HTMLDivElement;
+    public readonly headerElement: HTMLDivElement;
+    public readonly navButton?: HTMLButtonElement;
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
     private readonly width: number;
@@ -57,6 +60,16 @@ export class PanelShell {
             fontSize: "12px",
         });
 
+        this.headerElement = document.createElement("div");
+        Object.assign(this.headerElement.style, {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "8px",
+            paddingBottom: "2px",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+        });
+
         this.titleElement = document.createElement("div");
         Object.assign(this.titleElement.style, {
             fontSize: "11px",
@@ -64,10 +77,29 @@ export class PanelShell {
             letterSpacing: "0.08em",
             textTransform: "uppercase",
             color: "rgba(244, 244, 245, 0.7)",
-            paddingBottom: "2px",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
         });
         this.titleElement.textContent = options.title;
+
+        if (options.navButtonLabel) {
+            this.navButton = document.createElement("button");
+            this.navButton.type = "button";
+            this.navButton.setAttribute("data-molsysviewer-panel-nav", options.navButtonLabel.toLowerCase());
+            this.navButton.textContent = options.navButtonLabel;
+            Object.assign(this.navButton.style, {
+                border: "1px solid rgba(255,255,255,0.14)",
+                borderRadius: "999px",
+                background: "rgba(255,255,255,0.04)",
+                color: "rgba(244,244,245,0.8)",
+                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                fontSize: "10px",
+                lineHeight: "1",
+                padding: "5px 8px",
+                cursor: "pointer",
+            });
+        }
+
+        this.headerElement.appendChild(this.titleElement);
+        if (this.navButton) this.headerElement.appendChild(this.navButton);
 
         this.content = document.createElement("div");
         Object.assign(this.content.style, {
@@ -108,7 +140,7 @@ export class PanelShell {
         });
         this.toggleButton.textContent = ">";
 
-        this.panel.appendChild(this.titleElement);
+        this.panel.appendChild(this.headerElement);
         this.panel.appendChild(this.content);
         this.root.appendChild(this.panel);
         this.root.appendChild(this.toggleButton);
@@ -122,6 +154,13 @@ export class PanelShell {
 
     isVisible(): boolean {
         return this.visible;
+    }
+
+    setNavButtonLabel(label?: string): void {
+        if (!this.navButton) return;
+        this.navButton.textContent = label ?? "";
+        this.navButton.style.display = label ? "inline-flex" : "none";
+        this.navButton.setAttribute("data-molsysviewer-panel-nav", label ? label.toLowerCase() : "");
     }
 
     setExpanded(expanded: boolean): void {

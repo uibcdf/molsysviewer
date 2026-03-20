@@ -42,9 +42,10 @@ export class WorkbenchPanel {
     private readonly sectionExpanded: Record<WorkbenchSectionKey, boolean>;
     private expanded = false;
     private onExpandedChange?: (expanded: boolean) => void;
+    private onNavigateToNavigate?: () => void;
 
     constructor(private readonly host: HTMLElement) {
-        this.shell = new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26 });
+        this.shell = new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
         this.root = this.shell.root;
         this.body = this.shell.content;
         this.toggleButton = this.shell.toggleButton;
@@ -76,6 +77,11 @@ export class WorkbenchPanel {
             event.stopPropagation();
             this.expanded = !this.expanded;
             this.applyExpandedState();
+        });
+        this.shell.navButton?.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onNavigateToNavigate?.();
         });
 
         Object.assign(this.body.style, {
@@ -127,6 +133,11 @@ export class WorkbenchPanel {
 
     setOnExpandedChange(callback: ((expanded: boolean) => void) | undefined): void {
         this.onExpandedChange = callback;
+    }
+
+    setOnNavigateToNavigate(callback: (() => void) | undefined): void {
+        this.onNavigateToNavigate = callback;
+        this.shell.setNavButtonLabel(callback ? "Navigate" : undefined);
     }
 
     setAnnotations(items: WorkbenchItem[]): void {

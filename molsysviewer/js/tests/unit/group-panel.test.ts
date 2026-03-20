@@ -95,7 +95,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         const structure = { units: [{ kind: 0, model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
@@ -122,12 +122,15 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         const root = host.children[0];
         const shell = root.children[0];
         const title = findFirstByAttribute(root, "data-molsysviewer-group-panel-title");
+        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "workbench");
         const body = findFirstByAttribute(root, "data-molsysviewer-group-panel-body");
         const toggle = root.children[1];
         const stripRoots = collectByAttribute(root, 'data-molsysviewer-group-strip', 'true');
         assert.strictEqual(stripRoots.length, 2);
         assert.ok(shell);
         assert.ok(title);
+        assert.ok(navButton);
+        assert.strictEqual(navButton?.textContent, "Workbench");
         assert.strictEqual(title?.textContent, "Navigate");
         assert.strictEqual(root.style.display, 'flex');
         assert.strictEqual(toggle.textContent, '>');
@@ -142,7 +145,7 @@ test("GroupPanel renders active, saved, and region summaries", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         const structure = { units: [{ kind: 0, model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
@@ -354,6 +357,50 @@ test("GroupPanel exposes shared expanded state API", () => {
         assert.strictEqual(panel.isExpanded(), false);
         assert.strictEqual(lastExpanded, false);
         assert.strictEqual(root.style.transform, "translateX(-240px)");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel header nav button triggers navigate-to-workbench callback", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let navigated = 0;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        panel.setOnNavigateToWorkbench(() => { navigated += 1; });
+        const structure = { units: [{ kind: 0, model: {
+            sourceData: {
+                kind: "mol-viewer:molsysmt",
+                data: {
+                    molsys_molecule_id: [0, 0],
+                    molsys_molecule_name: ["Peptide", "Peptide"],
+                    molsys_component_id: [0, 0],
+                    molsys_component_name: ["Protein", "Protein"],
+                },
+            },
+            atomicHierarchy: {
+                residueAtomSegments: { offsets: [0, 2] },
+                chainAtomSegments: { index: [0, 0] },
+                atoms: { label_comp_id: { value: (_i: number) => "ALA" } },
+                residues: { auth_seq_id: { value: (i: number) => i + 1 } },
+                chains: {
+                    label_asym_id: { value: (_i: number) => "A" },
+                    label_entity_id: { value: (_i: number) => "0" },
+                },
+                index: { getEntityFromChain: (_i: number) => 0 },
+            },
+        }}] } as any;
+        panel.setStructure(structure);
+
+        const root = host.children[0];
+        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "workbench");
+        assert.ok(navButton);
+
+        navButton?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(navigated, 1);
 
         panel.dispose();
     } finally {
