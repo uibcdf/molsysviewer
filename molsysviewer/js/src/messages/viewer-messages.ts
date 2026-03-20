@@ -228,6 +228,23 @@ export type SetTrajectoryPlaybackMessage = {
     direction?: "forward" | "backward";
 };
 
+export type SetAddonRuntimeSummaryMessage = {
+    op: "set_addon_runtime_summary";
+    addons?: string[];
+    panel_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        target?: string;
+    }>;
+    workbench_sections?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        target_panel?: string;
+    }>;
+};
+
 export type LoadPdbIdMessage = {
     op: "load_pdb_id";
     pdb_id: string;
@@ -412,6 +429,7 @@ export type ViewerMessage =
     StepTrajectoryMessage |
     SetTrajectoryFrameMessage |
     SetTrajectoryPlaybackMessage |
+    SetAddonRuntimeSummaryMessage |
     CreateRegionMessage |
     SetRegionRepresentationMessage |
     ShowRegionMessage |

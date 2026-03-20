@@ -592,7 +592,12 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._enabled_overrides: set[str] = set()
         self._disabled_overrides: set[str] = set()
         self._active_runtime: set[str] = set()
+        self._notify_view_runtime = False
         self._sync_runtime()
+
+    def bind_runtime(self) -> None:
+        self._notify_view_runtime = True
+        self._notify_runtime_summary()
 
     def _effective_enabled(self) -> list[str]:
         names = []
@@ -633,6 +638,14 @@ class ViewAddonsManager(_AddonAggregationMixin):
             self._deactivate_addon(name)
         for name in sorted(desired - active):
             self._activate_addon(name)
+        self._notify_runtime_summary()
+
+    def _notify_runtime_summary(self) -> None:
+        if not self._notify_view_runtime:
+            return
+        sync = getattr(self._view, "_sync_addons_runtime", None)
+        if callable(sync):
+            sync()
 
     @signal(tags=["addon"])
     @digest()

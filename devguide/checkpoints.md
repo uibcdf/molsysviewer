@@ -245,6 +245,19 @@ This is still Python-side and deliberately narrow.
 It should help validate realistic add-on activation without opening a large
 hook surface too early.
 
+Add-ons now also have a first visible runtime surface:
+
+- Python sends a small add-on runtime summary to the frontend
+- `Workbench` exposes that through an `Add-ons` section
+- the current visible content is still intentionally summary-only:
+  - enabled add-on names
+  - contributed panel titles
+  - contributed workbench-section titles
+
+This is the first runtime proof that add-ons are no longer only a registry/API
+story; they now reach the visible viewer surface without opening full dynamic UI
+execution yet.
+
 Working rule:
 
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell

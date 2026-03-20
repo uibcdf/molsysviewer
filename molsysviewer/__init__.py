@@ -15,6 +15,7 @@ from .addons import (
     addons,
     AddonContextActionSpec,
     AddonExportHelperSpec,
+    AddonLifecycleSpec,
     AddonPanelSpec,
     AddonShapeProviderSpec,
     AddonSpec,
@@ -45,4 +46,5 @@ __all__ = [
     "AddonStyleHelperSpec",
     "AddonExportHelperSpec",
     "AddonToolModeSpec",
+    "AddonLifecycleSpec",
 ]

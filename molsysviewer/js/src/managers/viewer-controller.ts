@@ -30,6 +30,7 @@ import { WorkbenchPanel } from "../ui/workbench-panel";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
+type AddonRuntimeSummary = { name: string; panelTitles: string[]; workbenchTitles: string[] };
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
@@ -307,6 +308,7 @@ export class MolSysViewerController {
     private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean; atomIndices: number[] }>();
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
+    private workbenchAddons: AddonRuntimeSummary[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
@@ -920,6 +922,10 @@ export class MolSysViewerController {
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;
                 case "set_trajectory_frame": await this.trajectory.setTrajectoryFrame(msg); break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
+                case "set_addon_runtime_summary":
+                    this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
+                    this.refreshWorkbenchPanel();
+                    break;
 
                 default:
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
@@ -1229,6 +1235,27 @@ export class MolSysViewerController {
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
+        this.workbenchPanel.setAddons(this.workbenchAddons);
+    }
+
+    private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
+        const names = Array.isArray(msg?.addons)
+            ? msg.addons.filter((value: unknown): value is string => typeof value === "string")
+            : [];
+        const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
+        const workbenchSections = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+
+        return names
+            .map((name) => ({
+                name,
+                panelTitles: panelSpecs
+                    .filter((item: any) => item?.addon === name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                workbenchTitles: workbenchSections
+                    .filter((item: any) => item?.addon === name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+            }))
+            .sort((left, right) => left.name.localeCompare(right.name));
     }
 
     private refreshNavigatePanel(): void {

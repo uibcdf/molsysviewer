@@ -114,6 +114,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         panel.setMeasurements([{ title: "Distance", subtitle: "3.2 A" }]);
         panel.setShapes([{ title: "Pocket", subtitle: "surface", hidden: true }]);
         panel.setScene({ styleTag: "polymer-and-ligand", preset: "atomic-detail" });
+        panel.setAddons([{ name: "topomt", panelTitles: ["Topo"], workbenchTitles: ["Pockets"] }]);
 
         const root = host.children[0];
         const items = [];
@@ -123,7 +124,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         };
         collect(root);
 
-        assert.strictEqual(items.length, 5);
+        assert.strictEqual(items.length, 6);
         assert.strictEqual(findFirstText(items[0]), "Picked label");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-active"), "true");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-context"), "true");
@@ -131,6 +132,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         assert.strictEqual(findFirstText(items[2]), "Pocket");
         assert.strictEqual(findFirstText(items[3]), "Style: polymer-and-ligand");
         assert.strictEqual(findFirstText(items[4]), "Preset: atomic-detail");
+        assert.strictEqual(findFirstText(items[5]), "topomt");
 
         panel.dispose();
     } finally {

@@ -16,7 +16,13 @@ type SceneSummary = {
     preset?: string;
 };
 
-type WorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene";
+type AddonSummary = {
+    name: string;
+    panelTitles: string[];
+    workbenchTitles: string[];
+};
+
+type WorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
 
 type SectionView = {
     root: HTMLDivElement;
@@ -81,12 +87,14 @@ export class WorkbenchPanel {
             measurements: this.createSection("Measurements", "No measurements yet."),
             shapes: this.createSection("Shapes", "No shapes yet."),
             scene: this.createSection("Scene", "No scene style selected."),
+            addons: this.createSection("Add-ons", "No add-ons active."),
         };
         this.sectionExpanded = {
             annotations: true,
             measurements: true,
             shapes: true,
             scene: true,
+            addons: true,
         };
 
         this.applyExpandedState();
@@ -118,6 +126,21 @@ export class WorkbenchPanel {
         if (summary?.preset) items.push({ title: `Preset: ${summary.preset}` });
         this.renderItems(this.sections.scene, items);
         this.applySectionExpandedState("scene");
+    }
+
+    setAddons(items: AddonSummary[]): void {
+        this.renderItems(
+            this.sections.addons,
+            items.map((item) => ({
+                key: item.name,
+                title: item.name,
+                subtitle: [
+                    item.panelTitles.length > 0 ? `Panels: ${item.panelTitles.join(", ")}` : null,
+                    item.workbenchTitles.length > 0 ? `Workbench: ${item.workbenchTitles.join(", ")}` : null,
+                ].filter(Boolean).join(" · "),
+            })),
+        );
+        this.applySectionExpandedState("addons");
     }
 
     dispose(): void {

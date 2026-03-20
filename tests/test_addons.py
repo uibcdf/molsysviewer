@@ -284,3 +284,38 @@ def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
     assert events == ["enable", "disable", "enable"]
     assert another_view.addons.enabled() == []
     addons.clear()
+
+
+def test_view_addons_sync_runtime_summary_message():
+    addons.clear()
+    view = MolSysView()
+    sent: list[dict] = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(
+                        id="pockets",
+                        title="Pockets",
+                        entry="topomt.workbench.pockets",
+                    ),
+                ),
+            )
+        )
+        view.addons.enable("topomt")
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["addons"] == ["topomt"]
+        assert addon_msg["panel_specs"][0]["title"] == "Topo"
+        assert addon_msg["workbench_sections"][0]["title"] == "Pockets"
+
+        view.addons.disable("topomt")
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["addons"] == []
+        assert addon_msg["panel_specs"] == []
+        assert addon_msg["workbench_sections"] == []
+    finally:
+        addons.clear()

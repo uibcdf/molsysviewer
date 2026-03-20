@@ -202,6 +202,18 @@ view.addons.disable("topomt")
 view.addons.reset()
 ```
 
+MolSysViewer also now mirrors a minimal add-on runtime summary into the current
+Workbench runtime.
+
+The first visible slice is intentionally modest:
+
+- enabled add-ons appear in a dedicated `Add-ons` section
+- panel titles and workbench-section titles are summarized there
+
+This is not full add-on UI execution yet.
+It is only the first visible runtime proof that the add-on platform can reach
+the viewer surface.
+
 ## What is still intentionally missing
 
 This first slice does **not** yet try to standardize:

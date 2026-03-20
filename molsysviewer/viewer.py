@@ -188,6 +188,7 @@ class MolSysView:
         self.whole = Whole(self)
         self.styles = StylesManager(self)
         self.addons = ViewAddonsManager(self, global_addons)
+        self.addons.bind_runtime()
         self.export = ExportManager(self)
         self.hover_target = InteractionTarget(
             self,
@@ -1016,6 +1017,19 @@ class MolSysView:
             "op": "update_visibility",
             "options": {"visible_atom_indices": self.visible_atom_indices},
         })
+
+    def _sync_addons_runtime(self) -> None:
+        addon_names = self.addons.enabled(skip_digestion=True)
+        panel_specs = self.addons.panel_specs(skip_digestion=True)
+        workbench_sections = self.addons.workbench_section_specs(skip_digestion=True)
+        self._send(
+            {
+                "op": "set_addon_runtime_summary",
+                "addons": addon_names,
+                "panel_specs": panel_specs,
+                "workbench_sections": workbench_sections,
+            }
+        )
 
     def _remap_indices(self, indices: Any, atom_index_map: dict[int, int] | None) -> list[int]:
         if atom_index_map is None:
