@@ -171,6 +171,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - export-facing only
     - no detached project format yet
     - no independent frontend protocol yet
+- The add-on/panel scaling direction is now clearer too:
+  - do not assume future growth means one flat global pile of panels
+  - `Core` should be understood as the native future workspace
+  - larger add-ons may later contribute their own workspaces
+  - each workspace would then carry its own local panel stack
+  - smaller add-ons should still be allowed to remain lighter and never become
+    a workspace
 
 ## Near-Term Route To 1.0
 
