@@ -292,6 +292,13 @@ What this checkpoint consolidates:
   - `view.export.image(...)`
 - a reproducible scene/workbench baseline strong enough to support the next steps toward `1.0.0`
 
+Follow-up convergence after `0.11.0`:
+
+- `Navigate` and `Workbench` now share a minimal drawer expansion contract
+- only one of the two drawer panels expands at a time
+- `Escape` closes an expanded drawer before falling back to clearing active
+  selection
+
 What `0.9.0` does not mean yet:
 
 - no final shared panel navigator yet

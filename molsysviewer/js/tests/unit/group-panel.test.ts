@@ -312,3 +312,51 @@ test("GroupPanel saved and region summaries trigger their primary actions", () =
         restore();
     }
 });
+
+test("GroupPanel exposes shared expanded state API", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let lastExpanded: boolean | null = null;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const structure = { units: [{ kind: 0, model: {
+            sourceData: {
+                kind: "mol-viewer:molsysmt",
+                data: {
+                    molsys_molecule_id: [0, 0],
+                    molsys_molecule_name: ["Peptide", "Peptide"],
+                    molsys_component_id: [0, 0],
+                    molsys_component_name: ["Protein", "Protein"],
+                },
+            },
+            atomicHierarchy: {
+                residueAtomSegments: { offsets: [0, 2] },
+                chainAtomSegments: { index: [0, 0] },
+                atoms: { label_comp_id: { value: (_i: number) => "ALA" } },
+                residues: { auth_seq_id: { value: (i: number) => i + 1 } },
+                chains: {
+                    label_asym_id: { value: (_i: number) => "A" },
+                    label_entity_id: { value: (_i: number) => "0" },
+                },
+                index: { getEntityFromChain: (_i: number) => 0 },
+            },
+        }}] } as any;
+        panel.setOnExpandedChange((expanded) => { lastExpanded = expanded; });
+        panel.setStructure(structure);
+        panel.setExpanded(true);
+
+        const root = host.children[0];
+        assert.strictEqual(panel.isExpanded(), true);
+        assert.strictEqual(lastExpanded, true);
+        assert.strictEqual(root.style.transform, "translateX(0)");
+
+        panel.setExpanded(false);
+        assert.strictEqual(panel.isExpanded(), false);
+        assert.strictEqual(lastExpanded, false);
+        assert.strictEqual(root.style.transform, "translateX(-240px)");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
