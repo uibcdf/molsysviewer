@@ -258,6 +258,20 @@ This should also stay compatible with optional ecosystem add-ons:
 
 - the built-in target remains `Navigate` + `Workbench`
 - but the panel-mode architecture should not assume there can only ever be two
+
+Longer-term scaling direction:
+
+- `Core` should be treated as the native workspace
+- larger add-ons may later contribute their own workspaces
+- each workspace would then carry its own internal panel stack
+- smaller add-ons should still be allowed to remain lighter:
+  - context actions
+  - workbench sections
+  - export helpers
+  - shapes
+
+This means the future scaling pressure is not "more panels in one flat pile",
+but "more workspaces, each with a calmer local panel stack".
   panels
 - optional MolSysSuite add-ons should normally surface themselves through this
   same panel-mode system, not through new permanent canvas chrome

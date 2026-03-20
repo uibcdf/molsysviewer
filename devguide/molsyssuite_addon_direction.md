@@ -67,22 +67,72 @@ growing the core directly:
 This keeps the core thin while still allowing MolSysViewer to act as the shared
 visual workbench of MolSysSuite.
 
+## Workspace Direction
+
+The next scaling step for panel mode should not be "one flat ever-growing list
+of panels".
+
+The healthier long-term direction is:
+
+- a small number of top-level **workspaces**
+- and, inside each workspace, a **panel stack**
+
+Important distinction:
+
+- a `workspace` is the high-level work domain
+- a `stack` is the local panel family inside that workspace
+- an `add-on` is the extension mechanism
+
+This means:
+
+- `Core` is itself a workspace
+- some larger add-ons may contribute a workspace
+- not every add-on needs to become a workspace
+
+So the relationship is:
+
+- every non-core workspace would come from an add-on
+- but many smaller add-ons should remain lighter:
+  - context actions
+  - workbench sections
+  - export helpers
+  - tool modes
+  - shapes/overlays
+
+This separation matters because a flat global panel pile does not scale well if
+MolSysViewer eventually hosts several scientific domains with several panels of
+their own.
+
 ## Main Visible Form Of An Add-On
 
-The main visible form of an add-on should normally be:
+The main visible form of a **small** add-on should normally be:
 
-- **one new panel**
-- or, if scientifically necessary, a very small number of new panels
+- one or a few local contributions
+  - context actions
+  - workbench sections
+  - export helpers
+  - shapes
+  - tool modes
+
+The main visible form of a **large** add-on may be:
+
+- **one new workspace**
+- with its own panel stack inside it
 
 So, for example:
 
-- `TopoMT` could register a `Topo` panel
-- `PharmacophoreMT` could register a `Pharmacophore` panel
-- `ElasNetMT` could register a `Network` or `Elastic` panel
+- `Core` keeps the native workspace with:
+  - `Navigate`
+  - `Workbench`
+- `MolSysMT` could contribute a `MolSysMT` workspace with several analysis
+  panels
+- `TopoMT` could contribute a `TopoMT` workspace
+- `PharmacophoreMT` could contribute a `PharmacophoreMT` workspace
+- `ElasNetMT` could contribute an `Elastic` or `Networks` workspace
 
-This fits the panel-mode direction already established in `canvas_minimal_ux.md`
-and avoids inflating the base workbench for users who do not need those
-domains.
+This fits the panel-mode direction already established in
+`canvas_minimal_ux.md` while avoiding a single flat panel navigator for all
+future scientific domains.
 
 ## What An Add-On May Register
 
@@ -90,6 +140,7 @@ The add-on surface should remain intentionally small and explicit.
 
 Healthy registration targets include:
 
+- a workspace spec for larger add-ons
 - one or more panels
 - context-menu actions
 - shape/overlay producers or adapters
@@ -100,6 +151,11 @@ Healthy registration targets include:
 
 The panel is expected to be the main user-facing surface, but it should not be
 the only possible extension point.
+
+If workspace specs are introduced, they should remain optional:
+
+- a large add-on may register a workspace plus its panel stack
+- a small add-on may register no workspace at all
 
 ## What Should Not Be Opened Yet
 
@@ -316,16 +372,20 @@ This add-on direction does not change the minimal UX rule:
 
 In other words:
 
-- extensions should mostly arrive as optional panel-mode growth
+- extensions should mostly arrive as optional panel-mode/workspace growth
 - not as new always-visible UI noise
 
 ## Open Questions
 
 These questions remain intentionally open for later evaluation:
 
-- should add-ons register full new panels, or also panel subsections?
-- should add-ons contribute to `Workbench`, `Navigate`, or only as their own
-  panels?
+- should large add-ons contribute primarily as their own future workspaces
+  while smaller add-ons continue using `Workbench`/context/export surfaces?
+- what should a minimal future workspace spec contain beyond:
+  - id
+  - title
+  - entry/default panel
+- how visible should the workspace selector be in notebook versus standalone?
 - how far should the initial maintained known-module list go before a more
   formal discovery mechanism is justified?
 - should future discovery rely on entry points, package metadata, or keep a
