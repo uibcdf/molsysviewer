@@ -288,6 +288,7 @@ For standalone, the next communication milestone is also clearer:
 - the first public slice should stay deliberately small:
   - `build_standalone0_html(...)`
   - `launch_standalone0(...)`
+  - `molsysviewer ...`
   - `python -m molsysviewer.standalone ...`
 
   - cookbook should carry a "build a minimal add-on" recipe

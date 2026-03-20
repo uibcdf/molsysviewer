@@ -25,6 +25,9 @@ dev = [
   "pytest-cov",
 ]
 
+[project.scripts]
+molsysviewer = "molsysviewer.standalone:main"
+
 [tool.setuptools]
 include-package-data = false
 
