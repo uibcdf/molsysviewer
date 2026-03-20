@@ -259,13 +259,18 @@ def test_addons_registry_supports_manual_module_registration():
     )
     module.on_enable = lambda view: setattr(view, "_topomt_dev_enabled", True)
     module.on_disable = lambda view: setattr(view, "_topomt_dev_disabled", True)
+    module.on_context_action = lambda view, action_id, payload: setattr(view, "_topomt_dev_action", (action_id, payload["addon"]))
     sys.modules[module.__name__] = module
     try:
         addon = addons.register_module(module)
         assert addon.name == "topomt-dev"
         assert addons.available() == ["topomt-dev"]
         assert addons.records()[0]["module"] == "molsysviewer_topomt_dev"
-        assert addons.records()[0]["lifecycle"] == {"has_on_enable": True, "has_on_disable": True}
+        assert addons.records()[0]["lifecycle"] == {
+            "has_on_enable": True,
+            "has_on_disable": True,
+            "has_on_context_action": True,
+        }
     finally:
         sys.modules.pop(module.__name__, None)
         addons.clear()
@@ -348,6 +353,89 @@ def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
     another_view = MolSysView()
     assert events == ["enable", "disable", "enable"]
     assert another_view.addons.enabled() == []
+    addons.clear()
+
+
+def test_view_addons_handle_context_action_through_lifecycle():
+    addons.clear()
+    events: list[tuple[str, str, str]] = []
+
+    def _on_context_action(view, action_id, payload):
+        events.append((view.__class__.__name__, action_id, payload["addon"]))
+        view._addon_context_action = payload
+
+    addons.register(
+        AddonSpec(
+            name="topomt",
+            context_actions=(
+                AddonContextActionSpec(
+                    id="focus-pocket",
+                    title="Focus Pocket",
+                    entry="topomt.context.focus_pocket",
+                    target_kinds=("structure",),
+                ),
+            ),
+        ),
+        lifecycle=addons_module.AddonLifecycleSpec(on_context_action=_on_context_action),
+    )
+
+    view = MolSysView()
+    handled = view.addons.handle_context_action(
+        "topomt",
+        "focus-pocket",
+        {
+            "event": "interaction_context_action",
+            "action": "addon_context_action",
+            "addon": "topomt",
+            "addon_action_id": "focus-pocket",
+            "context": {"kind": "structure", "atom_indices": [0, 1, 2]},
+        },
+    )
+
+    assert handled is True
+    assert events == [("MolSysView", "focus-pocket", "topomt")]
+    assert view._addon_context_action["addon_action_id"] == "focus-pocket"
+    addons.clear()
+
+
+def test_view_handles_frontend_addon_context_action_event():
+    addons.clear()
+    events: list[tuple[str, str]] = []
+
+    def _on_context_action(view, action_id, payload):
+        events.append((action_id, payload["addon"]))
+        view._last_addon_context_payload = payload
+
+    addons.register(
+        AddonSpec(
+            name="topomt",
+            context_actions=(
+                AddonContextActionSpec(
+                    id="focus-pocket",
+                    title="Focus Pocket",
+                    entry="topomt.context.focus_pocket",
+                    target_kinds=("structure",),
+                ),
+            ),
+        ),
+        lifecycle=addons_module.AddonLifecycleSpec(on_context_action=_on_context_action),
+    )
+
+    view = MolSysView(debug_js=True)
+    payload = {
+        "event": "interaction_context_action",
+        "action": "addon_context_action",
+        "addon": "topomt",
+        "addon_action_id": "focus-pocket",
+        "addon_action_title": "Focus Pocket",
+        "context": {"kind": "structure", "atom_indices": [3, 4, 5]},
+    }
+
+    view._handle_frontend_event(payload)  # noqa: SLF001
+
+    assert events == [("focus-pocket", "topomt")]
+    assert view.get_last_context_action_event()["addon"] == "topomt"
+    assert view._last_addon_context_payload["context"]["kind"] == "structure"
     addons.clear()
 
 

@@ -257,15 +257,22 @@ KNOWN_ADDON_MODULES: tuple[str, ...] = (
 class AddonLifecycleSpec:
     on_enable: Callable[[Any], None] | None = None
     on_disable: Callable[[Any], None] | None = None
+    on_context_action: Callable[[Any, str, dict[str, Any]], None] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "on_enable", _coerce_callback(self.on_enable, "AddonLifecycleSpec.on_enable"))
         object.__setattr__(self, "on_disable", _coerce_callback(self.on_disable, "AddonLifecycleSpec.on_disable"))
+        object.__setattr__(
+            self,
+            "on_context_action",
+            _coerce_callback(self.on_context_action, "AddonLifecycleSpec.on_context_action"),
+        )
 
     def info(self) -> dict[str, bool]:
         return {
             "has_on_enable": self.on_enable is not None,
             "has_on_disable": self.on_disable is not None,
+            "has_on_context_action": self.on_context_action is not None,
         }
 
 
@@ -308,7 +315,8 @@ def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec 
 
     on_enable = getattr(module, "on_enable", None)
     on_disable = getattr(module, "on_disable", None)
-    if lifecycle is None and on_enable is None and on_disable is None:
+    on_context_action = getattr(module, "on_context_action", None)
+    if lifecycle is None and on_enable is None and on_disable is None and on_context_action is None:
         return None
 
     if lifecycle is not None and not isinstance(lifecycle, AddonLifecycleSpec):
@@ -318,7 +326,11 @@ def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec 
 
     if lifecycle is not None:
         return lifecycle
-    return AddonLifecycleSpec(on_enable=on_enable, on_disable=on_disable)
+    return AddonLifecycleSpec(
+        on_enable=on_enable,
+        on_disable=on_disable,
+        on_context_action=on_context_action,
+    )
 
 
 @dataclass(frozen=True)
@@ -540,6 +552,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
             record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
                 "has_on_enable": False,
                 "has_on_disable": False,
+                "has_on_context_action": False,
             }
             records.append(record)
         return records
@@ -757,9 +770,28 @@ class ViewAddonsManager(_AddonAggregationMixin):
             record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
                 "has_on_enable": False,
                 "has_on_disable": False,
+                "has_on_context_action": False,
             }
             records.append(record)
         return records
+
+    @signal(tags=["addon", "context"])
+    @digest()
+    def handle_context_action(
+        self,
+        addon: str,
+        action_id: str,
+        payload: dict[str, Any],
+        skip_digestion: bool = False,
+    ) -> bool:
+        if addon not in self._effective_enabled():
+            return False
+        lifecycle = self._host.lifecycle_for(addon, skip_digestion=True)
+        handler = lifecycle.on_context_action if lifecycle is not None else None
+        if handler is None:
+            return False
+        handler(self._view, action_id, dict(payload))
+        return True
 
 
 addons = GlobalAddonsRegistry()

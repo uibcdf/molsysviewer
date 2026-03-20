@@ -240,6 +240,7 @@ The add-on platform now also has a first intentionally small lifecycle slice:
 - `AddonLifecycleSpec`
 - `on_enable(view)`
 - `on_disable(view)`
+- `on_context_action(view, action_id, payload)`
 
 This is still Python-side and deliberately narrow.
 It should help validate realistic add-on activation without opening a large
@@ -270,6 +271,10 @@ There is now also a first visible add-on context-menu slice:
 
 This is still a bridge and visibility slice, not yet a rich domain action
 runtime.
+
+Enabled add-ons can now also handle that bridge through the new Python-side
+lifecycle hook above, so add-on context actions are no longer only observable;
+they can already trigger explicit view-local runtime behavior.
 
 Working rule:
 

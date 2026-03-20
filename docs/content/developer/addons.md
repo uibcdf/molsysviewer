@@ -172,6 +172,7 @@ MolSysViewer now also supports a deliberately small per-view lifecycle:
 
 - `on_enable(view)`
 - `on_disable(view)`
+- `on_context_action(view, action_id, payload)`
 
 This lifecycle is Python-side and view-local.
 It is intended for light runtime wiring when an add-on becomes active in a
@@ -188,6 +189,7 @@ molsysviewer.addons.register(
     lifecycle=AddonLifecycleSpec(
         on_enable=my_on_enable,
         on_disable=my_on_disable,
+        on_context_action=my_on_context_action,
     ),
 )
 ```
@@ -199,12 +201,31 @@ or expose it from an importable add-on module through:
 - or plain module functions:
   - `on_enable`
   - `on_disable`
+  - `on_context_action`
 
 This remains intentionally small:
 
 - no persisted lifecycle state
 - no frontend runtime code execution contract
 - no broad hook surface yet
+
+The new `on_context_action(...)` hook is the first real runtime bridge from
+visible add-on UI back into Python-side behavior.
+
+When an enabled add-on contributes a compatible context-menu action and the
+user activates it, MolSysViewer can now call:
+
+- `on_context_action(view, action_id, payload)`
+
+with a structured payload containing, for example:
+
+- `addon`
+- `addon_action_id`
+- `addon_action_title`
+- `context`
+
+This keeps the first real add-on runtime behavior explicit and testable without
+opening arbitrary frontend execution.
 
 ## View-local behavior
 
