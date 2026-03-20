@@ -437,12 +437,14 @@ export default {
                     const data_uri = await c.getImageDataUri({
                         width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
                         height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
+                        scale: typeof (msg as any).scale === "number" ? (msg as any).scale : undefined,
                         transparent: !!(msg as any).transparent,
                     });
                     if (typeof data_uri === "string" && data_uri) {
                         model.send({
                             event: "image_export",
                             data_uri,
+                            scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
                             transparent: !!(msg as any).transparent,
                             width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
                             height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,

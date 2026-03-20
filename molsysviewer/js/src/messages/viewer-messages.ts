@@ -336,6 +336,7 @@ export type RequestImageExportMessage = {
     op: "request_image_export";
     width?: number;
     height?: number;
+    scale?: number;
     transparent?: boolean;
 };
 
