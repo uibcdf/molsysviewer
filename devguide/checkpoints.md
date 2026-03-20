@@ -181,10 +181,12 @@ Do not append dated historical entries unless a date is itself operationally rel
   - that workspace layer is now also present in the typed add-on contract and
     already propagates through the current addon runtime summary path
   - the shared panel shell now also has a first minimal runtime workspace
-    selector:
+    launcher:
     - only shown when more than one workspace is effectively available
     - still far from the final launcher/mosaic
     - enough to make workspace state visible and steer add-on workbench slices
+    - the shared header stays calmer because only the current workspace remains
+      visible until the launcher is opened
   - the shared panel header is now also becoming workspace-aware:
     - non-core workspaces remain workbench-centric for now
     - the runtime offers a direct return to `Core`
@@ -198,6 +200,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - that panel selector is now also part of the shared header chrome:
     - core stack feels more like a real `panel mode`
     - non-core panel stacks stop feeling like a local workbench-only detail
+    - the header now reads more clearly as:
+      - workspace launcher first
+      - active workspace panel stack second
 
 ## Near-Term Route To 1.0
 

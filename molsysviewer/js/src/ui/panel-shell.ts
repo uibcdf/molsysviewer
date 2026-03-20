@@ -28,10 +28,12 @@ export class PanelShell {
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
     private readonly width: number;
-    private readonly workspaceCurrentElement: HTMLSpanElement;
+    private readonly workspaceCurrentElement: HTMLButtonElement;
+    private readonly workspaceMenuElement: HTMLDivElement;
     private onSelectPanel?: (panelId: string) => void;
     private visible = false;
     private onSelectWorkspace?: (workspaceId: string) => void;
+    private workspaceMenuOpen = false;
 
     constructor(host: HTMLElement, options: PanelShellOptions) {
         const width = options.width ?? 240;
@@ -160,15 +162,12 @@ export class PanelShell {
         this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-group", "true");
         Object.assign(this.workspaceGroupElement.style, {
             display: "none",
+            position: "relative",
             alignItems: "center",
-            gap: "4px",
-            padding: "3px",
-            borderRadius: "999px",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
             marginLeft: "auto",
         });
-        this.workspaceCurrentElement = document.createElement("span");
+        this.workspaceCurrentElement = document.createElement("button");
+        this.workspaceCurrentElement.type = "button";
         Object.assign(this.workspaceCurrentElement.style, {
             fontSize: "10px",
             fontWeight: "700",
@@ -177,8 +176,36 @@ export class PanelShell {
             borderRadius: "999px",
             background: "rgba(255,255,255,0.12)",
             color: "#f4f4f5",
+            border: "1px solid rgba(255,255,255,0.14)",
+            cursor: "pointer",
+        });
+        this.workspaceCurrentElement.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (this.workspaceMenuElement.childElementCount <= 0) return;
+            this.workspaceMenuOpen = !this.workspaceMenuOpen;
+            this.applyWorkspaceMenuState();
+        });
+
+        this.workspaceMenuElement = document.createElement("div");
+        this.workspaceMenuElement.setAttribute("data-molsysviewer-panel-workspace-launcher", "true");
+        Object.assign(this.workspaceMenuElement.style, {
+            position: "absolute",
+            top: "calc(100% + 6px)",
+            right: "0",
+            minWidth: "148px",
+            display: "none",
+            flexDirection: "column",
+            gap: "4px",
+            padding: "6px",
+            borderRadius: "12px",
+            background: "rgba(18, 18, 22, 0.96)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            boxShadow: "0 16px 32px rgba(0,0,0,0.24)",
+            zIndex: "20",
         });
         this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
+        this.workspaceGroupElement.appendChild(this.workspaceMenuElement);
         this.headerElement.appendChild(this.workspaceGroupElement);
 
         this.content = document.createElement("div");
@@ -230,6 +257,10 @@ export class PanelShell {
     setVisible(visible: boolean): void {
         this.visible = visible;
         this.root.style.display = visible ? "flex" : "none";
+        if (!visible) {
+            this.workspaceMenuOpen = false;
+            this.applyWorkspaceMenuState();
+        }
     }
 
     isVisible(): boolean {
@@ -291,9 +322,10 @@ export class PanelShell {
     }
 
     setWorkspaceOptions(items: WorkspaceOption[], currentId: string): void {
-        this.workspaceGroupElement.replaceChildren();
-
         if (!Array.isArray(items) || items.length <= 1) {
+            this.workspaceMenuElement.replaceChildren();
+            this.workspaceMenuOpen = false;
+            this.applyWorkspaceMenuState();
             this.workspaceGroupElement.style.display = "none";
             return;
         }
@@ -301,34 +333,47 @@ export class PanelShell {
         const current = items.find((item) => item.id === currentId) ?? items[0];
         this.workspaceCurrentElement.textContent = current.title;
         this.workspaceCurrentElement.setAttribute("data-molsysviewer-panel-workspace-current", current.id);
-        this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
+        this.workspaceMenuElement.replaceChildren();
 
         for (const item of items) {
-            if (item.id === current.id) continue;
             const button = document.createElement("button");
             button.type = "button";
-            button.setAttribute("data-molsysviewer-panel-workspace", item.id);
+            button.setAttribute("data-molsysviewer-panel-workspace-option", item.id);
             button.textContent = item.title;
             Object.assign(button.style, {
-                border: "0",
-                borderRadius: "999px",
-                background: "transparent",
-                color: "rgba(244,244,245,0.8)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                border: item.id === current.id ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.08)",
+                borderRadius: "10px",
+                background: item.id === current.id ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.03)",
+                color: item.id === current.id ? "#f4f4f5" : "rgba(244,244,245,0.82)",
                 fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-                fontSize: "10px",
-                lineHeight: "1",
-                padding: "5px 8px",
+                fontSize: "11px",
+                lineHeight: "1.2",
+                padding: "8px 10px",
                 cursor: "pointer",
+                textAlign: "left",
             });
             button.addEventListener("click", (event) => {
                 event.preventDefault();
                 event.stopPropagation();
+                this.workspaceMenuOpen = false;
+                this.applyWorkspaceMenuState();
                 this.onSelectWorkspace?.(item.id);
             });
-            this.workspaceGroupElement.appendChild(button);
+            this.workspaceMenuElement.appendChild(button);
         }
 
+        this.workspaceMenuOpen = false;
+        this.applyWorkspaceMenuState();
         this.workspaceGroupElement.style.display = "inline-flex";
+    }
+
+    private applyWorkspaceMenuState(): void {
+        this.workspaceMenuElement.style.display = this.workspaceMenuOpen ? "flex" : "none";
+        this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-launcher-open", this.workspaceMenuOpen ? "true" : "false");
     }
 
     setExpanded(expanded: boolean): void {

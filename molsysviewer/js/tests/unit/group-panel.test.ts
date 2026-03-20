@@ -368,7 +368,7 @@ test("GroupPanel exposes shared expanded state API", () => {
     }
 });
 
-test("GroupPanel exposes workspace selector when multiple workspaces exist", () => {
+test("GroupPanel exposes workspace launcher when multiple workspaces exist", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -386,8 +386,13 @@ test("GroupPanel exposes workspace selector when multiple workspaces exist", () 
 
         const root = host.children[0];
         const current = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current", "core");
-        const button = findFirstByAttribute(root, "data-molsysviewer-panel-workspace", "topomt");
+        const launcher = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-launcher", "true");
         assert.ok(current);
+        assert.ok(launcher);
+
+        current?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        const button = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option", "topomt");
         assert.ok(button);
 
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
