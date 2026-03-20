@@ -271,6 +271,11 @@ The add-on starter-pack story should now be treated as real deliverable work:
 - stable normative references under:
   - [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
   - [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+- those `standards/` files must now stay aligned with:
+  - the runtime contract
+  - the reference template
+  - developer docs
+  - cookbook guidance
 
 For standalone, the next communication milestone is also clearer:
 
@@ -280,6 +285,10 @@ For standalone, the next communication milestone is also clearer:
   PharmacophoreMT teams
 - its job is to prove the host model and add-on/workspace fit, not to pretend
   the final product UX is already finished
+- the first public slice should stay deliberately small:
+  - `build_standalone0_html(...)`
+  - `launch_standalone0(...)`
+  - `python -m molsysviewer.standalone ...`
 
   - cookbook should carry a "build a minimal add-on" recipe
   - showcase should eventually include at least one add-on-shaped scientific

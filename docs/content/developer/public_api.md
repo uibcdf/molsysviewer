@@ -219,6 +219,17 @@ system.
 `view.export.html(..., mode="lite")` is a public, user-facing export mode.
 It must remain reproducible.
 
+## Standalone 0 bridge
+
+The current pre-`1.0` standalone bridge is intentionally small:
+
+- `molsysviewer.build_standalone0_html(...)`
+- `molsysviewer.launch_standalone0(...)`
+- `python -m molsysviewer.standalone ...`
+
+These surfaces should be treated as a host-facing bridge built on top of the
+existing standalone HTML export path, not as the final standalone product.
+
 If you change:
 
 - the runtime URL logic,

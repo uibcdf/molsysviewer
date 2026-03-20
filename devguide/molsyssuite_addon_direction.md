@@ -223,6 +223,13 @@ It is now validated through a combination of:
 - a small importable reference template:
   - `molsysviewer.addon_templates.minimal_topomt`
 - public user/developer/cookbook docs that already describe the contract
+- normative references under:
+  - `standards/addons/README.md`
+  - `standards/addons/IMPLEMENTATION_CONTRACT.md`
+
+Those `standards/` files should now be treated as living contract documents.
+If the add-on contract changes in runtime, tests, cookbook, or developer docs,
+the corresponding standards files should be updated in the same slice.
 
 This is the right first step because it fixes the shape of the connection
 platform before real plugins start depending on it.
