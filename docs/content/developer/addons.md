@@ -63,6 +63,10 @@ Important clarification:
 - larger add-ons may later contribute a workspace plus its own panel stack
 - smaller add-ons may remain lighter and only contribute local surfaces
 
+That workspace layer is already part of the typed add-on contract and now also
+travels through the current runtime summary path, even though a dedicated
+workspace selector UI has not been built yet.
+
 ## Discovery
 
 The current discovery strategy is deliberately conservative.

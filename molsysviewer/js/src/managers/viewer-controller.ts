@@ -1341,6 +1341,7 @@ export class MolSysViewerController {
         const names = Array.isArray(msg?.addons)
             ? msg.addons.filter((value: unknown): value is string => typeof value === "string")
             : [];
+        const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
         const workbenchSections = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
         const contextActionSpecs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
@@ -1349,6 +1350,9 @@ export class MolSysViewerController {
         return names
             .map((name) => ({
                 name,
+                workspaceTitles: workspaceSpecs
+                    .filter((item: any) => item?.addon === name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
                 panelTitles: panelSpecs
                     .filter((item: any) => item?.addon === name && typeof item?.title === "string")
                     .map((item: any) => item.title as string),

@@ -1062,6 +1062,7 @@ class MolSysView:
 
     def _sync_addons_runtime(self) -> None:
         addon_names = self.addons.enabled(skip_digestion=True)
+        workspace_specs = self.addons.workspace_specs(skip_digestion=True)
         panel_specs = self.addons.panel_specs(skip_digestion=True)
         workbench_sections = self.addons.workbench_section_specs(skip_digestion=True)
         context_action_specs = self.addons.context_action_specs(skip_digestion=True)
@@ -1070,6 +1071,7 @@ class MolSysView:
             {
                 "op": "set_addon_runtime_summary",
                 "addons": addon_names,
+                "workspace_specs": workspace_specs,
                 "panel_specs": panel_specs,
                 "workbench_sections": workbench_sections,
                 "context_action_specs": context_action_specs,

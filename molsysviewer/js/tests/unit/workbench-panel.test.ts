@@ -123,6 +123,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         panel.setScene({ styleTag: "polymer-and-ligand", preset: "atomic-detail" });
         panel.setAddons([{
             name: "topomt",
+            workspaceTitles: ["TopoMT"],
             panelTitles: ["Topo"],
             workbenchTitles: ["Pockets"],
             contextActionTitles: ["Focus Pocket"],
@@ -149,7 +150,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         assert.ok(items[5].children[1]);
         assert.strictEqual(
             items[5].children[1]?.textContent,
-            "Panels: Topo · Workbench: Pockets · Context: Focus Pocket · Export: Topography Figure Export",
+            "Workspaces: TopoMT · Panels: Topo · Workbench: Pockets · Context: Focus Pocket · Export: Topography Figure Export",
         );
 
         panel.dispose();
