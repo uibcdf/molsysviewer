@@ -41,6 +41,7 @@ export class WorkbenchPanel {
     private readonly sections: Record<WorkbenchSectionKey, SectionView>;
     private readonly sectionExpanded: Record<WorkbenchSectionKey, boolean>;
     private expanded = false;
+    private onExpandedChange?: (expanded: boolean) => void;
 
     constructor(private readonly host: HTMLElement) {
         this.shell = new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26 });
@@ -105,6 +106,23 @@ export class WorkbenchPanel {
 
     setVisible(visible: boolean): void {
         this.shell.setVisible(visible);
+        if (!visible && this.expanded) {
+            this.expanded = false;
+            this.applyExpandedState();
+        }
+    }
+
+    setExpanded(expanded: boolean): void {
+        this.expanded = expanded;
+        this.applyExpandedState();
+    }
+
+    isExpanded(): boolean {
+        return this.expanded;
+    }
+
+    setOnExpandedChange(callback: ((expanded: boolean) => void) | undefined): void {
+        this.onExpandedChange = callback;
     }
 
     setAnnotations(items: WorkbenchItem[]): void {
@@ -154,6 +172,7 @@ export class WorkbenchPanel {
     private applyExpandedState(): void {
         this.toggleButton.textContent = this.expanded ? ">" : "<";
         this.root.style.transform = this.expanded ? "translateX(0)" : "translateX(240px)";
+        this.onExpandedChange?.(this.expanded);
     }
 
     private createSection(title: string, emptyText: string): SectionView {

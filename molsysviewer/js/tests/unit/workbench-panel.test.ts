@@ -237,3 +237,30 @@ test("WorkbenchPanel sections can collapse and expand", () => {
         restore();
     }
 });
+
+test("WorkbenchPanel exposes shared expanded state API and collapses when hidden", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let lastExpanded: boolean | null = null;
+        const panel = new WorkbenchPanel(host);
+        panel.setOnExpandedChange((expanded) => { lastExpanded = expanded; });
+
+        panel.setVisible(true);
+        panel.setExpanded(true);
+
+        const root = host.children[0];
+        assert.strictEqual(panel.isExpanded(), true);
+        assert.strictEqual(lastExpanded, true);
+        assert.strictEqual(root.style.transform, "translateX(0)");
+
+        panel.setVisible(false);
+        assert.strictEqual(panel.isExpanded(), false);
+        assert.strictEqual(lastExpanded, false);
+        assert.strictEqual(root.style.transform, "translateX(240px)");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});

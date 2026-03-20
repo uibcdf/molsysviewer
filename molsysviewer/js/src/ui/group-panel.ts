@@ -54,6 +54,7 @@ export class GroupPanel {
     private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
     private savedSelections: SavedSelectionSummary[] = [];
     private regions: RegionSummary[] = [];
+    private onExpandedChange?: (expanded: boolean) => void;
 
     constructor(
         private readonly host: HTMLElement,
@@ -113,6 +114,19 @@ export class GroupPanel {
         this.structure = structure;
         if (!structure) this.annotationMessages.length = 0;
         this.render();
+    }
+
+    setExpanded(expanded: boolean): void {
+        this.expanded = expanded;
+        this.applyExpandedState();
+    }
+
+    isExpanded(): boolean {
+        return this.expanded;
+    }
+
+    setOnExpandedChange(callback: ((expanded: boolean) => void) | undefined): void {
+        this.onExpandedChange = callback;
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {
@@ -193,6 +207,7 @@ export class GroupPanel {
 
     private applyExpandedState(): void {
         this.shell.setExpanded(this.expanded);
+        this.onExpandedChange?.(this.expanded);
     }
 
     private render(): void {
@@ -213,7 +228,11 @@ export class GroupPanel {
             this.strips.delete(chain);
         }
 
-        this.shell.setVisible(Boolean(this.structure) && grouped.size > 0);
+        const visible = Boolean(this.structure) && grouped.size > 0;
+        this.shell.setVisible(visible);
+        if (!visible && this.expanded) {
+            this.expanded = false;
+        }
         if (!this.structure || grouped.size === 0) return;
 
         for (const [chain, chainItems] of grouped.entries()) {

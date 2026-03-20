@@ -319,6 +319,7 @@ export class MolSysViewerController {
     private addonContextActions: AddonContextActionRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
+    private syncingPanelExpansion = false;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -456,6 +457,12 @@ export class MolSysViewerController {
             this.focusTarget({ atom_indices: region.atom_indices });
         });
         this.workbenchPanel = new WorkbenchPanel(host);
+        this.groupPanel.setOnExpandedChange((expanded) => {
+            this.handlePanelExpansionChanged("navigate", expanded);
+        });
+        this.workbenchPanel.setOnExpandedChange((expanded) => {
+            this.handlePanelExpansionChanged("workbench", expanded);
+        });
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
             if (action === "focus_target") {
                 this.focusTarget(target);
@@ -651,6 +658,13 @@ export class MolSysViewerController {
         const onKeyDown = (event: KeyboardEvent) => {
             if (event.key !== "Escape") return;
             if (this.measurementTools.isActive()) return;
+            if (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded()) {
+                event.preventDefault();
+                event.stopPropagation();
+                this.collapsePanels();
+                this.contextMenu.close();
+                return;
+            }
             if (this.currentActiveSelection?.source_kind !== "empty") {
                 event.preventDefault();
                 event.stopPropagation();
@@ -660,6 +674,30 @@ export class MolSysViewerController {
         };
         window.addEventListener("keydown", onKeyDown, true);
         return () => window.removeEventListener("keydown", onKeyDown, true);
+    }
+
+    private collapsePanels(): void {
+        this.syncingPanelExpansion = true;
+        try {
+            this.groupPanel.setExpanded(false);
+            this.workbenchPanel.setExpanded(false);
+        } finally {
+            this.syncingPanelExpansion = false;
+        }
+    }
+
+    private handlePanelExpansionChanged(source: "navigate" | "workbench", expanded: boolean): void {
+        if (this.syncingPanelExpansion || !expanded) return;
+        this.syncingPanelExpansion = true;
+        try {
+            if (source === "navigate") {
+                this.workbenchPanel.setExpanded(false);
+            } else {
+                this.groupPanel.setExpanded(false);
+            }
+        } finally {
+            this.syncingPanelExpansion = false;
+        }
     }
 
     private openContextMenuForItem(
