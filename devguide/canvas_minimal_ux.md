@@ -278,10 +278,13 @@ Current runtime bridge:
 - the shared panel shell now already supports a minimal workspace switcher
 - it only appears when there is more than one effective workspace
 - it is still intentionally modest:
-  - chrome-level selector only
+  - chrome-level launcher only
   - not yet the final mosaic/launcher
   - current non-core effect is limited to steering the shared panel runtime
     toward add-on-backed workbench slices
+  - the visible header remains calm:
+    - only the current workspace stays visible as the trigger
+    - the effective workspace set appears only when that trigger is opened
   - while that remains true, the shared header should stay honest:
     - non-core workspaces can remain workbench-centric
     - `Workbench` may offer a direct return to `Core`
@@ -296,6 +299,9 @@ Current runtime bridge:
   - core stack navigation (`Navigate` / `Workbench`)
   - and non-core workspace panel stacks
   - this is closer to the future `panel mode` than the previous local-only strip
+- this now yields a clearer two-level reading in the shared header:
+  - workspace launcher first
+  - panel stack inside the active workspace second
 - optional MolSysSuite add-ons should normally surface themselves through this
   same panel-mode system, not through new permanent canvas chrome
 
