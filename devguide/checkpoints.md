@@ -400,6 +400,11 @@ Post-`0.11.0` export work:
   - `publication-dark`
 - in the current implementation that preset only controls reversible background
   treatment during the capture itself
+- `view.export.figure(...)` now exists as the first explicit figure-oriented
+  wrapper over raw image export:
+  - stronger default scale
+  - `background=...`
+  - figure-oriented preset defaults
 
 ## Current State
 

@@ -2175,6 +2175,46 @@ class MolSysView:
         with open(output_filename, "wb") as f:
             f.write(image_bytes)
 
+    def _export_figure_impl(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        scale: float = 2.0,
+        background: str = "white",
+        preset: str = "publication-light",
+        camera_snapshot: dict | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Export a first figure-oriented PNG by mapping figure defaults onto image export."""
+        normalized_background = str(background).strip().lower()
+        normalized_preset = str(preset).strip() or "publication-light"
+
+        if normalized_background == "transparent":
+            transparent = True
+            export_preset = "current"
+        elif normalized_background == "dark":
+            transparent = False
+            export_preset = "publication-dark" if normalized_preset == "publication-light" else normalized_preset
+        elif normalized_background == "current":
+            transparent = False
+            export_preset = normalized_preset if normalized_preset != "publication-light" else "current"
+        else:
+            transparent = False
+            export_preset = "publication-light" if normalized_preset == "publication-light" else normalized_preset
+
+        self._export_image_impl(
+            output_filename,
+            width_px=width_px,
+            height_px=height_px,
+            scale=scale,
+            transparent=transparent,
+            preset=export_preset,
+            camera_snapshot=camera_snapshot,
+            skip_digestion=True,
+        )
+
     def _load_anywidget_bundle(self) -> str:
         """Return the JS bundle for anywidget if available to inline in exports."""
         try:

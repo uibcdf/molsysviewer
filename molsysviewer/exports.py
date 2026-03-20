@@ -75,3 +75,28 @@ class ExportManager:
             preset=preset,
             camera_snapshot=camera_snapshot,
         )
+
+    @signal(tags=["export", "figure"])
+    @digest()
+    def figure(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        scale: float = 2.0,
+        background: str = "white",
+        preset: str = "publication-light",
+        camera_snapshot: dict[str, Any] | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Export a first figure-oriented PNG using stronger defaults than raw image export."""
+        self._view._export_figure_impl(  # noqa: SLF001
+            output_filename,
+            width_px=width_px,
+            height_px=height_px,
+            scale=scale,
+            background=background,
+            preset=preset,
+            camera_snapshot=camera_snapshot,
+        )
