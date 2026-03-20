@@ -37,3 +37,13 @@ def test_standalone_main_supports_demo_mode_without_browser(tmp_path, capsys):
     assert code == 0
     assert outfile.exists()
     assert str(outfile.resolve()) in capsys.readouterr().out
+
+
+def test_standalone_main_supports_empty_host_without_browser(tmp_path, capsys):
+    outfile = tmp_path / "empty.html"
+
+    code = main(["--no-browser", "--output", str(outfile)])
+
+    assert code == 0
+    assert outfile.exists()
+    assert str(outfile.resolve()) in capsys.readouterr().out
