@@ -424,6 +424,38 @@ test("GroupPanel supports custom navigation labels", () => {
     }
 });
 
+test("GroupPanel exposes panel stack in the shared header", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        let selected = "";
+
+        panel.setPanelStack(
+            [
+                { id: "navigate", title: "Navigate", active: true },
+                { id: "workbench", title: "Workbench" },
+            ],
+            (panelId) => { selected = panelId; },
+        );
+
+        const root = host.children[0];
+        const stack = findFirstByAttribute(root, "data-molsysviewer-panel-stack", "true");
+        const current = findFirstByAttribute(root, "data-molsysviewer-panel-stack-current", "navigate");
+        const option = findFirstByAttribute(root, "data-molsysviewer-panel-stack-option", "workbench");
+
+        assert.ok(stack);
+        assert.ok(current);
+        assert.ok(option);
+        option?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(selected, "workbench");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel header nav button triggers navigate-to-workbench callback", () => {
     const restore = installFakeDom();
     try {

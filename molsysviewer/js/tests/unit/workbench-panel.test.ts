@@ -214,14 +214,14 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         });
 
         const root = host.children[0];
-        const strip = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panels", "true");
-        const active = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-active", "topo");
-        const button = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-option", "channels");
+        const stack = findFirstByAttribute(root, "data-molsysviewer-panel-stack", "true");
+        const active = findFirstByAttribute(root, "data-molsysviewer-panel-stack-current", "topo");
+        const button = findFirstByAttribute(root, "data-molsysviewer-panel-stack-option", "channels");
         const hostCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-host", "true");
         const title = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-title", "true");
         const entry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-entry", "true");
 
-        assert.ok(strip);
+        assert.ok(stack);
         assert.ok(active);
         assert.ok(button);
         assert.ok(hostCard);

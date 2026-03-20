@@ -15,6 +15,7 @@ type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: num
 type SavedSelectionSummary = { tag: string; atom_count: number };
 type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
 type WorkspaceOption = { id: string; title: string };
+type PanelOption = { id: string; title: string; active?: boolean };
 type SummaryItem = { title: string; subtitle: string; onActivate?: () => void };
 type SummarySectionKey = "active" | "saved" | "regions";
 type SummarySectionView = {
@@ -148,6 +149,11 @@ export class GroupPanel {
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
         this.shell.setOnSelectWorkspace(onSelect);
         this.shell.setWorkspaceOptions(items, currentId);
+    }
+
+    setPanelStack(items: PanelOption[], onSelect: ((panelId: string) => void) | undefined): void {
+        this.shell.setOnSelectPanel(onSelect);
+        this.shell.setPanelOptions(items);
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {

@@ -195,6 +195,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - selector of workspace panels
     - generic active-panel host card
     - still no arbitrary add-on frontend runtime, but no longer just a summary
+  - that panel selector is now also part of the shared header chrome:
+    - core stack feels more like a real `panel mode`
+    - non-core panel stacks stop feeling like a local workbench-only detail
 
 ## Near-Term Route To 1.0
 
