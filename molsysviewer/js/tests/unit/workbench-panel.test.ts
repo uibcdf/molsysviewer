@@ -190,6 +190,55 @@ test("WorkbenchPanel renders dynamic addon workbench sections", () => {
     }
 });
 
+test("WorkbenchPanel renders workspace panel selector and active host", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new WorkbenchPanel(host);
+        let selected = "";
+
+        panel.setVisible(true);
+        panel.setWorkspacePanels(
+            [
+                { id: "topo", title: "Topo", active: true, description: "Pocket analysis", entry: "topomt.panel.topo", addon: "topomt" },
+                { id: "channels", title: "Channels" },
+            ],
+            (panelId) => { selected = panelId; },
+        );
+        panel.setActiveWorkspacePanel({
+            workspaceTitle: "TopoMT",
+            title: "Topo",
+            description: "Pocket analysis",
+            entry: "topomt.panel.topo",
+            addon: "topomt",
+        });
+
+        const root = host.children[0];
+        const strip = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panels", "true");
+        const active = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-active", "topo");
+        const button = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-option", "channels");
+        const hostCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-host", "true");
+        const title = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-title", "true");
+        const entry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-entry", "true");
+
+        assert.ok(strip);
+        assert.ok(active);
+        assert.ok(button);
+        assert.ok(hostCard);
+        assert.ok(title);
+        assert.ok(entry);
+        assert.strictEqual(title?.textContent, "TopoMT · Topo");
+        assert.strictEqual(entry?.textContent, "Entry: topomt.panel.topo");
+
+        button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(selected, "channels");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("WorkbenchPanel rows trigger activation when provided", () => {
     const restore = installFakeDom();
     try {

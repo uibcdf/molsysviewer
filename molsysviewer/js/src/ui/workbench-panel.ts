@@ -35,6 +35,21 @@ type AddonWorkbenchSectionSummary = {
 };
 
 type WorkspaceOption = { id: string; title: string };
+type WorkspacePanelOption = {
+    id: string;
+    title: string;
+    description?: string;
+    entry?: string;
+    addon?: string;
+    active?: boolean;
+};
+type ActiveWorkspacePanelSummary = {
+    workspaceTitle: string;
+    title: string;
+    description?: string;
+    entry?: string;
+    addon?: string;
+};
 
 type BuiltInWorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
 type WorkbenchSectionKey = BuiltInWorkbenchSectionKey | `addon:${string}`;
@@ -51,6 +66,10 @@ export class WorkbenchPanel {
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
+    private readonly workspacePanelStrip: HTMLDivElement;
+    private readonly workspacePanelHost: HTMLDivElement;
+    private readonly workspacePanelHostTitle: HTMLDivElement;
+    private readonly workspacePanelHostBody: HTMLDivElement;
     private readonly sections = new Map<WorkbenchSectionKey, SectionView>();
     private readonly sectionExpanded = new Map<WorkbenchSectionKey, boolean>();
     private readonly builtInSectionKeys: BuiltInWorkbenchSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
@@ -106,6 +125,53 @@ export class WorkbenchPanel {
             gap: "8px",
         });
 
+        this.workspacePanelStrip = document.createElement("div");
+        this.workspacePanelStrip.setAttribute("data-molsysviewer-workbench-workspace-panels", "true");
+        Object.assign(this.workspacePanelStrip.style, {
+            display: "none",
+            flexWrap: "wrap",
+            gap: "6px",
+            padding: "8px",
+            borderRadius: "10px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.06)",
+        });
+
+        this.workspacePanelHost = document.createElement("div");
+        this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
+        Object.assign(this.workspacePanelHost.style, {
+            display: "none",
+            flexDirection: "column",
+            gap: "6px",
+            padding: "10px",
+            borderRadius: "10px",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.08)",
+        });
+
+        this.workspacePanelHostTitle = document.createElement("div");
+        this.workspacePanelHostTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-title", "true");
+        Object.assign(this.workspacePanelHostTitle.style, {
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "rgba(244,244,245,0.96)",
+        });
+
+        this.workspacePanelHostBody = document.createElement("div");
+        this.workspacePanelHostBody.setAttribute("data-molsysviewer-workbench-workspace-panel-body", "true");
+        Object.assign(this.workspacePanelHostBody.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            fontSize: "12px",
+            color: "rgba(244,244,245,0.78)",
+        });
+
+        this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
+        this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
+        this.body.appendChild(this.workspacePanelStrip);
+        this.body.appendChild(this.workspacePanelHost);
+
         this.createSection("annotations", "Annotations", "No annotations yet.");
         this.createSection("measurements", "Measurements", "No measurements yet.");
         this.createSection("shapes", "Shapes", "No shapes yet.");
@@ -149,6 +215,75 @@ export class WorkbenchPanel {
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
         this.shell.setOnSelectWorkspace(onSelect);
         this.shell.setWorkspaceOptions(items, currentId);
+    }
+
+    setWorkspacePanels(
+        items: WorkspacePanelOption[],
+        onSelect: ((panelId: string) => void) | undefined,
+    ): void {
+        this.workspacePanelStrip.replaceChildren();
+        if (!Array.isArray(items) || items.length === 0) {
+            this.workspacePanelStrip.style.display = "none";
+            return;
+        }
+
+        this.workspacePanelStrip.style.display = "flex";
+        for (const item of items) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute("data-molsysviewer-workbench-workspace-panel-option", item.id);
+            if (item.active) button.setAttribute("data-molsysviewer-workbench-workspace-panel-active", item.id);
+            button.textContent = item.title;
+            Object.assign(button.style, {
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: "999px",
+                background: item.active ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.03)",
+                color: item.active ? "#f4f4f5" : "rgba(244,244,245,0.78)",
+                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                fontSize: "10px",
+                lineHeight: "1",
+                padding: "6px 9px",
+                cursor: onSelect ? "pointer" : "default",
+            });
+            if (onSelect) {
+                button.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onSelect(item.id);
+                });
+            }
+            this.workspacePanelStrip.appendChild(button);
+        }
+    }
+
+    setActiveWorkspacePanel(summary: ActiveWorkspacePanelSummary | null): void {
+        this.workspacePanelHostBody.replaceChildren();
+        if (!summary) {
+            this.workspacePanelHost.style.display = "none";
+            return;
+        }
+
+        this.workspacePanelHost.style.display = "flex";
+        this.workspacePanelHostTitle.textContent = `${summary.workspaceTitle} · ${summary.title}`;
+
+        if (summary.description) {
+            const description = document.createElement("div");
+            description.setAttribute("data-molsysviewer-workbench-workspace-panel-description", "true");
+            description.textContent = summary.description;
+            this.workspacePanelHostBody.appendChild(description);
+        }
+        if (summary.entry) {
+            const entry = document.createElement("div");
+            entry.setAttribute("data-molsysviewer-workbench-workspace-panel-entry", "true");
+            entry.textContent = `Entry: ${summary.entry}`;
+            this.workspacePanelHostBody.appendChild(entry);
+        }
+        if (summary.addon) {
+            const addon = document.createElement("div");
+            addon.setAttribute("data-molsysviewer-workbench-workspace-panel-addon", "true");
+            addon.textContent = `Add-on: ${summary.addon}`;
+            this.workspacePanelHostBody.appendChild(addon);
+        }
     }
 
     setAnnotations(items: WorkbenchItem[]): void {

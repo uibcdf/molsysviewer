@@ -190,6 +190,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the runtime offers a direct return to `Core`
     - it does not pretend every add-on workspace already has a full native
       `Navigate` stack
+  - `Workbench` now also materializes a first generic panel-stack bridge for
+    add-on workspaces:
+    - selector of workspace panels
+    - generic active-panel host card
+    - still no arbitrary add-on frontend runtime, but no longer just a summary
 
 ## Near-Term Route To 1.0
 
