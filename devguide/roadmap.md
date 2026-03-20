@@ -1,6 +1,6 @@
 # Development Roadmap (Status-Aligned)
 
-Last update: 2026-03-04
+Last update: 2026-03-20
 
 This roadmap is status-aligned with the current repository state.
 It is organized by execution priority and uses three labels:
@@ -8,6 +8,166 @@ It is organized by execution priority and uses three labels:
 - `Done`: implemented and present in codebase.
 - `In progress`: partially implemented or implemented with limited coverage/docs.
 - `Planned`: not implemented yet or not stabilized.
+
+## Route From `0.12.0` To `1.0.0`
+
+After `0.12.0`, the project is no longer missing a direction.
+The near-term problem is now consolidation.
+
+What already exists in meaningful form:
+
+- reproducible scene/state and replay/export foundations
+- `Navigate` and `Workbench` as real runtime panels
+- add-ons as a real host/view platform with docs, standards, template, and
+  lifecycle
+- `standalone 0` as a teachable browser-hosted first cut
+- first serious `image` / `figure` export surfaces
+- a workspace-aware panel runtime with:
+  - launcher
+  - local panel stacks
+  - generic add-on workspace host
+
+So the path to `1.0.0` should now be:
+
+1. close the shared workbench model
+2. validate one richer add-on path on top of that workbench
+3. mature figure export enough to feel intentional, not incidental
+4. tighten verification and user/developer guidance around the now-real product
+5. only then make the final standalone push
+
+The intended release rhythm from here should stay pre-1.0 and incremental:
+
+- `0.13.x`:
+  - stronger shared workbench / workspace runtime
+- `0.14.x`:
+  - richer add-on proof through that runtime
+- `0.15.x`:
+  - figure/export maturation
+- `0.16.x`:
+  - cross-surface polish, verification, and documentation/tutorial tightening
+- `0.17.x+`:
+  - final standalone push
+- `1.0.0`:
+  - once that standalone host sits on a stable workbench/export/add-on core
+
+This sequence matters:
+
+- standalone is no longer "someday"
+- but it also should not become the place where unfinished workbench decisions
+  are hidden
+- the core viewer must already feel coherent before the final host step
+
+## Current 1.0 Plan
+
+The current preferred execution plan toward `1.0.0` is:
+
+### Phase A. Shared Workbench Consolidation
+
+Goal:
+
+- make `panel mode` feel like one coherent workbench system rather than two
+  coordinated drawers plus add-on fragments
+
+Main work:
+
+- keep converging the shared header toward the final navigator model
+- strengthen the relation:
+  - workspace launcher
+  - panel stack
+  - panel host
+- keep `Navigate` and `Workbench` visually and behaviorally aligned
+- avoid adding new permanent canvas chrome
+
+Success criteria:
+
+- switching workspace/panel feels native and unsurprising
+- `Core` remains the calm default
+- add-on workspaces can exist without flattening the product into one giant
+  panel list
+
+### Phase B. Add-On Runtime Proof
+
+Goal:
+
+- prove that external MolSysSuite teams can start real add-on work without
+  forcing another redesign of the host
+
+Main work:
+
+- make at least one reference add-on path more realistic through the shared
+  workbench runtime
+- keep `standards/`, cookbook, template, runtime contract, and tests aligned
+- prefer explicit, teachable contributions over a broad but vague API
+
+Success criteria:
+
+- a downstream team can build against the published add-on contract
+- a larger add-on workspace feels plausible in the real runtime
+- the host no longer looks "core-only with addon metadata attached"
+
+### Phase C. Figure Export Maturation
+
+Goal:
+
+- move from "serious image export exists" to "figure export feels deliberate"
+
+Main work:
+
+- push `view.export.figure(...)` beyond a thin wrapper
+- strengthen camera/composition reuse
+- strengthen publication-oriented presets/looks
+- keep figure export tied to reproducible viewer state
+
+Success criteria:
+
+- exported figures reuse explicit camera/state choices
+- the figure story feels like part of the workbench, not a bolt-on helper
+- the current Mol* pipeline is being exploited well before considering deeper
+  rendering ambitions
+
+### Phase D. Product Tightening
+
+Goal:
+
+- tighten the real product surface before the final host push
+
+Main work:
+
+- smoke and regression breadth where runtime contracts are already real
+- workbench-oriented tutorials and docs parity
+- public docs aligned with:
+  - add-ons
+  - exports
+  - panel/workspace behavior
+
+Success criteria:
+
+- the current public product can be taught without relying on chat history
+- the docs tell the truth about the current runtime
+- the remaining gap to `1.0.0` is mostly host-level, not conceptual confusion
+
+### Phase E. Final Standalone Push
+
+Goal:
+
+- deliver the final major pre-`1.0.0` host step on top of the already-mature
+  core
+
+Main work:
+
+- evolve `standalone 0` into the real standalone host
+- keep the same workbench/runtime model
+- avoid forking UX or scene/state behavior
+- decide the first acceptable host shape:
+  - browser-hosted
+  - popup-style
+  - or lightweight app shell
+
+Success criteria:
+
+- standalone feels like MolSysViewer, not a separate experiment
+- add-ons/workspaces remain compatible there
+- the host is good enough that `1.0.0` can reasonably ship on top of it
 
 ## Guiding Principle
 

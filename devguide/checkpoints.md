@@ -18,6 +18,15 @@ Do not append dated historical entries unless a date is itself operationally rel
 ## Current Focus
 
 - Continue feature implementation toward 1.0 on top of the now-hardened runtime/contracts layer.
+- Treat `0.12.0` as the end of the "prove the platform exists" stage.
+- The current stage is now:
+  - consolidate the shared workbench/runtime,
+  - validate richer add-on use on top of it,
+  - mature figure export,
+  - and leave standalone as the final major pre-`1.0.0` host push.
+- Avoid opening many unrelated new surfaces at once.
+- Prefer larger vertical slices that make one part of the product feel more
+  real, rather than many small disconnected improvements.
 - Keep the main product leitmotiv explicit:
   - scientific exploration is important,
   - but the outcome of that exploration should become reproducible viewer state.
@@ -219,6 +228,19 @@ Do not append dated historical entries unless a date is itself operationally rel
     - workspace launcher
     - local panel stacks
     - generic add-on workspace host
+
+The next route should now be read more sharply:
+
+- first:
+  - keep consolidating the shared workbench/runtime
+- second:
+  - use that runtime to validate a richer add-on path
+- third:
+  - mature `image` / `figure` export further
+- fourth:
+  - tighten docs/tutorials/verification around the now-real product
+- fifth and last major step before `1.0.0`:
+  - standalone
 
 ## Near-Term Route To 1.0
 
