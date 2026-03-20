@@ -31,6 +31,7 @@ Current public surfaces include:
 - `molsysviewer.addons`
 - `view.addons`
 - `AddonSpec`
+- `AddonWorkspaceSpec`
 - `AddonPanelSpec`
 - `AddonContextActionSpec`
 - `AddonWorkbenchSectionSpec`
@@ -44,6 +45,7 @@ Current public surfaces include:
 
 An add-on may currently declare:
 
+- workspace specs
 - panels
 - context-menu actions
 - workbench sections
@@ -53,6 +55,13 @@ An add-on may currently declare:
 - tool modes
 
 These contributions are intentionally typed and explicit.
+
+Important clarification:
+
+- not every add-on should become a workspace
+- `Core` remains the native workspace
+- larger add-ons may later contribute a workspace plus its own panel stack
+- smaller add-ons may remain lighter and only contribute local surfaces
 
 ## Discovery
 
@@ -87,11 +96,18 @@ Registering a spec directly:
 
 ```python
 import molsysviewer
-from molsysviewer import AddonPanelSpec, AddonSpec
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkspaceSpec
 
 molsysviewer.addons.register(
     AddonSpec(
         name="my-addon",
+        workspaces=(
+            AddonWorkspaceSpec(
+                id="myaddon",
+                title="My Add-on",
+                entry_panel="my-panel",
+            ),
+        ),
         panels=(
             AddonPanelSpec(
                 id="my-panel",
