@@ -473,6 +473,13 @@ def test_view_addons_sync_runtime_summary_message():
         addons.register(
             AddonSpec(
                 name="topomt",
+                workspaces=(
+                    AddonWorkspaceSpec(
+                        id="topomt",
+                        title="TopoMT",
+                        entry_panel="topo",
+                    ),
+                ),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
                 context_actions=(
                     AddonContextActionSpec(
@@ -502,6 +509,7 @@ def test_view_addons_sync_runtime_summary_message():
         view.addons.enable("topomt")
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
         assert addon_msg["addons"] == ["topomt"]
+        assert addon_msg["workspace_specs"][0]["title"] == "TopoMT"
         assert addon_msg["panel_specs"][0]["title"] == "Topo"
         assert addon_msg["context_action_specs"][0]["id"] == "focus-pocket"
         assert addon_msg["workbench_sections"][0]["title"] == "Pockets"
@@ -510,6 +518,7 @@ def test_view_addons_sync_runtime_summary_message():
         view.addons.disable("topomt")
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
         assert addon_msg["addons"] == []
+        assert addon_msg["workspace_specs"] == []
         assert addon_msg["panel_specs"] == []
         assert addon_msg["context_action_specs"] == []
         assert addon_msg["workbench_sections"] == []

@@ -364,6 +364,58 @@ export type SetPanelModeMessage = {
     expanded?: boolean;
 };
 
+export type SetAddonRuntimeSummaryMessage = {
+    op: "set_addon_runtime_summary";
+    addons?: string[];
+    workspace_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        entry_panel?: string | null;
+        description?: string | null;
+        order?: number;
+        meta?: Record<string, unknown>;
+    }>;
+    panel_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        entry?: string | null;
+        description?: string | null;
+        order?: number;
+        target?: string;
+        meta?: Record<string, unknown>;
+    }>;
+    workbench_sections?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        entry?: string;
+        target_panel?: string;
+        order?: number;
+        meta?: Record<string, unknown>;
+    }>;
+    context_action_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        entry?: string;
+        target_kinds?: string[];
+        group?: string | null;
+        order?: number;
+        meta?: Record<string, unknown>;
+    }>;
+    export_helper_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        entry?: string;
+        formats?: string[];
+        order?: number;
+        meta?: Record<string, unknown>;
+    }>;
+};
+
 export type RequestCameraSnapshotMessage = {
     op: "request_camera_snapshot";
 };

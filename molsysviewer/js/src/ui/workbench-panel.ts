@@ -18,6 +18,7 @@ type SceneSummary = {
 
 type AddonSummary = {
     name: string;
+    workspaceTitles: string[];
     panelTitles: string[];
     workbenchTitles: string[];
     contextActionTitles: string[];
@@ -171,6 +172,7 @@ export class WorkbenchPanel {
                 key: item.name,
                 title: item.name,
                 subtitle: [
+                    item.workspaceTitles.length > 0 ? `Workspaces: ${item.workspaceTitles.join(", ")}` : null,
                     item.panelTitles.length > 0 ? `Panels: ${item.panelTitles.join(", ")}` : null,
                     item.workbenchTitles.length > 0 ? `Workbench: ${item.workbenchTitles.join(", ")}` : null,
                     item.contextActionTitles.length > 0 ? `Context: ${item.contextActionTitles.join(", ")}` : null,

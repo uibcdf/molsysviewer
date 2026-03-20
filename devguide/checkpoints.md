@@ -178,6 +178,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - each workspace would then carry its own local panel stack
   - smaller add-ons should still be allowed to remain lighter and never become
     a workspace
+  - that workspace layer is now also present in the typed add-on contract and
+    already propagates through the current addon runtime summary path
 
 ## Near-Term Route To 1.0
 
