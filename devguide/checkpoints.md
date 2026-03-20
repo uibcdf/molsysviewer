@@ -208,6 +208,17 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the header now reads more clearly as:
       - workspace launcher first
       - active workspace panel stack second
+- `0.12.0` now marks a coherent pre-1.0 checkpoint:
+  - `standalone 0` exists and is already teachable as a browser-hosted first cut
+  - the add-on starter pack is real:
+    - public docs
+    - cookbook
+    - standards
+    - importable reference template
+  - the panel/runtime model has moved beyond two ad hoc drawers:
+    - workspace launcher
+    - local panel stacks
+    - generic add-on workspace host
 
 ## Near-Term Route To 1.0
 
