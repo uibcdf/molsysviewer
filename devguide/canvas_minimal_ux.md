@@ -297,6 +297,10 @@ Current runtime bridge:
     - `Workbench` may offer a direct return to `Core`
     - the runtime should not imply every add-on workspace already has a full
       native `Navigate` stack
+  - current runtime consequence:
+    - outside `Core`, `Navigate` should disappear as an operative panel
+    - returning to `Core` should restore the last core panel instead of always
+      forcing `Navigate`
 - `Workbench` can now also materialize a first generic panel-stack bridge for
   add-on workspaces:
   - a panel selector for the current workspace

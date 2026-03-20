@@ -58,6 +58,7 @@ export class GroupPanel {
     private regions: RegionSummary[] = [];
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToWorkbench?: () => void;
+    private runtimeVisibleOverride: boolean | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -144,6 +145,11 @@ export class GroupPanel {
     setOnNavigateToWorkbench(callback: (() => void) | undefined, label = "Workbench"): void {
         this.onNavigateToWorkbench = callback;
         this.shell.setNavButtonLabel(callback ? label : undefined);
+    }
+
+    setRuntimeVisible(visible: boolean | null): void {
+        this.runtimeVisibleOverride = visible;
+        this.render();
     }
 
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
@@ -255,7 +261,8 @@ export class GroupPanel {
             this.strips.delete(chain);
         }
 
-        const visible = Boolean(this.structure) && grouped.size > 0;
+        const naturalVisible = Boolean(this.structure) && grouped.size > 0;
+        const visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
         this.shell.setVisible(visible);
         if (!visible && this.expanded) {
             this.expanded = false;
