@@ -180,6 +180,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     a workspace
   - that workspace layer is now also present in the typed add-on contract and
     already propagates through the current addon runtime summary path
+  - the shared panel shell now also has a first minimal runtime workspace
+    selector:
+    - only shown when more than one workspace is effectively available
+    - still far from the final launcher/mosaic
+    - enough to make workspace state visible and steer add-on workbench slices
 
 ## Near-Term Route To 1.0
 

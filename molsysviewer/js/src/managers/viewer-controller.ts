@@ -32,13 +32,18 @@ type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 type InteractionKind = "hover" | "click" | "context";
 type AddonRuntimeSummary = {
     name: string;
+    workspaceTitles: string[];
     panelTitles: string[];
     workbenchTitles: string[];
     contextActionTitles: string[];
     exportHelperTitles: string[];
+    active?: boolean;
 };
+type WorkspaceRuntime = { id: string; title: string; addon?: string };
 type AddonWorkbenchSectionRuntime = {
     key: string;
+    workspaceId: string;
+    addon: string;
     title: string;
     itemTitle: string;
     itemSubtitle?: string;
@@ -322,12 +327,14 @@ export class MolSysViewerController {
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private workbenchAddons: AddonRuntimeSummary[] = [];
+    private addonWorkspaces: WorkspaceRuntime[] = [];
     private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
     private lastPanelMode: "navigate" | "workbench" = "navigate";
+    private currentWorkspace = "core";
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -470,6 +477,12 @@ export class MolSysViewerController {
         });
         this.workbenchPanel.setOnNavigateToNavigate(() => {
             this.setPanelMode("navigate", true);
+        });
+        this.groupPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+            this.selectWorkspace(workspaceId);
+        });
+        this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+            this.selectWorkspace(workspaceId);
         });
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
@@ -1019,6 +1032,10 @@ export class MolSysViewerController {
                 case "set_trajectory_frame": await this.trajectory.setTrajectoryFrame(msg); break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "set_addon_runtime_summary":
+                    this.addonWorkspaces = this.buildAddonWorkspaceSummary(msg as any);
+                    if (!this.getWorkspaceOptions().some((item) => item.id === this.currentWorkspace)) {
+                        this.currentWorkspace = "core";
+                    }
                     this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
                     this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg as any);
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
@@ -1333,8 +1350,32 @@ export class MolSysViewerController {
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
-        this.workbenchPanel.setAddons(this.workbenchAddons);
-        this.workbenchPanel.setAddonWorkbenchSections(this.workbenchAddonSections);
+        this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+            this.selectWorkspace(workspaceId);
+        });
+        this.workbenchPanel.setAddons(
+            this.workbenchAddons.map((item) => ({
+                ...item,
+                active: this.currentWorkspace !== "core" && this.workspaceBelongsToAddon(this.currentWorkspace, item.name),
+            }))
+        );
+        this.workbenchPanel.setAddonWorkbenchSections(
+            this.currentWorkspace === "core"
+                ? []
+                : this.workbenchAddonSections.filter((item) => item.workspaceId === this.currentWorkspace)
+        );
+    }
+
+    private buildAddonWorkspaceSummary(msg: any): WorkspaceRuntime[] {
+        const specs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
+        return specs
+            .filter((item: any) => typeof item?.id === "string" && typeof item?.title === "string")
+            .map((item: any) => ({
+                id: item.id as string,
+                title: item.title as string,
+                addon: typeof item?.addon === "string" ? item.addon as string : undefined,
+            }))
+            .sort((left, right) => left.id.localeCompare(right.id));
     }
 
     private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
@@ -1371,6 +1412,12 @@ export class MolSysViewerController {
 
     private buildAddonWorkbenchSectionSummary(msg: any): AddonWorkbenchSectionRuntime[] {
         const specs = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+        const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
+        const workspaceByAddon = new Map<string, string>();
+        for (const item of workspaceSpecs) {
+            if (typeof item?.addon !== "string" || typeof item?.id !== "string") continue;
+            if (!workspaceByAddon.has(item.addon)) workspaceByAddon.set(item.addon, item.id);
+        }
         return specs
             .filter(
                 (item: any) =>
@@ -1381,6 +1428,8 @@ export class MolSysViewerController {
             )
             .map((item: any) => ({
                 key: `${item.addon}:${item.id}`,
+                workspaceId: workspaceByAddon.get(item.addon as string) ?? (item.addon as string),
+                addon: item.addon as string,
                 title: item.title as string,
                 itemTitle: `Add-on: ${item.addon as string}`,
                 itemSubtitle: typeof item?.entry === "string" ? item.entry as string : undefined,
@@ -1413,6 +1462,28 @@ export class MolSysViewerController {
                 hidden: item.hidden,
             }))
         );
+        this.groupPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+            this.selectWorkspace(workspaceId);
+        });
+    }
+
+    private getWorkspaceOptions(): WorkspaceRuntime[] {
+        return [{ id: "core", title: "Core" }, ...this.addonWorkspaces];
+    }
+
+    private workspaceBelongsToAddon(workspaceId: string, addonName: string): boolean {
+        return this.addonWorkspaces.some((item) => item.id === workspaceId && item.addon === addonName);
+    }
+
+    private selectWorkspace(workspaceId: string): void {
+        const available = new Set(this.getWorkspaceOptions().map((item) => item.id));
+        this.currentWorkspace = available.has(workspaceId) ? workspaceId : "core";
+        if (this.currentWorkspace !== "core" && this.lastPanelMode === "navigate") {
+            this.setPanelMode("workbench", true);
+            return;
+        }
+        this.refreshNavigatePanel();
+        this.refreshWorkbenchPanel();
     }
 
     // Facades for external access (e.g. from Index or Popout)

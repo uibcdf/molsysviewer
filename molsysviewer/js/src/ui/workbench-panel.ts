@@ -23,14 +23,18 @@ type AddonSummary = {
     workbenchTitles: string[];
     contextActionTitles: string[];
     exportHelperTitles: string[];
+    active?: boolean;
 };
 
 type AddonWorkbenchSectionSummary = {
     key: string;
+    workspaceId: string;
     title: string;
     itemTitle: string;
     itemSubtitle?: string;
 };
+
+type WorkspaceOption = { id: string; title: string };
 
 type BuiltInWorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
 type WorkbenchSectionKey = BuiltInWorkbenchSectionKey | `addon:${string}`;
@@ -142,6 +146,11 @@ export class WorkbenchPanel {
         this.shell.setNavButtonLabel(callback ? "Navigate" : undefined);
     }
 
+    setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
+        this.shell.setOnSelectWorkspace(onSelect);
+        this.shell.setWorkspaceOptions(items, currentId);
+    }
+
     setAnnotations(items: WorkbenchItem[]): void {
         this.renderItems(this.sections.get("annotations")!, items);
         this.applySectionExpandedState("annotations");
@@ -171,6 +180,7 @@ export class WorkbenchPanel {
             items.map((item) => ({
                 key: item.name,
                 title: item.name,
+                active: item.active,
                 subtitle: [
                     item.workspaceTitles.length > 0 ? `Workspaces: ${item.workspaceTitles.join(", ")}` : null,
                     item.panelTitles.length > 0 ? `Panels: ${item.panelTitles.join(", ")}` : null,

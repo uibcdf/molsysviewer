@@ -272,6 +272,16 @@ Longer-term scaling direction:
 
 This means the future scaling pressure is not "more panels in one flat pile",
 but "more workspaces, each with a calmer local panel stack".
+
+Current runtime bridge:
+
+- the shared panel shell now already supports a minimal workspace switcher
+- it only appears when there is more than one effective workspace
+- it is still intentionally modest:
+  - chrome-level selector only
+  - not yet the final mosaic/launcher
+  - current non-core effect is limited to steering the shared panel runtime
+    toward add-on-backed workbench slices
   panels
 - optional MolSysSuite add-ons should normally surface themselves through this
   same panel-mode system, not through new permanent canvas chrome
