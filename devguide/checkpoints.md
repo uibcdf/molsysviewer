@@ -204,6 +204,33 @@ Working rule:
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell
 - first make the existing workbench slices coherent, reproducible, and pleasant
 
+## 0.9.0 Checkpoint
+
+`0.9.0` marks the point where MolSysViewer has a coherent pre-1.0 workbench direction rather than a loose collection of slices.
+
+What this checkpoint consolidates:
+
+- a recognizable two-panel workbench trajectory:
+  - `Navigate`
+  - `Workbench`
+- a minimal canvas UX direction that is already explicit and stable at the principle level
+- first-class scene styles through `Style` and `view.styles`
+- first-class export namespace:
+  - `view.export.html(...)`
+  - `view.export.image(...)`
+- legacy export aliases still available, but now explicitly deprecated:
+  - `write_html(...)`
+  - `export_image(...)`
+- a reproducible scene/workbench baseline strong enough to support the next steps toward `1.0.0`
+
+What `0.9.0` does not mean yet:
+
+- no final shared panel navigator yet
+- no full figure recipe/spec yet
+- no standalone host yet
+- no real MolSysSuite plugins yet
+- not the final publication-quality rendering story
+
 ## Current State
 
 - JS/TS tests
