@@ -185,6 +185,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - only shown when more than one workspace is effectively available
     - still far from the final launcher/mosaic
     - enough to make workspace state visible and steer add-on workbench slices
+  - the shared panel header is now also becoming workspace-aware:
+    - non-core workspaces remain workbench-centric for now
+    - the runtime offers a direct return to `Core`
+    - it does not pretend every add-on workspace already has a full native
+      `Navigate` stack
 
 ## Near-Term Route To 1.0
 

@@ -472,18 +472,7 @@ export class MolSysViewerController {
             this.focusTarget({ atom_indices: region.atom_indices });
         });
         this.workbenchPanel = new WorkbenchPanel(host);
-        this.groupPanel.setOnNavigateToWorkbench(() => {
-            this.setPanelMode("workbench", true);
-        });
-        this.workbenchPanel.setOnNavigateToNavigate(() => {
-            this.setPanelMode("navigate", true);
-        });
-        this.groupPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
-            this.selectWorkspace(workspaceId);
-        });
-        this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
-            this.selectWorkspace(workspaceId);
-        });
+        this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
         });
@@ -757,6 +746,30 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+    }
+
+    private refreshPanelWorkspaceChrome(): void {
+        if (this.currentWorkspace === "core") {
+            this.groupPanel.setOnNavigateToWorkbench(() => {
+                this.setPanelMode("workbench", true);
+            }, "Workbench");
+            this.workbenchPanel.setOnNavigateToNavigate(() => {
+                this.setPanelMode("navigate", true);
+            }, "Navigate");
+        } else {
+            this.groupPanel.setOnNavigateToWorkbench(undefined);
+            this.workbenchPanel.setOnNavigateToNavigate(() => {
+                this.selectWorkspace("core");
+                this.setPanelMode("navigate", true);
+            }, "Core");
+        }
+
+        this.groupPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+            this.selectWorkspace(workspaceId);
+        });
+        this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+            this.selectWorkspace(workspaceId);
+        });
     }
 
     private openContextMenuForItem(
@@ -1350,9 +1363,7 @@ export class MolSysViewerController {
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
-        this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
-            this.selectWorkspace(workspaceId);
-        });
+        this.refreshPanelWorkspaceChrome();
         this.workbenchPanel.setAddons(
             this.workbenchAddons.map((item) => ({
                 ...item,
@@ -1462,9 +1473,7 @@ export class MolSysViewerController {
                 hidden: item.hidden,
             }))
         );
-        this.groupPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
-            this.selectWorkspace(workspaceId);
-        });
+        this.refreshPanelWorkspaceChrome();
     }
 
     private getWorkspaceOptions(): WorkspaceRuntime[] {
@@ -1478,6 +1487,7 @@ export class MolSysViewerController {
     private selectWorkspace(workspaceId: string): void {
         const available = new Set(this.getWorkspaceOptions().map((item) => item.id));
         this.currentWorkspace = available.has(workspaceId) ? workspaceId : "core";
+        this.refreshPanelWorkspaceChrome();
         if (this.currentWorkspace !== "core" && this.lastPanelMode === "navigate") {
             this.setPanelMode("workbench", true);
             return;

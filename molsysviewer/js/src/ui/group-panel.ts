@@ -140,9 +140,9 @@ export class GroupPanel {
         this.onExpandedChange = callback;
     }
 
-    setOnNavigateToWorkbench(callback: (() => void) | undefined): void {
+    setOnNavigateToWorkbench(callback: (() => void) | undefined, label = "Workbench"): void {
         this.onNavigateToWorkbench = callback;
-        this.shell.setNavButtonLabel(callback ? "Workbench" : undefined);
+        this.shell.setNavButtonLabel(callback ? label : undefined);
     }
 
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {

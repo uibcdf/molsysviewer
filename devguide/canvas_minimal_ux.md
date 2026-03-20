@@ -282,7 +282,11 @@ Current runtime bridge:
   - not yet the final mosaic/launcher
   - current non-core effect is limited to steering the shared panel runtime
     toward add-on-backed workbench slices
-  panels
+  - while that remains true, the shared header should stay honest:
+    - non-core workspaces can remain workbench-centric
+    - `Workbench` may offer a direct return to `Core`
+    - the runtime should not imply every add-on workspace already has a full
+      native `Navigate` stack
 - optional MolSysSuite add-ons should normally surface themselves through this
   same panel-mode system, not through new permanent canvas chrome
 
