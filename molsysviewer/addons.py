@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import ModuleType
+from collections.abc import Callable
 from typing import Any
 
 from smonitor import signal
@@ -33,6 +34,14 @@ def _normalize_meta(meta: dict[str, Any] | None, field_name: str = "meta") -> di
     if not isinstance(meta, dict):
         raise ValueError(f"{field_name} must be a dictionary.")
     return dict(meta)
+
+
+def _coerce_callback(candidate: Any, field_name: str) -> Callable[[Any], None] | None:
+    if candidate is None:
+        return None
+    if not callable(candidate):
+        raise ValueError(f"{field_name} must be callable when provided.")
+    return candidate
 
 
 @dataclass(frozen=True)
@@ -243,6 +252,22 @@ KNOWN_ADDON_MODULES: tuple[str, ...] = (
 )
 
 
+@dataclass(frozen=True)
+class AddonLifecycleSpec:
+    on_enable: Callable[[Any], None] | None = None
+    on_disable: Callable[[Any], None] | None = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "on_enable", _coerce_callback(self.on_enable, "AddonLifecycleSpec.on_enable"))
+        object.__setattr__(self, "on_disable", _coerce_callback(self.on_disable, "AddonLifecycleSpec.on_disable"))
+
+    def info(self) -> dict[str, bool]:
+        return {
+            "has_on_enable": self.on_enable is not None,
+            "has_on_disable": self.on_disable is not None,
+        }
+
+
 def _coerce_addon_spec(candidate: Any, source_name: str) -> AddonSpec:
     if isinstance(candidate, AddonSpec):
         return candidate
@@ -268,6 +293,31 @@ def _load_addon_spec_from_module(module: ModuleType) -> AddonSpec:
         f"{module_name} does not expose a valid add-on contract. "
         "Expected `addon`, `ADDON`, or `get_addon()`."
     )
+
+
+def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec | None:
+    lifecycle = None
+    if hasattr(module, "lifecycle"):
+        lifecycle = getattr(module, "lifecycle")
+    elif hasattr(module, "LIFECYCLE"):
+        lifecycle = getattr(module, "LIFECYCLE")
+
+    if isinstance(lifecycle, AddonLifecycleSpec):
+        return lifecycle
+
+    on_enable = getattr(module, "on_enable", None)
+    on_disable = getattr(module, "on_disable", None)
+    if lifecycle is None and on_enable is None and on_disable is None:
+        return None
+
+    if lifecycle is not None and not isinstance(lifecycle, AddonLifecycleSpec):
+        raise ValueError(
+            f"{getattr(module, '__name__', '<unknown module>')} lifecycle must be an AddonLifecycleSpec."
+        )
+
+    if lifecycle is not None:
+        return lifecycle
+    return AddonLifecycleSpec(on_enable=on_enable, on_disable=on_disable)
 
 
 @dataclass(frozen=True)
@@ -383,22 +433,37 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._registry: dict[str, AddonSpec] = {}
         self._enabled: set[str] = set()
         self._module_sources: dict[str, str] = {}
+        self._lifecycles: dict[str, AddonLifecycleSpec] = {}
 
     def _iter_effective_addons(self) -> list[tuple[str, AddonSpec]]:
         return [(name, self._registry[name]) for name in self.enabled(skip_digestion=True)]
 
     @signal(tags=["addon"])
-    def register(self, addon: AddonSpec) -> AddonSpec:
+    def register(
+        self,
+        addon: AddonSpec,
+        *,
+        lifecycle: AddonLifecycleSpec | None = None,
+    ) -> AddonSpec:
         if not isinstance(addon, AddonSpec):
             raise ValueError("addons.register(...) requires an AddonSpec instance.")
         self._registry[addon.name] = addon
         self._enabled.add(addon.name)
+        if lifecycle is not None:
+            if not isinstance(lifecycle, AddonLifecycleSpec):
+                raise ValueError("addons.register(..., lifecycle=...) requires an AddonLifecycleSpec instance.")
+            self._lifecycles[addon.name] = lifecycle
+        else:
+            self._lifecycles.pop(addon.name, None)
         return addon
 
     @signal(tags=["addon"])
     def register_module(self, module: str | ModuleType) -> AddonSpec:
         imported = import_module(module) if isinstance(module, str) else module
-        addon = self.register(_load_addon_spec_from_module(imported))
+        addon = self.register(
+            _load_addon_spec_from_module(imported),
+            lifecycle=_load_addon_lifecycle_from_module(imported),
+        )
         self._module_sources[addon.name] = getattr(imported, "__name__", addon.name)
         return addon
 
@@ -420,6 +485,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._registry.pop(name, None)
         self._enabled.discard(name)
         self._module_sources.pop(name, None)
+        self._lifecycles.pop(name, None)
 
     @signal(tags=["addon"])
     @digest()
@@ -447,6 +513,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._registry.clear()
         self._enabled.clear()
         self._module_sources.clear()
+        self._lifecycles.clear()
 
     @signal(tags=["addon"])
     @digest()
@@ -457,6 +524,11 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
             record = self._registry[name].info()
             record["enabled"] = name in enabled
             record["module"] = self._module_sources.get(name)
+            lifecycle = self._lifecycles.get(name)
+            record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
+                "has_on_enable": False,
+                "has_on_disable": False,
+            }
             records.append(record)
         return records
 
@@ -474,6 +546,11 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     @digest()
     def module_for(self, name: str, skip_digestion: bool = False) -> str | None:
         return self._module_sources.get(name)
+
+    @signal(tags=["addon"])
+    @digest()
+    def lifecycle_for(self, name: str, skip_digestion: bool = False) -> AddonLifecycleSpec | None:
+        return self._lifecycles.get(name)
 
     @signal(tags=["addon"])
     @digest()
@@ -514,6 +591,8 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._host = host_registry
         self._enabled_overrides: set[str] = set()
         self._disabled_overrides: set[str] = set()
+        self._active_runtime: set[str] = set()
+        self._sync_runtime()
 
     def _effective_enabled(self) -> list[str]:
         names = []
@@ -530,6 +609,30 @@ class ViewAddonsManager(_AddonAggregationMixin):
             for name in self._effective_enabled()
             if (addon := self._host.get(name, skip_digestion=True)) is not None
         ]
+
+    def _activate_addon(self, name: str) -> None:
+        if name in self._active_runtime:
+            return
+        lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
+        if lifecycle is not None and lifecycle.on_enable is not None:
+            lifecycle.on_enable(self._view)
+        self._active_runtime.add(name)
+
+    def _deactivate_addon(self, name: str) -> None:
+        if name not in self._active_runtime:
+            return
+        lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
+        if lifecycle is not None and lifecycle.on_disable is not None:
+            lifecycle.on_disable(self._view)
+        self._active_runtime.discard(name)
+
+    def _sync_runtime(self) -> None:
+        desired = set(self._effective_enabled())
+        active = set(self._active_runtime)
+        for name in sorted(active - desired):
+            self._deactivate_addon(name)
+        for name in sorted(desired - active):
+            self._activate_addon(name)
 
     @signal(tags=["addon"])
     @digest()
@@ -559,6 +662,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
             raise ValueError(f"No add-on named {name!r} is registered in molsysviewer.addons.")
         self._disabled_overrides.discard(name)
         self._enabled_overrides.add(name)
+        self._sync_runtime()
 
     @signal(tags=["addon"])
     @digest()
@@ -567,12 +671,14 @@ class ViewAddonsManager(_AddonAggregationMixin):
             raise ValueError(f"No add-on named {name!r} is registered in molsysviewer.addons.")
         self._enabled_overrides.discard(name)
         self._disabled_overrides.add(name)
+        self._sync_runtime()
 
     @signal(tags=["addon"])
     @digest()
     def reset(self, skip_digestion: bool = False) -> None:
         self._enabled_overrides.clear()
         self._disabled_overrides.clear()
+        self._sync_runtime()
 
     @signal(tags=["addon"])
     @digest()
@@ -586,6 +692,11 @@ class ViewAddonsManager(_AddonAggregationMixin):
             record = addon.info()
             record["enabled"] = name in enabled
             record["module"] = self._host.module_for(name, skip_digestion=True)
+            lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
+            record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
+                "has_on_enable": False,
+                "has_on_disable": False,
+            }
             records.append(record)
         return records
 
