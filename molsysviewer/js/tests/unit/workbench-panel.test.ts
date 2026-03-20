@@ -326,3 +326,36 @@ test("WorkbenchPanel header nav button triggers navigate-to-navigate callback", 
         restore();
     }
 });
+
+test("WorkbenchPanel exposes workspace selector when multiple workspaces exist", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let selectedWorkspace: string | null = null;
+        const panel = new WorkbenchPanel(host);
+        panel.setWorkspaces(
+            [
+                { id: "core", title: "Core" },
+                { id: "topomt", title: "TopoMT" },
+            ],
+            "core",
+            (workspaceId) => { selectedWorkspace = workspaceId; },
+        );
+
+        panel.setVisible(true);
+
+        const root = host.children[0];
+        const current = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current", "core");
+        const button = findFirstByAttribute(root, "data-molsysviewer-panel-workspace", "topomt");
+        assert.ok(current);
+        assert.ok(button);
+        assert.strictEqual(current?.textContent, "Core");
+
+        button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(selectedWorkspace, "topomt");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});

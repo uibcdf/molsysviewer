@@ -5,6 +5,11 @@ type PanelShellOptions = {
     navButtonLabel?: string;
 };
 
+type WorkspaceOption = {
+    id: string;
+    title: string;
+};
+
 export class PanelShell {
     public readonly root: HTMLDivElement;
     public readonly panel: HTMLDivElement;
@@ -12,10 +17,13 @@ export class PanelShell {
     public readonly headerElement: HTMLDivElement;
     public readonly navGroupElement?: HTMLDivElement;
     public readonly navButton?: HTMLButtonElement;
+    public readonly workspaceGroupElement: HTMLDivElement;
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
     private readonly width: number;
+    private readonly workspaceCurrentElement: HTMLSpanElement;
     private visible = false;
+    private onSelectWorkspace?: (workspaceId: string) => void;
 
     constructor(host: HTMLElement, options: PanelShellOptions) {
         const width = options.width ?? 240;
@@ -130,6 +138,31 @@ export class PanelShell {
             this.headerElement.appendChild(this.titleElement);
         }
 
+        this.workspaceGroupElement = document.createElement("div");
+        this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-group", "true");
+        Object.assign(this.workspaceGroupElement.style, {
+            display: "none",
+            alignItems: "center",
+            gap: "4px",
+            padding: "3px",
+            borderRadius: "999px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            marginLeft: "auto",
+        });
+        this.workspaceCurrentElement = document.createElement("span");
+        Object.assign(this.workspaceCurrentElement.style, {
+            fontSize: "10px",
+            fontWeight: "700",
+            lineHeight: "1",
+            padding: "5px 8px",
+            borderRadius: "999px",
+            background: "rgba(255,255,255,0.12)",
+            color: "#f4f4f5",
+        });
+        this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
+        this.headerElement.appendChild(this.workspaceGroupElement);
+
         this.content = document.createElement("div");
         Object.assign(this.content.style, {
             pointerEvents: "auto",
@@ -190,6 +223,51 @@ export class PanelShell {
         this.navButton.textContent = label ?? "";
         this.navButton.style.display = label ? "inline-flex" : "none";
         this.navButton.setAttribute("data-molsysviewer-panel-nav", label ? label.toLowerCase() : "");
+    }
+
+    setOnSelectWorkspace(callback: ((workspaceId: string) => void) | undefined): void {
+        this.onSelectWorkspace = callback;
+    }
+
+    setWorkspaceOptions(items: WorkspaceOption[], currentId: string): void {
+        this.workspaceGroupElement.replaceChildren();
+
+        if (!Array.isArray(items) || items.length <= 1) {
+            this.workspaceGroupElement.style.display = "none";
+            return;
+        }
+
+        const current = items.find((item) => item.id === currentId) ?? items[0];
+        this.workspaceCurrentElement.textContent = current.title;
+        this.workspaceCurrentElement.setAttribute("data-molsysviewer-panel-workspace-current", current.id);
+        this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
+
+        for (const item of items) {
+            if (item.id === current.id) continue;
+            const button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute("data-molsysviewer-panel-workspace", item.id);
+            button.textContent = item.title;
+            Object.assign(button.style, {
+                border: "0",
+                borderRadius: "999px",
+                background: "transparent",
+                color: "rgba(244,244,245,0.8)",
+                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                fontSize: "10px",
+                lineHeight: "1",
+                padding: "5px 8px",
+                cursor: "pointer",
+            });
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.onSelectWorkspace?.(item.id);
+            });
+            this.workspaceGroupElement.appendChild(button);
+        }
+
+        this.workspaceGroupElement.style.display = "inline-flex";
     }
 
     setExpanded(expanded: boolean): void {

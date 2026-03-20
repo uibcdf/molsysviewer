@@ -368,6 +368,37 @@ test("GroupPanel exposes shared expanded state API", () => {
     }
 });
 
+test("GroupPanel exposes workspace selector when multiple workspaces exist", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let selectedWorkspace: string | null = null;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        panel.setWorkspaces(
+            [
+                { id: "core", title: "Core" },
+                { id: "topomt", title: "TopoMT" },
+            ],
+            "core",
+            (workspaceId) => { selectedWorkspace = workspaceId; },
+        );
+        panel.setStructure({ units: [] } as any);
+
+        const root = host.children[0];
+        const current = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current", "core");
+        const button = findFirstByAttribute(root, "data-molsysviewer-panel-workspace", "topomt");
+        assert.ok(current);
+        assert.ok(button);
+
+        button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(selectedWorkspace, "topomt");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel header nav button triggers navigate-to-workbench callback", () => {
     const restore = installFakeDom();
     try {

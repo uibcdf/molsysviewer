@@ -14,6 +14,7 @@ type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => vo
 type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 type SavedSelectionSummary = { tag: string; atom_count: number };
 type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
+type WorkspaceOption = { id: string; title: string };
 type SummaryItem = { title: string; subtitle: string; onActivate?: () => void };
 type SummarySectionKey = "active" | "saved" | "regions";
 type SummarySectionView = {
@@ -142,6 +143,11 @@ export class GroupPanel {
     setOnNavigateToWorkbench(callback: (() => void) | undefined): void {
         this.onNavigateToWorkbench = callback;
         this.shell.setNavButtonLabel(callback ? "Workbench" : undefined);
+    }
+
+    setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
+        this.shell.setOnSelectWorkspace(onSelect);
+        this.shell.setWorkspaceOptions(items, currentId);
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {
