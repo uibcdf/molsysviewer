@@ -40,6 +40,15 @@ type AddonRuntimeSummary = {
     active?: boolean;
 };
 type WorkspaceRuntime = { id: string; title: string; addon?: string };
+type AddonPanelRuntime = {
+    key: string;
+    workspaceId: string;
+    addon: string;
+    id: string;
+    title: string;
+    description?: string;
+    entry?: string;
+};
 type AddonWorkbenchSectionRuntime = {
     key: string;
     workspaceId: string;
@@ -328,6 +337,7 @@ export class MolSysViewerController {
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private workbenchAddons: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
+    private addonPanels: AddonPanelRuntime[] = [];
     private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
@@ -335,6 +345,7 @@ export class MolSysViewerController {
     private syncingPanelExpansion = false;
     private lastPanelMode: "navigate" | "workbench" = "navigate";
     private currentWorkspace = "core";
+    private readonly currentWorkspacePanelByWorkspace = new Map<string, string>();
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -1046,6 +1057,7 @@ export class MolSysViewerController {
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "set_addon_runtime_summary":
                     this.addonWorkspaces = this.buildAddonWorkspaceSummary(msg as any);
+                    this.addonPanels = this.buildAddonPanelSummary(msg as any);
                     if (!this.getWorkspaceOptions().some((item) => item.id === this.currentWorkspace)) {
                         this.currentWorkspace = "core";
                     }
@@ -1363,6 +1375,39 @@ export class MolSysViewerController {
                 }))
         );
         this.workbenchPanel.setScene(this.workbenchScene);
+        if (this.currentWorkspace === "core") {
+            this.workbenchPanel.setWorkspacePanels([], undefined);
+            this.workbenchPanel.setActiveWorkspacePanel(null);
+        } else {
+            const panels = this.getWorkspacePanels(this.currentWorkspace);
+            const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+            this.workbenchPanel.setWorkspacePanels(
+                panels.map((item) => ({
+                    id: item.id,
+                    title: item.title,
+                    description: item.description,
+                    entry: item.entry,
+                    addon: item.addon,
+                    active: item.id === selectedId,
+                })),
+                (panelId) => {
+                    this.selectWorkspacePanel(this.currentWorkspace, panelId);
+                },
+            );
+            const activePanel = panels.find((item) => item.id === selectedId) ?? null;
+            const workspaceTitle = this.getWorkspaceOptions().find((item) => item.id === this.currentWorkspace)?.title ?? this.currentWorkspace;
+            this.workbenchPanel.setActiveWorkspacePanel(
+                activePanel
+                    ? {
+                        workspaceTitle,
+                        title: activePanel.title,
+                        description: activePanel.description,
+                        entry: activePanel.entry,
+                        addon: activePanel.addon,
+                    }
+                    : null,
+            );
+        }
         this.refreshPanelWorkspaceChrome();
         this.workbenchPanel.setAddons(
             this.workbenchAddons.map((item) => ({
@@ -1387,6 +1432,34 @@ export class MolSysViewerController {
                 addon: typeof item?.addon === "string" ? item.addon as string : undefined,
             }))
             .sort((left, right) => left.id.localeCompare(right.id));
+    }
+
+    private buildAddonPanelSummary(msg: any): AddonPanelRuntime[] {
+        const specs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
+        const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
+        const workspaceByAddon = new Map<string, string>();
+        for (const item of workspaceSpecs) {
+            if (typeof item?.addon !== "string" || typeof item?.id !== "string") continue;
+            if (!workspaceByAddon.has(item.addon)) workspaceByAddon.set(item.addon, item.id);
+        }
+        return specs
+            .filter(
+                (item: any) =>
+                    typeof item?.addon === "string"
+                    && typeof item?.id === "string"
+                    && typeof item?.title === "string"
+                    && (item?.target === undefined || item?.target === "panel_mode"),
+            )
+            .map((item: any) => ({
+                key: `${item.addon}:${item.id}`,
+                workspaceId: workspaceByAddon.get(item.addon as string) ?? (item.addon as string),
+                addon: item.addon as string,
+                id: item.id as string,
+                title: item.title as string,
+                description: typeof item?.description === "string" ? item.description as string : undefined,
+                entry: typeof item?.entry === "string" ? item.entry as string : undefined,
+            }))
+            .sort((left, right) => left.key.localeCompare(right.key));
     }
 
     private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
@@ -1478,6 +1551,30 @@ export class MolSysViewerController {
 
     private getWorkspaceOptions(): WorkspaceRuntime[] {
         return [{ id: "core", title: "Core" }, ...this.addonWorkspaces];
+    }
+
+    private getWorkspacePanels(workspaceId: string): AddonPanelRuntime[] {
+        return this.addonPanels.filter((item) => item.workspaceId === workspaceId);
+    }
+
+    private ensureWorkspacePanelSelection(workspaceId: string): string | null {
+        const panels = this.getWorkspacePanels(workspaceId);
+        if (panels.length === 0) {
+            this.currentWorkspacePanelByWorkspace.delete(workspaceId);
+            return null;
+        }
+        const current = this.currentWorkspacePanelByWorkspace.get(workspaceId);
+        if (current && panels.some((item) => item.id === current)) return current;
+        const next = panels[0].id;
+        this.currentWorkspacePanelByWorkspace.set(workspaceId, next);
+        return next;
+    }
+
+    private selectWorkspacePanel(workspaceId: string, panelId: string): void {
+        const panels = this.getWorkspacePanels(workspaceId);
+        if (!panels.some((item) => item.id === panelId)) return;
+        this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
+        this.refreshWorkbenchPanel();
     }
 
     private workspaceBelongsToAddon(workspaceId: string, addonName: string): boolean {

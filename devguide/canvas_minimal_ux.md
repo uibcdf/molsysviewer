@@ -287,6 +287,11 @@ Current runtime bridge:
     - `Workbench` may offer a direct return to `Core`
     - the runtime should not imply every add-on workspace already has a full
       native `Navigate` stack
+- `Workbench` can now also materialize a first generic panel-stack bridge for
+  add-on workspaces:
+  - a panel selector for the current workspace
+  - and a generic active-panel host card
+  - still not arbitrary add-on frontend UI, but already more than a flat summary
 - optional MolSysSuite add-ons should normally surface themselves through this
   same panel-mode system, not through new permanent canvas chrome
 
