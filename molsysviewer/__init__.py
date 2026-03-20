@@ -22,6 +22,7 @@ from .addons import (
     AddonStyleHelperSpec,
     AddonToolModeSpec,
     AddonWorkbenchSectionSpec,
+    AddonWorkspaceSpec,
 )
 from .styles import Style
 from .figures import FigureSpec
@@ -41,6 +42,7 @@ __all__ = [
     "Style",
     "FigureSpec",
     "AddonSpec",
+    "AddonWorkspaceSpec",
     "AddonPanelSpec",
     "AddonContextActionSpec",
     "AddonWorkbenchSectionSpec",

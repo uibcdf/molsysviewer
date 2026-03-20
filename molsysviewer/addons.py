@@ -46,6 +46,35 @@ def _coerce_callback(candidate: Any, field_name: str) -> Callable[[Any], None] |
 
 
 @dataclass(frozen=True)
+class AddonWorkspaceSpec:
+    id: str
+    title: str
+    entry_panel: str | None = None
+    description: str | None = None
+    order: int = 0
+    meta: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "id", _ensure_non_empty_text(self.id, "AddonWorkspaceSpec.id"))
+        object.__setattr__(self, "title", _ensure_non_empty_text(self.title, "AddonWorkspaceSpec.title"))
+        if self.entry_panel is not None:
+            object.__setattr__(self, "entry_panel", _ensure_non_empty_text(self.entry_panel, "AddonWorkspaceSpec.entry_panel"))
+        if self.description is not None:
+            object.__setattr__(self, "description", self.description.strip())
+        object.__setattr__(self, "meta", _normalize_meta(self.meta))
+
+    def info(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "entry_panel": self.entry_panel,
+            "description": self.description,
+            "order": self.order,
+            "meta": dict(self.meta),
+        }
+
+
+@dataclass(frozen=True)
 class AddonPanelSpec:
     id: str
     title: str
@@ -339,6 +368,7 @@ class AddonSpec:
     package: str | None = None
     version: str | None = None
     description: str | None = None
+    workspaces: tuple[AddonWorkspaceSpec, ...] = field(default_factory=tuple)
     panels: tuple[AddonPanelSpec, ...] = field(default_factory=tuple)
     context_actions: tuple[AddonContextActionSpec, ...] = field(default_factory=tuple)
     workbench_sections: tuple[AddonWorkbenchSectionSpec, ...] = field(default_factory=tuple)
@@ -356,6 +386,7 @@ class AddonSpec:
             object.__setattr__(self, "version", _ensure_non_empty_text(self.version, "AddonSpec.version"))
         if self.description is not None:
             object.__setattr__(self, "description", self.description.strip())
+        object.__setattr__(self, "workspaces", tuple(self.workspaces))
         object.__setattr__(self, "panels", tuple(self.panels))
         object.__setattr__(self, "context_actions", tuple(self.context_actions))
         object.__setattr__(self, "workbench_sections", tuple(self.workbench_sections))
@@ -364,6 +395,7 @@ class AddonSpec:
         object.__setattr__(self, "export_helpers", tuple(self.export_helpers))
         object.__setattr__(self, "tool_modes", tuple(self.tool_modes))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
+        _validate_unique_ids(self.workspaces, "AddonSpec.workspaces")
         _validate_unique_ids(self.panels, "AddonSpec.panels")
         _validate_unique_ids(self.context_actions, "AddonSpec.context_actions")
         _validate_unique_ids(self.workbench_sections, "AddonSpec.workbench_sections")
@@ -378,6 +410,7 @@ class AddonSpec:
             "package": self.package,
             "version": self.version,
             "description": self.description,
+            "workspaces": [item.info() for item in self.workspaces],
             "panels": [item.info() for item in self.panels],
             "context_actions": [item.info() for item in self.context_actions],
             "workbench_sections": [item.info() for item in self.workbench_sections],
@@ -402,6 +435,11 @@ class _AddonAggregationMixin:
                 records.append(record)
         records.sort(key=lambda item: (int(item.get("order", 0)), str(item.get("addon", "")), str(item.get("id", ""))))
         return records
+
+    @signal(tags=["addon", "panel"])
+    @digest()
+    def workspace_specs(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        return self._aggregate("workspaces")
 
     @signal(tags=["addon", "panel"])
     @digest()

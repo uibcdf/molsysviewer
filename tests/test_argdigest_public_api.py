@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 
-from molsysviewer import AddonPanelSpec, AddonSpec, FigureSpec, addons
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkspaceSpec, FigureSpec, addons
 from molsysviewer import config
 from molsysviewer.config.user_presets import load_user_presets
 from molsysviewer.demo import demo
@@ -70,14 +70,17 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         addons.register(
             AddonSpec(
                 name="audit-addon",
+                workspaces=(AddonWorkspaceSpec(id="audit", title="Audit", entry_panel="audit"),),
                 panels=(AddonPanelSpec(id="audit", title="Audit", entry="audit.panel"),),
             )
         )
         addons.contains("audit-addon")
         addons.get("audit-addon")
         addons.names()
+        addons.workspace_specs()
         view.addons.available()
         view.addons.enabled()
+        view.addons.workspace_specs()
         view.addons.panel_specs()
         region.set_representation(preset="polymer-cartoon")
         layer.set_tag("audit-layer-2")

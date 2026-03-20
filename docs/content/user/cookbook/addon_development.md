@@ -13,16 +13,25 @@ Build a tiny add-on that contributes one panel and can be registered either:
 - directly as an `AddonSpec`
 - or through an importable module
 
+If it is a larger add-on, it may also declare a workspace.
+
 ## 1. Create the spec
 
 ```python
-from molsysviewer import AddonPanelSpec, AddonSpec
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkspaceSpec
 
 addon = AddonSpec(
     name="myaddon",
     package="molsysviewer-myaddon",
     version="0.1.0",
     description="Minimal example add-on.",
+    workspaces=(
+        AddonWorkspaceSpec(
+            id="myaddon",
+            title="My Add-on",
+            entry_panel="my-panel",
+        ),
+    ),
     panels=(
         AddonPanelSpec(
             id="my-panel",
@@ -71,11 +80,18 @@ The module should expose one of:
 Example:
 
 ```python
-from molsysviewer import AddonPanelSpec, AddonSpec
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkspaceSpec
 
 addon = AddonSpec(
     name="myaddon",
     package="molsysviewer-myaddon",
+    workspaces=(
+        AddonWorkspaceSpec(
+            id="myaddon",
+            title="My Add-on",
+            entry_panel="my-panel",
+        ),
+    ),
     panels=(
         AddonPanelSpec(
             id="my-panel",

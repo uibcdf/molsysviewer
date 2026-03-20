@@ -12,6 +12,7 @@ from molsysviewer import (
     AddonStyleHelperSpec,
     AddonToolModeSpec,
     AddonWorkbenchSectionSpec,
+    AddonWorkspaceSpec,
     MolSysView,
     addons,
 )
@@ -25,6 +26,15 @@ def test_global_addons_registry_supports_complete_fake_addon():
         package="TopoMT",
         version="0.1.0",
         description="Fake topography add-on used to validate the extension platform.",
+        workspaces=(
+            AddonWorkspaceSpec(
+                id="topomt",
+                title="TopoMT",
+                entry_panel="topo",
+                description="Topography workspace",
+                order=10,
+            ),
+        ),
         panels=(
             AddonPanelSpec(
                 id="topo",
@@ -105,6 +115,7 @@ def test_global_addons_registry_supports_complete_fake_addon():
     assert records[0]["enabled"] is True
     assert records[0]["module"] is None
     assert records[0]["meta"] == {"domain": "topography"}
+    assert records[0]["workspaces"][0]["id"] == "topomt"
     assert records[0]["panels"][0]["id"] == "topo"
     assert records[0]["context_actions"][0]["id"] == "focus-pocket"
     assert records[0]["workbench_sections"][0]["id"] == "pockets"
@@ -113,6 +124,17 @@ def test_global_addons_registry_supports_complete_fake_addon():
     assert records[0]["export_helpers"][0]["id"] == "topography-figure"
     assert records[0]["tool_modes"][0]["id"] == "pocket-pick"
 
+    assert addons.workspace_specs() == [
+        {
+            "addon": "topomt",
+            "id": "topomt",
+            "title": "TopoMT",
+            "entry_panel": "topo",
+            "description": "Topography workspace",
+            "order": 10,
+            "meta": {},
+        }
+    ]
     assert addons.panel_specs() == [
         {
             "addon": "topomt",
@@ -138,6 +160,7 @@ def test_view_addons_inherit_global_registry_and_support_local_overrides():
     addons.register(
         AddonSpec(
             name="topomt",
+            workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
             panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
         )
     )
@@ -154,6 +177,7 @@ def test_view_addons_inherit_global_registry_and_support_local_overrides():
     assert view.addons.available() == ["pharmacophoremt", "topomt"]
     assert view.addons.enabled() == ["topomt"]
     assert view.addons.disabled() == ["pharmacophoremt"]
+    assert [record["id"] for record in view.addons.workspace_specs()] == ["topomt"]
     assert [record["id"] for record in view.addons.panel_specs()] == ["topo"]
 
     view.addons.enable("pharmacophoremt")
