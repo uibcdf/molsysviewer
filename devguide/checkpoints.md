@@ -341,6 +341,39 @@ What `0.10.0` does not mean yet:
 - no richer add-on runtime lifecycle yet
 - no standalone host yet
 
+## 0.11.0 Checkpoint
+
+`0.11.0` marks the point where the add-on platform becomes visibly present in
+the running viewer, not only in API contracts and developer documentation.
+
+What this checkpoint consolidates:
+
+- importable reference add-on template:
+  - `molsysviewer.addon_templates.minimal_topomt`
+- first intentionally small add-on lifecycle:
+  - `AddonLifecycleSpec`
+  - `on_enable(view)`
+  - `on_disable(view)`
+- first visible workbench runtime surface for add-ons:
+  - `Workbench` now includes an `Add-ons` section
+  - enabled add-on names are shown there
+  - contributed panel titles and workbench-section titles are summarized there
+- first visible context-menu bridge for add-ons:
+  - compatible add-on context actions can appear in an `Add-ons` section
+  - clicking one emits a structured `interaction_context_action`
+  - the payload now carries:
+    - add-on name
+    - add-on action id
+    - add-on action title
+
+What `0.11.0` does not mean yet:
+
+- no real MolSysSuite scientific add-on shipped yet
+- no persisted enable/disable preferences yet
+- no entry-point metadata discovery yet
+- no full add-on frontend execution contract yet
+- no standalone host yet
+
 ## Current State
 
 - JS/TS tests
