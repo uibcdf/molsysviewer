@@ -250,6 +250,12 @@ export type SetAddonRuntimeSummaryMessage = {
         target_kinds?: string[];
         group?: string;
     }>;
+    export_helper_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        formats?: string[];
+    }>;
 };
 
 export type LoadPdbIdMessage = {

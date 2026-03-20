@@ -232,6 +232,7 @@ The first visible slice is intentionally modest:
 
 - enabled add-ons appear in a dedicated `Add-ons` section
 - panel titles and workbench-section titles are summarized there
+- context-action titles and export-helper titles are now also summarized there
 
 This is not full add-on UI execution yet.
 It is only the first visible runtime proof that the add-on platform can reach

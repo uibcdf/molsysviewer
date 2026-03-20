@@ -20,6 +20,8 @@ type AddonSummary = {
     name: string;
     panelTitles: string[];
     workbenchTitles: string[];
+    contextActionTitles: string[];
+    exportHelperTitles: string[];
 };
 
 type WorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
@@ -137,6 +139,8 @@ export class WorkbenchPanel {
                 subtitle: [
                     item.panelTitles.length > 0 ? `Panels: ${item.panelTitles.join(", ")}` : null,
                     item.workbenchTitles.length > 0 ? `Workbench: ${item.workbenchTitles.join(", ")}` : null,
+                    item.contextActionTitles.length > 0 ? `Context: ${item.contextActionTitles.join(", ")}` : null,
+                    item.exportHelperTitles.length > 0 ? `Export: ${item.exportHelperTitles.join(", ")}` : null,
                 ].filter(Boolean).join(" · "),
             })),
         );

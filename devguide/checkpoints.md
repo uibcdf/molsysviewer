@@ -357,7 +357,8 @@ What this checkpoint consolidates:
 - first visible workbench runtime surface for add-ons:
   - `Workbench` now includes an `Add-ons` section
   - enabled add-on names are shown there
-  - contributed panel titles and workbench-section titles are summarized there
+  - contributed panel titles, workbench-section titles, context-action titles,
+    and export-helper titles are summarized there
 - first visible context-menu bridge for add-ons:
   - compatible add-on context actions can appear in an `Add-ons` section
   - clicking one emits a structured `interaction_context_action`
