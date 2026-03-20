@@ -213,6 +213,21 @@ That add-on-compatibility story now has a first real slice:
   - tool modes
 - validated with a fake add-on test rather than a real ecosystem package
 
+The next add-on step is now more specific:
+
+- keep `addons` as the only public vocabulary
+- add a simple discovery path based on a maintained list of known add-on
+  modules
+- keep explicit manual coupling for local or unpublished add-on development
+- document the packaging contract early so downstream add-ons do not have to
+  guess their module shape
+- do not stop at `devguide`:
+  - user docs should explain installation/discovery/use of add-ons
+  - developer docs should explain the host/local registry contract
+  - cookbook should carry a "build a minimal add-on" recipe
+  - showcase should eventually include at least one add-on-shaped scientific
+    story
+
 Working rule:
 
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell
