@@ -490,6 +490,8 @@ The first export slice should probably be considered successful only if it can:
 
 - export a PNG reliably from the current scene
 - preserve the current camera
+- optionally accept an explicit saved camera snapshot for reproducible figure
+  generation
 - support explicit output size
 - support transparent or solid background
 - produce visibly better results than a naive browser screenshot when using

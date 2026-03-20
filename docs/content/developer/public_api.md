@@ -189,6 +189,9 @@ Preferred export surface:
 - `view.export.html(...)`
 - `view.export.image(...)`
 
+`view.export.image(...)` may receive an explicit `camera_snapshot=...` when the
+export should use a saved camera rather than the live current viewport.
+
 `view.export.html(..., mode="lite")` is a public, user-facing export mode.
 It must remain reproducible.
 

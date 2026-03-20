@@ -1313,7 +1313,13 @@ export class MolSysViewerController {
         return this.plugin.canvas3d?.camera.getSnapshot?.();
     }
 
-    async getImageDataUri(options?: { width?: number; height?: number; scale?: number; transparent?: boolean }): Promise<string | undefined> {
+    async getImageDataUri(options?: {
+        width?: number;
+        height?: number;
+        scale?: number;
+        transparent?: boolean;
+        cameraSnapshot?: Camera.Snapshot;
+    }): Promise<string | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
         if (!helper) return void 0;
 
@@ -1328,13 +1334,24 @@ export class MolSysViewerController {
         const targetHeight = useCustomResolution ? height : viewportHeight;
         const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
         const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
-        helper.behaviors.values.next({
-            ...helper.values,
-            transparent: !!options?.transparent,
-            format: { name: "png", params: {} },
-            resolution: { name: "custom", params: { width: scaledWidth, height: scaledHeight } },
-        });
-        return await helper.getImageDataUri();
+        const currentSnapshot = options?.cameraSnapshot ? this.getCameraSnapshot() : void 0;
+
+        try {
+            if (options?.cameraSnapshot) {
+                await this.setCameraSnapshot(options.cameraSnapshot, 0);
+            }
+            helper.behaviors.values.next({
+                ...helper.values,
+                transparent: !!options?.transparent,
+                format: { name: "png", params: {} },
+                resolution: { name: "custom", params: { width: scaledWidth, height: scaledHeight } },
+            });
+            return await helper.getImageDataUri();
+        } finally {
+            if (options?.cameraSnapshot && currentSnapshot) {
+                await this.setCameraSnapshot(currentSnapshot, 0);
+            }
+        }
     }
 
     async setCameraSnapshot(snapshot?: Camera.Snapshot, durationMs?: number) {

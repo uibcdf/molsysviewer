@@ -374,6 +374,12 @@ What `0.11.0` does not mean yet:
 - no full add-on frontend execution contract yet
 - no standalone host yet
 
+Post-`0.11.0` export work:
+
+- `view.export.image(...)` now also accepts `camera_snapshot=...`
+- the explicit snapshot should be treated as a reproducible figure/export aid,
+  not merely as another UI convenience parameter
+
 ## Current State
 
 - JS/TS tests

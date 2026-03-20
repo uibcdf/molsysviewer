@@ -362,6 +362,7 @@ export type RequestImageExportMessage = {
     height?: number;
     scale?: number;
     transparent?: boolean;
+    camera_snapshot?: any;
 };
 
 export type ClearActiveSelectionMessage = {
