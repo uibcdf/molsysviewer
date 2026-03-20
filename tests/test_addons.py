@@ -345,6 +345,37 @@ def test_addon_template_module_is_importable_and_registerable():
         addons.clear()
 
 
+def test_addon_template_module_has_visible_runtime_lifecycle_flow():
+    addons.clear()
+    try:
+        addons.register_module("molsysviewer.addon_templates.minimal_topomt")
+        view = MolSysView(debug_js=True)
+
+        assert view._topomt_template_enabled is True
+        assert ("enable", "topomt-template") in view._topomt_template_events
+
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "interaction_context_action",
+                "action": "addon_context_action",
+                "addon": "topomt-template",
+                "addon_action_id": "focus-pocket",
+                "addon_action_title": "Focus Pocket",
+                "context": {"kind": "structure", "atom_indices": [1, 2, 3]},
+            }
+        )
+
+        assert view._topomt_template_last_context_action["action_id"] == "focus-pocket"
+        assert view._topomt_template_last_context_action["payload"]["addon"] == "topomt-template"
+        assert ("context", "focus-pocket") in view._topomt_template_events
+
+        view.addons.disable("topomt-template")
+        assert view._topomt_template_enabled is False
+        assert ("disable", "topomt-template") in view._topomt_template_events
+    finally:
+        addons.clear()
+
+
 def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
     addons.clear()
     events: list[str] = []

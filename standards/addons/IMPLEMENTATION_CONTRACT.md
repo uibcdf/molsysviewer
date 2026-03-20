@@ -160,3 +160,4 @@ That reference template is intentionally small but already demonstrates:
 - context-action contribution
 - shape-provider contribution
 - lifecycle export
+- a visible lifecycle effect on the `view`

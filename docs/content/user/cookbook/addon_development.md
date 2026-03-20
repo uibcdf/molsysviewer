@@ -55,6 +55,13 @@ scratch, use:
 
 - [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
 
+That template is now slightly more than declarative:
+
+- its lifecycle leaves visible markers on the `view`
+- its context action records the last handled payload
+
+That makes it useful as an end-to-end starter, not only as a static spec sample.
+
 ## 2. Register it directly during development
 
 ```python

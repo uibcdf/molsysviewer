@@ -68,14 +68,26 @@ addon = AddonSpec(
 
 def on_enable(view) -> None:
     """Reference hook for per-view initialization."""
+    view._topomt_template_enabled = True
+    view._topomt_template_events = getattr(view, "_topomt_template_events", [])
+    view._topomt_template_events.append(("enable", "topomt-template"))
 
 
 def on_disable(view) -> None:
     """Reference hook for per-view teardown."""
+    view._topomt_template_enabled = False
+    view._topomt_template_events = getattr(view, "_topomt_template_events", [])
+    view._topomt_template_events.append(("disable", "topomt-template"))
 
 
 def on_context_action(view, action_id: str, payload: dict) -> None:
     """Reference hook for Python-side handling of context actions."""
+    view._topomt_template_last_context_action = {
+        "action_id": action_id,
+        "payload": payload,
+    }
+    view._topomt_template_events = getattr(view, "_topomt_template_events", [])
+    view._topomt_template_events.append(("context", action_id))
 
 
 lifecycle = AddonLifecycleSpec(
