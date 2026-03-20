@@ -96,3 +96,9 @@ To bridge the gap between API reference and real-world scientific usage, the fol
 ## Standards and Conventions
 
 This project strictly adheres to the UIBCDF software engineering standards. Please refer to the root `*_GUIDE.md` files for the canonical documentation of each infrastructure tool.
+
+For MolSysViewer add-ons, there is now also a local standards layer that should
+be maintained together with the runtime contract and public docs:
+
+- [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
+- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)

@@ -53,6 +53,7 @@ The minimum believable target for standalone 0 is:
 - add-on workspaces visible when compatible add-ons are installed
 - the same panel/workbench runtime model already used in notebook mode
 - no forked scene/state model
+- a first Python/CLI bridge that teams can actually run and inspect
 
 Standalone 0 does not need yet:
 

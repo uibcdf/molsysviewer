@@ -33,6 +33,18 @@ def __print_version__():
     print("MolSysViewer version " + __version__)
 
 
+def build_standalone0_html(*args, **kwargs):
+    from .standalone import build_standalone0_html as _build_standalone0_html
+
+    return _build_standalone0_html(*args, **kwargs)
+
+
+def launch_standalone0(*args, **kwargs):
+    from .standalone import launch_standalone0 as _launch_standalone0
+
+    return _launch_standalone0(*args, **kwargs)
+
+
 __all__ = [
     "MolSysView",
     "new_view",
@@ -41,6 +53,8 @@ __all__ = [
     "addons",
     "Style",
     "FigureSpec",
+    "build_standalone0_html",
+    "launch_standalone0",
     "AddonSpec",
     "AddonWorkspaceSpec",
     "AddonPanelSpec",
