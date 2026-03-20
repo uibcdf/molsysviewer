@@ -285,6 +285,13 @@ Current runtime bridge:
   - the visible header remains calm:
     - only the current workspace stays visible as the trigger
     - the effective workspace set appears only when that trigger is opened
+  - only effective workspaces should appear there:
+    - if a workspace contributes no visible panel/section runtime yet, it should
+      not pollute the launcher
+  - launcher entries may already summarize what they contain:
+    - panel count
+    - workbench-section count
+    - other lightweight runtime hints
   - while that remains true, the shared header should stay honest:
     - non-core workspaces can remain workbench-centric
     - `Workbench` may offer a direct return to `Core`

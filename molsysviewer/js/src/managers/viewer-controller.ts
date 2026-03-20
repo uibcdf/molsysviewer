@@ -39,7 +39,7 @@ type AddonRuntimeSummary = {
     exportHelperTitles: string[];
     active?: boolean;
 };
-type WorkspaceRuntime = { id: string; title: string; addon?: string };
+type WorkspaceRuntime = { id: string; title: string; subtitle?: string; addon?: string };
 type AddonPanelRuntime = {
     key: string;
     workspaceId: string;
@@ -760,6 +760,12 @@ export class MolSysViewerController {
     }
 
     private refreshPanelWorkspaceChrome(): void {
+        const workspaceOptions = this.getWorkspaceOptions();
+        const availableWorkspaces = new Set(workspaceOptions.map((item) => item.id));
+        if (!availableWorkspaces.has(this.currentWorkspace)) {
+            this.currentWorkspace = "core";
+        }
+
         if (this.currentWorkspace === "core") {
             this.groupPanel.setOnNavigateToWorkbench(() => {
                 this.setPanelMode("workbench", true);
@@ -775,10 +781,10 @@ export class MolSysViewerController {
             }, "Core");
         }
 
-        this.groupPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+        this.groupPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
             this.selectWorkspace(workspaceId);
         });
-        this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
+        this.workbenchPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
             this.selectWorkspace(workspaceId);
         });
 
@@ -1585,7 +1591,31 @@ export class MolSysViewerController {
     }
 
     private getWorkspaceOptions(): WorkspaceRuntime[] {
-        return [{ id: "core", title: "Core" }, ...this.addonWorkspaces];
+        const options: WorkspaceRuntime[] = [
+            { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
+        ];
+
+        for (const workspace of this.addonWorkspaces) {
+            const panelCount = this.getWorkspacePanels(workspace.id).length;
+            const workbenchSectionCount = this.addonWorkbenchSections.filter((item) => item.workspaceId === workspace.id).length;
+            const contextActionCount = this.addonContextActions.filter((item) => this.workspaceBelongsToAddon(workspace.id, item.addon)).length;
+            const exportHelperCount = this.addonRuntimeSummary.find((item) => item.name === workspace.addon)?.exportHelperTitles.length ?? 0;
+            const totalVisible = panelCount + workbenchSectionCount;
+            if (totalVisible <= 0) continue;
+
+            const summaryParts: string[] = [];
+            if (panelCount > 0) summaryParts.push(`${panelCount} panel${panelCount === 1 ? "" : "s"}`);
+            if (workbenchSectionCount > 0) summaryParts.push(`${workbenchSectionCount} section${workbenchSectionCount === 1 ? "" : "s"}`);
+            if (contextActionCount > 0) summaryParts.push(`${contextActionCount} context action${contextActionCount === 1 ? "" : "s"}`);
+            if (exportHelperCount > 0) summaryParts.push(`${exportHelperCount} export helper${exportHelperCount === 1 ? "" : "s"}`);
+
+            options.push({
+                ...workspace,
+                subtitle: summaryParts.join(" · "),
+            });
+        }
+
+        return options;
     }
 
     private getWorkspacePanels(workspaceId: string): AddonPanelRuntime[] {

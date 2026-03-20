@@ -187,6 +187,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - enough to make workspace state visible and steer add-on workbench slices
     - the shared header stays calmer because only the current workspace remains
       visible until the launcher is opened
+    - it now also prefers effective workspace entries only:
+      - workspaces with no visible panel/section runtime do not clutter the
+        launcher
+    - launcher entries can already expose lightweight summaries of what they
+      contain
   - the shared panel header is now also becoming workspace-aware:
     - non-core workspaces remain workbench-centric for now
     - the runtime offers a direct return to `Core`
