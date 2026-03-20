@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from importlib import import_module
+from types import ModuleType
 from typing import Any
 
 from smonitor import signal
@@ -234,6 +236,40 @@ def _validate_unique_ids(items: tuple[Any, ...], label: str) -> None:
         raise ValueError(f"{label} must not contain duplicate contribution ids.")
 
 
+KNOWN_ADDON_MODULES: tuple[str, ...] = (
+    "molsysviewer_topomt",
+    "molsysviewer_pharmacophoremt",
+    "molsysviewer_elasnetmt",
+)
+
+
+def _coerce_addon_spec(candidate: Any, source_name: str) -> AddonSpec:
+    if isinstance(candidate, AddonSpec):
+        return candidate
+    if callable(candidate):
+        produced = candidate()
+        if isinstance(produced, AddonSpec):
+            return produced
+    raise ValueError(
+        f"{source_name} did not expose a valid add-on contract. "
+        "Expected `addon`, `ADDON`, or `get_addon()` producing an AddonSpec."
+    )
+
+
+def _load_addon_spec_from_module(module: ModuleType) -> AddonSpec:
+    module_name = getattr(module, "__name__", "<unknown module>")
+    if hasattr(module, "addon"):
+        return _coerce_addon_spec(getattr(module, "addon"), f"{module_name}.addon")
+    if hasattr(module, "ADDON"):
+        return _coerce_addon_spec(getattr(module, "ADDON"), f"{module_name}.ADDON")
+    if hasattr(module, "get_addon"):
+        return _coerce_addon_spec(getattr(module, "get_addon"), f"{module_name}.get_addon")
+    raise ValueError(
+        f"{module_name} does not expose a valid add-on contract. "
+        "Expected `addon`, `ADDON`, or `get_addon()`."
+    )
+
+
 @dataclass(frozen=True)
 class AddonSpec:
     name: str
@@ -346,6 +382,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     def __init__(self) -> None:
         self._registry: dict[str, AddonSpec] = {}
         self._enabled: set[str] = set()
+        self._module_sources: dict[str, str] = {}
 
     def _iter_effective_addons(self) -> list[tuple[str, AddonSpec]]:
         return [(name, self._registry[name]) for name in self.enabled(skip_digestion=True)]
@@ -359,10 +396,30 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         return addon
 
     @signal(tags=["addon"])
+    def register_module(self, module: str | ModuleType) -> AddonSpec:
+        imported = import_module(module) if isinstance(module, str) else module
+        addon = self.register(_load_addon_spec_from_module(imported))
+        self._module_sources[addon.name] = getattr(imported, "__name__", addon.name)
+        return addon
+
+    @signal(tags=["addon"])
+    def discover(self, modules: tuple[str, ...] | list[str] | None = None) -> list[AddonSpec]:
+        discovered: list[AddonSpec] = []
+        module_names = KNOWN_ADDON_MODULES if modules is None else tuple(modules)
+        for module_name in module_names:
+            try:
+                addon = self.register_module(module_name)
+            except ModuleNotFoundError:
+                continue
+            discovered.append(addon)
+        return discovered
+
+    @signal(tags=["addon"])
     @digest()
     def unregister(self, name: str, skip_digestion: bool = False) -> None:
         self._registry.pop(name, None)
         self._enabled.discard(name)
+        self._module_sources.pop(name, None)
 
     @signal(tags=["addon"])
     @digest()
@@ -389,6 +446,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     def clear(self, skip_digestion: bool = False) -> None:
         self._registry.clear()
         self._enabled.clear()
+        self._module_sources.clear()
 
     @signal(tags=["addon"])
     @digest()
@@ -398,6 +456,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         for name in self.names(skip_digestion=True):
             record = self._registry[name].info()
             record["enabled"] = name in enabled
+            record["module"] = self._module_sources.get(name)
             records.append(record)
         return records
 
@@ -405,6 +464,16 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     @digest()
     def available(self, skip_digestion: bool = False) -> list[str]:
         return self.names(skip_digestion=True)
+
+    @signal(tags=["addon"])
+    @digest()
+    def known_modules(self, skip_digestion: bool = False) -> list[str]:
+        return list(KNOWN_ADDON_MODULES)
+
+    @signal(tags=["addon"])
+    @digest()
+    def module_for(self, name: str, skip_digestion: bool = False) -> str | None:
+        return self._module_sources.get(name)
 
     @signal(tags=["addon"])
     @digest()
@@ -516,6 +585,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
                 continue
             record = addon.info()
             record["enabled"] = name in enabled
+            record["module"] = self._host.module_for(name, skip_digestion=True)
             records.append(record)
         return records
 

@@ -196,6 +196,70 @@ This is preferable to waiting until a large real `TopoMT` or
 `PharmacophoreMT` integration appears and discovering then that the core viewer
 has no clean entry points.
 
+## Discovery And Manual Coupling Direction
+
+The first practical discovery model should stay simple and explicit.
+
+Near-term preferred behavior:
+
+- `MolSysViewer` keeps a small maintained list of known add-on module names
+- `molsysviewer.addons.discover()` checks whether those modules are importable
+- importable recognized add-ons are registered in the host registry
+- missing modules are ignored without error
+
+This is intentionally more conservative than a fully open dynamic plugin
+discovery system.
+
+It keeps the ecosystem easy to reason about while real MolSysSuite add-ons are
+still few.
+
+At the same time, there should also be an explicit manual path for local or
+unpublished development:
+
+- registering an `AddonSpec` directly
+- or registering an importable add-on module explicitly
+
+This manual path matters because early add-on authors should not need to
+publish a conda package or wait to be added to a maintained discovery list
+before validating their integration.
+
+## Packaging Contract
+
+The first packaging contract should remain lightweight and stable.
+
+Recommended split:
+
+- domain package:
+  - `topomt`
+- MolSysViewer integration package:
+  - `molsysviewer-topomt`
+
+Recommended importable module shape:
+
+- package name:
+  - `molsysviewer-topomt`
+- importable module:
+  - `molsysviewer_topomt`
+- module should expose one of:
+  - `addon`
+  - `ADDON`
+  - `get_addon()`
+
+and that contract should resolve to an `AddonSpec`.
+
+This keeps:
+
+- the scientific package usable without MolSysViewer
+- the viewer integration optional
+- the import/discovery logic simple
+
+For local development, manual coupling should support the same contract even
+before publication:
+
+- local module on `PYTHONPATH`
+- explicit `molsysviewer.addons.register_module(...)`
+- or direct `molsysviewer.addons.register(...)`
+
 ## Relationship With Panel Minimalism
 
 This add-on direction does not change the minimal UX rule:
@@ -216,8 +280,48 @@ These questions remain intentionally open for later evaluation:
 - should add-ons register full new panels, or also panel subsections?
 - should add-ons contribute to `Workbench`, `Navigate`, or only as their own
   panels?
-- how should add-on discovery/installation work in Python environments?
+- how far should the initial maintained known-module list go before a more
+  formal discovery mechanism is justified?
+- should future discovery rely on entry points, package metadata, or keep a
+  maintained-list path as the canonical safe fallback?
 - how much of the extension model should be public API in 1.0 versus internal
   but tested?
 - should the first proof-of-concept be a fake plugin or a real `TopoMT`
   integration?
+- how should add-on enable/disable preferences be persisted across views or
+  future standalone sessions?
+- how much runtime lifecycle should be standardized in 1.0 beyond registration
+  and discovery?
+
+## Documentation Surfaces Required For 1.0
+
+Even if `1.0` still ships without real ecosystem add-ons, the documentation
+should already acknowledge the add-on model in all three major public-facing
+surfaces:
+
+- User Guide
+  - what add-ons are
+  - how they are installed
+  - how discovery works
+  - how they appear in the viewer
+- Cookbook
+  - a recipe for developing a minimal add-on
+  - including the packaging contract and the expected exported object
+- Showcase
+  - at least one add-on-shaped scientific story
+  - even if initially backed by a fake or internal proof-of-concept add-on
+
+Developer documentation should also include:
+
+- the host-level `molsysviewer.addons` model
+- the local `view.addons` projection
+- the packaging/discovery contract
+- contribution types that an add-on may register
+- testing strategy for add-on compatibility
+
+This matters because the add-on platform should not only exist in code and
+tests. It should also be teachable:
+
+- to users installing optional scientific capabilities
+- to developers extending MolSysViewer
+- and to future MolSysSuite maintainers who need a stable extension model

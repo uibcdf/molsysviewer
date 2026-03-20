@@ -1,3 +1,8 @@
+from types import ModuleType
+import sys
+import importlib
+
+addons_module = importlib.import_module("molsysviewer.addons")
 from molsysviewer import (
     AddonContextActionSpec,
     AddonExportHelperSpec,
@@ -98,6 +103,7 @@ def test_global_addons_registry_supports_complete_fake_addon():
     records = addons.records()
     assert records[0]["name"] == "topomt"
     assert records[0]["enabled"] is True
+    assert records[0]["module"] is None
     assert records[0]["meta"] == {"domain": "topography"}
     assert records[0]["panels"][0]["id"] == "topo"
     assert records[0]["context_actions"][0]["id"] == "focus-pocket"
@@ -176,3 +182,46 @@ def test_addons_registry_rejects_duplicate_contribution_ids_within_one_addon():
         assert "duplicate contribution ids" in str(exc)
     else:
         raise AssertionError("Expected duplicate add-on contribution ids to raise ValueError.")
+
+
+def test_addons_registry_supports_manual_module_registration():
+    addons.clear()
+    module = ModuleType("molsysviewer_topomt_dev")
+    module.addon = AddonSpec(
+        name="topomt-dev",
+        package="molsysviewer-topomt-dev",
+        panels=(AddonPanelSpec(id="topo-dev", title="Topo Dev", entry="topomt.dev.panel"),),
+    )
+    sys.modules[module.__name__] = module
+    try:
+        addon = addons.register_module(module)
+        assert addon.name == "topomt-dev"
+        assert addons.available() == ["topomt-dev"]
+        assert addons.records()[0]["module"] == "molsysviewer_topomt_dev"
+    finally:
+        sys.modules.pop(module.__name__, None)
+        addons.clear()
+
+
+def test_addons_registry_can_discover_known_modules(monkeypatch):
+    addons.clear()
+    module = ModuleType("molsysviewer_topomt")
+
+    def _get_addon():
+        return AddonSpec(
+            name="topomt",
+            package="molsysviewer-topomt",
+            panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel"),),
+        )
+
+    module.get_addon = _get_addon
+    sys.modules[module.__name__] = module
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt", "molsysviewer_missing"))
+    try:
+        discovered = addons.discover()
+        assert [item.name for item in discovered] == ["topomt"]
+        assert addons.known_modules() == ["molsysviewer_topomt", "molsysviewer_missing"]
+        assert addons.records()[0]["module"] == "molsysviewer_topomt"
+    finally:
+        sys.modules.pop(module.__name__, None)
+        addons.clear()
