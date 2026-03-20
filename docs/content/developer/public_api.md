@@ -202,3 +202,15 @@ If you change:
 - or popup synchronization,
 
 you must validate the docs-lite output.
+
+## Panel Mode
+
+The current pre-`1.0` shared panel-mode entrypoint is:
+
+- `view.set_panel_mode(...)`
+
+This API is intentionally small:
+
+- `panel="navigate"` or `panel="workbench"` opens that panel
+- `expanded=False` collapses the current panel-mode surface
+- `panel=None` lets the frontend reuse its remembered last panel when opening

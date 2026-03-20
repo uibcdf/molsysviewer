@@ -358,6 +358,12 @@ export type SetCameraSnapshotMessage = {
     duration_ms?: number;
 };
 
+export type SetPanelModeMessage = {
+    op: "set_panel_mode";
+    panel?: "navigate" | "workbench" | null;
+    expanded?: boolean;
+};
+
 export type RequestCameraSnapshotMessage = {
     op: "request_camera_snapshot";
 };
@@ -459,6 +465,7 @@ export type ViewerMessage =
     HideGlobalMessage |
     ZoomMessage |
     SetCameraSnapshotMessage |
+    SetPanelModeMessage |
     RequestCameraSnapshotMessage |
     RequestImageExportMessage |
     ClearActiveSelectionMessage |

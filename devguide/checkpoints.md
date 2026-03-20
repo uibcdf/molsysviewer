@@ -298,6 +298,8 @@ Follow-up convergence after `0.11.0`:
 - only one of the two drawer panels expands at a time
 - `Escape` closes an expanded drawer before falling back to clearing active
   selection
+- the first shared runtime API now exists:
+  - `view.set_panel_mode(panel="navigate"|"workbench"|None, expanded=True|False)`
 
 What `0.9.0` does not mean yet:
 

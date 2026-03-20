@@ -116,6 +116,10 @@ export class GroupPanel {
         this.render();
     }
 
+    isVisible(): boolean {
+        return this.shell.isVisible();
+    }
+
     setExpanded(expanded: boolean): void {
         this.expanded = expanded;
         this.applyExpandedState();
