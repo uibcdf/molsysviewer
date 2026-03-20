@@ -2079,6 +2079,7 @@ class MolSysView:
         height_px: int | None = None,
         scale: float = 1.0,
         transparent: bool = False,
+        camera_snapshot: dict | None = None,
         timeout_s: float = 2.0,
     ) -> dict | None:
         """Ask the frontend for an image export (best-effort)."""
@@ -2094,6 +2095,8 @@ class MolSysView:
             payload["width"] = int(width_px)
         if height_px is not None:
             payload["height"] = int(height_px)
+        if camera_snapshot:
+            payload["camera_snapshot"] = dict(camera_snapshot)
         try:
             self.widget.send(payload)
         except Exception:
@@ -2116,6 +2119,7 @@ class MolSysView:
         height_px: int | None = None,
         scale: float = 1.0,
         transparent: bool = False,
+        camera_snapshot: dict | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Export the current viewer scene as a PNG image file."""
@@ -2124,6 +2128,7 @@ class MolSysView:
             height_px=height_px,
             scale=scale,
             transparent=transparent,
+            camera_snapshot=camera_snapshot,
         )
         if not event:
             raise RuntimeError("Image export requires a live ready frontend.")

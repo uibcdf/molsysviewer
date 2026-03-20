@@ -61,6 +61,7 @@ class ExportManager:
         height_px: int | None = None,
         scale: float = 1.0,
         transparent: bool = False,
+        camera_snapshot: dict[str, Any] | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Export the current viewer scene as a PNG image file."""
@@ -70,4 +71,5 @@ class ExportManager:
             height_px=height_px,
             scale=scale,
             transparent=transparent,
+            camera_snapshot=camera_snapshot,
         )

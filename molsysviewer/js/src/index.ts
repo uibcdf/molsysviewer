@@ -439,6 +439,10 @@ export default {
                         height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
                         scale: typeof (msg as any).scale === "number" ? (msg as any).scale : undefined,
                         transparent: !!(msg as any).transparent,
+                        cameraSnapshot:
+                            (msg as any).camera_snapshot && typeof (msg as any).camera_snapshot === "object"
+                                ? (msg as any).camera_snapshot
+                                : undefined,
                     });
                     if (typeof data_uri === "string" && data_uri) {
                         model.send({
