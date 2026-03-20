@@ -114,7 +114,13 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         panel.setMeasurements([{ title: "Distance", subtitle: "3.2 A" }]);
         panel.setShapes([{ title: "Pocket", subtitle: "surface", hidden: true }]);
         panel.setScene({ styleTag: "polymer-and-ligand", preset: "atomic-detail" });
-        panel.setAddons([{ name: "topomt", panelTitles: ["Topo"], workbenchTitles: ["Pockets"] }]);
+        panel.setAddons([{
+            name: "topomt",
+            panelTitles: ["Topo"],
+            workbenchTitles: ["Pockets"],
+            contextActionTitles: ["Focus Pocket"],
+            exportHelperTitles: ["Topography Figure Export"],
+        }]);
 
         const root = host.children[0];
         const items = [];
@@ -133,6 +139,11 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         assert.strictEqual(findFirstText(items[3]), "Style: polymer-and-ligand");
         assert.strictEqual(findFirstText(items[4]), "Preset: atomic-detail");
         assert.strictEqual(findFirstText(items[5]), "topomt");
+        assert.ok(items[5].children[1]);
+        assert.strictEqual(
+            items[5].children[1]?.textContent,
+            "Panels: Topo · Workbench: Pockets · Context: Focus Pocket · Export: Topography Figure Export",
+        );
 
         panel.dispose();
     } finally {

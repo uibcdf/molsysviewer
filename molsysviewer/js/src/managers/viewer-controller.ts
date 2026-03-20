@@ -30,7 +30,13 @@ import { WorkbenchPanel } from "../ui/workbench-panel";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
-type AddonRuntimeSummary = { name: string; panelTitles: string[]; workbenchTitles: string[] };
+type AddonRuntimeSummary = {
+    name: string;
+    panelTitles: string[];
+    workbenchTitles: string[];
+    contextActionTitles: string[];
+    exportHelperTitles: string[];
+};
 type AddonContextActionRuntime = { addon: string; id: string; title: string; target_kinds: string[]; group?: string };
 
 type InteractionPayload =
@@ -1250,6 +1256,8 @@ export class MolSysViewerController {
             : [];
         const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
         const workbenchSections = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+        const contextActionSpecs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
+        const exportHelperSpecs = Array.isArray(msg?.export_helper_specs) ? msg.export_helper_specs : [];
 
         return names
             .map((name) => ({
@@ -1258,6 +1266,12 @@ export class MolSysViewerController {
                     .filter((item: any) => item?.addon === name && typeof item?.title === "string")
                     .map((item: any) => item.title as string),
                 workbenchTitles: workbenchSections
+                    .filter((item: any) => item?.addon === name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                contextActionTitles: contextActionSpecs
+                    .filter((item: any) => item?.addon === name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                exportHelperTitles: exportHelperSpecs
                     .filter((item: any) => item?.addon === name && typeof item?.title === "string")
                     .map((item: any) => item.title as string),
             }))

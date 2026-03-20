@@ -1023,6 +1023,7 @@ class MolSysView:
         panel_specs = self.addons.panel_specs(skip_digestion=True)
         workbench_sections = self.addons.workbench_section_specs(skip_digestion=True)
         context_action_specs = self.addons.context_action_specs(skip_digestion=True)
+        export_helper_specs = self.addons.export_helper_specs(skip_digestion=True)
         self._send(
             {
                 "op": "set_addon_runtime_summary",
@@ -1030,6 +1031,7 @@ class MolSysView:
                 "panel_specs": panel_specs,
                 "workbench_sections": workbench_sections,
                 "context_action_specs": context_action_specs,
+                "export_helper_specs": export_helper_specs,
             }
         )
 

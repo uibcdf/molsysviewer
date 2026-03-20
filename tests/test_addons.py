@@ -377,6 +377,14 @@ def test_view_addons_sync_runtime_summary_message():
                         entry="topomt.workbench.pockets",
                     ),
                 ),
+                export_helpers=(
+                    AddonExportHelperSpec(
+                        id="topography-figure",
+                        title="Topography Figure Export",
+                        entry="topomt.export.figure",
+                        formats=("png",),
+                    ),
+                ),
             )
         )
         view.addons.enable("topomt")
@@ -385,6 +393,7 @@ def test_view_addons_sync_runtime_summary_message():
         assert addon_msg["panel_specs"][0]["title"] == "Topo"
         assert addon_msg["context_action_specs"][0]["id"] == "focus-pocket"
         assert addon_msg["workbench_sections"][0]["title"] == "Pockets"
+        assert addon_msg["export_helper_specs"][0]["title"] == "Topography Figure Export"
 
         view.addons.disable("topomt")
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
@@ -392,5 +401,6 @@ def test_view_addons_sync_runtime_summary_message():
         assert addon_msg["panel_specs"] == []
         assert addon_msg["context_action_specs"] == []
         assert addon_msg["workbench_sections"] == []
+        assert addon_msg["export_helper_specs"] == []
     finally:
         addons.clear()
