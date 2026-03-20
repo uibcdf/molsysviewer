@@ -257,6 +257,47 @@ What `0.9.0` does not mean yet:
 - no real MolSysSuite plugins yet
 - not the final publication-quality rendering story
 
+## 0.10.0 Checkpoint
+
+`0.10.0` marks the point where MolSysViewer's add-on story stops being only a
+future architectural intention and becomes a real public-facing platform slice.
+
+What this checkpoint consolidates:
+
+- host-level add-on registry:
+  - `molsysviewer.addons`
+- per-view add-on projection:
+  - `view.addons`
+- explicit typed contribution specs for:
+  - panels
+  - context actions
+  - workbench sections
+  - shape providers
+  - style helpers
+  - export helpers
+  - tool modes
+- first simple discovery path:
+  - maintained list of known add-on modules
+  - `molsysviewer.addons.discover()`
+- explicit manual coupling path for local or unpublished development:
+  - `molsysviewer.addons.register(...)`
+  - `molsysviewer.addons.register_module(...)`
+- first public docs surface for add-ons in:
+  - user introduction
+  - cookbook
+  - developer docs
+  - showcase placeholder
+- cleaner public export wording around:
+  - `view.export.html(...)`
+
+What `0.10.0` does not mean yet:
+
+- no real MolSysSuite add-on shipped yet
+- no entry-point metadata discovery yet
+- no persisted add-on preferences yet
+- no richer add-on runtime lifecycle yet
+- no standalone host yet
+
 ## Current State
 
 - JS/TS tests
