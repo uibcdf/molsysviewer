@@ -122,6 +122,8 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         const root = host.children[0];
         const shell = root.children[0];
         const title = findFirstByAttribute(root, "data-molsysviewer-group-panel-title");
+        const navGroup = findFirstByAttribute(root, "data-molsysviewer-panel-nav-group", "true");
+        const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "navigate");
         const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "workbench");
         const body = findFirstByAttribute(root, "data-molsysviewer-group-panel-body");
         const toggle = root.children[1];
@@ -129,6 +131,8 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         assert.strictEqual(stripRoots.length, 2);
         assert.ok(shell);
         assert.ok(title);
+        assert.ok(navGroup);
+        assert.ok(navCurrent);
         assert.ok(navButton);
         assert.strictEqual(navButton?.textContent, "Workbench");
         assert.strictEqual(title?.textContent, "Navigate");

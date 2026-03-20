@@ -301,6 +301,12 @@ Current practical bridge state:
   - `Workbench` rows now also expose a first minimal persistent affordance:
     - per-row visibility toggle for tagged annotations, measurements, and shapes
   - `Workbench` sections can now collapse/expand locally
+  - the drawer runtime now also exposes a first shared panel navigator in the
+    header chrome:
+    - current panel shown as the active pill
+    - sibling panel shown as the secondary jump target
+    - direct `Navigate <-> Workbench` switching already works before the final
+      shared floating container and formal `tabs`
 
 ## First Container Direction For Panel Mode
 
