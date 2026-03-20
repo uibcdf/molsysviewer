@@ -189,11 +189,6 @@ Preferred export surface:
 - `view.export.html(...)`
 - `view.export.image(...)`
 
-Compatibility aliases:
-
-- `MolSysView.write_html(...)` is deprecated in favor of `view.export.html(...)`
-- `MolSysView.export_image(...)` is deprecated in favor of `view.export.image(...)`
-
 `view.export.html(..., mode="lite")` is a public, user-facing export mode.
 It must remain reproducible.
 

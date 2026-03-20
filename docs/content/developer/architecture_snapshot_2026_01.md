@@ -192,7 +192,7 @@ This design keeps the popup as a live mirror of the host.
 ## 7. HTML export behavior (current)
 
 - HTML export replays `_message_history` and does not require `show()` to run.
-- If the frontend is live, `write_html(...)` requests a fresh camera snapshot
+- If the frontend is live, `view.export.html(...)` requests a fresh camera snapshot
   before exporting (best-effort).
 - UI-only changes (toggle buttons, manual style changes) do not populate
   `_message_history` and are not exported.

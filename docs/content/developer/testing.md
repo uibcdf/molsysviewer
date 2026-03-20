@@ -4,7 +4,7 @@
 - JS/TS: prefer logic tests for option normalization and message routing (no build required).
 - Keep `npm run build` manual; do not auto-regenerate `viewer.js` in tests.
 - Use tags in tests to add/clear shapes deterministically.
-- For docs demos, prefer pre-rendered HTML via `write_html(..., mode="lite")` instead of executing widgets during tests/build.
+- For docs demos, prefer pre-rendered HTML via `view.export.html(..., mode="lite")` instead of executing widgets during tests/build.
 - When adding new shape options, cover normalization (length checks, defaults) and error cases.
 - If touching message handlers, assert that tags and shape refs are registered/cleared as expected.
 - JS/TS tests: focus on pure functions (option mapping, data prep). Avoid depending on Mol* runtime unless absolutely necessary.

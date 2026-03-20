@@ -29,6 +29,6 @@ def test_write_html_requests_camera_snapshot_when_ready(monkeypatch, tmp_path):
     monkeypatch.setattr(view, "_build_standalone_html", lambda *args, **kwargs: "HTML")
 
     outfile = tmp_path / "out.html"
-    view.write_html(str(outfile))
+    view.export.html(str(outfile))
 
     assert called.get("requested") is True

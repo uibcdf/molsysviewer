@@ -11,6 +11,17 @@ from ._version import __version__
 from .demo import demo
 from .new_view import new_view
 from . import tools
+from .addons import (
+    addons,
+    AddonContextActionSpec,
+    AddonExportHelperSpec,
+    AddonPanelSpec,
+    AddonShapeProviderSpec,
+    AddonSpec,
+    AddonStyleHelperSpec,
+    AddonToolModeSpec,
+    AddonWorkbenchSectionSpec,
+)
 from .styles import Style
 from .viewer import MolSysView
 
@@ -24,5 +35,14 @@ __all__ = [
     "new_view",
     "demo",
     "tools",
+    "addons",
     "Style",
+    "AddonSpec",
+    "AddonPanelSpec",
+    "AddonContextActionSpec",
+    "AddonWorkbenchSectionSpec",
+    "AddonShapeProviderSpec",
+    "AddonStyleHelperSpec",
+    "AddonExportHelperSpec",
+    "AddonToolModeSpec",
 ]

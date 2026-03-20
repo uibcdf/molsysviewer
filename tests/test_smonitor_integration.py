@@ -44,7 +44,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.reset_camera(skip_digestion=True)
         view.get_camera_snapshot(skip_digestion=True)
         view.set_camera_snapshot({"target": [0, 0, 0]}, skip_digestion=True)
-        view.write_html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
+        view.export.html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
 
         timeline = manager.report()["timeline"]
         keys = [entry["key"] for entry in timeline]
@@ -57,16 +57,16 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "molsysviewer.viewer.reset_camera" in keys
         assert "molsysviewer.viewer.get_camera_snapshot" in keys
         assert "molsysviewer.viewer.set_camera_snapshot" in keys
-        assert "molsysviewer.viewer.write_html" in keys
+        assert "molsysviewer.exports.html" in keys
 
         assert "region" in tags_by_key["molsysviewer.regions.hide"]
         assert "whole" in tags_by_key["molsysviewer.whole.hide"]
         assert "shape" in tags_by_key["molsysviewer.shapes.clear"]
         assert "camera" in tags_by_key["molsysviewer.viewer.reset_camera"]
-        assert "export" in tags_by_key["molsysviewer.viewer.write_html"]
+        assert "export" in tags_by_key["molsysviewer.exports.html"]
         assert meta_by_key["molsysviewer.viewer.get_camera_snapshot"].get("pretty") is None
         assert meta_by_key["molsysviewer.viewer.set_camera_snapshot"].get("snapshot_keys") == ["target"]
-        assert meta_by_key["molsysviewer.viewer.write_html"].get("include_popout") is False
+        assert meta_by_key["molsysviewer.exports.html"].get("include_popout") is False
     finally:
         manager.configure(
             profiling=previous_profiling,

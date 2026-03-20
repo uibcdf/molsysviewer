@@ -138,7 +138,7 @@ python docs/execute_notebooks.py -f -r docs/content/
 
 For 3D visuals, prefer HTML lite exports:
 
-- Export with `MolSysView.write_html(..., mode="lite")` into `docs/_static/views/`.
+- Export with `view.export.html(..., mode="lite")` into `docs/_static/views/`.
 - Embed via iframe or `molsysviewer.thirds.jupyter.load_html_in_notebook`.
 
 ## Troubleshooting
