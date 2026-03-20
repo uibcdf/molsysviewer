@@ -406,6 +406,49 @@ test("GroupPanel exposes workspace launcher when multiple workspaces exist", () 
     }
 });
 
+test("GroupPanel can be force-hidden for non-core workspaces", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const structure = { units: [{ kind: 0, model: {
+            sourceData: {
+                kind: "mol-viewer:molsysmt",
+                data: {
+                    molsys_molecule_id: [0, 0],
+                    molsys_molecule_name: ["Peptide", "Peptide"],
+                    molsys_component_id: [0, 0],
+                    molsys_component_name: ["Protein", "Protein"],
+                },
+            },
+            atomicHierarchy: {
+                residueAtomSegments: { offsets: [0, 2] },
+                chainAtomSegments: { index: [0, 0] },
+                atoms: { label_comp_id: { value: (_i: number) => "ALA" } },
+                residues: { auth_seq_id: { value: (i: number) => i + 1 } },
+                chains: {
+                    label_asym_id: { value: (_i: number) => "A" },
+                    label_entity_id: { value: (_i: number) => "0" },
+                },
+                index: { getEntityFromChain: (_i: number) => 0 },
+            },
+        }}] } as any;
+
+        panel.setStructure(structure);
+        assert.strictEqual(panel.isVisible(), true);
+
+        panel.setRuntimeVisible(false);
+        assert.strictEqual(panel.isVisible(), false);
+
+        panel.setRuntimeVisible(null);
+        assert.strictEqual(panel.isVisible(), true);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel supports custom navigation labels", () => {
     const restore = installFakeDom();
     try {

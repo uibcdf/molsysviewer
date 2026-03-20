@@ -206,6 +206,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the runtime offers a direct return to `Core`
     - it does not pretend every add-on workspace already has a full native
       `Navigate` stack
+    - the next honest runtime step is to make that true in behavior too:
+      - non-core workspaces should hide `Navigate`
+      - returning to `Core` should restore the last core panel choice
   - `Workbench` now also materializes a first generic panel-stack bridge for
     add-on workspaces:
     - selector of workspace panels

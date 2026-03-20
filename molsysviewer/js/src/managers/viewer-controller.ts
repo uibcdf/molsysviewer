@@ -344,6 +344,7 @@ export class MolSysViewerController {
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
     private lastPanelMode: "navigate" | "workbench" = "navigate";
+    private lastCorePanelMode: "navigate" | "workbench" = "navigate";
     private currentWorkspace = "core";
     private readonly currentWorkspacePanelByWorkspace = new Map<string, string>();
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
@@ -715,7 +716,12 @@ export class MolSysViewerController {
 
     private handlePanelExpansionChanged(source: "navigate" | "workbench", expanded: boolean): void {
         if (this.syncingPanelExpansion) return;
-        if (expanded) this.lastPanelMode = source;
+        if (expanded) {
+            this.lastPanelMode = source;
+            if (this.currentWorkspace === "core") {
+                this.lastCorePanelMode = source;
+            }
+        }
         if (!expanded) return;
         this.syncingPanelExpansion = true;
         try {
@@ -736,7 +742,10 @@ export class MolSysViewerController {
             return;
         }
 
-        const requested = panel ?? this.lastPanelMode;
+        const requested =
+            this.currentWorkspace === "core"
+                ? (panel ?? this.lastCorePanelMode)
+                : "workbench";
         let target: "navigate" | "workbench" | null = null;
         if (requested === "navigate" && this.groupPanel.isVisible()) {
             target = "navigate";
@@ -754,6 +763,9 @@ export class MolSysViewerController {
             this.groupPanel.setExpanded(target === "navigate");
             this.workbenchPanel.setExpanded(target === "workbench");
             this.lastPanelMode = target;
+            if (this.currentWorkspace === "core") {
+                this.lastCorePanelMode = target;
+            }
         } finally {
             this.syncingPanelExpansion = false;
         }
@@ -767,6 +779,7 @@ export class MolSysViewerController {
         }
 
         if (this.currentWorkspace === "core") {
+            this.groupPanel.setRuntimeVisible(null);
             this.groupPanel.setOnNavigateToWorkbench(() => {
                 this.setPanelMode("workbench", true);
             }, "Workbench");
@@ -774,10 +787,11 @@ export class MolSysViewerController {
                 this.setPanelMode("navigate", true);
             }, "Navigate");
         } else {
+            this.groupPanel.setRuntimeVisible(false);
             this.groupPanel.setOnNavigateToWorkbench(undefined);
             this.workbenchPanel.setOnNavigateToNavigate(() => {
                 this.selectWorkspace("core");
-                this.setPanelMode("navigate", true);
+                this.setPanelMode(this.lastCorePanelMode, true);
             }, "Core");
         }
 
@@ -1650,10 +1664,11 @@ export class MolSysViewerController {
         const available = new Set(this.getWorkspaceOptions().map((item) => item.id));
         this.currentWorkspace = available.has(workspaceId) ? workspaceId : "core";
         this.refreshPanelWorkspaceChrome();
-        if (this.currentWorkspace !== "core" && this.lastPanelMode === "navigate") {
+        if (this.currentWorkspace !== "core") {
             this.setPanelMode("workbench", true);
             return;
         }
+        this.setPanelMode(this.lastCorePanelMode, true);
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
     }
