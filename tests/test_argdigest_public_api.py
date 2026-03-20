@@ -62,6 +62,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.styles.apply(style=Style(preset="polymer-cartoon", name="Polymers"))
         view.styles.add("publication", Style(preset="polymer-cartoon"), description="Publication baseline", source="runtime")
         view.styles.load_project_config(str(project_config_path), apply_default=False)
+        addons.load_project_config(str(project_config_path))
         addons.clear()
         addons.register(
             AddonSpec(

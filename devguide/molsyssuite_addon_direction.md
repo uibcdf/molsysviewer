@@ -268,6 +268,18 @@ before publication:
 - explicit `molsysviewer.addons.register_module(...)`
 - or direct `molsysviewer.addons.register(...)`
 
+Project-level defaults should also be supported through `_molsysviewer.py`:
+
+- `ADDONS_ENABLED`
+- `ADDONS_DISABLED`
+
+These should be applied at the host level through:
+
+- `molsysviewer.addons.load_project_config(...)`
+
+so new views inherit a project baseline while `view.addons` still keeps local
+override semantics.
+
 ## Minimal Lifecycle Direction
 
 The first runtime lifecycle now implemented should stay intentionally narrow:
@@ -319,8 +331,9 @@ These questions remain intentionally open for later evaluation:
   but tested?
 - should the first proof-of-concept be a fake plugin or a real `TopoMT`
   integration?
-- how should add-on enable/disable preferences be persisted across views or
-  future standalone sessions?
+- how should add-on enable/disable preferences evolve beyond the first
+  project-level `_molsysviewer.py` defaults across views or future standalone
+  sessions?
 - how much runtime lifecycle should be standardized in 1.0 beyond registration
   and discovery?
 - when should the first add-on contribution become visibly real in the runtime,

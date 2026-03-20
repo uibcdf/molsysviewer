@@ -365,6 +365,11 @@ What this checkpoint consolidates:
     - add-on name
     - add-on action id
     - add-on action title
+- first explicit project-level add-on defaults:
+  - `_molsysviewer.py` may now define `ADDONS_ENABLED` and `ADDONS_DISABLED`
+  - `molsysviewer.addons.load_project_config(...)` applies those defaults at
+    host level
+  - new views inherit them while `view.addons` keeps local override semantics
 
 What `0.11.0` does not mean yet:
 

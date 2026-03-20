@@ -147,6 +147,27 @@ The important pieces to keep stable are:
   - `ADDON`
   - or `get_addon()`
 
+## Project defaults during development
+
+If you want a local project to enable or disable add-ons by default, define in
+`_molsysviewer.py`:
+
+```python
+ADDONS_ENABLED = ["topomt"]
+ADDONS_DISABLED = ["pharmacophoremt"]
+```
+
+and apply those defaults explicitly:
+
+```python
+import molsysviewer
+
+molsysviewer.addons.load_project_config("_molsysviewer.py")
+```
+
+New views will inherit that host-level baseline, while `view.addons` can still
+override it locally for debugging.
+
 ## What not to assume yet
 
 Do not assume that `1.0` already standardizes:
