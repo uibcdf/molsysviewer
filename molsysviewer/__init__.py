@@ -24,6 +24,7 @@ from .addons import (
     AddonWorkbenchSectionSpec,
 )
 from .styles import Style
+from .figures import FigureSpec
 from .viewer import MolSysView
 
 
@@ -38,6 +39,7 @@ __all__ = [
     "tools",
     "addons",
     "Style",
+    "FigureSpec",
     "AddonSpec",
     "AddonPanelSpec",
     "AddonContextActionSpec",

@@ -210,6 +210,7 @@ raw image export. It currently provides:
 - stronger default `scale`
 - a `background=...` surface (`white`, `dark`, `transparent`, `current`)
 - figure-oriented preset defaults
+- an optional reusable `figure_spec=FigureSpec(...)` recipe layer
 
 It is still intentionally modest and should be treated as the first step toward
 the future richer `figure` export contract, not as the final publication export

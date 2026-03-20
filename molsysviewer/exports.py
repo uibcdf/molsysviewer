@@ -5,6 +5,7 @@ from typing import Any
 from smonitor import signal
 
 from ._private.arg_digestion import digest
+from .figures import FigureSpec
 
 
 def _export_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -82,6 +83,7 @@ class ExportManager:
         self,
         output_filename: str,
         *,
+        figure_spec: FigureSpec | dict[str, Any] | None = None,
         width_px: int | None = None,
         height_px: int | None = None,
         scale: float = 2.0,
@@ -91,12 +93,27 @@ class ExportManager:
         skip_digestion: bool = False,
     ) -> None:
         """Export a first figure-oriented PNG using stronger defaults than raw image export."""
+        resolved_width_px = width_px
+        resolved_height_px = height_px
+        resolved_scale = scale
+        resolved_background = background
+        resolved_preset = preset
+        resolved_camera_snapshot = camera_snapshot
+
+        if figure_spec is not None:
+            resolved_width_px = width_px if width_px is not None else figure_spec.width_px
+            resolved_height_px = height_px if height_px is not None else figure_spec.height_px
+            resolved_scale = scale if scale != 2.0 else figure_spec.scale
+            resolved_background = background if background != "white" else figure_spec.background
+            resolved_preset = preset if preset != "publication-light" else figure_spec.preset
+            resolved_camera_snapshot = camera_snapshot if camera_snapshot is not None else figure_spec.camera_snapshot
+
         self._view._export_figure_impl(  # noqa: SLF001
             output_filename,
-            width_px=width_px,
-            height_px=height_px,
-            scale=scale,
-            background=background,
-            preset=preset,
-            camera_snapshot=camera_snapshot,
+            width_px=resolved_width_px,
+            height_px=resolved_height_px,
+            scale=resolved_scale,
+            background=resolved_background,
+            preset=resolved_preset,
+            camera_snapshot=resolved_camera_snapshot,
         )

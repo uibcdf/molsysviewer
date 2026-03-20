@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 
-from molsysviewer import AddonPanelSpec, AddonSpec, addons
+from molsysviewer import AddonPanelSpec, AddonSpec, FigureSpec, addons
 from molsysviewer import config
 from molsysviewer.config.user_presets import load_user_presets
 from molsysviewer.demo import demo
@@ -99,6 +99,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         )
         view.export.figure(
             tmp_path / "audit-figure.png",
+            figure_spec=FigureSpec(width_px=900, height_px=600, scale=2.5, background="white", preset="publication-light"),
             width_px=800,
             height_px=600,
             scale=2.0,

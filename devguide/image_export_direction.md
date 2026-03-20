@@ -409,6 +409,26 @@ view.export.figure(
 This is not yet the final figure system. It is the first explicit wrapper that
 maps a figure-oriented request onto the current image export runtime.
 
+There is now also a first minimal reusable recipe object:
+
+```python
+from molsysviewer import FigureSpec
+
+spec = FigureSpec(
+    width_px=2400,
+    height_px=1800,
+    scale=3.0,
+    background="dark",
+    preset="publication-dark",
+)
+
+view.export.figure("figure.png", figure_spec=spec)
+```
+
+This is still intentionally small. It is not yet a rich figure project format,
+but it already proves that figure export can start to become reusable without
+disconnecting from the current scene/export runtime.
+
 The key is not the exact spelling yet.
 The key is that the API should:
 
