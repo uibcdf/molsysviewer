@@ -25,6 +25,7 @@ public_api.md
 protocol_and_payloads.md
 architecture.md
 architecture_full.md
+addons.md
 regions_layers.md
 debugging.md
 ```

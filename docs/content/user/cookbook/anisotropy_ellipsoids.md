@@ -23,7 +23,7 @@ v.shapes.add_anisotropy_ellipsoids(
     color_mode="anisotropy",
     tag="ellipsoid-demo",
 )
-v.write_html("_static/views/anisotropy_ellipsoids.html")
+v.export.html("_static/views/anisotropy_ellipsoids.html")
 ```
 
 What to tweak

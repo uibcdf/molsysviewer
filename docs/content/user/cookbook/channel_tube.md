@@ -21,7 +21,7 @@ v.shapes.add_channel_tube(
     smoothing=0.5,
     tag="channel-demo",
 )
-v.write_html("_static/views/channel_tube.html")
+v.export.html("_static/views/channel_tube.html")
 ```
 
 What to tweak

@@ -17,7 +17,7 @@ v.shapes.add_pharmacophore_features(
     alphas=[0.5, 0.4, 0.6],
     tag="ph4-demo",
 )
-v.write_html("_static/views/pharmacophore_overlay.html")
+v.export.html("_static/views/pharmacophore_overlay.html")
 ```
 
 What to tweak

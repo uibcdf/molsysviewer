@@ -16,4 +16,5 @@ molstar
 units
 configuration
 project_configuration
+addons
 ```

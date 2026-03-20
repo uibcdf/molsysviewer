@@ -9,6 +9,7 @@ Short demonstrations of MolSysViewer features. These will evolve into runnable n
 | [Channels & tubes](channels) | Channel tubes from TopoMT routes with segment colors |
 | [Pharmacophore overlays](pharmacophore) | Render standard pharmacophore glyphs and colors |
 | [Anisotropy ellipsoids](anisotropy-ellipsoids) | Anisotropy glyphs as ellipsoids or disks |
+| [Ecosystem add-ons](addons) | How future MolSysSuite add-ons will extend the same core viewer/workbench |
 
 
 ```{toctree}
@@ -20,4 +21,5 @@ pockets
 channels
 pharmacophore
 anisotropy-ellipsoids
+addons
 ```

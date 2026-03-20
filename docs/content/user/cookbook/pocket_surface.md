@@ -22,7 +22,7 @@ v.shapes.add_pocket_surface(
     grid={"resolution": 1.0, "smoothness": 1.0},
     tag="pocket-surface",
 )
-v.write_html("_static/views/pocket_surface.html")
+v.export.html("_static/views/pocket_surface.html")
 ```
 
 What to tweak
