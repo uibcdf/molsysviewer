@@ -15,6 +15,14 @@ Build a tiny add-on that contributes one panel and can be registered either:
 
 If it is a larger add-on, it may also declare a workspace.
 
+For real MolSysSuite teams, a better first milestone is:
+
+- one workspace if the add-on is large enough
+- one panel
+- one workbench section
+- one context action
+- optional minimal lifecycle hooks
+
 ## 1. Create the spec
 
 ```python
@@ -41,6 +49,11 @@ addon = AddonSpec(
     ),
 )
 ```
+
+If you prefer to start from the bundled reference example instead of from
+scratch, use:
+
+- [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
 
 ## 2. Register it directly during development
 
@@ -76,6 +89,15 @@ The module should expose one of:
 - `addon`
 - `ADDON`
 - `get_addon()`
+
+If the add-on needs lifecycle hooks, it may also expose:
+
+- `lifecycle`
+- `LIFECYCLE`
+- or plain functions:
+  - `on_enable`
+  - `on_disable`
+  - `on_context_action`
 
 Example:
 
@@ -146,6 +168,15 @@ the add-on module.
 This lifecycle is intentionally minimal.
 It is not yet a broad runtime hook system.
 
+Recommended use:
+
+- `on_enable(view)`:
+  - prepare small per-view state
+- `on_disable(view)`:
+  - clean it up
+- `on_context_action(view, action_id, payload)`:
+  - connect one visible context-menu action back to Python-side behavior
+
 ## Contract summary
 
 The important pieces to keep stable are:
@@ -156,6 +187,8 @@ The important pieces to keep stable are:
   - `view.addons`
 - add-on object:
   - `AddonSpec`
+- optional workspace:
+  - `AddonWorkspaceSpec`
 - optional lifecycle:
   - `AddonLifecycleSpec`
 - importable module contract:
@@ -194,3 +227,18 @@ Do not assume that `1.0` already standardizes:
 - complex automatic loading of arbitrary packages
 
 The current goal is a small, explicit, stable extension contract.
+
+## Recommended checklist before sharing your add-on with the MolSysViewer team
+
+1. the package imports as `molsysviewer_<name>`
+2. it exposes `addon`, `ADDON`, or `get_addon()`
+3. if it exposes lifecycle, the hooks are small and explicit
+4. if it is a large add-on, it defines a workspace
+5. it can be registered both:
+   - manually via `molsysviewer.addons.register_module(...)`
+   - and through discovery once its module name is added to the maintained list
+
+For the more normative version of this contract, also see:
+
+- [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
+- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)

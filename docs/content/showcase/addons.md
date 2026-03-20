@@ -19,5 +19,11 @@ The important product direction is already fixed:
 - users who do not need those domains should not have to carry their visual
   complexity
 
+Teams that want to start now already have a starter pack:
+
+- [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
+- [`addon_development.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_development.md)
+- [`IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+
 As real MolSysSuite add-ons arrive, this section should become a gallery of
 focused scientific workflows built on top of the same MolSysViewer core.

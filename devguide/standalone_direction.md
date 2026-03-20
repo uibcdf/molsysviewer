@@ -31,6 +31,43 @@ The key principle is:
 The standalone mode should not become a separate product with a separate
 interaction model or a separate scene/state architecture.
 
+## Standalone 0
+
+Before the final standalone push, it is useful to define a first presentable
+**standalone 0** for internal ecosystem teams.
+
+It should be explicitly honest:
+
+- not feature-complete
+- not the final host UX
+- not a separate product
+
+But it should already be good enough to show how future add-ons fit into the
+host.
+
+The minimum believable target for standalone 0 is:
+
+- a CLI-launchable host
+- one main canvas window/host
+- the same `Core` workspace already present in notebook mode
+- add-on workspaces visible when compatible add-ons are installed
+- the same panel/workbench runtime model already used in notebook mode
+- no forked scene/state model
+
+Standalone 0 does not need yet:
+
+- the final workspace launcher/mosaic
+- the final two-window auxiliary layout
+- polished file/project management
+- the final publication/figure UX
+- every add-on integration story closed
+
+Its job is narrower:
+
+- prove that MolSysViewer can run as a host
+- prove that the same workbench model survives outside notebook
+- prove that add-ons can be surfaced there without redesigning the platform
+
 ## Why This Direction Makes Sense
 
 MolSysViewer is already moving beyond the idea of a simple notebook widget.

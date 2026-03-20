@@ -330,10 +330,17 @@ def test_addon_template_module_is_importable_and_registerable():
         addon = addons.register_module("molsysviewer.addon_templates.minimal_topomt")
         assert addon.name == "topomt-template"
         assert addons.available() == ["topomt-template"]
+        assert addons.workspace_specs()[0]["id"] == "topomt"
         assert addons.panel_specs()[0]["id"] == "topo"
         assert addons.context_action_specs()[0]["id"] == "focus-pocket"
         assert addons.workbench_section_specs()[0]["id"] == "pockets"
         assert addons.shape_provider_specs()[0]["id"] == "pocket-surface"
+        assert addons.lifecycle_for("topomt-template") is not None
+        assert addons.lifecycle_for("topomt-template").info() == {
+            "has_on_enable": True,
+            "has_on_disable": True,
+            "has_on_context_action": True,
+        }
     finally:
         addons.clear()
 

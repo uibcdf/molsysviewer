@@ -258,6 +258,29 @@ The next add-on step is now more specific:
 - do not stop at `devguide`:
   - user docs should explain installation/discovery/use of add-ons
   - developer docs should explain the host/local registry contract
+  - cookbook should stay actionable for external teams
+
+The add-on starter-pack story should now be treated as real deliverable work:
+
+- bundled reference template:
+  - [`molsysviewer/addon_templates/minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
+- public docs:
+  - developer add-on contract
+  - cookbook recipe
+  - showcase placeholder with starter links
+- stable normative references under:
+  - [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
+  - [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+
+For standalone, the next communication milestone is also clearer:
+
+- before the final standalone implementation push, preserve a credible
+  `standalone 0`
+- that is the version to show early to the MolSysMT/TopoMT/
+  PharmacophoreMT teams
+- its job is to prove the host model and add-on/workspace fit, not to pretend
+  the final product UX is already finished
+
   - cookbook should carry a "build a minimal add-on" recipe
   - showcase should eventually include at least one add-on-shaped scientific
     story
