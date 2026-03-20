@@ -21,6 +21,8 @@ def _resolve_view(
     load_mode: str = "selection",
     debug_js: bool | None = None,
 ) -> MolSysView:
+    if molecular_system is None:
+        return MolSysView(debug_js=debug_js)
     if isinstance(molecular_system, MolSysView):
         return molecular_system
     return new_view(
@@ -138,7 +140,11 @@ def launch_standalone0(
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Launch a minimal MolSysViewer standalone 0 HTML host.")
-    parser.add_argument("source", help="Path to a molecular system or a demo key when using --demo.")
+    parser.add_argument(
+        "source",
+        nargs="?",
+        help="Path to a molecular system or a demo key when using --demo. If omitted, launch an empty host.",
+    )
     parser.add_argument("--demo", action="store_true", help="Interpret source as a MolSysViewer demo key.")
     parser.add_argument("--output", default=None, help="Output HTML file. Defaults to a temporary file.")
     parser.add_argument("--title", default="MolSysViewer Standalone 0", help="Standalone HTML title.")
@@ -160,7 +166,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_arg_parser()
     args = parser.parse_args(argv)
-    source: Any = demo[args.source] if args.demo else args.source
+    source: Any
+    if args.source is None:
+        source = None
+    else:
+        source = demo[args.source] if args.demo else args.source
     path = launch_standalone0(
         source,
         output_filename=args.output,
