@@ -55,6 +55,9 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
             "data_uri": "data:image/png;base64,iVBORw0KGgo=",
         }
         view.set_controls_visible(True, autohide=False, position=("top", "left"), position_fullscreen="bottom right")
+        view.set_panel_mode("navigate")
+        view.set_panel_mode("workbench")
+        view.set_panel_mode(None, expanded=False)
         view.clear_decorations(shapes=True, styles=False, labels=True)
         view.get_camera_snapshot(pretty=True)
         view.set_camera_snapshot({"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]}, duration_ms=125)

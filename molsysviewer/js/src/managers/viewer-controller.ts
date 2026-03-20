@@ -320,6 +320,7 @@ export class MolSysViewerController {
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
+    private lastPanelMode: "navigate" | "workbench" = "navigate";
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -687,7 +688,9 @@ export class MolSysViewerController {
     }
 
     private handlePanelExpansionChanged(source: "navigate" | "workbench", expanded: boolean): void {
-        if (this.syncingPanelExpansion || !expanded) return;
+        if (this.syncingPanelExpansion) return;
+        if (expanded) this.lastPanelMode = source;
+        if (!expanded) return;
         this.syncingPanelExpansion = true;
         try {
             if (source === "navigate") {
@@ -695,6 +698,36 @@ export class MolSysViewerController {
             } else {
                 this.groupPanel.setExpanded(false);
             }
+        } finally {
+            this.syncingPanelExpansion = false;
+        }
+    }
+
+    private setPanelMode(panel?: "navigate" | "workbench" | null, expanded?: boolean): void {
+        const shouldExpand = expanded !== false;
+        if (!shouldExpand) {
+            this.collapsePanels();
+            return;
+        }
+
+        const requested = panel ?? this.lastPanelMode;
+        let target: "navigate" | "workbench" | null = null;
+        if (requested === "navigate" && this.groupPanel.isVisible()) {
+            target = "navigate";
+        } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
+            target = "workbench";
+        } else if (this.groupPanel.isVisible()) {
+            target = "navigate";
+        } else if (this.workbenchPanel.isVisible()) {
+            target = "workbench";
+        }
+        if (!target) return;
+
+        this.syncingPanelExpansion = true;
+        try {
+            this.groupPanel.setExpanded(target === "navigate");
+            this.workbenchPanel.setExpanded(target === "workbench");
+            this.lastPanelMode = target;
         } finally {
             this.syncingPanelExpansion = false;
         }
@@ -924,6 +957,7 @@ export class MolSysViewerController {
                 case "toggle_background": await this.scene.toggleBackground(msg); break;
                 case "toggle_swing": await this.scene.toggleSwing(msg); break;
                 case "toggle_spin": await this.scene.toggleSpin(msg); break;
+                case "set_panel_mode": this.setPanelMode((msg as any).panel, (msg as any).expanded); break;
                 case "clear_scene": await this.scene.clearScene(msg); break;
                 case "clear_all": await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;

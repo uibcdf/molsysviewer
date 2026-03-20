@@ -374,6 +374,8 @@ Current preferred behavior:
 - the same panel button that opens panel mode should also close it
 - the same keyboard shortcut that opens panel mode should also close it
 - `Esc` should also be treated as a likely close path
+- the first shared runtime API can already be expressed as:
+  - `set_panel_mode(panel="navigate"|"workbench"|None, expanded=True|False)`
 
 Current caution:
 

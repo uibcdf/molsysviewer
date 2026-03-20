@@ -752,6 +752,34 @@ class MolSysView:
         except Exception:
             pass
 
+    @signal(tags=["viewer", "panel"])
+    @digest()
+    def set_panel_mode(
+        self,
+        panel: str | None = None,
+        *,
+        expanded: bool = True,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Open/close the shared panel-mode surface.
+
+        Parameters
+        ----------
+        panel
+            One of ``"navigate"`` or ``"workbench"``. If ``None``, the frontend
+            may use its remembered last panel when opening.
+        expanded
+            If ``True`` (default), open the requested panel. If ``False``,
+            collapse the current panel-mode surface.
+        """
+        self._send(
+            {
+                "op": "set_panel_mode",
+                "panel": panel,
+                "expanded": bool(expanded),
+            }
+        )
+
     @property
     def visible_atom_indices(self):
         """Return the indices of currently visible atoms."""

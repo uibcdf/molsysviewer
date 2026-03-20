@@ -11,6 +11,7 @@ export class PanelShell {
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
     private readonly width: number;
+    private visible = false;
 
     constructor(host: HTMLElement, options: PanelShellOptions) {
         const width = options.width ?? 240;
@@ -115,7 +116,12 @@ export class PanelShell {
     }
 
     setVisible(visible: boolean): void {
+        this.visible = visible;
         this.root.style.display = visible ? "flex" : "none";
+    }
+
+    isVisible(): boolean {
+        return this.visible;
     }
 
     setExpanded(expanded: boolean): void {

@@ -112,6 +112,10 @@ export class WorkbenchPanel {
         }
     }
 
+    isVisible(): boolean {
+        return this.shell.isVisible();
+    }
+
     setExpanded(expanded: boolean): void {
         this.expanded = expanded;
         this.applyExpandedState();
