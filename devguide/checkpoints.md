@@ -1002,3 +1002,11 @@ The current adopted container direction is:
 - the notebook embedding now clips viewer overflow explicitly so the sliding panel does not provoke output-cell scrollbars or canvas blink/reflow loops
 
 This is preferred over a permanent lower band because it preserves canvas area while keeping the strip tool quickly reachable.
+
+## Current Panel-Mode Convergence
+
+- `Navigate` and `Workbench` already expose a shared minimal navigator in the drawer header chrome.
+- The runtime can now jump directly:
+  - `Navigate -> Workbench`
+  - `Workbench -> Navigate`
+- This is still an intermediate step before the final shared `panel mode` container and its definitive navigator (`tabs` first, `carousel` later if it still proves useful).

@@ -458,6 +458,12 @@ export class MolSysViewerController {
             this.focusTarget({ atom_indices: region.atom_indices });
         });
         this.workbenchPanel = new WorkbenchPanel(host);
+        this.groupPanel.setOnNavigateToWorkbench(() => {
+            this.setPanelMode("workbench", true);
+        });
+        this.workbenchPanel.setOnNavigateToNavigate(() => {
+            this.setPanelMode("navigate", true);
+        });
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
         });

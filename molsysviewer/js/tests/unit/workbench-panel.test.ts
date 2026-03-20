@@ -86,11 +86,14 @@ test("WorkbenchPanel renders titled shell and empty sections", () => {
 
         const root = host.children[0];
         const title = findFirstByAttribute(root, "data-molsysviewer-workbench-panel-title");
+        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "navigate");
         const annotationsEmpty = findFirstByAttribute(root, "data-molsysviewer-workbench-empty", "annotations");
         const sceneEmpty = findFirstByAttribute(root, "data-molsysviewer-workbench-empty", "scene");
 
         assert.ok(root);
         assert.ok(title);
+        assert.ok(navButton);
+        assert.strictEqual(navButton?.textContent, "Navigate");
         assert.strictEqual(title?.textContent, "Workbench");
         assert.strictEqual(root.style.display, "flex");
         assert.strictEqual(root.style.transform, "translateX(240px)");
@@ -258,6 +261,29 @@ test("WorkbenchPanel exposes shared expanded state API and collapses when hidden
         assert.strictEqual(panel.isExpanded(), false);
         assert.strictEqual(lastExpanded, false);
         assert.strictEqual(root.style.transform, "translateX(240px)");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("WorkbenchPanel header nav button triggers navigate-to-navigate callback", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let navigated = 0;
+        const panel = new WorkbenchPanel(host);
+        panel.setOnNavigateToNavigate(() => { navigated += 1; });
+
+        panel.setVisible(true);
+
+        const root = host.children[0];
+        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "navigate");
+        assert.ok(navButton);
+
+        navButton?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(navigated, 1);
 
         panel.dispose();
     } finally {
