@@ -17,7 +17,7 @@ Responsibilities
   - Visibility (`show`, `hide`, `isolate`).
   - Regions and layers (`new_region`, `new_layer`, `regions`, `layers`, `whole`).
   - Shapes (`self.shapes`).
-  - Export (`write_html` with `standalone` and `lite` modes).
+  - Export (`view.export.html(...)` with `standalone` and `lite` modes).
 - Encapsulate Python ↔ JS messaging (`_send`, `_message_history`, `_clean_message_history`).
 
 In practice, `MolSysView` plays multiple “logical module” roles:

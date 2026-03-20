@@ -28,7 +28,7 @@
 - Mol\* handles the actual rendering pipeline; we focus on data prep, color/alpha mapping, and lifecycle (refs/tags).
 
 ## Key components
-- `MolSysView` (Python): owns widget, masks, loaders, shapes manager; exports static HTML via `write_html`.
+- `MolSysView` (Python): owns widget, masks, loaders, shapes manager; exports static HTML via `view.export.html(...)`.
 - `MolSysViewerController` (JS): initializes Mol\*, routes messages, manages refs/tags, clears shapes/styles.
 - `js/src/shapes/`: geometry helpers (spheres, pockets, blobs, tubes, ellipsoids, pharmacophore, etc.).
 - `js/src/managers/` and `plugin/`: message handling and structure loading.

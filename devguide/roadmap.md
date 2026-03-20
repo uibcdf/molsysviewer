@@ -303,7 +303,7 @@ should grow over time as additional project-level principles become clear.
 ### Status
 
 - `Done`
-  - `write_html` in `standalone` and `lite` modes.
+  - `view.export.html(...)` in `standalone` and `lite` modes.
   - Message-history replay and camera snapshot embedding.
   - Popup host logic with runtime source/module URL modes.
 
