@@ -169,6 +169,71 @@ def test_view_addons_inherit_global_registry_and_support_local_overrides():
     assert view.addons.disabled() == ["pharmacophoremt"]
 
 
+def test_addons_can_load_project_config_defaults_and_new_views_inherit_them(tmp_path):
+    addons.clear()
+    config_path = tmp_path / "_molsysviewer.py"
+    config_path.write_text(
+        "\n".join(
+            [
+                "from molsysviewer import Style",
+                "",
+                'DEFAULT_SCENE_STYLE = Style(preset=\"polymer-cartoon\", name=\"Default Polymer\")',
+                "STYLES = {}",
+                "ADDONS_ENABLED = ['topomt']",
+                "ADDONS_DISABLED = ['pharmacophoremt']",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    addons.register(AddonSpec(name="topomt", panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel"),)))
+    addons.register(
+        AddonSpec(
+            name="pharmacophoremt",
+            panels=(AddonPanelSpec(id="pharma", title="Pharmacophore", entry="pharma.panel"),),
+        )
+    )
+
+    result = addons.load_project_config(str(config_path))
+
+    assert result["addons_enabled"] == ["topomt"]
+    assert result["addons_disabled"] == ["pharmacophoremt"]
+    assert addons.project_enabled_defaults() == ["topomt"]
+    assert addons.project_disabled_defaults() == ["pharmacophoremt"]
+    assert addons.enabled() == ["topomt"]
+    assert addons.disabled() == ["pharmacophoremt"]
+
+    view = MolSysView()
+    assert view.addons.enabled() == ["topomt"]
+    assert view.addons.disabled() == ["pharmacophoremt"]
+
+
+def test_addons_project_disabled_defaults_apply_to_later_registrations(tmp_path):
+    addons.clear()
+    config_path = tmp_path / "_molsysviewer.py"
+    config_path.write_text(
+        "\n".join(
+            [
+                "from molsysviewer import Style",
+                "",
+                'DEFAULT_SCENE_STYLE = Style(preset=\"polymer-cartoon\", name=\"Default Polymer\")',
+                "STYLES = {}",
+                "ADDONS_DISABLED = ['topomt']",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    addons.load_project_config(str(config_path))
+    addons.register(AddonSpec(name="topomt", panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel"),)))
+
+    assert addons.enabled() == []
+    assert addons.disabled() == ["topomt"]
+    assert addons.records()[0]["project_default_disabled"] is True
+
+
 def test_addons_registry_rejects_duplicate_contribution_ids_within_one_addon():
     try:
         AddonSpec(

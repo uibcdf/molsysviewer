@@ -9,6 +9,7 @@ from typing import Any
 from smonitor import signal
 
 from ._private.arg_digestion import digest
+from .config.project_config import load_project_config
 
 
 def _ensure_non_empty_text(value: str, field_name: str) -> str:
@@ -434,6 +435,8 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._enabled: set[str] = set()
         self._module_sources: dict[str, str] = {}
         self._lifecycles: dict[str, AddonLifecycleSpec] = {}
+        self._project_enabled_defaults: set[str] = set()
+        self._project_disabled_defaults: set[str] = set()
 
     def _iter_effective_addons(self) -> list[tuple[str, AddonSpec]]:
         return [(name, self._registry[name]) for name in self.enabled(skip_digestion=True)]
@@ -448,7 +451,12 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         if not isinstance(addon, AddonSpec):
             raise ValueError("addons.register(...) requires an AddonSpec instance.")
         self._registry[addon.name] = addon
-        self._enabled.add(addon.name)
+        if addon.name in self._project_disabled_defaults:
+            self._enabled.discard(addon.name)
+        else:
+            self._enabled.add(addon.name)
+        if addon.name in self._project_enabled_defaults:
+            self._enabled.add(addon.name)
         if lifecycle is not None:
             if not isinstance(lifecycle, AddonLifecycleSpec):
                 raise ValueError("addons.register(..., lifecycle=...) requires an AddonLifecycleSpec instance.")
@@ -514,6 +522,8 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._enabled.clear()
         self._module_sources.clear()
         self._lifecycles.clear()
+        self._project_enabled_defaults.clear()
+        self._project_disabled_defaults.clear()
 
     @signal(tags=["addon"])
     @digest()
@@ -523,6 +533,8 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         for name in self.names(skip_digestion=True):
             record = self._registry[name].info()
             record["enabled"] = name in enabled
+            record["project_default_enabled"] = name in self._project_enabled_defaults
+            record["project_default_disabled"] = name in self._project_disabled_defaults
             record["module"] = self._module_sources.get(name)
             lifecycle = self._lifecycles.get(name)
             record["lifecycle"] = lifecycle.info() if lifecycle is not None else {
@@ -551,6 +563,16 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     @digest()
     def lifecycle_for(self, name: str, skip_digestion: bool = False) -> AddonLifecycleSpec | None:
         return self._lifecycles.get(name)
+
+    @signal(tags=["addon", "config"])
+    @digest()
+    def project_enabled_defaults(self, skip_digestion: bool = False) -> list[str]:
+        return sorted(self._project_enabled_defaults)
+
+    @signal(tags=["addon", "config"])
+    @digest()
+    def project_disabled_defaults(self, skip_digestion: bool = False) -> list[str]:
+        return sorted(self._project_disabled_defaults)
 
     @signal(tags=["addon"])
     @digest()
@@ -581,6 +603,32 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         if name not in self._registry:
             raise ValueError(f"No add-on named {name!r} is registered.")
         self._enabled.discard(name)
+
+    @signal(tags=["addon", "config"])
+    @digest()
+    def load_project_config(self, path: str, skip_digestion: bool = False) -> dict[str, Any]:
+        config = load_project_config(path, skip_digestion=True)
+        enabled_defaults = set(config.get("addons_enabled") or [])
+        disabled_defaults = set(config.get("addons_disabled") or [])
+        overlap = enabled_defaults.intersection(disabled_defaults)
+        if overlap:
+            raise ValueError(
+                "Project add-on defaults must not overlap: " + ", ".join(sorted(overlap))
+            )
+        self._project_enabled_defaults = enabled_defaults
+        self._project_disabled_defaults = disabled_defaults
+        for name in list(self._registry.keys()):
+            if name in self._project_disabled_defaults:
+                self._enabled.discard(name)
+            else:
+                self._enabled.add(name)
+            if name in self._project_enabled_defaults:
+                self._enabled.add(name)
+        return {
+            "path": config.get("path"),
+            "addons_enabled": sorted(enabled_defaults),
+            "addons_disabled": sorted(disabled_defaults),
+        }
 
 
 class ViewAddonsManager(_AddonAggregationMixin):

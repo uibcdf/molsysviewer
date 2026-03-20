@@ -50,6 +50,17 @@ modules. Missing add-ons are ignored without error.
 If an add-on is available in the environment, a view can use it without
 re-registering it manually for every viewer instance.
 
+Project-level defaults can also be applied explicitly from `_molsysviewer.py`:
+
+```python
+import molsysviewer
+
+molsysviewer.addons.load_project_config("_molsysviewer.py")
+```
+
+That lets a project declare which add-ons should be enabled or disabled by
+default before new views are created.
+
 ## What a user should expect
 
 When add-ons become available, they should normally appear as:

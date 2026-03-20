@@ -73,6 +73,14 @@ STYLES = {
         name="atomic",
     ),
 }
+
+ADDONS_ENABLED = [
+    "topomt",
+]
+
+ADDONS_DISABLED = [
+    "pharmacophoremt",
+]
 ```
 
 Supported names:
@@ -81,6 +89,10 @@ Supported names:
   - optional single `Style`
 - `STYLES`
   - optional mapping `tag -> Style`
+- `ADDONS_ENABLED`
+  - optional iterable of add-on names enabled by default at host level
+- `ADDONS_DISABLED`
+  - optional iterable of add-on names disabled by default at host level
 
 ## Loading Project Config Explicitly
 
@@ -93,6 +105,24 @@ data = load_project_config("_molsysviewer.py")
 ```
 
 That returns validated data without mutating a viewer instance.
+
+## Applying Project Add-on Defaults
+
+Project config can also define host-level add-on defaults:
+
+```python
+import molsysviewer
+
+molsysviewer.addons.load_project_config("_molsysviewer.py")
+```
+
+This updates the host registry defaults for:
+
+- add-ons enabled by default
+- add-ons disabled by default
+
+New views inherit those defaults automatically.
+Existing views still keep their local `view.addons` overrides.
 
 ## Applying Project Config To A Viewer
 

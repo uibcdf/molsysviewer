@@ -15,6 +15,8 @@ def load_project_config(path: str | Path, skip_digestion: bool = False) -> dict[
 
     - ``DEFAULT_SCENE_STYLE``: optional :class:`Style`
     - ``STYLES``: optional mapping ``tag -> Style``
+    - ``ADDONS_ENABLED``: optional iterable of add-on names enabled by default
+    - ``ADDONS_DISABLED``: optional iterable of add-on names disabled by default
     """
     from ..styles import Style
 
@@ -47,10 +49,30 @@ def load_project_config(path: str | Path, skip_digestion: bool = False) -> dict[
             raise ValueError(f"STYLES[{tag!r}] must be a molsysviewer.styles.Style instance.")
         validated_styles[tag] = style
 
+    def _normalize_addon_names(value: Any, field_name: str) -> list[str]:
+        if value is None:
+            return []
+        if isinstance(value, str) or not isinstance(value, (list, tuple, set)):
+            raise ValueError(f"{field_name} must be an iterable of add-on names.")
+        names: list[str] = []
+        for item in value:
+            if not isinstance(item, str) or item.strip() == "":
+                raise ValueError(f"{field_name} items must be non-empty strings.")
+            names.append(item.strip())
+        return sorted(set(names))
+
+    addons_enabled = _normalize_addon_names(getattr(module, "ADDONS_ENABLED", []), "ADDONS_ENABLED")
+    addons_disabled = _normalize_addon_names(getattr(module, "ADDONS_DISABLED", []), "ADDONS_DISABLED")
+    overlap = sorted(set(addons_enabled).intersection(addons_disabled))
+    if overlap:
+        raise ValueError(f"ADDONS_ENABLED and ADDONS_DISABLED must not overlap: {', '.join(overlap)}")
+
     return {
         "path": str(file_path),
         "default_scene_style": default_scene_style,
         "styles": validated_styles,
+        "addons_enabled": addons_enabled,
+        "addons_disabled": addons_disabled,
     }
 
 

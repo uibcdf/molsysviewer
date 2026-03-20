@@ -143,6 +143,29 @@ and that object/factory must resolve to an `AddonSpec`.
 
 The bundled reference template follows exactly that rule.
 
+## Project-level defaults
+
+Add-on enable/disable can now also be configured through `_molsysviewer.py`.
+
+Supported names there are:
+
+- `ADDONS_ENABLED`
+- `ADDONS_DISABLED`
+
+Those names define host-level defaults, not per-view overrides.
+
+Apply them explicitly with:
+
+```python
+import molsysviewer
+
+molsysviewer.addons.load_project_config("_molsysviewer.py")
+```
+
+The host registry updates its default enabled/disabled set, and new views
+inherit that baseline automatically.
+Existing `view.addons` overrides remain local.
+
 ## Minimal lifecycle
 
 MolSysViewer now also supports a deliberately small per-view lifecycle:
