@@ -20,7 +20,7 @@ v.shapes.add_pocket_blob(
     smoothing=1.0,
     tag="pocket-blob",
 )
-v.write_html("_static/views/pocket_blob.html")
+v.export.html("_static/views/pocket_blob.html")
 ```
 
 What to tweak

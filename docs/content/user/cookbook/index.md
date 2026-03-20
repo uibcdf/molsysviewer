@@ -8,7 +8,7 @@ Recipes for common tasks (to be filled with concrete examples):
 - Pharmacophore glyph overlays with standard colors and transparency.
 - Anisotropy ellipsoids/disks from ANM tensors/eigenvectors.
 
-Each recipe will include: minimal code, expected visuals (static HTML via `write_html(..., mode="lite")`), and option tweaks.
+Each recipe will include: minimal code, expected visuals (static HTML via `view.export.html(..., mode="lite")`), and option tweaks.
 
 ```{toctree}
 :maxdepth: 2
@@ -21,4 +21,5 @@ pharmacophore_overlay
 anisotropy_ellipsoids
 html_export
 sphinx_html_embedding
+addon_development
 ```
