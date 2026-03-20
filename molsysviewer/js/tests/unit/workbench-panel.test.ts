@@ -86,12 +86,16 @@ test("WorkbenchPanel renders titled shell and empty sections", () => {
 
         const root = host.children[0];
         const title = findFirstByAttribute(root, "data-molsysviewer-workbench-panel-title");
+        const navGroup = findFirstByAttribute(root, "data-molsysviewer-panel-nav-group", "true");
+        const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "workbench");
         const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "navigate");
         const annotationsEmpty = findFirstByAttribute(root, "data-molsysviewer-workbench-empty", "annotations");
         const sceneEmpty = findFirstByAttribute(root, "data-molsysviewer-workbench-empty", "scene");
 
         assert.ok(root);
         assert.ok(title);
+        assert.ok(navGroup);
+        assert.ok(navCurrent);
         assert.ok(navButton);
         assert.strictEqual(navButton?.textContent, "Navigate");
         assert.strictEqual(title?.textContent, "Workbench");
