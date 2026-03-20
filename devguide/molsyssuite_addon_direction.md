@@ -152,6 +152,7 @@ into two levels:
 - `AddonStyleHelperSpec`
 - `AddonExportHelperSpec`
 - `AddonToolModeSpec`
+- `AddonLifecycleSpec`
 
 This first slice is intentionally:
 
@@ -160,8 +161,12 @@ This first slice is intentionally:
 - host-aware
 - registration-based rather than dynamic-code-loading-based
 
-It is currently validated with a fake add-on in tests rather than a real
-MolSysSuite package.
+It is now validated through a combination of:
+
+- fake add-ons in tests
+- a small importable reference template:
+  - `molsysviewer.addon_templates.minimal_topomt`
+- public user/developer/cookbook docs that already describe the contract
 
 This is the right first step because it fixes the shape of the connection
 platform before real plugins start depending on it.
@@ -172,6 +177,9 @@ The important architectural decision is now explicit:
 - views inherit that availability
 - views may still enable/disable add-ons locally without redefining the host
   registry
+- add-ons may now also expose a deliberately small per-view Python lifecycle:
+  - `on_enable(view)`
+  - `on_disable(view)`
 
 ## Near-Term Design Consequence
 
@@ -260,6 +268,29 @@ before publication:
 - explicit `molsysviewer.addons.register_module(...)`
 - or direct `molsysviewer.addons.register(...)`
 
+## Minimal Lifecycle Direction
+
+The first runtime lifecycle now implemented should stay intentionally narrow:
+
+- `AddonLifecycleSpec`
+- `on_enable(view)`
+- `on_disable(view)`
+
+This should be understood as:
+
+- Python-side
+- view-local
+- useful for light runtime setup/teardown
+
+It should **not** yet be treated as:
+
+- a broad hook framework
+- a frontend execution contract
+- a license to let add-ons mutate the whole host arbitrarily
+
+This is the right intermediate step because it lets real add-on activation be
+validated before a larger lifecycle model is opened.
+
 ## Relationship With Panel Minimalism
 
 This add-on direction does not change the minimal UX rule:
@@ -292,6 +323,8 @@ These questions remain intentionally open for later evaluation:
   future standalone sessions?
 - how much runtime lifecycle should be standardized in 1.0 beyond registration
   and discovery?
+- when should the first add-on contribution become visibly real in the runtime,
+  rather than only declared through specs and tests?
 
 ## Documentation Surfaces Required For 1.0
 
