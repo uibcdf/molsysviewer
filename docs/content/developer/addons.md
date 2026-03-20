@@ -20,6 +20,41 @@ Add-ons belong to the MolSysViewer host, not to one single view instance.
 Each view inherits what the host knows and can still enable or disable add-ons
 locally.
 
+## What external add-on teams can rely on now
+
+The current platform is ready enough for MolSysSuite teams to start prototyping
+against it.
+
+The stable surface to target today is:
+
+- host-level registration:
+  - `molsysviewer.addons`
+- view-local projection:
+  - `view.addons`
+- typed contribution specs:
+  - workspaces
+  - panels
+  - workbench sections
+  - context actions
+  - shape providers
+  - export helpers
+- minimal lifecycle:
+  - `on_enable(view)`
+  - `on_disable(view)`
+  - `on_context_action(view, action_id, payload)`
+
+What downstream teams should not assume yet:
+
+- a final workspace launcher/mosaic
+- persisted add-on preferences
+- broad frontend runtime hooks
+- standalone as a finished product
+
+For the most stable normative references, also see:
+
+- [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
+- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+
 ## Public vocabulary
 
 Use **add-ons** consistently.
@@ -162,6 +197,54 @@ The module should expose one of:
 and that object/factory must resolve to an `AddonSpec`.
 
 The bundled reference template follows exactly that rule.
+
+Recommended lifecycle exports, when needed:
+
+- `lifecycle`
+- `LIFECYCLE`
+- or plain functions:
+  - `on_enable`
+  - `on_disable`
+  - `on_context_action`
+
+## Recommended package layout
+
+For larger MolSysSuite integrations, prefer:
+
+- domain/scientific package:
+  - `topomt`
+- MolSysViewer integration package:
+  - `molsysviewer-topomt`
+
+Typical import path:
+
+- `molsysviewer_topomt`
+
+This keeps domain logic and viewer integration decoupled while still allowing a
+first-class add-on story.
+
+## Reference template and first milestone
+
+MolSysViewer now ships an importable reference template:
+
+- [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
+
+That template already includes:
+
+- one workspace
+- one panel
+- one workbench section
+- one context action
+- one shape provider
+- a minimal lifecycle object
+
+Recommended first milestone for external teams:
+
+1. define one workspace if the add-on is large enough
+2. contribute one panel
+3. contribute one workbench section
+4. contribute one context action
+5. implement at most one real lifecycle-driven behavior
 
 ## Project-level defaults
 
