@@ -228,6 +228,13 @@ The next add-on step is now more specific:
   - showcase should eventually include at least one add-on-shaped scientific
     story
 
+That story now also has a concrete reference template module:
+
+- `molsysviewer.addon_templates.minimal_topomt`
+
+It is not a real ecosystem integration, but it gives add-on authors and tests a
+stable importable target beyond ad hoc fake specs.
+
 Working rule:
 
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell

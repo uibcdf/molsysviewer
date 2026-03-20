@@ -110,6 +110,13 @@ import molsysviewer
 molsysviewer.addons.register_module("molsysviewer_myaddon")
 ```
 
+MolSysViewer also ships a tiny reference template module you can inspect:
+
+- `molsysviewer.addon_templates.minimal_topomt`
+
+It is intentionally small and only demonstrates the registration contract, not
+the full runtime behavior of a real scientific add-on.
+
 ## Packaging contract
 
 The current packaging contract is lightweight.
@@ -132,6 +139,8 @@ The module should expose one of:
 - `get_addon()`
 
 and that object/factory must resolve to an `AddonSpec`.
+
+The bundled reference template follows exactly that rule.
 
 ## View-local behavior
 

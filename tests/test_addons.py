@@ -225,3 +225,17 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
     finally:
         sys.modules.pop(module.__name__, None)
         addons.clear()
+
+
+def test_addon_template_module_is_importable_and_registerable():
+    addons.clear()
+    try:
+        addon = addons.register_module("molsysviewer.addon_templates.minimal_topomt")
+        assert addon.name == "topomt-template"
+        assert addons.available() == ["topomt-template"]
+        assert addons.panel_specs()[0]["id"] == "topo"
+        assert addons.context_action_specs()[0]["id"] == "focus-pocket"
+        assert addons.workbench_section_specs()[0]["id"] == "pockets"
+        assert addons.shape_provider_specs()[0]["id"] == "pocket-surface"
+    finally:
+        addons.clear()
