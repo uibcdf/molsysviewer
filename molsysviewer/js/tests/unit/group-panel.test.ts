@@ -399,6 +399,31 @@ test("GroupPanel exposes workspace selector when multiple workspaces exist", () 
     }
 });
 
+test("GroupPanel supports custom navigation labels", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+
+        let navigated = 0;
+        panel.setOnNavigateToWorkbench(() => {
+            navigated += 1;
+        }, "Core");
+
+        const root = host.children[0];
+        const button = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "core");
+        assert.ok(button);
+        assert.strictEqual(button?.textContent, "Core");
+
+        button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(navigated, 1);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel header nav button triggers navigate-to-workbench callback", () => {
     const restore = installFakeDom();
     try {

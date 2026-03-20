@@ -141,9 +141,9 @@ export class WorkbenchPanel {
         this.onExpandedChange = callback;
     }
 
-    setOnNavigateToNavigate(callback: (() => void) | undefined): void {
+    setOnNavigateToNavigate(callback: (() => void) | undefined, label = "Navigate"): void {
         this.onNavigateToNavigate = callback;
-        this.shell.setNavButtonLabel(callback ? "Navigate" : undefined);
+        this.shell.setNavButtonLabel(callback ? label : undefined);
     }
 
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
