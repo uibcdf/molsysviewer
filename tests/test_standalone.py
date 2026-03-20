@@ -47,3 +47,6 @@ def test_standalone_main_supports_empty_host_without_browser(tmp_path, capsys):
     assert code == 0
     assert outfile.exists()
     assert str(outfile.resolve()) in capsys.readouterr().out
+    text = outfile.read_text(encoding="utf-8")
+    assert "no molecular system has been loaded yet" in text
+    assert "molsysviewer dialanine --demo" in text
