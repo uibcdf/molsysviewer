@@ -303,6 +303,10 @@ The preferred roadmap is:
 - better quality defaults
 - camera reproducibility
 - cleaner scene-state capture
+- first export-oriented preset surface:
+  - `current`
+  - `publication-light`
+  - `publication-dark`
 
 ### Phase 3: Publication Export
 
@@ -342,6 +346,7 @@ To avoid drift, it is useful to keep a very short priority map:
 - first export-oriented scene presets
 - stronger label treatment
 - figure-oriented export defaults
+- richer export presets beyond background-only capture control
 
 ### Later
 
@@ -358,6 +363,7 @@ These likely offer the best return early:
 - transparent background export
 - supersampled export
 - camera snapshot reuse
+- first reversible export preset surface
 - first `publication` scene style
 
 These are much more valuable than trying to solve every figure problem at once.

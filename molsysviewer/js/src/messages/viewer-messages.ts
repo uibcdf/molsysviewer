@@ -374,6 +374,7 @@ export type RequestImageExportMessage = {
     height?: number;
     scale?: number;
     transparent?: boolean;
+    preset?: string;
     camera_snapshot?: any;
 };
 

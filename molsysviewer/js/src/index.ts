@@ -439,6 +439,7 @@ export default {
                         height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
                         scale: typeof (msg as any).scale === "number" ? (msg as any).scale : undefined,
                         transparent: !!(msg as any).transparent,
+                        preset: typeof (msg as any).preset === "string" ? (msg as any).preset : undefined,
                         cameraSnapshot:
                             (msg as any).camera_snapshot && typeof (msg as any).camera_snapshot === "object"
                                 ? (msg as any).camera_snapshot
@@ -450,6 +451,7 @@ export default {
                             data_uri,
                             scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
                             transparent: !!(msg as any).transparent,
+                            preset: typeof (msg as any).preset === "string" ? (msg as any).preset : "current",
                             width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
                             height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
                             format: "png",
