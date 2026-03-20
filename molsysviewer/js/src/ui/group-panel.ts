@@ -14,7 +14,7 @@ type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => vo
 type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 type SavedSelectionSummary = { tag: string; atom_count: number };
 type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
-type WorkspaceOption = { id: string; title: string };
+type WorkspaceOption = { id: string; title: string; subtitle?: string };
 type PanelOption = { id: string; title: string; active?: boolean };
 type SummaryItem = { title: string; subtitle: string; onActivate?: () => void };
 type SummarySectionKey = "active" | "saved" | "regions";

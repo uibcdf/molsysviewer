@@ -8,6 +8,7 @@ type PanelShellOptions = {
 type WorkspaceOption = {
     id: string;
     title: string;
+    subtitle?: string;
 };
 
 type PanelOption = {
@@ -339,11 +340,11 @@ export class PanelShell {
             const button = document.createElement("button");
             button.type = "button";
             button.setAttribute("data-molsysviewer-panel-workspace-option", item.id);
-            button.textContent = item.title;
             Object.assign(button.style, {
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "3px",
                 width: "100%",
                 border: item.id === current.id ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.08)",
                 borderRadius: "10px",
@@ -356,6 +357,20 @@ export class PanelShell {
                 cursor: "pointer",
                 textAlign: "left",
             });
+            const title = document.createElement("span");
+            title.textContent = item.title;
+            button.appendChild(title);
+            if (item.subtitle) {
+                const subtitle = document.createElement("span");
+                subtitle.setAttribute("data-molsysviewer-panel-workspace-option-subtitle", item.id);
+                subtitle.textContent = item.subtitle;
+                Object.assign(subtitle.style, {
+                    fontSize: "10px",
+                    lineHeight: "1.25",
+                    color: item.id === current.id ? "rgba(244,244,245,0.78)" : "rgba(244,244,245,0.62)",
+                });
+                button.appendChild(subtitle);
+            }
             button.addEventListener("click", (event) => {
                 event.preventDefault();
                 event.stopPropagation();

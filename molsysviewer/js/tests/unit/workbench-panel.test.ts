@@ -384,8 +384,8 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const panel = new WorkbenchPanel(host);
         panel.setWorkspaces(
             [
-                { id: "core", title: "Core" },
-                { id: "topomt", title: "TopoMT" },
+                { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
+                { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section" },
             ],
             "core",
             (workspaceId) => { selectedWorkspace = workspaceId; },
@@ -403,7 +403,9 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         current?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
         const button = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option", "topomt");
+        const subtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-subtitle", "topomt");
         assert.ok(button);
+        assert.strictEqual(subtitle?.textContent, "2 panels · 1 section");
 
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selectedWorkspace, "topomt");

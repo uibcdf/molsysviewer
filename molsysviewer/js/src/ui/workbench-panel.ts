@@ -34,7 +34,7 @@ type AddonWorkbenchSectionSummary = {
     itemSubtitle?: string;
 };
 
-type WorkspaceOption = { id: string; title: string };
+type WorkspaceOption = { id: string; title: string; subtitle?: string };
 type WorkspacePanelOption = {
     id: string;
     title: string;
