@@ -225,6 +225,7 @@ The current pre-`1.0` standalone bridge is intentionally small:
 
 - `molsysviewer.build_standalone0_html(...)`
 - `molsysviewer.launch_standalone0(...)`
+- `molsysviewer ...`
 - `python -m molsysviewer.standalone ...`
 
 These surfaces should be treated as a host-facing bridge built on top of the

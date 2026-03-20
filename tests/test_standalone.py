@@ -4,7 +4,7 @@ pytest.importorskip("anywidget")
 pytest.importorskip("traitlets")
 
 from molsysviewer import demo
-from molsysviewer.standalone import build_standalone0_html, launch_standalone0
+from molsysviewer.standalone import build_standalone0_html, launch_standalone0, main
 
 
 def test_build_standalone0_html_writes_file(tmp_path):
@@ -27,3 +27,13 @@ def test_launch_standalone0_can_skip_browser(tmp_path):
 
     assert result == str(outfile.resolve())
     assert outfile.exists()
+
+
+def test_standalone_main_supports_demo_mode_without_browser(tmp_path, capsys):
+    outfile = tmp_path / "cli.html"
+
+    code = main(["dialanine", "--demo", "--no-browser", "--output", str(outfile)])
+
+    assert code == 0
+    assert outfile.exists()
+    assert str(outfile.resolve()) in capsys.readouterr().out

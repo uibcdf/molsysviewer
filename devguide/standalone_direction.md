@@ -54,6 +54,7 @@ The minimum believable target for standalone 0 is:
 - the same panel/workbench runtime model already used in notebook mode
 - no forked scene/state model
 - a first Python/CLI bridge that teams can actually run and inspect
+- a short CLI entry point (`molsysviewer ...`) on top of that same bridge
 
 Standalone 0 does not need yet:
 
