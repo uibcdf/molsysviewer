@@ -37,6 +37,12 @@ type AddonRuntimeSummary = {
     contextActionTitles: string[];
     exportHelperTitles: string[];
 };
+type AddonWorkbenchSectionRuntime = {
+    key: string;
+    title: string;
+    itemTitle: string;
+    itemSubtitle?: string;
+};
 type AddonContextActionRuntime = { addon: string; id: string; title: string; target_kinds: string[]; group?: string };
 
 type InteractionPayload =
@@ -316,6 +322,7 @@ export class MolSysViewerController {
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private workbenchAddons: AddonRuntimeSummary[] = [];
+    private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
@@ -1013,6 +1020,7 @@ export class MolSysViewerController {
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "set_addon_runtime_summary":
                     this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
+                    this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg as any);
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
                     this.refreshWorkbenchPanel();
                     break;
@@ -1326,6 +1334,7 @@ export class MolSysViewerController {
         );
         this.workbenchPanel.setScene(this.workbenchScene);
         this.workbenchPanel.setAddons(this.workbenchAddons);
+        this.workbenchPanel.setAddonWorkbenchSections(this.workbenchAddonSections);
     }
 
     private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
@@ -1354,6 +1363,25 @@ export class MolSysViewerController {
                     .map((item: any) => item.title as string),
             }))
             .sort((left, right) => left.name.localeCompare(right.name));
+    }
+
+    private buildAddonWorkbenchSectionSummary(msg: any): AddonWorkbenchSectionRuntime[] {
+        const specs = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+        return specs
+            .filter(
+                (item: any) =>
+                    typeof item?.addon === "string"
+                    && typeof item?.id === "string"
+                    && typeof item?.title === "string"
+                    && (item?.target_panel === undefined || item?.target_panel === "workbench")
+            )
+            .map((item: any) => ({
+                key: `${item.addon}:${item.id}`,
+                title: item.title as string,
+                itemTitle: `Add-on: ${item.addon as string}`,
+                itemSubtitle: typeof item?.entry === "string" ? item.entry as string : undefined,
+            }))
+            .sort((left, right) => left.key.localeCompare(right.key));
     }
 
     private buildAddonContextActionSummary(msg: any): AddonContextActionRuntime[] {

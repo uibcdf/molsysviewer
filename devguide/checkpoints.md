@@ -105,6 +105,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - tagged annotations, measurements, and shapes now expose a minimal visibility toggle
       through the existing `show_layer` / `hide_layer` path
     - workbench sections can now collapse/expand locally to reduce vertical noise
+  - add-ons no longer surface only as summaries there:
+    - `Workbench` can now materialize add-on-contributed workbench sections as
+      real dynamic sections in the panel
+    - each such section is still intentionally modest:
+      - one informational row
+      - no arbitrary frontend execution
+      - enough to validate that add-ons can project structure into the shared workbench
   - still not yet integrated into a shared navigator or final `panel mode`
 - The next strip step is no longer “multiple strips”, but a better `GroupPanel` shape: vertical per-chain strip-columns, independent scroll, and then show/hide; the permanent lower strip is no longer the intended final product shape.
 - `chain` remains the primary strip organizer, but future strip grammar should also mark `component` and `molecule`.
