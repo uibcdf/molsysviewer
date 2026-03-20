@@ -116,6 +116,20 @@ molsysviewer.addons.discover()
 Today this only checks a maintained list of known module names.
 It is intentionally conservative.
 
+## 6. Optional minimal lifecycle
+
+If your add-on needs small Python-side setup or teardown when it becomes active
+in a view, you can provide:
+
+- `on_enable(view)`
+- `on_disable(view)`
+
+either through an explicit lifecycle object at registration time or directly in
+the add-on module.
+
+This lifecycle is intentionally minimal.
+It is not yet a broad runtime hook system.
+
 ## Contract summary
 
 The important pieces to keep stable are:
@@ -126,6 +140,8 @@ The important pieces to keep stable are:
   - `view.addons`
 - add-on object:
   - `AddonSpec`
+- optional lifecycle:
+  - `AddonLifecycleSpec`
 - importable module contract:
   - `addon`
   - `ADDON`

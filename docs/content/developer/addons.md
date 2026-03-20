@@ -38,6 +38,7 @@ Current public surfaces include:
 - `AddonStyleHelperSpec`
 - `AddonExportHelperSpec`
 - `AddonToolModeSpec`
+- `AddonLifecycleSpec`
 
 ## Current contribution types
 
@@ -142,6 +143,46 @@ and that object/factory must resolve to an `AddonSpec`.
 
 The bundled reference template follows exactly that rule.
 
+## Minimal lifecycle
+
+MolSysViewer now also supports a deliberately small per-view lifecycle:
+
+- `on_enable(view)`
+- `on_disable(view)`
+
+This lifecycle is Python-side and view-local.
+It is intended for light runtime wiring when an add-on becomes active in a
+specific view.
+
+You can provide it explicitly:
+
+```python
+import molsysviewer
+from molsysviewer.addons import AddonLifecycleSpec
+
+molsysviewer.addons.register(
+    my_addon_spec,
+    lifecycle=AddonLifecycleSpec(
+        on_enable=my_on_enable,
+        on_disable=my_on_disable,
+    ),
+)
+```
+
+or expose it from an importable add-on module through:
+
+- `lifecycle`
+- `LIFECYCLE`
+- or plain module functions:
+  - `on_enable`
+  - `on_disable`
+
+This remains intentionally small:
+
+- no persisted lifecycle state
+- no frontend runtime code execution contract
+- no broad hook surface yet
+
 ## View-local behavior
 
 New views inherit the globally registered add-ons:
@@ -167,7 +208,7 @@ This first slice does **not** yet try to standardize:
 
 - entry-point metadata discovery
 - persisted enable/disable preferences
-- full runtime lifecycle hooks
+- rich runtime lifecycle hooks beyond `on_enable(view)` / `on_disable(view)`
 - execution of arbitrary add-on code in the frontend
 - a marketplace-like plugin model
 

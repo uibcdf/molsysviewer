@@ -192,12 +192,15 @@ def test_addons_registry_supports_manual_module_registration():
         package="molsysviewer-topomt-dev",
         panels=(AddonPanelSpec(id="topo-dev", title="Topo Dev", entry="topomt.dev.panel"),),
     )
+    module.on_enable = lambda view: setattr(view, "_topomt_dev_enabled", True)
+    module.on_disable = lambda view: setattr(view, "_topomt_dev_disabled", True)
     sys.modules[module.__name__] = module
     try:
         addon = addons.register_module(module)
         assert addon.name == "topomt-dev"
         assert addons.available() == ["topomt-dev"]
         assert addons.records()[0]["module"] == "molsysviewer_topomt_dev"
+        assert addons.records()[0]["lifecycle"] == {"has_on_enable": True, "has_on_disable": True}
     finally:
         sys.modules.pop(module.__name__, None)
         addons.clear()
@@ -239,3 +242,45 @@ def test_addon_template_module_is_importable_and_registerable():
         assert addons.shape_provider_specs()[0]["id"] == "pocket-surface"
     finally:
         addons.clear()
+
+
+def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
+    addons.clear()
+    events: list[str] = []
+
+    def _on_enable(view):
+        events.append("enable")
+        view._addon_marker = "enabled"
+
+    def _on_disable(view):
+        events.append("disable")
+        view._addon_marker = "disabled"
+
+    addons.register(
+        AddonSpec(
+            name="lifecycle-addon",
+            panels=(AddonPanelSpec(id="life", title="Life", entry="life.panel"),),
+        ),
+        lifecycle=addons_module.AddonLifecycleSpec(on_enable=_on_enable, on_disable=_on_disable),
+    )
+
+    view = MolSysView()
+    assert events == ["enable"]
+    assert view._addon_marker == "enabled"
+
+    view.addons.disable("lifecycle-addon")
+    assert events == ["enable", "disable"]
+    assert view._addon_marker == "disabled"
+
+    view.addons.enable("lifecycle-addon")
+    assert events == ["enable", "disable", "enable"]
+    assert view._addon_marker == "enabled"
+
+    view.addons.reset()
+    assert events == ["enable", "disable", "enable"]
+
+    addons.disable("lifecycle-addon")
+    another_view = MolSysView()
+    assert events == ["enable", "disable", "enable"]
+    assert another_view.addons.enabled() == []
+    addons.clear()

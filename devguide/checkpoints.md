@@ -235,6 +235,16 @@ That story now also has a concrete reference template module:
 It is not a real ecosystem integration, but it gives add-on authors and tests a
 stable importable target beyond ad hoc fake specs.
 
+The add-on platform now also has a first intentionally small lifecycle slice:
+
+- `AddonLifecycleSpec`
+- `on_enable(view)`
+- `on_disable(view)`
+
+This is still Python-side and deliberately narrow.
+It should help validate realistic add-on activation without opening a large
+hook surface too early.
+
 Working rule:
 
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell
