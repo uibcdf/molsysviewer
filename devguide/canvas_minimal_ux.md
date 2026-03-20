@@ -292,6 +292,10 @@ Current runtime bridge:
   - a panel selector for the current workspace
   - and a generic active-panel host card
   - still not arbitrary add-on frontend UI, but already more than a flat summary
+- that panel selector is now moving up into the shared header itself:
+  - core stack navigation (`Navigate` / `Workbench`)
+  - and non-core workspace panel stacks
+  - this is closer to the future `panel mode` than the previous local-only strip
 - optional MolSysSuite add-ons should normally surface themselves through this
   same panel-mode system, not through new permanent canvas chrome
 

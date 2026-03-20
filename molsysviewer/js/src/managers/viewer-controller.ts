@@ -781,6 +781,42 @@ export class MolSysViewerController {
         this.workbenchPanel.setWorkspaces(this.getWorkspaceOptions(), this.currentWorkspace, (workspaceId) => {
             this.selectWorkspace(workspaceId);
         });
+
+        if (this.currentWorkspace === "core") {
+            this.groupPanel.setPanelStack([
+                { id: "navigate", title: "Navigate", active: true },
+                { id: "workbench", title: "Workbench" },
+            ], (panelId) => {
+                if (panelId === "workbench") this.setPanelMode("workbench", true);
+            });
+            this.workbenchPanel.setWorkspacePanels(
+                [
+                    { id: "navigate", title: "Navigate" },
+                    { id: "workbench", title: "Workbench", active: true },
+                ],
+                (panelId) => {
+                    if (panelId === "navigate") this.setPanelMode("navigate", true);
+                },
+            );
+            return;
+        }
+
+        this.groupPanel.setPanelStack([], undefined);
+        const panels = this.getWorkspacePanels(this.currentWorkspace);
+        const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+        this.workbenchPanel.setWorkspacePanels(
+            panels.map((item) => ({
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                entry: item.entry,
+                addon: item.addon,
+                active: item.id === selectedId,
+            })),
+            (panelId) => {
+                this.selectWorkspacePanel(this.currentWorkspace, panelId);
+            },
+        );
     }
 
     private openContextMenuForItem(
@@ -1376,7 +1412,6 @@ export class MolSysViewerController {
         );
         this.workbenchPanel.setScene(this.workbenchScene);
         if (this.currentWorkspace === "core") {
-            this.workbenchPanel.setWorkspacePanels([], undefined);
             this.workbenchPanel.setActiveWorkspacePanel(null);
         } else {
             const panels = this.getWorkspacePanels(this.currentWorkspace);

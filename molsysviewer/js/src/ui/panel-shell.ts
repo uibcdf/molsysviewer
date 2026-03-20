@@ -10,6 +10,12 @@ type WorkspaceOption = {
     title: string;
 };
 
+type PanelOption = {
+    id: string;
+    title: string;
+    active?: boolean;
+};
+
 export class PanelShell {
     public readonly root: HTMLDivElement;
     public readonly panel: HTMLDivElement;
@@ -17,11 +23,13 @@ export class PanelShell {
     public readonly headerElement: HTMLDivElement;
     public readonly navGroupElement?: HTMLDivElement;
     public readonly navButton?: HTMLButtonElement;
+    public readonly panelStackGroupElement: HTMLDivElement;
     public readonly workspaceGroupElement: HTMLDivElement;
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
     private readonly width: number;
     private readonly workspaceCurrentElement: HTMLSpanElement;
+    private onSelectPanel?: (panelId: string) => void;
     private visible = false;
     private onSelectWorkspace?: (workspaceId: string) => void;
 
@@ -138,6 +146,16 @@ export class PanelShell {
             this.headerElement.appendChild(this.titleElement);
         }
 
+        this.panelStackGroupElement = document.createElement("div");
+        this.panelStackGroupElement.setAttribute("data-molsysviewer-panel-stack", "true");
+        Object.assign(this.panelStackGroupElement.style, {
+            display: "none",
+            alignItems: "center",
+            gap: "4px",
+            flexWrap: "wrap",
+        });
+        this.headerElement.appendChild(this.panelStackGroupElement);
+
         this.workspaceGroupElement = document.createElement("div");
         this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-group", "true");
         Object.assign(this.workspaceGroupElement.style, {
@@ -227,6 +245,49 @@ export class PanelShell {
 
     setOnSelectWorkspace(callback: ((workspaceId: string) => void) | undefined): void {
         this.onSelectWorkspace = callback;
+    }
+
+    setOnSelectPanel(callback: ((panelId: string) => void) | undefined): void {
+        this.onSelectPanel = callback;
+    }
+
+    setPanelOptions(items: PanelOption[]): void {
+        this.panelStackGroupElement.replaceChildren();
+
+        if (!Array.isArray(items) || items.length <= 1) {
+            this.panelStackGroupElement.style.display = "none";
+            return;
+        }
+
+        this.panelStackGroupElement.style.display = "flex";
+        for (const item of items) {
+            const node = document.createElement(item.active ? "span" : "button");
+            if (item.active) {
+                node.setAttribute("data-molsysviewer-panel-stack-current", item.id);
+            } else {
+                const button = node as HTMLButtonElement;
+                button.type = "button";
+                button.setAttribute("data-molsysviewer-panel-stack-option", item.id);
+                button.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.onSelectPanel?.(item.id);
+                });
+            }
+            node.textContent = item.title;
+            Object.assign(node.style, {
+                border: item.active ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(255,255,255,0.08)",
+                borderRadius: "999px",
+                background: item.active ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.03)",
+                color: item.active ? "#f4f4f5" : "rgba(244,244,245,0.78)",
+                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                fontSize: "10px",
+                lineHeight: "1",
+                padding: "5px 8px",
+                cursor: item.active ? "default" : "pointer",
+            });
+            this.panelStackGroupElement.appendChild(node);
+        }
     }
 
     setWorkspaceOptions(items: WorkspaceOption[], currentId: string): void {

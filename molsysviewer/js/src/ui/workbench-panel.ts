@@ -66,7 +66,6 @@ export class WorkbenchPanel {
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
-    private readonly workspacePanelStrip: HTMLDivElement;
     private readonly workspacePanelHost: HTMLDivElement;
     private readonly workspacePanelHostTitle: HTMLDivElement;
     private readonly workspacePanelHostBody: HTMLDivElement;
@@ -125,18 +124,6 @@ export class WorkbenchPanel {
             gap: "8px",
         });
 
-        this.workspacePanelStrip = document.createElement("div");
-        this.workspacePanelStrip.setAttribute("data-molsysviewer-workbench-workspace-panels", "true");
-        Object.assign(this.workspacePanelStrip.style, {
-            display: "none",
-            flexWrap: "wrap",
-            gap: "6px",
-            padding: "8px",
-            borderRadius: "10px",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.06)",
-        });
-
         this.workspacePanelHost = document.createElement("div");
         this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
         Object.assign(this.workspacePanelHost.style, {
@@ -169,7 +156,6 @@ export class WorkbenchPanel {
 
         this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
         this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
-        this.body.appendChild(this.workspacePanelStrip);
         this.body.appendChild(this.workspacePanelHost);
 
         this.createSection("annotations", "Annotations", "No annotations yet.");
@@ -221,39 +207,12 @@ export class WorkbenchPanel {
         items: WorkspacePanelOption[],
         onSelect: ((panelId: string) => void) | undefined,
     ): void {
-        this.workspacePanelStrip.replaceChildren();
-        if (!Array.isArray(items) || items.length === 0) {
-            this.workspacePanelStrip.style.display = "none";
-            return;
-        }
-
-        this.workspacePanelStrip.style.display = "flex";
-        for (const item of items) {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.setAttribute("data-molsysviewer-workbench-workspace-panel-option", item.id);
-            if (item.active) button.setAttribute("data-molsysviewer-workbench-workspace-panel-active", item.id);
-            button.textContent = item.title;
-            Object.assign(button.style, {
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "999px",
-                background: item.active ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.03)",
-                color: item.active ? "#f4f4f5" : "rgba(244,244,245,0.78)",
-                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-                fontSize: "10px",
-                lineHeight: "1",
-                padding: "6px 9px",
-                cursor: onSelect ? "pointer" : "default",
-            });
-            if (onSelect) {
-                button.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    onSelect(item.id);
-                });
-            }
-            this.workspacePanelStrip.appendChild(button);
-        }
+        this.shell.setOnSelectPanel(onSelect);
+        this.shell.setPanelOptions(items.map((item) => ({
+            id: item.id,
+            title: item.title,
+            active: item.active,
+        })));
     }
 
     setActiveWorkspacePanel(summary: ActiveWorkspacePanelSummary | null): void {
