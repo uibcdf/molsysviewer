@@ -135,6 +135,44 @@ This is important because the point of 1.0 is not to ship all of MolSysSuite
 inside MolSysViewer, but to ship a core viewer/workbench that the rest of
 MolSysSuite can safely build on.
 
+## Current Validation Slice
+
+MolSysViewer now has a first explicit Python-side add-on registry surface split
+into two levels:
+
+- `molsysviewer.addons`
+  - host-level registry
+- `view.addons`
+  - view-local projection of the host registry
+- `AddonSpec`
+- `AddonPanelSpec`
+- `AddonContextActionSpec`
+- `AddonWorkbenchSectionSpec`
+- `AddonShapeProviderSpec`
+- `AddonStyleHelperSpec`
+- `AddonExportHelperSpec`
+- `AddonToolModeSpec`
+
+This first slice is intentionally:
+
+- explicit
+- JSON-friendly
+- host-aware
+- registration-based rather than dynamic-code-loading-based
+
+It is currently validated with a fake add-on in tests rather than a real
+MolSysSuite package.
+
+This is the right first step because it fixes the shape of the connection
+platform before real plugins start depending on it.
+
+The important architectural decision is now explicit:
+
+- add-ons are registered at the MolSysViewer host level
+- views inherit that availability
+- views may still enable/disable add-ons locally without redefining the host
+  registry
+
 ## Near-Term Design Consequence
 
 Current work toward 1.0 should therefore prefer:

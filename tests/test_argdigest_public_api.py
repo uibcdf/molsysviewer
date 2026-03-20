@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 
+from molsysviewer import AddonPanelSpec, AddonSpec, addons
 from molsysviewer import config
 from molsysviewer.config.user_presets import load_user_presets
 from molsysviewer.demo import demo
@@ -47,6 +48,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
 
     with warnings.catch_warnings(record=True) as records:
         warnings.simplefilter("always")
+        addons.clear()
         view._request_image_export = lambda **_kwargs: {  # type: ignore[attr-defined]  # noqa: SLF001
             "event": "image_export",
             "format": "png",
@@ -60,6 +62,19 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.styles.apply(style=Style(preset="polymer-cartoon", name="Polymers"))
         view.styles.add("publication", Style(preset="polymer-cartoon"), description="Publication baseline", source="runtime")
         view.styles.load_project_config(str(project_config_path), apply_default=False)
+        addons.clear()
+        addons.register(
+            AddonSpec(
+                name="audit-addon",
+                panels=(AddonPanelSpec(id="audit", title="Audit", entry="audit.panel"),),
+            )
+        )
+        addons.contains("audit-addon")
+        addons.get("audit-addon")
+        addons.names()
+        view.addons.available()
+        view.addons.enabled()
+        view.addons.panel_specs()
         region.set_representation(preset="polymer-cartoon")
         layer.set_tag("audit-layer-2")
         view.export.html(
@@ -78,6 +93,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         )
         config.set_default_standard_units("nm, ps, K, mole, amu, e, kJ/mol, kJ/(mol*nm), kJ/(mol*nm**2), radians")
         load_user_presets(preset_path)
+        addons.clear()
 
     assert _missing_digester_warnings(records) == []
 

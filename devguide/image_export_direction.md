@@ -130,7 +130,6 @@ This is the minimum useful layer.
 Current status:
 
 - the first real slice now exists in the repository as Python `view.export.image(...)`
-- legacy `view.export_image(...)` remains as a deprecated compatibility alias
 - current implemented scope:
   - PNG
   - optional `width_px` / `height_px`

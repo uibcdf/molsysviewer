@@ -5,7 +5,7 @@
 - **Shapes & tags**: shape builders register Mol* state refs; tags allow selective clearing.
 - **Data flow**: Python → message → JS controller → Mol* state tree → renderer; visibility uses transparency over atom masks.
 - **Generated artifacts**: `viewer.js`/`.map` are produced from `js/src/` with esbuild; never edit them directly.
-- **Doc embeds**: prefer `view.export.html(..., mode="lite")` to export docs-light views and `molsysviewer.thirds.jupyter.load_html_in_notebook` to embed them in docs notebooks. `MolSysView.write_html(...)` remains as a deprecated compatibility alias.
+- **Doc embeds**: use `view.export.html(..., mode="lite")` to export docs-light views and `molsysviewer.thirds.jupyter.load_html_in_notebook` to embed them in docs notebooks.
 - For a detailed architecture reference, see {doc}`architecture_full`.
 
 Developer-facing structure

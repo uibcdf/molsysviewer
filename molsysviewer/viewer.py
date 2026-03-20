@@ -6,7 +6,6 @@ import time
 import inspect
 import json
 import re
-import warnings
 
 import molsysmt as msm
 import numpy as np
@@ -22,6 +21,7 @@ from .widget import MolSysViewerWidget
 from .loaders import load_from_molsysmt as _load_from_molsysmt
 from .annotations import AnnotationsManager
 from .active_selection import ActiveSelection
+from .addons import ViewAddonsManager, addons as global_addons
 from .exports import ExportManager
 from .interaction_targets import InteractionTarget
 from .measurements import MeasurementsManager
@@ -187,6 +187,7 @@ class MolSysView:
 
         self.whole = Whole(self)
         self.styles = StylesManager(self)
+        self.addons = ViewAddonsManager(self, global_addons)
         self.export = ExportManager(self)
         self.hover_target = InteractionTarget(
             self,
@@ -2008,7 +2009,7 @@ class MolSysView:
             Only used when ``mode="lite"``. If ``True`` (default), embed the replay messages inline in the HTML.
         """
         if mode not in {"standalone", "lite"}:
-            raise ValueError("write_html(mode=...) must be 'standalone' or 'lite'.")
+            raise ValueError("view.export.html(mode=...) must be 'standalone' or 'lite'.")
 
         # If the frontend is live, request a fresh camera snapshot so exports
         # reflect the latest user view (best-effort, no hard dependency).
@@ -2035,40 +2036,6 @@ class MolSysView:
             )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
-
-    @signal(tags=["export", "html"])
-    @digest()
-    def write_html(
-        self,
-        output_filename: str,
-        *,
-        title: str = "MolSysViewer",
-        include_controls: bool = True,
-        include_popout: bool = True,
-        mode: str = "standalone",
-        inline_messages: bool = True,
-        skip_digestion: bool = False,
-    ) -> None:
-        """Deprecated alias for :meth:`view.export.html`.
-
-        Notes
-        -----
-        ``write_html(...)`` remains supported for compatibility, but new code
-        should prefer ``view.export.html(...)``.
-        """
-        warnings.warn(
-            "MolSysView.write_html(...) is deprecated; prefer view.export.html(...).",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self._write_html_impl(
-            output_filename,
-            title=title,
-            include_controls=include_controls,
-            include_popout=include_popout,
-            mode=mode,
-            inline_messages=inline_messages,
-        )
 
     def _request_camera_snapshot(self, timeout_s: float = 0.35) -> bool:
         """Ask the frontend for a camera snapshot (best-effort)."""
@@ -2152,32 +2119,6 @@ class MolSysView:
         image_bytes = base64.b64decode(data_uri.split(",", 1)[1])
         with open(output_filename, "wb") as f:
             f.write(image_bytes)
-
-    @signal(tags=["export", "image"])
-    @digest()
-    def export_image(
-        self,
-        output_filename: str,
-        *,
-        width_px: int | None = None,
-        height_px: int | None = None,
-        scale: float = 1.0,
-        transparent: bool = False,
-        skip_digestion: bool = False,
-    ) -> None:
-        """Deprecated alias for :meth:`view.export.image`."""
-        warnings.warn(
-            "MolSysView.export_image(...) is deprecated; prefer view.export.image(...).",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self._export_image_impl(
-            output_filename,
-            width_px=width_px,
-            height_px=height_px,
-            scale=scale,
-            transparent=transparent,
-        )
 
     def _load_anywidget_bundle(self) -> str:
         """Return the JS bundle for anywidget if available to inline in exports."""

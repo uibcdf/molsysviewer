@@ -155,7 +155,6 @@ Do not append dated historical entries unless a date is itself operationally rel
   - optional `scale` multiplier for higher-resolution export
   - optional transparent background
   - backed by Mol*'s real viewport screenshot helper rather than naive canvas capture
-  - legacy `view.export_image(...)` remains as a deprecated compatibility alias
   - still no richer figure recipe/spec yet
 
 ## Near-Term Route To 1.0
@@ -200,6 +199,20 @@ The current preferred route to 1.0 is incremental and workbench-first:
     - explicit extension points
     - and at least a plugin test or plugin template
 
+That add-on-compatibility story now has a first real slice:
+
+- `molsysviewer.addons` as host-level registry
+- `view.addons` as local projection with per-view enable/disable overrides
+- explicit typed add-on specs for:
+  - panels
+  - context actions
+  - workbench sections
+  - shape providers
+  - style helpers
+  - export helpers
+  - tool modes
+- validated with a fake add-on test rather than a real ecosystem package
+
 Working rule:
 
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell
@@ -219,9 +232,6 @@ What this checkpoint consolidates:
 - first-class export namespace:
   - `view.export.html(...)`
   - `view.export.image(...)`
-- legacy export aliases still available, but now explicitly deprecated:
-  - `write_html(...)`
-  - `export_image(...)`
 - a reproducible scene/workbench baseline strong enough to support the next steps toward `1.0.0`
 
 What `0.9.0` does not mean yet:
