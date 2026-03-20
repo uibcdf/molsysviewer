@@ -24,7 +24,15 @@ type AddonSummary = {
     exportHelperTitles: string[];
 };
 
-type WorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
+type AddonWorkbenchSectionSummary = {
+    key: string;
+    title: string;
+    itemTitle: string;
+    itemSubtitle?: string;
+};
+
+type BuiltInWorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
+type WorkbenchSectionKey = BuiltInWorkbenchSectionKey | `addon:${string}`;
 
 type SectionView = {
     root: HTMLDivElement;
@@ -38,8 +46,10 @@ export class WorkbenchPanel {
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
-    private readonly sections: Record<WorkbenchSectionKey, SectionView>;
-    private readonly sectionExpanded: Record<WorkbenchSectionKey, boolean>;
+    private readonly sections = new Map<WorkbenchSectionKey, SectionView>();
+    private readonly sectionExpanded = new Map<WorkbenchSectionKey, boolean>();
+    private readonly builtInSectionKeys: BuiltInWorkbenchSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
+    private addonSectionKeys: WorkbenchSectionKey[] = [];
     private expanded = false;
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToNavigate?: () => void;
@@ -91,20 +101,11 @@ export class WorkbenchPanel {
             gap: "8px",
         });
 
-        this.sections = {
-            annotations: this.createSection("Annotations", "No annotations yet."),
-            measurements: this.createSection("Measurements", "No measurements yet."),
-            shapes: this.createSection("Shapes", "No shapes yet."),
-            scene: this.createSection("Scene", "No scene style selected."),
-            addons: this.createSection("Add-ons", "No add-ons active."),
-        };
-        this.sectionExpanded = {
-            annotations: true,
-            measurements: true,
-            shapes: true,
-            scene: true,
-            addons: true,
-        };
+        this.createSection("annotations", "Annotations", "No annotations yet.");
+        this.createSection("measurements", "Measurements", "No measurements yet.");
+        this.createSection("shapes", "Shapes", "No shapes yet.");
+        this.createSection("scene", "Scene", "No scene style selected.");
+        this.createSection("addons", "Add-ons", "No add-ons active.");
 
         this.applyExpandedState();
         this.setVisible(false);
@@ -141,17 +142,17 @@ export class WorkbenchPanel {
     }
 
     setAnnotations(items: WorkbenchItem[]): void {
-        this.renderItems(this.sections.annotations, items);
+        this.renderItems(this.sections.get("annotations")!, items);
         this.applySectionExpandedState("annotations");
     }
 
     setMeasurements(items: WorkbenchItem[]): void {
-        this.renderItems(this.sections.measurements, items);
+        this.renderItems(this.sections.get("measurements")!, items);
         this.applySectionExpandedState("measurements");
     }
 
     setShapes(items: WorkbenchItem[]): void {
-        this.renderItems(this.sections.shapes, items);
+        this.renderItems(this.sections.get("shapes")!, items);
         this.applySectionExpandedState("shapes");
     }
 
@@ -159,13 +160,13 @@ export class WorkbenchPanel {
         const items: WorkbenchItem[] = [];
         if (summary?.styleTag) items.push({ title: `Style: ${summary.styleTag}` });
         if (summary?.preset) items.push({ title: `Preset: ${summary.preset}` });
-        this.renderItems(this.sections.scene, items);
+        this.renderItems(this.sections.get("scene")!, items);
         this.applySectionExpandedState("scene");
     }
 
     setAddons(items: AddonSummary[]): void {
         this.renderItems(
-            this.sections.addons,
+            this.sections.get("addons")!,
             items.map((item) => ({
                 key: item.name,
                 title: item.name,
@@ -180,6 +181,31 @@ export class WorkbenchPanel {
         this.applySectionExpandedState("addons");
     }
 
+    setAddonWorkbenchSections(items: AddonWorkbenchSectionSummary[]): void {
+        const nextKeys = new Set<WorkbenchSectionKey>();
+        for (const item of items) {
+            const key = (`addon:${item.key}`) as WorkbenchSectionKey;
+            nextKeys.add(key);
+            if (!this.sections.has(key)) {
+                this.createSection(key, item.title, "Add-on section registered.");
+            }
+            const section = this.sections.get(key)!;
+            this.renderItems(section, [{ key: item.key, title: item.itemTitle, subtitle: item.itemSubtitle }]);
+            this.applySectionExpandedState(key);
+        }
+
+        for (const key of this.addonSectionKeys) {
+            if (nextKeys.has(key)) continue;
+            const section = this.sections.get(key);
+            section?.root.remove();
+            this.sections.delete(key);
+            this.sectionExpanded.delete(key);
+        }
+
+        this.addonSectionKeys = Array.from(nextKeys);
+        this.reorderSections();
+    }
+
     dispose(): void {
         this.shell.dispose();
     }
@@ -190,8 +216,7 @@ export class WorkbenchPanel {
         this.onExpandedChange?.(this.expanded);
     }
 
-    private createSection(title: string, emptyText: string): SectionView {
-        const key = title.toLowerCase() as WorkbenchSectionKey;
+    private createSection(key: WorkbenchSectionKey, title: string, emptyText: string): SectionView {
         const section = document.createElement("div");
         section.setAttribute("data-molsysviewer-workbench-section", key);
         Object.assign(section.style, {
@@ -236,7 +261,7 @@ export class WorkbenchPanel {
         header.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
-            this.sectionExpanded[key] = !this.sectionExpanded[key];
+            this.sectionExpanded.set(key, !(this.sectionExpanded.get(key) ?? true));
             this.applySectionExpandedState(key);
         });
 
@@ -260,7 +285,10 @@ export class WorkbenchPanel {
         section.appendChild(empty);
         this.body.appendChild(section);
 
-        return { root: section, list, empty, marker: headerMarker };
+        const view = { root: section, list, empty, marker: headerMarker };
+        this.sections.set(key, view);
+        this.sectionExpanded.set(key, true);
+        return view;
     }
 
     private renderItems(section: SectionView, items: WorkbenchItem[]): void {
@@ -276,12 +304,24 @@ export class WorkbenchPanel {
     }
 
     private applySectionExpandedState(key: WorkbenchSectionKey): void {
-        const section = this.sections[key];
-        const expanded = this.sectionExpanded[key];
+        const section = this.sections.get(key);
+        if (!section) return;
+        const expanded = this.sectionExpanded.get(key) ?? true;
         section.marker.textContent = expanded ? "−" : "+";
         section.list.style.display = expanded ? "flex" : "none";
         const hasItems = section.list.children.length > 0;
         section.empty.style.display = expanded && !hasItems ? "block" : "none";
+    }
+
+    private reorderSections(): void {
+        const orderedKeys: WorkbenchSectionKey[] = [
+            ...this.builtInSectionKeys,
+            ...this.addonSectionKeys.sort((left, right) => left.localeCompare(right)),
+        ];
+        for (const key of orderedKeys) {
+            const section = this.sections.get(key);
+            if (section) this.body.appendChild(section.root);
+        }
     }
 
     private makeRow(item: WorkbenchItem): HTMLDivElement {

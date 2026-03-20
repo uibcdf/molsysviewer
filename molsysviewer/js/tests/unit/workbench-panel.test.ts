@@ -158,6 +158,37 @@ test("WorkbenchPanel populates sections and scene summary", () => {
     }
 });
 
+test("WorkbenchPanel renders dynamic addon workbench sections", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new WorkbenchPanel(host);
+
+        panel.setVisible(true);
+        panel.setAddonWorkbenchSections([
+            {
+                key: "topomt:pockets",
+                title: "Pockets",
+                itemTitle: "Add-on: topomt",
+                itemSubtitle: "top_pockets",
+            },
+        ]);
+
+        const root = host.children[0];
+        const section = findFirstByAttribute(root, "data-molsysviewer-workbench-section", "addon:topomt:pockets");
+        const row = findFirstByAttribute(root, "data-molsysviewer-workbench-item-key", "topomt:pockets");
+
+        assert.ok(section);
+        assert.ok(row);
+        assert.strictEqual(findFirstText(row!), "Add-on: topomt");
+        assert.strictEqual(row?.children[1]?.textContent, "top_pockets");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("WorkbenchPanel rows trigger activation when provided", () => {
     const restore = installFakeDom();
     try {
