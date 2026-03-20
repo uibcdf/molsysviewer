@@ -180,6 +180,7 @@ The important architectural decision is now explicit:
 - add-ons may now also expose a deliberately small per-view Python lifecycle:
   - `on_enable(view)`
   - `on_disable(view)`
+  - `on_context_action(view, action_id, payload)`
 
 ## Near-Term Design Consequence
 
@@ -287,12 +288,14 @@ The first runtime lifecycle now implemented should stay intentionally narrow:
 - `AddonLifecycleSpec`
 - `on_enable(view)`
 - `on_disable(view)`
+- `on_context_action(view, action_id, payload)`
 
 This should be understood as:
 
 - Python-side
 - view-local
 - useful for light runtime setup/teardown
+- useful for the first real add-on action dispatch coming back from visible UI
 
 It should **not** yet be treated as:
 

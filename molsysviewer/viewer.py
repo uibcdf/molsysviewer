@@ -296,6 +296,20 @@ class MolSysView:
         elif event == "interaction_context_action":
             self._last_context_action_event = dict(content)
             action = content.get("action")
+            if action == "addon_context_action":
+                addon = content.get("addon")
+                addon_action_id = content.get("addon_action_id")
+                if not isinstance(addon, str) or addon.strip() == "":
+                    raise ValueError("addon_context_action requires non-empty addon.")
+                if not isinstance(addon_action_id, str) or addon_action_id.strip() == "":
+                    raise ValueError("addon_context_action requires non-empty addon_action_id.")
+                self.addons.handle_context_action(
+                    addon.strip(),
+                    addon_action_id.strip(),
+                    dict(content),
+                    skip_digestion=True,
+                )
+                return
             if action == "create_region_from_selection":
                 self.new_region_from_active_selection(skip_digestion=True)
             elif action == "activate_selection":
