@@ -243,6 +243,13 @@ export type SetAddonRuntimeSummaryMessage = {
         title?: string;
         target_panel?: string;
     }>;
+    context_action_specs?: Array<{
+        addon?: string;
+        id?: string;
+        title?: string;
+        target_kinds?: string[];
+        group?: string;
+    }>;
 };
 
 export type LoadPdbIdMessage = {

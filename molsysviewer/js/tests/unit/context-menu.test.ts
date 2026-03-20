@@ -368,6 +368,66 @@ test("ViewerContextMenu renders relevant regions and emits focus_region", () => 
     }
 });
 
+test("ViewerContextMenu renders add-on actions and emits addon_context_action", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "structure" as const, atom_indices: [3, 4, 5] };
+        menu.open(
+            target,
+            10,
+            20,
+            null,
+            null,
+            null,
+            null,
+            [
+                {
+                    addon: "topomt-template",
+                    id: "focus-pocket",
+                    title: "Focus Pocket",
+                    target_kinds: ["structure", "shape"],
+                },
+            ],
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Add-ons"));
+        assert.ok(texts.includes("Focus Pocket · topomt-template"));
+
+        const button = findNodeByText(root, "Focus Pocket · topomt-template");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "addon_context_action", target, details: { tag: "focus-pocket" } },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "addon_context_action",
+                context: target,
+                addon: "topomt-template",
+                addon_action_id: "focus-pocket",
+                addon_action_title: "Focus Pocket",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu opens inline label composer before add-label action", () => {
     const restore = installFakeDom();
     try {
