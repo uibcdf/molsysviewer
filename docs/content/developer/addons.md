@@ -237,6 +237,10 @@ That template already includes:
 - one context action
 - one shape provider
 - a minimal lifecycle object
+- and a visible reference lifecycle flow:
+  - `on_enable(view)` leaves a marker on the view
+  - `on_context_action(...)` records the handled action payload
+  - `on_disable(view)` flips that runtime marker back
 
 Recommended first milestone for external teams:
 
