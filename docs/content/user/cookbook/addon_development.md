@@ -96,6 +96,13 @@ import molsysviewer
 molsysviewer.addons.register_module("molsysviewer_myaddon")
 ```
 
+If you want a concrete reference inside MolSysViewer itself, inspect:
+
+- `molsysviewer.addon_templates.minimal_topomt`
+
+That module exists only to demonstrate the add-on contract in a stable,
+importable form.
+
 ## 5. Discovery
 
 MolSysViewer also has a simple discovery path:
