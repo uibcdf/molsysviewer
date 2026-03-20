@@ -214,6 +214,16 @@ This is not full add-on UI execution yet.
 It is only the first visible runtime proof that the add-on platform can reach
 the viewer surface.
 
+The next visible slice is now also present in the context menu:
+
+- compatible add-on context actions can appear in an `Add-ons` section
+- clicking one emits a structured Python-side `interaction_context_action`
+
+This still does **not** mean that add-ons already execute arbitrary frontend
+logic.
+At this stage the menu action is mainly a clean runtime bridge for future
+domain-specific behavior.
+
 ## What is still intentionally missing
 
 This first slice does **not** yet try to standardize:

@@ -258,6 +258,19 @@ This is the first runtime proof that add-ons are no longer only a registry/API
 story; they now reach the visible viewer surface without opening full dynamic UI
 execution yet.
 
+There is now also a first visible add-on context-menu slice:
+
+- enabled add-ons may contribute compatible context actions
+- the menu renders them in an `Add-ons` section
+- clicking one emits a structured Python-side `interaction_context_action`
+  carrying:
+  - add-on name
+  - add-on action id
+  - add-on action title
+
+This is still a bridge and visibility slice, not yet a rich domain action
+runtime.
+
 Working rule:
 
 - do not jump early to the final panel switcher, offline rendering, or a desktop-like host shell

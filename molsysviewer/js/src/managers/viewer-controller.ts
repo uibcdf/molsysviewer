@@ -31,6 +31,7 @@ type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
 type AddonRuntimeSummary = { name: string; panelTitles: string[]; workbenchTitles: string[] };
+type AddonContextActionRuntime = { addon: string; id: string; title: string; target_kinds: string[]; group?: string };
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
@@ -309,6 +310,7 @@ export class MolSysViewerController {
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string } | null = null;
     private workbenchAddons: AddonRuntimeSummary[] = [];
+    private addonContextActions: AddonContextActionRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
@@ -552,6 +554,7 @@ export class MolSysViewerController {
                 this.lastMeasurementSummary,
                 this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
                 this.getRelevantRegionSummaries(payload),
+                this.addonContextActions,
             );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
@@ -681,6 +684,7 @@ export class MolSysViewerController {
             this.lastMeasurementSummary,
             this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
             this.getRelevantRegionSummaries(payload),
+            this.addonContextActions,
         );
     }
 
@@ -707,6 +711,7 @@ export class MolSysViewerController {
             this.lastMeasurementSummary,
             this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
             this.getRelevantRegionSummaries(payload),
+            this.addonContextActions,
         );
     }
 
@@ -924,6 +929,7 @@ export class MolSysViewerController {
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "set_addon_runtime_summary":
                     this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
+                    this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
                     this.refreshWorkbenchPanel();
                     break;
 
@@ -1256,6 +1262,22 @@ export class MolSysViewerController {
                     .map((item: any) => item.title as string),
             }))
             .sort((left, right) => left.name.localeCompare(right.name));
+    }
+
+    private buildAddonContextActionSummary(msg: any): AddonContextActionRuntime[] {
+        const specs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
+        return specs
+            .filter((item: any) => typeof item?.addon === "string" && typeof item?.id === "string" && typeof item?.title === "string")
+            .map((item: any) => ({
+                addon: item.addon as string,
+                id: item.id as string,
+                title: item.title as string,
+                target_kinds: Array.isArray(item.target_kinds)
+                    ? item.target_kinds.filter((value: unknown): value is string => typeof value === "string")
+                    : [],
+                group: typeof item.group === "string" ? item.group : undefined,
+            }))
+            .sort((left, right) => `${left.addon}:${left.id}`.localeCompare(`${right.addon}:${right.id}`));
     }
 
     private refreshNavigatePanel(): void {

@@ -28,7 +28,8 @@ export type ContextMenuAction =
     | "clear_selection"
     | "create_region_from_selection"
     | "add_label_from_selection"
-    | "persist_last_measurement";
+    | "persist_last_measurement"
+    | "addon_context_action";
 
 export type ContextActionDetails = {
     text?: string;
@@ -51,6 +52,14 @@ export type RegionSummary = {
     atom_count: number;
     selection?: string;
     hidden: boolean;
+};
+
+export type AddonContextActionSummary = {
+    addon: string;
+    id: string;
+    title: string;
+    target_kinds: string[];
+    group?: string;
 };
 
 function targetTitle(target: ContextMenuTarget): string {
@@ -92,6 +101,7 @@ export class ViewerContextMenu {
     private currentLastMeasurement: LastMeasurementSummary | null = null;
     private currentSavedSelections: SavedSelectionSummary[] = [];
     private currentRegions: RegionSummary[] = [];
+    private currentAddonActions: AddonContextActionSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
 
@@ -132,12 +142,14 @@ export class ViewerContextMenu {
         lastMeasurement?: LastMeasurementSummary | null,
         savedSelections?: SavedSelectionSummary[] | null,
         regions?: RegionSummary[] | null,
+        addonActions?: AddonContextActionSummary[] | null,
     ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
         this.currentLastMeasurement = lastMeasurement ?? null;
         this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
         this.currentRegions = Array.isArray(regions) ? [...regions] : [];
+        this.currentAddonActions = Array.isArray(addonActions) ? [...addonActions] : [];
         this.currentPageX = pageX;
         this.currentPageY = pageY;
         this.root.replaceChildren();
@@ -270,6 +282,30 @@ export class ViewerContextMenu {
             this.root.appendChild(section);
         }
 
+        const matchingAddonActions = this.currentAddonActions.filter((item) => item.target_kinds.includes(target.kind));
+        if (matchingAddonActions.length > 0) {
+            const section = document.createElement("div");
+            Object.assign(section.style, {
+                marginTop: "8px",
+                paddingTop: "8px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+
+            const title = document.createElement("div");
+            title.textContent = "Add-ons";
+            Object.assign(title.style, {
+                padding: "4px 8px 8px 8px",
+                opacity: "0.82",
+                fontSize: "12px",
+            });
+            section.appendChild(title);
+
+            for (const addonAction of matchingAddonActions) {
+                section.appendChild(this.makeAddonActionButton(addonAction));
+            }
+            this.root.appendChild(section);
+        }
+
         const rect = this.host.getBoundingClientRect();
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
@@ -295,6 +331,7 @@ export class ViewerContextMenu {
         this.currentLastMeasurement = null;
         this.currentSavedSelections = [];
         this.currentRegions = [];
+        this.currentAddonActions = [];
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
         if (wasOpen) this.onClose?.();
@@ -443,6 +480,46 @@ export class ViewerContextMenu {
             return { tag };
         }
         return {};
+    }
+
+    private makeAddonActionButton(addonAction: AddonContextActionSummary): HTMLButtonElement {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = `${addonAction.title} · ${addonAction.addon}`;
+        button.setAttribute("data-molsysviewer-addon-action", `${addonAction.addon}:${addonAction.id}`);
+        Object.assign(button.style, {
+            display: "block",
+            width: "100%",
+            padding: "8px 10px",
+            margin: "0",
+            border: "0",
+            borderRadius: "8px",
+            background: "transparent",
+            color: "inherit",
+            textAlign: "left",
+            cursor: "pointer",
+        });
+        button.addEventListener("pointerenter", () => {
+            button.style.background = "rgba(255,255,255,0.10)";
+        });
+        button.addEventListener("pointerleave", () => {
+            button.style.background = "transparent";
+        });
+        button.addEventListener("click", () => {
+            if (!this.currentTarget) return;
+            const details = { tag: addonAction.id };
+            this.onAction?.("addon_context_action", this.currentTarget, details);
+            this.notify?.({
+                event: "interaction_context_action",
+                action: "addon_context_action",
+                context: this.currentTarget,
+                addon: addonAction.addon,
+                addon_action_id: addonAction.id,
+                addon_action_title: addonAction.title,
+            });
+            this.close();
+        });
+        return button;
     }
 
     private renderLabelComposer(): void {
