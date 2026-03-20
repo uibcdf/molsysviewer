@@ -13,10 +13,18 @@ from .new_view import new_view
 from .viewer import MolSysView
 
 
-def _empty_host_overlay_html(title: str) -> str:
+def _empty_host_overlay_html(title: str, demo_links: Sequence[tuple[str, str]] | None = None) -> str:
     demo_names = ", ".join(sorted(demo.keys()))
     escaped_title = html.escape(title)
     escaped_demos = html.escape(demo_names)
+    link_items = ""
+    if demo_links:
+        rendered = []
+        for name, href in demo_links:
+            rendered.append(
+                f'<a class="molsysviewer-standalone0-demo-link" href="{html.escape(href)}">{html.escape(name)}</a>'
+            )
+        link_items = "\n".join(rendered)
     return f"""
 <style>
   #molsysviewer-standalone0-empty {{
@@ -71,6 +79,24 @@ def _empty_host_overlay_html(title: str) -> str:
     text-transform: uppercase;
     color: rgba(244, 244, 245, 0.60);
   }}
+  #molsysviewer-standalone0-empty .molsysviewer-standalone0-demo-links {{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }}
+  #molsysviewer-standalone0-empty .molsysviewer-standalone0-demo-link {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    text-decoration: none;
+    background: rgba(236, 253, 245, 0.08);
+    border: 1px solid rgba(236, 253, 245, 0.14);
+    color: rgba(236, 253, 245, 0.96);
+    font-size: 12px;
+    pointer-events: auto;
+  }}
   #molsysviewer-standalone0-empty code {{
     font-size: 12px;
     color: rgba(236, 253, 245, 0.96);
@@ -91,8 +117,10 @@ def _empty_host_overlay_html(title: str) -> str:
         <code>molsysviewer --no-browser --output /tmp/view.html</code>
       </div>
       <div class="molsysviewer-standalone0-tile">
-        <span class="molsysviewer-standalone0-label">Known demos</span>
-        <code>{escaped_demos}</code>
+        <span class="molsysviewer-standalone0-label">Load demo</span>
+        <div class="molsysviewer-standalone0-demo-links">
+          {link_items or f"<code>{escaped_demos}</code>"}
+        </div>
       </div>
     </div>
   </div>
@@ -100,14 +128,53 @@ def _empty_host_overlay_html(title: str) -> str:
 """
 
 
-def _inject_empty_host_overlay(output_path: Path, title: str) -> None:
+def _inject_empty_host_overlay(
+    output_path: Path,
+    title: str,
+    demo_links: Sequence[tuple[str, str]] | None = None,
+) -> None:
     text = output_path.read_text(encoding="utf-8")
-    overlay = _empty_host_overlay_html(title)
+    overlay = _empty_host_overlay_html(title, demo_links=demo_links)
     if "</body>" in text:
         text = text.replace("</body>", f"{overlay}\n</body>")
     else:
         text = text + overlay
     output_path.write_text(text, encoding="utf-8")
+
+
+def _build_demo_gallery(
+    output_path: Path,
+    *,
+    selection: str | Sequence[int],
+    structure_indices: str | Sequence[int],
+    syntax: str,
+    load_mode: str,
+    include_controls: bool,
+    include_popout: bool,
+    debug_js: bool | None,
+) -> list[tuple[str, str]]:
+    links: list[tuple[str, str]] = []
+    for demo_name in sorted(demo.keys()):
+        demo_path = output_path.with_name(f"{output_path.stem}-demo-{demo_name}.html")
+        build_standalone0_html(
+            demo[demo_name],
+            str(demo_path),
+            title=f"MolSysViewer Standalone 0 · {demo_name}",
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            load_mode=load_mode,
+            include_controls=include_controls,
+            include_popout=include_popout,
+            discover_addons=False,
+            addon_modules=(),
+            apply_project_config=False,
+            debug_js=debug_js,
+            generate_demo_gallery=False,
+            prepare_addons=False,
+        )
+        links.append((demo_name, demo_path.name))
+    return links
 
 
 def _resolve_view(
@@ -166,14 +233,17 @@ def build_standalone0_html(
     addon_modules: Sequence[str] | None = None,
     apply_project_config: bool = True,
     debug_js: bool | None = None,
+    generate_demo_gallery: bool = True,
+    prepare_addons: bool = True,
 ) -> str:
     """Build a first standalone-shaped HTML host using the current viewer runtime."""
 
-    _prepare_addons(
-        discover_addons=discover_addons,
-        addon_modules=addon_modules,
-        apply_project_config=apply_project_config,
-    )
+    if prepare_addons:
+        _prepare_addons(
+            discover_addons=discover_addons,
+            addon_modules=addon_modules,
+            apply_project_config=apply_project_config,
+        )
     view = _resolve_view(
         molecular_system,
         selection=selection,
@@ -191,7 +261,21 @@ def build_standalone0_html(
         mode="standalone",
     )
     if molecular_system is None:
-        _inject_empty_host_overlay(output_path, title)
+        demo_links = (
+            _build_demo_gallery(
+                output_path,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                load_mode=load_mode,
+                include_controls=include_controls,
+                include_popout=include_popout,
+                debug_js=debug_js,
+            )
+            if generate_demo_gallery
+            else []
+        )
+        _inject_empty_host_overlay(output_path, title, demo_links=demo_links)
     return str(output_path)
 
 
