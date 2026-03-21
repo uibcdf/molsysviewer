@@ -30,6 +30,8 @@ export class PanelShell {
     public readonly toggleButton: HTMLButtonElement;
     private readonly width: number;
     private readonly workspaceCurrentElement: HTMLButtonElement;
+    private readonly workspaceCurrentTitleElement: HTMLSpanElement;
+    private readonly workspaceCurrentSubtitleElement: HTMLSpanElement;
     private readonly workspaceMenuElement: HTMLDivElement;
     private onSelectPanel?: (panelId: string) => void;
     private visible = false;
@@ -170,16 +172,36 @@ export class PanelShell {
         this.workspaceCurrentElement = document.createElement("button");
         this.workspaceCurrentElement.type = "button";
         Object.assign(this.workspaceCurrentElement.style, {
-            fontSize: "10px",
-            fontWeight: "700",
-            lineHeight: "1",
-            padding: "5px 8px",
-            borderRadius: "999px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "2px",
+            minWidth: "110px",
+            padding: "7px 10px",
+            borderRadius: "12px",
             background: "rgba(255,255,255,0.12)",
             color: "#f4f4f5",
             border: "1px solid rgba(255,255,255,0.14)",
             cursor: "pointer",
+            textAlign: "left",
         });
+        this.workspaceCurrentTitleElement = document.createElement("span");
+        this.workspaceCurrentTitleElement.setAttribute("data-molsysviewer-panel-workspace-current-title", "true");
+        Object.assign(this.workspaceCurrentTitleElement.style, {
+            fontSize: "11px",
+            fontWeight: "700",
+            lineHeight: "1.1",
+            color: "#f4f4f5",
+        });
+        this.workspaceCurrentSubtitleElement = document.createElement("span");
+        this.workspaceCurrentSubtitleElement.setAttribute("data-molsysviewer-panel-workspace-current-subtitle", "true");
+        Object.assign(this.workspaceCurrentSubtitleElement.style, {
+            fontSize: "10px",
+            lineHeight: "1.2",
+            color: "rgba(244,244,245,0.68)",
+        });
+        this.workspaceCurrentElement.appendChild(this.workspaceCurrentTitleElement);
+        this.workspaceCurrentElement.appendChild(this.workspaceCurrentSubtitleElement);
         this.workspaceCurrentElement.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -194,7 +216,7 @@ export class PanelShell {
             position: "absolute",
             top: "calc(100% + 6px)",
             right: "0",
-            minWidth: "148px",
+            minWidth: "196px",
             display: "none",
             flexDirection: "column",
             gap: "4px",
@@ -332,7 +354,9 @@ export class PanelShell {
         }
 
         const current = items.find((item) => item.id === currentId) ?? items[0];
-        this.workspaceCurrentElement.textContent = current.title;
+        this.workspaceCurrentTitleElement.textContent = current.title;
+        this.workspaceCurrentSubtitleElement.textContent = current.subtitle ?? "";
+        this.workspaceCurrentSubtitleElement.style.display = current.subtitle ? "block" : "none";
         this.workspaceCurrentElement.setAttribute("data-molsysviewer-panel-workspace-current", current.id);
         this.workspaceMenuElement.replaceChildren();
 
@@ -358,6 +382,7 @@ export class PanelShell {
                 textAlign: "left",
             });
             const title = document.createElement("span");
+            title.setAttribute("data-molsysviewer-panel-workspace-option-title", item.id);
             title.textContent = item.title;
             button.appendChild(title);
             if (item.subtitle) {
@@ -370,6 +395,17 @@ export class PanelShell {
                     color: item.id === current.id ? "rgba(244,244,245,0.78)" : "rgba(244,244,245,0.62)",
                 });
                 button.appendChild(subtitle);
+            }
+            if (item.id === current.id) {
+                const marker = document.createElement("span");
+                marker.setAttribute("data-molsysviewer-panel-workspace-option-marker", item.id);
+                marker.textContent = "Current";
+                Object.assign(marker.style, {
+                    fontSize: "10px",
+                    lineHeight: "1.1",
+                    color: "rgba(244,244,245,0.74)",
+                });
+                button.appendChild(marker);
             }
             button.addEventListener("click", (event) => {
                 event.preventDefault();
