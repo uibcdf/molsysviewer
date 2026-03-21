@@ -1,7 +1,5 @@
 # molsysviewer/shapes/__init__.py
 
-import warnings
-
 from .spheres import SphereShapes
 from .pocket_surfaces import PocketSurfaces
 from .links import LinkShapes
@@ -37,7 +35,7 @@ class ShapesManager:
         self.blobs = PocketBlobs(view)
         self.tubes = ChannelTubes(view)
         self.ellipsoids = AnisotropyEllipsoids(view)
-        self.ph4 = PharmacophoreShapes(view)
+        self.interaction_sites = PharmacophoreShapes(view)
 
     @signal(tags=["shape"])
     def add_sphere(
@@ -145,7 +143,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.ph4.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+        return self.interaction_sites.add_interaction_sites(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
     def add_pharmacophore_features(
@@ -159,7 +157,7 @@ class ShapesManager:
             DeprecationWarning,
             stacklevel=2,
         )
-        return self.ph4.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+        return self.interaction_sites.add_interaction_sites(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
     @digest()
