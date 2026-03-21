@@ -243,6 +243,12 @@ That template should now be understood as more than a one-panel placeholder:
 - one export helper
 - visible lifecycle state on the `view`
 
+For onboarding and demos, MolSysViewer now also has a tiny helper surface for
+those bundled references:
+
+- `molsysviewer.addon_templates.list_reference_addons()`
+- `molsysviewer.addon_templates.register_reference_addon(...)`
+
 The important architectural decision is now explicit:
 
 - add-ons are registered at the MolSysViewer host level

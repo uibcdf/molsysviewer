@@ -152,6 +152,11 @@ Start from:
 
 - [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
 
+For local evaluation of bundled references, MolSysViewer now also exposes:
+
+- `molsysviewer.addon_templates.list_reference_addons()`
+- `molsysviewer.addon_templates.register_reference_addon(...)`
+
 That reference template is intentionally small but already demonstrates:
 
 - workspace contribution

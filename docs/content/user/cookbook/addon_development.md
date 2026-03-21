@@ -67,6 +67,15 @@ That template is now more than declarative and more than single-panel:
 
 That makes it useful as an end-to-end starter, not only as a static spec sample.
 
+You can also activate that bundled reference without memorizing module names:
+
+```python
+import molsysviewer
+
+molsysviewer.addon_templates.list_reference_addons()
+molsysviewer.addon_templates.register_reference_addon("topomt")
+```
+
 ## 2. Register it directly during development
 
 ```python
