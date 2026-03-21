@@ -17,13 +17,27 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- `0.13.0` should now be read as the checkpoint where:
+  - the shared workbench/runtime became coherent enough to stop dominating the roadmap
+  - the reference add-on path became teachable end to end
+  - and figure export stopped being a thin helper and became a small but real subsystem
+
 - Continue feature implementation toward 1.0 on top of the now-hardened runtime/contracts layer.
 - Treat `0.12.0` as the end of the "prove the platform exists" stage.
+- Treat `0.13.0` as the end of the first serious consolidation wave across:
+  - workbench/workspace runtime
+  - add-on onboarding
+  - figure export
 - The current stage is now:
-  - consolidate the shared workbench/runtime,
-  - validate richer add-on use on top of it,
-  - mature figure export,
+  - finish squeezing the value out of the now-stronger add-on/runtime path,
+  - treat figure export as a deliberate subsystem rather than a side helper,
   - and leave standalone as the final major pre-`1.0.0` host push.
+- Phase A should now be read as effectively closed unless a downstream need
+  exposes a real structural gap.
+- Phase B is now advanced enough that it should not keep growing sideways
+  without concrete ecosystem pressure.
+- Phase C is now much stronger and should be considered substantial rather than
+  exploratory.
 - After the latest workspace/panel runtime slices, Phase A should now be read as
   **near closure** rather than open-ended:
   - the shared workbench model is already coherent enough to stop iterating on

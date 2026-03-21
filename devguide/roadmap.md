@@ -9,9 +9,9 @@ It is organized by execution priority and uses three labels:
 - `In progress`: partially implemented or implemented with limited coverage/docs.
 - `Planned`: not implemented yet or not stabilized.
 
-## Route From `0.12.0` To `1.0.0`
+## Route From `0.13.0` To `1.0.0`
 
-After `0.12.0`, the project is no longer missing a direction.
+After `0.13.0`, the project is no longer missing a direction.
 The near-term problem is now consolidation.
 
 What already exists in meaningful form:
@@ -21,11 +21,17 @@ What already exists in meaningful form:
 - add-ons as a real host/view platform with docs, standards, template, and
   lifecycle
 - `standalone 0` as a teachable browser-hosted first cut
-- first serious `image` / `figure` export surfaces
+- a now much stronger `image` / `figure` export story:
+  - reusable `FigureSpec`
+  - camera-derived figure recipes
+  - named figure variants
+  - standard publication bundles
+  - a visible figure baseline in `Workbench -> Scene`
 - a workspace-aware panel runtime with:
   - launcher
   - local panel stacks
   - generic add-on workspace host
+- the first coherent reference add-on smoke/demo path for downstream teams
 
 So the path to `1.0.0` should now be:
 
@@ -37,14 +43,12 @@ So the path to `1.0.0` should now be:
 
 The intended release rhythm from here should stay pre-1.0 and incremental:
 
-- `0.13.x`:
-  - stronger shared workbench / workspace runtime
 - `0.14.x`:
-  - richer add-on proof through that runtime
+  - richer add-on proof through the now-solid workbench/runtime
 - `0.15.x`:
-  - figure/export maturation
+  - cross-surface polish and verification tightening
 - `0.16.x`:
-  - cross-surface polish, verification, and documentation/tutorial tightening
+  - documentation/tutorial tightening and release hardening
 - `0.17.x+`:
   - final standalone push
 - `1.0.0`:
@@ -62,6 +66,10 @@ This sequence matters:
 The current preferred execution plan toward `1.0.0` is:
 
 ### Phase A. Shared Workbench Consolidation
+
+Status:
+
+- near closure
 
 Goal:
 
@@ -87,6 +95,10 @@ Success criteria:
 
 ### Phase B. Add-On Runtime Proof
 
+Status:
+
+- in strong progress
+
 Goal:
 
 - prove that external MolSysSuite teams can start real add-on work without
@@ -106,6 +118,10 @@ Success criteria:
 - the host no longer looks "core-only with addon metadata attached"
 
 ### Phase C. Figure Export Maturation
+
+Status:
+
+- in strong progress
 
 Goal:
 
