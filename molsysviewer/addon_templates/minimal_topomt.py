@@ -2,6 +2,7 @@
 
 from molsysviewer.addons import (
     AddonContextActionSpec,
+    AddonExportHelperSpec,
     AddonLifecycleSpec,
     AddonPanelSpec,
     AddonShapeProviderSpec,
@@ -33,6 +34,20 @@ addon = AddonSpec(
             description="Reference panel contribution for topography workflows.",
             order=20,
         ),
+        AddonPanelSpec(
+            id="channels",
+            title="Channels",
+            entry="molsysviewer_topomt.panel.channels",
+            description="Reference channel-analysis panel contribution.",
+            order=30,
+        ),
+        AddonPanelSpec(
+            id="regions",
+            title="Regions",
+            entry="molsysviewer_topomt.panel.regions",
+            description="Reference region-oriented panel contribution.",
+            order=40,
+        ),
     ),
     context_actions=(
         AddonContextActionSpec(
@@ -43,6 +58,14 @@ addon = AddonSpec(
             group="topography",
             order=10,
         ),
+        AddonContextActionSpec(
+            id="inspect-channel",
+            title="Inspect Channel",
+            entry="molsysviewer_topomt.context.inspect_channel",
+            target_kinds=("structure", "shape"),
+            group="topography",
+            order=20,
+        ),
     ),
     workbench_sections=(
         AddonWorkbenchSectionSpec(
@@ -52,6 +75,13 @@ addon = AddonSpec(
             target_panel="workbench",
             order=30,
         ),
+        AddonWorkbenchSectionSpec(
+            id="channels",
+            title="Channels",
+            entry="molsysviewer_topomt.workbench.channels",
+            target_panel="workbench",
+            order=40,
+        ),
     ),
     shape_providers=(
         AddonShapeProviderSpec(
@@ -59,7 +89,16 @@ addon = AddonSpec(
             title="Pocket Surface",
             entry="molsysviewer_topomt.shapes.pocket_surface",
             kinds=("surface", "cavity"),
-            order=40,
+            order=50,
+        ),
+    ),
+    export_helpers=(
+        AddonExportHelperSpec(
+            id="topography-figure",
+            title="Topography Figure Export",
+            entry="molsysviewer_topomt.export.figure",
+            formats=("png", "html"),
+            order=60,
         ),
     ),
     meta={"domain": "topography", "template": True},
@@ -71,6 +110,15 @@ def on_enable(view) -> None:
     view._topomt_template_enabled = True
     view._topomt_template_events = getattr(view, "_topomt_template_events", [])
     view._topomt_template_events.append(("enable", "topomt-template"))
+    view._topomt_template_runtime = {
+        "enabled": True,
+        "workspace": "topomt",
+        "panels": ["topo", "channels", "regions"],
+        "sections": ["pockets", "channels"],
+        "context_actions": ["focus-pocket", "inspect-channel"],
+        "export_helpers": ["topography-figure"],
+        "last_context_action": None,
+    }
 
 
 def on_disable(view) -> None:
@@ -78,6 +126,9 @@ def on_disable(view) -> None:
     view._topomt_template_enabled = False
     view._topomt_template_events = getattr(view, "_topomt_template_events", [])
     view._topomt_template_events.append(("disable", "topomt-template"))
+    runtime = getattr(view, "_topomt_template_runtime", None)
+    if isinstance(runtime, dict):
+        runtime["enabled"] = False
 
 
 def on_context_action(view, action_id: str, payload: dict) -> None:
@@ -88,6 +139,12 @@ def on_context_action(view, action_id: str, payload: dict) -> None:
     }
     view._topomt_template_events = getattr(view, "_topomt_template_events", [])
     view._topomt_template_events.append(("context", action_id))
+    runtime = getattr(view, "_topomt_template_runtime", None)
+    if isinstance(runtime, dict):
+        runtime["last_context_action"] = {
+            "action_id": action_id,
+            "payload": payload,
+        }
 
 
 lifecycle = AddonLifecycleSpec(

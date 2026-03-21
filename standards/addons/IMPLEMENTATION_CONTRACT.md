@@ -132,9 +132,9 @@ Do not assume arbitrary package scanning or final entry-point metadata yet.
 The recommended first milestone is:
 
 1. one workspace if the add-on is large enough
-2. one panel
-3. one workbench section
-4. one context action
+2. at least one panel
+3. at least one workbench section
+4. at least one context action
 5. one small lifecycle-driven behavior
 
 That is enough to validate:
@@ -155,9 +155,10 @@ Start from:
 That reference template is intentionally small but already demonstrates:
 
 - workspace contribution
-- panel contribution
-- workbench contribution
-- context-action contribution
+- multi-panel contribution
+- multi-section workbench contribution
+- more than one context-action contribution
 - shape-provider contribution
+- export-helper contribution
 - lifecycle export
 - a visible lifecycle effect on the `view`

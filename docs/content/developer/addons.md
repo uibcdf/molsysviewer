@@ -170,8 +170,16 @@ MolSysViewer also ships a tiny reference template module you can inspect:
 
 - `molsysviewer.addon_templates.minimal_topomt`
 
-It is intentionally small and only demonstrates the registration contract, not
-the full runtime behavior of a real scientific add-on.
+It is intentionally bounded, but it now demonstrates more than the bare
+registration contract:
+
+- one workspace
+- several panels
+- several workbench/runtime contributions
+- a minimal but visible lifecycle flow
+
+So it is a better starter for downstream teams than a purely declarative
+one-panel example.
 
 ## Packaging contract
 
@@ -232,10 +240,11 @@ MolSysViewer now ships an importable reference template:
 That template already includes:
 
 - one workspace
-- one panel
-- one workbench section
-- one context action
+- several panels
+- several workbench sections
+- more than one context action
 - one shape provider
+- one export helper
 - a minimal lifecycle object
 - and a visible reference lifecycle flow:
   - `on_enable(view)` leaves a marker on the view

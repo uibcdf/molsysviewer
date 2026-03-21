@@ -331,10 +331,11 @@ def test_addon_template_module_is_importable_and_registerable():
         assert addon.name == "topomt-template"
         assert addons.available() == ["topomt-template"]
         assert addons.workspace_specs()[0]["id"] == "topomt"
-        assert addons.panel_specs()[0]["id"] == "topo"
-        assert addons.context_action_specs()[0]["id"] == "focus-pocket"
-        assert addons.workbench_section_specs()[0]["id"] == "pockets"
+        assert [item["id"] for item in addons.panel_specs()] == ["topo", "channels", "regions"]
+        assert [item["id"] for item in addons.context_action_specs()] == ["focus-pocket", "inspect-channel"]
+        assert [item["id"] for item in addons.workbench_section_specs()] == ["pockets", "channels"]
         assert addons.shape_provider_specs()[0]["id"] == "pocket-surface"
+        assert addons.export_helper_specs()[0]["id"] == "topography-figure"
         assert addons.lifecycle_for("topomt-template") is not None
         assert addons.lifecycle_for("topomt-template").info() == {
             "has_on_enable": True,
@@ -353,6 +354,12 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
 
         assert view._topomt_template_enabled is True
         assert ("enable", "topomt-template") in view._topomt_template_events
+        assert view._topomt_template_runtime["enabled"] is True
+        assert view._topomt_template_runtime["workspace"] == "topomt"
+        assert view._topomt_template_runtime["panels"] == ["topo", "channels", "regions"]
+        assert view._topomt_template_runtime["sections"] == ["pockets", "channels"]
+        assert view._topomt_template_runtime["context_actions"] == ["focus-pocket", "inspect-channel"]
+        assert view._topomt_template_runtime["export_helpers"] == ["topography-figure"]
 
         view._handle_frontend_event(  # noqa: SLF001
             {
@@ -367,11 +374,32 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
 
         assert view._topomt_template_last_context_action["action_id"] == "focus-pocket"
         assert view._topomt_template_last_context_action["payload"]["addon"] == "topomt-template"
+        assert view._topomt_template_runtime["last_context_action"]["action_id"] == "focus-pocket"
         assert ("context", "focus-pocket") in view._topomt_template_events
 
         view.addons.disable("topomt-template")
         assert view._topomt_template_enabled is False
+        assert view._topomt_template_runtime["enabled"] is False
         assert ("disable", "topomt-template") in view._topomt_template_events
+    finally:
+        addons.clear()
+
+
+def test_addon_template_module_syncs_richer_runtime_summary_message():
+    addons.clear()
+    view = MolSysView()
+    sent: list[dict] = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+    try:
+        addons.register_module("molsysviewer.addon_templates.minimal_topomt")
+        view.addons.enable("topomt-template")
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["addons"] == ["topomt-template"]
+        assert [item["id"] for item in addon_msg["panel_specs"]] == ["topo", "channels", "regions"]
+        assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-pocket", "inspect-channel"]
+        assert [item["id"] for item in addon_msg["workbench_sections"]] == ["pockets", "channels"]
+        assert [item["id"] for item in addon_msg["export_helper_specs"]] == ["topography-figure"]
     finally:
         addons.clear()
 
