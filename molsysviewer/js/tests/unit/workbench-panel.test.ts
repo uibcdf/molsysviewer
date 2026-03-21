@@ -211,6 +211,14 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
             description: "Pocket analysis",
             entry: "topomt.panel.topo",
             addon: "topomt",
+            sections: [
+                {
+                    key: "topomt:pockets",
+                    title: "Pockets",
+                    itemTitle: "Add-on: topomt",
+                    itemSubtitle: "top_pockets",
+                },
+            ],
         });
 
         const root = host.children[0];
@@ -220,6 +228,10 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const hostCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-host", "true");
         const title = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-title", "true");
         const entry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-entry", "true");
+        const section = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section", "topomt:pockets");
+        const sectionTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-title", "topomt:pockets");
+        const sectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-item", "topomt:pockets");
+        const sectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-subtitle", "topomt:pockets");
 
         assert.ok(stack);
         assert.ok(active);
@@ -227,8 +239,15 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(hostCard);
         assert.ok(title);
         assert.ok(entry);
+        assert.ok(section);
+        assert.ok(sectionTitle);
+        assert.ok(sectionItem);
+        assert.ok(sectionSubtitle);
         assert.strictEqual(title?.textContent, "TopoMT · Topo");
         assert.strictEqual(entry?.textContent, "Entry: topomt.panel.topo");
+        assert.strictEqual(sectionTitle?.textContent, "Pockets");
+        assert.strictEqual(sectionItem?.textContent, "Add-on: topomt");
+        assert.strictEqual(sectionSubtitle?.textContent, "top_pockets");
 
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selected, "channels");

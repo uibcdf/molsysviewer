@@ -304,7 +304,9 @@ Current runtime bridge:
 - `Workbench` can now also materialize a first generic panel-stack bridge for
   add-on workspaces:
   - a panel selector for the current workspace
-  - and a generic active-panel host card
+  - and a generic active-panel host surface
+  - that host can now also absorb workspace-specific sections so the panel and
+    its immediate add-on runtime no longer feel artificially split apart
   - still not arbitrary add-on frontend UI, but already more than a flat summary
 - that panel selector is now moving up into the shared header itself:
   - core stack navigation (`Navigate` / `Workbench`)
