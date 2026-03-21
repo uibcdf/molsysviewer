@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from molsysviewer.addons import AddonSpec, GlobalAddonsRegistry
+    from molsysviewer.viewer import MolSysView
 
 
 REFERENCE_ADDON_MODULES: dict[str, str] = {
@@ -67,6 +68,28 @@ def import_reference_module(name: str):
     return import_module(resolve_reference_addon(name))
 
 
+def build_reference_demo_view(
+    name: str,
+    *,
+    demo_key: str = "dialanine",
+    registry: "GlobalAddonsRegistry | None" = None,
+    expand_workbench: bool = True,
+) -> "MolSysView":
+    """Build a demo view with one bundled reference add-on already active.
+
+    This is the shortest supported smoke path for downstream teams that want to
+    inspect a credible add-on-shaped runtime without writing their own package
+    first.
+    """
+    from molsysviewer import demo
+
+    register_reference_addon(name, registry=registry)
+    view = demo[demo_key]
+    if expand_workbench:
+        view.set_panel_mode(panel="workbench", expanded=True, skip_digestion=True)
+    return view
+
+
 __all__ = [
     "REFERENCE_ADDON_MODULES",
     "list_reference_addons",
@@ -74,4 +97,5 @@ __all__ = [
     "register_reference_addon",
     "register_all_reference_addons",
     "import_reference_module",
+    "build_reference_demo_view",
 ]

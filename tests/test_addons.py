@@ -432,6 +432,20 @@ def test_addon_templates_helper_can_register_all_reference_addons():
         addons.clear()
 
 
+def test_addon_templates_helper_can_build_reference_demo_view():
+    addons.clear()
+    try:
+        view = addon_templates.build_reference_demo_view("topomt")
+        assert view.addons.enabled() == ["topomt-template"]
+        assert [item["id"] for item in view.addons.workspace_specs()] == ["topomt"]
+        assert [item["id"] for item in view.addons.panel_specs()] == ["topo", "channels", "regions"]
+        assert view._topomt_template_enabled is True
+        assert view._topomt_template_runtime["workspace"] == "topomt"
+        assert view._topomt_template_runtime["panels"] == ["topo", "channels", "regions"]
+    finally:
+        addons.clear()
+
+
 def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
     addons.clear()
     events: list[str] = []

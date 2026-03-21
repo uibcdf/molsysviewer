@@ -258,6 +258,11 @@ The next route should now be read more sharply:
   - mature `image` / `figure` export further
 - fourth:
   - tighten docs/tutorials/verification around the now-real product
+- The bundled add-on starter pack now also has a single smoke/demo path teams
+  can share:
+  - `molsysviewer.addon_templates.build_reference_demo_view("topomt")`
+  - use that as the shortest reproducible reference route when onboarding
+    `MolSysMT`, `TopoMT`, `PharmacophoreMT`, or similar teams
 - fifth and last major step before `1.0.0`:
   - standalone
 
