@@ -1451,6 +1451,7 @@ export class MolSysViewerController {
             );
             const activePanel = panels.find((item) => item.id === selectedId) ?? null;
             const workspaceTitle = this.getWorkspaceOptions().find((item) => item.id === this.currentWorkspace)?.title ?? this.currentWorkspace;
+            const workspaceSections = this.workbenchAddonSections.filter((item) => item.workspaceId === this.currentWorkspace);
             this.workbenchPanel.setActiveWorkspacePanel(
                 activePanel
                     ? {
@@ -1459,6 +1460,12 @@ export class MolSysViewerController {
                         description: activePanel.description,
                         entry: activePanel.entry,
                         addon: activePanel.addon,
+                        sections: workspaceSections.map((item) => ({
+                            key: item.key,
+                            title: item.title,
+                            itemTitle: item.itemTitle,
+                            itemSubtitle: item.itemSubtitle,
+                        })),
                     }
                     : null,
             );
@@ -1470,11 +1477,7 @@ export class MolSysViewerController {
                 active: this.currentWorkspace !== "core" && this.workspaceBelongsToAddon(this.currentWorkspace, item.name),
             }))
         );
-        this.workbenchPanel.setAddonWorkbenchSections(
-            this.currentWorkspace === "core"
-                ? []
-                : this.workbenchAddonSections.filter((item) => item.workspaceId === this.currentWorkspace)
-        );
+        this.workbenchPanel.setAddonWorkbenchSections([]);
     }
 
     private buildAddonWorkspaceSummary(msg: any): WorkspaceRuntime[] {

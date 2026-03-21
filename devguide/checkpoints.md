@@ -212,7 +212,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `Workbench` now also materializes a first generic panel-stack bridge for
     add-on workspaces:
     - selector of workspace panels
-    - generic active-panel host card
+    - generic active-panel host surface
+    - workspace-specific add-on sections can now be absorbed into that host so
+      the workspace panel does not feel split from its own immediate runtime
     - still no arbitrary add-on frontend runtime, but no longer just a summary
   - that panel selector is now also part of the shared header chrome:
     - core stack feels more like a real `panel mode`

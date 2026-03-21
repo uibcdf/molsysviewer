@@ -49,6 +49,12 @@ type ActiveWorkspacePanelSummary = {
     description?: string;
     entry?: string;
     addon?: string;
+    sections?: Array<{
+        key: string;
+        title: string;
+        itemTitle: string;
+        itemSubtitle?: string;
+    }>;
 };
 
 type BuiltInWorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
@@ -242,6 +248,61 @@ export class WorkbenchPanel {
             addon.setAttribute("data-molsysviewer-workbench-workspace-panel-addon", "true");
             addon.textContent = `Add-on: ${summary.addon}`;
             this.workspacePanelHostBody.appendChild(addon);
+        }
+        if (Array.isArray(summary.sections) && summary.sections.length > 0) {
+            const sectionsBlock = document.createElement("div");
+            sectionsBlock.setAttribute("data-molsysviewer-workbench-workspace-panel-sections", "true");
+            Object.assign(sectionsBlock.style, {
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
+                marginTop: "4px",
+            });
+
+            for (const section of summary.sections) {
+                const sectionCard = document.createElement("div");
+                sectionCard.setAttribute("data-molsysviewer-workbench-workspace-panel-section", section.key);
+                Object.assign(sectionCard.style, {
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "3px",
+                    padding: "8px",
+                    borderRadius: "8px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                });
+
+                const sectionTitle = document.createElement("div");
+                sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-title", section.key);
+                Object.assign(sectionTitle.style, {
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    color: "rgba(244,244,245,0.90)",
+                });
+                sectionTitle.textContent = section.title;
+
+                const itemTitle = document.createElement("div");
+                itemTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-item", section.key);
+                itemTitle.textContent = section.itemTitle;
+
+                sectionCard.appendChild(sectionTitle);
+                sectionCard.appendChild(itemTitle);
+
+                if (section.itemSubtitle) {
+                    const itemSubtitle = document.createElement("div");
+                    itemSubtitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-subtitle", section.key);
+                    Object.assign(itemSubtitle.style, {
+                        fontSize: "11px",
+                        color: "rgba(244,244,245,0.62)",
+                    });
+                    itemSubtitle.textContent = section.itemSubtitle;
+                    sectionCard.appendChild(itemSubtitle);
+                }
+
+                sectionsBlock.appendChild(sectionCard);
+            }
+
+            this.workspacePanelHostBody.appendChild(sectionsBlock);
         }
     }
 
