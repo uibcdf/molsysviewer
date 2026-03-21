@@ -1,3 +1,5 @@
+import warnings
+
 from molsysviewer.shapes import PharmacophoreShapes
 
 
@@ -15,11 +17,11 @@ class DummyView:
         return f"shape-{self._layer_counter}"
 
 
-def test_add_pharmacophore_features():
+def test_add_interaction_sites():
     view = DummyView()
     ph4 = PharmacophoreShapes(view)
 
-    ph4.add_pharmacophore_features(
+    ph4.add_interaction_sites(
         centers=[(0, 0, 0), (1, 1, 1)],
         kinds=["donor", "acceptor"],
         radii=[0.5, 0.6],
@@ -27,6 +29,7 @@ def test_add_pharmacophore_features():
         directions=[(1, 0, 0), (0, 1, 0)],
         tag="ph4",
         name="demo",
+        skip_digestion=True,
     )
 
     assert view.messages == [
@@ -41,6 +44,37 @@ def test_add_pharmacophore_features():
                 "directions": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
                 "tag": "ph4",
                 "name": "demo",
+            },
+        }
+    ]
+
+
+def test_add_pharmacophore_features_warns_and_uses_same_payload():
+    view = DummyView()
+    ph4 = PharmacophoreShapes(view)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        ph4.add_pharmacophore_features(
+            centers=[(0, 0, 0)],
+            kinds=["donor"],
+            tag="ph4",
+            skip_digestion=True,
+        )
+
+    assert len(caught) == 1
+    assert issubclass(caught[0].category, DeprecationWarning)
+    assert "add_interaction_sites" in str(caught[0].message)
+    assert view.messages == [
+        {
+            "op": "add_pharmacophore_features",
+            "options": {
+                "centers": [[0.0, 0.0, 0.0]],
+                "kinds": ["donor"],
+                "radii": [0.6],
+                "alphas": [0.6],
+                "colors": [0x3b82f6],
+                "tag": "ph4",
             },
         }
     ]

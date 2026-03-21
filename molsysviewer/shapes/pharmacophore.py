@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import Iterable, Sequence
 
 from smonitor import signal
@@ -7,7 +8,7 @@ from smonitor import signal
 from .._private.arg_digestion import digest
 
 
-PHARM_COLORS = {
+INTERACTION_COLORS = {
     "donor": 0x3b82f6,        # blue
     "acceptor": 0xef4444,     # red
     "hydrophobe": 0xf59e0b,   # amber
@@ -16,6 +17,7 @@ PHARM_COLORS = {
     "negative": 0xf43f5e,     # pink/red
     "metal": 0x10b981,        # green
 }
+PHARM_COLORS = INTERACTION_COLORS
 
 
 class PharmacophoreShapes:
@@ -44,9 +46,7 @@ class PharmacophoreShapes:
             out.append([float(v[0]), float(v[1]), float(v[2])])
         return out
 
-    @signal(tags=["shape", "pharmacophore"])
-    @digest()
-    def add_pharmacophore_features(
+    def _build_interaction_site_options(
         self,
         *,
         centers: Iterable[Sequence[float]],
@@ -57,9 +57,7 @@ class PharmacophoreShapes:
         colors: Sequence[int] | None = None,
         tag: str | None = None,
         name: str | None = None,
-        skip_digestion: bool = False,
-    ) -> None:
-        """Render standard pharmacophore glyphs (sphere/disk/arrow)."""
+    ) -> dict:
         centers_list = self._norm_centers(centers)
         kinds_list = list(kinds)
 
@@ -80,7 +78,7 @@ class PharmacophoreShapes:
 
         radii_list = _as_list(radii, float, 0.6)
         alphas_list = _as_list(alphas, float, 0.6)
-        colors_list = colors if colors is not None else [PHARM_COLORS.get(k.lower(), 0xcccccc) for k in kinds_list]
+        colors_list = colors if colors is not None else [INTERACTION_COLORS.get(k.lower(), 0xcccccc) for k in kinds_list]
         directions_list = self._norm_vectors(directions)
 
         options = {
@@ -96,5 +94,48 @@ class PharmacophoreShapes:
             options["tag"] = tag
         if name is not None:
             options["name"] = name
+        return options
 
+    @signal(tags=["shape", "pharmacophore"])
+    @digest()
+    def add_interaction_sites(
+        self,
+        *,
+        centers: Iterable[Sequence[float]],
+        kinds: Sequence[str],
+        radii: float | Sequence[float] | None = None,
+        directions: Iterable[Sequence[float]] | None = None,
+        alphas: float | Sequence[float] | None = None,
+        colors: Sequence[int] | None = None,
+        tag: str | None = None,
+        name: str | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Render standard interaction-site glyphs (sphere/disk/arrow)."""
+        options = self._build_interaction_site_options(
+            centers=centers,
+            kinds=kinds,
+            radii=radii,
+            directions=directions,
+            alphas=alphas,
+            colors=colors,
+            tag=tag,
+            name=name,
+        )
         self._view._send({"op": "add_pharmacophore_features", "options": options})
+
+    @signal(tags=["shape", "pharmacophore"])
+    @digest()
+    def add_pharmacophore_features(
+        self,
+        *args,
+        skip_digestion: bool = False,
+        **kwargs,
+    ) -> None:
+        """Deprecated alias for `add_interaction_sites(...)`."""
+        warnings.warn(
+            "add_pharmacophore_features(...) is deprecated; use add_interaction_sites(...) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.add_interaction_sites(*args, skip_digestion=True, **kwargs)
