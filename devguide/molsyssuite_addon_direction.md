@@ -234,6 +234,15 @@ the corresponding standards files should be updated in the same slice.
 This is the right first step because it fixes the shape of the connection
 platform before real plugins start depending on it.
 
+That template should now be understood as more than a one-panel placeholder:
+
+- one workspace
+- several panels
+- several workbench/runtime contributions
+- more than one context action
+- one export helper
+- visible lifecycle state on the `view`
+
 The important architectural decision is now explicit:
 
 - add-ons are registered at the MolSysViewer host level

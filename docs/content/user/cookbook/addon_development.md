@@ -55,10 +55,15 @@ scratch, use:
 
 - [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
 
-That template is now slightly more than declarative:
+That template is now more than declarative and more than single-panel:
 
 - its lifecycle leaves visible markers on the `view`
 - its context action records the last handled payload
+- it models a small but credible workspace:
+  - multiple panels
+  - multiple workbench sections
+  - more than one context action
+  - one export helper
 
 That makes it useful as an end-to-end starter, not only as a static spec sample.
 

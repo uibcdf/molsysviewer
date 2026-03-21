@@ -13,6 +13,9 @@ Read in this order:
 3. [`docs/content/user/cookbook/addon_development.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_development.md)
 4. [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
 
+The bundled `minimal_topomt.py` template should now be read as a small but
+credible workspace-shaped reference add-on, not as a bare one-panel toy.
+
 What belongs here:
 
 - stable vocabulary
