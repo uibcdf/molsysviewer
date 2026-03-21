@@ -422,17 +422,26 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
 
         const root = host.children[0];
         const current = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current", "core");
+        const currentTitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-title", "true");
+        const currentSubtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-subtitle", "true");
         const launcher = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-launcher", "true");
         assert.ok(current);
+        assert.ok(currentTitle);
+        assert.ok(currentSubtitle);
         assert.ok(launcher);
-        assert.strictEqual(current?.textContent, "Core");
+        assert.strictEqual(currentTitle?.textContent, "Core");
+        assert.strictEqual(currentSubtitle?.textContent, "Navigate + Workbench");
 
         current?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
         const button = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option", "topomt");
+        const title = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-title", "topomt");
         const subtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-subtitle", "topomt");
+        const marker = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-marker", "core");
         assert.ok(button);
+        assert.strictEqual(title?.textContent, "TopoMT");
         assert.strictEqual(subtitle?.textContent, "2 panels · 1 section");
+        assert.strictEqual(marker?.textContent, "Current");
 
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selectedWorkspace, "topomt");

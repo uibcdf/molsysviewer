@@ -201,6 +201,10 @@ Do not append dated historical entries unless a date is itself operationally rel
         launcher
     - launcher entries can already expose lightweight summaries of what they
       contain
+    - the current workspace trigger can also carry a compact subtitle, so the
+      active domain is legible without opening the launcher
+    - the launcher can explicitly mark the current workspace, making it read
+      more like a domain selector than a flat dropdown
   - the shared panel header is now also becoming workspace-aware:
     - non-core workspaces remain workbench-centric for now
     - the runtime offers a direct return to `Core`
