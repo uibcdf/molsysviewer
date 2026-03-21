@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from smonitor import signal
@@ -117,3 +118,33 @@ class ExportManager:
             preset=resolved_preset,
             camera_snapshot=resolved_camera_snapshot,
         )
+
+    @signal(tags=["export", "figure"])
+    @digest()
+    def figure_variants(
+        self,
+        output_directory: str,
+        *,
+        variants: dict[str, FigureSpec],
+        stem: str = "figure",
+        skip_digestion: bool = False,
+    ) -> list[str]:
+        """Export a batch of named figure recipes into one directory.
+
+        This is intentionally narrow: callers should derive concrete
+        `FigureSpec` objects first, typically from a shared base recipe.
+        """
+        outdir = Path(output_directory)
+        outdir.mkdir(parents=True, exist_ok=True)
+
+        written: list[str] = []
+        for name, spec in variants.items():
+            slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in name).strip("-") or "variant"
+            output_filename = outdir / f"{stem}-{slug}.png"
+            self.figure(
+                str(output_filename),
+                figure_spec=spec,
+                skip_digestion=True,
+            )
+            written.append(str(output_filename))
+        return written

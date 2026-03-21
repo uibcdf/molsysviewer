@@ -451,6 +451,26 @@ This matters because the first reusable figure story should be:
 - keep camera/state reuse explicit
 - generate small figure variants without rebuilding everything by hand
 
+The next practical layer now also exists:
+
+```python
+base = FigureSpec.from_view(view, width_px=2400, height_px=1800)
+variants = base.build_variants(
+    {
+        "dark": {"background": "dark", "preset": "publication-dark"},
+        "transparent": {"background": "transparent"},
+    }
+)
+
+view.export.figure_variants("figures/", variants=variants, stem="pocket")
+```
+
+This is still intentionally modest:
+
+- it is directory-oriented
+- it expects explicit named `FigureSpec` recipes
+- and it keeps the batch story tied to the same reproducible export surface
+
 The key is not the exact spelling yet.
 The key is that the API should:
 

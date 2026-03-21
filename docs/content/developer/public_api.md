@@ -189,6 +189,7 @@ Preferred export surface:
 - `view.export.html(...)`
 - `view.export.image(...)`
 - `view.export.figure(...)`
+- `view.export.figure_variants(...)`
 
 `view.export.image(...)` may receive an explicit `camera_snapshot=...` when the
 export should use a saved camera rather than the live current viewport.
@@ -215,6 +216,9 @@ raw image export. It currently provides:
   recipe
 - `FigureSpec.with_overrides(...)` to derive small recipe variants without
   mutating the original
+- `FigureSpec.build_variants(...)` to expand a named batch of figure recipes
+- `view.export.figure_variants(...)` to materialize those named recipes into a
+  directory in one pass
 
 It is still intentionally modest and should be treated as the first step toward
 the future richer `figure` export contract, not as the final publication export

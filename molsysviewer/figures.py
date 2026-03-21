@@ -106,3 +106,29 @@ class FigureSpec:
         else:
             updates["camera_snapshot"] = None
         return replace(self, **updates)
+
+    def build_variants(
+        self,
+        variants: dict[str, "FigureSpec | dict[str, Any]"],
+    ) -> dict[str, "FigureSpec"]:
+        """Expand a mapping of named figure variants from this base recipe."""
+        if not isinstance(variants, dict) or len(variants) == 0:
+            raise ValueError("FigureSpec.build_variants(...) requires a non-empty dictionary.")
+
+        resolved: dict[str, FigureSpec] = {}
+        for name, item in variants.items():
+            if not isinstance(name, str) or not name.strip():
+                raise ValueError("FigureSpec.build_variants(...) requires non-empty string variant names.")
+            if isinstance(item, FigureSpec):
+                resolved[name.strip()] = item
+                continue
+            if isinstance(item, dict):
+                try:
+                    resolved[name.strip()] = self.with_overrides(**item)
+                except TypeError as exc:
+                    raise ValueError(f"Invalid overrides for figure variant {name!r}: {exc}") from exc
+                continue
+            raise ValueError(
+                f"Figure variant {name!r} must be a FigureSpec or a dictionary of explicit overrides."
+            )
+        return resolved

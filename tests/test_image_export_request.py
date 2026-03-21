@@ -322,6 +322,56 @@ def test_export_figure_uses_camera_from_view_derived_figure_spec(monkeypatch, tm
     assert calls[0]["height_px"] == 1000
 
 
+def test_figure_spec_build_variants_derives_named_recipes():
+    spec = FigureSpec(width_px=1200, height_px=900, scale=3.0, background="white", preset="publication-light")
+
+    variants = spec.build_variants(
+        {
+            "dark": {"background": "dark", "preset": "publication-dark"},
+            "transparent": {"background": "transparent", "preset": "publication-light"},
+        }
+    )
+
+    assert list(variants) == ["dark", "transparent"]
+    assert variants["dark"].background == "dark"
+    assert variants["dark"].preset == "publication-dark"
+    assert variants["dark"].width_px == 1200
+    assert variants["transparent"].background == "transparent"
+    assert variants["transparent"].scale == 3.0
+
+
+def test_export_figure_variants_writes_named_png_batch(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append((output_filename, kwargs))
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    base = FigureSpec(width_px=1200, height_px=900, scale=2.5, background="white", preset="publication-light")
+    variants = base.build_variants(
+        {
+            "dark": {"background": "dark", "preset": "publication-dark"},
+            "transparent": {"background": "transparent"},
+        }
+    )
+
+    outdir = tmp_path / "figures"
+    written = view.export.figure_variants(str(outdir), variants=variants, stem="pocket")
+
+    assert written == [
+        str(outdir / "pocket-dark.png"),
+        str(outdir / "pocket-transparent.png"),
+    ]
+    assert (outdir / "pocket-dark.png").read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert (outdir / "pocket-transparent.png").read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls[0][1]["preset"] == "publication-dark"
+    assert calls[1][1]["preset"] == "current"
+
+
 def test_frontend_image_export_event_is_recorded():
     view = MolSysView(debug_js=True)
     event = {
