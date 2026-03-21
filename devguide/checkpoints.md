@@ -186,6 +186,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `FigureSpec` can now also:
     - capture the current camera from a live `view`
     - derive small immutable variants through explicit overrides
+    - expand a named batch of figure recipes from one base recipe
+  - `view.export.figure_variants(...)` now exists as the first explicit batch
+    figure-export path
   - that recipe layer is still intentionally modest:
     - export-facing only
     - no detached project format yet
