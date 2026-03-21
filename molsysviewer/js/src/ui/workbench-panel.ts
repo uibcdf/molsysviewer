@@ -14,6 +14,9 @@ type WorkbenchItem = {
 type SceneSummary = {
     styleTag?: string;
     preset?: string;
+    figurePreset?: string;
+    figureScale?: number;
+    figureVariants?: string[];
 };
 
 type AddonSummary = {
@@ -353,6 +356,15 @@ export class WorkbenchPanel {
         const items: WorkbenchItem[] = [];
         if (summary?.styleTag) items.push({ title: `Style: ${summary.styleTag}` });
         if (summary?.preset) items.push({ title: `Preset: ${summary.preset}` });
+        if (summary?.figurePreset || summary?.figureScale) {
+            const scale = typeof summary?.figureScale === "number" ? `${summary.figureScale.toFixed(1)}x` : undefined;
+            items.push({
+                title: `Figure: ${summary?.figurePreset ?? "publication-light"}${scale ? ` @ ${scale}` : ""}`,
+            });
+        }
+        if ((summary?.figureVariants?.length ?? 0) > 0) {
+            items.push({ title: `Variants: ${summary!.figureVariants!.join(", ")}` });
+        }
         this.renderItems(this.sections.get("scene")!, items);
         this.applySectionExpandedState("scene");
     }

@@ -334,7 +334,7 @@ export class MolSysViewerController {
     private readonly workbenchAnnotations = new Map<string, { text: string; hidden: boolean; atomIndices: number[] }>();
     private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean; atomIndices: number[] }>();
     private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
-    private workbenchScene: { styleTag?: string; preset?: string } | null = null;
+    private workbenchScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
     private workbenchAddons: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
     private addonPanels: AddonPanelRuntime[] = [];
@@ -1366,7 +1366,13 @@ export class MolSysViewerController {
                     : typeof (msg as any).representation === "string"
                         ? (msg as any).representation
                         : undefined;
-            this.workbenchScene = styleTag || preset ? { styleTag, preset } : null;
+            this.workbenchScene = {
+                styleTag,
+                preset,
+                figurePreset: "publication-light",
+                figureScale: 2.0,
+                figureVariants: ["dark", "transparent"],
+            };
         }
     }
 

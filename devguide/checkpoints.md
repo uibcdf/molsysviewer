@@ -189,6 +189,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - expand a named batch of figure recipes from one base recipe
   - `view.export.figure_variants(...)` now exists as the first explicit batch
     figure-export path
+  - `Workbench -> Scene` now also exposes the built-in figure baseline:
+    - default figure preset
+    - default figure scale
+    - recommended figure variants
   - that recipe layer is still intentionally modest:
     - export-facing only
     - no detached project format yet
