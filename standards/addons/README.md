@@ -20,6 +20,10 @@ Bundled references can also be activated through:
 
 - `molsysviewer.addon_templates.list_reference_addons()`
 - `molsysviewer.addon_templates.register_reference_addon(...)`
+- `molsysviewer.addon_templates.build_reference_demo_view(...)`
+
+The last helper should now be treated as the canonical bundled smoke path for
+external teams evaluating the add-on contract.
 
 What belongs here:
 

@@ -188,10 +188,19 @@ import molsysviewer
 
 molsysviewer.addon_templates.list_reference_addons()
 molsysviewer.addon_templates.register_reference_addon("topomt")
+molsysviewer.addon_templates.build_reference_demo_view("topomt")
 ```
 
 That avoids hardcoding internal module strings when teams just want to inspect
 the bundled references.
+
+`build_reference_demo_view("topomt")` is now the shortest supported smoke path
+for external teams:
+
+- register one bundled reference add-on
+- open a real demo system
+- land directly in the shared `Workbench` surface where the add-on runtime can
+  be inspected
 
 ## Packaging contract
 

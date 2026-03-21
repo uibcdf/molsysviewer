@@ -76,6 +76,21 @@ molsysviewer.addon_templates.list_reference_addons()
 molsysviewer.addon_templates.register_reference_addon("topomt")
 ```
 
+If you want the shortest end-to-end smoke path for a downstream team demo, use:
+
+```python
+import molsysviewer
+
+view = molsysviewer.addon_templates.build_reference_demo_view("topomt")
+view
+```
+
+That helper currently does three things for you:
+
+- registers the bundled reference add-on
+- opens the `dialanine` demo system
+- opens the shared `Workbench` panel so the reference workspace is visible
+
 ## 2. Register it directly during development
 
 ```python
@@ -216,6 +231,8 @@ The important pieces to keep stable are:
   - `addon`
   - `ADDON`
   - or `get_addon()`
+- reference smoke helper:
+  - `molsysviewer.addon_templates.build_reference_demo_view(...)`
 
 ## Project defaults during development
 

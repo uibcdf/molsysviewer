@@ -25,5 +25,22 @@ Teams that want to start now already have a starter pack:
 - [`addon_development.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_development.md)
 - [`IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
 
+There is now also a single supported smoke/demo path for external teams:
+
+```python
+import molsysviewer
+
+view = molsysviewer.addon_templates.build_reference_demo_view("topomt")
+view
+```
+
+That gives `MolSysMT`, `TopoMT`, `PharmacophoreMT`, and similar teams a shared
+starting point for discussions:
+
+- one real demo molecular system
+- one credible reference workspace
+- one visible add-on lifecycle/runtime path
+- one reproducible snippet everyone can run before writing their own package
+
 As real MolSysSuite add-ons arrive, this section should become a gallery of
 focused scientific workflows built on top of the same MolSysViewer core.
