@@ -11,6 +11,7 @@ from ._version import __version__
 from .demo import demo
 from .new_view import new_view
 from . import tools
+from . import addon_templates
 from .addons import (
     addons,
     AddonContextActionSpec,
@@ -50,6 +51,7 @@ __all__ = [
     "new_view",
     "demo",
     "tools",
+    "addon_templates",
     "addons",
     "Style",
     "FigureSpec",

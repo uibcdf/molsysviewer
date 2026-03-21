@@ -16,6 +16,11 @@ Read in this order:
 The bundled `minimal_topomt.py` template should now be read as a small but
 credible workspace-shaped reference add-on, not as a bare one-panel toy.
 
+Bundled references can also be activated through:
+
+- `molsysviewer.addon_templates.list_reference_addons()`
+- `molsysviewer.addon_templates.register_reference_addon(...)`
+
 What belongs here:
 
 - stable vocabulary

@@ -181,6 +181,18 @@ registration contract:
 So it is a better starter for downstream teams than a purely declarative
 one-panel example.
 
+For onboarding and demos, MolSysViewer also exposes a small helper surface:
+
+```python
+import molsysviewer
+
+molsysviewer.addon_templates.list_reference_addons()
+molsysviewer.addon_templates.register_reference_addon("topomt")
+```
+
+That avoids hardcoding internal module strings when teams just want to inspect
+the bundled references.
+
 ## Packaging contract
 
 The current packaging contract is lightweight.

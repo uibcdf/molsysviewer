@@ -14,6 +14,7 @@ from molsysviewer import (
     AddonWorkbenchSectionSpec,
     AddonWorkspaceSpec,
     MolSysView,
+    addon_templates,
     addons,
 )
 
@@ -400,6 +401,33 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
         assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-pocket", "inspect-channel"]
         assert [item["id"] for item in addon_msg["workbench_sections"]] == ["pockets", "channels"]
         assert [item["id"] for item in addon_msg["export_helper_specs"]] == ["topography-figure"]
+    finally:
+        addons.clear()
+
+
+def test_addon_templates_helper_lists_and_registers_reference_addons():
+    addons.clear()
+    try:
+        assert addon_templates.list_reference_addons() == ["topomt"]
+        assert addon_templates.resolve_reference_addon("topomt") == "molsysviewer.addon_templates.minimal_topomt"
+        assert addon_templates.resolve_reference_addon("minimal_topomt") == "molsysviewer.addon_templates.minimal_topomt"
+
+        addon = addon_templates.register_reference_addon("topomt")
+        assert addon.name == "topomt-template"
+        assert addons.available() == ["topomt-template"]
+
+        imported = addon_templates.import_reference_module("topomt")
+        assert imported.__name__ == "molsysviewer.addon_templates.minimal_topomt"
+    finally:
+        addons.clear()
+
+
+def test_addon_templates_helper_can_register_all_reference_addons():
+    addons.clear()
+    try:
+        registered = addon_templates.register_all_reference_addons()
+        assert [item.name for item in registered] == ["topomt-template"]
+        assert addons.available() == ["topomt-template"]
     finally:
         addons.clear()
 
