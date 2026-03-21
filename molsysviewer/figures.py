@@ -132,3 +132,14 @@ class FigureSpec:
                 f"Figure variant {name!r} must be a FigureSpec or a dictionary of explicit overrides."
             )
         return resolved
+
+    def build_publication_variants(self, *, include_current: bool = False) -> dict[str, "FigureSpec"]:
+        """Return the standard small publication-oriented variant set."""
+        variants: dict[str, FigureSpec | dict[str, Any]] = {
+            "light": {"background": "white", "preset": "publication-light"},
+            "dark": {"background": "dark", "preset": "publication-dark"},
+            "transparent": {"background": "transparent", "preset": "publication-light"},
+        }
+        if include_current:
+            variants["current"] = {"background": "current", "preset": "current"}
+        return self.build_variants(variants)

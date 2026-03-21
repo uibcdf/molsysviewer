@@ -372,6 +372,53 @@ def test_export_figure_variants_writes_named_png_batch(monkeypatch, tmp_path: Pa
     assert calls[1][1]["preset"] == "current"
 
 
+def test_figure_spec_build_publication_variants_returns_standard_bundle():
+    base = FigureSpec(width_px=1200, height_px=900, scale=2.5, background="white", preset="publication-light")
+
+    variants = base.build_publication_variants(include_current=True)
+
+    assert list(variants) == ["light", "dark", "transparent", "current"]
+    assert variants["light"].background == "white"
+    assert variants["light"].preset == "publication-light"
+    assert variants["dark"].background == "dark"
+    assert variants["dark"].preset == "publication-dark"
+    assert variants["transparent"].background == "transparent"
+    assert variants["current"].background == "current"
+    assert variants["current"].preset == "current"
+
+
+def test_export_figure_publication_set_writes_standard_bundle(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append((output_filename, kwargs))
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    base = FigureSpec.from_view(view, width_px=1600, height_px=1200)
+    outdir = tmp_path / "publication-set"
+    written = view.export.figure_publication_set(
+        str(outdir),
+        figure_spec=base,
+        stem="binding-site",
+        include_current=True,
+    )
+
+    assert written == [
+        str(outdir / "binding-site-light.png"),
+        str(outdir / "binding-site-dark.png"),
+        str(outdir / "binding-site-transparent.png"),
+        str(outdir / "binding-site-current.png"),
+    ]
+    assert calls[0][1]["preset"] == "publication-light"
+    assert calls[1][1]["preset"] == "publication-dark"
+    assert calls[2][1]["preset"] == "current"
+    assert calls[3][1]["preset"] == "current"
+
+
 def test_frontend_image_export_event_is_recorded():
     view = MolSysView(debug_js=True)
     event = {

@@ -190,6 +190,7 @@ Preferred export surface:
 - `view.export.image(...)`
 - `view.export.figure(...)`
 - `view.export.figure_variants(...)`
+- `view.export.figure_publication_set(...)`
 
 `view.export.image(...)` may receive an explicit `camera_snapshot=...` when the
 export should use a saved camera rather than the live current viewport.
@@ -219,6 +220,10 @@ raw image export. It currently provides:
 - `FigureSpec.build_variants(...)` to expand a named batch of figure recipes
 - `view.export.figure_variants(...)` to materialize those named recipes into a
   directory in one pass
+- `FigureSpec.build_publication_variants(...)` to get the standard small
+  `light` / `dark` / `transparent` publication bundle
+- `view.export.figure_publication_set(...)` to export that standard bundle in
+  one call
 
 The runtime `Workbench -> Scene` surface now also reflects the current built-in
 figure baseline so that figure export is visible as part of the workbench
