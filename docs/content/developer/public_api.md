@@ -211,6 +211,10 @@ raw image export. It currently provides:
 - a `background=...` surface (`white`, `dark`, `transparent`, `current`)
 - figure-oriented preset defaults
 - an optional reusable `figure_spec=FigureSpec(...)` recipe layer
+- `FigureSpec.from_view(...)` to capture the current camera into a reusable
+  recipe
+- `FigureSpec.with_overrides(...)` to derive small recipe variants without
+  mutating the original
 
 It is still intentionally modest and should be treated as the first step toward
 the future richer `figure` export contract, not as the final publication export

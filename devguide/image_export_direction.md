@@ -429,6 +429,28 @@ This is still intentionally small. It is not yet a rich figure project format,
 but it already proves that figure export can start to become reusable without
 disconnecting from the current scene/export runtime.
 
+The recipe layer has now grown one more useful step:
+
+```python
+spec = FigureSpec.from_view(
+    view,
+    width_px=2400,
+    height_px=1800,
+    preset="publication-light",
+)
+
+alt = spec.with_overrides(background="transparent")
+
+view.export.figure("figure.png", figure_spec=spec)
+view.export.figure("figure-transparent.png", figure_spec=alt)
+```
+
+This matters because the first reusable figure story should be:
+
+- derive a recipe from a real viewer state
+- keep camera/state reuse explicit
+- generate small figure variants without rebuilding everything by hand
+
 The key is not the exact spelling yet.
 The key is that the API should:
 

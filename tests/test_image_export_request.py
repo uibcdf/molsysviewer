@@ -239,6 +239,89 @@ def test_export_figure_allows_explicit_overrides_over_figure_spec(monkeypatch, t
     ]
 
 
+def test_figure_spec_from_view_captures_current_camera_snapshot(monkeypatch):
+    view = MolSysView(debug_js=True)
+    snapshot = {"target": [0, 0, 0], "position": [5, 5, 5], "up": [0, 1, 0]}
+
+    monkeypatch.setattr(view, "get_camera_snapshot", lambda **kwargs: snapshot)
+
+    spec = FigureSpec.from_view(
+        view,
+        width_px=1600,
+        height_px=1200,
+        scale=2.5,
+        background="dark",
+        preset="publication-dark",
+    )
+
+    assert spec.info() == {
+        "width_px": 1600,
+        "height_px": 1200,
+        "scale": 2.5,
+        "background": "dark",
+        "preset": "publication-dark",
+        "camera_snapshot": snapshot,
+    }
+
+
+def test_figure_spec_from_view_can_skip_camera_capture(monkeypatch):
+    view = MolSysView(debug_js=True)
+    monkeypatch.setattr(view, "get_camera_snapshot", lambda **kwargs: {"target": [1, 2, 3]})
+
+    spec = FigureSpec.from_view(view, include_camera=False)
+
+    assert spec.camera_snapshot is None
+
+
+def test_figure_spec_with_overrides_returns_new_recipe():
+    spec = FigureSpec(
+        width_px=1200,
+        height_px=900,
+        scale=3.0,
+        background="dark",
+        preset="publication-dark",
+        camera_snapshot={"target": [0, 0, 0]},
+    )
+
+    updated = spec.with_overrides(width_px=1800, background="white", include_camera_snapshot=False)
+
+    assert updated is not spec
+    assert updated.info() == {
+        "width_px": 1800,
+        "height_px": 900,
+        "scale": 3.0,
+        "background": "white",
+        "preset": "publication-dark",
+        "camera_snapshot": None,
+    }
+    assert spec.info()["camera_snapshot"] == {"target": [0, 0, 0]}
+
+
+def test_export_figure_uses_camera_from_view_derived_figure_spec(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+    calls = []
+    snapshot = {"target": [0, 0, 0], "position": [9, 4, 1], "up": [0, 1, 0]}
+
+    monkeypatch.setattr(view, "get_camera_snapshot", lambda **kwargs: snapshot)
+
+    spec = FigureSpec.from_view(view, width_px=1400, height_px=1000)
+
+    def fake_export_image(output_filename, **kwargs):
+        calls.append(kwargs)
+        outfile = Path(output_filename)
+        outfile.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    monkeypatch.setattr(view, "_export_image_impl", fake_export_image)
+
+    outfile = tmp_path / "figure-from-view.png"
+    view.export.figure(str(outfile), figure_spec=spec)
+
+    assert outfile.read_bytes() == b"\x89PNG\r\n\x1a\n"
+    assert calls[0]["camera_snapshot"] == snapshot
+    assert calls[0]["width_px"] == 1400
+    assert calls[0]["height_px"] == 1000
+
+
 def test_frontend_image_export_event_is_recorded():
     view = MolSysView(debug_js=True)
     event = {
