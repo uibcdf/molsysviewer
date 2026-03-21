@@ -220,6 +220,10 @@ raw image export. It currently provides:
 - `view.export.figure_variants(...)` to materialize those named recipes into a
   directory in one pass
 
+The runtime `Workbench -> Scene` surface now also reflects the current built-in
+figure baseline so that figure export is visible as part of the workbench
+story, not only as a scripting API.
+
 It is still intentionally modest and should be treated as the first step toward
 the future richer `figure` export contract, not as the final publication export
 system.

@@ -120,7 +120,13 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         panel.setAnnotations([{ key: "notes", title: "Picked label", subtitle: "group 12", active: true, context: true }]);
         panel.setMeasurements([{ title: "Distance", subtitle: "3.2 A" }]);
         panel.setShapes([{ title: "Pocket", subtitle: "surface", hidden: true }]);
-        panel.setScene({ styleTag: "polymer-and-ligand", preset: "atomic-detail" });
+        panel.setScene({
+            styleTag: "polymer-and-ligand",
+            preset: "atomic-detail",
+            figurePreset: "publication-light",
+            figureScale: 2.0,
+            figureVariants: ["dark", "transparent"],
+        });
         panel.setAddons([{
             name: "topomt",
             workspaceTitles: ["TopoMT"],
@@ -138,7 +144,7 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         };
         collect(root);
 
-        assert.strictEqual(items.length, 6);
+        assert.strictEqual(items.length, 8);
         assert.strictEqual(findFirstText(items[0]), "Picked label");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-active"), "true");
         assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-context"), "true");
@@ -146,10 +152,12 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         assert.strictEqual(findFirstText(items[2]), "Pocket");
         assert.strictEqual(findFirstText(items[3]), "Style: polymer-and-ligand");
         assert.strictEqual(findFirstText(items[4]), "Preset: atomic-detail");
-        assert.strictEqual(findFirstText(items[5]), "topomt");
-        assert.ok(items[5].children[1]);
+        assert.strictEqual(findFirstText(items[5]), "Figure: publication-light @ 2.0x");
+        assert.strictEqual(findFirstText(items[6]), "Variants: dark, transparent");
+        assert.strictEqual(findFirstText(items[7]), "topomt");
+        assert.ok(items[7].children[1]);
         assert.strictEqual(
-            items[5].children[1]?.textContent,
+            items[7].children[1]?.textContent,
             "Workspaces: TopoMT · Panels: Topo · Workbench: Pockets · Context: Focus Pocket · Export: Topography Figure Export",
         );
 
