@@ -73,7 +73,7 @@ v.shapes.add_channel_tube(
 Pharmacophore glyphs
 
 ```python
-v.shapes.add_pharmacophore_features(
+v.shapes.add_interaction_sites(
     centers=[(0,0,0), (3,0,0), (6,0,0)],
     kinds=["aromatic", "hydrophobic", "hbond_acceptor"],
     alphas=[0.5, 0.4, 0.6],

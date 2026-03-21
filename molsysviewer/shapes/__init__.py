@@ -1,5 +1,7 @@
 # molsysviewer/shapes/__init__.py
 
+import warnings
+
 from .spheres import SphereShapes
 from .pocket_surfaces import PocketSurfaces
 from .links import LinkShapes
@@ -137,13 +139,27 @@ class ShapesManager:
         return self.ellipsoids.add_anisotropy_ellipsoids(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
+    def add_interaction_sites(
+        self,
+        *args,
+        skip_digestion: bool = False,
+        **kwargs,
+    ):
+        return self.ph4.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+
+    @signal(tags=["shape"])
     def add_pharmacophore_features(
         self,
         *args,
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.ph4.add_pharmacophore_features(*args, skip_digestion=True, **kwargs)
+        warnings.warn(
+            "shapes.add_pharmacophore_features(...) is deprecated; use shapes.add_interaction_sites(...) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.ph4.add_interaction_sites(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
     @digest()
