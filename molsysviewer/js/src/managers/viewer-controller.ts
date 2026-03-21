@@ -1452,6 +1452,9 @@ export class MolSysViewerController {
             const activePanel = panels.find((item) => item.id === selectedId) ?? null;
             const workspaceTitle = this.getWorkspaceOptions().find((item) => item.id === this.currentWorkspace)?.title ?? this.currentWorkspace;
             const workspaceSections = this.workbenchAddonSections.filter((item) => item.workspaceId === this.currentWorkspace);
+            const activeAddonSummary = activePanel
+                ? this.workbenchAddons.find((item) => item.name === activePanel.addon)
+                : null;
             this.workbenchPanel.setActiveWorkspacePanel(
                 activePanel
                     ? {
@@ -1460,6 +1463,8 @@ export class MolSysViewerController {
                         description: activePanel.description,
                         entry: activePanel.entry,
                         addon: activePanel.addon,
+                        contextActionTitles: activeAddonSummary?.contextActionTitles ?? [],
+                        exportHelperTitles: activeAddonSummary?.exportHelperTitles ?? [],
                         sections: workspaceSections.map((item) => ({
                             key: item.key,
                             title: item.title,

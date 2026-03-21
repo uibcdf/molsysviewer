@@ -215,6 +215,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - generic active-panel host surface
     - workspace-specific add-on sections can now be absorbed into that host so
       the workspace panel does not feel split from its own immediate runtime
+    - the host can now also surface the active add-on's immediate capabilities:
+      - context actions
+      - export helpers
     - still no arbitrary add-on frontend runtime, but no longer just a summary
   - that panel selector is now also part of the shared header chrome:
     - core stack feels more like a real `panel mode`
