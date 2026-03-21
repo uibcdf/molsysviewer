@@ -24,6 +24,13 @@ Do not append dated historical entries unless a date is itself operationally rel
   - validate richer add-on use on top of it,
   - mature figure export,
   - and leave standalone as the final major pre-`1.0.0` host push.
+- After the latest workspace/panel runtime slices, Phase A should now be read as
+  **near closure** rather than open-ended:
+  - the shared workbench model is already coherent enough to stop iterating on
+    chrome by default
+  - the next major implementation focus should be Phase B
+  - only keep touching Phase A when a downstream add-on/runtime need exposes a
+    real structural gap
 - Avoid opening many unrelated new surfaces at once.
 - Prefer larger vertical slices that make one part of the product feel more
   real, rather than many small disconnected improvements.
