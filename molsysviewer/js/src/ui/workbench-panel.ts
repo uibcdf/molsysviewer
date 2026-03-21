@@ -49,6 +49,8 @@ type ActiveWorkspacePanelSummary = {
     description?: string;
     entry?: string;
     addon?: string;
+    contextActionTitles?: string[];
+    exportHelperTitles?: string[];
     sections?: Array<{
         key: string;
         title: string;
@@ -248,6 +250,32 @@ export class WorkbenchPanel {
             addon.setAttribute("data-molsysviewer-workbench-workspace-panel-addon", "true");
             addon.textContent = `Add-on: ${summary.addon}`;
             this.workspacePanelHostBody.appendChild(addon);
+        }
+        if ((summary.contextActionTitles?.length ?? 0) > 0 || (summary.exportHelperTitles?.length ?? 0) > 0) {
+            const capabilities = document.createElement("div");
+            capabilities.setAttribute("data-molsysviewer-workbench-workspace-panel-capabilities", "true");
+            Object.assign(capabilities.style, {
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
+                marginTop: "4px",
+            });
+
+            if ((summary.contextActionTitles?.length ?? 0) > 0) {
+                const context = document.createElement("div");
+                context.setAttribute("data-molsysviewer-workbench-workspace-panel-context-actions", "true");
+                context.textContent = `Context: ${summary.contextActionTitles!.join(", ")}`;
+                capabilities.appendChild(context);
+            }
+
+            if ((summary.exportHelperTitles?.length ?? 0) > 0) {
+                const exports = document.createElement("div");
+                exports.setAttribute("data-molsysviewer-workbench-workspace-panel-export-helpers", "true");
+                exports.textContent = `Export: ${summary.exportHelperTitles!.join(", ")}`;
+                capabilities.appendChild(exports);
+            }
+
+            this.workspacePanelHostBody.appendChild(capabilities);
         }
         if (Array.isArray(summary.sections) && summary.sections.length > 0) {
             const sectionsBlock = document.createElement("div");

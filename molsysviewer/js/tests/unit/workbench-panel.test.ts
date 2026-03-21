@@ -211,6 +211,8 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
             description: "Pocket analysis",
             entry: "topomt.panel.topo",
             addon: "topomt",
+            contextActionTitles: ["Inspect Pocket", "Focus Pocket"],
+            exportHelperTitles: ["Pocket Figure"],
             sections: [
                 {
                     key: "topomt:pockets",
@@ -228,6 +230,8 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const hostCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-host", "true");
         const title = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-title", "true");
         const entry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-entry", "true");
+        const context = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-context-actions", "true");
+        const exports = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-export-helpers", "true");
         const section = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section", "topomt:pockets");
         const sectionTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-title", "topomt:pockets");
         const sectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-item", "topomt:pockets");
@@ -239,12 +243,16 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(hostCard);
         assert.ok(title);
         assert.ok(entry);
+        assert.ok(context);
+        assert.ok(exports);
         assert.ok(section);
         assert.ok(sectionTitle);
         assert.ok(sectionItem);
         assert.ok(sectionSubtitle);
         assert.strictEqual(title?.textContent, "TopoMT · Topo");
         assert.strictEqual(entry?.textContent, "Entry: topomt.panel.topo");
+        assert.strictEqual(context?.textContent, "Context: Inspect Pocket, Focus Pocket");
+        assert.strictEqual(exports?.textContent, "Export: Pocket Figure");
         assert.strictEqual(sectionTitle?.textContent, "Pockets");
         assert.strictEqual(sectionItem?.textContent, "Add-on: topomt");
         assert.strictEqual(sectionSubtitle?.textContent, "top_pockets");

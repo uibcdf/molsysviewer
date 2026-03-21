@@ -307,6 +307,9 @@ Current runtime bridge:
   - and a generic active-panel host surface
   - that host can now also absorb workspace-specific sections so the panel and
     its immediate add-on runtime no longer feel artificially split apart
+  - it may also surface the active add-on's immediate domain capabilities there:
+    - context actions
+    - export helpers
   - still not arbitrary add-on frontend UI, but already more than a flat summary
 - that panel selector is now moving up into the shared header itself:
   - core stack navigation (`Navigate` / `Workbench`)
