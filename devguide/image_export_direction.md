@@ -471,6 +471,32 @@ This is still intentionally modest:
 - it expects explicit named `FigureSpec` recipes
 - and it keeps the batch story tied to the same reproducible export surface
 
+There is now also a first built-in publication bundle:
+
+```python
+base = FigureSpec.from_view(view, width_px=2400, height_px=1800)
+
+view.export.figure_publication_set(
+    "figures/",
+    figure_spec=base,
+    stem="binding-site",
+    include_current=True,
+)
+```
+
+That bundle is intentionally small and concrete:
+
+- `light`
+- `dark`
+- `transparent`
+- optional `current`
+
+So the current figure story now has three levels:
+
+- one figure
+- a named custom batch
+- a standard small publication bundle
+
 The key is not the exact spelling yet.
 The key is that the API should:
 

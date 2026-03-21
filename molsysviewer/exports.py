@@ -148,3 +148,24 @@ class ExportManager:
             )
             written.append(str(output_filename))
         return written
+
+    @signal(tags=["export", "figure"])
+    @digest()
+    def figure_publication_set(
+        self,
+        output_directory: str,
+        *,
+        figure_spec: FigureSpec | dict[str, Any] | None = None,
+        stem: str = "figure",
+        include_current: bool = False,
+        skip_digestion: bool = False,
+    ) -> list[str]:
+        """Export the standard publication-oriented figure set to one directory."""
+        base = FigureSpec() if figure_spec is None else figure_spec
+        variants = base.build_publication_variants(include_current=include_current)
+        return self.figure_variants(
+            output_directory,
+            variants=variants,
+            stem=stem,
+            skip_digestion=True,
+        )
