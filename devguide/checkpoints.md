@@ -183,6 +183,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `view.export.figure(...)` now exists as the first explicit figure-oriented
     wrapper above raw image export
   - a first minimal reusable `FigureSpec` now exists on the Python side
+  - `FigureSpec` can now also:
+    - capture the current camera from a live `view`
+    - derive small immutable variants through explicit overrides
   - that recipe layer is still intentionally modest:
     - export-facing only
     - no detached project format yet
