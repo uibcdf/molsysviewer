@@ -1,6 +1,6 @@
 import warnings
 
-from molsysviewer.shapes import PharmacophoreShapes
+from molsysviewer.shapes import PharmacophoreShapes, ShapesManager
 
 
 class DummyView:
@@ -78,3 +78,11 @@ def test_add_pharmacophore_features_warns_and_uses_same_payload():
             },
         }
     ]
+
+
+def test_shapes_manager_exposes_interaction_sites():
+    view = DummyView()
+    shapes = ShapesManager(view)
+
+    assert isinstance(shapes.interaction_sites, PharmacophoreShapes)
+    assert not hasattr(shapes, "ph4")
