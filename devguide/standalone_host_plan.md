@@ -77,6 +77,124 @@ It should also preserve the current project identity:
 - add-ons/workspaces scaling cleanly
 - reproducible scientific state
 
+## Product Aspiration
+
+The final standalone should aim to feel:
+
+- solid
+- powerful
+- professional
+
+That does not mean "visually heavy" or "enterprise-like".
+It means the product should communicate:
+
+- stability
+- clarity
+- deliberateness
+- trustworthiness for scientific work
+
+The intended perception is:
+
+- this is a real scientific application
+- not a browser tab carrying an embedded viewer
+- not a demo shell around a widget
+
+## What Will Make It Feel Solid And Professional
+
+Several signals matter here more than flashy host chrome.
+
+### 1. Dedicated app identity
+
+The host should clearly own:
+
+- application name
+- icon
+- window title
+- menu structure
+
+This is one of the first things that separates an app from a browser page.
+
+### 2. Native host affordances
+
+The final standalone should use host-owned:
+
+- file open dialogs
+- save/export dialogs
+- keyboard shortcuts
+- menu actions
+
+Those flows should feel native, not simulated inside the viewer surface.
+
+### 3. Clean boundary between host and viewer
+
+Professional feel will be lost if the app becomes architecturally confused.
+
+The host should feel like a strong shell around the viewer, not like a second
+implementation of the viewer.
+
+That means:
+
+- host concerns remain host concerns
+- viewer concerns remain viewer concerns
+
+### 4. Calm but deliberate workbench
+
+The app should not try to feel "professional" by becoming busy.
+
+Professional feel in MolSysViewer should come from:
+
+- a calm canvas
+- clear workspace hierarchy
+- panel stacks that scale cleanly
+- predictable export behavior
+- visible scientific intent
+
+### 5. Stable flows for real work
+
+The host should support ordinary scientific workflows without friction:
+
+- open data
+- inspect structure
+- move between workspaces
+- export figures
+- return later to the same state model
+
+If those flows feel stable, the tool will feel powerful.
+
+### 6. Add-ons that look native
+
+Large add-ons should not feel bolted on.
+
+A professional MolSysSuite story means:
+
+- `Core` remains coherent
+- add-on workspaces feel first-class
+- the host does not expose a second-class extension model
+
+### 7. Good error and edge behavior
+
+A tool feels professional not only when the happy path works, but when failure
+is handled clearly.
+
+That includes:
+
+- understandable startup failures
+- understandable file-open failures
+- controlled missing-dependency behavior
+- predictable add-on compatibility behavior
+
+## What Would Make It Feel Weak
+
+These are warning signs for the final standalone:
+
+- it still looks like a normal browser tab
+- browser chrome dominates the experience
+- menus and shortcuts feel accidental or missing
+- file open/export flows feel improvised
+- add-ons feel glued on instead of native
+- host logic and viewer logic start to diverge
+- the shell looks like a demo wrapper rather than an application
+
 ## Host Options Considered
 
 ### Option A. Browser Tab
