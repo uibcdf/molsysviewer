@@ -46,6 +46,8 @@ Current smoke scope:
 8. GroupStrip synchronization
 9. Annotation API sanity after UI-created labels
 10. Export/replay sanity for the newly created artifacts
+11. Figure-export baseline from `Workbench -> Scene`
+12. Reference add-on workspace behavior in the shared workbench
 
 ## Recommended Test System
 
@@ -272,6 +274,63 @@ There is now an integral Python regression for this export surface covering:
 - distance / angle / dihedral measurements,
 - camera snapshot.
 
+### 12. Check figure-export baseline from `Workbench -> Scene`
+
+Workflow:
+
+- open `Workbench`
+- inspect the `Scene` section
+- confirm that figure export is visible there as part of the workbench story
+- capture the current camera with `FigureSpec.from_view(...)`
+- export at least:
+  - one explicit figure
+  - one named variant batch
+  - one publication bundle
+
+Suggested checks:
+
+```python
+from molsysviewer.figures import FigureSpec
+
+view.set_panel_mode(panel="workbench", expanded=True)
+base = FigureSpec.from_view(view, preset="publication-light", scale=2.0)
+```
+
+Expected:
+
+- `Workbench -> Scene` exposes the current figure baseline
+- one explicit figure export succeeds
+- `figure_variants(...)` writes a named batch
+- `figure_publication_set(...)` writes the standard bundle
+- all of them remain tied to the same explicit camera/state choice
+
+### 13. Check a reference add-on workspace in the shared workbench
+
+Workflow:
+
+- build the reference demo view:
+
+```python
+import molsysviewer
+
+view = molsysviewer.addon_templates.build_reference_demo_view("topomt")
+```
+
+- inspect the shared workbench
+- open the workspace launcher
+- move between the reference workspace and `Core`
+
+Expected:
+
+- the reference add-on lands in the shared `Workbench`
+- the add-on workspace appears as a real workspace, not as detached metadata
+- the active add-on host surface exposes:
+  - local panel stack
+  - workspace sections
+  - immediate capabilities
+- returning to `Core` remains calm and coherent
+- the runtime still feels like one MolSysViewer, not several mini-apps
+
 ## Automated Portion
 
 The automated smoke subset should remain small and fast.
@@ -281,6 +340,8 @@ Current minimum:
 - `pytest tests/test_annotations.py -q`
 - `pytest tests/test_reproducible_interaction.py -q`
 - `pytest tests/test_measurements.py -q`
+- `pytest tests/test_image_export_request.py -q`
+- `pytest tests/test_addons.py -q`
 - `npm --prefix molsysviewer/js run test:js`
 - `npm --prefix molsysviewer/js run test:e2e`
 

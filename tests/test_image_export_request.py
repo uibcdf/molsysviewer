@@ -417,6 +417,7 @@ def test_export_figure_publication_set_writes_standard_bundle(monkeypatch, tmp_p
     assert calls[1][1]["preset"] == "publication-dark"
     assert calls[2][1]["preset"] == "current"
     assert calls[3][1]["preset"] == "current"
+    assert all(call[1]["camera_snapshot"] == base.camera_snapshot for call in calls)
 
 
 def test_frontend_image_export_event_is_recorded():
