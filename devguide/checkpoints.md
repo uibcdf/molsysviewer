@@ -57,6 +57,14 @@ Do not append dated historical entries unless a date is itself operationally rel
   - preserve `Core` and `panel mode` semantics unchanged
   - keep the technical mini-plan in:
     - `devguide/standalone_qt_prototype_plan.md`
+- Phase E is now no longer only planned:
+  - the first thin Qt host prototype has started
+  - it currently adds:
+    - a dedicated `QMainWindow`
+    - embedded `QWebEngineView`
+    - a minimal menu bar
+    - reuse of the current standalone HTML/runtime path
+  - it should still be treated as a prototype, not as the final standalone host
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways

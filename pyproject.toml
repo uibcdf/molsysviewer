@@ -24,9 +24,13 @@ dev = [
   "pytest",
   "pytest-cov",
 ]
+standalone = [
+  "pyside6",
+]
 
 [project.scripts]
 molsysviewer = "molsysviewer.standalone:main"
+molsysviewer-qt = "molsysviewer.standalone_qt:main"
 
 [tool.setuptools]
 include-package-data = false

@@ -248,6 +248,22 @@ The current pre-`1.0` standalone bridge is intentionally small:
 These surfaces should be treated as a host-facing bridge built on top of the
 existing standalone HTML export path, not as the final standalone product.
 
+The first Qt-host prototype now also exists as an explicit experimental surface:
+
+- `molsysviewer.create_standalone_qt0_window(...)`
+- `molsysviewer.launch_standalone_qt0(...)`
+- `molsysviewer-qt ...`
+- `python -m molsysviewer.standalone_qt ...`
+
+This should still be read as:
+
+- a thin host prototype
+- not the final standalone host
+- not a second viewer/runtime
+
+Its current purpose is to prove that the existing standalone/runtime path can
+live inside a real app window without forking viewer semantics.
+
 If you change:
 
 - the runtime URL logic,
