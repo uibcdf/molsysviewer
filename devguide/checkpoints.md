@@ -48,6 +48,12 @@ Do not append dated historical entries unless a date is itself operationally rel
   without concrete ecosystem pressure.
 - Phase C is now much stronger and should be considered substantial rather than
   exploratory.
+- Phase D should now prefer product-facing tightening work that teaches the
+  current runtime honestly:
+  - workbench-oriented figure/export tutorials
+  - public docs that connect runtime surfaces to the now-real APIs
+  - small but truthful user/developer guidance slices instead of broad new
+    architecture
 - After the latest workspace/panel runtime slices, Phase A should now be read as
   **near closure** rather than open-ended:
   - the shared workbench model is already coherent enough to stop iterating on
