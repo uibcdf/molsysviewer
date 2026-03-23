@@ -141,6 +141,8 @@ Prototype 1 is successful if:
 The first dependency to add for this prototype is:
 
 - `pyside6`
+- `PySide6-Addons` when `PySide6.QtWebEngineWidgets` is missing from the
+  conda environment
 
 Current recommendation for developers is:
 
@@ -148,9 +150,19 @@ Current recommendation for developers is:
 conda install -c conda-forge pyside6
 ```
 
-This is enough to begin the first prototype spike.
-If platform-specific Qt WebEngine packaging needs an extra package later, that
-should be evaluated during the prototype itself rather than guessed too early.
+In the current development track, that may still be insufficient on some
+platform/Python combinations because `conda-forge::pyside6` does not always
+expose `PySide6.QtWebEngineWidgets`.
+
+When that happens, install the matching PyPI addons package after `pyside6`,
+for example:
+
+```bash
+pip install PySide6-Addons==$(python -c "import PySide6; print(PySide6.__version__)")
+```
+
+This is a development-time fallback for the prototype. It is not yet the final
+conda packaging strategy for MolSysViewer 1.0.
 
 ## What Not To Do In Prototype 1
 
@@ -172,7 +184,8 @@ Prototype 1 should answer one question only:
 After this document, the next implementation slice should be:
 
 1. add `pyside6` as an optional development dependency
-2. create a tiny standalone Qt launcher module
-3. open one `QMainWindow` + `QWebEngineView`
-4. load the existing standalone HTML path
-5. verify that `Core` and `panel mode` remain intact
+2. document the temporary `PySide6-Addons` fallback for `QtWebEngineWidgets`
+3. create a tiny standalone Qt launcher module
+4. open one `QMainWindow` + `QWebEngineView`
+5. load the existing standalone HTML path
+6. verify that `Core` and `panel mode` remain intact
