@@ -23,6 +23,7 @@ Teams that want to start now already have a starter pack:
 
 - [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
 - [`addon_development.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_development.md)
+- [`addon_workspace_workbench.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_workspace_workbench.md)
 - [`IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
 
 There is now also a single supported smoke/demo path for external teams:
@@ -41,6 +42,8 @@ starting point for discussions:
 - one credible reference workspace
 - one visible add-on lifecycle/runtime path
 - one reproducible snippet everyone can run before writing their own package
+- one short recipe that shows how that workspace actually sits inside the shared
+  workbench
 
 As real MolSysSuite add-ons arrive, this section should become a gallery of
 focused scientific workflows built on top of the same MolSysViewer core.
