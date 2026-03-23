@@ -11,6 +11,10 @@ It is not a commitment to implement it immediately.
 It is a design direction that should help keep current decisions compatible with
 that future.
 
+The more operational host-level decision is now tracked separately in:
+
+- `devguide/standalone_host_plan.md`
+
 It also now carries an explicit sequencing decision:
 
 - **standalone should be the last major implementation step before `1.0.0`**

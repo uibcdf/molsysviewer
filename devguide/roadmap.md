@@ -185,6 +185,18 @@ Success criteria:
 - add-ons/workspaces remain compatible there
 - the host is good enough that `1.0.0` can reasonably ship on top of it
 
+Current preferred host direction:
+
+- keep browser-hosted `standalone 0` as the teaching bridge
+- prefer a Python app shell with embedded webview for the final host
+- currently the strongest pragmatic candidate is:
+  - `PySide6 + Qt WebEngine`
+
+See also:
+
+- `devguide/standalone_direction.md`
+- `devguide/standalone_host_plan.md`
+
 ## Guiding Principle
 
 MolSysViewer is guided by a simple product idea:

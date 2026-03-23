@@ -32,6 +32,16 @@ Do not append dated historical entries unless a date is itself operationally rel
   - finish squeezing the value out of the now-stronger add-on/runtime path,
   - treat figure export as a deliberate subsystem rather than a side helper,
   - and leave standalone as the final major pre-`1.0.0` host push.
+- The standalone question should now be treated as more concrete than before:
+  - browser-hosted `standalone 0` is already good enough as a teaching bridge
+  - the final pre-`1.0.0` standalone host should now be planned as a dedicated
+    application shell, not just "open HTML in browser"
+  - the current preferred direction is:
+    - Python app shell
+    - embedded webview
+    - likely `PySide6 + Qt WebEngine`
+  - keep that host decision explicit in:
+    - `devguide/standalone_host_plan.md`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways
