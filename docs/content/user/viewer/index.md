@@ -9,4 +9,5 @@ If you are new, start with **Viewer UI** to learn the layout (buttons, structure
 
 ui
 camera_and_controls
+panel_mode
 ```

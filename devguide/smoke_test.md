@@ -48,6 +48,7 @@ Current smoke scope:
 10. Export/replay sanity for the newly created artifacts
 11. Figure-export baseline from `Workbench -> Scene`
 12. Reference add-on workspace behavior in the shared workbench
+13. Shared panel-mode behavior across `Core` and add-on workspaces
 
 ## Recommended Test System
 
@@ -331,6 +332,34 @@ Expected:
 - returning to `Core` remains calm and coherent
 - the runtime still feels like one MolSysViewer, not several mini-apps
 
+### 14. Check shared panel-mode behavior explicitly
+
+Workflow:
+
+- open `Navigate` from Python
+- switch to `Workbench`
+- collapse panel mode
+- if an add-on workspace is available, switch into it and return to `Core`
+
+Suggested checks:
+
+```python
+view.set_panel_mode("navigate")
+view.set_panel_mode("workbench")
+view.set_panel_mode(None, expanded=False)
+```
+
+Expected:
+
+- the panel-mode surface responds coherently to the Python API
+- the messages are retained as part of the viewer-side state/history
+- `Core` still reads as the calm native workspace
+- larger add-on workspaces remain workbench-centric without pretending they are
+  already a second native `Navigate`
+- the launcher hierarchy still feels like:
+  - workspace first
+  - local panel stack second
+
 ## Automated Portion
 
 The automated smoke subset should remain small and fast.
@@ -342,6 +371,7 @@ Current minimum:
 - `pytest tests/test_measurements.py -q`
 - `pytest tests/test_image_export_request.py -q`
 - `pytest tests/test_addons.py -q`
+- `pytest tests/test_panel_mode_request.py -q`
 - `npm --prefix molsysviewer/js run test:js`
 - `npm --prefix molsysviewer/js run test:e2e`
 

@@ -52,6 +52,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   current runtime honestly:
   - workbench-oriented figure/export tutorials
   - workbench-oriented add-on/workspace tutorials
+  - panel/workspace behavior docs that explain the shared workbench model
   - public docs that connect runtime surfaces to the now-real APIs
   - small but truthful user/developer guidance slices instead of broad new
     architecture
