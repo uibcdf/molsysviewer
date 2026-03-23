@@ -17,6 +17,13 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- `0.14.0` should now be read as the checkpoint where:
+  - Phase D stopped being only intention and gained first real tightening
+    slices
+  - the product became materially easier to teach without chat history
+  - figure export, add-on workspaces, and panel mode now have both user-facing
+    guidance and matching smoke/regression coverage
+
 - `0.13.0` should now be read as the checkpoint where:
   - the shared workbench/runtime became coherent enough to stop dominating the roadmap
   - the reference add-on path became teachable end to end
@@ -64,6 +71,15 @@ Do not append dated historical entries unless a date is itself operationally rel
   - likely candidates for a last tightening pass before `0.14.0` are:
     - one more docs/API parity review
     - or one more small regression bundle around recently taught surfaces
+- That short pre-`0.14.0` review is now effectively closed:
+  - docs/API/runtime parity for the recent tightening surfaces looks good
+  - the small regression bundle for:
+    - figure export
+    - add-on workspaces
+    - panel mode
+    is green
+  - so `0.14.0` is justified as the first checkpoint where product tightening
+    itself becomes part of the release story
 - After the latest workspace/panel runtime slices, Phase A should now be read as
   **near closure** rather than open-ended:
   - the shared workbench model is already coherent enough to stop iterating on
