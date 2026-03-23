@@ -203,11 +203,17 @@ Current preferred host direction:
 - prefer a Python app shell with embedded webview for the final host
 - currently the strongest pragmatic candidate is:
   - `PySide6 + Qt WebEngine`
+- begin that push with a deliberately thin Qt prototype:
+  - `QMainWindow`
+  - `QWebEngineView`
+  - same embedded runtime
+  - no standalone-only viewer semantics
 
 See also:
 
 - `devguide/standalone_direction.md`
 - `devguide/standalone_host_plan.md`
+- `devguide/standalone_qt_prototype_plan.md`
 
 ## Guiding Principle
 
