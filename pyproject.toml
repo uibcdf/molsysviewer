@@ -26,6 +26,7 @@ dev = [
 ]
 standalone = [
   "pyside6",
+  "PySide6-Addons",
 ]
 
 [project.scripts]

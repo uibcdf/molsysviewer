@@ -11,8 +11,10 @@ from .standalone import build_standalone0_html
 
 QT_IMPORT_ERROR = (
     "PySide6 with Qt WebEngine is required for the standalone Qt prototype. "
-    "Install it in your development environment, for example with: "
-    "`conda install -c conda-forge pyside6`."
+    "Install `pyside6` and ensure `PySide6.QtWebEngineWidgets` is available. "
+    "If the conda-forge build does not expose that module in your environment, "
+    "install the matching PyPI addons package, for example "
+    "`pip install PySide6-Addons==<your-pyside6-version>`."
 )
 
 

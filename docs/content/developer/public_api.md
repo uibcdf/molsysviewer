@@ -255,6 +255,11 @@ The first Qt-host prototype now also exists as an explicit experimental surface:
 - `molsysviewer-qt ...`
 - `python -m molsysviewer.standalone_qt ...`
 
+For development, this prototype requires `PySide6` and access to
+`PySide6.QtWebEngineWidgets`. If the conda-forge `pyside6` build in your
+environment does not expose that module, install the matching
+`PySide6-Addons` wheel as a temporary development fallback.
+
 This should still be read as:
 
 - a thin host prototype

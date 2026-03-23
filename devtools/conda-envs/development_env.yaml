@@ -46,3 +46,7 @@ dependencies:
   - sphinx-tabs
   - pydata-sphinx-theme
   - myst-nb
+  - pip:
+      # Keep Qt WebEngine available for the standalone Qt prototype when the
+      # conda-forge pyside6 build does not expose PySide6.QtWebEngineWidgets.
+      - PySide6-Addons
