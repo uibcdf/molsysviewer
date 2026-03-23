@@ -20,6 +20,7 @@ channel_tube
 pharmacophore_overlay
 anisotropy_ellipsoids
 figure_export_workbench
+addon_workspace_workbench
 html_export
 sphinx_html_embedding
 addon_development

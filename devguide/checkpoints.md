@@ -51,6 +51,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Phase D should now prefer product-facing tightening work that teaches the
   current runtime honestly:
   - workbench-oriented figure/export tutorials
+  - workbench-oriented add-on/workspace tutorials
   - public docs that connect runtime surfaces to the now-real APIs
   - small but truthful user/developer guidance slices instead of broad new
     architecture
