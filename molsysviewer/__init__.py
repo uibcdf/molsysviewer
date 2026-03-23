@@ -46,6 +46,18 @@ def launch_standalone0(*args, **kwargs):
     return _launch_standalone0(*args, **kwargs)
 
 
+def create_standalone_qt0_window(*args, **kwargs):
+    from .standalone_qt import create_standalone_qt0_window as _create_standalone_qt0_window
+
+    return _create_standalone_qt0_window(*args, **kwargs)
+
+
+def launch_standalone_qt0(*args, **kwargs):
+    from .standalone_qt import launch_standalone_qt0 as _launch_standalone_qt0
+
+    return _launch_standalone_qt0(*args, **kwargs)
+
+
 __all__ = [
     "MolSysView",
     "new_view",
@@ -57,6 +69,8 @@ __all__ = [
     "FigureSpec",
     "build_standalone0_html",
     "launch_standalone0",
+    "create_standalone_qt0_window",
+    "launch_standalone_qt0",
     "AddonSpec",
     "AddonWorkspaceSpec",
     "AddonPanelSpec",
