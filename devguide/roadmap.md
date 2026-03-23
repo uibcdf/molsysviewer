@@ -162,6 +162,18 @@ Success criteria:
 - the docs tell the truth about the current runtime
 - the remaining gap to `1.0.0` is mostly host-level, not conceptual confusion
 
+Immediate pre-`0.14.0` interpretation:
+
+- recent tightening already improved three real teaching surfaces:
+  - figure export
+  - add-on/workspace runtime
+  - panel/workspace behavior
+- before `0.14.0`, prefer confirming that these slices are enough rather than
+  reopening broad design work
+- the next useful question is no longer "what should panel mode be?" but:
+  - does the current runtime already teach well enough to count as the next
+    stable pre-`1.0` checkpoint?
+
 ### Phase E. Final Standalone Push
 
 Goal:

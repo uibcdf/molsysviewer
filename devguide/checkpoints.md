@@ -56,6 +56,14 @@ Do not append dated historical entries unless a date is itself operationally rel
   - public docs that connect runtime surfaces to the now-real APIs
   - small but truthful user/developer guidance slices instead of broad new
     architecture
+- The practical question is now shifting toward the next checkpoint gate:
+  - before `0.14.0`, prefer checking whether the current Phase D slices are
+    already enough to teach the product honestly
+  - do not reopen broad architectural fronts unless the review exposes a real
+    gap
+  - likely candidates for a last tightening pass before `0.14.0` are:
+    - one more docs/API parity review
+    - or one more small regression bundle around recently taught surfaces
 - After the latest workspace/panel runtime slices, Phase A should now be read as
   **near closure** rather than open-ended:
   - the shared workbench model is already coherent enough to stop iterating on
