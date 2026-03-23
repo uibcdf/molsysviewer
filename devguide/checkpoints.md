@@ -49,6 +49,14 @@ Do not append dated historical entries unless a date is itself operationally rel
     - likely `PySide6 + Qt WebEngine`
   - keep that host decision explicit in:
     - `devguide/standalone_host_plan.md`
+- The first implementation step for Phase E should now also be treated as
+  decided:
+  - begin with a thin Qt prototype
+  - use `PySide6`
+  - embed the existing runtime in `QWebEngineView`
+  - preserve `Core` and `panel mode` semantics unchanged
+  - keep the technical mini-plan in:
+    - `devguide/standalone_qt_prototype_plan.md`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways

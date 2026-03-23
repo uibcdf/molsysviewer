@@ -32,6 +32,9 @@ dependencies:
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
 
+  # --- Optional: final-standalone prototyping (Qt host shell) ---
+  - pyside6
+
   # --- Documentation with Sphinx and MyST ---
   - jupyterlab
   - sphinx
