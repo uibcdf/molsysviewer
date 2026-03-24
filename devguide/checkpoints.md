@@ -98,6 +98,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     mosaic or multi-panel layout system
 - `Workbench` now also has a first body-level workspace overview:
   - small workspace cards inside the panel body
+  - the current workspace card can now reflect the active panel hosted below
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
 - Phase B is now advanced enough that it should not keep growing sideways

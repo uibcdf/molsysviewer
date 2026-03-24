@@ -301,6 +301,8 @@ The first body-level step toward the future mosaic should be modest:
 - that block may use cards similar to the launcher
 - it should help the user understand the available domains without forcing a
   full layout editor
+- when a workspace already has an active panel, the overview should be able to
+  reflect that active panel instead of staying completely generic
 
 Important rule:
 
