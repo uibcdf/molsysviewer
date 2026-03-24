@@ -187,6 +187,14 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         def getSaveFileName(_parent=None, _title="", _dir="", _filter=""):
             return FakeFileDialog.saved, "HTML files (*.html)"
 
+    class FakeInputDialog:
+        value = ""
+        accepted = True
+
+        @staticmethod
+        def getText(_parent=None, _title="", _label=""):
+            return FakeInputDialog.value, FakeInputDialog.accepted
+
     class FakeQUrl:
         @staticmethod
         def fromLocalFile(path):
@@ -212,6 +220,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_gui.QAction = FakeAction
     module_widgets.QApplication = FakeApplication
     module_widgets.QFileDialog = FakeFileDialog
+    module_widgets.QInputDialog = FakeInputDialog
     module_widgets.QMainWindow = FakeMainWindow
     module_web.QWebEngineView = FakeWebView
 
@@ -246,6 +255,12 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert calls == [(str(tmp_path / "picked-system.pdb"), str(outfile.resolve()), "Qt Prototype")]
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
+    assert runtime["window"].title == "Qt Prototype · picked-system.pdb"
+    FakeInputDialog.value = "1crn"
+    file_menu.actions[2].triggered._callbacks[0]()
+    assert calls[-1] == ("1crn", str(outfile.resolve()), "Qt Prototype")
+    assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
+    assert runtime["window"].title == "Qt Prototype · 1crn"
     view_menu = runtime["window"].menu_bar.menus[1]
     for action in view_menu.actions:
         assert action.triggered._callbacks
@@ -270,7 +285,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     FakeFileDialog.saved = str(tmp_path / "exported-figure.png")
     export_menu.actions[1].triggered._callbacks[0]()
     assert figure_calls == [
-        (str(tmp_path / "picked-system.pdb"), str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
+        ("1crn", str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
     ]
     assert runtime["window"].status_bar.messages[-1] == "Exported Figure: exported-figure.png"
 
