@@ -12,7 +12,11 @@ LIBRARIES = {
     'argdigest': {'type': 'hard', 'pypi': 'argdigest'},
 }
 
-MAPPING = {}
+MAPPING = {
+    'molsysmt_MolSys': 'molsysmt',
+    'file_h5msm': 'molsysmt',
+    'file_pdb': 'molsysmt',
+}
 
 SHOW_ALL_CAPABILITIES = True
 

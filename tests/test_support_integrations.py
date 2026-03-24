@@ -59,6 +59,12 @@ def test_depdigest_config_lists_support_stack_as_hard_dependencies():
         assert depdigest_config.LIBRARIES[library_name]["type"] == "hard"
 
 
+def test_depdigest_mapping_covers_primary_molsysmt_input_forms():
+    assert depdigest_config.MAPPING["molsysmt_MolSys"] == "molsysmt"
+    assert depdigest_config.MAPPING["file_h5msm"] == "molsysmt"
+    assert depdigest_config.MAPPING["file_pdb"] == "molsysmt"
+
+
 def test_private_variables_use_local_pyunitwizard_instance():
     assert variables.puw is puw
 

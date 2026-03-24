@@ -46,6 +46,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     `@digest()`/`@signal()` rule as the rest of the main public API
   - `depdigest` is now explicit in the local hard support stack rather than an
     implicit bootstrap dependency
+  - `depdigest` now also has a first concrete `MAPPING` layer for primary
+    MolSysMT input forms used by MolSysViewer (`molsysmt.MolSys`, `h5msm`,
+    `pdb`) instead of remaining completely flat
   - the ArgDigest surface now also covers stable query/delegation wrappers such
     as `contains(...)`, `is_composed_of(...)`, and `extract(...)` in the main
     viewer path
