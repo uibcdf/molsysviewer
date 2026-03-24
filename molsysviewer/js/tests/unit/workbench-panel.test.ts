@@ -246,6 +246,13 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
         const overviewSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-subtitle", "topomt");
         const overviewEntry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-entry", "topomt");
+        const overviewPreview = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview", "topomt");
+        const overviewPreviewDescription = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-description", "topomt");
+        const overviewPreviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-capabilities", "topomt");
+        const overviewPreviewSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section", "topomt:pockets");
+        const overviewPreviewSectionTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-title", "topomt:pockets");
+        const overviewPreviewSectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-item", "topomt:pockets");
+        const overviewPreviewSectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", "topomt:pockets");
         const overviewPanels = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panels", "topomt");
         const overviewCurrentPanel = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-current", "topo");
         const overviewPanelButton = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel", "channels");
@@ -267,6 +274,13 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(overviewCard);
         assert.ok(overviewSubtitle);
         assert.ok(overviewEntry);
+        assert.ok(overviewPreview);
+        assert.ok(overviewPreviewDescription);
+        assert.ok(overviewPreviewCapabilities);
+        assert.ok(overviewPreviewSection);
+        assert.ok(overviewPreviewSectionTitle);
+        assert.ok(overviewPreviewSectionItem);
+        assert.ok(overviewPreviewSectionSubtitle);
         assert.ok(overviewPanels);
         assert.ok(overviewCurrentPanel);
         assert.ok(overviewPanelButton);
@@ -286,6 +300,11 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.strictEqual(currentSection?.textContent, "Current");
         assert.strictEqual(overviewSubtitle?.textContent, "Panel: Topo");
         assert.strictEqual(overviewEntry?.textContent, "Entry: topomt.panel.topo");
+        assert.strictEqual(overviewPreviewDescription?.textContent, "Pocket analysis");
+        assert.strictEqual(overviewPreviewCapabilities?.children.length, 3);
+        assert.strictEqual(overviewPreviewSectionTitle?.textContent, "Pockets");
+        assert.strictEqual(overviewPreviewSectionItem?.textContent, "Add-on: topomt");
+        assert.strictEqual(overviewPreviewSectionSubtitle?.textContent, "top_pockets");
         assert.strictEqual(overviewMarker?.textContent, "Current workspace");
         assert.strictEqual(title?.textContent, "TopoMT · Topo");
         assert.strictEqual(entry?.textContent, "Entry: topomt.panel.topo");
@@ -469,7 +488,7 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const currentSubtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-subtitle", "true");
         const launcher = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-launcher", "true");
         const overview = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview", "true");
-        const overviewCoreSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "core");
+        const overviewCurrentSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "current");
         const overviewAddonSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "addons");
         const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
         const overviewCurrent = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-current", "core");
@@ -480,7 +499,7 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         assert.ok(currentSubtitle);
         assert.ok(launcher);
         assert.ok(overview);
-        assert.ok(overviewCoreSection);
+        assert.ok(overviewCurrentSection);
         assert.ok(overviewAddonSection);
         assert.ok(overviewCard);
         assert.ok(overviewCurrent);
@@ -489,7 +508,7 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         assert.strictEqual(currentTitle?.textContent, "Core");
         assert.strictEqual(currentSubtitle?.textContent, "Navigate + Workbench");
         assert.strictEqual(launcher?.getAttribute("data-molsysviewer-panel-workspace-launcher-mode"), "mosaic");
-        assert.strictEqual(overviewCoreSection?.textContent, "Core");
+        assert.strictEqual(overviewCurrentSection?.textContent, "Current");
         assert.strictEqual(overviewAddonSection?.textContent, "Add-ons");
         assert.strictEqual(overviewMarker?.textContent, "Open workspace");
         assert.strictEqual(overviewCurrentMarker?.textContent, "Current workspace");

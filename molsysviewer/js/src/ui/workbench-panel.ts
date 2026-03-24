@@ -484,6 +484,131 @@ export class WorkbenchPanel {
                 card.appendChild(entry);
             }
 
+            if (isCurrent && this.activeWorkspacePanelSummary) {
+                const preview = document.createElement("div");
+                preview.setAttribute("data-molsysviewer-workbench-workspace-overview-preview", item.id);
+                Object.assign(preview.style, {
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px",
+                    width: "100%",
+                    marginTop: "2px",
+                    padding: "8px",
+                    borderRadius: "8px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                });
+
+                if (this.activeWorkspacePanelSummary.description) {
+                    const description = document.createElement("div");
+                    description.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-description", item.id);
+                    Object.assign(description.style, {
+                        fontSize: "11px",
+                        lineHeight: "1.3",
+                        color: "rgba(244,244,245,0.72)",
+                    });
+                    description.textContent = this.activeWorkspacePanelSummary.description;
+                    preview.appendChild(description);
+                }
+
+                const capabilityTexts: string[] = [];
+                if ((this.activeWorkspacePanelSummary.contextActionTitles?.length ?? 0) > 0) {
+                    capabilityTexts.push(`Context ${this.activeWorkspacePanelSummary.contextActionTitles!.length}`);
+                }
+                if ((this.activeWorkspacePanelSummary.exportHelperTitles?.length ?? 0) > 0) {
+                    capabilityTexts.push(`Export ${this.activeWorkspacePanelSummary.exportHelperTitles!.length}`);
+                }
+                if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
+                    capabilityTexts.push(`Sections ${this.activeWorkspacePanelSummary.sections!.length}`);
+                }
+
+                if (capabilityTexts.length > 0) {
+                    const capabilities = document.createElement("div");
+                    capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capabilities", item.id);
+                    Object.assign(capabilities.style, {
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "4px",
+                    });
+
+                    for (const text of capabilityTexts) {
+                        const chip = document.createElement("div");
+                        chip.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capability", text.toLowerCase().replace(/\s+/g, "-"));
+                        Object.assign(chip.style, {
+                            padding: "3px 7px",
+                            borderRadius: "999px",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(255,255,255,0.04)",
+                            fontSize: "10px",
+                            fontWeight: "700",
+                            color: "rgba(244,244,245,0.76)",
+                        });
+                        chip.textContent = text;
+                        capabilities.appendChild(chip);
+                    }
+
+                    preview.appendChild(capabilities);
+                }
+
+                if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
+                    const sections = document.createElement("div");
+                    sections.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-sections", item.id);
+                    Object.assign(sections.style, {
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px",
+                    });
+
+                    for (const section of this.activeWorkspacePanelSummary.sections!.slice(0, 2)) {
+                        const sectionRow = document.createElement("div");
+                        sectionRow.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section", section.key);
+                        Object.assign(sectionRow.style, {
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "2px",
+                        });
+
+                        const sectionTitle = document.createElement("div");
+                        sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-title", section.key);
+                        Object.assign(sectionTitle.style, {
+                            fontSize: "10px",
+                            fontWeight: "700",
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                            color: "rgba(244,244,245,0.54)",
+                        });
+                        sectionTitle.textContent = section.title;
+                        sectionRow.appendChild(sectionTitle);
+
+                        const sectionItem = document.createElement("div");
+                        sectionItem.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-item", section.key);
+                        Object.assign(sectionItem.style, {
+                            fontSize: "11px",
+                            color: "rgba(244,244,245,0.78)",
+                        });
+                        sectionItem.textContent = section.itemTitle;
+                        sectionRow.appendChild(sectionItem);
+
+                        if (section.itemSubtitle) {
+                            const sectionSubtitle = document.createElement("div");
+                            sectionSubtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", section.key);
+                            Object.assign(sectionSubtitle.style, {
+                                fontSize: "10px",
+                                color: "rgba(244,244,245,0.58)",
+                            });
+                            sectionSubtitle.textContent = section.itemSubtitle;
+                            sectionRow.appendChild(sectionSubtitle);
+                        }
+
+                        sections.appendChild(sectionRow);
+                    }
+
+                    preview.appendChild(sections);
+                }
+
+                card.appendChild(preview);
+            }
+
             if (isCurrent && this.workspacePanelItems.length > 0) {
                 const panelStrip = document.createElement("div");
                 panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item.id);

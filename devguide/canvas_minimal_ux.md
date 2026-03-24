@@ -254,6 +254,19 @@ as separate concerns:
 - one shared panel-content registry
 - one swappable navigator
 
+Current runtime direction:
+
+- the `Workbench` body-level workspace overview should keep moving toward a
+  light mosaic language
+- the current workspace card may act as a small "hero" summary of the active
+  host:
+  - active panel
+  - entry
+  - capability hints
+  - first dynamic section previews
+- this is still meant to feel like calm navigation, not like a dashboard or a
+  second toolbar
+
 This should also stay compatible with optional ecosystem add-ons:
 
 - the built-in target remains `Navigate` + `Workbench`

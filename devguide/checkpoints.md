@@ -120,6 +120,11 @@ Do not append dated historical entries unless a date is itself operationally rel
   - small workspace cards inside the panel body
   - the current workspace card can now reflect the active panel hosted below
   - and can surface the active panel entry when that helps identify the runtime
+  - the current workspace card can now also preview the active host more
+    directly:
+    - description
+    - immediate capability counts
+    - first dynamic section cards
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
 - Phase B is now advanced enough that it should not keep growing sideways
