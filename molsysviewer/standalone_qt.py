@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import shutil
 import tempfile
 from typing import Any, Sequence
 
@@ -181,9 +182,24 @@ def _install_menu_bar(
     view_menu.addAction(close_panel_action)
 
     export_html_action = QAction("Export HTML", window)
-    export_html_action.triggered.connect(
-        lambda: _show_status(window, "Export actions are placeholders in the first Qt prototype.")
-    )
+
+    def _export_html():
+        if not hasattr(QFileDialog, "getSaveFileName"):
+            _show_status(window, "Export HTML is not available in the current Qt runtime.")
+            return
+        selected, _filter = QFileDialog.getSaveFileName(
+            window,
+            "Export MolSysViewer HTML",
+            str(Path(html_path).with_name("molsysviewer-export.html")),
+            "HTML files (*.html);;All files (*)",
+        )
+        if not selected:
+            return
+        destination = Path(selected).expanduser().resolve()
+        shutil.copyfile(html_path, destination)
+        _show_status(window, f"Exported HTML: {destination.name}")
+
+    export_html_action.triggered.connect(_export_html)
     export_menu.addAction(export_html_action)
 
     export_figure_action = QAction("Export Figure", window)
