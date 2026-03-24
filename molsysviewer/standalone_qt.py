@@ -19,6 +19,8 @@ QT_IMPORT_ERROR = (
     "`pip install PySide6-Addons==<your-pyside6-version>`."
 )
 
+QT_STATE_FILENAME = "standalone_qt0_state.json"
+
 
 def _import_qt():
     try:
@@ -46,6 +48,35 @@ def _get_or_create_application(QApplication, argv: Sequence[str] | None = None):
     if app is not None:
         return app
     return QApplication(list(argv or []))
+
+
+def _qt_shell_state_path() -> Path:
+    return Path.home() / ".molsysviewer" / QT_STATE_FILENAME
+
+
+def _load_qt_shell_state() -> dict[str, Any]:
+    path = _qt_shell_state_path()
+    if not path.exists():
+        return {"recent_sources": []}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"recent_sources": []}
+    if not isinstance(data, dict):
+        return {"recent_sources": []}
+    recent_sources = data.get("recent_sources", [])
+    if not isinstance(recent_sources, list):
+        recent_sources = []
+    return {"recent_sources": recent_sources[:5]}
+
+
+def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
+    path = _qt_shell_state_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "recent_sources": current_state.get("recent_sources", [])[:5],
+    }
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def _show_status(window, message: str) -> None:
@@ -84,6 +115,13 @@ def _record_recent_source(
     recent[:] = [item for item in recent if not (item["kind"] == kind and item["loaded_label"] == loaded_label)]
     recent.insert(0, entry)
     del recent[5:]
+
+
+def _persist_shell_state(current_state: dict[str, Any]) -> None:
+    try:
+        _save_qt_shell_state(current_state)
+    except Exception:
+        return
 
 
 def _send_viewer_message(webview, message: dict[str, Any]) -> None:
@@ -160,6 +198,7 @@ def _load_demo_into_qt_host(
         value=demo_name,
         loaded_label=demo_name,
     )
+    _persist_shell_state(current_state)
     _reload_html_in_view(webview, QUrl, html_path)
     _show_status(window, f"Loaded demo: {demo_name}")
 
@@ -200,9 +239,12 @@ def _load_recent_source(
         value=value,
         loaded_label=loaded_label,
     )
+    _persist_shell_state(current_state)
     _reload_html_in_view(webview, QUrl, html_path)
     if kind == "pdb_id":
         _show_status(window, f"Loaded PDB ID: {loaded_label}")
+    elif kind == "source":
+        _show_status(window, f"Loaded source: {loaded_label}")
     else:
         _show_status(window, f"Loaded file: {loaded_label}")
 
@@ -253,6 +295,7 @@ def _install_menu_bar(
             value=selected,
             loaded_label=Path(selected).name,
         )
+        _persist_shell_state(current_state)
         _reload_html_in_view(webview, QUrl, html_path)
         _refresh_recent_menu()
         _show_status(window, f"Loaded file: {Path(selected).name}")
@@ -264,7 +307,9 @@ def _install_menu_bar(
     recent_menu = file_menu.addMenu("Recent")
 
     def _refresh_recent_menu() -> None:
-        if hasattr(recent_menu, "actions"):
+        if hasattr(recent_menu, "clear"):
+            recent_menu.clear()
+        elif isinstance(getattr(recent_menu, "actions", None), list):
             recent_menu.actions.clear()
         recent_sources = current_state.get("recent_sources", [])
         if not recent_sources:
@@ -338,8 +383,42 @@ def _install_menu_bar(
     load_pdbid_action.triggered.connect(_load_pdbid)
     file_menu.addAction(load_pdbid_action)
 
+    load_source_action = QAction("Load Source", window)
+
+    def _load_source():
+        if not hasattr(QInputDialog, "getText"):
+            _show_status(window, "Load Source is not available in the current Qt runtime.")
+            return
+        value, accepted = QInputDialog.getText(
+            window,
+            "Load MolSysMT Source",
+            "Source:",
+        )
+        source_value = str(value).strip()
+        if not accepted or not source_value:
+            return
+        _rebuild_qt_html(
+            source_value,
+            html_path=html_path,
+            title=current_title,
+        )
+        _set_loaded_state(window, current_state, source_value, source_value)
+        _record_recent_source(
+            current_state,
+            kind="source",
+            value=source_value,
+            loaded_label=source_value,
+        )
+        _persist_shell_state(current_state)
+        _reload_html_in_view(webview, QUrl, html_path)
+        _refresh_recent_menu()
+        _show_status(window, f"Loaded source: {source_value}")
+
+    load_source_action.triggered.connect(_load_source)
+    file_menu.addAction(load_source_action)
+
     close_action = QAction("Close", window)
-    close_action.triggered.connect(window.close)
+    close_action.triggered.connect(lambda: (_persist_shell_state(current_state), window.close()))
     file_menu.addAction(close_action)
 
     open_navigate_action = QAction("Open Navigate", window)
@@ -446,6 +525,27 @@ def _install_menu_bar(
     current_source_action.triggered.connect(_show_current_source)
     help_menu.addAction(current_source_action)
 
+    reload_last_action = QAction("Reload Last Source", window)
+
+    def _reload_last_source() -> None:
+        recent_sources = current_state.get("recent_sources", [])
+        if not recent_sources:
+            _show_status(window, "No recent source is available.")
+            return
+        _load_recent_source(
+            recent_sources[0],
+            window=window,
+            webview=webview,
+            QUrl=QUrl,
+            html_path=html_path,
+            current_title=current_title,
+            current_state=current_state,
+        )
+        _refresh_recent_menu()
+
+    reload_last_action.triggered.connect(_reload_last_source)
+    help_menu.addAction(reload_last_action)
+
 
 def create_standalone_qt0_window(
     molecular_system: Any,
@@ -508,6 +608,7 @@ def create_standalone_qt0_window(
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
     current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
+    current_state.update(_load_qt_shell_state())
     _install_menu_bar(
         window=window,
         webview=webview,

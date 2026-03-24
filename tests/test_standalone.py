@@ -1,3 +1,4 @@
+import json
 import pytest
 import sys
 from types import ModuleType
@@ -247,6 +248,10 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     monkeypatch.setitem(sys.modules, "PySide6.QtGui", module_gui)
     monkeypatch.setitem(sys.modules, "PySide6.QtWidgets", module_widgets)
     monkeypatch.setitem(sys.modules, "PySide6.QtWebEngineWidgets", module_web)
+    monkeypatch.setattr(
+        "molsysviewer.standalone_qt._qt_shell_state_path",
+        lambda: tmp_path / "standalone_qt0_state.json",
+    )
 
     outfile = tmp_path / "qt0.html"
     runtime = create_standalone_qt0_window(
@@ -265,6 +270,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     file_menu = runtime["window"].menu_bar.menus[0]
     demo_menu = file_menu.actions[1]
     recent_menu = file_menu.actions[2]
+    load_pdbid_action = file_menu.actions[3]
+    load_source_action = file_menu.actions[4]
+    close_action = file_menu.actions[5]
     assert demo_menu.title == "Load Demo"
     assert recent_menu.title == "Recent"
     assert recent_menu.actions[0].text == "No recent sources"
@@ -289,15 +297,22 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert recent_menu.actions[0].text == "pentalanine"
     assert recent_menu.actions[1].text == "picked-system.pdb"
     FakeInputDialog.value = "1crn"
-    file_menu.actions[3].triggered._callbacks[0]()
+    load_pdbid_action.triggered._callbacks[0]()
     assert calls[-1] == ("1crn", str(outfile.resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
     assert recent_menu.actions[0].text == "1crn"
     assert recent_menu.actions[1].text == "pentalanine"
+    FakeInputDialog.value = "molsysmt.MolSys"
+    load_source_action.triggered._callbacks[0]()
+    assert calls[-1] == ("molsysmt.MolSys", str(outfile.resolve()), "Qt Prototype")
+    assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
+    assert runtime["window"].title == "Qt Prototype · molsysmt.MolSys"
+    assert recent_menu.actions[0].text == "molsysmt.MolSys"
+    assert recent_menu.actions[1].text == "1crn"
     recent_menu.actions[1].triggered._callbacks[0]()
-    assert runtime["window"].status_bar.messages[-1] == "Loaded demo: pentalanine"
-    assert runtime["window"].title == "Qt Prototype · pentalanine"
+    assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
+    assert runtime["window"].title == "Qt Prototype · 1crn"
     view_menu = runtime["window"].menu_bar.menus[1]
     for action in view_menu.actions:
         assert action.triggered._callbacks
@@ -322,7 +337,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     FakeFileDialog.saved = str(tmp_path / "exported-figure.png")
     export_menu.actions[1].triggered._callbacks[0]()
     assert len(figure_calls) == 1
-    assert type(figure_calls[0][0]).__name__ == "MolSysView"
+    assert figure_calls[0][0] == "1crn"
     assert figure_calls[0][1:] == (str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Exported Figure: exported-figure.png"
     help_menu = runtime["window"].menu_bar.menus[3]
@@ -330,7 +345,34 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert FakeMessageBox.calls
     assert FakeMessageBox.calls[-1][0] == "About MolSysViewer Qt Prototype"
     help_menu.actions[1].triggered._callbacks[0]()
-    assert runtime["window"].status_bar.messages[-1] == "Current source: pentalanine"
+    assert runtime["window"].status_bar.messages[-1] == "Current source: 1crn"
+    help_menu.actions[2].triggered._callbacks[0]()
+    assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
+    close_action.triggered._callbacks[0]()
+    assert runtime["window"].closed is True
+    persisted = (tmp_path / "standalone_qt0_state.json").read_text(encoding="utf-8")
+    assert '"kind": "pdb_id"' in persisted
+    assert '"loaded_label": "1crn"' in persisted
+
+
+def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
+    state_path = tmp_path / "standalone_qt0_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "recent_sources": [
+                    {"kind": "source", "value": "molsysmt.MolSys", "loaded_label": "molsysmt.MolSys"},
+                    {"kind": "pdb_id", "value": "1crn", "loaded_label": "1crn"},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("molsysviewer.standalone_qt._qt_shell_state_path", lambda: state_path)
+
+    state = standalone_qt._load_qt_shell_state()
+
+    assert [item["loaded_label"] for item in state["recent_sources"]] == ["molsysmt.MolSys", "1crn"]
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
