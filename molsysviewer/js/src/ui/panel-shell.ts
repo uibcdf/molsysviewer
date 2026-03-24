@@ -365,7 +365,25 @@ export class PanelShell {
         });
         this.workspaceMenuElement.replaceChildren();
 
-        for (const item of items) {
+        const appendSection = (key: string, label: string): void => {
+            if (!mosaic) return;
+            const section = document.createElement("div");
+            section.setAttribute("data-molsysviewer-panel-workspace-section", key);
+            section.textContent = label;
+            Object.assign(section.style, {
+                gridColumn: "1 / -1",
+                fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+                fontSize: "10px",
+                fontWeight: "700",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(244,244,245,0.58)",
+                padding: "4px 2px 0 2px",
+            });
+            this.workspaceMenuElement.appendChild(section);
+        };
+
+        const appendOption = (item: WorkspaceOption, fullSpan = false): void => {
             const button = document.createElement("button");
             button.type = "button";
             button.setAttribute("data-molsysviewer-panel-workspace-option", item.id);
@@ -388,6 +406,7 @@ export class PanelShell {
                 cursor: "pointer",
                 textAlign: "left",
             });
+            if (fullSpan && mosaic) button.style.gridColumn = "1 / -1";
             const title = document.createElement("span");
             title.setAttribute("data-molsysviewer-panel-workspace-option-title", item.id);
             title.textContent = item.title;
@@ -422,6 +441,21 @@ export class PanelShell {
                 this.onSelectWorkspace?.(item.id);
             });
             this.workspaceMenuElement.appendChild(button);
+        };
+
+        if (mosaic) {
+            const coreItems = items.filter((item) => item.id === "core");
+            const addonItems = items.filter((item) => item.id !== "core");
+            if (coreItems.length > 0) {
+                appendSection("core", "Core");
+                for (const item of coreItems) appendOption(item, true);
+            }
+            if (addonItems.length > 0) {
+                appendSection("addons", "Add-ons");
+                for (const item of addonItems) appendOption(item, false);
+            }
+        } else {
+            for (const item of items) appendOption(item, false);
         }
 
         this.workspaceMenuOpen = false;

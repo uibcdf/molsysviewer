@@ -92,6 +92,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   future workspace mosaic:
   - when several workspaces coexist, the shared launcher can now present them
     as a small card-like grid rather than only as a flat list
+  - `Core` can now also be separated visually from the add-on block inside that
+    launcher
   - this should still be treated as a launcher refinement, not yet as the final
     mosaic or multi-panel layout system
 - Phase B is now advanced enough that it should not keep growing sideways

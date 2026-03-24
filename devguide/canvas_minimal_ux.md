@@ -279,6 +279,13 @@ Reason:
 - a light launcher grid is the first step toward the future mosaic without
   committing yet to a full free-layout container
 
+Near-term hierarchy rule:
+
+- `Core` should not read like just another add-on card
+- when the launcher grows into a small grid, separate `Core` from the add-on
+  block explicitly
+- this is still a launcher hierarchy, not yet the final mosaic itself
+
 Important rule:
 
 - this launcher is still only for choosing a workspace
