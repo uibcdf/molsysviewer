@@ -8,7 +8,7 @@ import tempfile
 from typing import Any, Sequence
 
 from .demo import demo
-from .standalone import build_standalone0_html
+from .standalone import _resolve_view, build_standalone0_html
 
 
 QT_IMPORT_ERROR = (
@@ -95,6 +95,20 @@ def _rebuild_qt_html(
     )
 
 
+def _export_qt_figure(
+    molecular_system: Any,
+    *,
+    output_filename: str,
+    title: str,
+) -> str:
+    view = _resolve_view(molecular_system)
+    view.export.figure(
+        output_filename,
+        skip_digestion=True,
+    )
+    return output_filename
+
+
 def _install_menu_bar(
     *,
     window,
@@ -104,6 +118,7 @@ def _install_menu_bar(
     QFileDialog,
     html_path: str,
     current_title: str,
+    current_state: dict[str, Any],
 ) -> None:
     menu_bar = window.menuBar()
 
@@ -130,6 +145,7 @@ def _install_menu_bar(
             html_path=html_path,
             title=current_title,
         )
+        current_state["molecular_system"] = selected
         _reload_html_in_view(webview, QUrl, html_path)
         _show_status(window, f"Loaded file: {Path(selected).name}")
 
@@ -144,6 +160,7 @@ def _install_menu_bar(
             html_path=html_path,
             title=current_title,
         )
+        current_state["molecular_system"] = demo["dialanine"]
         _reload_html_in_view(webview, QUrl, html_path)
         _show_status(window, "Loaded demo: dialanine")
 
@@ -203,9 +220,31 @@ def _install_menu_bar(
     export_menu.addAction(export_html_action)
 
     export_figure_action = QAction("Export Figure", window)
-    export_figure_action.triggered.connect(
-        lambda: _show_status(window, "Export actions are placeholders in the first Qt prototype.")
-    )
+
+    def _export_figure():
+        if current_state.get("molecular_system") is None:
+            _show_status(window, "No molecular system is loaded for figure export.")
+            return
+        if not hasattr(QFileDialog, "getSaveFileName"):
+            _show_status(window, "Export Figure is not available in the current Qt runtime.")
+            return
+        selected, _filter = QFileDialog.getSaveFileName(
+            window,
+            "Export MolSysViewer figure",
+            str(Path(html_path).with_name("molsysviewer-figure.png")),
+            "PNG files (*.png);;All files (*)",
+        )
+        if not selected:
+            return
+        destination = Path(selected).expanduser().resolve()
+        _export_qt_figure(
+            current_state["molecular_system"],
+            output_filename=str(destination),
+            title=current_title,
+        )
+        _show_status(window, f"Exported Figure: {destination.name}")
+
+    export_figure_action.triggered.connect(_export_figure)
     export_menu.addAction(export_figure_action)
 
 
@@ -267,6 +306,7 @@ def create_standalone_qt0_window(
     webview = QWebEngineView(window)
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
+    current_state = {"molecular_system": molecular_system}
     _install_menu_bar(
         window=window,
         webview=webview,
@@ -275,6 +315,7 @@ def create_standalone_qt0_window(
         QFileDialog=QFileDialog,
         html_path=html_path,
         current_title=title,
+        current_state=current_state,
     )
 
     return {
