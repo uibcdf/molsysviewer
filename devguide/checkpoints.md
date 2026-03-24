@@ -42,6 +42,9 @@ Do not append dated historical entries unless a date is itself operationally rel
 - Support-library hardening is also part of the current stage:
   - `workspace_catalog()` and `workspace_runtime()` now belong to the structured
     SMonitor contract layer, not just the thin query surface
+  - `new_view(...)` and the main export paths now also emit richer structured
+    SMonitor context, which makes fast QA around scripted load/export flows more
+    informative
   - `molsysviewer.config` PyUnitWizard setters now follow the same
     `@digest()`/`@signal()` rule as the rest of the main public API
   - `depdigest` is now explicit in the local hard support stack rather than an

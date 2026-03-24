@@ -97,6 +97,16 @@ Current example of that rule:
 This is intentional because these calls are now part of the fast QA loop for
 shared runtime behavior.
 
+- the main scripted load/export surface should also carry structured context:
+  - `new_view(...)`
+  - `export.image(...)`
+  - `export.figure(...)`
+  - `export.figure_variants(...)`
+  - `export.figure_publication_set(...)`
+
+This matters because these flows are the shortest route to reproduce and
+profile notebook/runtime regressions without going through manual UI steps.
+
 - the same structural rule also applies to small but real public config entry
   points such as the local PyUnitWizard defaults in `molsysviewer.config`.
 
