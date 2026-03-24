@@ -25,7 +25,7 @@ def _import_qt():
         from PySide6.QtCore import QUrl
         from PySide6.QtGui import QAction
         from PySide6.QtWebEngineWidgets import QWebEngineView
-        from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
+        from PySide6.QtWidgets import QApplication, QFileDialog, QInputDialog, QMainWindow
     except Exception as exc:  # pragma: no cover - exercised by contract test
         raise ImportError(QT_IMPORT_ERROR) from exc
 
@@ -33,6 +33,7 @@ def _import_qt():
         "QAction": QAction,
         "QApplication": QApplication,
         "QFileDialog": QFileDialog,
+        "QInputDialog": QInputDialog,
         "QMainWindow": QMainWindow,
         "QUrl": QUrl,
         "QWebEngineView": QWebEngineView,
@@ -55,6 +56,19 @@ def _show_status(window, message: str) -> None:
 
 def _reload_html_in_view(webview, QUrl, html_path: str) -> None:
     webview.setUrl(QUrl.fromLocalFile(html_path))
+
+
+def _window_title(base_title: str, loaded_label: str | None = None) -> str:
+    if not loaded_label:
+        return base_title
+    return f"{base_title} · {loaded_label}"
+
+
+def _set_loaded_state(window, current_state: dict[str, Any], molecular_system: Any, loaded_label: str) -> None:
+    current_state["molecular_system"] = molecular_system
+    current_state["loaded_label"] = loaded_label
+    if hasattr(window, "setWindowTitle"):
+        window.setWindowTitle(_window_title(current_state["base_title"], loaded_label))
 
 
 def _send_viewer_message(webview, message: dict[str, Any]) -> None:
@@ -116,6 +130,7 @@ def _install_menu_bar(
     QUrl,
     QAction,
     QFileDialog,
+    QInputDialog,
     html_path: str,
     current_title: str,
     current_state: dict[str, Any],
@@ -145,7 +160,7 @@ def _install_menu_bar(
             html_path=html_path,
             title=current_title,
         )
-        current_state["molecular_system"] = selected
+        _set_loaded_state(window, current_state, selected, Path(selected).name)
         _reload_html_in_view(webview, QUrl, html_path)
         _show_status(window, f"Loaded file: {Path(selected).name}")
 
@@ -160,12 +175,38 @@ def _install_menu_bar(
             html_path=html_path,
             title=current_title,
         )
-        current_state["molecular_system"] = demo["dialanine"]
+        _set_loaded_state(window, current_state, demo["dialanine"], "dialanine")
         _reload_html_in_view(webview, QUrl, html_path)
         _show_status(window, "Loaded demo: dialanine")
 
     load_demo_action.triggered.connect(_load_demo)
     file_menu.addAction(load_demo_action)
+
+    load_pdbid_action = QAction("Load PDB ID", window)
+
+    def _load_pdbid():
+        if not hasattr(QInputDialog, "getText"):
+            _show_status(window, "Load PDB ID is not available in the current Qt runtime.")
+            return
+        value, accepted = QInputDialog.getText(
+            window,
+            "Load PDB ID",
+            "PDB ID:",
+        )
+        pdb_id = str(value).strip()
+        if not accepted or not pdb_id:
+            return
+        _rebuild_qt_html(
+            pdb_id,
+            html_path=html_path,
+            title=current_title,
+        )
+        _set_loaded_state(window, current_state, pdb_id, pdb_id)
+        _reload_html_in_view(webview, QUrl, html_path)
+        _show_status(window, f"Loaded PDB ID: {pdb_id}")
+
+    load_pdbid_action.triggered.connect(_load_pdbid)
+    file_menu.addAction(load_pdbid_action)
 
     close_action = QAction("Close", window)
     close_action.triggered.connect(window.close)
@@ -274,6 +315,7 @@ def create_standalone_qt0_window(
     QUrl = qt["QUrl"]
     QAction = qt["QAction"]
     QFileDialog = qt["QFileDialog"]
+    QInputDialog = qt["QInputDialog"]
 
     if output_filename is None:
         with tempfile.NamedTemporaryFile(prefix="molsysviewer-qt0-", suffix=".html", delete=False) as handle:
@@ -306,13 +348,14 @@ def create_standalone_qt0_window(
     webview = QWebEngineView(window)
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
-    current_state = {"molecular_system": molecular_system}
+    current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
     _install_menu_bar(
         window=window,
         webview=webview,
         QUrl=QUrl,
         QAction=QAction,
         QFileDialog=QFileDialog,
+        QInputDialog=QInputDialog,
         html_path=html_path,
         current_title=title,
         current_state=current_state,
