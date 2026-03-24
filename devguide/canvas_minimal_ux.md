@@ -293,6 +293,22 @@ Important rule:
 - do not mix this step with docking, free arrangement, or arbitrary multi-panel
   layouts
 
+## Workbench Workspace Overview
+
+The first body-level step toward the future mosaic should be modest:
+
+- `Workbench` may expose a small workspace overview block
+- that block may use cards similar to the launcher
+- it should help the user understand the available domains without forcing a
+  full layout editor
+
+Important rule:
+
+- this overview is still a navigator, not yet a multi-panel container
+- it should reinforce the workspace model already present in the shared header
+- the final mosaic, if it comes, should grow from this shared language rather
+  than replace it abruptly
+
 Longer-term scaling direction:
 
 - `Core` should be treated as the native workspace

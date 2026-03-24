@@ -96,6 +96,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     launcher
   - this should still be treated as a launcher refinement, not yet as the final
     mosaic or multi-panel layout system
+- `Workbench` now also has a first body-level workspace overview:
+  - small workspace cards inside the panel body
+  - still a navigator, not yet a free multi-panel mosaic
+  - intended as the first in-panel foothold for the future workspace mosaic
 - Phase B is now advanced enough that it should not keep growing sideways
   without concrete ecosystem pressure.
 - Phase C is now much stronger and should be considered substantial rather than
