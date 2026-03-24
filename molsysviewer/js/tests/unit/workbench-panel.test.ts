@@ -434,13 +434,29 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const currentTitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-title", "true");
         const currentSubtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-subtitle", "true");
         const launcher = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-launcher", "true");
+        const overview = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview", "true");
+        const overviewCoreSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "core");
+        const overviewAddonSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "addons");
+        const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
+        const overviewCurrent = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-current", "core");
         assert.ok(current);
         assert.ok(currentTitle);
         assert.ok(currentSubtitle);
         assert.ok(launcher);
+        assert.ok(overview);
+        assert.ok(overviewCoreSection);
+        assert.ok(overviewAddonSection);
+        assert.ok(overviewCard);
+        assert.ok(overviewCurrent);
         assert.strictEqual(currentTitle?.textContent, "Core");
         assert.strictEqual(currentSubtitle?.textContent, "Navigate + Workbench");
         assert.strictEqual(launcher?.getAttribute("data-molsysviewer-panel-workspace-launcher-mode"), "mosaic");
+        assert.strictEqual(overviewCoreSection?.textContent, "Core");
+        assert.strictEqual(overviewAddonSection?.textContent, "Add-ons");
+
+        overviewCard?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(selectedWorkspace, "topomt");
+        selectedWorkspace = null;
 
         current?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 

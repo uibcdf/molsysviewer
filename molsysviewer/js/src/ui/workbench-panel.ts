@@ -77,6 +77,9 @@ export class WorkbenchPanel {
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
+    private readonly workspaceOverviewHost: HTMLDivElement;
+    private readonly workspaceOverviewTitle: HTMLDivElement;
+    private readonly workspaceOverviewBody: HTMLDivElement;
     private readonly workspacePanelHost: HTMLDivElement;
     private readonly workspacePanelHostTitle: HTMLDivElement;
     private readonly workspacePanelHostBody: HTMLDivElement;
@@ -134,6 +137,41 @@ export class WorkbenchPanel {
             overflowY: "auto",
             gap: "8px",
         });
+
+        this.workspaceOverviewHost = document.createElement("div");
+        this.workspaceOverviewHost.setAttribute("data-molsysviewer-workbench-workspace-overview", "true");
+        Object.assign(this.workspaceOverviewHost.style, {
+            display: "none",
+            flexDirection: "column",
+            gap: "6px",
+            padding: "10px",
+            borderRadius: "10px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+        });
+
+        this.workspaceOverviewTitle = document.createElement("div");
+        this.workspaceOverviewTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-title", "true");
+        Object.assign(this.workspaceOverviewTitle.style, {
+            fontSize: "11px",
+            fontWeight: "700",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "rgba(244,244,245,0.74)",
+        });
+        this.workspaceOverviewTitle.textContent = "Workspaces";
+
+        this.workspaceOverviewBody = document.createElement("div");
+        this.workspaceOverviewBody.setAttribute("data-molsysviewer-workbench-workspace-overview-body", "true");
+        Object.assign(this.workspaceOverviewBody.style, {
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: "6px",
+        });
+
+        this.workspaceOverviewHost.appendChild(this.workspaceOverviewTitle);
+        this.workspaceOverviewHost.appendChild(this.workspaceOverviewBody);
+        this.body.appendChild(this.workspaceOverviewHost);
 
         this.workspacePanelHost = document.createElement("div");
         this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
@@ -212,6 +250,102 @@ export class WorkbenchPanel {
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
         this.shell.setOnSelectWorkspace(onSelect);
         this.shell.setWorkspaceOptions(items, currentId);
+        this.workspaceOverviewBody.replaceChildren();
+
+        if (!Array.isArray(items) || items.length <= 1) {
+            this.workspaceOverviewHost.style.display = "none";
+            return;
+        }
+
+        const mosaic = items.length >= 3;
+        this.workspaceOverviewHost.style.display = "flex";
+        this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
+
+        const appendSection = (key: string, label: string): void => {
+            if (!mosaic) return;
+            const section = document.createElement("div");
+            section.setAttribute("data-molsysviewer-workbench-workspace-overview-section", key);
+            section.textContent = label;
+            Object.assign(section.style, {
+                gridColumn: "1 / -1",
+                fontSize: "10px",
+                fontWeight: "700",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(244,244,245,0.54)",
+                padding: "2px 1px 0 1px",
+            });
+            this.workspaceOverviewBody.appendChild(section);
+        };
+
+        const appendCard = (item: WorkspaceOption, fullSpan = false): void => {
+            const card = document.createElement("button");
+            card.type = "button";
+            card.setAttribute("data-molsysviewer-workbench-workspace-overview-card", item.id);
+            if (item.id === currentId) {
+                card.setAttribute("data-molsysviewer-workbench-workspace-overview-current", item.id);
+            }
+            Object.assign(card.style, {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "5px",
+                width: "100%",
+                minHeight: mosaic ? "72px" : "0",
+                padding: mosaic ? "10px 11px" : "8px 10px",
+                borderRadius: "10px",
+                border: item.id === currentId ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.07)",
+                background: item.id === currentId ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.03)",
+                color: item.id === currentId ? "#f4f4f5" : "rgba(244,244,245,0.82)",
+                cursor: "pointer",
+                textAlign: "left",
+            });
+            if (fullSpan && mosaic) card.style.gridColumn = "1 / -1";
+
+            const title = document.createElement("div");
+            title.setAttribute("data-molsysviewer-workbench-workspace-overview-card-title", item.id);
+            Object.assign(title.style, {
+                fontSize: "12px",
+                fontWeight: "700",
+            });
+            title.textContent = item.title;
+            card.appendChild(title);
+
+            if (item.subtitle) {
+                const subtitle = document.createElement("div");
+                subtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-card-subtitle", item.id);
+                Object.assign(subtitle.style, {
+                    fontSize: "11px",
+                    lineHeight: "1.25",
+                    color: item.id === currentId ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.58)",
+                });
+                subtitle.textContent = item.subtitle;
+                card.appendChild(subtitle);
+            }
+
+            card.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onSelect?.(item.id);
+            });
+            this.workspaceOverviewBody.appendChild(card);
+        };
+
+        if (mosaic) {
+            const coreItems = items.filter((item) => item.id === "core");
+            const addonItems = items.filter((item) => item.id !== "core");
+            if (coreItems.length > 0) {
+                appendSection("core", "Core");
+                for (const item of coreItems) appendCard(item, true);
+            }
+            if (addonItems.length > 0) {
+                appendSection("addons", "Add-ons");
+                for (const item of addonItems) appendCard(item, false);
+            }
+        } else {
+            for (const item of items) appendCard(item, false);
+        }
     }
 
     setWorkspacePanels(
