@@ -146900,15 +146900,20 @@ var WorkbenchPanel = class {
       this.workspaceOverviewBody.appendChild(card);
     };
     if (mosaic) {
-      const coreItems = items.filter((item2) => item2.id === "core");
-      const addonItems = items.filter((item2) => item2.id !== "core");
-      if (coreItems.length > 0) {
-        appendSection("core", "Core");
-        for (const item2 of coreItems) appendCard(item2, true);
+      const currentItems = items.filter((item2) => item2.id === currentId);
+      const remainingCoreItems = items.filter((item2) => item2.id === "core" && item2.id !== currentId);
+      const remainingAddonItems = items.filter((item2) => item2.id !== "core" && item2.id !== currentId);
+      if (currentItems.length > 0) {
+        appendSection("current", "Current");
+        for (const item2 of currentItems) appendCard(item2, true);
       }
-      if (addonItems.length > 0) {
+      if (remainingCoreItems.length > 0) {
+        appendSection("core", "Core");
+        for (const item2 of remainingCoreItems) appendCard(item2, true);
+      }
+      if (remainingAddonItems.length > 0) {
         appendSection("addons", "Add-ons");
-        for (const item2 of addonItems) appendCard(item2, false);
+        for (const item2 of remainingAddonItems) appendCard(item2, false);
       }
     } else {
       for (const item2 of items) appendCard(item2, false);

@@ -242,6 +242,7 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         });
 
         const root = host.children[0];
+        const currentSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "current");
         const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
         const overviewSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-subtitle", "topomt");
         const overviewEntry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-entry", "topomt");
@@ -262,6 +263,7 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const sectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-item", "topomt:pockets");
         const sectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-subtitle", "topomt:pockets");
 
+        assert.ok(currentSection);
         assert.ok(overviewCard);
         assert.ok(overviewSubtitle);
         assert.ok(overviewEntry);
@@ -281,6 +283,7 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(sectionTitle);
         assert.ok(sectionItem);
         assert.ok(sectionSubtitle);
+        assert.strictEqual(currentSection?.textContent, "Current");
         assert.strictEqual(overviewSubtitle?.textContent, "Panel: Topo");
         assert.strictEqual(overviewEntry?.textContent, "Entry: topomt.panel.topo");
         assert.strictEqual(overviewMarker?.textContent, "Current workspace");

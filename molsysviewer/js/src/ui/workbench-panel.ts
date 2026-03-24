@@ -544,15 +544,20 @@ export class WorkbenchPanel {
         };
 
         if (mosaic) {
-            const coreItems = items.filter((item) => item.id === "core");
-            const addonItems = items.filter((item) => item.id !== "core");
-            if (coreItems.length > 0) {
-                appendSection("core", "Core");
-                for (const item of coreItems) appendCard(item, true);
+            const currentItems = items.filter((item) => item.id === currentId);
+            const remainingCoreItems = items.filter((item) => item.id === "core" && item.id !== currentId);
+            const remainingAddonItems = items.filter((item) => item.id !== "core" && item.id !== currentId);
+            if (currentItems.length > 0) {
+                appendSection("current", "Current");
+                for (const item of currentItems) appendCard(item, true);
             }
-            if (addonItems.length > 0) {
+            if (remainingCoreItems.length > 0) {
+                appendSection("core", "Core");
+                for (const item of remainingCoreItems) appendCard(item, true);
+            }
+            if (remainingAddonItems.length > 0) {
                 appendSection("addons", "Add-ons");
-                for (const item of addonItems) appendCard(item, false);
+                for (const item of remainingAddonItems) appendCard(item, false);
             }
         } else {
             for (const item of items) appendCard(item, false);

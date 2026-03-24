@@ -308,6 +308,9 @@ The first body-level step toward the future mosaic should be modest:
 - the current workspace card may also expose quick access to its local panel
   stack, so the overview and active host cooperate instead of feeling like
   separate surfaces
+- once several workspaces exist, the overview may separate the current
+  workspace from the rest, then keep the remaining cards grouped as `Core` and
+  `Add-ons`
 
 Important rule:
 
