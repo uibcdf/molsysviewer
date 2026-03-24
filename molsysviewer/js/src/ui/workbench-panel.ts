@@ -467,6 +467,18 @@ export class WorkbenchPanel {
                 card.appendChild(subtitle);
             }
 
+            if (isCurrent && this.activeWorkspacePanelSummary?.entry) {
+                const entry = document.createElement("div");
+                entry.setAttribute("data-molsysviewer-workbench-workspace-overview-card-entry", item.id);
+                Object.assign(entry.style, {
+                    fontSize: "10px",
+                    lineHeight: "1.2",
+                    color: "rgba(244,244,245,0.58)",
+                });
+                entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
+                card.appendChild(entry);
+            }
+
             const marker = document.createElement("div");
             marker.setAttribute("data-molsysviewer-workbench-workspace-overview-card-marker", item.id);
             Object.assign(marker.style, {

@@ -303,6 +303,8 @@ The first body-level step toward the future mosaic should be modest:
   full layout editor
 - when a workspace already has an active panel, the overview should be able to
   reflect that active panel instead of staying completely generic
+- if the active panel has a meaningful entry/runtime id, the current workspace
+  card may surface that too as a small secondary line
 
 Important rule:
 

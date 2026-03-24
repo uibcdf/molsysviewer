@@ -99,6 +99,7 @@ Do not append dated historical entries unless a date is itself operationally rel
 - `Workbench` now also has a first body-level workspace overview:
   - small workspace cards inside the panel body
   - the current workspace card can now reflect the active panel hosted below
+  - and can surface the active panel entry when that helps identify the runtime
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
 - Phase B is now advanced enough that it should not keep growing sideways
