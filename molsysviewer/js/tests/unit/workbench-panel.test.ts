@@ -449,11 +449,17 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const subtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-subtitle", "topomt");
         const marker = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-marker", "core");
         const other = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option", "pharmacophoremt");
+        const coreSection = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-section", "core");
+        const addonSection = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-section", "addons");
         assert.ok(button);
         assert.ok(other);
+        assert.ok(coreSection);
+        assert.ok(addonSection);
         assert.strictEqual(title?.textContent, "TopoMT");
         assert.strictEqual(subtitle?.textContent, "2 panels · 1 section");
         assert.strictEqual(marker?.textContent, "Current");
+        assert.strictEqual(coreSection?.textContent, "Core");
+        assert.strictEqual(addonSection?.textContent, "Add-ons");
 
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selectedWorkspace, "topomt");
