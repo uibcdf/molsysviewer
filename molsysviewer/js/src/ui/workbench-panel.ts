@@ -88,8 +88,10 @@ export class WorkbenchPanel {
     private readonly builtInSectionKeys: BuiltInWorkbenchSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
     private addonSectionKeys: WorkbenchSectionKey[] = [];
     private workspaceItems: WorkspaceOption[] = [];
+    private workspacePanelItems: WorkspacePanelOption[] = [];
     private currentWorkspaceId = "core";
     private onSelectWorkspace?: (workspaceId: string) => void;
+    private onSelectWorkspacePanel?: (panelId: string) => void;
     private activeWorkspacePanelSummary: ActiveWorkspacePanelSummary | null = null;
     private expanded = false;
     private onExpandedChange?: (expanded: boolean) => void;
@@ -264,12 +266,15 @@ export class WorkbenchPanel {
         items: WorkspacePanelOption[],
         onSelect: ((panelId: string) => void) | undefined,
     ): void {
+        this.workspacePanelItems = Array.isArray(items) ? items : [];
+        this.onSelectWorkspacePanel = onSelect;
         this.shell.setOnSelectPanel(onSelect);
         this.shell.setPanelOptions(items.map((item) => ({
             id: item.id,
             title: item.title,
             active: item.active,
         })));
+        this.renderWorkspaceOverview();
     }
 
     setActiveWorkspacePanel(summary: ActiveWorkspacePanelSummary | null): void {
@@ -477,6 +482,45 @@ export class WorkbenchPanel {
                 });
                 entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
                 card.appendChild(entry);
+            }
+
+            if (isCurrent && this.workspacePanelItems.length > 0) {
+                const panelStrip = document.createElement("div");
+                panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item.id);
+                Object.assign(panelStrip.style, {
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "4px",
+                    marginTop: "2px",
+                });
+
+                for (const panel of this.workspacePanelItems) {
+                    const panelButton = document.createElement("button");
+                    panelButton.type = "button";
+                    panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel", panel.id);
+                    if (panel.active) {
+                        panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-current", panel.id);
+                    }
+                    Object.assign(panelButton.style, {
+                        padding: "3px 7px",
+                        borderRadius: "999px",
+                        border: panel.active ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
+                        background: panel.active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
+                        color: panel.active ? "#f4f4f5" : "rgba(244,244,245,0.76)",
+                        fontSize: "10px",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                    });
+                    panelButton.textContent = panel.title;
+                    panelButton.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.onSelectWorkspacePanel?.(panel.id);
+                    });
+                    panelStrip.appendChild(panelButton);
+                }
+
+                card.appendChild(panelStrip);
             }
 
             const marker = document.createElement("div");

@@ -61,6 +61,13 @@ This is the current notebook-friendly pattern:
 - `view.workspace_panels(...)`
 - `view.get_panel_mode_state()`
 
+In practice:
+
+- `workspace_catalog()` lets notebook code discover what can be opened
+- `workspace_panels("topomt")` shows the local stack for that workspace
+- both helpers mark the active item once the frontend has reported runtime
+  state
+
 ## Notes
 
 - `get_panel_mode_state()` returns the last state reported by the frontend.

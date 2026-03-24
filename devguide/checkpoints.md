@@ -167,6 +167,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `view.workspace_panels(...)`
   - this should be treated as the stable scripted doorway into the workspace
     runtime, not only as UI chrome
+  - the catalog side now also reflects active workspace/panel state when the
+    frontend has already reported it
 - Keep the emerging MolSysSuite add-on direction explicit:
   - `MolSysViewer` 1.0 should stay as a strong core workbench
   - domain-specific ecosystem growth should prefer optional add-ons

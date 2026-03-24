@@ -305,6 +305,9 @@ The first body-level step toward the future mosaic should be modest:
   reflect that active panel instead of staying completely generic
 - if the active panel has a meaningful entry/runtime id, the current workspace
   card may surface that too as a small secondary line
+- the current workspace card may also expose quick access to its local panel
+  stack, so the overview and active host cooperate instead of feeling like
+  separate surfaces
 
 Important rule:
 

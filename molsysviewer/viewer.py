@@ -856,12 +856,15 @@ class MolSysView:
         workbench_specs = self.addons.workbench_section_specs(skip_digestion=True)
         context_action_specs = self.addons.context_action_specs(skip_digestion=True)
         export_helper_specs = self.addons.export_helper_specs(skip_digestion=True)
+        state = self.get_panel_mode_state() or {}
+        active_workspace = state.get("workspace") if isinstance(state, dict) else None
 
         records: list[dict[str, Any]] = [
             {
                 "id": "core",
                 "title": "Core",
                 "subtitle": "Navigate + Workbench",
+                "active": active_workspace == "core",
             }
         ]
 
@@ -898,6 +901,7 @@ class MolSysView:
 
             record = dict(workspace)
             record["subtitle"] = " · ".join(summary_parts)
+            record["active"] = workspace_id == active_workspace
             records.append(record)
 
         return records
@@ -911,10 +915,13 @@ class MolSysView:
         skip_digestion: bool = False,
     ) -> list[dict[str, Any]]:
         """Return the visible local panel stack for a workspace."""
+        state = self.get_panel_mode_state() or {}
+        active_workspace = state.get("workspace") if isinstance(state, dict) else None
+        active_panel = state.get("workspace_panel") if isinstance(state, dict) else None
         if workspace == "core":
             return [
-                {"id": "navigate", "title": "Navigate"},
-                {"id": "workbench", "title": "Workbench"},
+                {"id": "navigate", "title": "Navigate", "active": active_workspace == "core" and active_panel == "navigate"},
+                {"id": "workbench", "title": "Workbench", "active": active_workspace == "core" and active_panel == "workbench"},
             ]
 
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
@@ -944,6 +951,7 @@ class MolSysView:
                     "entry": item.get("entry"),
                     "addon": addon_name,
                     "workspace": workspace,
+                    "active": active_workspace == workspace and item.get("id") == active_panel,
                 }
             )
         return records

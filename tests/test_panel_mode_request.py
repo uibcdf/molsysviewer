@@ -138,7 +138,7 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
         view = MolSysView(debug_js=True)
 
         assert view.workspace_catalog() == [
-            {"id": "core", "title": "Core", "subtitle": "Navigate + Workbench"},
+            {"id": "core", "title": "Core", "subtitle": "Navigate + Workbench", "active": False},
             {
                 "id": "topomt",
                 "title": "TopoMT",
@@ -148,11 +148,12 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
                 "meta": {},
                 "addon": "topomt",
                 "subtitle": "1 panel · 1 section",
+                "active": False,
             },
         ]
         assert view.workspace_panels() == [
-            {"id": "navigate", "title": "Navigate"},
-            {"id": "workbench", "title": "Workbench"},
+            {"id": "navigate", "title": "Navigate", "active": False},
+            {"id": "workbench", "title": "Workbench", "active": False},
         ]
         assert view.workspace_panels("topomt") == [
             {
@@ -162,8 +163,59 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
                 "entry": "topomt.panel.topo",
                 "addon": "topomt",
                 "workspace": "topomt",
+                "active": False,
             }
         ]
         assert view.workspace_panels("missing") == []
+    finally:
+        addons.clear()
+
+
+def test_workspace_catalog_and_panels_reflect_active_runtime_state():
+    addons.clear()
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
+            )
+        )
+        view = MolSysView(debug_js=True)
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "panel_mode_state",
+                "panel": "workbench",
+                "expanded": True,
+                "workspace": "topomt",
+                "workspace_panel": "topo",
+            }
+        )
+
+        assert view.workspace_catalog() == [
+            {"id": "core", "title": "Core", "subtitle": "Navigate + Workbench", "active": False},
+            {
+                "id": "topomt",
+                "title": "TopoMT",
+                "entry_panel": "topo",
+                "description": None,
+                "order": 0,
+                "meta": {},
+                "addon": "topomt",
+                "subtitle": "1 panel",
+                "active": True,
+            },
+        ]
+        assert view.workspace_panels("topomt") == [
+            {
+                "id": "topo",
+                "title": "Topo",
+                "description": None,
+                "entry": "topomt.panel.topo",
+                "addon": "topomt",
+                "workspace": "topomt",
+                "active": True,
+            }
+        ]
     finally:
         addons.clear()

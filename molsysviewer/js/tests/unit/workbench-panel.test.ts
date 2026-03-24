@@ -245,6 +245,9 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
         const overviewSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-subtitle", "topomt");
         const overviewEntry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-entry", "topomt");
+        const overviewPanels = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panels", "topomt");
+        const overviewCurrentPanel = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-current", "topo");
+        const overviewPanelButton = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel", "channels");
         const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "topomt");
         const stack = findFirstByAttribute(root, "data-molsysviewer-panel-stack", "true");
         const active = findFirstByAttribute(root, "data-molsysviewer-panel-stack-current", "topo");
@@ -262,6 +265,9 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(overviewCard);
         assert.ok(overviewSubtitle);
         assert.ok(overviewEntry);
+        assert.ok(overviewPanels);
+        assert.ok(overviewCurrentPanel);
+        assert.ok(overviewPanelButton);
         assert.ok(overviewMarker);
         assert.ok(stack);
         assert.ok(active);
@@ -288,6 +294,8 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
 
         overviewCard?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selectedWorkspace, "topomt");
+        overviewPanelButton?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(selected, "channels");
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selected, "channels");
 
