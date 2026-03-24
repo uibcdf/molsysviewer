@@ -46,6 +46,7 @@ type WorkspaceRuntime = {
     addon?: string;
     panelCount?: number;
     workbenchSectionCount?: number;
+    workbenchSectionTitles?: string[];
     contextActionCount?: number;
     exportHelperCount?: number;
 };
@@ -1657,7 +1658,9 @@ export class MolSysViewerController {
 
         for (const workspace of this.addonWorkspaces) {
             const panelCount = this.getWorkspacePanels(workspace.id).length;
-            const workbenchSectionCount = this.addonWorkbenchSections.filter((item) => item.workspaceId === workspace.id).length;
+            const workbenchSections = this.addonWorkbenchSections.filter((item) => item.workspaceId === workspace.id);
+            const workbenchSectionCount = workbenchSections.length;
+            const workbenchSectionTitles = workbenchSections.map((item) => item.title);
             const contextActionCount = this.addonContextActions.filter((item) => this.workspaceBelongsToAddon(workspace.id, item.addon)).length;
             const exportHelperCount = this.addonRuntimeSummary.find((item) => item.name === workspace.addon)?.exportHelperTitles.length ?? 0;
             const totalVisible = panelCount + workbenchSectionCount;
@@ -1674,6 +1677,7 @@ export class MolSysViewerController {
                 subtitle: summaryParts.join(" · "),
                 panelCount,
                 workbenchSectionCount,
+                workbenchSectionTitles,
                 contextActionCount,
                 exportHelperCount,
             });

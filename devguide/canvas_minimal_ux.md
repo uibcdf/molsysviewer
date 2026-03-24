@@ -272,6 +272,9 @@ Current runtime direction:
   - workbench sections
   - context actions
   - export helpers
+- non-current workspace cards may also preview one or two real section titles
+  when that helps communicate domain structure without turning the overview into
+  a dashboard
 - the current workspace card may also expose a compact local panel lane when
   that helps tie the overview to the host below:
   - current panel title
