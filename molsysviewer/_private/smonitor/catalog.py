@@ -152,6 +152,7 @@ CODES = {
 }
 
 SIGNALS = {
+    "molsysviewer.new_view.new_view": {"extra_required": ["load_mode", "syntax", "reused_view", "molecular_system_kind"]},
     "molsysviewer.viewer.load": {"extra_required": ["molecular_system"]},
     "molsysviewer.viewer.zoom": {"extra_required": ["selection"]},
     "molsysviewer.viewer.set_controls_visible": {"extra_required": ["visible", "autohide"]},
@@ -165,6 +166,10 @@ SIGNALS = {
     "molsysviewer.viewer.get_camera_snapshot": {"extra_required": ["pretty"]},
     "molsysviewer.viewer.set_camera_snapshot": {"extra_required": ["duration_ms", "snapshot_keys"]},
     "molsysviewer.viewer.write_html": {"extra_required": ["output_filename", "mode", "include_popout"]},
+    "molsysviewer.exports.image": {"extra_required": ["output_filename", "transparent", "preset"]},
+    "molsysviewer.exports.figure": {"extra_required": ["output_filename", "has_figure_spec", "preset"]},
+    "molsysviewer.exports.figure_variants": {"extra_required": ["output_directory", "stem", "variant_count"]},
+    "molsysviewer.exports.figure_publication_set": {"extra_required": ["output_directory", "stem", "include_current", "has_figure_spec"]},
     "molsysviewer.whole.set_representation": {"extra_required": ["representation", "preset"]},
     "molsysviewer.regions.set_representation": {"extra_required": ["representation", "preset"]},
     "molsysviewer.layers.set_tag": {"extra_required": ["new_tag"]},

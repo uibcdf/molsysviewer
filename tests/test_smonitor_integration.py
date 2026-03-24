@@ -3,7 +3,9 @@ import ast
 from pathlib import Path
 
 from molsysviewer._private.exceptions import ArgumentError
+from molsysviewer import MolSysView
 from molsysviewer.demo import demo
+from molsysviewer.new_view import new_view
 from molsysviewer._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from smonitor import get_manager
 from smonitor.integrations import emit_from_catalog
@@ -39,6 +41,21 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         manager._timeline.clear()
         manager._timings.clear()
 
+        scripted_view = MolSysView(debug_js=True)
+        scripted_view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+        scripted_view._request_image_export = lambda **_kwargs: {  # type: ignore[attr-defined]  # noqa: SLF001
+            "event": "image_export",
+            "format": "png",
+            "data_uri": "data:image/png;base64,iVBORw0KGgo=",
+        }
+
+        new_view(
+            view._molsys,  # noqa: SLF001
+            view=scripted_view,
+            load_mode="selection",
+            skip_digestion=True,
+        )
+
         region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
         region.hide(skip_digestion=True)
         view.whole.hide(skip_digestion=True)
@@ -54,6 +71,12 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.workspace_runtime(skip_digestion=True)
         view.get_panel_mode_state(pretty=True)
         view.export.html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
+        scripted_view.export.image(str(tmp_path / "smonitor.png"), transparent=True, preset="current", skip_digestion=True)
+        scripted_view.export.figure_publication_set(
+            str(tmp_path / "pub-set"),
+            include_current=True,
+            skip_digestion=True,
+        )
 
         timeline = manager.report()["timeline"]
         keys = [entry["key"] for entry in timeline]
@@ -73,14 +96,22 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "molsysviewer.viewer.workspace_panels" in keys
         assert "molsysviewer.viewer.workspace_runtime" in keys
         assert "molsysviewer.viewer.get_panel_mode_state" in keys
+        assert "molsysviewer.new_view.new_view" in keys
         assert "molsysviewer.exports.html" in keys
+        assert "molsysviewer.exports.image" in keys
+        assert "molsysviewer.exports.figure_publication_set" in keys
+        assert "molsysviewer.exports.figure_variants" in keys
+        assert "molsysviewer.exports.figure" in keys
 
         assert "region" in tags_by_key["molsysviewer.regions.hide"]
         assert "whole" in tags_by_key["molsysviewer.whole.hide"]
         assert "shape" in tags_by_key["molsysviewer.shapes.clear"]
         assert "camera" in tags_by_key["molsysviewer.viewer.reset_camera"]
         assert "panel" in tags_by_key["molsysviewer.viewer.set_panel_mode"]
+        assert "factory" in tags_by_key["molsysviewer.new_view.new_view"]
         assert "export" in tags_by_key["molsysviewer.exports.html"]
+        assert "image" in tags_by_key["molsysviewer.exports.image"]
+        assert "figure" in tags_by_key["molsysviewer.exports.figure_publication_set"]
         assert meta_by_key["molsysviewer.viewer.get_camera_snapshot"].get("pretty") is None
         assert meta_by_key["molsysviewer.viewer.set_camera_snapshot"].get("snapshot_keys") == ["target"]
         assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("panel") == "workbench"
@@ -94,7 +125,17 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("current_workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("panel_count") == 2
         assert meta_by_key["molsysviewer.viewer.get_panel_mode_state"].get("pretty") is True
+        assert meta_by_key["molsysviewer.new_view.new_view"].get("load_mode") == "selection"
+        assert meta_by_key["molsysviewer.new_view.new_view"].get("syntax") == "MolSysMT"
+        assert meta_by_key["molsysviewer.new_view.new_view"].get("reused_view") is True
+        assert meta_by_key["molsysviewer.new_view.new_view"].get("molecular_system_kind") == "MolSys"
         assert meta_by_key["molsysviewer.exports.html"].get("include_popout") is False
+        assert meta_by_key["molsysviewer.exports.image"].get("transparent") is True
+        assert meta_by_key["molsysviewer.exports.image"].get("preset") == "current"
+        assert meta_by_key["molsysviewer.exports.figure_publication_set"].get("include_current") is True
+        assert meta_by_key["molsysviewer.exports.figure_publication_set"].get("has_figure_spec") is False
+        assert meta_by_key["molsysviewer.exports.figure_variants"].get("variant_count") == 4
+        assert meta_by_key["molsysviewer.exports.figure"].get("has_figure_spec") is True
     finally:
         manager.configure(
             profiling=previous_profiling,

@@ -12,8 +12,25 @@ from depdigest import dep_digest
 Selection = Union[str, Sequence[int]]
 StructureIndices = Union[str, Sequence[int]]
 
+
+def _new_view_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    molecular_system = kwargs.get("molecular_system", args[0] if args else None)
+    reused_view = kwargs.get("view") is not None
+    load_mode = kwargs.get("load_mode", "selection")
+    syntax = kwargs.get("syntax", "MolSysMT")
+    if isinstance(molecular_system, str):
+        molecular_system_kind = "string"
+    else:
+        molecular_system_kind = type(molecular_system).__name__ if molecular_system is not None else None
+    return {
+        "load_mode": load_mode,
+        "syntax": syntax,
+        "reused_view": reused_view,
+        "molecular_system_kind": molecular_system_kind,
+    }
+
 @dep_digest('molsysmt')
-@signal(tags=["load", "factory"])
+@signal(tags=["load", "factory"], extra_factory=_new_view_signal_extra)
 @digest()
 def new_view(
     molecular_system: Any,

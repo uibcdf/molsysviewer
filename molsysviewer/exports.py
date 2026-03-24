@@ -24,6 +24,72 @@ def _export_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> 
     }
 
 
+def _export_image_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    def value(index: int, name: str) -> Any:
+        if name in kwargs:
+            return kwargs[name]
+        if len(args) > index:
+            return args[index]
+        return None
+
+    return {
+        "output_filename": value(1, "output_filename"),
+        "width_px": value(2, "width_px"),
+        "height_px": value(3, "height_px"),
+        "transparent": value(5, "transparent"),
+        "preset": value(6, "preset"),
+    }
+
+
+def _export_figure_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    def value(index: int, name: str) -> Any:
+        if name in kwargs:
+            return kwargs[name]
+        if len(args) > index:
+            return args[index]
+        return None
+
+    return {
+        "output_filename": value(1, "output_filename"),
+        "has_figure_spec": value(2, "figure_spec") is not None,
+        "width_px": value(3, "width_px"),
+        "height_px": value(4, "height_px"),
+        "preset": value(7, "preset"),
+    }
+
+
+def _export_figure_variants_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    def value(index: int, name: str) -> Any:
+        if name in kwargs:
+            return kwargs[name]
+        if len(args) > index:
+            return args[index]
+        return None
+
+    variants = value(2, "variants") or {}
+    return {
+        "output_directory": value(1, "output_directory"),
+        "stem": value(3, "stem") or "figure",
+        "variant_count": len(variants),
+    }
+
+
+def _export_publication_set_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    def value(index: int, name: str) -> Any:
+        if name in kwargs:
+            return kwargs[name]
+        if len(args) > index:
+            return args[index]
+        return None
+
+    return {
+        "output_directory": value(1, "output_directory"),
+        "stem": value(3, "stem") or "figure",
+        "include_current": value(4, "include_current") or False,
+        "has_figure_spec": value(2, "figure_spec") is not None,
+    }
+
+
 class ExportManager:
     """Public export namespace for HTML and image outputs."""
 
@@ -53,7 +119,7 @@ class ExportManager:
             inline_messages=inline_messages,
         )
 
-    @signal(tags=["export", "image"])
+    @signal(tags=["export", "image"], extra_factory=_export_image_signal_extra)
     @digest()
     def image(
         self,
@@ -78,7 +144,7 @@ class ExportManager:
             camera_snapshot=camera_snapshot,
         )
 
-    @signal(tags=["export", "figure"])
+    @signal(tags=["export", "figure"], extra_factory=_export_figure_signal_extra)
     @digest()
     def figure(
         self,
@@ -119,7 +185,7 @@ class ExportManager:
             camera_snapshot=resolved_camera_snapshot,
         )
 
-    @signal(tags=["export", "figure"])
+    @signal(tags=["export", "figure"], extra_factory=_export_figure_variants_signal_extra)
     @digest()
     def figure_variants(
         self,
@@ -149,7 +215,7 @@ class ExportManager:
             written.append(str(output_filename))
         return written
 
-    @signal(tags=["export", "figure"])
+    @signal(tags=["export", "figure"], extra_factory=_export_publication_set_signal_extra)
     @digest()
     def figure_publication_set(
         self,
