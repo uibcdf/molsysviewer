@@ -87,6 +87,10 @@ export class WorkbenchPanel {
     private readonly sectionExpanded = new Map<WorkbenchSectionKey, boolean>();
     private readonly builtInSectionKeys: BuiltInWorkbenchSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
     private addonSectionKeys: WorkbenchSectionKey[] = [];
+    private workspaceItems: WorkspaceOption[] = [];
+    private currentWorkspaceId = "core";
+    private onSelectWorkspace?: (workspaceId: string) => void;
+    private activeWorkspacePanelSummary: ActiveWorkspacePanelSummary | null = null;
     private expanded = false;
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToNavigate?: () => void;
@@ -248,104 +252,12 @@ export class WorkbenchPanel {
     }
 
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
+        this.workspaceItems = Array.isArray(items) ? items : [];
+        this.currentWorkspaceId = currentId;
+        this.onSelectWorkspace = onSelect;
         this.shell.setOnSelectWorkspace(onSelect);
         this.shell.setWorkspaceOptions(items, currentId);
-        this.workspaceOverviewBody.replaceChildren();
-
-        if (!Array.isArray(items) || items.length <= 1) {
-            this.workspaceOverviewHost.style.display = "none";
-            return;
-        }
-
-        const mosaic = items.length >= 3;
-        this.workspaceOverviewHost.style.display = "flex";
-        this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
-
-        const appendSection = (key: string, label: string): void => {
-            if (!mosaic) return;
-            const section = document.createElement("div");
-            section.setAttribute("data-molsysviewer-workbench-workspace-overview-section", key);
-            section.textContent = label;
-            Object.assign(section.style, {
-                gridColumn: "1 / -1",
-                fontSize: "10px",
-                fontWeight: "700",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "rgba(244,244,245,0.54)",
-                padding: "2px 1px 0 1px",
-            });
-            this.workspaceOverviewBody.appendChild(section);
-        };
-
-        const appendCard = (item: WorkspaceOption, fullSpan = false): void => {
-            const card = document.createElement("button");
-            card.type = "button";
-            card.setAttribute("data-molsysviewer-workbench-workspace-overview-card", item.id);
-            if (item.id === currentId) {
-                card.setAttribute("data-molsysviewer-workbench-workspace-overview-current", item.id);
-            }
-            Object.assign(card.style, {
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                gap: "5px",
-                width: "100%",
-                minHeight: mosaic ? "72px" : "0",
-                padding: mosaic ? "10px 11px" : "8px 10px",
-                borderRadius: "10px",
-                border: item.id === currentId ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.07)",
-                background: item.id === currentId ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.03)",
-                color: item.id === currentId ? "#f4f4f5" : "rgba(244,244,245,0.82)",
-                cursor: "pointer",
-                textAlign: "left",
-            });
-            if (fullSpan && mosaic) card.style.gridColumn = "1 / -1";
-
-            const title = document.createElement("div");
-            title.setAttribute("data-molsysviewer-workbench-workspace-overview-card-title", item.id);
-            Object.assign(title.style, {
-                fontSize: "12px",
-                fontWeight: "700",
-            });
-            title.textContent = item.title;
-            card.appendChild(title);
-
-            if (item.subtitle) {
-                const subtitle = document.createElement("div");
-                subtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-card-subtitle", item.id);
-                Object.assign(subtitle.style, {
-                    fontSize: "11px",
-                    lineHeight: "1.25",
-                    color: item.id === currentId ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.58)",
-                });
-                subtitle.textContent = item.subtitle;
-                card.appendChild(subtitle);
-            }
-
-            card.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                onSelect?.(item.id);
-            });
-            this.workspaceOverviewBody.appendChild(card);
-        };
-
-        if (mosaic) {
-            const coreItems = items.filter((item) => item.id === "core");
-            const addonItems = items.filter((item) => item.id !== "core");
-            if (coreItems.length > 0) {
-                appendSection("core", "Core");
-                for (const item of coreItems) appendCard(item, true);
-            }
-            if (addonItems.length > 0) {
-                appendSection("addons", "Add-ons");
-                for (const item of addonItems) appendCard(item, false);
-            }
-        } else {
-            for (const item of items) appendCard(item, false);
-        }
+        this.renderWorkspaceOverview();
     }
 
     setWorkspacePanels(
@@ -361,6 +273,8 @@ export class WorkbenchPanel {
     }
 
     setActiveWorkspacePanel(summary: ActiveWorkspacePanelSummary | null): void {
+        this.activeWorkspacePanelSummary = summary;
+        this.renderWorkspaceOverview();
         this.workspacePanelHostBody.replaceChildren();
         if (!summary) {
             this.workspacePanelHost.style.display = "none";
@@ -468,6 +382,124 @@ export class WorkbenchPanel {
             }
 
             this.workspacePanelHostBody.appendChild(sectionsBlock);
+        }
+    }
+
+    private renderWorkspaceOverview(): void {
+        const items = this.workspaceItems;
+        const currentId = this.currentWorkspaceId;
+        const onSelect = this.onSelectWorkspace;
+        this.workspaceOverviewBody.replaceChildren();
+
+        if (!Array.isArray(items) || items.length <= 1) {
+            this.workspaceOverviewHost.style.display = "none";
+            return;
+        }
+
+        const mosaic = items.length >= 3;
+        this.workspaceOverviewHost.style.display = "flex";
+        this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
+
+        const appendSection = (key: string, label: string): void => {
+            if (!mosaic) return;
+            const section = document.createElement("div");
+            section.setAttribute("data-molsysviewer-workbench-workspace-overview-section", key);
+            section.textContent = label;
+            Object.assign(section.style, {
+                gridColumn: "1 / -1",
+                fontSize: "10px",
+                fontWeight: "700",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(244,244,245,0.54)",
+                padding: "2px 1px 0 1px",
+            });
+            this.workspaceOverviewBody.appendChild(section);
+        };
+
+        const appendCard = (item: WorkspaceOption, fullSpan = false): void => {
+            const card = document.createElement("button");
+            card.type = "button";
+            card.setAttribute("data-molsysviewer-workbench-workspace-overview-card", item.id);
+            const isCurrent = item.id === currentId;
+            if (item.id === currentId) {
+                card.setAttribute("data-molsysviewer-workbench-workspace-overview-current", item.id);
+            }
+            Object.assign(card.style, {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "5px",
+                width: "100%",
+                minHeight: mosaic ? "72px" : "0",
+                padding: mosaic ? "10px 11px" : "8px 10px",
+                borderRadius: "10px",
+                border: isCurrent ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.07)",
+                background: isCurrent ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.03)",
+                color: isCurrent ? "#f4f4f5" : "rgba(244,244,245,0.82)",
+                cursor: "pointer",
+                textAlign: "left",
+            });
+            if (fullSpan && mosaic) card.style.gridColumn = "1 / -1";
+
+            const title = document.createElement("div");
+            title.setAttribute("data-molsysviewer-workbench-workspace-overview-card-title", item.id);
+            Object.assign(title.style, {
+                fontSize: "12px",
+                fontWeight: "700",
+            });
+            title.textContent = item.title;
+            card.appendChild(title);
+
+            const subtitleText = isCurrent && this.activeWorkspacePanelSummary
+                ? `Panel: ${this.activeWorkspacePanelSummary.title}`
+                : item.subtitle;
+            if (subtitleText) {
+                const subtitle = document.createElement("div");
+                subtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-card-subtitle", item.id);
+                Object.assign(subtitle.style, {
+                    fontSize: "11px",
+                    lineHeight: "1.25",
+                    color: isCurrent ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.58)",
+                });
+                subtitle.textContent = subtitleText;
+                card.appendChild(subtitle);
+            }
+
+            const marker = document.createElement("div");
+            marker.setAttribute("data-molsysviewer-workbench-workspace-overview-card-marker", item.id);
+            Object.assign(marker.style, {
+                fontSize: "10px",
+                fontWeight: "700",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+                color: isCurrent ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.48)",
+            });
+            marker.textContent = isCurrent ? "Current workspace" : "Open workspace";
+            card.appendChild(marker);
+
+            card.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onSelect?.(item.id);
+            });
+            this.workspaceOverviewBody.appendChild(card);
+        };
+
+        if (mosaic) {
+            const coreItems = items.filter((item) => item.id === "core");
+            const addonItems = items.filter((item) => item.id !== "core");
+            if (coreItems.length > 0) {
+                appendSection("core", "Core");
+                for (const item of coreItems) appendCard(item, true);
+            }
+            if (addonItems.length > 0) {
+                appendSection("addons", "Add-ons");
+                for (const item of addonItems) appendCard(item, false);
+            }
+        } else {
+            for (const item of items) appendCard(item, false);
         }
     }
 
