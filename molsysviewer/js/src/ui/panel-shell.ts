@@ -216,10 +216,9 @@ export class PanelShell {
             position: "absolute",
             top: "calc(100% + 6px)",
             right: "0",
-            minWidth: "196px",
+            minWidth: "224px",
             display: "none",
-            flexDirection: "column",
-            gap: "4px",
+            gap: "6px",
             padding: "6px",
             borderRadius: "12px",
             background: "rgba(18, 18, 22, 0.96)",
@@ -354,10 +353,16 @@ export class PanelShell {
         }
 
         const current = items.find((item) => item.id === currentId) ?? items[0];
+        const mosaic = items.length >= 3;
         this.workspaceCurrentTitleElement.textContent = current.title;
         this.workspaceCurrentSubtitleElement.textContent = current.subtitle ?? "";
         this.workspaceCurrentSubtitleElement.style.display = current.subtitle ? "block" : "none";
         this.workspaceCurrentElement.setAttribute("data-molsysviewer-panel-workspace-current", current.id);
+        this.workspaceMenuElement.setAttribute("data-molsysviewer-panel-workspace-launcher-mode", mosaic ? "mosaic" : "list");
+        Object.assign(this.workspaceMenuElement.style, {
+            display: "none",
+            gridTemplateColumns: mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)",
+        });
         this.workspaceMenuElement.replaceChildren();
 
         for (const item of items) {
@@ -368,16 +373,18 @@ export class PanelShell {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                gap: "3px",
+                justifyContent: "space-between",
+                gap: "5px",
                 width: "100%",
                 border: item.id === current.id ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "10px",
+                borderRadius: "12px",
                 background: item.id === current.id ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.03)",
                 color: item.id === current.id ? "#f4f4f5" : "rgba(244,244,245,0.82)",
                 fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
                 fontSize: "11px",
                 lineHeight: "1.2",
-                padding: "8px 10px",
+                minHeight: mosaic ? "72px" : "0",
+                padding: mosaic ? "10px 11px" : "8px 10px",
                 cursor: "pointer",
                 textAlign: "left",
             });
@@ -423,7 +430,8 @@ export class PanelShell {
     }
 
     private applyWorkspaceMenuState(): void {
-        this.workspaceMenuElement.style.display = this.workspaceMenuOpen ? "flex" : "none";
+        const mode = this.workspaceMenuElement.getAttribute("data-molsysviewer-panel-workspace-launcher-mode");
+        this.workspaceMenuElement.style.display = this.workspaceMenuOpen ? (mode === "mosaic" ? "grid" : "flex") : "none";
         this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-launcher-open", this.workspaceMenuOpen ? "true" : "false");
     }
 

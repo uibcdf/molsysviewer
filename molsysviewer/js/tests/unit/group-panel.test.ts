@@ -378,6 +378,7 @@ test("GroupPanel exposes workspace launcher when multiple workspaces exist", () 
             [
                 { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
                 { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section" },
+                { id: "pharmacophoremt", title: "PharmacophoreMT", subtitle: "3 panels · 2 sections" },
             ],
             "core",
             (workspaceId) => { selectedWorkspace = workspaceId; },
@@ -395,6 +396,7 @@ test("GroupPanel exposes workspace launcher when multiple workspaces exist", () 
         assert.ok(launcher);
         assert.strictEqual(currentTitle?.textContent, "Core");
         assert.strictEqual(currentSubtitle?.textContent, "Navigate + Workbench");
+        assert.strictEqual(launcher?.getAttribute("data-molsysviewer-panel-workspace-launcher-mode"), "mosaic");
 
         current?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
@@ -402,7 +404,9 @@ test("GroupPanel exposes workspace launcher when multiple workspaces exist", () 
         const title = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-title", "topomt");
         const subtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-subtitle", "topomt");
         const marker = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option-marker", "core");
+        const other = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-option", "pharmacophoremt");
         assert.ok(button);
+        assert.ok(other);
         assert.strictEqual(title?.textContent, "TopoMT");
         assert.strictEqual(subtitle?.textContent, "2 panels · 1 section");
         assert.strictEqual(marker?.textContent, "Current");
