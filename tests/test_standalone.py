@@ -164,9 +164,16 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     class FakeWebView:
         def __init__(self, _parent=None):
             self.url = None
+            self.scripts = []
 
         def setUrl(self, url):
             self.url = url
+
+        def page(self):
+            return self
+
+        def runJavaScript(self, script):
+            self.scripts.append(script)
 
     class FakeQUrl:
         @staticmethod
@@ -215,6 +222,14 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].size == (1200, 800)
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export"]
+    view_menu = runtime["window"].menu_bar.menus[1]
+    for action in view_menu.actions:
+        assert action.triggered._callbacks
+        action.triggered._callbacks[0]()
+    scripts = runtime["webview"].scripts
+    assert any('"panel":"navigate"' in script for script in scripts)
+    assert any('"panel":"workbench"' in script for script in scripts)
+    assert any('"expanded":false' in script and '"panel":null' in script for script in scripts)
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):

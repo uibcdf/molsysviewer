@@ -48,6 +48,10 @@ export async function bootDocsView(opts: {
 
     const commandLog: ViewerMessage[] = Array.isArray(opts.initialMessages) ? [...opts.initialMessages] : [];
     const ui = opts.ui || {};
+    (window as any).__molsysviewerDocsHandleMessage = async (msg: ViewerMessage) => {
+        const controller = await controllerPromise;
+        await controller.handleMessage(msg);
+    };
 
     // Setup DOM
     const hostEl = opts.el;

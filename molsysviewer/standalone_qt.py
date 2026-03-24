@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import tempfile
 from typing import Any, Sequence
@@ -54,6 +55,19 @@ def _reload_html_in_view(webview, QUrl, html_path: str) -> None:
     webview.setUrl(QUrl.fromLocalFile(html_path))
 
 
+def _send_viewer_message(webview, message: dict[str, Any]) -> None:
+    page = webview.page() if hasattr(webview, "page") else None
+    if page is None or not hasattr(page, "runJavaScript"):
+        return
+    payload = json.dumps(message, separators=(",", ":"))
+    script = (
+        "if (window.__molsysviewerDocsHandleMessage) { "
+        f"window.__molsysviewerDocsHandleMessage({payload}); "
+        "}"
+    )
+    page.runJavaScript(script)
+
+
 def _qt_runtime_urls() -> list[str]:
     local_runtime = Path(__file__).with_name("viewer.js").resolve().as_uri()
     return [
@@ -101,19 +115,28 @@ def _install_menu_bar(
 
     open_navigate_action = QAction("Open Navigate", window)
     open_navigate_action.triggered.connect(
-        lambda: _show_status(window, "Panel host actions are not wired yet in the Qt prototype.")
+        lambda: _send_viewer_message(
+            webview,
+            {"op": "set_panel_mode", "panel": "navigate", "expanded": True},
+        )
     )
     view_menu.addAction(open_navigate_action)
 
     open_workbench_action = QAction("Open Workbench", window)
     open_workbench_action.triggered.connect(
-        lambda: _show_status(window, "Panel host actions are not wired yet in the Qt prototype.")
+        lambda: _send_viewer_message(
+            webview,
+            {"op": "set_panel_mode", "panel": "workbench", "expanded": True},
+        )
     )
     view_menu.addAction(open_workbench_action)
 
     close_panel_action = QAction("Close Panel Mode", window)
     close_panel_action.triggered.connect(
-        lambda: _show_status(window, "Panel host actions are not wired yet in the Qt prototype.")
+        lambda: _send_viewer_message(
+            webview,
+            {"op": "set_panel_mode", "panel": None, "expanded": False},
+        )
     )
     view_menu.addAction(close_panel_action)
 
