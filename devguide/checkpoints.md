@@ -39,6 +39,13 @@ Do not append dated historical entries unless a date is itself operationally rel
   - finish squeezing the value out of the now-stronger add-on/runtime path,
   - treat figure export as a deliberate subsystem rather than a side helper,
   - and leave standalone as the final major pre-`1.0.0` host push.
+- Support-library hardening is also part of the current stage:
+  - `workspace_catalog()` and `workspace_runtime()` now belong to the structured
+    SMonitor contract layer, not just the thin query surface
+  - `molsysviewer.config` PyUnitWizard setters now follow the same
+    `@digest()`/`@signal()` rule as the rest of the main public API
+  - `depdigest` is now explicit in the local hard support stack rather than an
+    implicit bootstrap dependency
 - The standalone question should now be treated as more concrete than before:
   - browser-hosted `standalone 0` is already good enough as a teaching bridge
   - the final pre-`1.0.0` standalone host should now be planned as a dedicated

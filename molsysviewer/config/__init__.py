@@ -19,6 +19,7 @@ controls_position_fullscreen = ["bottom", "right"]
 from .user_presets import user_presets, load_user_presets
 from .project_config import load_project_config
 from .._private.arg_digestion import digest
+from smonitor import signal
 
 __all__ = [
     "show_controls",
@@ -32,18 +33,21 @@ __all__ = [
 
 # PyUnitWizard configuration for quantities with units.
 
+@signal(tags=["config", "pyunitwizard"])
 @digest()
 def set_default_quantities_form(form='pint', skip_digestion: bool = False):
 
     from molsysviewer._pyunitwizard import puw
     puw.configure.set_default_form(form)
 
+@signal(tags=["config", "pyunitwizard"])
 @digest()
 def set_default_quantities_parser(form='pint', skip_digestion: bool = False):
 
     from molsysviewer._pyunitwizard import puw
     puw.configure.set_default_parser(form)
 
+@signal(tags=["config", "pyunitwizard"])
 @digest()
 def set_default_standard_units(standards=['nm', 'ps', 'K', 'mole', 'amu', 'e',
     'kJ/mol', 'kJ/(mol*nm)', 'kJ/(mol*nm**2)', 'radians'], skip_digestion: bool = False):

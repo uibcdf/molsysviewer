@@ -8,6 +8,7 @@ LIBRARIES = {
     'anywidget': {'type': 'hard', 'pypi': 'anywidget'},
     'pyunitwizard': {'type': 'hard', 'pypi': 'pyunitwizard'},
     'smonitor': {'type': 'hard', 'pypi': 'smonitor'},
+    'depdigest': {'type': 'hard', 'pypi': 'depdigest'},
     'argdigest': {'type': 'hard', 'pypi': 'argdigest'},
 }
 

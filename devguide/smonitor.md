@@ -38,6 +38,8 @@ Good examples in the current codebase include:
 - controls visibility methods,
 - export methods,
 - representation-setting wrappers.
+- panel/workspace notebook helpers should also use structured context when they
+  become part of QA or interactive support workflows.
 
 ### 3. Catalog-Powered Exceptions
 Custom exceptions must inherit from `CatalogException` (and typically `ValueError` or `TypeError` for Python compatibility). This ensures that error messages are automatically hydrated from the catalog metadata.
@@ -79,6 +81,24 @@ Remaining work should be selective:
 
 - add context to new orchestration paths when they are introduced;
 - expand contracts only when they improve real QA/dev workflows.
+
+Current example of that rule:
+
+- the notebook-facing panel/workspace control surface now carries structured
+  signal context for:
+  - `set_panel_mode(...)`
+  - `set_workspace(...)`
+  - `set_workspace_panel(...)`
+  - `workspace_catalog(...)`
+  - `workspace_panels(...)`
+  - `workspace_runtime(...)`
+  - `get_panel_mode_state(...)`
+
+This is intentional because these calls are now part of the fast QA loop for
+shared runtime behavior.
+
+- the same structural rule also applies to small but real public config entry
+  points such as the local PyUnitWizard defaults in `molsysviewer.config`.
 
 ## Traceability
 

@@ -75,3 +75,9 @@ Bootstrap ordering matters.
 
 - `depdigest` only adds real value if it runs before heavyweight imports fail.
 - late dependency checks are treated as an integration defect.
+
+Current local rule:
+
+- the support stack itself should be explicit in `molsysviewer/_depdigest.py`;
+- `argdigest`, `depdigest`, `pyunitwizard`, and `smonitor` are treated as hard
+  dependencies, not incidental transitive imports.
