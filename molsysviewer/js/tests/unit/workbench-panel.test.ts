@@ -209,9 +209,9 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         panel.setVisible(true);
         panel.setWorkspaces(
             [
-                { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
-                { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section" },
-                { id: "pharmacophoremt", title: "PharmacophoreMT", subtitle: "3 panels · 2 sections" },
+                { id: "core", title: "Core", subtitle: "Navigate + Workbench", panelCount: 2 },
+                { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section", panelCount: 2, workbenchSectionCount: 1, contextActionCount: 1, exportHelperCount: 1 },
+                { id: "pharmacophoremt", title: "PharmacophoreMT", subtitle: "3 panels · 2 sections", panelCount: 3, workbenchSectionCount: 2, contextActionCount: 2 },
             ],
             "topomt",
             (workspaceId) => { selectedWorkspace = workspaceId; },
@@ -254,6 +254,7 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const overviewPreviewSectionTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-title", "topomt:pockets");
         const overviewPreviewSectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-item", "topomt:pockets");
         const overviewPreviewSectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", "topomt:pockets");
+        const overviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-capabilities", "topomt");
         const overviewPanels = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panels", "topomt");
         const overviewCurrentPanel = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-current", "topo");
         const overviewPanelButton = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel", "channels");
@@ -283,6 +284,7 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(overviewPreviewSectionTitle);
         assert.ok(overviewPreviewSectionItem);
         assert.ok(overviewPreviewSectionSubtitle);
+        assert.ok(overviewCapabilities);
         assert.ok(overviewPanels);
         assert.ok(overviewCurrentPanel);
         assert.ok(overviewPanelButton);
@@ -303,6 +305,7 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.strictEqual(overviewSubtitle?.textContent, "Panel: Topo");
         assert.strictEqual(overviewEntry?.textContent, "Entry: topomt.panel.topo");
         assert.strictEqual(overviewPreviewDescription?.textContent, "Pocket analysis");
+        assert.strictEqual(overviewCapabilities?.children.length, 4);
         assert.strictEqual(overviewPreviewCapabilities?.children.length, 3);
         assert.strictEqual(overviewPreviewSectionTitle?.textContent, "Pockets");
         assert.strictEqual(overviewPreviewSectionItem?.textContent, "Add-on: topomt");
@@ -474,9 +477,9 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const panel = new WorkbenchPanel(host);
         panel.setWorkspaces(
             [
-                { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
-                { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section" },
-                { id: "pharmacophoremt", title: "PharmacophoreMT", subtitle: "3 panels · 2 sections" },
+                { id: "core", title: "Core", subtitle: "Navigate + Workbench", panelCount: 2 },
+                { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section", panelCount: 2, workbenchSectionCount: 1, contextActionCount: 1, exportHelperCount: 1 },
+                { id: "pharmacophoremt", title: "PharmacophoreMT", subtitle: "3 panels · 2 sections", panelCount: 3, workbenchSectionCount: 2, contextActionCount: 2 },
             ],
             "core",
             (workspaceId) => { selectedWorkspace = workspaceId; },
@@ -496,6 +499,7 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
         const overviewCurrent = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-current", "core");
         const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "topomt");
+        const overviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-capabilities", "topomt");
         const overviewCurrentMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "core");
         assert.ok(current);
         assert.ok(currentMarker);
@@ -508,6 +512,7 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         assert.ok(overviewCard);
         assert.ok(overviewCurrent);
         assert.ok(overviewMarker);
+        assert.ok(overviewCapabilities);
         assert.ok(overviewCurrentMarker);
         assert.strictEqual(currentMarker?.textContent, "Core workspace");
         assert.strictEqual(currentTitle?.textContent, "Core");
@@ -516,6 +521,7 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         assert.strictEqual(overviewCurrentSection?.textContent, "Current");
         assert.strictEqual(overviewAddonSection?.textContent, "Add-ons");
         assert.strictEqual(overviewMarker?.textContent, "Open workspace");
+        assert.strictEqual(overviewCapabilities?.children.length, 4);
         assert.strictEqual(overviewCurrentMarker?.textContent, "Current workspace");
 
         overviewCard?.dispatch("click", { preventDefault() {}, stopPropagation() {} });

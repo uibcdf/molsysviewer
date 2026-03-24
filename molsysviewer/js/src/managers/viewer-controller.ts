@@ -39,7 +39,16 @@ type AddonRuntimeSummary = {
     exportHelperTitles: string[];
     active?: boolean;
 };
-type WorkspaceRuntime = { id: string; title: string; subtitle?: string; addon?: string };
+type WorkspaceRuntime = {
+    id: string;
+    title: string;
+    subtitle?: string;
+    addon?: string;
+    panelCount?: number;
+    workbenchSectionCount?: number;
+    contextActionCount?: number;
+    exportHelperCount?: number;
+};
 type AddonPanelRuntime = {
     key: string;
     workspaceId: string;
@@ -1663,6 +1672,10 @@ export class MolSysViewerController {
             options.push({
                 ...workspace,
                 subtitle: summaryParts.join(" · "),
+                panelCount,
+                workbenchSectionCount,
+                contextActionCount,
+                exportHelperCount,
             });
         }
 

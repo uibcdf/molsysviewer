@@ -264,6 +264,14 @@ Current runtime direction:
   - entry
   - capability hints
   - first dynamic section previews
+- non-current workspace cards may still expose compact capability chips when
+  that helps the user understand that an add-on workspace is substantive and
+  not just a label
+- when those chips exist, they should summarize real runtime affordances:
+  - local panels
+  - workbench sections
+  - context actions
+  - export helpers
 - the active workspace host should remain visually tied to that overview rather
   than feeling like an unrelated second card
 - this is still meant to feel like calm navigation, not like a dashboard or a
