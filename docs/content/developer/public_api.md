@@ -283,6 +283,7 @@ The current pre-`1.0` shared panel-mode entrypoint is:
 
 - `view.set_panel_mode(...)`
 - `view.set_workspace(...)`
+- `view.set_workspace_panel(...)`
 
 This API is intentionally small:
 
@@ -291,9 +292,13 @@ This API is intentionally small:
 - `panel=None` lets the frontend reuse its remembered last panel when opening
 - `workspace="core"` selects the native workspace
 - other workspace ids select the corresponding add-on workspace when available
+- `view.set_workspace_panel("topo", workspace="topomt")` lands directly on a
+  local workspace panel from Python/notebook code
 
 This small surface matters especially for notebook usage:
 
 - it gives Jupyter users an explicit Python control door into the shared
   panel/workspace runtime
 - it avoids requiring mouse-only navigation for workspace changes
+- it also lets notebook code drive the local panel stack of larger add-on
+  workspaces

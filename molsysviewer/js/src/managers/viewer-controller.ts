@@ -1065,6 +1065,25 @@ export class MolSysViewerController {
                 case "toggle_spin": await this.scene.toggleSpin(msg); break;
                 case "set_panel_mode": this.setPanelMode((msg as any).panel, (msg as any).expanded); break;
                 case "set_workspace": this.selectWorkspace((msg as any).workspace ?? "core"); break;
+                case "set_workspace_panel": {
+                    const workspaceId = typeof (msg as any).workspace === "string"
+                        ? (msg as any).workspace
+                        : this.currentWorkspace;
+                    const panelId = typeof (msg as any).panel === "string"
+                        ? (msg as any).panel
+                        : "";
+                    if (!panelId) break;
+                    if (workspaceId === "core") {
+                        this.selectWorkspace("core");
+                        if (panelId === "navigate" || panelId === "workbench") {
+                            this.setPanelMode(panelId, true);
+                        }
+                        break;
+                    }
+                    this.selectWorkspace(workspaceId);
+                    this.selectWorkspacePanel(workspaceId, panelId);
+                    break;
+                }
                 case "clear_scene": await this.scene.clearScene(msg); break;
                 case "clear_all": await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;

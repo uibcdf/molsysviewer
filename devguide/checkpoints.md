@@ -161,6 +161,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   surface for notebook use:
   - `view.set_panel_mode(...)`
   - `view.set_workspace(...)`
+  - `view.set_workspace_panel(...)`
   - this should be treated as the stable scripted doorway into the workspace
     runtime, not only as UI chrome
 - Keep the emerging MolSysSuite add-on direction explicit:

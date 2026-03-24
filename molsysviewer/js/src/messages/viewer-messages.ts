@@ -339,6 +339,12 @@ export type SetWorkspaceMessage = {
     workspace?: string;
 };
 
+export type SetWorkspacePanelMessage = {
+    op: "set_workspace_panel";
+    panel?: string;
+    workspace?: string;
+};
+
 export type SetAddonRuntimeSummaryMessage = {
     op: "set_addon_runtime_summary";
     addons?: string[];
@@ -495,6 +501,7 @@ export type ViewerMessage =
     SetCameraSnapshotMessage |
     SetPanelModeMessage |
     SetWorkspaceMessage |
+    SetWorkspacePanelMessage |
     RequestCameraSnapshotMessage |
     RequestImageExportMessage |
     ClearActiveSelectionMessage |
