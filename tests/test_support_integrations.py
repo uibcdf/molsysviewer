@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from molsysviewer import config
+from molsysviewer import _depdigest as depdigest_config
 from molsysviewer._private import variables
 from molsysviewer._pyunitwizard import puw
 
@@ -46,6 +47,12 @@ def test_runtime_and_config_share_same_pyunitwizard_defaults():
         "kJ/(mol*nm**2)",
         "radians",
     ]
+
+
+def test_depdigest_config_lists_support_stack_as_hard_dependencies():
+    for library_name in ["argdigest", "depdigest", "pyunitwizard", "smonitor"]:
+        assert library_name in depdigest_config.LIBRARIES
+        assert depdigest_config.LIBRARIES[library_name]["type"] == "hard"
 
 
 def test_private_variables_use_local_pyunitwizard_instance():

@@ -31,11 +31,13 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
     previous_buffer = manager.config.profiling_buffer_size
     manager._timeline.clear()
     manager._timings.clear()
-    manager.configure(profiling=True, profiling_sample_rate=1.0, profiling_buffer_size=64)
+    manager.configure(profiling=True, profiling_sample_rate=1.0, profiling_buffer_size=2048)
 
     try:
         view = demo["dialanine"]
         view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+        manager._timeline.clear()
+        manager._timings.clear()
 
         region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
         region.hide(skip_digestion=True)
@@ -44,6 +46,13 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.reset_camera(skip_digestion=True)
         view.get_camera_snapshot(skip_digestion=True)
         view.set_camera_snapshot({"target": [0, 0, 0]}, skip_digestion=True)
+        view.set_panel_mode("workbench", skip_digestion=True)
+        view.set_workspace("core", skip_digestion=True)
+        view.set_workspace_panel("workbench", workspace="core", skip_digestion=True)
+        view.workspace_catalog(skip_digestion=True)
+        view.workspace_panels("core", skip_digestion=True)
+        view.workspace_runtime(skip_digestion=True)
+        view.get_panel_mode_state(pretty=True)
         view.export.html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
 
         timeline = manager.report()["timeline"]
@@ -57,15 +66,34 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "molsysviewer.viewer.reset_camera" in keys
         assert "molsysviewer.viewer.get_camera_snapshot" in keys
         assert "molsysviewer.viewer.set_camera_snapshot" in keys
+        assert "molsysviewer.viewer.set_panel_mode" in keys
+        assert "molsysviewer.viewer.set_workspace" in keys
+        assert "molsysviewer.viewer.set_workspace_panel" in keys
+        assert "molsysviewer.viewer.workspace_catalog" in keys
+        assert "molsysviewer.viewer.workspace_panels" in keys
+        assert "molsysviewer.viewer.workspace_runtime" in keys
+        assert "molsysviewer.viewer.get_panel_mode_state" in keys
         assert "molsysviewer.exports.html" in keys
 
         assert "region" in tags_by_key["molsysviewer.regions.hide"]
         assert "whole" in tags_by_key["molsysviewer.whole.hide"]
         assert "shape" in tags_by_key["molsysviewer.shapes.clear"]
         assert "camera" in tags_by_key["molsysviewer.viewer.reset_camera"]
+        assert "panel" in tags_by_key["molsysviewer.viewer.set_panel_mode"]
         assert "export" in tags_by_key["molsysviewer.exports.html"]
         assert meta_by_key["molsysviewer.viewer.get_camera_snapshot"].get("pretty") is None
         assert meta_by_key["molsysviewer.viewer.set_camera_snapshot"].get("snapshot_keys") == ["target"]
+        assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("panel") == "workbench"
+        assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("expanded") is True
+        assert meta_by_key["molsysviewer.viewer.set_workspace"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("panel") == "workbench"
+        assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("current_workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("workspace_count") == 1
+        assert meta_by_key["molsysviewer.viewer.workspace_panels"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("current_workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("panel_count") == 2
+        assert meta_by_key["molsysviewer.viewer.get_panel_mode_state"].get("pretty") is True
         assert meta_by_key["molsysviewer.exports.html"].get("include_popout") is False
     finally:
         manager.configure(
@@ -82,6 +110,7 @@ def test_public_digest_entrypoints_have_signal_decorators():
         Path("molsysviewer/whole.py"),
         Path("molsysviewer/regions.py"),
         Path("molsysviewer/layers.py"),
+        Path("molsysviewer/config/__init__.py"),
     ]
     targets.extend(sorted(Path("molsysviewer/shapes").glob("*.py")))
 

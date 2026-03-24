@@ -122,6 +122,120 @@ def _write_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> d
     }
 
 
+def _panel_mode_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "panel": _signal_value(args, kwargs, 1, "panel"),
+        "expanded": _signal_value(args, kwargs, 2, "expanded")
+        if _signal_value(args, kwargs, 2, "expanded") is not None
+        else True,
+    }
+
+
+def _workspace_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "workspace": _signal_value(args, kwargs, 1, "workspace") or "core",
+    }
+
+
+def _workspace_panel_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "panel": _signal_value(args, kwargs, 1, "panel"),
+        "workspace": _signal_value(args, kwargs, 2, "workspace"),
+    }
+
+
+def _workspace_panels_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "workspace": _signal_value(args, kwargs, 1, "workspace") or "core",
+    }
+
+
+def _workspace_catalog_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    view = args[0] if args else None
+    state = getattr(view, "_last_panel_mode_state_event", None)
+    current_workspace = "core"
+    if isinstance(state, dict):
+        workspace = state.get("workspace")
+        if isinstance(workspace, str) and workspace.strip() != "":
+            current_workspace = workspace
+
+    workspace_count = 1
+    if view is not None:
+        try:
+            workspace_specs = view.addons.workspace_specs(skip_digestion=True)
+            panel_specs = view.addons.panel_specs(skip_digestion=True)
+            workbench_specs = view.addons.workbench_section_specs(skip_digestion=True)
+            for workspace in workspace_specs:
+                workspace_id = workspace.get("id")
+                addon_name = workspace.get("addon")
+                if not isinstance(workspace_id, str) or not isinstance(addon_name, str):
+                    continue
+                panel_count = sum(
+                    1
+                    for item in panel_specs
+                    if item.get("addon") == addon_name and item.get("target", "panel_mode") == "panel_mode"
+                )
+                workbench_section_count = sum(
+                    1
+                    for item in workbench_specs
+                    if item.get("addon") == addon_name and item.get("target_panel", "workbench") == "workbench"
+                )
+                if panel_count + workbench_section_count > 0:
+                    workspace_count += 1
+        except Exception:
+            pass
+
+    return {
+        "current_workspace": current_workspace,
+        "workspace_count": workspace_count,
+    }
+
+
+def _workspace_runtime_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    view = args[0] if args else None
+    state = getattr(view, "_last_panel_mode_state_event", None)
+    current_workspace = "core"
+    if isinstance(state, dict):
+        workspace = state.get("workspace")
+        if isinstance(workspace, str) and workspace.strip() != "":
+            current_workspace = workspace
+
+    panel_count = 2 if current_workspace == "core" else 0
+    if view is not None and current_workspace != "core":
+        try:
+            workspace_specs = view.addons.workspace_specs(skip_digestion=True)
+            panel_specs = view.addons.panel_specs(skip_digestion=True)
+            addon_name = next(
+                (
+                    item.get("addon")
+                    for item in workspace_specs
+                    if item.get("id") == current_workspace and isinstance(item.get("addon"), str)
+                ),
+                None,
+            )
+            if isinstance(addon_name, str):
+                panel_count = sum(
+                    1
+                    for item in panel_specs
+                    if item.get("addon") == addon_name and item.get("target", "panel_mode") == "panel_mode"
+                )
+        except Exception:
+            pass
+
+    return {
+        "current_workspace": current_workspace,
+        "panel_count": panel_count,
+    }
+
+
+def _panel_mode_state_query_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "pretty": _signal_value(args, kwargs, 1, "pretty")
+        if _signal_value(args, kwargs, 1, "pretty") is not None
+        else False,
+    }
+
+
 def _quantity_value_in_unit(value: Any, unit_name: str) -> float:
     if isinstance(value, (int, float, np.integer, np.floating)):
         return float(value)
@@ -769,7 +883,7 @@ class MolSysView:
         except Exception:
             pass
 
-    @signal(tags=["viewer", "panel"])
+    @signal(tags=["viewer", "panel"], extra_factory=_panel_mode_signal_extra)
     @digest()
     def set_panel_mode(
         self,
@@ -797,7 +911,7 @@ class MolSysView:
             }
         )
 
-    @signal(tags=["viewer", "panel"])
+    @signal(tags=["viewer", "panel"], extra_factory=_workspace_signal_extra)
     @digest()
     def set_workspace(
         self,
@@ -819,7 +933,7 @@ class MolSysView:
             }
         )
 
-    @signal(tags=["viewer", "panel"])
+    @signal(tags=["viewer", "panel"], extra_factory=_workspace_panel_signal_extra)
     @digest()
     def set_workspace_panel(
         self,
@@ -847,7 +961,7 @@ class MolSysView:
             }
         )
 
-    @signal(tags=["viewer", "panel", "query"])
+    @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_catalog_signal_extra)
     @digest()
     def workspace_catalog(self, *, skip_digestion: bool = False) -> list[dict[str, Any]]:
         """Return the current effective workspace catalog visible to the view."""
@@ -906,7 +1020,7 @@ class MolSysView:
 
         return records
 
-    @signal(tags=["viewer", "panel", "query"])
+    @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_panels_signal_extra)
     @digest()
     def workspace_panels(
         self,
@@ -956,7 +1070,7 @@ class MolSysView:
             )
         return records
 
-    @signal(tags=["viewer", "panel", "query"])
+    @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_runtime_signal_extra)
     @digest()
     def workspace_runtime(self, *, skip_digestion: bool = False) -> dict[str, Any]:
         """Return a notebook-friendly snapshot of the shared workspace runtime."""
@@ -1855,7 +1969,7 @@ class MolSysView:
             return None
         return dict(self._last_measurement_created_event)
 
-    @signal(tags=["viewer", "query"])
+    @signal(tags=["viewer", "query"], extra_factory=_panel_mode_state_query_extra)
     def get_panel_mode_state(self, *, pretty: bool = False) -> dict | str | None:
         """Return the last known frontend panel/workspace runtime state.
 
