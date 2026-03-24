@@ -190,10 +190,15 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     class FakeInputDialog:
         value = ""
         accepted = True
+        item = ""
 
         @staticmethod
         def getText(_parent=None, _title="", _label=""):
             return FakeInputDialog.value, FakeInputDialog.accepted
+
+        @staticmethod
+        def getItem(_parent=None, _title="", _label="", _items=(), _current=0, _editable=False):
+            return FakeInputDialog.item, FakeInputDialog.accepted
 
     class FakeQUrl:
         @staticmethod
@@ -256,6 +261,12 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
     assert runtime["window"].title == "Qt Prototype · picked-system.pdb"
+    FakeInputDialog.item = "pentalanine"
+    file_menu.actions[1].triggered._callbacks[0]()
+    assert calls[-1][1:] == (str(outfile.resolve()), "Qt Prototype")
+    assert type(calls[-1][0]).__name__ == "MolSysView"
+    assert runtime["window"].status_bar.messages[-1] == "Loaded demo: pentalanine"
+    assert runtime["window"].title == "Qt Prototype · pentalanine"
     FakeInputDialog.value = "1crn"
     file_menu.actions[2].triggered._callbacks[0]()
     assert calls[-1] == ("1crn", str(outfile.resolve()), "Qt Prototype")
