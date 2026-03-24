@@ -128,6 +128,14 @@ Do not append dated historical entries unless a date is itself operationally rel
   - the overview and the active host now also sit inside one shared runtime
     deck, so the body reads more like one domain surface and less like two
     unrelated stacked cards
+  - non-current add-on workspace cards can now also expose small capability
+    chips, so the workbench no longer reads as `Core` plus vague add-on
+    metadata
+  - that capability layer should now be treated as part of the add-on runtime
+    proof itself:
+    - add-on workspaces need to look informative and domain-bearing inside the
+      shared workbench body,
+      not only selectable from the launcher
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
 - the shared workspace launcher/header now also carries a clearer domain hint:

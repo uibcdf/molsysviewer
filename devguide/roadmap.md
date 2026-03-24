@@ -128,6 +128,14 @@ Immediate next focus from here:
   believable
 - keep the notebook/runtime bridge strong enough that these slices are easy to
   drive and diagnose from Python
+- specifically, the current best path is:
+  - make add-on workspaces look and feel substantive inside `Workbench`
+  - not by adding generic chrome,
+  - but by making workspace cards, host previews, panel stacks, and capability
+    summaries cooperate better
+  - a good sign of progress is that non-current add-on workspaces already look
+    informative before the user opens them, instead of reading like placeholder
+    labels beside `Core`
 
 ### Phase C. Figure Export Maturation
 

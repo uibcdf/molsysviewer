@@ -37,7 +37,15 @@ type AddonWorkbenchSectionSummary = {
     itemSubtitle?: string;
 };
 
-type WorkspaceOption = { id: string; title: string; subtitle?: string };
+type WorkspaceOption = {
+    id: string;
+    title: string;
+    subtitle?: string;
+    panelCount?: number;
+    workbenchSectionCount?: number;
+    contextActionCount?: number;
+    exportHelperCount?: number;
+};
 type WorkspacePanelOption = {
     id: string;
     title: string;
@@ -494,6 +502,41 @@ export class WorkbenchPanel {
                 });
                 entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
                 card.appendChild(entry);
+            }
+
+            const overviewCapabilityTexts: string[] = [];
+            if ((item.panelCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.panelCount} panel${item.panelCount === 1 ? "" : "s"}`);
+            if ((item.workbenchSectionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.workbenchSectionCount} section${item.workbenchSectionCount === 1 ? "" : "s"}`);
+            if ((item.contextActionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.contextActionCount} context`);
+            if ((item.exportHelperCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.exportHelperCount} export`);
+
+            if (overviewCapabilityTexts.length > 0) {
+                const capabilities = document.createElement("div");
+                capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capabilities", item.id);
+                Object.assign(capabilities.style, {
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "4px",
+                    marginTop: "2px",
+                });
+
+                for (const text of overviewCapabilityTexts) {
+                    const chip = document.createElement("div");
+                    chip.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capability", text.toLowerCase().replace(/\s+/g, "-"));
+                    Object.assign(chip.style, {
+                        padding: "3px 7px",
+                        borderRadius: "999px",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        background: isCurrent ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.035)",
+                        fontSize: "10px",
+                        fontWeight: "700",
+                        color: isCurrent ? "rgba(244,244,245,0.82)" : "rgba(244,244,245,0.72)",
+                    });
+                    chip.textContent = text;
+                    capabilities.appendChild(chip);
+                }
+
+                card.appendChild(capabilities);
             }
 
             if (isCurrent && this.activeWorkspacePanelSummary) {
