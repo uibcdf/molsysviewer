@@ -31,6 +31,7 @@ We use ArgDigest in **package style**. Validation and normalization live outside
    - internal replay/rebuild flows depend on bypassing digestion once state is already normalized.
 3. **Encode caller-aware semantics in digesters**
    - if `None` is valid only for specific callables, that belongs in the digester, not in ad hoc bypass code.
+   - when MolSysViewer exposes both method-style and module/helper-style public routes, caller-aware digesters should accept both aliases; do not rely on one exact caller string if the API intentionally exposes more than one public entry path.
 4. **Prefer normalization over scattering coercion**
    - if a public method keeps manually coercing booleans, positions, tags, colors, or lists, that is a signal to move the contract into `arg_digestion`.
 5. **Treat warnings as migration signals**

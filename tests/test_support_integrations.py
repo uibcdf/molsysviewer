@@ -7,6 +7,9 @@ import pytest
 
 from molsysviewer import config
 from molsysviewer import _depdigest as depdigest_config
+from molsysviewer._private.arg_digestion.argument.atom_indices import digest_atom_indices
+from molsysviewer._private.arg_digestion.argument.element import digest_element
+from molsysviewer._private.arg_digestion.argument.mask import digest_mask
 from molsysviewer._private import variables
 from molsysviewer._pyunitwizard import puw
 
@@ -148,3 +151,10 @@ def test_thin_variadic_forwarders_do_not_carry_digest_decorators():
                 offenders.append(item.name)
 
     assert offenders == []
+
+
+def test_argdigest_caller_aliases_accept_module_level_molsysviewer_wrappers():
+    assert digest_mask("all", caller="molsysviewer.viewer.select") == "all"
+    assert digest_mask(None, caller="molsysviewer.regions.info") is None
+    assert digest_atom_indices("all", caller="molsysviewer.viewer.new_region") is None
+    assert digest_element(None, caller="molsysviewer.viewer.set") is None

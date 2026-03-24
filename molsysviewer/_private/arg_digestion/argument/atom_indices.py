@@ -28,7 +28,7 @@ def digest_atom_indices(atom_indices, caller=None):
     if atom_indices is None:
         return None
     elif is_all(atom_indices):
-        if caller == "molsysviewer.viewer.MolSysView.new_region":
+        if caller in {"molsysviewer.viewer.MolSysView.new_region", "molsysviewer.viewer.new_region"}:
             return None
         return 'all'
     elif isinstance(atom_indices, (int, np.int64, np.int32)):

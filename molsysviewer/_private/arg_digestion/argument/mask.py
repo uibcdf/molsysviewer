@@ -10,9 +10,15 @@ def digest_mask(mask, caller=None):
         'molsysviewer.viewer.MolSysView.select',
         'molsysviewer.viewer.MolSysView.get',
         'molsysviewer.viewer.MolSysView.info',
+        'molsysviewer.viewer.select',
+        'molsysviewer.viewer.get',
+        'molsysviewer.viewer.info',
         'molsysviewer.regions.Region.select',
         'molsysviewer.regions.Region.get',
         'molsysviewer.regions.Region.info',
+        'molsysviewer.regions.select',
+        'molsysviewer.regions.get',
+        'molsysviewer.regions.info',
     ]:
 
         if mask is None:
