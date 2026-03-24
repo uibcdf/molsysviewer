@@ -87,3 +87,36 @@ def test_set_workspace_panel_is_kept_in_message_history():
         {"op": "set_workspace_panel", "panel": "topo", "workspace": "topomt"},
         {"op": "set_workspace_panel", "panel": "overview", "workspace": None},
     ]
+
+
+def test_get_panel_mode_state_returns_last_frontend_state():
+    view = MolSysView(debug_js=True)
+
+    payload = {
+        "event": "panel_mode_state",
+        "panel": "workbench",
+        "expanded": True,
+        "workspace": "topomt",
+        "workspace_panel": "topo",
+    }
+    view._handle_frontend_event(payload)  # noqa: SLF001
+
+    assert view.get_panel_mode_state() == payload
+
+
+def test_get_panel_mode_state_pretty_returns_json():
+    view = MolSysView(debug_js=True)
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "panel_mode_state",
+            "panel": "navigate",
+            "expanded": True,
+            "workspace": "core",
+            "workspace_panel": "navigate",
+        }
+    )
+
+    pretty = view.get_panel_mode_state(pretty=True)
+
+    assert isinstance(pretty, str)
+    assert '"workspace": "core"' in pretty

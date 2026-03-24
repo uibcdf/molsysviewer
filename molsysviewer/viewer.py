@@ -172,6 +172,7 @@ class MolSysView:
         self._last_active_selection_event: dict | None = None
         self._last_tool_state_event: dict | None = None
         self._last_measurement_created_event: dict | None = None
+        self._last_panel_mode_state_event: dict | None = None
         self._shape_history: list[dict] = []
         self._annotation_history: list[dict] = []
         self._measurement_history: list[dict] = []
@@ -348,6 +349,8 @@ class MolSysView:
             self._last_tool_state_event = dict(content)
         elif event == "interaction_measurement_created":
             self._last_measurement_created_event = dict(content)
+        elif event == "panel_mode_state":
+            self._last_panel_mode_state_event = dict(content)
         elif event == "viewer_init_failed":
             reason = content.get("reason", "unknown")
             message = content.get("message") or "Mol* viewer failed to initialize."
@@ -1725,6 +1728,21 @@ class MolSysView:
         if self._last_measurement_created_event is None:
             return None
         return dict(self._last_measurement_created_event)
+
+    @signal(tags=["viewer", "query"])
+    def get_panel_mode_state(self, *, pretty: bool = False) -> dict | str | None:
+        """Return the last known frontend panel/workspace runtime state.
+
+        Parameters
+        ----------
+        pretty
+            If ``True``, return formatted JSON instead of a dict.
+        """
+        if self._last_panel_mode_state_event is None:
+            return None
+        if not pretty:
+            return dict(self._last_panel_mode_state_event)
+        return json.dumps(self._last_panel_mode_state_event, indent=2, sort_keys=True)
 
     @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()

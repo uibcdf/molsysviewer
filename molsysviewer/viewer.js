@@ -147672,6 +147672,7 @@ var MolSysViewerController = class _MolSysViewerController {
     } finally {
       this.syncingPanelExpansion = false;
     }
+    this.emitPanelModeState();
   }
   handlePanelExpansionChanged(source, expanded) {
     if (this.syncingPanelExpansion) return;
@@ -147692,6 +147693,7 @@ var MolSysViewerController = class _MolSysViewerController {
     } finally {
       this.syncingPanelExpansion = false;
     }
+    this.emitPanelModeState();
   }
   setPanelMode(panel, expanded) {
     const shouldExpand = expanded !== false;
@@ -147722,6 +147724,7 @@ var MolSysViewerController = class _MolSysViewerController {
     } finally {
       this.syncingPanelExpansion = false;
     }
+    this.emitPanelModeState();
   }
   refreshPanelWorkspaceChrome() {
     const workspaceOptions = this.getWorkspaceOptions();
@@ -148594,6 +148597,7 @@ var MolSysViewerController = class _MolSysViewerController {
     if (!panels.some((item2) => item2.id === panelId)) return;
     this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
     this.refreshWorkbenchPanel();
+    this.emitPanelModeState();
   }
   workspaceBelongsToAddon(workspaceId, addonName) {
     return this.addonWorkspaces.some((item2) => item2.id === workspaceId && item2.addon === addonName);
@@ -148604,11 +148608,27 @@ var MolSysViewerController = class _MolSysViewerController {
     this.refreshPanelWorkspaceChrome();
     if (this.currentWorkspace !== "core") {
       this.setPanelMode("workbench", true);
+      this.emitPanelModeState();
       return;
     }
     this.setPanelMode(this.lastCorePanelMode, true);
     this.refreshNavigatePanel();
     this.refreshWorkbenchPanel();
+    this.emitPanelModeState();
+  }
+  emitPanelModeState() {
+    const navigateExpanded = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
+    const workbenchExpanded = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
+    const expanded = navigateExpanded || workbenchExpanded;
+    const panel = navigateExpanded ? "navigate" : workbenchExpanded ? "workbench" : null;
+    const workspacePanel = this.currentWorkspace === "core" ? panel : this.ensureWorkspacePanelSelection(this.currentWorkspace);
+    this.notify?.({
+      event: "panel_mode_state",
+      panel,
+      expanded,
+      workspace: this.currentWorkspace,
+      workspace_panel: workspacePanel ?? null
+    });
   }
   // Facades for external access (e.g. from Index or Popout)
   async resetView() {
