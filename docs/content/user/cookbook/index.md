@@ -21,6 +21,7 @@ pharmacophore_overlay
 anisotropy_ellipsoids
 figure_export_workbench
 addon_workspace_workbench
+panel_mode_notebook
 html_export
 sphinx_html_embedding
 addon_development

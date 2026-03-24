@@ -712,6 +712,7 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+        this.emitPanelModeState();
     }
 
     private handlePanelExpansionChanged(source: "navigate" | "workbench", expanded: boolean): void {
@@ -733,6 +734,7 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+        this.emitPanelModeState();
     }
 
     private setPanelMode(panel?: "navigate" | "workbench" | null, expanded?: boolean): void {
@@ -769,6 +771,7 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+        this.emitPanelModeState();
     }
 
     private refreshPanelWorkspaceChrome(): void {
@@ -1688,6 +1691,7 @@ export class MolSysViewerController {
         if (!panels.some((item) => item.id === panelId)) return;
         this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
         this.refreshWorkbenchPanel();
+        this.emitPanelModeState();
     }
 
     private workspaceBelongsToAddon(workspaceId: string, addonName: string): boolean {
@@ -1700,11 +1704,35 @@ export class MolSysViewerController {
         this.refreshPanelWorkspaceChrome();
         if (this.currentWorkspace !== "core") {
             this.setPanelMode("workbench", true);
+            this.emitPanelModeState();
             return;
         }
         this.setPanelMode(this.lastCorePanelMode, true);
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
+        this.emitPanelModeState();
+    }
+
+    private emitPanelModeState(): void {
+        const navigateExpanded = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
+        const workbenchExpanded = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
+        const expanded = navigateExpanded || workbenchExpanded;
+        const panel = navigateExpanded
+            ? "navigate"
+            : workbenchExpanded
+                ? "workbench"
+                : null;
+        const workspacePanel =
+            this.currentWorkspace === "core"
+                ? panel
+                : this.ensureWorkspacePanelSelection(this.currentWorkspace);
+        this.notify?.({
+            event: "panel_mode_state",
+            panel,
+            expanded,
+            workspace: this.currentWorkspace,
+            workspace_panel: workspacePanel ?? null,
+        });
     }
 
     // Facades for external access (e.g. from Index or Popout)

@@ -33,6 +33,7 @@ Today, the shared Python entrypoint is:
 view.set_panel_mode(...)
 view.set_workspace(...)
 view.set_workspace_panel(...)
+view.get_panel_mode_state()
 ```
 
 The current contract is intentionally small:
@@ -55,6 +56,8 @@ This means:
 - another workspace id selects that add-on workspace when it is available
 - `set_workspace_panel(...)` selects a local panel inside the current or given
   workspace
+- `get_panel_mode_state()` returns the last runtime state reported back by the
+  frontend
 
 The browser side may also remember the last active panel when appropriate.
 
