@@ -2045,6 +2045,7 @@ class MolSysView:
         include_popout: bool = True,
         mode: str = "standalone",
         inline_messages: bool = True,
+        runtime_urls: Sequence[str] | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Export this viewer widget to an HTML file.
@@ -2095,6 +2096,7 @@ class MolSysView:
                 include_popout=include_popout,
                 messages=messages,
                 inline_messages=inline_messages,
+                runtime_urls=runtime_urls,
             )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
@@ -2354,6 +2356,7 @@ class MolSysView:
         include_popout: bool,
         messages: list[dict],
         inline_messages: bool,
+        runtime_urls: Sequence[str] | None = None,
     ) -> str:
         """Create a lightweight HTML that loads a shared runtime and replays messages."""
         # This HTML is meant to be embedded and load the runtime from the CDN
@@ -2375,6 +2378,9 @@ class MolSysView:
         messages_json = self._json_for_html_script(messages) if inline_messages else "[]"
         ui_json = self._json_for_html_script(ui_config)
 
+        runtime_candidates = list(runtime_urls or [runtime_cdn])
+        runtime_candidates_json = self._json_for_html_script(runtime_candidates)
+
         template = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2390,14 +2396,12 @@ class MolSysView:
   <div id="molsysviewer-root"></div>
   <script id="molsysviewer-ui" type="application/json">{ui_json}</script>
   <script id="molsysviewer-messages" type="application/json">{messages_json}</script>
+  <script id="molsysviewer-runtime-candidates" type="application/json">{runtime_candidates_json}</script>
   <script type="module">
     const el = document.getElementById("molsysviewer-root");
     const ui = JSON.parse(document.getElementById("molsysviewer-ui").textContent || "{{}}");
     const messages = JSON.parse(document.getElementById("molsysviewer-messages").textContent || "[]");
-
-    const candidates = [
-      "{runtime_cdn}",
-    ];
+    const candidates = JSON.parse(document.getElementById("molsysviewer-runtime-candidates").textContent || "[]");
 
     let lastError = null;
     for (const rel of candidates) {{

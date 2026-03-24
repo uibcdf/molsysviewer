@@ -152,6 +152,8 @@ def _build_demo_gallery(
     include_controls: bool,
     include_popout: bool,
     debug_js: bool | None,
+    mode: str,
+    runtime_urls: Sequence[str] | None,
 ) -> list[tuple[str, str]]:
     links: list[tuple[str, str]] = []
     for demo_name in sorted(demo.keys()):
@@ -172,6 +174,8 @@ def _build_demo_gallery(
             debug_js=debug_js,
             generate_demo_gallery=False,
             prepare_addons=False,
+            mode=mode,
+            runtime_urls=runtime_urls,
         )
         links.append((demo_name, demo_path.name))
     return links
@@ -235,6 +239,8 @@ def build_standalone0_html(
     debug_js: bool | None = None,
     generate_demo_gallery: bool = True,
     prepare_addons: bool = True,
+    mode: str = "standalone",
+    runtime_urls: Sequence[str] | None = None,
 ) -> str:
     """Build a first standalone-shaped HTML host using the current viewer runtime."""
 
@@ -253,12 +259,15 @@ def build_standalone0_html(
         debug_js=debug_js,
     )
     output_path = Path(output_filename).expanduser().resolve()
-    view.export.html(
+    view._write_html_impl(  # noqa: SLF001
         str(output_path),
         title=title,
         include_controls=include_controls,
         include_popout=include_popout,
-        mode="standalone",
+        mode=mode,
+        inline_messages=True,
+        runtime_urls=runtime_urls,
+        skip_digestion=True,
     )
     if molecular_system is None:
         demo_links = (
@@ -271,6 +280,8 @@ def build_standalone0_html(
                 include_controls=include_controls,
                 include_popout=include_popout,
                 debug_js=debug_js,
+                mode=mode,
+                runtime_urls=runtime_urls,
             )
             if generate_demo_gallery
             else []

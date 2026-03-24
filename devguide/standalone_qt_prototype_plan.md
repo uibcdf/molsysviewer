@@ -84,9 +84,12 @@ The Qt host should not become a second controller for viewer semantics.
 
 For the first prototype, prefer the simplest path:
 
-1. reuse the current standalone HTML generation path
-2. write/load that HTML in a `QWebEngineView`
-3. confirm that the embedded runtime behaves like the current browser-hosted
+1. reuse the current standalone export path
+2. in the Qt host, prefer the `lite` runtime route rather than the AMD widget
+   manager route
+3. prefer local packaged `viewer.js` first, with CDN only as fallback
+4. write/load that HTML in a `QWebEngineView`
+5. confirm that the embedded runtime behaves like the current browser-hosted
    `standalone 0`
 
 That keeps the first prototype honest:
@@ -136,33 +139,47 @@ Prototype 1 is successful if:
   - better startup flow
   - standalone-native export affordances
 
-## Expected First Dependency
+## Dependency Findings From The First Spike
 
-The first dependency to add for this prototype is:
+The first Qt spike already established several concrete facts:
 
-- `pyside6`
-- `PySide6-Addons` when `PySide6.QtWebEngineWidgets` is missing from the
-  conda environment
+- `conda-forge::pyside6` alone was not sufficient in the tested Python 3.13
+  environments because `PySide6.QtWebEngineWidgets` was not exposed.
+- Mixing:
+  - conda-forge `pyside6`
+  - pip `PySide6-Addons`
+  was not reliable in the tested environment because the resulting binary stack
+  failed to resolve `libshiboken6`.
+- A coherent `pip` Qt stack **did** work:
+  - `PySide6==6.9.2`
+  - `PySide6-Addons==6.9.2`
+- On Linux, the tested prototype also required the native `xcb` cursor support
+  so the Qt platform plugin could load cleanly.
+- Once the Qt host stopped loading the AMD widget-manager HTML and used the
+  `lite` runtime path with local `viewer.js`, the prototype could open:
+  - the empty host
+  - and `dialanine --demo`
 
-Current recommendation for developers is:
+### Current development recipe
+
+The current working development recipe for the Qt prototype should be treated
+as:
 
 ```bash
-conda install -c conda-forge pyside6
+pip install PySide6==6.9.2 PySide6-Addons==6.9.2
 ```
 
-In the current development track, that may still be insufficient on some
-platform/Python combinations because `conda-forge::pyside6` does not always
-expose `PySide6.QtWebEngineWidgets`.
+This should be done in a dedicated Qt-spike environment derived from a working
+MolSysSuite environment, not in the main day-to-day environment.
 
-When that happens, install the matching PyPI addons package after `pyside6`,
-for example:
+On Debian/Ubuntu-like Linux systems, the tested prototype also needed:
 
 ```bash
-pip install PySide6-Addons==$(python -c "import PySide6; print(PySide6.__version__)")
+sudo apt install libxcb-cursor0
 ```
 
-This is a development-time fallback for the prototype. It is not yet the final
-conda packaging strategy for MolSysViewer 1.0.
+This is a development-time recipe for the prototype. It is **not** yet the
+final standalone packaging story for MolSysViewer `1.0.0`.
 
 ## What Not To Do In Prototype 1
 
@@ -183,9 +200,8 @@ Prototype 1 should answer one question only:
 
 After this document, the next implementation slice should be:
 
-1. add `pyside6` as an optional development dependency
-2. document the temporary `PySide6-Addons` fallback for `QtWebEngineWidgets`
-3. create a tiny standalone Qt launcher module
-4. open one `QMainWindow` + `QWebEngineView`
-5. load the existing standalone HTML path
-6. verify that `Core` and `panel mode` remain intact
+1. keep the working Qt-spike recipe explicit in `devguide`
+2. keep the Qt host on the `lite` runtime path with local `viewer.js` first
+3. continue improving the thin Qt launcher and menu contract
+4. verify that `Core` and `panel mode` remain intact
+5. treat final conda/release packaging as a later standalone release question
