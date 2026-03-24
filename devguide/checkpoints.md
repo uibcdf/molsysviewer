@@ -78,6 +78,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `File -> Open File`
     - `File -> Load Demo: dialanine`
     - `Export -> Export HTML`
+    - `Export -> Export Figure`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways

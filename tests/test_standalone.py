@@ -260,6 +260,19 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     exported = tmp_path / "exported-view.html"
     assert exported.exists()
     assert runtime["window"].status_bar.messages[-1] == "Exported HTML: exported-view.html"
+    figure_calls = []
+    monkeypatch.setattr(
+        "molsysviewer.standalone_qt._export_qt_figure",
+        lambda molecular_system, *, output_filename, title: figure_calls.append(
+            (molecular_system, output_filename, title)
+        ) or output_filename,
+    )
+    FakeFileDialog.saved = str(tmp_path / "exported-figure.png")
+    export_menu.actions[1].triggered._callbacks[0]()
+    assert figure_calls == [
+        (str(tmp_path / "picked-system.pdb"), str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
+    ]
+    assert runtime["window"].status_bar.messages[-1] == "Exported Figure: exported-figure.png"
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
