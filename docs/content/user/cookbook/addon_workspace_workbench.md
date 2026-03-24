@@ -159,6 +159,8 @@ It proves something narrower but important:
 
 - `molsysviewer.addon_templates.build_reference_demo_view(...)`
 - `view.set_panel_mode(...)`
+- `view.set_workspace(...)`
+- `view.set_workspace_panel(...)`
 - shared workbench/runtime behavior
 
 ## See also

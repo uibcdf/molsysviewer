@@ -60,6 +60,8 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.set_panel_mode(None, expanded=False)
         view.set_workspace("core")
         view.set_workspace("audit")
+        view.set_workspace_panel("summary", workspace="audit")
+        view.set_workspace_panel("summary")
         view.clear_decorations(shapes=True, styles=False, labels=True)
         view.get_camera_snapshot(pretty=True)
         view.set_camera_snapshot({"target": [0, 0, 0], "position": [1, 1, 1], "up": [0, 1, 0]}, duration_ms=125)

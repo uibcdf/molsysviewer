@@ -816,6 +816,34 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["viewer", "panel"])
+    @digest()
+    def set_workspace_panel(
+        self,
+        panel: str,
+        *,
+        workspace: str | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Select the active panel inside the current or given workspace.
+
+        Parameters
+        ----------
+        panel
+            Panel identifier inside the target workspace.
+        workspace
+            Optional workspace identifier. If omitted, the frontend uses the
+            current workspace. When set to ``"core"``, ``"navigate"`` and
+            ``"workbench"`` remain the meaningful panel ids.
+        """
+        self._send(
+            {
+                "op": "set_workspace_panel",
+                "panel": panel,
+                "workspace": workspace,
+            }
+        )
+
     @property
     def visible_atom_indices(self):
         """Return the indices of currently visible atoms."""

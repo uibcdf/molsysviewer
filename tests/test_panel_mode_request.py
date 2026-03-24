@@ -35,6 +35,22 @@ def test_set_workspace_sends_message():
     ]
 
 
+def test_set_workspace_panel_sends_message():
+    view = MolSysView(debug_js=True)
+    view._ready = True  # noqa: SLF001
+    sent = []
+
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+
+    view.set_workspace_panel("topo", workspace="topomt")
+    view.set_workspace_panel("overview")
+
+    assert sent == [
+        {"op": "set_workspace_panel", "panel": "topo", "workspace": "topomt"},
+        {"op": "set_workspace_panel", "panel": "overview", "workspace": None},
+    ]
+
+
 def test_set_panel_mode_is_kept_in_message_history():
     view = MolSysView(debug_js=True)
 
@@ -58,4 +74,16 @@ def test_set_workspace_is_kept_in_message_history():
     assert view._message_history[-2:] == [  # noqa: SLF001
         {"op": "set_workspace", "workspace": "core"},
         {"op": "set_workspace", "workspace": "topomt"},
+    ]
+
+
+def test_set_workspace_panel_is_kept_in_message_history():
+    view = MolSysView(debug_js=True)
+
+    view.set_workspace_panel("topo", workspace="topomt")
+    view.set_workspace_panel("overview")
+
+    assert view._message_history[-2:] == [  # noqa: SLF001
+        {"op": "set_workspace_panel", "panel": "topo", "workspace": "topomt"},
+        {"op": "set_workspace_panel", "panel": "overview", "workspace": None},
     ]

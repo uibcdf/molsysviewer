@@ -32,6 +32,7 @@ Today, the shared Python entrypoint is:
 ```python
 view.set_panel_mode(...)
 view.set_workspace(...)
+view.set_workspace_panel(...)
 ```
 
 The current contract is intentionally small:
@@ -42,6 +43,7 @@ view.set_panel_mode("workbench")
 view.set_panel_mode(None, expanded=False)
 view.set_workspace("core")
 view.set_workspace("topomt")
+view.set_workspace_panel("topo", workspace="topomt")
 ```
 
 This means:
@@ -51,6 +53,8 @@ This means:
 - `expanded=False` collapses the current panel-mode surface
 - `workspace="core"` selects the native workspace
 - another workspace id selects that add-on workspace when it is available
+- `set_workspace_panel(...)` selects a local panel inside the current or given
+  workspace
 
 The browser side may also remember the last active panel when appropriate.
 
@@ -102,6 +106,24 @@ view
 
 If you also enable a larger add-on workspace, the same panel mode becomes the
 place where that workspace appears.
+
+## Notebook-oriented workspace example
+
+```python
+import molsysviewer as mv
+
+view = mv.addon_templates.build_reference_demo_view("topomt")
+view.set_panel_mode("workbench")
+view.set_workspace("topomt")
+view.set_workspace_panel("topo")
+view
+```
+
+This is the current notebook-friendly pattern:
+
+- open the shared panel surface
+- select the workspace explicitly
+- then land on the local panel you want
 
 ## Why this matters
 
