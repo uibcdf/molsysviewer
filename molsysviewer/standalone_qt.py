@@ -24,13 +24,14 @@ def _import_qt():
         from PySide6.QtCore import QUrl
         from PySide6.QtGui import QAction
         from PySide6.QtWebEngineWidgets import QWebEngineView
-        from PySide6.QtWidgets import QApplication, QMainWindow
+        from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow
     except Exception as exc:  # pragma: no cover - exercised by contract test
         raise ImportError(QT_IMPORT_ERROR) from exc
 
     return {
         "QAction": QAction,
         "QApplication": QApplication,
+        "QFileDialog": QFileDialog,
         "QMainWindow": QMainWindow,
         "QUrl": QUrl,
         "QWebEngineView": QWebEngineView,
@@ -76,12 +77,30 @@ def _qt_runtime_urls() -> list[str]:
     ]
 
 
+def _rebuild_qt_html(
+    molecular_system: Any,
+    *,
+    html_path: str,
+    title: str,
+) -> str:
+    return build_standalone0_html(
+        molecular_system,
+        html_path,
+        title=title,
+        include_popout=False,
+        prepare_addons=False,
+        mode="lite",
+        runtime_urls=_qt_runtime_urls(),
+    )
+
+
 def _install_menu_bar(
     *,
     window,
     webview,
     QUrl,
     QAction,
+    QFileDialog,
     html_path: str,
     current_title: str,
 ) -> None:
@@ -91,17 +110,38 @@ def _install_menu_bar(
     view_menu = menu_bar.addMenu("View")
     export_menu = menu_bar.addMenu("Export")
 
+    open_file_action = QAction("Open File", window)
+
+    def _open_file():
+        if not hasattr(QFileDialog, "getOpenFileName"):
+            _show_status(window, "Open File is not available in the current Qt runtime.")
+            return
+        selected, _filter = QFileDialog.getOpenFileName(
+            window,
+            "Open molecular system",
+            "",
+            "Molecular systems (*);;All files (*)",
+        )
+        if not selected:
+            return
+        _rebuild_qt_html(
+            selected,
+            html_path=html_path,
+            title=current_title,
+        )
+        _reload_html_in_view(webview, QUrl, html_path)
+        _show_status(window, f"Loaded file: {Path(selected).name}")
+
+    open_file_action.triggered.connect(_open_file)
+    file_menu.addAction(open_file_action)
+
     load_demo_action = QAction("Load Demo: dialanine", window)
 
     def _load_demo():
-        build_standalone0_html(
+        _rebuild_qt_html(
             demo["dialanine"],
-            html_path,
+            html_path=html_path,
             title=current_title,
-            include_popout=False,
-            prepare_addons=False,
-            mode="lite",
-            runtime_urls=_qt_runtime_urls(),
         )
         _reload_html_in_view(webview, QUrl, html_path)
         _show_status(window, "Loaded demo: dialanine")
@@ -178,6 +218,7 @@ def create_standalone_qt0_window(
     QWebEngineView = qt["QWebEngineView"]
     QUrl = qt["QUrl"]
     QAction = qt["QAction"]
+    QFileDialog = qt["QFileDialog"]
 
     if output_filename is None:
         with tempfile.NamedTemporaryFile(prefix="molsysviewer-qt0-", suffix=".html", delete=False) as handle:
@@ -215,6 +256,7 @@ def create_standalone_qt0_window(
         webview=webview,
         QUrl=QUrl,
         QAction=QAction,
+        QFileDialog=QFileDialog,
         html_path=html_path,
         current_title=title,
     )
