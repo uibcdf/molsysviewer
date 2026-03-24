@@ -287,6 +287,7 @@ The current pre-`1.0` shared panel-mode entrypoint is:
 - `view.get_panel_mode_state()`
 - `view.workspace_catalog()`
 - `view.workspace_panels(...)`
+- `view.workspace_runtime()`
 
 This API is intentionally small:
 
@@ -305,6 +306,8 @@ This API is intentionally small:
   workspace
 - `workspace_catalog()` and `workspace_panels(...)` also reflect the current
   active workspace/panel when the frontend has already reported runtime state
+- `workspace_runtime()` returns a single notebook-facing snapshot combining:
+  runtime state, effective workspace catalog, and the current local panel stack
 
 This small surface matters especially for notebook usage:
 

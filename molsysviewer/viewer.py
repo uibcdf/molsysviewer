@@ -956,6 +956,23 @@ class MolSysView:
             )
         return records
 
+    @signal(tags=["viewer", "panel", "query"])
+    @digest()
+    def workspace_runtime(self, *, skip_digestion: bool = False) -> dict[str, Any]:
+        """Return a notebook-friendly snapshot of the shared workspace runtime."""
+        state = self.get_panel_mode_state() or {}
+        if not isinstance(state, dict):
+            state = {}
+        current_workspace = state.get("workspace")
+        if not isinstance(current_workspace, str) or current_workspace.strip() == "":
+            current_workspace = "core"
+        return {
+            "state": dict(state),
+            "workspaces": self.workspace_catalog(skip_digestion=True),
+            "current_workspace": current_workspace,
+            "current_panels": self.workspace_panels(current_workspace, skip_digestion=True),
+        }
+
     @property
     def visible_atom_indices(self):
         """Return the indices of currently visible atoms."""
