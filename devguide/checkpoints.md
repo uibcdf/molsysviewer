@@ -71,6 +71,12 @@ Do not append dated historical entries unless a date is itself operationally rel
       widget-manager export path
     - final standalone packaging is now clearly an environment-recipe problem,
       not just a host-implementation problem
+  - the Qt host now also owns first real app-level actions:
+    - `View -> Navigate`
+    - `View -> Workbench`
+    - `View -> Close Panel Mode`
+    - `File -> Open File`
+    - `File -> Load Demo: dialanine`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways

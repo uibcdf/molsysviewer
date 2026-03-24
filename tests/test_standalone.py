@@ -175,6 +175,13 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         def runJavaScript(self, script):
             self.scripts.append(script)
 
+    class FakeFileDialog:
+        selected = ""
+
+        @staticmethod
+        def getOpenFileName(_parent=None, _title="", _dir="", _filter=""):
+            return FakeFileDialog.selected, "Molecular systems (*)"
+
     class FakeQUrl:
         @staticmethod
         def fromLocalFile(path):
@@ -199,6 +206,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_core.QUrl = FakeQUrl
     module_gui.QAction = FakeAction
     module_widgets.QApplication = FakeApplication
+    module_widgets.QFileDialog = FakeFileDialog
     module_widgets.QMainWindow = FakeMainWindow
     module_web.QWebEngineView = FakeWebView
 
@@ -222,6 +230,17 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].size == (1200, 800)
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export"]
+    file_menu = runtime["window"].menu_bar.menus[0]
+    FakeFileDialog.selected = str(tmp_path / "picked-system.pdb")
+    calls = []
+    monkeypatch.setattr(
+        "molsysviewer.standalone_qt._rebuild_qt_html",
+        lambda molecular_system, *, html_path, title: calls.append((molecular_system, html_path, title)) or html_path,
+    )
+    file_menu.actions[0].triggered._callbacks[0]()
+    assert calls == [(str(tmp_path / "picked-system.pdb"), str(outfile.resolve()), "Qt Prototype")]
+    assert runtime["webview"].url == f"file://{outfile.resolve()}"
+    assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
     view_menu = runtime["window"].menu_bar.menus[1]
     for action in view_menu.actions:
         assert action.triggered._callbacks
