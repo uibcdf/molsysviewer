@@ -114,6 +114,11 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
             self.actions.append(action)
             return action
 
+        def addMenu(self, title):
+            menu = FakeMenu(title)
+            self.actions.append(menu)
+            return menu
+
     class FakeMenuBar:
         def __init__(self):
             self.menus = []
@@ -200,6 +205,13 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         def getItem(_parent=None, _title="", _label="", _items=(), _current=0, _editable=False):
             return FakeInputDialog.item, FakeInputDialog.accepted
 
+    class FakeMessageBox:
+        calls = []
+
+        @staticmethod
+        def information(_parent=None, title="", text=""):
+            FakeMessageBox.calls.append((title, text))
+
     class FakeQUrl:
         @staticmethod
         def fromLocalFile(path):
@@ -227,6 +239,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_widgets.QFileDialog = FakeFileDialog
     module_widgets.QInputDialog = FakeInputDialog
     module_widgets.QMainWindow = FakeMainWindow
+    module_widgets.QMessageBox = FakeMessageBox
     module_web.QWebEngineView = FakeWebView
 
     monkeypatch.setitem(sys.modules, "PySide6", module_root)
@@ -248,8 +261,13 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].title == "Qt Prototype"
     assert runtime["window"].size == (1200, 800)
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
-    assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export"]
+    assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export", "Help"]
     file_menu = runtime["window"].menu_bar.menus[0]
+    demo_menu = file_menu.actions[1]
+    recent_menu = file_menu.actions[2]
+    assert demo_menu.title == "Load Demo"
+    assert recent_menu.title == "Recent"
+    assert recent_menu.actions[0].text == "No recent sources"
     FakeFileDialog.selected = str(tmp_path / "picked-system.pdb")
     calls = []
     monkeypatch.setattr(
@@ -261,17 +279,25 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
     assert runtime["window"].title == "Qt Prototype · picked-system.pdb"
-    FakeInputDialog.item = "pentalanine"
-    file_menu.actions[1].triggered._callbacks[0]()
+    assert recent_menu.actions[0].text == "picked-system.pdb"
+    demo_action = next(action for action in demo_menu.actions if action.text == "pentalanine")
+    demo_action.triggered._callbacks[0]()
     assert calls[-1][1:] == (str(outfile.resolve()), "Qt Prototype")
     assert type(calls[-1][0]).__name__ == "MolSysView"
     assert runtime["window"].status_bar.messages[-1] == "Loaded demo: pentalanine"
     assert runtime["window"].title == "Qt Prototype · pentalanine"
+    assert recent_menu.actions[0].text == "pentalanine"
+    assert recent_menu.actions[1].text == "picked-system.pdb"
     FakeInputDialog.value = "1crn"
-    file_menu.actions[2].triggered._callbacks[0]()
+    file_menu.actions[3].triggered._callbacks[0]()
     assert calls[-1] == ("1crn", str(outfile.resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
+    assert recent_menu.actions[0].text == "1crn"
+    assert recent_menu.actions[1].text == "pentalanine"
+    recent_menu.actions[1].triggered._callbacks[0]()
+    assert runtime["window"].status_bar.messages[-1] == "Loaded demo: pentalanine"
+    assert runtime["window"].title == "Qt Prototype · pentalanine"
     view_menu = runtime["window"].menu_bar.menus[1]
     for action in view_menu.actions:
         assert action.triggered._callbacks
@@ -295,10 +321,16 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     )
     FakeFileDialog.saved = str(tmp_path / "exported-figure.png")
     export_menu.actions[1].triggered._callbacks[0]()
-    assert figure_calls == [
-        ("1crn", str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
-    ]
+    assert len(figure_calls) == 1
+    assert type(figure_calls[0][0]).__name__ == "MolSysView"
+    assert figure_calls[0][1:] == (str((tmp_path / "exported-figure.png").resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Exported Figure: exported-figure.png"
+    help_menu = runtime["window"].menu_bar.menus[3]
+    help_menu.actions[0].triggered._callbacks[0]()
+    assert FakeMessageBox.calls
+    assert FakeMessageBox.calls[-1][0] == "About MolSysViewer Qt Prototype"
+    help_menu.actions[1].triggered._callbacks[0]()
+    assert runtime["window"].status_bar.messages[-1] == "Current source: pentalanine"
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
