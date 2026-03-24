@@ -847,6 +847,107 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["viewer", "panel", "query"])
+    @digest()
+    def workspace_catalog(self, *, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        """Return the current effective workspace catalog visible to the view."""
+        workspace_specs = self.addons.workspace_specs(skip_digestion=True)
+        panel_specs = self.addons.panel_specs(skip_digestion=True)
+        workbench_specs = self.addons.workbench_section_specs(skip_digestion=True)
+        context_action_specs = self.addons.context_action_specs(skip_digestion=True)
+        export_helper_specs = self.addons.export_helper_specs(skip_digestion=True)
+
+        records: list[dict[str, Any]] = [
+            {
+                "id": "core",
+                "title": "Core",
+                "subtitle": "Navigate + Workbench",
+            }
+        ]
+
+        for workspace in workspace_specs:
+            workspace_id = workspace.get("id")
+            addon_name = workspace.get("addon")
+            if not isinstance(workspace_id, str) or not isinstance(addon_name, str):
+                continue
+            panel_count = sum(
+                1
+                for item in panel_specs
+                if item.get("addon") == addon_name and item.get("target", "panel_mode") == "panel_mode"
+            )
+            workbench_section_count = sum(
+                1
+                for item in workbench_specs
+                if item.get("addon") == addon_name and item.get("target_panel", "workbench") == "workbench"
+            )
+            context_action_count = sum(1 for item in context_action_specs if item.get("addon") == addon_name)
+            export_helper_count = sum(1 for item in export_helper_specs if item.get("addon") == addon_name)
+            total_visible = panel_count + workbench_section_count
+            if total_visible <= 0:
+                continue
+
+            summary_parts: list[str] = []
+            if panel_count > 0:
+                summary_parts.append(f"{panel_count} panel{'' if panel_count == 1 else 's'}")
+            if workbench_section_count > 0:
+                summary_parts.append(f"{workbench_section_count} section{'' if workbench_section_count == 1 else 's'}")
+            if context_action_count > 0:
+                summary_parts.append(f"{context_action_count} context action{'' if context_action_count == 1 else 's'}")
+            if export_helper_count > 0:
+                summary_parts.append(f"{export_helper_count} export helper{'' if export_helper_count == 1 else 's'}")
+
+            record = dict(workspace)
+            record["subtitle"] = " · ".join(summary_parts)
+            records.append(record)
+
+        return records
+
+    @signal(tags=["viewer", "panel", "query"])
+    @digest()
+    def workspace_panels(
+        self,
+        workspace: str = "core",
+        *,
+        skip_digestion: bool = False,
+    ) -> list[dict[str, Any]]:
+        """Return the visible local panel stack for a workspace."""
+        if workspace == "core":
+            return [
+                {"id": "navigate", "title": "Navigate"},
+                {"id": "workbench", "title": "Workbench"},
+            ]
+
+        workspace_specs = self.addons.workspace_specs(skip_digestion=True)
+        panel_specs = self.addons.panel_specs(skip_digestion=True)
+        addon_name = next(
+            (
+                item.get("addon")
+                for item in workspace_specs
+                if item.get("id") == workspace and isinstance(item.get("addon"), str)
+            ),
+            None,
+        )
+        if not isinstance(addon_name, str):
+            return []
+
+        records: list[dict[str, Any]] = []
+        for item in panel_specs:
+            if item.get("addon") != addon_name:
+                continue
+            if item.get("target", "panel_mode") != "panel_mode":
+                continue
+            records.append(
+                {
+                    "id": item.get("id"),
+                    "title": item.get("title"),
+                    "description": item.get("description"),
+                    "entry": item.get("entry"),
+                    "addon": addon_name,
+                    "workspace": workspace,
+                }
+            )
+        return records
+
     @property
     def visible_atom_indices(self):
         """Return the indices of currently visible atoms."""

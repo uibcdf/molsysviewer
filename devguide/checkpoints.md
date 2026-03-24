@@ -163,6 +163,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `view.set_workspace(...)`
   - `view.set_workspace_panel(...)`
   - `view.get_panel_mode_state()`
+  - `view.workspace_catalog()`
+  - `view.workspace_panels(...)`
   - this should be treated as the stable scripted doorway into the workspace
     runtime, not only as UI chrome
 - Keep the emerging MolSysSuite add-on direction explicit:

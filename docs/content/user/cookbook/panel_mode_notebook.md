@@ -8,6 +8,7 @@ It is intentionally small:
 - open or close panel mode
 - choose a workspace
 - choose the local panel inside that workspace
+- inspect the effective workspace and panel catalog from Python
 - inspect the last known runtime state from Python
 
 ## Core workspace
@@ -16,6 +17,8 @@ It is intentionally small:
 import molsysviewer as mv
 
 view = mv.demo["dialanine"]
+view.workspace_catalog()
+view.workspace_panels("core")
 view.set_panel_mode("workbench")
 view.set_workspace("core")
 view.get_panel_mode_state()
@@ -40,6 +43,8 @@ Typical state shape:
 import molsysviewer as mv
 
 view = mv.addon_templates.build_reference_demo_view("topomt")
+view.workspace_catalog()
+view.workspace_panels("topomt")
 view.set_panel_mode("workbench")
 view.set_workspace("topomt")
 view.set_workspace_panel("topo")
@@ -52,6 +57,8 @@ This is the current notebook-friendly pattern:
 - `view.set_panel_mode(...)`
 - `view.set_workspace(...)`
 - `view.set_workspace_panel(...)`
+- `view.workspace_catalog()`
+- `view.workspace_panels(...)`
 - `view.get_panel_mode_state()`
 
 ## Notes
