@@ -794,6 +794,28 @@ class MolSysView:
             }
         )
 
+    @signal(tags=["viewer", "panel"])
+    @digest()
+    def set_workspace(
+        self,
+        workspace: str = "core",
+        *,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Select the active workspace in the shared panel-mode runtime.
+
+        Parameters
+        ----------
+        workspace
+            Workspace identifier such as ``"core"`` or an add-on workspace id.
+        """
+        self._send(
+            {
+                "op": "set_workspace",
+                "workspace": workspace,
+            }
+        )
+
     @property
     def visible_atom_indices(self):
         """Return the indices of currently visible atoms."""

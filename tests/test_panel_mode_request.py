@@ -19,6 +19,22 @@ def test_set_panel_mode_sends_message():
     ]
 
 
+def test_set_workspace_sends_message():
+    view = MolSysView(debug_js=True)
+    view._ready = True  # noqa: SLF001
+    sent = []
+
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+
+    view.set_workspace("core")
+    view.set_workspace("topomt")
+
+    assert sent == [
+        {"op": "set_workspace", "workspace": "core"},
+        {"op": "set_workspace", "workspace": "topomt"},
+    ]
+
+
 def test_set_panel_mode_is_kept_in_message_history():
     view = MolSysView(debug_js=True)
 
@@ -30,4 +46,16 @@ def test_set_panel_mode_is_kept_in_message_history():
         {"op": "set_panel_mode", "panel": "navigate", "expanded": True},
         {"op": "set_panel_mode", "panel": "workbench", "expanded": True},
         {"op": "set_panel_mode", "panel": None, "expanded": False},
+    ]
+
+
+def test_set_workspace_is_kept_in_message_history():
+    view = MolSysView(debug_js=True)
+
+    view.set_workspace("core")
+    view.set_workspace("topomt")
+
+    assert view._message_history[-2:] == [  # noqa: SLF001
+        {"op": "set_workspace", "workspace": "core"},
+        {"op": "set_workspace", "workspace": "topomt"},
     ]

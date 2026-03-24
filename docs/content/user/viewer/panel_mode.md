@@ -31,6 +31,7 @@ Today, the shared Python entrypoint is:
 
 ```python
 view.set_panel_mode(...)
+view.set_workspace(...)
 ```
 
 The current contract is intentionally small:
@@ -39,6 +40,8 @@ The current contract is intentionally small:
 view.set_panel_mode("navigate")
 view.set_panel_mode("workbench")
 view.set_panel_mode(None, expanded=False)
+view.set_workspace("core")
+view.set_workspace("topomt")
 ```
 
 This means:
@@ -46,6 +49,8 @@ This means:
 - `panel="navigate"` opens `Navigate`
 - `panel="workbench"` opens `Workbench`
 - `expanded=False` collapses the current panel-mode surface
+- `workspace="core"` selects the native workspace
+- another workspace id selects that add-on workspace when it is available
 
 The browser side may also remember the last active panel when appropriate.
 
@@ -91,6 +96,7 @@ import molsysviewer as mv
 
 view = mv.demo["dialanine"]
 view.set_panel_mode(panel="workbench", expanded=True)
+view.set_workspace("core")
 view
 ```
 
