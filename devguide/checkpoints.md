@@ -76,7 +76,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `View -> Workbench`
     - `View -> Close Panel Mode`
     - `File -> Open File`
-    - `File -> Load Demo: dialanine`
+    - `File -> Load Demo`
     - `File -> Load PDB ID`
     - `Export -> Export HTML`
     - `Export -> Export Figure`

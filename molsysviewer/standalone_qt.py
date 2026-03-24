@@ -123,6 +123,26 @@ def _export_qt_figure(
     return output_filename
 
 
+def _load_demo_into_qt_host(
+    demo_name: str,
+    *,
+    window,
+    webview,
+    QUrl,
+    html_path: str,
+    current_title: str,
+    current_state: dict[str, Any],
+) -> None:
+    _rebuild_qt_html(
+        demo[demo_name],
+        html_path=html_path,
+        title=current_title,
+    )
+    _set_loaded_state(window, current_state, demo[demo_name], demo_name)
+    _reload_html_in_view(webview, QUrl, html_path)
+    _show_status(window, f"Loaded demo: {demo_name}")
+
+
 def _install_menu_bar(
     *,
     window,
@@ -167,17 +187,36 @@ def _install_menu_bar(
     open_file_action.triggered.connect(_open_file)
     file_menu.addAction(open_file_action)
 
-    load_demo_action = QAction("Load Demo: dialanine", window)
+    load_demo_action = QAction("Load Demo", window)
 
     def _load_demo():
-        _rebuild_qt_html(
-            demo["dialanine"],
-            html_path=html_path,
-            title=current_title,
+        if not hasattr(QInputDialog, "getItem"):
+            _show_status(window, "Load Demo is not available in the current Qt runtime.")
+            return
+        demo_names = sorted(demo.keys())
+        selected, accepted = QInputDialog.getItem(
+            window,
+            "Load Demo",
+            "Demo:",
+            demo_names,
+            0,
+            False,
         )
-        _set_loaded_state(window, current_state, demo["dialanine"], "dialanine")
-        _reload_html_in_view(webview, QUrl, html_path)
-        _show_status(window, "Loaded demo: dialanine")
+        demo_name = str(selected).strip()
+        if not accepted or not demo_name:
+            return
+        if demo_name not in demo:
+            _show_status(window, f"Unknown demo: {demo_name}")
+            return
+        _load_demo_into_qt_host(
+            demo_name,
+            window=window,
+            webview=webview,
+            QUrl=QUrl,
+            html_path=html_path,
+            current_title=current_title,
+            current_state=current_state,
+        )
 
     load_demo_action.triggered.connect(_load_demo)
     file_menu.addAction(load_demo_action)
