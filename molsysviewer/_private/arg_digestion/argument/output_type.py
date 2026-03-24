@@ -14,6 +14,7 @@ def digest_output_type(output_type, caller=None):
         'molsysviewer.viewer.MolSysView.get',
         'molsysviewer.viewer.get',
         'molsysviewer.regions.Region.get',
+        'molsysviewer.regions.get',
         'molsysviewer.tools.basic.get.get',
     ]:
 

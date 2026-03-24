@@ -15,6 +15,9 @@ We use ArgDigest in **package style**. Validation and normalization live outside
 
 - package-style digestion is active and broadly integrated across the public API;
 - core noisy wrappers have now been hardened with explicit digesters;
+- thin but real public query wrappers such as `contains(...)`,
+  `is_composed_of(...)`, and `extract(...)` are also part of the hardening
+  surface when they own a stable contract;
 - missing-digester warnings on stable public paths are treated as integration debt;
 - shape/detail coverage is broader than before, but not yet exhaustive across every argument of every overlay method.
 
@@ -23,6 +26,7 @@ We use ArgDigest in **package style**. Validation and normalization live outside
 1. **Decorate real public entry points**
    - use `@digest()` on public methods that own a stable argument contract.
    - do not decorate thin variadic forwarders that only pass `*args/**kwargs` to a deeper method; that creates fake digestion surfaces and noisy warnings.
+   - public wrappers such as `contains(...)`, `is_composed_of(...)`, or `extract(...)` should still carry `@digest()` when they expose a real named contract, even if they delegate later.
 2. **Keep `skip_digestion=True` available**
    - internal replay/rebuild flows depend on bypassing digestion once state is already normalized.
 3. **Encode caller-aware semantics in digesters**
@@ -56,6 +60,9 @@ When auditing public API digestion:
 - check for missing-digester warnings on real demo viewers;
 - check for valid public calls rejected by overly strict digesters;
 - prefer regression tests that assert warning-free use of core wrappers.
+- distinguish between:
+  - public contract wrappers: digest and then delegate with `skip_digestion=True`;
+  - pure variadic forwarders: keep `@signal()`, but avoid fake `@digest()` layers.
 
 ## Dependency Management (DepDigest)
 

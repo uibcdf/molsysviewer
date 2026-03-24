@@ -121,7 +121,7 @@ class Region:
                 element=element,
                 mask=mask,
                 syntax=syntax,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
             )
 
         if selection == "all" and (mask is None or mask == "all"):
@@ -133,7 +133,7 @@ class Region:
             element=element,
             mask=None,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
         if mask is not None and mask != "all":
             masked = self._view.select(  # noqa: SLF001
@@ -142,7 +142,7 @@ class Region:
                 element=element,
                 mask=None,
                 syntax=syntax,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
             )
             selected = self._intersect_indices(selected, masked)
 
@@ -173,7 +173,7 @@ class Region:
                 syntax=syntax,
                 get_missing_bonds=get_missing_bonds,
                 output_type=output_type,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
                 **kwargs,
             )
 
@@ -186,7 +186,7 @@ class Region:
                 syntax=syntax,
                 get_missing_bonds=get_missing_bonds,
                 output_type=output_type,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
                 **kwargs,
             )
 
@@ -196,7 +196,7 @@ class Region:
             element=element,
             mask=mask,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
         return self._view.get(  # noqa: SLF001
             element=element,
@@ -206,7 +206,7 @@ class Region:
             syntax=syntax,
             get_missing_bonds=get_missing_bonds,
             output_type=output_type,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
             **kwargs,
         )
 
@@ -228,7 +228,7 @@ class Region:
                 selection=selection,
                 syntax=syntax,
                 mask=mask,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
             )
 
         indices = self.select(
@@ -236,17 +236,18 @@ class Region:
             element=element,
             mask=mask,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
         return self._view.info(  # noqa: SLF001
             element=element,
             selection=indices,
             syntax=syntax,
             mask="all",
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
 
     @signal(tags=["region", "query"])
+    @digest()
     def contains(
         self,
         selection="all",
@@ -259,7 +260,7 @@ class Region:
             return self._view.contains(  # noqa: SLF001
                 selection=selection,
                 syntax=syntax,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
                 **kwargs,
             )
 
@@ -267,16 +268,17 @@ class Region:
             selection=selection,
             element="atom",
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
         return self._view.contains(  # noqa: SLF001
             selection=scoped,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
             **kwargs,
         )
 
     @signal(tags=["region", "query"])
+    @digest()
     def is_composed_of(
         self,
         selection="all",
@@ -289,7 +291,7 @@ class Region:
             return self._view.is_composed_of(  # noqa: SLF001
                 selection=selection,
                 syntax=syntax,
-                skip_digestion=skip_digestion,
+                skip_digestion=True,
                 **kwargs,
             )
 
@@ -297,12 +299,12 @@ class Region:
             selection=selection,
             element="atom",
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
         )
         return self._view.is_composed_of(  # noqa: SLF001
             selection=scoped,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
             **kwargs,
         )
 

@@ -2082,6 +2082,7 @@ class MolSysView:
         )
 
     @signal(tags=["query"])
+    @digest()
     def contains(
         self,
         selection="all",
@@ -2101,6 +2102,7 @@ class MolSysView:
         )
 
     @signal(tags=["query"])
+    @digest()
     def is_composed_of(
         self,
         selection="all",
@@ -2120,6 +2122,7 @@ class MolSysView:
         )
 
     @signal(tags=["query"])
+    @digest()
     def extract(
         self,
         selection="all",
