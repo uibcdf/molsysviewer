@@ -77,6 +77,7 @@ export class WorkbenchPanel {
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
+    private readonly workspaceRuntimeDeck: HTMLDivElement;
     private readonly workspaceOverviewHost: HTMLDivElement;
     private readonly workspaceOverviewTitle: HTMLDivElement;
     private readonly workspaceOverviewBody: HTMLDivElement;
@@ -144,6 +145,15 @@ export class WorkbenchPanel {
             gap: "8px",
         });
 
+        this.workspaceRuntimeDeck = document.createElement("div");
+        this.workspaceRuntimeDeck.setAttribute("data-molsysviewer-workbench-workspace-runtime-deck", "true");
+        Object.assign(this.workspaceRuntimeDeck.style, {
+            display: "none",
+            flexDirection: "column",
+            gap: "8px",
+        });
+        this.body.appendChild(this.workspaceRuntimeDeck);
+
         this.workspaceOverviewHost = document.createElement("div");
         this.workspaceOverviewHost.setAttribute("data-molsysviewer-workbench-workspace-overview", "true");
         Object.assign(this.workspaceOverviewHost.style, {
@@ -152,7 +162,7 @@ export class WorkbenchPanel {
             gap: "6px",
             padding: "10px",
             borderRadius: "10px",
-            background: "rgba(255,255,255,0.04)",
+            background: "rgba(255,255,255,0.045)",
             border: "1px solid rgba(255,255,255,0.08)",
         });
 
@@ -177,7 +187,7 @@ export class WorkbenchPanel {
 
         this.workspaceOverviewHost.appendChild(this.workspaceOverviewTitle);
         this.workspaceOverviewHost.appendChild(this.workspaceOverviewBody);
-        this.body.appendChild(this.workspaceOverviewHost);
+        this.workspaceRuntimeDeck.appendChild(this.workspaceOverviewHost);
 
         this.workspacePanelHost = document.createElement("div");
         this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
@@ -187,8 +197,8 @@ export class WorkbenchPanel {
             gap: "6px",
             padding: "10px",
             borderRadius: "10px",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.06)",
         });
 
         this.workspacePanelHostTitle = document.createElement("div");
@@ -211,7 +221,7 @@ export class WorkbenchPanel {
 
         this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
         this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
-        this.body.appendChild(this.workspacePanelHost);
+        this.workspaceRuntimeDeck.appendChild(this.workspacePanelHost);
 
         this.createSection("annotations", "Annotations", "No annotations yet.");
         this.createSection("measurements", "Measurements", "No measurements yet.");
@@ -397,11 +407,13 @@ export class WorkbenchPanel {
         this.workspaceOverviewBody.replaceChildren();
 
         if (!Array.isArray(items) || items.length <= 1) {
+            this.workspaceRuntimeDeck.style.display = this.activeWorkspacePanelSummary ? "flex" : "none";
             this.workspaceOverviewHost.style.display = "none";
             return;
         }
 
         const mosaic = items.length >= 3;
+        this.workspaceRuntimeDeck.style.display = "flex";
         this.workspaceOverviewHost.style.display = "flex";
         this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
 
