@@ -89,3 +89,8 @@ Current local rule:
 - the support stack itself should be explicit in `molsysviewer/_depdigest.py`;
 - `argdigest`, `depdigest`, `pyunitwizard`, and `smonitor` are treated as hard
   dependencies, not incidental transitive imports.
+- `MAPPING` should start small and concrete:
+  - use it first for MolSysMT-owned object/file forms that MolSysViewer really
+    accepts in public entry points;
+  - do not pre-fill speculative add-on or standalone capability maps before the
+    runtime actually needs them.
