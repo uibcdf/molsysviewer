@@ -25,7 +25,7 @@ def _import_qt():
         from PySide6.QtCore import QUrl
         from PySide6.QtGui import QAction
         from PySide6.QtWebEngineWidgets import QWebEngineView
-        from PySide6.QtWidgets import QApplication, QFileDialog, QInputDialog, QMainWindow
+        from PySide6.QtWidgets import QApplication, QFileDialog, QInputDialog, QMainWindow, QMessageBox
     except Exception as exc:  # pragma: no cover - exercised by contract test
         raise ImportError(QT_IMPORT_ERROR) from exc
 
@@ -35,6 +35,7 @@ def _import_qt():
         "QFileDialog": QFileDialog,
         "QInputDialog": QInputDialog,
         "QMainWindow": QMainWindow,
+        "QMessageBox": QMessageBox,
         "QUrl": QUrl,
         "QWebEngineView": QWebEngineView,
     }
@@ -69,6 +70,20 @@ def _set_loaded_state(window, current_state: dict[str, Any], molecular_system: A
     current_state["loaded_label"] = loaded_label
     if hasattr(window, "setWindowTitle"):
         window.setWindowTitle(_window_title(current_state["base_title"], loaded_label))
+
+
+def _record_recent_source(
+    current_state: dict[str, Any],
+    *,
+    kind: str,
+    value: Any,
+    loaded_label: str,
+) -> None:
+    recent = current_state.setdefault("recent_sources", [])
+    entry = {"kind": kind, "value": value, "loaded_label": loaded_label}
+    recent[:] = [item for item in recent if not (item["kind"] == kind and item["loaded_label"] == loaded_label)]
+    recent.insert(0, entry)
+    del recent[5:]
 
 
 def _send_viewer_message(webview, message: dict[str, Any]) -> None:
@@ -139,8 +154,57 @@ def _load_demo_into_qt_host(
         title=current_title,
     )
     _set_loaded_state(window, current_state, demo[demo_name], demo_name)
+    _record_recent_source(
+        current_state,
+        kind="demo",
+        value=demo_name,
+        loaded_label=demo_name,
+    )
     _reload_html_in_view(webview, QUrl, html_path)
     _show_status(window, f"Loaded demo: {demo_name}")
+
+
+def _load_recent_source(
+    recent_entry: dict[str, Any],
+    *,
+    window,
+    webview,
+    QUrl,
+    html_path: str,
+    current_title: str,
+    current_state: dict[str, Any],
+) -> None:
+    kind = recent_entry["kind"]
+    value = recent_entry["value"]
+    loaded_label = recent_entry["loaded_label"]
+    if kind == "demo":
+        _load_demo_into_qt_host(
+            str(value),
+            window=window,
+            webview=webview,
+            QUrl=QUrl,
+            html_path=html_path,
+            current_title=current_title,
+            current_state=current_state,
+        )
+        return
+    _rebuild_qt_html(
+        value,
+        html_path=html_path,
+        title=current_title,
+    )
+    _set_loaded_state(window, current_state, value, loaded_label)
+    _record_recent_source(
+        current_state,
+        kind=kind,
+        value=value,
+        loaded_label=loaded_label,
+    )
+    _reload_html_in_view(webview, QUrl, html_path)
+    if kind == "pdb_id":
+        _show_status(window, f"Loaded PDB ID: {loaded_label}")
+    else:
+        _show_status(window, f"Loaded file: {loaded_label}")
 
 
 def _install_menu_bar(
@@ -151,6 +215,7 @@ def _install_menu_bar(
     QAction,
     QFileDialog,
     QInputDialog,
+    QMessageBox,
     html_path: str,
     current_title: str,
     current_state: dict[str, Any],
@@ -160,6 +225,7 @@ def _install_menu_bar(
     file_menu = menu_bar.addMenu("File")
     view_menu = menu_bar.addMenu("View")
     export_menu = menu_bar.addMenu("Export")
+    help_menu = menu_bar.addMenu("Help")
 
     open_file_action = QAction("Open File", window)
 
@@ -181,45 +247,63 @@ def _install_menu_bar(
             title=current_title,
         )
         _set_loaded_state(window, current_state, selected, Path(selected).name)
+        _record_recent_source(
+            current_state,
+            kind="file",
+            value=selected,
+            loaded_label=Path(selected).name,
+        )
         _reload_html_in_view(webview, QUrl, html_path)
+        _refresh_recent_menu()
         _show_status(window, f"Loaded file: {Path(selected).name}")
 
     open_file_action.triggered.connect(_open_file)
     file_menu.addAction(open_file_action)
 
-    load_demo_action = QAction("Load Demo", window)
+    demo_menu = file_menu.addMenu("Load Demo")
+    recent_menu = file_menu.addMenu("Recent")
 
-    def _load_demo():
-        if not hasattr(QInputDialog, "getItem"):
-            _show_status(window, "Load Demo is not available in the current Qt runtime.")
+    def _refresh_recent_menu() -> None:
+        if hasattr(recent_menu, "actions"):
+            recent_menu.actions.clear()
+        recent_sources = current_state.get("recent_sources", [])
+        if not recent_sources:
+            empty_action = QAction("No recent sources", window)
+            recent_menu.addAction(empty_action)
             return
-        demo_names = sorted(demo.keys())
-        selected, accepted = QInputDialog.getItem(
-            window,
-            "Load Demo",
-            "Demo:",
-            demo_names,
-            0,
-            False,
+        for recent_entry in recent_sources:
+            recent_action = QAction(recent_entry["loaded_label"], window)
+            recent_action.triggered.connect(
+                lambda _checked=False, entry=recent_entry: _load_recent_source(
+                    entry,
+                    window=window,
+                    webview=webview,
+                    QUrl=QUrl,
+                    html_path=html_path,
+                    current_title=current_title,
+                    current_state=current_state,
+                )
+            )
+            recent_menu.addAction(recent_action)
+    for demo_name in sorted(demo.keys()):
+        demo_action = QAction(demo_name, window)
+        demo_action.triggered.connect(
+            lambda _checked=False, name=demo_name: (
+                _load_demo_into_qt_host(
+                    name,
+                    window=window,
+                    webview=webview,
+                    QUrl=QUrl,
+                    html_path=html_path,
+                    current_title=current_title,
+                    current_state=current_state,
+                ),
+                _refresh_recent_menu(),
+            )
         )
-        demo_name = str(selected).strip()
-        if not accepted or not demo_name:
-            return
-        if demo_name not in demo:
-            _show_status(window, f"Unknown demo: {demo_name}")
-            return
-        _load_demo_into_qt_host(
-            demo_name,
-            window=window,
-            webview=webview,
-            QUrl=QUrl,
-            html_path=html_path,
-            current_title=current_title,
-            current_state=current_state,
-        )
+        demo_menu.addAction(demo_action)
 
-    load_demo_action.triggered.connect(_load_demo)
-    file_menu.addAction(load_demo_action)
+    _refresh_recent_menu()
 
     load_pdbid_action = QAction("Load PDB ID", window)
 
@@ -241,7 +325,14 @@ def _install_menu_bar(
             title=current_title,
         )
         _set_loaded_state(window, current_state, pdb_id, pdb_id)
+        _record_recent_source(
+            current_state,
+            kind="pdb_id",
+            value=pdb_id,
+            loaded_label=pdb_id,
+        )
         _reload_html_in_view(webview, QUrl, html_path)
+        _refresh_recent_menu()
         _show_status(window, f"Loaded PDB ID: {pdb_id}")
 
     load_pdbid_action.triggered.connect(_load_pdbid)
@@ -327,6 +418,34 @@ def _install_menu_bar(
     export_figure_action.triggered.connect(_export_figure)
     export_menu.addAction(export_figure_action)
 
+    about_action = QAction("About MolSysViewer Qt Prototype", window)
+
+    def _show_about() -> None:
+        message = (
+            "MolSysViewer Qt Prototype\n\n"
+            "Thin standalone host for the shared MolSysViewer runtime.\n"
+            "Current goal: validate the dedicated app shell before final packaging."
+        )
+        if hasattr(QMessageBox, "information"):
+            QMessageBox.information(window, "About MolSysViewer Qt Prototype", message)
+        else:
+            _show_status(window, "About: MolSysViewer Qt Prototype")
+
+    about_action.triggered.connect(_show_about)
+    help_menu.addAction(about_action)
+
+    current_source_action = QAction("Show Current Source", window)
+
+    def _show_current_source() -> None:
+        loaded_label = current_state.get("loaded_label")
+        if not loaded_label:
+            _show_status(window, "No molecular system is currently loaded.")
+            return
+        _show_status(window, f"Current source: {loaded_label}")
+
+    current_source_action.triggered.connect(_show_current_source)
+    help_menu.addAction(current_source_action)
+
 
 def create_standalone_qt0_window(
     molecular_system: Any,
@@ -355,6 +474,7 @@ def create_standalone_qt0_window(
     QAction = qt["QAction"]
     QFileDialog = qt["QFileDialog"]
     QInputDialog = qt["QInputDialog"]
+    QMessageBox = qt["QMessageBox"]
 
     if output_filename is None:
         with tempfile.NamedTemporaryFile(prefix="molsysviewer-qt0-", suffix=".html", delete=False) as handle:
@@ -395,6 +515,7 @@ def create_standalone_qt0_window(
         QAction=QAction,
         QFileDialog=QFileDialog,
         QInputDialog=QInputDialog,
+        QMessageBox=QMessageBox,
         html_path=html_path,
         current_title=title,
         current_state=current_state,

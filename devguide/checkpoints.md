@@ -76,10 +76,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `View -> Workbench`
     - `View -> Close Panel Mode`
     - `File -> Open File`
-    - `File -> Load Demo`
+    - `File -> Load Demo` submenu
+    - `File -> Recent`
     - `File -> Load PDB ID`
     - `Export -> Export HTML`
     - `Export -> Export Figure`
+    - `Help -> About`
+    - `Help -> Show Current Source`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways
