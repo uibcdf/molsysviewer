@@ -63,6 +63,8 @@ This means:
 - `workspace_catalog()` returns the effective workspace catalog visible to the
   view
 - `workspace_panels(...)` returns the local panel stack for a workspace
+- both catalog helpers also mark the currently active workspace/panel when that
+  runtime state is already known
 
 The browser side may also remember the last active panel when appropriate.
 

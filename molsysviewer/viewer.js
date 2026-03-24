@@ -146504,6 +146504,7 @@ var WorkbenchPanel = class {
     this.builtInSectionKeys = ["annotations", "measurements", "shapes", "scene", "addons"];
     this.addonSectionKeys = [];
     this.workspaceItems = [];
+    this.workspacePanelItems = [];
     this.currentWorkspaceId = "core";
     this.activeWorkspacePanelSummary = null;
     this.expanded = false;
@@ -146650,12 +146651,15 @@ var WorkbenchPanel = class {
     this.renderWorkspaceOverview();
   }
   setWorkspacePanels(items, onSelect) {
+    this.workspacePanelItems = Array.isArray(items) ? items : [];
+    this.onSelectWorkspacePanel = onSelect;
     this.shell.setOnSelectPanel(onSelect);
     this.shell.setPanelOptions(items.map((item2) => ({
       id: item2.id,
       title: item2.title,
       active: item2.active
     })));
+    this.renderWorkspaceOverview();
   }
   setActiveWorkspacePanel(summary) {
     this.activeWorkspacePanelSummary = summary;
@@ -146840,6 +146844,42 @@ var WorkbenchPanel = class {
         });
         entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
         card.appendChild(entry);
+      }
+      if (isCurrent && this.workspacePanelItems.length > 0) {
+        const panelStrip = document.createElement("div");
+        panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item2.id);
+        Object.assign(panelStrip.style, {
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "4px",
+          marginTop: "2px"
+        });
+        for (const panel of this.workspacePanelItems) {
+          const panelButton = document.createElement("button");
+          panelButton.type = "button";
+          panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel", panel.id);
+          if (panel.active) {
+            panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-current", panel.id);
+          }
+          Object.assign(panelButton.style, {
+            padding: "3px 7px",
+            borderRadius: "999px",
+            border: panel.active ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
+            background: panel.active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
+            color: panel.active ? "#f4f4f5" : "rgba(244,244,245,0.76)",
+            fontSize: "10px",
+            fontWeight: "700",
+            cursor: "pointer"
+          });
+          panelButton.textContent = panel.title;
+          panelButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onSelectWorkspacePanel?.(panel.id);
+          });
+          panelStrip.appendChild(panelButton);
+        }
+        card.appendChild(panelStrip);
       }
       const marker = document.createElement("div");
       marker.setAttribute("data-molsysviewer-workbench-workspace-overview-card-marker", item2.id);

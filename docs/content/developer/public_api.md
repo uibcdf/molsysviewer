@@ -303,6 +303,8 @@ This API is intentionally small:
   view, including `Core`
 - `view.workspace_panels("topomt")` returns the local panel stack for that
   workspace
+- `workspace_catalog()` and `workspace_panels(...)` also reflect the current
+  active workspace/panel when the frontend has already reported runtime state
 
 This small surface matters especially for notebook usage:
 
