@@ -34,6 +34,8 @@ view.set_panel_mode(...)
 view.set_workspace(...)
 view.set_workspace_panel(...)
 view.get_panel_mode_state()
+view.workspace_catalog()
+view.workspace_panels(...)
 ```
 
 The current contract is intentionally small:
@@ -58,6 +60,9 @@ This means:
   workspace
 - `get_panel_mode_state()` returns the last runtime state reported back by the
   frontend
+- `workspace_catalog()` returns the effective workspace catalog visible to the
+  view
+- `workspace_panels(...)` returns the local panel stack for a workspace
 
 The browser side may also remember the last active panel when appropriate.
 

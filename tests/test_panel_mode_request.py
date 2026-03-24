@@ -1,4 +1,4 @@
-from molsysviewer import MolSysView
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkbenchSectionSpec, AddonWorkspaceSpec, MolSysView, addons
 
 
 def test_set_panel_mode_sends_message():
@@ -120,3 +120,50 @@ def test_get_panel_mode_state_pretty_returns_json():
 
     assert isinstance(pretty, str)
     assert '"workspace": "core"' in pretty
+
+
+def test_workspace_catalog_and_panels_follow_effective_runtime():
+    addons.clear()
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
+                ),
+            )
+        )
+        view = MolSysView(debug_js=True)
+
+        assert view.workspace_catalog() == [
+            {"id": "core", "title": "Core", "subtitle": "Navigate + Workbench"},
+            {
+                "id": "topomt",
+                "title": "TopoMT",
+                "entry_panel": "topo",
+                "description": None,
+                "order": 0,
+                "meta": {},
+                "addon": "topomt",
+                "subtitle": "1 panel · 1 section",
+            },
+        ]
+        assert view.workspace_panels() == [
+            {"id": "navigate", "title": "Navigate"},
+            {"id": "workbench", "title": "Workbench"},
+        ]
+        assert view.workspace_panels("topomt") == [
+            {
+                "id": "topo",
+                "title": "Topo",
+                "description": None,
+                "entry": "topomt.panel.topo",
+                "addon": "topomt",
+                "workspace": "topomt",
+            }
+        ]
+        assert view.workspace_panels("missing") == []
+    finally:
+        addons.clear()

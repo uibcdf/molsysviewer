@@ -161,6 +161,8 @@ It proves something narrower but important:
 - `view.set_panel_mode(...)`
 - `view.set_workspace(...)`
 - `view.set_workspace_panel(...)`
+- `view.workspace_catalog()`
+- `view.workspace_panels(...)`
 - `view.get_panel_mode_state()`
 - shared workbench/runtime behavior
 

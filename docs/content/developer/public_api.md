@@ -285,6 +285,8 @@ The current pre-`1.0` shared panel-mode entrypoint is:
 - `view.set_workspace(...)`
 - `view.set_workspace_panel(...)`
 - `view.get_panel_mode_state()`
+- `view.workspace_catalog()`
+- `view.workspace_panels(...)`
 
 This API is intentionally small:
 
@@ -297,6 +299,10 @@ This API is intentionally small:
   local workspace panel from Python/notebook code
 - `view.get_panel_mode_state()` returns the last panel/workspace state reported
   by the frontend runtime
+- `view.workspace_catalog()` returns the effective workspace list visible to the
+  view, including `Core`
+- `view.workspace_panels("topomt")` returns the local panel stack for that
+  workspace
 
 This small surface matters especially for notebook usage:
 
