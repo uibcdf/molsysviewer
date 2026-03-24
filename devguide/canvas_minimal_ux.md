@@ -258,6 +258,33 @@ This should also stay compatible with optional ecosystem add-ons:
 
 - the built-in target remains `Navigate` + `Workbench`
 - but the panel-mode architecture should not assume there can only ever be two
+  panels forever
+
+## Workspace Launcher Direction
+
+The workspace selector should now be read as evolving toward a small domain
+launcher rather than a plain dropdown.
+
+Near-term direction:
+
+- keep the selector in the shared header
+- preserve one current workspace trigger
+- but let the opened launcher read more like a small card grid when several
+  workspaces exist
+
+Reason:
+
+- a flat list is still acceptable for two workspaces
+- it becomes weak once several ecosystem workspaces coexist
+- a light launcher grid is the first step toward the future mosaic without
+  committing yet to a full free-layout container
+
+Important rule:
+
+- this launcher is still only for choosing a workspace
+- it is not yet the final panel mosaic
+- do not mix this step with docking, free arrangement, or arbitrary multi-panel
+  layouts
 
 Longer-term scaling direction:
 

@@ -88,6 +88,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `Help -> Reload Last Source`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
+- The shared workspace launcher has now taken a first concrete step toward the
+  future workspace mosaic:
+  - when several workspaces coexist, the shared launcher can now present them
+    as a small card-like grid rather than only as a flat list
+  - this should still be treated as a launcher refinement, not yet as the final
+    mosaic or multi-panel layout system
 - Phase B is now advanced enough that it should not keep growing sideways
   without concrete ecosystem pressure.
 - Phase C is now much stronger and should be considered substantial rather than
