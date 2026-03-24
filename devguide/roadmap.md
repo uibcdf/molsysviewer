@@ -139,6 +139,9 @@ Immediate next focus from here:
   - another good sign is that the current workspace overview already exposes a
     meaningful local panel lane, so the add-on runtime feels navigable before
     the user even drops fully into the panel host
+  - another good sign is that non-current add-on cards can already preview
+    concrete workbench sections, so they read as domain surfaces rather than
+    abstract capabilities only
 
 ### Phase C. Figure Export Maturation
 

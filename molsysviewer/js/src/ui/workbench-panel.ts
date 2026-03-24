@@ -43,6 +43,7 @@ type WorkspaceOption = {
     subtitle?: string;
     panelCount?: number;
     workbenchSectionCount?: number;
+    workbenchSectionTitles?: string[];
     contextActionCount?: number;
     exportHelperCount?: number;
 };
@@ -537,6 +538,32 @@ export class WorkbenchPanel {
                 }
 
                 card.appendChild(capabilities);
+            }
+
+            if (!isCurrent && (item.workbenchSectionTitles?.length ?? 0) > 0) {
+                const sections = document.createElement("div");
+                sections.setAttribute("data-molsysviewer-workbench-workspace-overview-card-sections", item.id);
+                Object.assign(sections.style, {
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "3px",
+                    width: "100%",
+                    marginTop: "2px",
+                });
+
+                for (const titleText of item.workbenchSectionTitles!.slice(0, 2)) {
+                    const section = document.createElement("div");
+                    section.setAttribute("data-molsysviewer-workbench-workspace-overview-card-section", `${item.id}:${titleText}`);
+                    Object.assign(section.style, {
+                        fontSize: "10px",
+                        lineHeight: "1.25",
+                        color: "rgba(244,244,245,0.62)",
+                    });
+                    section.textContent = titleText;
+                    sections.appendChild(section);
+                }
+
+                card.appendChild(sections);
             }
 
             if (isCurrent && this.activeWorkspacePanelSummary) {

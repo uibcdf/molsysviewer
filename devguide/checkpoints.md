@@ -142,6 +142,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - current panel entry
     - direct switching across the local stack
     so the overview and the active host read more like one runtime surface
+  - non-current add-on cards can now also expose the first real workbench
+    section titles when available,
+    so the shared workbench already hints at domain structure before the user
+    opens that workspace
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
 - the shared workspace launcher/header now also carries a clearer domain hint:
