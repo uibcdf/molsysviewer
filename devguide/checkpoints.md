@@ -80,6 +80,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `File -> Load PDB ID`
     - `File -> Load Source`
     - `File -> Recent` with persisted recent sources
+    - `File -> Restore Last Source`
     - `Export -> Export HTML`
     - `Export -> Export Figure`
     - `Help -> About`

@@ -57,17 +57,20 @@ def _qt_shell_state_path() -> Path:
 def _load_qt_shell_state() -> dict[str, Any]:
     path = _qt_shell_state_path()
     if not path.exists():
-        return {"recent_sources": []}
+        return {"recent_sources": [], "last_source": None}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
-        return {"recent_sources": []}
+        return {"recent_sources": [], "last_source": None}
     if not isinstance(data, dict):
-        return {"recent_sources": []}
+        return {"recent_sources": [], "last_source": None}
     recent_sources = data.get("recent_sources", [])
     if not isinstance(recent_sources, list):
         recent_sources = []
-    return {"recent_sources": recent_sources[:5]}
+    last_source = data.get("last_source")
+    if not isinstance(last_source, dict):
+        last_source = None
+    return {"recent_sources": recent_sources[:5], "last_source": last_source}
 
 
 def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
@@ -75,6 +78,7 @@ def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "recent_sources": current_state.get("recent_sources", [])[:5],
+        "last_source": current_state.get("last_source"),
     }
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
@@ -115,6 +119,7 @@ def _record_recent_source(
     recent[:] = [item for item in recent if not (item["kind"] == kind and item["loaded_label"] == loaded_label)]
     recent.insert(0, entry)
     del recent[5:]
+    current_state["last_source"] = entry
 
 
 def _persist_shell_state(current_state: dict[str, Any]) -> None:
@@ -247,6 +252,33 @@ def _load_recent_source(
         _show_status(window, f"Loaded source: {loaded_label}")
     else:
         _show_status(window, f"Loaded file: {loaded_label}")
+
+
+def _restore_last_source(
+    *,
+    window,
+    webview,
+    QUrl,
+    html_path: str,
+    current_title: str,
+    current_state: dict[str, Any],
+) -> None:
+    recent_entry = current_state.get("last_source")
+    if not isinstance(recent_entry, dict):
+        recent_sources = current_state.get("recent_sources", [])
+        recent_entry = recent_sources[0] if recent_sources else None
+    if not isinstance(recent_entry, dict):
+        _show_status(window, "No last source is available.")
+        return
+    _load_recent_source(
+        recent_entry,
+        window=window,
+        webview=webview,
+        QUrl=QUrl,
+        html_path=html_path,
+        current_title=current_title,
+        current_state=current_state,
+    )
 
 
 def _install_menu_bar(
@@ -417,6 +449,22 @@ def _install_menu_bar(
     load_source_action.triggered.connect(_load_source)
     file_menu.addAction(load_source_action)
 
+    restore_last_action = QAction("Restore Last Source", window)
+
+    def _restore_last():
+        _restore_last_source(
+            window=window,
+            webview=webview,
+            QUrl=QUrl,
+            html_path=html_path,
+            current_title=current_title,
+            current_state=current_state,
+        )
+        _refresh_recent_menu()
+
+    restore_last_action.triggered.connect(_restore_last)
+    file_menu.addAction(restore_last_action)
+
     close_action = QAction("Close", window)
     close_action.triggered.connect(lambda: (_persist_shell_state(current_state), window.close()))
     file_menu.addAction(close_action)
@@ -528,12 +576,7 @@ def _install_menu_bar(
     reload_last_action = QAction("Reload Last Source", window)
 
     def _reload_last_source() -> None:
-        recent_sources = current_state.get("recent_sources", [])
-        if not recent_sources:
-            _show_status(window, "No recent source is available.")
-            return
-        _load_recent_source(
-            recent_sources[0],
+        _restore_last_source(
             window=window,
             webview=webview,
             QUrl=QUrl,

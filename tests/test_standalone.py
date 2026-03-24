@@ -272,7 +272,8 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     recent_menu = file_menu.actions[2]
     load_pdbid_action = file_menu.actions[3]
     load_source_action = file_menu.actions[4]
-    close_action = file_menu.actions[5]
+    restore_last_action = file_menu.actions[5]
+    close_action = file_menu.actions[6]
     assert demo_menu.title == "Load Demo"
     assert recent_menu.title == "Recent"
     assert recent_menu.actions[0].text == "No recent sources"
@@ -310,6 +311,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].title == "Qt Prototype · molsysmt.MolSys"
     assert recent_menu.actions[0].text == "molsysmt.MolSys"
     assert recent_menu.actions[1].text == "1crn"
+    restore_last_action.triggered._callbacks[0]()
+    assert calls[-1] == ("molsysmt.MolSys", str(outfile.resolve()), "Qt Prototype")
+    assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
     recent_menu.actions[1].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
@@ -353,6 +357,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     persisted = (tmp_path / "standalone_qt0_state.json").read_text(encoding="utf-8")
     assert '"kind": "pdb_id"' in persisted
     assert '"loaded_label": "1crn"' in persisted
+    assert '"last_source"' in persisted
 
 
 def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
@@ -363,7 +368,8 @@ def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
                 "recent_sources": [
                     {"kind": "source", "value": "molsysmt.MolSys", "loaded_label": "molsysmt.MolSys"},
                     {"kind": "pdb_id", "value": "1crn", "loaded_label": "1crn"},
-                ]
+                ],
+                "last_source": {"kind": "pdb_id", "value": "1crn", "loaded_label": "1crn"},
             }
         ),
         encoding="utf-8",
@@ -373,6 +379,7 @@ def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
     state = standalone_qt._load_qt_shell_state()
 
     assert [item["loaded_label"] for item in state["recent_sources"]] == ["molsysmt.MolSys", "1crn"]
+    assert state["last_source"]["loaded_label"] == "1crn"
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
