@@ -54,6 +54,14 @@ def _reload_html_in_view(webview, QUrl, html_path: str) -> None:
     webview.setUrl(QUrl.fromLocalFile(html_path))
 
 
+def _qt_runtime_urls() -> list[str]:
+    local_runtime = Path(__file__).with_name("viewer.js").resolve().as_uri()
+    return [
+        local_runtime,
+        "https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer/dist/viewer.js",
+    ]
+
+
 def _install_menu_bar(
     *,
     window,
@@ -78,6 +86,8 @@ def _install_menu_bar(
             title=current_title,
             include_popout=False,
             prepare_addons=False,
+            mode="lite",
+            runtime_urls=_qt_runtime_urls(),
         )
         _reload_html_in_view(webview, QUrl, html_path)
         _show_status(window, "Loaded demo: dialanine")
@@ -164,6 +174,8 @@ def create_standalone_qt0_window(
         addon_modules=addon_modules,
         apply_project_config=apply_project_config,
         debug_js=debug_js,
+        mode="lite",
+        runtime_urls=_qt_runtime_urls(),
     )
 
     app = _get_or_create_application(QApplication, app_argv)

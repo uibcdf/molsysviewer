@@ -65,6 +65,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - a minimal menu bar
     - reuse of the current standalone HTML/runtime path
   - it should still be treated as a prototype, not as the final standalone host
+  - the first real Qt spike has now also validated that:
+    - the host can run successfully with a coherent `pip` PySide6 stack
+    - the viewer should use the `lite` runtime path in Qt rather than the AMD
+      widget-manager export path
+    - final standalone packaging is now clearly an environment-recipe problem,
+      not just a host-implementation problem
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways

@@ -7,6 +7,7 @@ pytest.importorskip("traitlets")
 
 from molsysviewer import demo
 from molsysviewer.standalone import build_standalone0_html, launch_standalone0, main
+import molsysviewer.standalone_qt as standalone_qt
 from molsysviewer.standalone_qt import QT_IMPORT_ERROR, create_standalone_qt0_window, main as qt_main
 
 
@@ -20,6 +21,25 @@ def test_build_standalone0_html_writes_file(tmp_path):
     assert outfile.exists()
     text = outfile.read_text(encoding="utf-8")
     assert "MolSysViewer Standalone 0" in text
+
+
+def test_build_standalone0_html_supports_lite_runtime_urls(tmp_path):
+    view = demo["dialanine"]
+    outfile = tmp_path / "standalone0-lite.html"
+
+    result = build_standalone0_html(
+        view,
+        str(outfile),
+        include_popout=False,
+        mode="lite",
+        runtime_urls=["file:///tmp/molsysviewer-viewer.js", "https://example.invalid/viewer.js"],
+    )
+
+    assert result == str(outfile.resolve())
+    text = outfile.read_text(encoding="utf-8")
+    assert 'type="module"' in text
+    assert "requirejs" not in text
+    assert "file:///tmp/molsysviewer-viewer.js" in text
 
 
 def test_launch_standalone0_can_skip_browser(tmp_path):
@@ -58,15 +78,10 @@ def test_standalone_main_supports_empty_host_without_browser(tmp_path, capsys):
 
 
 def test_create_standalone_qt0_window_raises_informative_import_error(monkeypatch):
-    for name in [
-        "PySide6",
-        "PySide6.QtCore",
-        "PySide6.QtGui",
-        "PySide6.QtWidgets",
-        "PySide6.QtWebEngineWidgets",
-    ]:
-        monkeypatch.delitem(sys.modules, name, raising=False)
+    def _raise():
+        raise ImportError(QT_IMPORT_ERROR)
 
+    monkeypatch.setattr(standalone_qt, "_import_qt", _raise)
     with pytest.raises(ImportError, match="PySide6 with Qt WebEngine is required"):
         create_standalone_qt0_window(None)
 

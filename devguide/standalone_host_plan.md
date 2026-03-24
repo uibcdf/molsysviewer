@@ -268,6 +268,13 @@ Cons:
 - WebEngine/WebView integration must be kept disciplined
 - introduces a real app-shell maintenance surface
 
+First spike result:
+
+- technically validated
+- still packaging-heavy
+- should remain the preferred host direction, but with explicit caution that
+  the environment recipe is now a first-class product concern
+
 Decision:
 
 - preferred direction for the final standalone host
@@ -324,6 +331,53 @@ This is the best balance currently visible between:
 - reuse of current runtime
 - fit with the existing Python ecosystem
 - and keeping standalone from becoming a second product.
+
+## What The First Qt Spike Already Taught Us
+
+The first Qt spike has moved the discussion from speculation to evidence.
+
+What is now proven:
+
+- the MolSysViewer runtime can live in a real Qt application window
+- `QWebEngineView` can host the viewer successfully
+- the Qt host can show:
+  - an empty MolSysViewer host
+  - a demo-loaded viewer (`dialanine`)
+- the host is materially stronger when it uses the `lite` export/runtime path
+  and prefers local `viewer.js` over the AMD widget-manager export path
+
+What is not solved yet:
+
+- a final supported conda-only recipe for Qt WebEngine
+- a final release packaging strategy for the standalone host
+
+Operational lesson:
+
+- Phase E can continue on top of the now-working Qt spike
+- but final packaging should be treated as a separate release question, not as
+  a precondition for all standalone host implementation work
+
+## Environment Strategy Implication
+
+The standalone final host is not only a package question.
+It is an environment-recipe question.
+
+That is because the final standalone must coexist with:
+
+- `molsysviewer`
+- `molsysmt`
+- `pyunitwizard`
+- future MolSysSuite add-ons such as:
+  - `molsysviewer-molsysmt`
+  - `molsysviewer-topomt`
+  - `molsysviewer-pharmacophoremt`
+
+So the final release must not depend on arbitrary user-side mixing.
+It will need a supported environment recipe, whether that becomes:
+
+- conda-only
+- a supported conda+pip combination
+- or a more curated UIBCDF stack later
 
 ## Non-Negotiable Invariants
 

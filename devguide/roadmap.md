@@ -208,6 +208,9 @@ Current preferred host direction:
   - `QWebEngineView`
   - same embedded runtime
   - no standalone-only viewer semantics
+- keep the current Qt spike recipe explicit:
+  - Qt host development may continue on top of a working `pip` PySide6 stack
+  - final release packaging remains a separate decision
 
 See also:
 
