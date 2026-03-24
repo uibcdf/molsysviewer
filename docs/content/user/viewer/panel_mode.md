@@ -36,6 +36,7 @@ view.set_workspace_panel(...)
 view.get_panel_mode_state()
 view.workspace_catalog()
 view.workspace_panels(...)
+view.workspace_runtime()
 ```
 
 The current contract is intentionally small:
@@ -65,6 +66,8 @@ This means:
 - `workspace_panels(...)` returns the local panel stack for a workspace
 - both catalog helpers also mark the currently active workspace/panel when that
   runtime state is already known
+- `workspace_runtime()` bundles the current runtime state, visible workspace
+  catalog, and current local panel stack into one query
 
 The browser side may also remember the last active panel when appropriate.
 

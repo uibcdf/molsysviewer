@@ -219,3 +219,63 @@ def test_workspace_catalog_and_panels_reflect_active_runtime_state():
         ]
     finally:
         addons.clear()
+
+
+def test_workspace_runtime_aggregates_state_catalog_and_current_panels():
+    addons.clear()
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
+            )
+        )
+        view = MolSysView(debug_js=True)
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "panel_mode_state",
+                "panel": "workbench",
+                "expanded": True,
+                "workspace": "topomt",
+                "workspace_panel": "topo",
+            }
+        )
+
+        assert view.workspace_runtime() == {
+            "state": {
+                "event": "panel_mode_state",
+                "panel": "workbench",
+                "expanded": True,
+                "workspace": "topomt",
+                "workspace_panel": "topo",
+            },
+            "current_workspace": "topomt",
+            "workspaces": [
+                {"id": "core", "title": "Core", "subtitle": "Navigate + Workbench", "active": False},
+                {
+                    "id": "topomt",
+                    "title": "TopoMT",
+                    "entry_panel": "topo",
+                    "description": None,
+                    "order": 0,
+                    "meta": {},
+                    "addon": "topomt",
+                    "subtitle": "1 panel",
+                    "active": True,
+                },
+            ],
+            "current_panels": [
+                {
+                    "id": "topo",
+                    "title": "Topo",
+                    "description": None,
+                    "entry": "topomt.panel.topo",
+                    "addon": "topomt",
+                    "workspace": "topomt",
+                    "active": True,
+                }
+            ],
+        }
+    finally:
+        addons.clear()

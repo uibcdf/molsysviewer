@@ -165,6 +165,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - `view.get_panel_mode_state()`
   - `view.workspace_catalog()`
   - `view.workspace_panels(...)`
+  - `view.workspace_runtime()`
   - this should be treated as the stable scripted doorway into the workspace
     runtime, not only as UI chrome
   - the catalog side now also reflects active workspace/panel state when the
