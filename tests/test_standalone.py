@@ -177,10 +177,15 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
 
     class FakeFileDialog:
         selected = ""
+        saved = ""
 
         @staticmethod
         def getOpenFileName(_parent=None, _title="", _dir="", _filter=""):
             return FakeFileDialog.selected, "Molecular systems (*)"
+
+        @staticmethod
+        def getSaveFileName(_parent=None, _title="", _dir="", _filter=""):
+            return FakeFileDialog.saved, "HTML files (*.html)"
 
     class FakeQUrl:
         @staticmethod
@@ -249,6 +254,12 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert any('"panel":"navigate"' in script for script in scripts)
     assert any('"panel":"workbench"' in script for script in scripts)
     assert any('"expanded":false' in script and '"panel":null' in script for script in scripts)
+    export_menu = runtime["window"].menu_bar.menus[2]
+    FakeFileDialog.saved = str(tmp_path / "exported-view.html")
+    export_menu.actions[0].triggered._callbacks[0]()
+    exported = tmp_path / "exported-view.html"
+    assert exported.exists()
+    assert runtime["window"].status_bar.messages[-1] == "Exported HTML: exported-view.html"
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):

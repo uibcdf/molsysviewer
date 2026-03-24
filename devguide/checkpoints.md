@@ -77,6 +77,7 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `View -> Close Panel Mode`
     - `File -> Open File`
     - `File -> Load Demo: dialanine`
+    - `Export -> Export HTML`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - Phase B is now advanced enough that it should not keep growing sideways
