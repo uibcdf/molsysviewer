@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 
 import pytest
@@ -74,3 +75,76 @@ def test_make_coordinates_like_normalizes_plain_sequences():
 
     assert puw.get_value(output).shape == (1, 1, 3)
     assert puw.get_unit(output) == puw.get_unit(coords)
+
+
+def test_contract_wrappers_bypass_redigestion_after_local_digest():
+    from molsysviewer.demo import demo
+
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+
+    observed: list[tuple[str, object]] = []
+
+    def fake_contains(*args, **kwargs):
+        observed.append(("contains", kwargs.get("skip_digestion")))
+        return True
+
+    def fake_get(*args, **kwargs):
+        observed.append(("get", kwargs.get("skip_digestion")))
+        return {"ok": True}
+
+    def fake_info(*args, **kwargs):
+        observed.append(("info", kwargs.get("skip_digestion")))
+        return {"ok": True}
+
+    def fake_select(*args, **kwargs):
+        observed.append(("select", kwargs.get("skip_digestion")))
+        return [0, 1]
+
+    def fake_is_composed_of(*args, **kwargs):
+        observed.append(("is_composed_of", kwargs.get("skip_digestion")))
+        return True
+
+    view.contains = fake_contains  # type: ignore[method-assign]
+    view.get = fake_get  # type: ignore[method-assign]
+    view.info = fake_info  # type: ignore[method-assign]
+    view.select = fake_select  # type: ignore[method-assign]
+    view.is_composed_of = fake_is_composed_of  # type: ignore[method-assign]
+
+    region.contains("all")
+    region.get()
+    region.info()
+    region.select("all")
+    region.is_composed_of("all")
+
+    assert observed
+    assert all(value is True for _, value in observed)
+
+
+def test_thin_variadic_forwarders_do_not_carry_digest_decorators():
+    path = Path("molsysviewer/whole.py")
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+
+    offenders: list[str] = []
+
+    for node in tree.body:
+        if not isinstance(node, ast.ClassDef) or node.name != "Whole":
+            continue
+        for item in node.body:
+            if not isinstance(item, ast.FunctionDef):
+                continue
+            has_varargs = item.args.vararg is not None or item.args.kwarg is not None
+            decorators = [ast.unparse(deco) for deco in item.decorator_list]
+            has_digest = any("digest" in deco for deco in decorators)
+            named_runtime_args = [
+                arg.arg
+                for arg in item.args.args[1:]
+                if arg.arg != "skip_digestion"
+            ]
+            kwonly_runtime_args = [arg.arg for arg in item.args.kwonlyargs if arg.arg != "skip_digestion"]
+            has_named_contract = bool(named_runtime_args or kwonly_runtime_args)
+            if has_varargs and not has_named_contract and has_digest:
+                offenders.append(item.name)
+
+    assert offenders == []

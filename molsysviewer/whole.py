@@ -76,24 +76,22 @@ class Whole:
     # --- MolSysMT query helpers (delegated to MolSysView) ---
 
     @signal(tags=["selection", "whole"])
-    @digest()
     def select(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Select indices from the whole system (delegates to `MolSysView.select`)."""
         return self._view.select(*args, skip_digestion=skip_digestion, **kwargs)
 
     @signal(tags=["query", "whole"])
-    @digest()
     def get(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Retrieve values from the whole system (delegates to `MolSysView.get`)."""
         return self._view.get(*args, skip_digestion=skip_digestion, **kwargs)
 
     @signal(tags=["query", "whole"])
-    @digest()
     def info(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Show a summary table for the whole system (delegates to `MolSysView.info`)."""
         return self._view.info(*args, skip_digestion=skip_digestion, **kwargs)
 
     @signal(tags=["query", "whole"])
+    @digest()
     def contains(
         self,
         selection="all",
@@ -105,11 +103,12 @@ class Whole:
         return self._view.contains(
             selection=selection,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
             **kwargs,
         )
 
     @signal(tags=["query", "whole"])
+    @digest()
     def is_composed_of(
         self,
         selection="all",
@@ -121,7 +120,7 @@ class Whole:
         return self._view.is_composed_of(
             selection=selection,
             syntax=syntax,
-            skip_digestion=skip_digestion,
+            skip_digestion=True,
             **kwargs,
         )
 
@@ -152,25 +151,21 @@ class Whole:
         )
 
     @signal(tags=["edit", "whole"])
-    @digest()
     def append_structures(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Append structures to the underlying system (delegates to `MolSysView.append_structures`)."""
         return self._view.append_structures(*args, skip_digestion=skip_digestion, **kwargs)
 
     @signal(tags=["edit", "whole"])
-    @digest()
     def set(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Set attributes on the underlying system (delegates to `MolSysView.set`)."""
         return self._view.set(*args, skip_digestion=skip_digestion, **kwargs)
 
     @signal(tags=["edit", "whole"])
-    @digest()
     def add(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Add elements from another system (delegates to `MolSysView.add`)."""
         return self._view.add(*args, skip_digestion=skip_digestion, **kwargs)
 
     @signal(tags=["edit", "whole"])
-    @digest()
     def remove(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Remove atoms/structures from the system (delegates to `MolSysView.remove`)."""
         return self._view.remove(*args, skip_digestion=skip_digestion, **kwargs)
