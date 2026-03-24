@@ -282,9 +282,18 @@ you must validate the docs-lite output.
 The current pre-`1.0` shared panel-mode entrypoint is:
 
 - `view.set_panel_mode(...)`
+- `view.set_workspace(...)`
 
 This API is intentionally small:
 
 - `panel="navigate"` or `panel="workbench"` opens that panel
 - `expanded=False` collapses the current panel-mode surface
 - `panel=None` lets the frontend reuse its remembered last panel when opening
+- `workspace="core"` selects the native workspace
+- other workspace ids select the corresponding add-on workspace when available
+
+This small surface matters especially for notebook usage:
+
+- it gives Jupyter users an explicit Python control door into the shared
+  panel/workspace runtime
+- it avoids requiring mouse-only navigation for workspace changes

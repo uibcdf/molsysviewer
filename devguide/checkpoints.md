@@ -157,6 +157,12 @@ Do not append dated historical entries unless a date is itself operationally rel
   - what has already been verified in smoke,
   - and what still needs re-checking.
 - Keep `devguide/` aligned with the real repository state.
+- The shared panel/workspace runtime now also has a clearer Python control
+  surface for notebook use:
+  - `view.set_panel_mode(...)`
+  - `view.set_workspace(...)`
+  - this should be treated as the stable scripted doorway into the workspace
+    runtime, not only as UI chrome
 - Keep the emerging MolSysSuite add-on direction explicit:
   - `MolSysViewer` 1.0 should stay as a strong core workbench
   - domain-specific ecosystem growth should prefer optional add-ons

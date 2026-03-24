@@ -1064,6 +1064,7 @@ export class MolSysViewerController {
                 case "toggle_swing": await this.scene.toggleSwing(msg); break;
                 case "toggle_spin": await this.scene.toggleSpin(msg); break;
                 case "set_panel_mode": this.setPanelMode((msg as any).panel, (msg as any).expanded); break;
+                case "set_workspace": this.selectWorkspace((msg as any).workspace ?? "core"); break;
                 case "clear_scene": await this.scene.clearScene(msg); break;
                 case "clear_all": await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
