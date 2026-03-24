@@ -258,6 +258,10 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         const overviewPanels = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panels", "topomt");
         const overviewCurrentPanel = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-current", "topo");
         const overviewPanelButton = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel", "channels");
+        const overviewCurrentPanelTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-title", "topo");
+        const overviewCurrentPanelDescription = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-description", "topo");
+        const overviewCurrentPanelEntry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-entry", "topo");
+        const overviewPanelButtonTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-title", "channels");
         const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "topomt");
         const stack = findFirstByAttribute(root, "data-molsysviewer-panel-stack", "true");
         const active = findFirstByAttribute(root, "data-molsysviewer-panel-stack-current", "topo");
@@ -288,6 +292,10 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.ok(overviewPanels);
         assert.ok(overviewCurrentPanel);
         assert.ok(overviewPanelButton);
+        assert.ok(overviewCurrentPanelTitle);
+        assert.ok(overviewCurrentPanelDescription);
+        assert.ok(overviewCurrentPanelEntry);
+        assert.ok(overviewPanelButtonTitle);
         assert.ok(overviewMarker);
         assert.ok(stack);
         assert.ok(active);
@@ -311,6 +319,10 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         assert.strictEqual(overviewPreviewSectionItem?.textContent, "Add-on: topomt");
         assert.strictEqual(overviewPreviewSectionSubtitle?.textContent, "top_pockets");
         assert.strictEqual(overviewMarker?.textContent, "Current workspace");
+        assert.strictEqual(overviewCurrentPanelTitle?.textContent, "Topo");
+        assert.strictEqual(overviewCurrentPanelDescription?.textContent, "Pocket analysis");
+        assert.strictEqual(overviewCurrentPanelEntry?.textContent, "Entry: topomt.panel.topo");
+        assert.strictEqual(overviewPanelButtonTitle?.textContent, "Channels");
         assert.strictEqual(title?.textContent, "TopoMT · Topo");
         assert.strictEqual(entry?.textContent, "Entry: topomt.panel.topo");
         assert.strictEqual(context?.textContent, "Context: Inspect Pocket, Focus Pocket");

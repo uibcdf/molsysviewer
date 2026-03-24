@@ -669,7 +669,7 @@ export class WorkbenchPanel {
                 panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item.id);
                 Object.assign(panelStrip.style, {
                     display: "flex",
-                    flexWrap: "wrap",
+                    flexDirection: "column",
                     gap: "4px",
                     marginTop: "2px",
                 });
@@ -682,16 +682,52 @@ export class WorkbenchPanel {
                         panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-current", panel.id);
                     }
                     Object.assign(panelButton.style, {
-                        padding: "3px 7px",
-                        borderRadius: "999px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        gap: "2px",
+                        width: "100%",
+                        padding: "6px 8px",
+                        borderRadius: "8px",
                         border: panel.active ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
                         background: panel.active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
                         color: panel.active ? "#f4f4f5" : "rgba(244,244,245,0.76)",
+                        cursor: "pointer",
+                        textAlign: "left",
+                    });
+                    const panelTitle = document.createElement("div");
+                    panelTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-title", panel.id);
+                    Object.assign(panelTitle.style, {
                         fontSize: "10px",
                         fontWeight: "700",
-                        cursor: "pointer",
                     });
-                    panelButton.textContent = panel.title;
+                    panelTitle.textContent = panel.title;
+                    panelButton.appendChild(panelTitle);
+
+                    if (panel.description) {
+                        const panelDescription = document.createElement("div");
+                        panelDescription.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-description", panel.id);
+                        Object.assign(panelDescription.style, {
+                            fontSize: "10px",
+                            lineHeight: "1.2",
+                            color: panel.active ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.6)",
+                        });
+                        panelDescription.textContent = panel.description;
+                        panelButton.appendChild(panelDescription);
+                    }
+
+                    if (panel.active && panel.entry) {
+                        const panelEntry = document.createElement("div");
+                        panelEntry.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-entry", panel.id);
+                        Object.assign(panelEntry.style, {
+                            fontSize: "9px",
+                            lineHeight: "1.2",
+                            color: "rgba(244,244,245,0.54)",
+                        });
+                        panelEntry.textContent = `Entry: ${panel.entry}`;
+                        panelButton.appendChild(panelEntry);
+                    }
+
                     panelButton.addEventListener("click", (event) => {
                         event.preventDefault();
                         event.stopPropagation();
