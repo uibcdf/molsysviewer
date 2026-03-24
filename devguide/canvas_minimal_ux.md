@@ -272,6 +272,12 @@ Current runtime direction:
   - workbench sections
   - context actions
   - export helpers
+- the current workspace card may also expose a compact local panel lane when
+  that helps tie the overview to the host below:
+  - current panel title
+  - current panel description
+  - current panel entry
+  - direct panel switching
 - the active workspace host should remain visually tied to that overview rather
   than feeling like an unrelated second card
 - this is still meant to feel like calm navigation, not like a dashboard or a

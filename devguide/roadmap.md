@@ -136,6 +136,9 @@ Immediate next focus from here:
   - a good sign of progress is that non-current add-on workspaces already look
     informative before the user opens them, instead of reading like placeholder
     labels beside `Core`
+  - another good sign is that the current workspace overview already exposes a
+    meaningful local panel lane, so the add-on runtime feels navigable before
+    the user even drops fully into the panel host
 
 ### Phase C. Figure Export Maturation
 

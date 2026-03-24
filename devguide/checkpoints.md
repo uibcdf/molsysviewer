@@ -136,6 +136,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     - add-on workspaces need to look informative and domain-bearing inside the
       shared workbench body,
       not only selectable from the launcher
+  - the current workspace card now also carries a richer local panel lane:
+    - panel title
+    - panel description
+    - current panel entry
+    - direct switching across the local stack
+    so the overview and the active host read more like one runtime surface
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
 - the shared workspace launcher/header now also carries a clearer domain hint:
