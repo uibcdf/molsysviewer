@@ -264,8 +264,18 @@ Current runtime direction:
   - entry
   - capability hints
   - first dynamic section previews
+- the active workspace host should remain visually tied to that overview rather
+  than feeling like an unrelated second card
 - this is still meant to feel like calm navigation, not like a dashboard or a
   second toolbar
+
+The shared header should reinforce the same reading:
+
+- workspace switching should feel like switching domains of work
+- the trigger should communicate at least:
+  - current workspace title
+  - current workspace subtitle when useful
+  - whether the user is in `Core` or an add-on workspace
 
 This should also stay compatible with optional ecosystem add-ons:
 
