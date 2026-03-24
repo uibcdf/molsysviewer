@@ -125,8 +125,15 @@ Do not append dated historical entries unless a date is itself operationally rel
     - description
     - immediate capability counts
     - first dynamic section cards
+  - the overview and the active host now also sit inside one shared runtime
+    deck, so the body reads more like one domain surface and less like two
+    unrelated stacked cards
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
+- the shared workspace launcher/header now also carries a clearer domain hint:
+  - the current trigger distinguishes `Core workspace` from `Add-on workspace`
+  - so the shared header reads more clearly as a domain switcher rather than a
+    generic dropdown
 - Phase B is now advanced enough that it should not keep growing sideways
   without concrete ecosystem pressure.
 - Phase C is now much stronger and should be considered substantial rather than

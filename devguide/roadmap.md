@@ -1,6 +1,6 @@
 # Development Roadmap (Status-Aligned)
 
-Last update: 2026-03-20
+Last update: 2026-03-24
 
 This roadmap is status-aligned with the current repository state.
 It is organized by execution priority and uses three labels:
@@ -69,7 +69,7 @@ The current preferred execution plan toward `1.0.0` is:
 
 Status:
 
-- near closure
+- effectively closed, with targeted follow-up only
 
 Goal:
 
@@ -78,10 +78,11 @@ Goal:
 
 Main work:
 
-- keep converging the shared header toward the final navigator model
+- keep the shared header and the body-level workbench overview aligned
 - strengthen the relation:
   - workspace launcher
   - panel stack
+  - workspace overview / runtime deck
   - panel host
 - keep `Navigate` and `Workbench` visually and behaviorally aligned
 - avoid adding new permanent canvas chrome
@@ -92,6 +93,8 @@ Success criteria:
 - `Core` remains the calm default
 - add-on workspaces can exist without flattening the product into one giant
   panel list
+- the body-level workbench overview already feels like the seed of the future
+  workspace mosaic rather than a temporary summary list
 
 ### Phase B. Add-On Runtime Proof
 
@@ -116,6 +119,15 @@ Success criteria:
 - a downstream team can build against the published add-on contract
 - a larger add-on workspace feels plausible in the real runtime
 - the host no longer looks "core-only with addon metadata attached"
+
+Immediate next focus from here:
+
+- keep using the now-stronger shared workbench as the main place to mature
+  add-on/runtime behavior
+- prefer vertical slices that make the current workspace mosaic direction more
+  believable
+- keep the notebook/runtime bridge strong enough that these slices are easy to
+  drive and diagnose from Python
 
 ### Phase C. Figure Export Maturation
 
@@ -161,6 +173,13 @@ Success criteria:
 - the current public product can be taught without relying on chat history
 - the docs tell the truth about the current runtime
 - the remaining gap to `1.0.0` is mostly host-level, not conceptual confusion
+
+Current interpretation after `0.15.0`:
+
+- support-library hardening (`argdigest`, `depdigest`, `pyunitwizard`,
+  `smonitor`) is now strong enough that it should stop dominating the roadmap
+- the best next tightening is no longer generic support work, but workbench/API
+  slices that immediately improve the teachable product
 
 Immediate pre-`0.14.0` interpretation:
 
@@ -211,6 +230,13 @@ Current preferred host direction:
 - keep the current Qt spike recipe explicit:
   - Qt host development may continue on top of a working `pip` PySide6 stack
   - final release packaging remains a separate decision
+
+Practical rule from the current state:
+
+- continue standalone when it validates the shared runtime or unblocks future
+  host decisions
+- do not let standalone packaging dominate the roadmap before the shared
+  workbench/add-on story feels fully intentional
 
 See also:
 
