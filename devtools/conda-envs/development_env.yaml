@@ -32,7 +32,11 @@ dependencies:
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
 
-  # --- Optional: final-standalone prototyping (Qt host shell) ---
+  # --- Optional: base Qt package only.
+  # The currently supported standalone Qt spike recipe itself is documented in:
+  # devguide/standalone_supported_environment.md
+  # Keep the main env conservative; use a derived Qt-spike env for coherent
+  # PySide6 + QtWebEngine work.
   - pyside6
 
   # --- Documentation with Sphinx and MyST ---
@@ -47,6 +51,6 @@ dependencies:
   - pydata-sphinx-theme
   - myst-nb
   - pip:
-      # Keep Qt WebEngine available for the standalone Qt prototype when the
-      # conda-forge pyside6 build does not expose PySide6.QtWebEngineWidgets.
+      # Do not treat this as the final supported standalone recipe by itself.
+      # See devguide/standalone_supported_environment.md.
       - PySide6-Addons

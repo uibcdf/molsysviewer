@@ -27,6 +27,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - Phase B should now be treated as done enough unless a new realistic add-on
     path reveals another structural host gap
   - Phase E should now be treated as the main execution focus toward `1.0.0`
+  - the standalone Qt spike now also has an explicit supported development
+    recipe in `devguide`, so the conda/pip boundary no longer lives partly in
+    chat history
 
 - `0.14.0` should now be read as the checkpoint where:
   - Phase D stopped being only intention and gained first real tightening
