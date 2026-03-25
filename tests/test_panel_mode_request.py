@@ -264,6 +264,17 @@ def test_workspace_runtime_aggregates_state_catalog_and_current_panels():
                 "workspace_panel": "topo",
             },
             "current_workspace": "topomt",
+            "current_workspace_record": {
+                "id": "topomt",
+                "title": "TopoMT",
+                "entry_panel": "topo",
+                "description": None,
+                "order": 0,
+                "meta": {},
+                "addon": "topomt",
+                "subtitle": "1 panel",
+                "active": True,
+            },
             "workspaces": [
                 {"id": "core", "title": "Core", "subtitle": "Navigate + Workbench", "active": False},
                 {
@@ -289,6 +300,15 @@ def test_workspace_runtime_aggregates_state_catalog_and_current_panels():
                     "active": True,
                 }
             ],
+            "current_panel": {
+                "id": "topo",
+                "title": "Topo",
+                "description": None,
+                "entry": "topomt.panel.topo",
+                "addon": "topomt",
+                "workspace": "topomt",
+                "active": True,
+            },
             "current_sections": [],
         }
     finally:
@@ -319,7 +339,29 @@ def test_workspace_runtime_includes_current_sections():
             }
         )
 
-        assert view.workspace_runtime()["current_sections"] == [
+        runtime = view.workspace_runtime()
+
+        assert runtime["current_workspace_record"] == {
+            "id": "topomt",
+            "title": "TopoMT",
+            "entry_panel": "topo",
+            "description": None,
+            "order": 0,
+            "meta": {},
+            "addon": "topomt",
+            "subtitle": "1 panel · 1 section",
+            "active": True,
+        }
+        assert runtime["current_panel"] == {
+            "id": "topo",
+            "title": "Topo",
+            "description": None,
+            "entry": "topomt.panel.topo",
+            "addon": "topomt",
+            "workspace": "topomt",
+            "active": True,
+        }
+        assert runtime["current_sections"] == [
             {
                 "id": "summary",
                 "title": "Summary",

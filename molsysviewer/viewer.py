@@ -1126,12 +1126,19 @@ class MolSysView:
         current_workspace = state.get("workspace")
         if not isinstance(current_workspace, str) or current_workspace.strip() == "":
             current_workspace = "core"
+        workspaces = self.workspace_catalog(skip_digestion=True)
+        current_panels = self.workspace_panels(current_workspace, skip_digestion=True)
+        current_sections = self.workspace_sections(current_workspace, skip_digestion=True)
+        current_panel = next((item for item in current_panels if item.get("active") is True), None)
+        current_workspace_record = next((item for item in workspaces if item.get("id") == current_workspace), None)
         return {
             "state": dict(state),
-            "workspaces": self.workspace_catalog(skip_digestion=True),
+            "workspaces": workspaces,
             "current_workspace": current_workspace,
-            "current_panels": self.workspace_panels(current_workspace, skip_digestion=True),
-            "current_sections": self.workspace_sections(current_workspace, skip_digestion=True),
+            "current_workspace_record": current_workspace_record,
+            "current_panels": current_panels,
+            "current_panel": current_panel,
+            "current_sections": current_sections,
         }
 
     @property

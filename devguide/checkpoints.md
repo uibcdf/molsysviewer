@@ -230,6 +230,10 @@ Do not append dated historical entries unless a date is itself operationally rel
   - notebook/runtime QA can now also inspect the visible workbench sections of
     the current workspace without reconstructing them indirectly from add-on
     specs
+  - `workspace_runtime()` now also exposes:
+    - `current_workspace_record`
+    - `current_panel`
+    so notebook code does not need to recombine the active records manually
 - Keep the emerging MolSysSuite add-on direction explicit:
   - `MolSysViewer` 1.0 should stay as a strong core workbench
   - domain-specific ecosystem growth should prefer optional add-ons
