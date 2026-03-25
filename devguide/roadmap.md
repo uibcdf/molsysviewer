@@ -100,7 +100,7 @@ Success criteria:
 
 Status:
 
-- near closure
+- done enough, reopen only if new structural addon pressure appears
 
 Goal:
 
@@ -120,52 +120,19 @@ Success criteria:
 - a larger add-on workspace feels plausible in the real runtime
 - the host no longer looks "core-only with addon metadata attached"
 
-Immediate next focus from here:
+Current reading:
 
-- keep using the now-stronger shared workbench as the main place to mature
-  add-on/runtime behavior
-- prefer vertical slices that make the current workspace mosaic direction more
-  believable
-- keep the notebook/runtime bridge strong enough that these slices are easy to
-  drive and diagnose from Python
-- specifically, the current best path is:
-  - make add-on workspaces look and feel substantive inside `Workbench`
-  - not by adding generic chrome,
-  - but by making workspace cards, host previews, panel stacks, and capability
-    summaries cooperate better
-  - a good sign of progress is that non-current add-on workspaces already look
-    informative before the user opens them, instead of reading like placeholder
-    labels beside `Core`
-  - another good sign is that the current workspace overview already exposes a
-    meaningful local panel lane, so the add-on runtime feels navigable before
-    the user even drops fully into the panel host
-  - another good sign is that non-current add-on cards can already preview
-    concrete workbench sections, so they read as domain surfaces rather than
-    abstract capabilities only
-  - the notebook/runtime bridge should expose the same structure honestly:
-    visible workspace sections should be queryable from Python, not only
-    inferred from add-on specs or the frontend UI
-  - the reference demo/onboarding path should also land directly inside the
-    add-on workspace and entry panel, so external teams start from a real
-    runtime state rather than from the generic shell only
-  - the aggregated notebook snapshot should also expose the active workspace and
-    active panel as records, so QA and scripted workflows do not need to
-    reconstruct them by hand from longer lists
-- the final useful check before calling Phase B "done enough" is that the
-  reference add-on path is teachable and smokeable as one shared runtime from
-  both the host UI and the notebook API
-- that check is now largely in place, so the remaining reason to keep Phase B
-  open would be discovering another real structural gap under add-on pressure,
-  not continuing to polish it by inertia
-- concretely, the only work that should reopen it is:
-  - a more realistic add-on path exposing a missing host capability
-  - a mismatch between launcher, local panel stack, active host, and notebook
-    control
-  - or a real teaching/smoke gap in the reference runtime story
+- the reference add-on path is now teachable and smokeable as one shared
+  runtime from both host UI and notebook API
+- notebook/runtime queries now expose the same workspace/panel/section shape
+  that the workbench renders
+- the main reason to reopen Phase B would now be a new real add-on path
+  exposing a missing host capability, not lack of credibility in the current
+  host
 - work that should **not** reopen it:
   - generic chrome
   - abstract contract growth without runtime pressure
-  - or cosmetic polish that does not improve host credibility
+  - cosmetic polish that does not improve host credibility
 
 ### Phase C. Figure Export Maturation
 
@@ -235,13 +202,13 @@ Immediate `0.16.x` hardening gate:
 - if that gate is satisfied, the next major uncertainty should shift toward the
   final standalone/distribution story rather than toward the shared runtime
 - current reading after the latest tightening slices:
-  - this gate is now materially satisfied:
+  - this gate is now materially satisfied and should stop dominating the
+    roadmap:
     - the Python smoke subset is green
     - `npm --prefix molsysviewer/js run test:js` is green again
     - docs/API/runtime parity across the three mature stories remains aligned
-  - the next useful work should be small release-hardening checks or the next
-    real product slice, not another large conceptual pass over the shared
-    runtime
+  - the next useful work should be the next real product slice, not another
+    large conceptual pass over the shared runtime
 - concrete `0.16.0` release gate:
   - the recommended smoke subset remains green
   - docs navigation still makes the three mature stories easy to find:
@@ -251,6 +218,48 @@ Immediate `0.16.x` hardening gate:
   - the public notebook-facing APIs still match those stories honestly
   - no new host-structure issue appears while doing the last release-hardening
     pass
+
+### Phase E. Final Standalone Push
+
+Status:
+
+- now the main execution focus
+
+Goal:
+
+- turn the already-validated Qt host direction into a credible standalone path
+  to `1.0.0`
+
+Main work:
+
+- continue making the Qt host feel like a real application shell:
+  - source state
+  - navigation affordances
+  - export affordances
+  - host-level persistence where it genuinely helps
+- keep the host thin:
+  - no duplicate viewer logic
+  - no separate addon/runtime model
+  - no forked panel semantics
+- separate host work from environment/packaging work:
+  - host behavior and UX slices
+  - supported standalone environment recipe
+  - final packaging/distribution strategy
+
+Success criteria:
+
+- the standalone host feels like a real desktop tool, not a browser tab in a
+  box
+- the same shared runtime remains the source of truth
+- the environment recipe needed to run that host is explicit and supportable
+- the main remaining work before `1.0.0` becomes packaging/distribution polish,
+  not uncertainty about the host direction itself
+
+Immediate next focus:
+
+- keep the next slices on the host itself, not on speculative packaging
+- in parallel, document the supported standalone environment recipe more
+  explicitly so the Qt path stops living partly in chat history
 
 Immediate pre-`0.14.0` interpretation:
 
