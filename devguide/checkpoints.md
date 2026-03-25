@@ -148,6 +148,12 @@ Do not append dated historical entries unless a date is itself operationally rel
     opens that workspace
   - still a navigator, not yet a free multi-panel mosaic
   - intended as the first in-panel foothold for the future workspace mosaic
+- the reference add-on smoke path is now also more honest as runtime pressure:
+  - `build_reference_demo_view("topomt")` no longer stops at opening
+    `Workbench`
+  - it also activates the add-on workspace and its entry panel
+  - so downstream teams land directly in a visible workspace-shaped runtime,
+    not only in the generic shell
 - the shared workspace launcher/header now also carries a clearer domain hint:
   - the current trigger distinguishes `Core workspace` from `Add-on workspace`
   - so the shared header reads more clearly as a domain switcher rather than a

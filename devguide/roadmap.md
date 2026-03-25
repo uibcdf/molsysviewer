@@ -145,6 +145,9 @@ Immediate next focus from here:
   - the notebook/runtime bridge should expose the same structure honestly:
     visible workspace sections should be queryable from Python, not only
     inferred from add-on specs or the frontend UI
+  - the reference demo/onboarding path should also land directly inside the
+    add-on workspace and entry panel, so external teams start from a real
+    runtime state rather than from the generic shell only
 
 ### Phase C. Figure Export Maturation
 
