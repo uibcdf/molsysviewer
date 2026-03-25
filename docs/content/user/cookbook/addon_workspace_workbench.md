@@ -39,7 +39,7 @@ view
 
 This is the shortest supported smoke path for an add-on workspace today.
 
-It currently does three things:
+It currently does five things:
 
 - registers the bundled reference add-on
 - opens the `dialanine` demo system
@@ -181,6 +181,8 @@ It proves something narrower but important:
 - `view.set_workspace_panel(...)`
 - `view.workspace_catalog()`
 - `view.workspace_panels(...)`
+- `view.workspace_sections(...)`
+- `view.workspace_runtime()`
 - `view.get_panel_mode_state()`
 - shared workbench/runtime behavior
 

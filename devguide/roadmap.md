@@ -100,7 +100,7 @@ Success criteria:
 
 Status:
 
-- in strong progress
+- near closure
 
 Goal:
 
@@ -151,9 +151,12 @@ Immediate next focus from here:
   - the aggregated notebook snapshot should also expose the active workspace and
     active panel as records, so QA and scripted workflows do not need to
     reconstruct them by hand from longer lists
-  - the final useful check before calling Phase B "done enough" is that the
-    reference add-on path is teachable and smokeable as one shared runtime from
-    both the host UI and the notebook API
+- the final useful check before calling Phase B "done enough" is that the
+  reference add-on path is teachable and smokeable as one shared runtime from
+  both the host UI and the notebook API
+- that check is now largely in place, so the remaining reason to keep Phase B
+  open would be discovering another real structural gap under add-on pressure,
+  not continuing to polish it by inertia
 
 ### Phase C. Figure Export Maturation
 

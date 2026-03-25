@@ -159,6 +159,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the same local panel stack
     - and the same workbench sections
     that the shared host is rendering
+  - after the latest runtime, notebook, smoke, and onboarding slices, Phase B
+    should now be read as **near closure**:
+    - do not keep extending it sideways by default
+    - only keep it open if one more realistic add-on-pressure slice exposes a
+      structural gap in the shared host
 - the shared workspace launcher/header now also carries a clearer domain hint:
   - the current trigger distinguishes `Core workspace` from `Add-on workspace`
   - so the shared header reads more clearly as a domain switcher rather than a
