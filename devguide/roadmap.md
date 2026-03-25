@@ -219,6 +219,22 @@ Current interpretation after `0.15.0`:
 - the best next tightening is no longer generic support work, but workbench/API
   slices that immediately improve the teachable product
 
+Immediate `0.16.x` hardening gate:
+
+- before treating `0.16.x` as the next strong checkpoint, prefer checking that
+  the current mature surfaces can be taught and smoke-tested as one product:
+  - panel/workspace runtime
+  - add-on reference runtime
+  - figure export from the workbench
+- the preferred final tightening slices before that gate are:
+  - docs/navigation parity so users can actually find the mature stories
+  - smoke guidance that reflects the same product story and support tooling
+  - small regression additions only where a real teaching path would otherwise
+    drift
+- do not reopen architecture to chase this gate
+- if that gate is satisfied, the next major uncertainty should shift toward the
+  final standalone/distribution story rather than toward the shared runtime
+
 Immediate pre-`0.14.0` interpretation:
 
 - recent tightening already improved three real teaching surfaces:

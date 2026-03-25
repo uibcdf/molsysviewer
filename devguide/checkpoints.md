@@ -196,6 +196,16 @@ Do not append dated historical entries unless a date is itself operationally rel
     rely on for fast QA (`smonitor`)
   - small but truthful user/developer guidance slices instead of broad new
     architecture
+- the next useful tightening gate should now be read as a pre-`0.16.x`
+  release-hardening check:
+  - can the current mature product surfaces be taught and smoke-tested as one
+    coherent story?
+  - specifically:
+    - panel/workspace runtime
+    - add-on reference runtime
+    - figure export from the workbench
+  - if yes, the main remaining uncertainty moves to standalone/distribution,
+    not back to the shared runtime
 - The practical question is now shifting toward the next checkpoint gate:
   - before `0.14.0`, prefer checking whether the current Phase D slices are
     already enough to teach the product honestly

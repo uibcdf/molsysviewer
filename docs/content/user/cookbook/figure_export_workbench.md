@@ -9,6 +9,7 @@ The important idea is that figure export in MolSysViewer is no longer just
 You can now:
 
 - inspect the figure baseline from `Workbench -> Scene`
+- inspect the same export baseline from notebook/runtime state
 - capture the current camera into a reusable `FigureSpec`
 - derive small variants from that recipe
 - and export a publication-oriented bundle in one pass
@@ -46,6 +47,16 @@ figure baseline:
 
 That baseline is intentionally modest, but it is useful because figure export
 is now visible as part of the workbench story, not only as an API call.
+
+From notebook code, the same workbench-facing story should already be visible
+through the export API itself:
+
+```python
+view.get_camera_snapshot()
+```
+
+That means the interactive viewer state and the later export recipe can still
+be discussed from Python without treating export as a disconnected subsystem.
 
 ## 2. Move the camera to the view you actually want
 
@@ -173,6 +184,7 @@ That is exactly the kind of workflow MolSysViewer should encourage before
 ## API surfaces used in this recipe
 
 - `view.set_panel_mode(...)`
+- `view.get_camera_snapshot()`
 - `FigureSpec.from_view(...)`
 - `FigureSpec.with_overrides(...)`
 - `FigureSpec.build_variants(...)`
