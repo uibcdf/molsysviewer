@@ -130,6 +130,13 @@ def _show_host_error(window, QMessageBox, title: str, message: str) -> None:
         QMessageBox.warning(window, title, message)
 
 
+def _set_action_shortcut(action, shortcut: str) -> None:
+    if hasattr(action, "setShortcut"):
+        action.setShortcut(shortcut)
+    else:
+        setattr(action, "shortcut", shortcut)
+
+
 def _reload_html_in_view(webview, QUrl, html_path: str) -> None:
     webview.setUrl(QUrl.fromLocalFile(html_path))
 
@@ -374,6 +381,7 @@ def _install_menu_bar(
     help_menu = menu_bar.addMenu("Help")
 
     open_file_action = QAction("Open File", window)
+    _set_action_shortcut(open_file_action, "Ctrl+O")
 
     def _open_file():
         if not hasattr(QFileDialog, "getOpenFileName"):
@@ -571,6 +579,7 @@ def _install_menu_bar(
     file_menu.addAction(load_source_action)
 
     restore_last_action = QAction("Restore Last Source", window)
+    _set_action_shortcut(restore_last_action, "Ctrl+R")
 
     def _restore_last():
         try:
@@ -590,10 +599,12 @@ def _install_menu_bar(
     file_menu.addAction(restore_last_action)
 
     close_action = QAction("Close", window)
+    _set_action_shortcut(close_action, "Ctrl+W")
     close_action.triggered.connect(lambda: (_persist_shell_state(current_state, window=window), window.close()))
     file_menu.addAction(close_action)
 
     open_navigate_action = QAction("Open Navigate", window)
+    _set_action_shortcut(open_navigate_action, "Ctrl+1")
     open_navigate_action.triggered.connect(
         lambda: _send_viewer_message(
             webview,
@@ -603,6 +614,7 @@ def _install_menu_bar(
     view_menu.addAction(open_navigate_action)
 
     open_workbench_action = QAction("Open Workbench", window)
+    _set_action_shortcut(open_workbench_action, "Ctrl+2")
     open_workbench_action.triggered.connect(
         lambda: _send_viewer_message(
             webview,
@@ -612,6 +624,7 @@ def _install_menu_bar(
     view_menu.addAction(open_workbench_action)
 
     close_panel_action = QAction("Close Panel Mode", window)
+    _set_action_shortcut(close_panel_action, "Escape")
     close_panel_action.triggered.connect(
         lambda: _send_viewer_message(
             webview,
@@ -621,6 +634,7 @@ def _install_menu_bar(
     view_menu.addAction(close_panel_action)
 
     export_html_action = QAction("Export HTML", window)
+    _set_action_shortcut(export_html_action, "Ctrl+Shift+S")
 
     def _export_html():
         if not hasattr(QFileDialog, "getSaveFileName"):
@@ -645,6 +659,7 @@ def _install_menu_bar(
     export_menu.addAction(export_html_action)
 
     export_figure_action = QAction("Export Figure", window)
+    _set_action_shortcut(export_figure_action, "Ctrl+Shift+E")
 
     def _export_figure():
         if current_state.get("molecular_system") is None:

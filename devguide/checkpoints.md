@@ -139,6 +139,13 @@ Do not append dated historical entries unless a date is itself operationally rel
   - the standalone Qt host now also gives a clearer startup feel:
     - explicit `Ready` status when a system is already loaded
     - explicit quickstart-style status when the host opens empty
+  - the thin Qt host now also owns a first small keyboard-shortcut layer for
+    app-level actions:
+    - open file
+    - restore last source
+    - navigate/workbench switching
+    - close panel mode
+    - export actions
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
