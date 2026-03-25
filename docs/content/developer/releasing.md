@@ -61,3 +61,15 @@ If you publish a pre-release (`X.Y.Z-rc.N`), publish both:
 - the npm runtime (`@uibcdf/molsysviewer@X.Y.Z-rc.N`)
 
 Then ensure docs-lite exports point at the same pre-release runtime URL.
+
+## Current Pre-`0.16.0` Practical Gate
+
+Before cutting the next strong pre-`1.0` checkpoint, verify:
+
+- the recommended smoke subset in `devguide/smoke_test.md` is green
+- the current mature product stories are still easy to find from docs:
+  - panel/workspace runtime
+  - add-on reference runtime
+  - figure export from the workbench
+- the public notebook-facing APIs still match those stories
+- no new structural host/runtime gap appeared during the last tightening pass

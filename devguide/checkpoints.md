@@ -210,6 +210,16 @@ Do not append dated historical entries unless a date is itself operationally rel
     - this gate is largely in place
     - the remaining work should now prefer small release-hardening checks and
       not another broad documentation rewrite
+  - concrete `0.16.0` gate:
+    - the recommended smoke subset is still green
+    - the three mature stories are still easy to find from docs navigation:
+      - panel/workspace runtime
+      - add-on reference runtime
+      - figure export from the workbench
+    - public docs and notebook-facing APIs still describe the same runtime
+      shape
+    - no new structural host gap has appeared while tightening release
+      guidance
 - The practical question is now shifting toward the next checkpoint gate:
   - before `0.14.0`, prefer checking whether the current Phase D slices are
     already enough to teach the product honestly

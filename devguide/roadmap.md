@@ -238,6 +238,15 @@ Immediate `0.16.x` hardening gate:
   - this gate is now largely satisfied
   - the next useful work should be small release-hardening checks, not another
     large conceptual pass over the shared runtime
+- concrete `0.16.0` release gate:
+  - the recommended smoke subset remains green
+  - docs navigation still makes the three mature stories easy to find:
+    - panel/workspace runtime
+    - add-on reference runtime
+    - figure export from the workbench
+  - the public notebook-facing APIs still match those stories honestly
+  - no new host-structure issue appears while doing the last release-hardening
+    pass
 
 Immediate pre-`0.14.0` interpretation:
 
