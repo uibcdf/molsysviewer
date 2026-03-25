@@ -148,6 +148,9 @@ Immediate next focus from here:
   - the reference demo/onboarding path should also land directly inside the
     add-on workspace and entry panel, so external teams start from a real
     runtime state rather than from the generic shell only
+  - the aggregated notebook snapshot should also expose the active workspace and
+    active panel as records, so QA and scripted workflows do not need to
+    reconstruct them by hand from longer lists
 
 ### Phase C. Figure Export Maturation
 

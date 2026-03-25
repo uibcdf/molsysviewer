@@ -75,6 +75,9 @@ In practice:
   workspace
 - `workspace_runtime()` gives one combined snapshot for notebook logic that does
   not want to recombine these queries manually
+- that snapshot now also includes:
+  - `current_workspace_record`
+  - `current_panel`
 - both helpers mark the active item once the frontend has reported runtime
   state
 

@@ -311,8 +311,9 @@ This API is intentionally small:
   also reflect the current runtime view of the shared workspace model when the
   frontend has already reported state
 - `workspace_runtime()` returns a single notebook-facing snapshot combining:
-  runtime state, effective workspace catalog, the current local panel stack,
-  and the current workspace sections
+  runtime state, effective workspace catalog, the current workspace record, the
+  current local panel stack, the current active panel record, and the current
+  workspace sections
 
 This small surface matters especially for notebook usage:
 

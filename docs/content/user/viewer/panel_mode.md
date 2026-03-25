@@ -70,8 +70,8 @@ This means:
 - all three runtime helpers also reflect the currently active workspace/panel
   when that runtime state is already known
 - `workspace_runtime()` bundles the current runtime state, visible workspace
-  catalog, current local panel stack, and current workspace sections into one
-  query
+  catalog, current workspace record, current local panel stack, current active
+  panel record, and current workspace sections into one query
 
 The browser side may also remember the last active panel when appropriate.
 
