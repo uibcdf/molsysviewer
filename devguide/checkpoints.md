@@ -154,6 +154,11 @@ Do not append dated historical entries unless a date is itself operationally rel
   - it also activates the add-on workspace and its entry panel
   - so downstream teams land directly in a visible workspace-shaped runtime,
     not only in the generic shell
+  - the same reference path is now also a better closure check for Phase B:
+    - notebook queries can inspect the same workspace
+    - the same local panel stack
+    - and the same workbench sections
+    that the shared host is rendering
 - the shared workspace launcher/header now also carries a clearer domain hint:
   - the current trigger distinguishes `Core workspace` from `Add-on workspace`
   - so the shared header reads more clearly as a domain switcher rather than a

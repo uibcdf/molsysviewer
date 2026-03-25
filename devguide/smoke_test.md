@@ -318,17 +318,28 @@ view = molsysviewer.addon_templates.build_reference_demo_view("topomt")
 ```
 
 - inspect the shared workbench
+- inspect the same runtime from Python:
+
+```python
+view.workspace_catalog()
+view.workspace_panels("topomt")
+view.workspace_sections("topomt")
+view.workspace_runtime()
+```
+
 - open the workspace launcher
 - move between the reference workspace and `Core`
 
 Expected:
 
 - the reference add-on lands in the shared `Workbench`
+- it also lands in the add-on workspace and its entry panel
 - the add-on workspace appears as a real workspace, not as detached metadata
 - the active add-on host surface exposes:
   - local panel stack
   - workspace sections
   - immediate capabilities
+- notebook queries report the same workspace/panel/section structure
 - returning to `Core` remains calm and coherent
 - the runtime still feels like one MolSysViewer, not several mini-apps
 
