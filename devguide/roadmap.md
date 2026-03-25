@@ -151,6 +151,9 @@ Immediate next focus from here:
   - the aggregated notebook snapshot should also expose the active workspace and
     active panel as records, so QA and scripted workflows do not need to
     reconstruct them by hand from longer lists
+  - the final useful check before calling Phase B "done enough" is that the
+    reference add-on path is teachable and smokeable as one shared runtime from
+    both the host UI and the notebook API
 
 ### Phase C. Figure Export Maturation
 

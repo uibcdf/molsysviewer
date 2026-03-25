@@ -457,6 +457,22 @@ def test_addon_templates_helper_can_build_reference_demo_view():
             "panel": "topo",
             "workspace": "topomt",
         }
+
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "panel_mode_state",
+                "panel": "workbench",
+                "expanded": True,
+                "workspace": "topomt",
+                "workspace_panel": "topo",
+            }
+        )
+        runtime = view.workspace_runtime()
+        assert runtime["current_workspace"] == "topomt"
+        assert runtime["current_workspace_record"]["id"] == "topomt"
+        assert runtime["current_panel"]["id"] == "topo"
+        assert [item["id"] for item in runtime["current_panels"]] == ["topo", "channels", "regions"]
+        assert [item["id"] for item in runtime["current_sections"]] == ["pockets", "channels"]
     finally:
         addons.clear()
 

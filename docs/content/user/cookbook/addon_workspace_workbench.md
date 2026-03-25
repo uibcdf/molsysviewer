@@ -43,7 +43,9 @@ It currently does three things:
 
 - registers the bundled reference add-on
 - opens the `dialanine` demo system
-- opens the shared `Workbench` so the add-on runtime is immediately visible
+- opens the shared `Workbench`
+- selects the add-on workspace
+- opens its entry panel so the add-on runtime is immediately visible
 
 ## 2. Read the runtime as a shared workbench, not a separate app
 
@@ -73,6 +75,22 @@ things visible:
 In other words, the add-on should no longer feel like "metadata attached to the
 core".
 It should already feel like a domain that lives inside the shared workbench.
+
+From notebook code, you can inspect the same runtime directly:
+
+```python
+view.workspace_catalog()
+view.workspace_panels("topomt")
+view.workspace_sections("topomt")
+view.workspace_runtime()
+```
+
+That is the important current teaching point:
+
+- the visible add-on runtime is not only a frontend impression
+- the same workspace, panel stack, and workbench sections are also queryable
+  from Python
+- so smoke checks and downstream onboarding can talk about one shared runtime
 
 ## 4. Use the workspace launcher
 
