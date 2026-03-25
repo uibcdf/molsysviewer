@@ -234,6 +234,10 @@ Immediate `0.16.x` hardening gate:
 - do not reopen architecture to chase this gate
 - if that gate is satisfied, the next major uncertainty should shift toward the
   final standalone/distribution story rather than toward the shared runtime
+- current reading after the latest tightening slices:
+  - this gate is now largely satisfied
+  - the next useful work should be small release-hardening checks, not another
+    large conceptual pass over the shared runtime
 
 Immediate pre-`0.14.0` interpretation:
 
