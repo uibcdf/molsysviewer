@@ -46,11 +46,17 @@ Prototype 1 does **not** need yet:
 
 - full file-open support
 - session/project management
-- recent files
-- preferences
 - multi-window mode
 - add-on-specific host chrome
 - custom export dialogs
+
+Those two bullets are now outdated:
+
+- recent files are already present in the thin host
+- a very small amount of shell persistence is already justified:
+  - recent sources
+  - last source
+  - last window size
 
 ## Recommended Technical Shape
 
@@ -203,5 +209,6 @@ After this document, the next implementation slice should be:
 1. keep the working Qt-spike recipe explicit in `devguide`
 2. keep the Qt host on the `lite` runtime path with local `viewer.js` first
 3. continue improving the thin Qt launcher and menu contract
-4. verify that `Core` and `panel mode` remain intact
-5. treat final conda/release packaging as a later standalone release question
+4. keep host-level persistence deliberately small and shell-only
+5. verify that `Core` and `panel mode` remain intact
+6. treat final conda/release packaging as a later standalone release question

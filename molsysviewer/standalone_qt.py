@@ -57,20 +57,27 @@ def _qt_shell_state_path() -> Path:
 def _load_qt_shell_state() -> dict[str, Any]:
     path = _qt_shell_state_path()
     if not path.exists():
-        return {"recent_sources": [], "last_source": None}
+        return {"recent_sources": [], "last_source": None, "window_size": None}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
-        return {"recent_sources": [], "last_source": None}
+        return {"recent_sources": [], "last_source": None, "window_size": None}
     if not isinstance(data, dict):
-        return {"recent_sources": [], "last_source": None}
+        return {"recent_sources": [], "last_source": None, "window_size": None}
     recent_sources = data.get("recent_sources", [])
     if not isinstance(recent_sources, list):
         recent_sources = []
     last_source = data.get("last_source")
     if not isinstance(last_source, dict):
         last_source = None
-    return {"recent_sources": recent_sources[:5], "last_source": last_source}
+    window_size = data.get("window_size")
+    if (
+        not isinstance(window_size, dict)
+        or not isinstance(window_size.get("width"), int)
+        or not isinstance(window_size.get("height"), int)
+    ):
+        window_size = None
+    return {"recent_sources": recent_sources[:5], "last_source": last_source, "window_size": window_size}
 
 
 def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
@@ -79,8 +86,33 @@ def _save_qt_shell_state(current_state: dict[str, Any]) -> None:
     payload = {
         "recent_sources": current_state.get("recent_sources", [])[:5],
         "last_source": current_state.get("last_source"),
+        "window_size": current_state.get("window_size"),
     }
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def _capture_window_size(window) -> dict[str, int] | None:
+    width = None
+    height = None
+    if hasattr(window, "width") and callable(window.width):
+        try:
+            width = int(window.width())
+        except Exception:
+            width = None
+    if hasattr(window, "height") and callable(window.height):
+        try:
+            height = int(window.height())
+        except Exception:
+            height = None
+    size = getattr(window, "size", None)
+    if (width is None or height is None) and isinstance(size, tuple) and len(size) == 2:
+        if width is None and isinstance(size[0], int):
+            width = size[0]
+        if height is None and isinstance(size[1], int):
+            height = size[1]
+    if not isinstance(width, int) or not isinstance(height, int):
+        return None
+    return {"width": width, "height": height}
 
 
 def _show_status(window, message: str) -> None:
@@ -122,7 +154,11 @@ def _record_recent_source(
     current_state["last_source"] = entry
 
 
-def _persist_shell_state(current_state: dict[str, Any]) -> None:
+def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
+    if window is not None:
+        window_size = _capture_window_size(window)
+        if window_size is not None:
+            current_state["window_size"] = window_size
     try:
         _save_qt_shell_state(current_state)
     except Exception:
@@ -203,7 +239,7 @@ def _load_demo_into_qt_host(
         value=demo_name,
         loaded_label=demo_name,
     )
-    _persist_shell_state(current_state)
+    _persist_shell_state(current_state, window=window)
     _reload_html_in_view(webview, QUrl, html_path)
     _show_status(window, f"Loaded demo: {demo_name}")
 
@@ -244,7 +280,7 @@ def _load_recent_source(
         value=value,
         loaded_label=loaded_label,
     )
-    _persist_shell_state(current_state)
+    _persist_shell_state(current_state, window=window)
     _reload_html_in_view(webview, QUrl, html_path)
     if kind == "pdb_id":
         _show_status(window, f"Loaded PDB ID: {loaded_label}")
@@ -327,7 +363,7 @@ def _install_menu_bar(
             value=selected,
             loaded_label=Path(selected).name,
         )
-        _persist_shell_state(current_state)
+        _persist_shell_state(current_state, window=window)
         _reload_html_in_view(webview, QUrl, html_path)
         _refresh_recent_menu()
         _show_status(window, f"Loaded file: {Path(selected).name}")
@@ -441,7 +477,7 @@ def _install_menu_bar(
             value=source_value,
             loaded_label=source_value,
         )
-        _persist_shell_state(current_state)
+        _persist_shell_state(current_state, window=window)
         _reload_html_in_view(webview, QUrl, html_path)
         _refresh_recent_menu()
         _show_status(window, f"Loaded source: {source_value}")
@@ -466,7 +502,7 @@ def _install_menu_bar(
     file_menu.addAction(restore_last_action)
 
     close_action = QAction("Close", window)
-    close_action.triggered.connect(lambda: (_persist_shell_state(current_state), window.close()))
+    close_action.triggered.connect(lambda: (_persist_shell_state(current_state, window=window), window.close()))
     file_menu.addAction(close_action)
 
     open_navigate_action = QAction("Open Navigate", window)
@@ -641,17 +677,21 @@ def create_standalone_qt0_window(
         runtime_urls=_qt_runtime_urls(),
     )
 
+    current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
+    current_state.update(_load_qt_shell_state())
+
     app = _get_or_create_application(QApplication, app_argv)
     window = QMainWindow()
     window.setWindowTitle(title)
+    saved_window_size = current_state.get("window_size") if isinstance(current_state.get("window_size"), dict) else None
+    initial_width = saved_window_size.get("width", width) if saved_window_size else width
+    initial_height = saved_window_size.get("height", height) if saved_window_size else height
     if hasattr(window, "resize"):
-        window.resize(width, height)
+        window.resize(initial_width, initial_height)
 
     webview = QWebEngineView(window)
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
-    current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
-    current_state.update(_load_qt_shell_state())
     _install_menu_bar(
         window=window,
         webview=webview,

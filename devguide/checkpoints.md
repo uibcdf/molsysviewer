@@ -24,6 +24,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     green unit suite
   - the route to `1.0.0` stopped being blocked by shared-runtime hardening and
     shifted more clearly toward final standalone/distribution questions
+  - Phase B should now be treated as done enough unless a new realistic add-on
+    path reveals another structural host gap
+  - Phase E should now be treated as the main execution focus toward `1.0.0`
 
 - `0.14.0` should now be read as the checkpoint where:
   - Phase D stopped being only intention and gained first real tightening
@@ -114,6 +117,11 @@ Do not append dated historical entries unless a date is itself operationally rel
     - `Help -> About`
     - `Help -> Show Current Source`
     - `Help -> Reload Last Source`
+  - the thin host now also persists a small shell-state layer that helps it
+    feel application-like without leaking viewer logic into Qt:
+    - recent sources
+    - last source
+    - last window size
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the

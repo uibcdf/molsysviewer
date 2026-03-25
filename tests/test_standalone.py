@@ -358,6 +358,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert '"kind": "pdb_id"' in persisted
     assert '"loaded_label": "1crn"' in persisted
     assert '"last_source"' in persisted
+    assert '"window_size"' in persisted
+    assert '"width": 1200' in persisted
+    assert '"height": 800' in persisted
 
 
 def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
@@ -380,6 +383,25 @@ def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
 
     assert [item["loaded_label"] for item in state["recent_sources"]] == ["molsysmt.MolSys", "1crn"]
     assert state["last_source"]["loaded_label"] == "1crn"
+
+
+def test_load_qt_shell_state_restores_window_size(tmp_path, monkeypatch):
+    state_path = tmp_path / "standalone_qt0_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "recent_sources": [],
+                "last_source": None,
+                "window_size": {"width": 1660, "height": 980},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("molsysviewer.standalone_qt._qt_shell_state_path", lambda: state_path)
+
+    state = standalone_qt._load_qt_shell_state()
+
+    assert state["window_size"] == {"width": 1660, "height": 980}
 
 
 def test_qt_standalone_main_supports_no_exec(tmp_path, monkeypatch, capsys):
