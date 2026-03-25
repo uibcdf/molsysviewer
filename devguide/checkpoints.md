@@ -164,6 +164,20 @@ Do not append dated historical entries unless a date is itself operationally rel
     - do not keep extending it sideways by default
     - only keep it open if one more realistic add-on-pressure slice exposes a
       structural gap in the shared host
+    - the only remaining work that should justify reopening it is:
+      - a more realistic downstream add-on path that reveals a missing host
+        capability
+      - a real mismatch between:
+        - workspace launcher
+        - local panel stack
+        - active panel host
+        - notebook/runtime bridge
+      - or a smoke/onboarding gap that makes the reference runtime hard to
+        teach honestly
+    - what should **not** justify reopening it is:
+      - more chrome by default
+      - more abstract add-on API surface without runtime pressure
+      - or aesthetic work that does not change host credibility
 - the shared workspace launcher/header now also carries a clearer domain hint:
   - the current trigger distinguishes `Core workspace` from `Add-on workspace`
   - so the shared header reads more clearly as a domain switcher rather than a

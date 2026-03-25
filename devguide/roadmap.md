@@ -157,6 +157,15 @@ Immediate next focus from here:
 - that check is now largely in place, so the remaining reason to keep Phase B
   open would be discovering another real structural gap under add-on pressure,
   not continuing to polish it by inertia
+- concretely, the only work that should reopen it is:
+  - a more realistic add-on path exposing a missing host capability
+  - a mismatch between launcher, local panel stack, active host, and notebook
+    control
+  - or a real teaching/smoke gap in the reference runtime story
+- work that should **not** reopen it:
+  - generic chrome
+  - abstract contract growth without runtime pressure
+  - or cosmetic polish that does not improve host credibility
 
 ### Phase C. Figure Export Maturation
 
