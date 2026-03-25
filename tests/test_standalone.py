@@ -288,33 +288,38 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
     assert runtime["window"].title == "Qt Prototype · picked-system.pdb"
-    assert recent_menu.actions[0].text == "picked-system.pdb"
+    assert recent_menu.actions[0].title == "Files"
+    assert recent_menu.actions[0].actions[0].text == "picked-system.pdb"
     demo_action = next(action for action in demo_menu.actions if action.text == "pentalanine")
     demo_action.triggered._callbacks[0]()
     assert calls[-1][1:] == (str(outfile.resolve()), "Qt Prototype")
     assert type(calls[-1][0]).__name__ == "MolSysView"
     assert runtime["window"].status_bar.messages[-1] == "Loaded demo: pentalanine"
     assert runtime["window"].title == "Qt Prototype · pentalanine"
-    assert recent_menu.actions[0].text == "pentalanine"
-    assert recent_menu.actions[1].text == "picked-system.pdb"
+    assert recent_menu.actions[0].title == "Demos"
+    assert recent_menu.actions[0].actions[0].text == "pentalanine"
+    assert recent_menu.actions[1].title == "Files"
+    assert recent_menu.actions[1].actions[0].text == "picked-system.pdb"
     FakeInputDialog.value = "1crn"
     load_pdbid_action.triggered._callbacks[0]()
     assert calls[-1] == ("1crn", str(outfile.resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
-    assert recent_menu.actions[0].text == "1crn"
-    assert recent_menu.actions[1].text == "pentalanine"
+    assert recent_menu.actions[0].title == "Demos"
+    assert recent_menu.actions[1].title == "Files"
+    assert recent_menu.actions[2].title == "PDB IDs"
+    assert recent_menu.actions[2].actions[0].text == "1crn"
     FakeInputDialog.value = "molsysmt.MolSys"
     load_source_action.triggered._callbacks[0]()
     assert calls[-1] == ("molsysmt.MolSys", str(outfile.resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
     assert runtime["window"].title == "Qt Prototype · molsysmt.MolSys"
-    assert recent_menu.actions[0].text == "molsysmt.MolSys"
-    assert recent_menu.actions[1].text == "1crn"
+    assert recent_menu.actions[3].title == "Sources"
+    assert recent_menu.actions[3].actions[0].text == "molsysmt.MolSys"
     restore_last_action.triggered._callbacks[0]()
     assert calls[-1] == ("molsysmt.MolSys", str(outfile.resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
-    recent_menu.actions[1].triggered._callbacks[0]()
+    recent_menu.actions[2].actions[0].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
     view_menu = runtime["window"].menu_bar.menus[1]

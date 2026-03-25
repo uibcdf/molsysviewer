@@ -154,6 +154,15 @@ def _record_recent_source(
     current_state["last_source"] = entry
 
 
+def _recent_section_title(kind: str) -> str:
+    return {
+        "demo": "Demos",
+        "file": "Files",
+        "pdb_id": "PDB IDs",
+        "source": "Sources",
+    }.get(kind, "Other")
+
+
 def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
     if window is not None:
         window_size = _capture_window_size(window)
@@ -384,20 +393,50 @@ def _install_menu_bar(
             empty_action = QAction("No recent sources", window)
             recent_menu.addAction(empty_action)
             return
+        kind_order = ("demo", "file", "pdb_id", "source")
+        grouped_sources: dict[str, list[dict[str, Any]]] = {kind: [] for kind in kind_order}
         for recent_entry in recent_sources:
-            recent_action = QAction(recent_entry["loaded_label"], window)
-            recent_action.triggered.connect(
-                lambda _checked=False, entry=recent_entry: _load_recent_source(
-                    entry,
-                    window=window,
-                    webview=webview,
-                    QUrl=QUrl,
-                    html_path=html_path,
-                    current_title=current_title,
-                    current_state=current_state,
+            kind = str(recent_entry.get("kind", "other"))
+            grouped_sources.setdefault(kind, []).append(recent_entry)
+        for kind in kind_order:
+            entries = grouped_sources.get(kind, [])
+            if not entries:
+                continue
+            target_menu = recent_menu.addMenu(_recent_section_title(kind))
+            for recent_entry in entries:
+                recent_action = QAction(recent_entry["loaded_label"], window)
+                recent_action.triggered.connect(
+                    lambda _checked=False, entry=recent_entry: _load_recent_source(
+                        entry,
+                        window=window,
+                        webview=webview,
+                        QUrl=QUrl,
+                        html_path=html_path,
+                        current_title=current_title,
+                        current_state=current_state,
+                    )
                 )
-            )
-            recent_menu.addAction(recent_action)
+                target_menu.addAction(recent_action)
+        extra_kinds = [kind for kind in grouped_sources.keys() if kind not in kind_order]
+        for kind in sorted(extra_kinds):
+            entries = grouped_sources[kind]
+            if not entries:
+                continue
+            target_menu = recent_menu.addMenu(_recent_section_title(kind))
+            for recent_entry in entries:
+                recent_action = QAction(recent_entry["loaded_label"], window)
+                recent_action.triggered.connect(
+                    lambda _checked=False, entry=recent_entry: _load_recent_source(
+                        entry,
+                        window=window,
+                        webview=webview,
+                        QUrl=QUrl,
+                        html_path=html_path,
+                        current_title=current_title,
+                        current_state=current_state,
+                    )
+                )
+                target_menu.addAction(recent_action)
     for demo_name in sorted(demo.keys()):
         demo_action = QAction(demo_name, window)
         demo_action.triggered.connect(
