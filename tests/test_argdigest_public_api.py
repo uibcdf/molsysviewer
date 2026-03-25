@@ -65,6 +65,8 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         view.workspace_catalog()
         view.workspace_panels()
         view.workspace_panels("audit")
+        view.workspace_sections()
+        view.workspace_sections("audit")
         view.workspace_runtime()
         view.get_panel_mode_state(pretty=True)
         view.clear_decorations(shapes=True, styles=False, labels=True)

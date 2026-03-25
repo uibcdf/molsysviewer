@@ -68,6 +68,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.set_workspace_panel("workbench", workspace="core", skip_digestion=True)
         view.workspace_catalog(skip_digestion=True)
         view.workspace_panels("core", skip_digestion=True)
+        view.workspace_sections("core", skip_digestion=True)
         view.workspace_runtime(skip_digestion=True)
         view.get_panel_mode_state(pretty=True)
         view.export.html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
@@ -94,6 +95,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "molsysviewer.viewer.set_workspace_panel" in keys
         assert "molsysviewer.viewer.workspace_catalog" in keys
         assert "molsysviewer.viewer.workspace_panels" in keys
+        assert "molsysviewer.viewer.workspace_sections" in keys
         assert "molsysviewer.viewer.workspace_runtime" in keys
         assert "molsysviewer.viewer.get_panel_mode_state" in keys
         assert "molsysviewer.new_view.new_view" in keys
@@ -122,6 +124,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("current_workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("workspace_count") == 1
         assert meta_by_key["molsysviewer.viewer.workspace_panels"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.workspace_sections"].get("workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("current_workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("panel_count") == 2
         assert meta_by_key["molsysviewer.viewer.get_panel_mode_state"].get("pretty") is True

@@ -36,6 +36,7 @@ view.set_workspace_panel(...)
 view.get_panel_mode_state()
 view.workspace_catalog()
 view.workspace_panels(...)
+view.workspace_sections(...)
 view.workspace_runtime()
 ```
 
@@ -64,10 +65,13 @@ This means:
 - `workspace_catalog()` returns the effective workspace catalog visible to the
   view
 - `workspace_panels(...)` returns the local panel stack for a workspace
-- both catalog helpers also mark the currently active workspace/panel when that
-  runtime state is already known
+- `workspace_sections(...)` returns the visible workbench sections for a
+  workspace
+- all three runtime helpers also reflect the currently active workspace/panel
+  when that runtime state is already known
 - `workspace_runtime()` bundles the current runtime state, visible workspace
-  catalog, and current local panel stack into one query
+  catalog, current local panel stack, and current workspace sections into one
+  query
 
 The browser side may also remember the last active panel when appropriate.
 

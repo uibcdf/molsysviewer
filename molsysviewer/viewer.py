@@ -150,6 +150,12 @@ def _workspace_panels_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]
     }
 
 
+def _workspace_sections_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "workspace": _signal_value(args, kwargs, 1, "workspace") or "core",
+    }
+
+
 def _workspace_catalog_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
     view = args[0] if args else None
     state = getattr(view, "_last_panel_mode_state_event", None)
@@ -1070,6 +1076,46 @@ class MolSysView:
             )
         return records
 
+    @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_sections_signal_extra)
+    @digest()
+    def workspace_sections(
+        self,
+        workspace: str = "core",
+        *,
+        skip_digestion: bool = False,
+    ) -> list[dict[str, Any]]:
+        """Return the visible workbench sections for a workspace."""
+        if workspace == "core":
+            return []
+
+        workspace_specs = self.addons.workspace_specs(skip_digestion=True)
+        workbench_specs = self.addons.workbench_section_specs(skip_digestion=True)
+        addon_name = next(
+            (
+                item.get("addon")
+                for item in workspace_specs
+                if item.get("id") == workspace and isinstance(item.get("addon"), str)
+            ),
+            None,
+        )
+        if not isinstance(addon_name, str):
+            return []
+
+        records: list[dict[str, Any]] = []
+        for item in workbench_specs:
+            if item.get("addon") != addon_name:
+                continue
+            if item.get("target_panel", "workbench") != "workbench":
+                continue
+            section_id = item.get("id")
+            title = item.get("title")
+            if not isinstance(section_id, str) or not isinstance(title, str):
+                continue
+            record = dict(item)
+            record["workspace"] = workspace
+            records.append(record)
+        return records
+
     @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_runtime_signal_extra)
     @digest()
     def workspace_runtime(self, *, skip_digestion: bool = False) -> dict[str, Any]:
@@ -1085,6 +1131,7 @@ class MolSysView:
             "workspaces": self.workspace_catalog(skip_digestion=True),
             "current_workspace": current_workspace,
             "current_panels": self.workspace_panels(current_workspace, skip_digestion=True),
+            "current_sections": self.workspace_sections(current_workspace, skip_digestion=True),
         }
 
     @property

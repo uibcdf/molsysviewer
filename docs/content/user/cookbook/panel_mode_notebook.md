@@ -19,6 +19,7 @@ import molsysviewer as mv
 view = mv.demo["dialanine"]
 view.workspace_catalog()
 view.workspace_panels("core")
+view.workspace_sections("core")
 view.workspace_runtime()
 view.set_panel_mode("workbench")
 view.set_workspace("core")
@@ -46,6 +47,7 @@ import molsysviewer as mv
 view = mv.addon_templates.build_reference_demo_view("topomt")
 view.workspace_catalog()
 view.workspace_panels("topomt")
+view.workspace_sections("topomt")
 view.workspace_runtime()
 view.set_panel_mode("workbench")
 view.set_workspace("topomt")
@@ -61,6 +63,7 @@ This is the current notebook-friendly pattern:
 - `view.set_workspace_panel(...)`
 - `view.workspace_catalog()`
 - `view.workspace_panels(...)`
+- `view.workspace_sections(...)`
 - `view.workspace_runtime()`
 - `view.get_panel_mode_state()`
 
@@ -68,6 +71,8 @@ In practice:
 
 - `workspace_catalog()` lets notebook code discover what can be opened
 - `workspace_panels("topomt")` shows the local stack for that workspace
+- `workspace_sections("topomt")` shows the workbench sections visible for that
+  workspace
 - `workspace_runtime()` gives one combined snapshot for notebook logic that does
   not want to recombine these queries manually
 - both helpers mark the active item once the frontend has reported runtime
