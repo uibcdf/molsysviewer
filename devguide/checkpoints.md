@@ -212,6 +212,8 @@ Do not append dated historical entries unless a date is itself operationally rel
       not another broad documentation rewrite
   - concrete `0.16.0` gate:
     - the recommended smoke subset is still green
+    - `npm --prefix molsysviewer/js run test:js` is green again after hardening
+      the interaction/active-selection/annotation test path
     - the three mature stories are still easy to find from docs navigation:
       - panel/workspace runtime
       - add-on reference runtime

@@ -235,9 +235,13 @@ Immediate `0.16.x` hardening gate:
 - if that gate is satisfied, the next major uncertainty should shift toward the
   final standalone/distribution story rather than toward the shared runtime
 - current reading after the latest tightening slices:
-  - this gate is now largely satisfied
-  - the next useful work should be small release-hardening checks, not another
-    large conceptual pass over the shared runtime
+  - this gate is now materially satisfied:
+    - the Python smoke subset is green
+    - `npm --prefix molsysviewer/js run test:js` is green again
+    - docs/API/runtime parity across the three mature stories remains aligned
+  - the next useful work should be small release-hardening checks or the next
+    real product slice, not another large conceptual pass over the shared
+    runtime
 - concrete `0.16.0` release gate:
   - the recommended smoke subset remains green
   - docs navigation still makes the three mature stories easy to find:

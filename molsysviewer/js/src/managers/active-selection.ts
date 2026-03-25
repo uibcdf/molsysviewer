@@ -9,9 +9,9 @@ export type ActiveSelectionItem = {
     element_level: "group";
     atom_indices: number[];
     group_indices: number[];
-    component_indices: number[];
+    component_indices?: number[];
     chain_indices: number[];
-    molecule_indices: number[];
+    molecule_indices?: number[];
     entity_indices: number[];
     group_name?: string;
     group_id?: number | string;
@@ -24,9 +24,9 @@ export type ActiveSelectionItem = {
     annotation_kind: "label";
     atom_indices: number[];
     group_indices: number[];
-    component_indices: number[];
+    component_indices?: number[];
     chain_indices: number[];
-    molecule_indices: number[];
+    molecule_indices?: number[];
     entity_indices: number[];
     tag?: string;
     text?: string;
@@ -37,9 +37,9 @@ export type ActiveSelectionItem = {
     tag?: string;
     atom_indices: number[];
     group_indices: number[];
-    component_indices: number[];
+    component_indices?: number[];
     chain_indices: number[];
-    molecule_indices: number[];
+    molecule_indices?: number[];
     entity_indices: number[];
 };
 
@@ -69,9 +69,9 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
     const hierarchy = model.atomicHierarchy;
     let atomSite: any = undefined;
     
-    if (model.sourceData.kind === "mmCIF") {
+    if (model?.sourceData?.kind === "mmCIF") {
         atomSite = (model.sourceData.data as any).db?.atom_site;
-    } else if (model.sourceData.kind === "mol-viewer:molsysmt") {
+    } else if (model?.sourceData?.kind === "mol-viewer:molsysmt") {
         atomSite = model.sourceData.data;
     }
 
@@ -110,27 +110,28 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
             return col[idx];
         };
 
-        const molId = getValue(molIdCol, start) ?? 0;
-        const molName = getValue(molNameCol, start) ?? "Molecule";
-        const compIndex = getValue(compIdCol, start) ?? 0;
-        const compName = getValue(compNameCol, start) ?? "Component";
+        const molId = getValue(molIdCol, start);
+        const molName = getValue(molNameCol, start);
+        const compIndex = getValue(compIdCol, start);
+        const compName = getValue(compNameCol, start);
 
-        items.push({
+        const item: ActiveSelectionItem = {
             source_kind: "element",
             element_level: "group",
             atom_indices: atomIndices,
             group_indices: [groupIndex],
-            component_indices: [compIndex],
             chain_indices: [chainIndex],
-            molecule_indices: [molId],
             entity_indices: [entityIndex],
             group_name: `${compId} ${authSeqId}`,
             group_id: authSeqId,
-            component_name: compName,
             chain_name: chainName,
-            molecule_name: molName,
             entity_name: entityName,
-        });
+        };
+        if (typeof compIndex === "number" && Number.isFinite(compIndex)) item.component_indices = [compIndex];
+        if (typeof compName === "string" && compName.trim()) item.component_name = compName;
+        if (typeof molId === "number" && Number.isFinite(molId)) item.molecule_indices = [molId];
+        if (typeof molName === "string" && molName.trim()) item.molecule_name = molName;
+        items.push(item);
     }
 
     return items;
@@ -159,9 +160,9 @@ export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
         const modelIndex = hierarchy?.index;
         let atomSite: any = undefined;
         
-        if (model.sourceData.kind === "mmCIF") {
+        if (model?.sourceData?.kind === "mmCIF") {
             atomSite = (model.sourceData.data as any).db?.atom_site;
-        } else if (model.sourceData.kind === "mol-viewer:molsysmt") {
+        } else if (model?.sourceData?.kind === "mol-viewer:molsysmt") {
             atomSite = model.sourceData.data;
         }
 
@@ -209,27 +210,28 @@ export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
                 return col[idx];
             };
 
-            const molId = getValue(molIdCol, atomIndex) ?? 0;
-            const molName = getValue(molNameCol, atomIndex) ?? "Molecule";
-            const compIndex = getValue(compIdCol, atomIndex) ?? 0;
-            const compName = getValue(compNameCol, atomIndex) ?? "Component";
+            const molId = getValue(molIdCol, atomIndex);
+            const molName = getValue(molNameCol, atomIndex);
+            const compIndex = getValue(compIdCol, atomIndex);
+            const compName = getValue(compNameCol, atomIndex);
 
-            items.push({
+            const item: ActiveSelectionItem = {
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: atomIndices,
                 group_indices: [groupIndex],
-                component_indices: [compIndex],
                 chain_indices: [chainIndex],
-                molecule_indices: [molId],
                 entity_indices: [entityIndex],
                 group_name: groupName,
                 group_id: authSeqId,
-                component_name: compName,
                 chain_name: chainName,
-                molecule_name: molName,
                 entity_name: entityName,
-            });
+            };
+            if (typeof compIndex === "number" && Number.isFinite(compIndex)) item.component_indices = [compIndex];
+            if (typeof compName === "string" && compName.trim()) item.component_name = compName;
+            if (typeof molId === "number" && Number.isFinite(molId)) item.molecule_indices = [molId];
+            if (typeof molName === "string" && molName.trim()) item.molecule_name = molName;
+            items.push(item);
         }
     }
 
@@ -253,9 +255,7 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
         tag: typeof data.tag === "string" ? data.tag : undefined,
         atom_indices: arrayOfNumbers(data.atom_indices),
         group_indices: arrayOfNumbers(data.group_indices),
-        component_indices: [],
         chain_indices: arrayOfNumbers(data.chain_indices),
-        molecule_indices: [],
         entity_indices: arrayOfNumbers(data.entity_indices),
     }];
 }
@@ -290,7 +290,8 @@ function signature(item: ActiveSelectionItem): string {
     return `${item.source_kind}:${item.element_level}:${item.group_indices.join(",")}:${item.chain_indices.join(",")}`;
 }
 
-function appendUnique(target: number[], seen: Set<number>, values: number[]) {
+function appendUnique(target: number[], seen: Set<number>, values: number[] | undefined) {
+    if (!Array.isArray(values)) return;
     for (const value of values) {
         if (seen.has(value)) continue;
         seen.add(value);
