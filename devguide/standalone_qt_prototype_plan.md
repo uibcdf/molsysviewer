@@ -212,3 +212,37 @@ After this document, the next implementation slice should be:
 4. keep host-level persistence deliberately small and shell-only
 5. verify that `Core` and `panel mode` remain intact
 6. treat final conda/release packaging as a later standalone release question
+
+## Pre-1.0 Host Sufficiency Gate
+
+The Qt host should not stay in endless "prototype polish".
+
+Before the final packaging decision, the host should be treated as
+pre-`1.0.0` sufficient once it can honestly provide:
+
+- a clear empty/startup path
+- credible shell-owned load flows:
+  - demo
+  - file
+  - PDB ID
+  - generic source
+- a clean return to empty host state
+- app-level navigation/export affordances that feel intentional
+- small but useful persistence:
+  - recent sources
+  - last source
+  - window size
+- non-silent, understandable host-side error handling
+
+That gate should still preserve the thin-host rule:
+
+- no duplicate viewer semantics
+- no standalone-only add-on/runtime model
+- no project/session manager detour before it is truly needed
+
+The following should **not** be required before judging the host sufficient:
+
+- final packaging closure
+- multi-window support
+- full project/session management
+- more shell chrome that does not improve credibility of the host itself
