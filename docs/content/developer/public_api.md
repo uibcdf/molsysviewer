@@ -287,6 +287,7 @@ The current pre-`1.0` shared panel-mode entrypoint is:
 - `view.get_panel_mode_state()`
 - `view.workspace_catalog()`
 - `view.workspace_panels(...)`
+- `view.workspace_sections(...)`
 - `view.workspace_runtime()`
 
 This API is intentionally small:
@@ -304,10 +305,14 @@ This API is intentionally small:
   view, including `Core`
 - `view.workspace_panels("topomt")` returns the local panel stack for that
   workspace
-- `workspace_catalog()` and `workspace_panels(...)` also reflect the current
-  active workspace/panel when the frontend has already reported runtime state
+- `view.workspace_sections("topomt")` returns the visible workbench sections
+  for that workspace
+- `workspace_catalog()`, `workspace_panels(...)`, and `workspace_sections(...)`
+  also reflect the current runtime view of the shared workspace model when the
+  frontend has already reported state
 - `workspace_runtime()` returns a single notebook-facing snapshot combining:
-  runtime state, effective workspace catalog, and the current local panel stack
+  runtime state, effective workspace catalog, the current local panel stack,
+  and the current workspace sections
 
 This small surface matters especially for notebook usage:
 

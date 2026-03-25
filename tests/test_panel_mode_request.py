@@ -166,6 +166,19 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
                 "active": False,
             }
         ]
+        assert view.workspace_sections("topomt") == [
+            {
+                "id": "summary",
+                "title": "Summary",
+                "entry": "topomt.section.summary",
+                "target_panel": "workbench",
+                "order": 0,
+                "meta": {},
+                "addon": "topomt",
+                "workspace": "topomt",
+            }
+        ]
+        assert view.workspace_sections("core") == []
         assert view.workspace_panels("missing") == []
     finally:
         addons.clear()
@@ -276,6 +289,47 @@ def test_workspace_runtime_aggregates_state_catalog_and_current_panels():
                     "active": True,
                 }
             ],
+            "current_sections": [],
         }
+    finally:
+        addons.clear()
+
+
+def test_workspace_runtime_includes_current_sections():
+    addons.clear()
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
+                ),
+            )
+        )
+        view = MolSysView(debug_js=True)
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "panel_mode_state",
+                "panel": "workbench",
+                "expanded": True,
+                "workspace": "topomt",
+                "workspace_panel": "topo",
+            }
+        )
+
+        assert view.workspace_runtime()["current_sections"] == [
+            {
+                "id": "summary",
+                "title": "Summary",
+                "entry": "topomt.section.summary",
+                "target_panel": "workbench",
+                "order": 0,
+                "meta": {},
+                "addon": "topomt",
+                "workspace": "topomt",
+            }
+        ]
     finally:
         addons.clear()

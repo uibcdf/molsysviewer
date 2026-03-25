@@ -142,6 +142,9 @@ Immediate next focus from here:
   - another good sign is that non-current add-on cards can already preview
     concrete workbench sections, so they read as domain surfaces rather than
     abstract capabilities only
+  - the notebook/runtime bridge should expose the same structure honestly:
+    visible workspace sections should be queryable from Python, not only
+    inferred from add-on specs or the frontend UI
 
 ### Phase C. Figure Export Maturation
 
