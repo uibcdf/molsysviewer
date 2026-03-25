@@ -258,6 +258,37 @@ Success criteria:
 Immediate next focus:
 
 - keep the next slices on the host itself, not on speculative packaging
+
+Pre-`1.0.0` host gate:
+
+- do not keep adding shell chrome indefinitely
+- treat the host as sufficient for pre-`1.0.0` once these conditions hold:
+  - startup/empty-host flow is clear without oral explanation
+  - load flows are credible from the shell:
+    - demo
+    - file
+    - PDB ID
+    - generic MolSysMT source
+  - the host can also return cleanly to an empty shell state
+  - view/export actions feel like app-owned affordances rather than raw debug
+    hooks
+  - shell-level persistence stays intentionally small and useful:
+    - recent sources
+    - last source
+    - window size
+  - error handling is good enough that load/export failures are not silent or
+    confusing
+  - the host still stays thin:
+    - no duplicate viewer semantics
+    - no standalone-only runtime model
+    - no host-side add-on logic that forks the shared runtime
+- work that should **not** be required for that gate:
+  - final packaging closure
+  - multi-window/project management
+  - rich session management
+  - speculative shell polish with no effect on host credibility
+- once that gate is satisfied, stop treating host UX as the main unknown and
+  move the remaining uncertainty to packaging/distribution
 - in parallel, document the supported standalone environment recipe more
   explicitly so the Qt path stops living partly in chat history
 

@@ -163,6 +163,19 @@ Do not append dated historical entries unless a date is itself operationally rel
     closing the app:
     - `File -> New Empty Host`
     - shortcut `Ctrl+N`
+  - the next Phase E work should now be judged against an explicit
+    pre-`1.0.0` host-sufficiency gate rather than against open-ended polish:
+    - clear startup/empty-host flow
+    - credible shell-owned load paths
+    - return to empty host
+    - app-level view/export affordances
+    - small and useful shell persistence
+    - non-silent error handling
+    - still a thin host with no forked viewer semantics
+  - work that should not be used to keep Phase E open by inertia:
+    - more generic shell chrome
+    - speculative session/project management
+    - packaging closure before the host itself is judged sufficient
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
