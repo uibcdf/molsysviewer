@@ -183,6 +183,16 @@ Do not append dated historical entries unless a date is itself operationally rel
       supported packaging/distribution route
     - more host work should now be driven only by a real QA/runtime gap, not by
       generic shell polish
+  - the packaging evaluation is now also more concrete:
+    - A1:
+      - conda-native route with standard package names
+    - A2:
+      - conda-native standalone runtime with specific package names
+    - B:
+      - hybrid conda+pip route as fallback/bridge only
+  - the provisional reading is now:
+    - if UIBCDF has to cover the Qt/WebEngine gap itself before upstream
+      catches up, A2 currently looks safer than A1
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
