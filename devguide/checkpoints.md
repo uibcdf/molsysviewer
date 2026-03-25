@@ -192,6 +192,8 @@ Do not append dated historical entries unless a date is itself operationally rel
   - workbench-oriented add-on/workspace tutorials
   - panel/workspace behavior docs that explain the shared workbench model
   - public docs that connect runtime surfaces to the now-real APIs
+  - smoke guidance that includes the support-library observability layer we now
+    rely on for fast QA (`smonitor`)
   - small but truthful user/developer guidance slices instead of broad new
     architecture
 - The practical question is now shifting toward the next checkpoint gate:

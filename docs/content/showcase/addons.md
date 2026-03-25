@@ -32,6 +32,7 @@ There is now also a single supported smoke/demo path for external teams:
 import molsysviewer
 
 view = molsysviewer.addon_templates.build_reference_demo_view("topomt")
+view.workspace_runtime()
 view
 ```
 
@@ -42,6 +43,7 @@ starting point for discussions:
 - one credible reference workspace
 - one visible add-on lifecycle/runtime path
 - one entry-panel landing inside that workspace
+- one notebook-facing runtime snapshot of that same workspace
 - one reproducible snippet everyone can run before writing their own package
 - one short recipe that shows how that workspace actually sits inside the shared
   workbench

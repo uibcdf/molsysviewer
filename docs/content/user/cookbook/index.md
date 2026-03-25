@@ -10,6 +10,12 @@ Recipes for common tasks (to be filled with concrete examples):
 
 Each recipe will include: minimal code, expected visuals (static HTML via `view.export.html(..., mode="lite")`), and option tweaks.
 
+Current high-value runtime recipes:
+
+- {doc}`figure_export_workbench`
+- {doc}`addon_workspace_workbench`
+- {doc}`panel_mode_notebook`
+
 ```{toctree}
 :maxdepth: 2
 :hidden:
