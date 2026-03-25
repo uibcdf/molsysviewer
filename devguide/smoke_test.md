@@ -383,6 +383,7 @@ Current minimum:
 - `pytest tests/test_image_export_request.py -q`
 - `pytest tests/test_addons.py -q`
 - `pytest tests/test_panel_mode_request.py -q`
+- `pytest tests/test_smonitor_integration.py -q`
 - `npm --prefix molsysviewer/js run test:js`
 - `npm --prefix molsysviewer/js run test:e2e`
 
