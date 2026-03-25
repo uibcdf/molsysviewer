@@ -106,18 +106,22 @@ def _empty_host_overlay_html(title: str, demo_links: Sequence[tuple[str, str]] |
   <div class="molsysviewer-standalone0-card">
     <h1>{escaped_title}</h1>
     <p>This standalone 0 host is open but no molecular system has been loaded yet.</p>
-    <p>Next step: add a real loader flow for files and identifiers. For now, use the CLI with a source or a demo.</p>
+    <p>Use the host shell to load a demo, file, PDB ID, or MolSysMT source. In CLI/browser-hosted flows you can also start directly with a source.</p>
     <div class="molsysviewer-standalone0-grid">
       <div class="molsysviewer-standalone0-tile">
-        <span class="molsysviewer-standalone0-label">Load a demo</span>
+        <span class="molsysviewer-standalone0-label">App shell</span>
+        <code>File → Load Demo / Open File / Load PDB ID</code>
+      </div>
+      <div class="molsysviewer-standalone0-tile">
+        <span class="molsysviewer-standalone0-label">CLI demo</span>
         <code>molsysviewer dialanine --demo</code>
       </div>
       <div class="molsysviewer-standalone0-tile">
-        <span class="molsysviewer-standalone0-label">Export only</span>
+        <span class="molsysviewer-standalone0-label">CLI export only</span>
         <code>molsysviewer --no-browser --output /tmp/view.html</code>
       </div>
       <div class="molsysviewer-standalone0-tile">
-        <span class="molsysviewer-standalone0-label">Load demo</span>
+        <span class="molsysviewer-standalone0-label">Quick demos</span>
         <div class="molsysviewer-standalone0-demo-links">
           {link_items or f"<code>{escaped_demos}</code>"}
         </div>

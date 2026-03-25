@@ -168,6 +168,33 @@ def _show_startup_status(window, current_state: dict[str, Any]) -> None:
     )
 
 
+def _current_source_summary(current_state: dict[str, Any]) -> str:
+    loaded_label = current_state.get("loaded_label")
+    if isinstance(loaded_label, str) and loaded_label:
+        return loaded_label
+    if current_state.get("molecular_system") is not None:
+        return "Molecular system loaded"
+    return "Empty host"
+
+
+def _host_info_message(current_state: dict[str, Any], html_path: str) -> str:
+    recent_sources = current_state.get("recent_sources", [])
+    return (
+        "MolSysViewer Qt Prototype\n\n"
+        f"Current source: {_current_source_summary(current_state)}\n"
+        f"Recent sources: {len(recent_sources)}\n"
+        f"HTML path: {html_path}\n\n"
+        "Primary shell shortcuts:\n"
+        "  Ctrl+O  Open File\n"
+        "  Ctrl+R  Restore Last Source\n"
+        "  Ctrl+1  Navigate\n"
+        "  Ctrl+2  Workbench\n"
+        "  Escape  Close Panel Mode\n"
+        "  Ctrl+Shift+S  Export HTML\n"
+        "  Ctrl+Shift+E  Export Figure"
+    )
+
+
 def _record_recent_source(
     current_state: dict[str, Any],
     *,
@@ -696,7 +723,8 @@ def _install_menu_bar(
         message = (
             "MolSysViewer Qt Prototype\n\n"
             "Thin standalone host for the shared MolSysViewer runtime.\n"
-            "Current goal: validate the dedicated app shell before final packaging."
+            "Current goal: validate the dedicated app shell before final packaging.\n\n"
+            "Use File to load a demo, file, PDB ID, or MolSysMT source."
         )
         if hasattr(QMessageBox, "information"):
             QMessageBox.information(window, "About MolSysViewer Qt Prototype", message)
@@ -709,14 +737,22 @@ def _install_menu_bar(
     current_source_action = QAction("Show Current Source", window)
 
     def _show_current_source() -> None:
-        loaded_label = current_state.get("loaded_label")
-        if not loaded_label:
-            _show_status(window, "No molecular system is currently loaded.")
-            return
-        _show_status(window, f"Current source: {loaded_label}")
+        _show_status(window, f"Current source: {_current_source_summary(current_state)}")
 
     current_source_action.triggered.connect(_show_current_source)
     help_menu.addAction(current_source_action)
+
+    host_info_action = QAction("Show Host Info", window)
+
+    def _show_host_info() -> None:
+        message = _host_info_message(current_state, html_path)
+        if hasattr(QMessageBox, "information"):
+            QMessageBox.information(window, "MolSysViewer Qt Host Info", message)
+        else:
+            _show_status(window, "Host info is available.")
+
+    host_info_action.triggered.connect(_show_host_info)
+    help_menu.addAction(host_info_action)
 
     reload_last_action = QAction("Reload Last Source", window)
 

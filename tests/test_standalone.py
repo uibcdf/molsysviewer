@@ -73,6 +73,7 @@ def test_standalone_main_supports_empty_host_without_browser(tmp_path, capsys):
     assert str(outfile.resolve()) in capsys.readouterr().out
     text = outfile.read_text(encoding="utf-8")
     assert "no molecular system has been loaded yet" in text
+    assert "File → Load Demo / Open File / Load PDB ID" in text
     assert "molsysviewer dialanine --demo" in text
     assert "empty-demo-dialanine.html" in text
     assert (tmp_path / "empty-demo-dialanine.html").exists()
@@ -371,9 +372,14 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     help_menu.actions[0].triggered._callbacks[0]()
     assert FakeMessageBox.calls
     assert FakeMessageBox.calls[-1][0] == "About MolSysViewer Qt Prototype"
+    assert "Use File to load a demo, file, PDB ID, or MolSysMT source." in FakeMessageBox.calls[-1][1]
     help_menu.actions[1].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Current source: 1crn"
     help_menu.actions[2].triggered._callbacks[0]()
+    assert FakeMessageBox.calls[-1][0] == "MolSysViewer Qt Host Info"
+    assert "Current source: 1crn" in FakeMessageBox.calls[-1][1]
+    assert "Ctrl+O  Open File" in FakeMessageBox.calls[-1][1]
+    help_menu.actions[3].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     recent_menu.actions[4].triggered._callbacks[0]()
     assert recent_menu.actions[0].text == "No recent sources"
