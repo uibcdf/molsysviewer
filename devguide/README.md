@@ -86,9 +86,11 @@ That principle should guide prioritization throughout the repository.
    - Technical mini-plan for the first `PySide6 + Qt WebEngine` prototype and the thin-host boundary it must preserve.
 26. [**Standalone Supported Environment**](standalone_supported_environment.md)
    - Supported development-time recipe for the Qt host spike and the current conda/pip boundary.
-27. [**Image Export Direction**](image_export_direction.md)
+27. [**Standalone Packaging Strategy**](standalone_packaging_strategy.md)
+   - Current position on supported recipes, packaging options still open, and when final standalone distribution should be decided.
+28. [**Image Export Direction**](image_export_direction.md)
    - Work lines, roadmap, premium/publication goals, and open questions for image export on top of the current Mol* runtime.
-28. [**MolSysSuite Add-On Direction**](molsyssuite_addon_direction.md)
+29. [**MolSysSuite Add-On Direction**](molsyssuite_addon_direction.md)
    - Core-vs-add-on boundary for MolSysViewer, optional ecosystem panels, and the requirement that 1.0 already leave plugin entry points or a template/test in place.
 
 ## Workbench Tutorials (Planned)
