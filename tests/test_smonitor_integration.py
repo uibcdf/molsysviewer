@@ -70,6 +70,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.workspace_panels("core", skip_digestion=True)
         view.workspace_sections("core", skip_digestion=True)
         view.workspace_runtime(skip_digestion=True)
+        view.workspace_runtime(pretty=True, skip_digestion=True)
         view.get_panel_mode_state(pretty=True)
         view.export.html(str(tmp_path / "smonitor.html"), include_popout=False, skip_digestion=True)
         scripted_view.export.image(str(tmp_path / "smonitor.png"), transparent=True, preset="current", skip_digestion=True)
@@ -127,6 +128,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert meta_by_key["molsysviewer.viewer.workspace_sections"].get("workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("current_workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("panel_count") == 2
+        assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("pretty") is True
         assert meta_by_key["molsysviewer.viewer.get_panel_mode_state"].get("pretty") is True
         assert meta_by_key["molsysviewer.new_view.new_view"].get("load_mode") == "selection"
         assert meta_by_key["molsysviewer.new_view.new_view"].get("syntax") == "MolSysMT"

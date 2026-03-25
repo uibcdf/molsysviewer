@@ -231,6 +231,9 @@ def _workspace_runtime_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any
     return {
         "current_workspace": current_workspace,
         "panel_count": panel_count,
+        "pretty": _signal_value(args, kwargs, 1, "pretty")
+        if _signal_value(args, kwargs, 1, "pretty") is not None
+        else False,
     }
 
 
@@ -1118,7 +1121,7 @@ class MolSysView:
 
     @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_runtime_signal_extra)
     @digest()
-    def workspace_runtime(self, *, skip_digestion: bool = False) -> dict[str, Any]:
+    def workspace_runtime(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict[str, Any] | str:
         """Return a notebook-friendly snapshot of the shared workspace runtime."""
         state = self.get_panel_mode_state() or {}
         if not isinstance(state, dict):
@@ -1131,7 +1134,7 @@ class MolSysView:
         current_sections = self.workspace_sections(current_workspace, skip_digestion=True)
         current_panel = next((item for item in current_panels if item.get("active") is True), None)
         current_workspace_record = next((item for item in workspaces if item.get("id") == current_workspace), None)
-        return {
+        payload = {
             "state": dict(state),
             "workspaces": workspaces,
             "current_workspace": current_workspace,
@@ -1140,6 +1143,9 @@ class MolSysView:
             "current_panel": current_panel,
             "current_sections": current_sections,
         }
+        if pretty:
+            return json.dumps(payload, indent=2, sort_keys=True)
+        return payload
 
     @property
     def visible_atom_indices(self):

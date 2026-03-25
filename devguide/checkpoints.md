@@ -154,6 +154,15 @@ Do not append dated historical entries unless a date is itself operationally rel
     - stronger `About`
     - clearer current-source readback
     - explicit host-info summary with shortcuts and shell state
+  - the notebook/runtime feedback path is now slightly stronger too:
+    - `workspace_runtime(pretty=True)` gives a readable JSON snapshot for quick
+      Jupyter diagnostics
+    - the same `pretty` choice is now visible in the structured SMonitor
+      timeline for that query
+  - the thin Qt host now also supports returning to an empty shell without
+    closing the app:
+    - `File -> New Empty Host`
+    - shortcut `Ctrl+N`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the

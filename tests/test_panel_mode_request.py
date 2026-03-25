@@ -375,3 +375,37 @@ def test_workspace_runtime_includes_current_sections():
         ]
     finally:
         addons.clear()
+
+
+def test_workspace_runtime_pretty_returns_json():
+    addons.clear()
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
+                ),
+            )
+        )
+        view = MolSysView(debug_js=True)
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "panel_mode_state",
+                "panel": "workbench",
+                "expanded": True,
+                "workspace": "topomt",
+                "workspace_panel": "topo",
+            }
+        )
+
+        runtime = view.workspace_runtime(pretty=True)
+
+        assert isinstance(runtime, str)
+        assert '"current_workspace": "topomt"' in runtime
+        assert '"workspace_panel": "topo"' in runtime
+        assert '"current_sections"' in runtime
+    finally:
+        addons.clear()
