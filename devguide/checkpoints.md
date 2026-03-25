@@ -128,6 +128,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - recent sources
     - last source
     - last window size
+  - the Qt host `Recent` menu now behaves more like application chrome and less
+    like raw state dump:
+    - grouped by source kind
+    - explicit clear action
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the

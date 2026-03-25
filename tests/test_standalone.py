@@ -316,6 +316,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].title == "Qt Prototype · molsysmt.MolSys"
     assert recent_menu.actions[3].title == "Sources"
     assert recent_menu.actions[3].actions[0].text == "molsysmt.MolSys"
+    assert recent_menu.actions[4].text == "Clear Recent Sources"
     restore_last_action.triggered._callbacks[0]()
     assert calls[-1] == ("molsysmt.MolSys", str(outfile.resolve()), "Qt Prototype")
     assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
@@ -357,12 +358,16 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].status_bar.messages[-1] == "Current source: 1crn"
     help_menu.actions[2].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
+    recent_menu.actions[4].triggered._callbacks[0]()
+    assert recent_menu.actions[0].text == "No recent sources"
+    assert runtime["window"].status_bar.messages[-1] == "Cleared recent sources."
+    restore_last_action.triggered._callbacks[0]()
+    assert runtime["window"].status_bar.messages[-1] == "No last source is available."
     close_action.triggered._callbacks[0]()
     assert runtime["window"].closed is True
     persisted = (tmp_path / "standalone_qt0_state.json").read_text(encoding="utf-8")
-    assert '"kind": "pdb_id"' in persisted
-    assert '"loaded_label": "1crn"' in persisted
-    assert '"last_source"' in persisted
+    assert '"recent_sources": []' in persisted
+    assert '"last_source": null' in persisted
     assert '"window_size"' in persisted
     assert '"width": 1200' in persisted
     assert '"height": 800' in persisted
