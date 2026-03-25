@@ -163,6 +163,11 @@ def _recent_section_title(kind: str) -> str:
     }.get(kind, "Other")
 
 
+def _clear_recent_sources(current_state: dict[str, Any]) -> None:
+    current_state["recent_sources"] = []
+    current_state["last_source"] = None
+
+
 def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
     if window is not None:
         window_size = _capture_window_size(window)
@@ -417,6 +422,16 @@ def _install_menu_bar(
                     )
                 )
                 target_menu.addAction(recent_action)
+        clear_recent_action = QAction("Clear Recent Sources", window)
+        clear_recent_action.triggered.connect(
+            lambda: (
+                _clear_recent_sources(current_state),
+                _persist_shell_state(current_state, window=window),
+                _refresh_recent_menu(),
+                _show_status(window, "Cleared recent sources."),
+            )
+        )
+        recent_menu.addAction(clear_recent_action)
         extra_kinds = [kind for kind in grouped_sources.keys() if kind not in kind_order]
         for kind in sorted(extra_kinds):
             entries = grouped_sources[kind]
