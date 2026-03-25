@@ -206,6 +206,10 @@ Do not append dated historical entries unless a date is itself operationally rel
     - figure export from the workbench
   - if yes, the main remaining uncertainty moves to standalone/distribution,
     not back to the shared runtime
+  - current reading after the latest tightening slices:
+    - this gate is largely in place
+    - the remaining work should now prefer small release-hardening checks and
+      not another broad documentation rewrite
 - The practical question is now shifting toward the next checkpoint gate:
   - before `0.14.0`, prefer checking whether the current Phase D slices are
     already enough to teach the product honestly
