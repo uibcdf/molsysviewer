@@ -193,6 +193,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - the provisional reading is now:
     - if UIBCDF has to cover the Qt/WebEngine gap itself before upstream
       catches up, A2 currently looks safer than A1
+    - and if A2 is pursued, the current naming preference is now:
+      - stay close to the standard package roots
+      - differentiate with a suffix rather than a completely unrelated name
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the

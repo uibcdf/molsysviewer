@@ -119,6 +119,40 @@ Current reading:
   the Qt/PySide6 stack as a broadly compatible substitute for the normal
   ecosystem path
 
+#### A2 naming direction
+
+If A2 is pursued, the package naming should stay close to the standard stack
+and differ by a suffix rather than by a completely different product name.
+
+Preferred direction:
+
+- keep the upstream/root identity visible
+- append a suffix that makes the scope explicit
+
+Examples of the shape, not final names:
+
+- `pyside6-standalone`
+- `qt6-webengine-standalone`
+- `shiboken6-standalone`
+
+Why this is preferable to a totally different name:
+
+- it stays legible to maintainers
+- it keeps the future migration path back toward upstream naming clearer
+- it still avoids pretending that the package is the standard ecosystem route
+
+What the suffix should communicate:
+
+- standalone/runtime-scoped
+- UIBCDF-curated
+- provisional if upstream later becomes sufficient
+
+What it should avoid:
+
+- branding-heavy names unrelated to Qt/PySide6
+- names that suggest a fully general replacement for the standard packages
+- names so different that later cleanup/migration becomes harder to read
+
 ### Option B. Supported conda+pip recipe
 
 Pros:
@@ -190,3 +224,8 @@ For the current decision point:
 
 This should still be treated as a provisional recommendation, not as a final
 packaging commitment.
+
+The current naming preference inside that provisional recommendation is:
+
+- if A2 is chosen, prefer a suffix-based naming scheme over a completely new
+  root package name
