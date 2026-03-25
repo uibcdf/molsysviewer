@@ -289,6 +289,20 @@ Pre-`1.0.0` host gate:
   - speculative shell polish with no effect on host credibility
 - once that gate is satisfied, stop treating host UX as the main unknown and
   move the remaining uncertainty to packaging/distribution
+
+Current reading:
+
+- the host now materially satisfies that gate:
+  - startup/empty-host flow is explicit
+  - shell-owned load paths are present and tested
+  - returning to empty host is present and tested
+  - app-level navigation/export affordances are present
+  - shell persistence remains intentionally small
+  - host-side error handling is no longer silent
+- because of that, the next major standalone uncertainty should now be treated
+  as packaging/distribution strategy rather than host credibility
+- do not keep opening new host slices by default unless a real runtime or QA
+  gap appears
 - in parallel, document the supported standalone environment recipe more
   explicitly so the Qt path stops living partly in chat history
 
