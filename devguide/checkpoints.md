@@ -17,6 +17,14 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- `0.16.0` should now be read as the checkpoint where:
+  - the mature product stories were verified together as one coherent release
+    surface
+  - the JS interaction/active-selection/annotation path was hardened back to a
+    green unit suite
+  - the route to `1.0.0` stopped being blocked by shared-runtime hardening and
+    shifted more clearly toward final standalone/distribution questions
+
 - `0.14.0` should now be read as the checkpoint where:
   - Phase D stopped being only intention and gained first real tightening
     slices
