@@ -278,26 +278,32 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].status_bar.messages[0] == "Ready. Molecular system loaded."
     assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export", "Help"]
     file_menu = runtime["window"].menu_bar.menus[0]
-    demo_menu = file_menu.actions[1]
-    recent_menu = file_menu.actions[2]
-    load_pdbid_action = file_menu.actions[3]
-    load_source_action = file_menu.actions[4]
-    restore_last_action = file_menu.actions[5]
-    close_action = file_menu.actions[6]
+    new_empty_action = file_menu.actions[0]
+    demo_menu = file_menu.actions[2]
+    recent_menu = file_menu.actions[3]
+    load_pdbid_action = file_menu.actions[4]
+    load_source_action = file_menu.actions[5]
+    restore_last_action = file_menu.actions[6]
+    close_action = file_menu.actions[7]
     assert demo_menu.title == "Load Demo"
     assert recent_menu.title == "Recent"
-    assert file_menu.actions[0].shortcut == "Ctrl+O"
+    assert new_empty_action.shortcut == "Ctrl+N"
+    assert file_menu.actions[1].shortcut == "Ctrl+O"
     assert restore_last_action.shortcut == "Ctrl+R"
     assert close_action.shortcut == "Ctrl+W"
     assert recent_menu.actions[0].text == "No recent sources"
-    FakeFileDialog.selected = str(tmp_path / "picked-system.pdb")
     calls = []
     monkeypatch.setattr(
         "molsysviewer.standalone_qt._rebuild_qt_html",
         lambda molecular_system, *, html_path, title: calls.append((molecular_system, html_path, title)) or html_path,
     )
-    file_menu.actions[0].triggered._callbacks[0]()
-    assert calls == [(str(tmp_path / "picked-system.pdb"), str(outfile.resolve()), "Qt Prototype")]
+    new_empty_action.triggered._callbacks[0]()
+    assert calls == [(None, str(outfile.resolve()), "Qt Prototype")]
+    assert runtime["window"].status_bar.messages[-1] == "Opened empty host."
+    assert runtime["window"].title == "Qt Prototype"
+    FakeFileDialog.selected = str(tmp_path / "picked-system.pdb")
+    file_menu.actions[1].triggered._callbacks[0]()
+    assert calls[-1] == (str(tmp_path / "picked-system.pdb"), str(outfile.resolve()), "Qt Prototype")
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
     assert runtime["window"].title == "Qt Prototype · picked-system.pdb"
@@ -378,6 +384,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     help_menu.actions[2].triggered._callbacks[0]()
     assert FakeMessageBox.calls[-1][0] == "MolSysViewer Qt Host Info"
     assert "Current source: 1crn" in FakeMessageBox.calls[-1][1]
+    assert "Ctrl+N  New Empty Host" in FakeMessageBox.calls[-1][1]
     assert "Ctrl+O  Open File" in FakeMessageBox.calls[-1][1]
     help_menu.actions[3].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
@@ -400,7 +407,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("broken source")),
     )
     FakeFileDialog.selected = str(tmp_path / "broken-system.pdb")
-    file_menu.actions[0].triggered._callbacks[0]()
+    file_menu.actions[1].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Could not load file: broken source"
     assert FakeMessageBox.calls[-1] == ("Open File Failed", "Could not load file: broken source")
 

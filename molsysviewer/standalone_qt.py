@@ -154,6 +154,13 @@ def _set_loaded_state(window, current_state: dict[str, Any], molecular_system: A
         window.setWindowTitle(_window_title(current_state["base_title"], loaded_label))
 
 
+def _set_empty_state(window, current_state: dict[str, Any]) -> None:
+    current_state["molecular_system"] = None
+    current_state["loaded_label"] = None
+    if hasattr(window, "setWindowTitle"):
+        window.setWindowTitle(current_state["base_title"])
+
+
 def _show_startup_status(window, current_state: dict[str, Any]) -> None:
     loaded_label = current_state.get("loaded_label")
     if isinstance(loaded_label, str) and loaded_label:
@@ -185,6 +192,7 @@ def _host_info_message(current_state: dict[str, Any], html_path: str) -> str:
         f"Recent sources: {len(recent_sources)}\n"
         f"HTML path: {html_path}\n\n"
         "Primary shell shortcuts:\n"
+        "  Ctrl+N  New Empty Host\n"
         "  Ctrl+O  Open File\n"
         "  Ctrl+R  Restore Last Source\n"
         "  Ctrl+1  Navigate\n"
@@ -409,6 +417,26 @@ def _install_menu_bar(
 
     open_file_action = QAction("Open File", window)
     _set_action_shortcut(open_file_action, "Ctrl+O")
+
+    new_empty_action = QAction("New Empty Host", window)
+    _set_action_shortcut(new_empty_action, "Ctrl+N")
+
+    def _new_empty_host():
+        try:
+            _rebuild_qt_html(
+                None,
+                html_path=html_path,
+                title=current_title,
+            )
+            _set_empty_state(window, current_state)
+            _persist_shell_state(current_state, window=window)
+            _reload_html_in_view(webview, QUrl, html_path)
+            _show_status(window, "Opened empty host.")
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "New Empty Host Failed", f"Could not open empty host: {exc}")
+
+    new_empty_action.triggered.connect(_new_empty_host)
+    file_menu.addAction(new_empty_action)
 
     def _open_file():
         if not hasattr(QFileDialog, "getOpenFileName"):
