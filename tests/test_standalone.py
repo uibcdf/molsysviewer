@@ -213,6 +213,10 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         def information(_parent=None, title="", text=""):
             FakeMessageBox.calls.append((title, text))
 
+        @staticmethod
+        def critical(_parent=None, title="", text=""):
+            FakeMessageBox.calls.append((title, text))
+
     class FakeQUrl:
         @staticmethod
         def fromLocalFile(path):
@@ -266,6 +270,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].title == "Qt Prototype"
     assert runtime["window"].size == (1200, 800)
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
+    assert runtime["window"].status_bar.messages[0] == "Ready. Molecular system loaded."
     assert [menu.title for menu in runtime["window"].menu_bar.menus] == ["File", "View", "Export", "Help"]
     file_menu = runtime["window"].menu_bar.menus[0]
     demo_menu = file_menu.actions[1]
@@ -372,6 +377,15 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert '"width": 1200' in persisted
     assert '"height": 800' in persisted
 
+    monkeypatch.setattr(
+        "molsysviewer.standalone_qt._rebuild_qt_html",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("broken source")),
+    )
+    FakeFileDialog.selected = str(tmp_path / "broken-system.pdb")
+    file_menu.actions[0].triggered._callbacks[0]()
+    assert runtime["window"].status_bar.messages[-1] == "Could not load file: broken source"
+    assert FakeMessageBox.calls[-1] == ("Open File Failed", "Could not load file: broken source")
+
 
 def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
     state_path = tmp_path / "standalone_qt0_state.json"
@@ -393,6 +407,15 @@ def test_load_qt_shell_state_restores_recent_sources(tmp_path, monkeypatch):
 
     assert [item["loaded_label"] for item in state["recent_sources"]] == ["molsysmt.MolSys", "1crn"]
     assert state["last_source"]["loaded_label"] == "1crn"
+
+
+def test_qt_startup_status_for_empty_host(monkeypatch):
+    messages = []
+    standalone_qt._show_startup_status(type("FakeWindow", (), {
+        "statusBar": lambda self: type("FakeStatusBar", (), {"showMessage": lambda _self, message: messages.append(message)})()
+    })(), {"loaded_label": None})
+
+    assert messages[-1] == "Ready. Use File to load a demo, file, PDB ID, or MolSysMT source."
 
 
 def test_load_qt_shell_state_restores_window_size(tmp_path, monkeypatch):

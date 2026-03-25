@@ -132,6 +132,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     like raw state dump:
     - grouped by source kind
     - explicit clear action
+  - the thin Qt host now also handles load/export failures more like an
+    application shell:
+    - status-bar feedback
+    - host-owned error dialog
+  - the standalone Qt host now also gives a clearer startup feel:
+    - explicit `Ready` status when a system is already loaded
+    - explicit quickstart-style status when the host opens empty
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
