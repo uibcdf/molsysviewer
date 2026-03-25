@@ -105,6 +105,10 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         def __init__(self, text, _parent=None):
             self.text = text
             self.triggered = FakeSignal()
+            self.shortcut = None
+
+        def setShortcut(self, shortcut):
+            self.shortcut = shortcut
 
     class FakeMenu:
         def __init__(self, title):
@@ -281,6 +285,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     close_action = file_menu.actions[6]
     assert demo_menu.title == "Load Demo"
     assert recent_menu.title == "Recent"
+    assert file_menu.actions[0].shortcut == "Ctrl+O"
+    assert restore_last_action.shortcut == "Ctrl+R"
+    assert close_action.shortcut == "Ctrl+W"
     assert recent_menu.actions[0].text == "No recent sources"
     FakeFileDialog.selected = str(tmp_path / "picked-system.pdb")
     calls = []
@@ -329,6 +336,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
     view_menu = runtime["window"].menu_bar.menus[1]
+    assert view_menu.actions[0].shortcut == "Ctrl+1"
+    assert view_menu.actions[1].shortcut == "Ctrl+2"
+    assert view_menu.actions[2].shortcut == "Escape"
     for action in view_menu.actions:
         assert action.triggered._callbacks
         action.triggered._callbacks[0]()
@@ -337,6 +347,8 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert any('"panel":"workbench"' in script for script in scripts)
     assert any('"expanded":false' in script and '"panel":null' in script for script in scripts)
     export_menu = runtime["window"].menu_bar.menus[2]
+    assert export_menu.actions[0].shortcut == "Ctrl+Shift+S"
+    assert export_menu.actions[1].shortcut == "Ctrl+Shift+E"
     FakeFileDialog.saved = str(tmp_path / "exported-view.html")
     export_menu.actions[0].triggered._callbacks[0]()
     exported = tmp_path / "exported-view.html"
