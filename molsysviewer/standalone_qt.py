@@ -122,6 +122,14 @@ def _show_status(window, message: str) -> None:
             status_bar.showMessage(message)
 
 
+def _show_host_error(window, QMessageBox, title: str, message: str) -> None:
+    _show_status(window, message)
+    if hasattr(QMessageBox, "critical"):
+        QMessageBox.critical(window, title, message)
+    elif hasattr(QMessageBox, "warning"):
+        QMessageBox.warning(window, title, message)
+
+
 def _reload_html_in_view(webview, QUrl, html_path: str) -> None:
     webview.setUrl(QUrl.fromLocalFile(html_path))
 
@@ -137,6 +145,20 @@ def _set_loaded_state(window, current_state: dict[str, Any], molecular_system: A
     current_state["loaded_label"] = loaded_label
     if hasattr(window, "setWindowTitle"):
         window.setWindowTitle(_window_title(current_state["base_title"], loaded_label))
+
+
+def _show_startup_status(window, current_state: dict[str, Any]) -> None:
+    loaded_label = current_state.get("loaded_label")
+    if isinstance(loaded_label, str) and loaded_label:
+        _show_status(window, f"Ready: {loaded_label}")
+        return
+    if current_state.get("molecular_system") is not None:
+        _show_status(window, "Ready. Molecular system loaded.")
+        return
+    _show_status(
+        window,
+        "Ready. Use File to load a demo, file, PDB ID, or MolSysMT source.",
+    )
 
 
 def _record_recent_source(
@@ -365,22 +387,25 @@ def _install_menu_bar(
         )
         if not selected:
             return
-        _rebuild_qt_html(
-            selected,
-            html_path=html_path,
-            title=current_title,
-        )
-        _set_loaded_state(window, current_state, selected, Path(selected).name)
-        _record_recent_source(
-            current_state,
-            kind="file",
-            value=selected,
-            loaded_label=Path(selected).name,
-        )
-        _persist_shell_state(current_state, window=window)
-        _reload_html_in_view(webview, QUrl, html_path)
-        _refresh_recent_menu()
-        _show_status(window, f"Loaded file: {Path(selected).name}")
+        try:
+            _rebuild_qt_html(
+                selected,
+                html_path=html_path,
+                title=current_title,
+            )
+            _set_loaded_state(window, current_state, selected, Path(selected).name)
+            _record_recent_source(
+                current_state,
+                kind="file",
+                value=selected,
+                loaded_label=Path(selected).name,
+            )
+            _persist_shell_state(current_state, window=window)
+            _reload_html_in_view(webview, QUrl, html_path)
+            _refresh_recent_menu()
+            _show_status(window, f"Loaded file: {Path(selected).name}")
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "Open File Failed", f"Could not load file: {exc}")
 
     open_file_action.triggered.connect(_open_file)
     file_menu.addAction(open_file_action)
@@ -486,21 +511,24 @@ def _install_menu_bar(
         pdb_id = str(value).strip()
         if not accepted or not pdb_id:
             return
-        _rebuild_qt_html(
-            pdb_id,
-            html_path=html_path,
-            title=current_title,
-        )
-        _set_loaded_state(window, current_state, pdb_id, pdb_id)
-        _record_recent_source(
-            current_state,
-            kind="pdb_id",
-            value=pdb_id,
-            loaded_label=pdb_id,
-        )
-        _reload_html_in_view(webview, QUrl, html_path)
-        _refresh_recent_menu()
-        _show_status(window, f"Loaded PDB ID: {pdb_id}")
+        try:
+            _rebuild_qt_html(
+                pdb_id,
+                html_path=html_path,
+                title=current_title,
+            )
+            _set_loaded_state(window, current_state, pdb_id, pdb_id)
+            _record_recent_source(
+                current_state,
+                kind="pdb_id",
+                value=pdb_id,
+                loaded_label=pdb_id,
+            )
+            _reload_html_in_view(webview, QUrl, html_path)
+            _refresh_recent_menu()
+            _show_status(window, f"Loaded PDB ID: {pdb_id}")
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "Load PDB ID Failed", f"Could not load PDB ID: {exc}")
 
     load_pdbid_action.triggered.connect(_load_pdbid)
     file_menu.addAction(load_pdbid_action)
@@ -519,22 +547,25 @@ def _install_menu_bar(
         source_value = str(value).strip()
         if not accepted or not source_value:
             return
-        _rebuild_qt_html(
-            source_value,
-            html_path=html_path,
-            title=current_title,
-        )
-        _set_loaded_state(window, current_state, source_value, source_value)
-        _record_recent_source(
-            current_state,
-            kind="source",
-            value=source_value,
-            loaded_label=source_value,
-        )
-        _persist_shell_state(current_state, window=window)
-        _reload_html_in_view(webview, QUrl, html_path)
-        _refresh_recent_menu()
-        _show_status(window, f"Loaded source: {source_value}")
+        try:
+            _rebuild_qt_html(
+                source_value,
+                html_path=html_path,
+                title=current_title,
+            )
+            _set_loaded_state(window, current_state, source_value, source_value)
+            _record_recent_source(
+                current_state,
+                kind="source",
+                value=source_value,
+                loaded_label=source_value,
+            )
+            _persist_shell_state(current_state, window=window)
+            _reload_html_in_view(webview, QUrl, html_path)
+            _refresh_recent_menu()
+            _show_status(window, f"Loaded source: {source_value}")
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "Load Source Failed", f"Could not load source: {exc}")
 
     load_source_action.triggered.connect(_load_source)
     file_menu.addAction(load_source_action)
@@ -542,15 +573,18 @@ def _install_menu_bar(
     restore_last_action = QAction("Restore Last Source", window)
 
     def _restore_last():
-        _restore_last_source(
-            window=window,
-            webview=webview,
-            QUrl=QUrl,
-            html_path=html_path,
-            current_title=current_title,
-            current_state=current_state,
-        )
-        _refresh_recent_menu()
+        try:
+            _restore_last_source(
+                window=window,
+                webview=webview,
+                QUrl=QUrl,
+                html_path=html_path,
+                current_title=current_title,
+                current_state=current_state,
+            )
+            _refresh_recent_menu()
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "Restore Last Source Failed", f"Could not restore last source: {exc}")
 
     restore_last_action.triggered.connect(_restore_last)
     file_menu.addAction(restore_last_action)
@@ -600,9 +634,12 @@ def _install_menu_bar(
         )
         if not selected:
             return
-        destination = Path(selected).expanduser().resolve()
-        shutil.copyfile(html_path, destination)
-        _show_status(window, f"Exported HTML: {destination.name}")
+        try:
+            destination = Path(selected).expanduser().resolve()
+            shutil.copyfile(html_path, destination)
+            _show_status(window, f"Exported HTML: {destination.name}")
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "Export HTML Failed", f"Could not export HTML: {exc}")
 
     export_html_action.triggered.connect(_export_html)
     export_menu.addAction(export_html_action)
@@ -624,13 +661,16 @@ def _install_menu_bar(
         )
         if not selected:
             return
-        destination = Path(selected).expanduser().resolve()
-        _export_qt_figure(
-            current_state["molecular_system"],
-            output_filename=str(destination),
-            title=current_title,
-        )
-        _show_status(window, f"Exported Figure: {destination.name}")
+        try:
+            destination = Path(selected).expanduser().resolve()
+            _export_qt_figure(
+                current_state["molecular_system"],
+                output_filename=str(destination),
+                title=current_title,
+            )
+            _show_status(window, f"Exported Figure: {destination.name}")
+        except Exception as exc:
+            _show_host_error(window, QMessageBox, "Export Figure Failed", f"Could not export figure: {exc}")
 
     export_figure_action.triggered.connect(_export_figure)
     export_menu.addAction(export_figure_action)
@@ -758,6 +798,7 @@ def create_standalone_qt0_window(
         current_title=title,
         current_state=current_state,
     )
+    _show_startup_status(window, current_state)
 
     return {
         "app": app,
