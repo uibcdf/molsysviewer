@@ -246,3 +246,11 @@ The following should **not** be required before judging the host sufficient:
 - multi-window support
 - full project/session management
 - more shell chrome that does not improve credibility of the host itself
+
+Current reading after the latest slices:
+
+- that sufficiency gate is now materially met by the thin Qt host
+- so the next standalone uncertainty is no longer "can the host feel real?"
+- it is now mainly:
+  - packaging/distribution strategy
+  - and any future host work should be justified by a real QA/runtime gap

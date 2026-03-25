@@ -176,6 +176,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - more generic shell chrome
     - speculative session/project management
     - packaging closure before the host itself is judged sufficient
+  - the current reading after the latest host slices is now:
+    - that host-sufficiency gate is materially satisfied
+    - the thin Qt host is no longer the main standalone unknown
+    - the main remaining standalone uncertainty before `1.0.0` is now the
+      supported packaging/distribution route
+    - more host work should now be driven only by a real QA/runtime gap, not by
+      generic shell polish
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
