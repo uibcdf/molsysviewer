@@ -261,68 +261,13 @@ Immediate next focus:
 - in parallel, document the supported standalone environment recipe more
   explicitly so the Qt path stops living partly in chat history
 
-Immediate pre-`0.14.0` interpretation:
-
-- recent tightening already improved three real teaching surfaces:
-  - figure export
-  - add-on/workspace runtime
-  - panel/workspace behavior
-- before `0.14.0`, prefer confirming that these slices are enough rather than
-  reopening broad design work
-- the next useful question is no longer "what should panel mode be?" but:
-  - does the current runtime already teach well enough to count as the next
-    stable pre-`1.0` checkpoint?
-
-### Phase E. Final Standalone Push
-
-Goal:
-
-- deliver the final major pre-`1.0.0` host step on top of the already-mature
-  core
-
-Main work:
-
-- evolve `standalone 0` into the real standalone host
-- keep the same workbench/runtime model
-- avoid forking UX or scene/state behavior
-- decide the first acceptable host shape:
-  - browser-hosted
-  - popup-style
-  - or lightweight app shell
-
-Success criteria:
-
-- standalone feels like MolSysViewer, not a separate experiment
-- add-ons/workspaces remain compatible there
-- the host is good enough that `1.0.0` can reasonably ship on top of it
-
-Current preferred host direction:
-
-- keep browser-hosted `standalone 0` as the teaching bridge
-- prefer a Python app shell with embedded webview for the final host
-- currently the strongest pragmatic candidate is:
-  - `PySide6 + Qt WebEngine`
-- begin that push with a deliberately thin Qt prototype:
-  - `QMainWindow`
-  - `QWebEngineView`
-  - same embedded runtime
-  - no standalone-only viewer semantics
-- keep the current Qt spike recipe explicit:
-  - Qt host development may continue on top of a working `pip` PySide6 stack
-  - final release packaging remains a separate decision
-
-Practical rule from the current state:
-
-- continue standalone when it validates the shared runtime or unblocks future
-  host decisions
-- do not let standalone packaging dominate the roadmap before the shared
-  workbench/add-on story feels fully intentional
-
 See also:
 
 - `devguide/standalone_direction.md`
 - `devguide/standalone_host_plan.md`
 - `devguide/standalone_qt_prototype_plan.md`
+- `devguide/standalone_supported_environment.md`
+- `devguide/standalone_packaging_strategy.md`
 
 ## Guiding Principle
 

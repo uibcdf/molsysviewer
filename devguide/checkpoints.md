@@ -30,6 +30,9 @@ Do not append dated historical entries unless a date is itself operationally rel
   - the standalone Qt spike now also has an explicit supported development
     recipe in `devguide`, so the conda/pip boundary no longer lives partly in
     chat history
+  - the remaining standalone packaging/distribution question is now also split
+    out explicitly from host implementation work, so Phase E can proceed
+    without pretending that the final installer story is already decided
 
 - `0.14.0` should now be read as the checkpoint where:
   - Phase D stopped being only intention and gained first real tightening
