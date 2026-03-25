@@ -41,6 +41,7 @@ starting point for discussions:
 - one real demo molecular system
 - one credible reference workspace
 - one visible add-on lifecycle/runtime path
+- one entry-panel landing inside that workspace
 - one reproducible snippet everyone can run before writing their own package
 - one short recipe that shows how that workspace actually sits inside the shared
   workbench

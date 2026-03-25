@@ -199,8 +199,9 @@ for external teams:
 
 - register one bundled reference add-on
 - open a real demo system
-- land directly in the shared `Workbench` surface where the add-on runtime can
-  be inspected
+- land directly in the shared `Workbench` surface
+- activate the add-on workspace
+- and open its entry panel so the add-on runtime can be inspected immediately
 
 ## Packaging contract
 

@@ -442,8 +442,21 @@ def test_addon_templates_helper_can_build_reference_demo_view():
         assert view._topomt_template_enabled is True
         assert view._topomt_template_runtime["workspace"] == "topomt"
         assert view._topomt_template_runtime["panels"] == ["topo", "channels", "regions"]
-        panel_mode = next(msg for msg in reversed(view._message_history) if msg.get("op") == "set_panel_mode")  # noqa: SLF001
-        assert panel_mode == {"op": "set_panel_mode", "panel": "workbench", "expanded": True}
+        messages = view._message_history  # noqa: SLF001
+        assert next(msg for msg in reversed(messages) if msg.get("op") == "set_panel_mode") == {
+            "op": "set_panel_mode",
+            "panel": "workbench",
+            "expanded": True,
+        }
+        assert next(msg for msg in reversed(messages) if msg.get("op") == "set_workspace") == {
+            "op": "set_workspace",
+            "workspace": "topomt",
+        }
+        assert next(msg for msg in reversed(messages) if msg.get("op") == "set_workspace_panel") == {
+            "op": "set_workspace_panel",
+            "panel": "topo",
+            "workspace": "topomt",
+        }
     finally:
         addons.clear()
 
