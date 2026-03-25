@@ -46,6 +46,21 @@ Install the project in editable mode:
 pip install -e .[dev]
 ```
 
+### Standalone Qt host note
+
+The final standalone packaging story is still open.
+
+For current Qt-host development, use the working recipe recorded in:
+
+- `devguide/standalone_supported_environment.md`
+
+In short:
+
+- keep the main development environment conservative
+- use a derived Qt-spike environment for `molsysviewer.standalone_qt`
+- use a coherent `pip` Qt stack there rather than rediscovering the conda/pip
+  boundary ad hoc
+
 ## TypeScript environment
 
 All JS/TS work happens under `molsysviewer/js/`:
