@@ -303,6 +303,11 @@ Current reading:
   as packaging/distribution strategy rather than host credibility
 - do not keep opening new host slices by default unless a real runtime or QA
   gap appears
+- the current packaging evaluation should now distinguish explicitly between:
+  - A1: conda-native route with standard Qt/PySide6 package names
+  - A2: conda-native standalone runtime with specific package names
+  - B: hybrid conda+pip route as fallback/bridge, not as the preferred final
+    user story
 - in parallel, document the supported standalone environment recipe more
   explicitly so the Qt path stops living partly in chat history
 
