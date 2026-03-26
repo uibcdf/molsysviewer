@@ -325,6 +325,31 @@ Current reading after that experiment:
 - this is still narrower than forking the entire Qt/PySide6 stack, but broader
   than a tiny WebEngine-only drop-in
 
+### Addons-only overlay result
+
+A second scratch overlay then copied the full `PySide6_Addons` file set from
+the validated `pip` environment onto the current conda-forge base, plus the two
+`abi3` bridge libraries:
+
+- `PySide6/libpyside6.abi3.so.6.9`
+- `shiboken6/libshiboken6.abi3.so.6.9`
+
+Result:
+
+- `QtWebEngineWidgets` still did not become stably usable
+- the process segfaulted during import / `QWebEngineView` construction
+
+What that now means:
+
+- the packaging boundary does continue to point toward `PySide6_Addons`
+- but the result is strong evidence that:
+  - a manual overlay of `pip` Addons on top of the current conda-forge
+    `pyside6` base is not ABI-safe enough
+- the likely next serious route is therefore:
+  - a curated `PySide6_Addons`-style package built/aligned for the target conda
+    base
+  - not a direct file transplant between the current two environments
+
 ### Provisional naming direction for the addon-first attempt
 
 If this add-on route is attempted before a broader A2 fork, the current naming
