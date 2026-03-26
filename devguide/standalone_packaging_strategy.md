@@ -350,6 +350,53 @@ What that now means:
     base
   - not a direct file transplant between the current two environments
 
+### Runtime boundary after the pip-family comparison
+
+The next comparison step answered a more structural question:
+
+- can the natural Qt-for-Python family
+  - `shiboken6`
+  - `PySide6_Essentials`
+  - `PySide6_Addons`
+  sit cleanly on top of `qt6-main` from conda-forge?
+- or does that family effectively carry its own Qt runtime?
+
+Current reading:
+
+- the validated `pip` family appears to carry and prefer its own Qt runtime
+- `PySide6_Essentials` resolves core Qt from:
+  - `site-packages/PySide6/Qt/lib`
+  not from `$CONDA_PREFIX/lib`
+- `PySide6_Addons` does the same for:
+  - `QtPositioning`
+  - `QtWebChannel`
+  - `QtWebEngine*`
+  - `QtWebEngineProcess`
+  - WebEngine QML/resources/translations
+- the `pip` family also carries its own ICU runtime:
+  - `libicui18n.so.73`
+  - `libicuuc.so.73`
+  - `libicudata.so.73`
+- the current conda-forge base environment uses ICU 75 in `$CONDA_PREFIX/lib`
+
+Implication:
+
+- the provisional standalone route should no longer be modeled as:
+  - a `qt6-main`-based conda-forge runtime plus a few extra Python bindings
+- it is better modeled as:
+  - a self-aligned Qt-for-Python family
+  - with its own matching Qt runtime payload
+
+That does not yet prove the final UIBCDF packaging shape.
+But it does make one conclusion much stronger:
+
+- a clean provisional route is more likely to look like:
+  - `shiboken6-uibcdf`
+  - `pyside6-essentials-uibcdf`
+  - `pyside6-addons-uibcdf`
+- and less likely to look like:
+  - `qt6-main` from conda-forge plus a thin WebEngine extension layer
+
 ### Provisional naming direction for the addon-first attempt
 
 If this add-on route is attempted before a broader A2 fork, the current naming
