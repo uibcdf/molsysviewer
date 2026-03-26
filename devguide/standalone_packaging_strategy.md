@@ -294,6 +294,37 @@ experiment. It also suggests the add-on is unlikely to work if it ships only
 the top-level PySide6 `.abi3.so` modules without the matching native Qt
 WebEngine runtime under `PySide6/Qt`.
 
+### First scratch-overlay result
+
+The first reversible overlay experiment in `sandbox/` was informative:
+
+- adding only the WebEngine slice made `PySide6.QtWebEngineWidgets`
+  discoverable
+- loading then failed first on missing `abi3` bridge libraries:
+  - `libpyside6.abi3.so.6.9`
+  - `libshiboken6.abi3.so.6.9`
+- after adding those, loading then failed on:
+  - `libQt6Positioning.so.6`
+- inspection of the validated `pip` environment showed that both:
+  - `QtPositioning`
+  - and the WebEngine runtime
+  belong to `PySide6_Addons`
+- after extending the overlay with that first Addons slice, the process moved
+  past the earlier loader errors but segfaulted
+
+Current reading after that experiment:
+
+- a pure `webengine-only` add-on is probably too narrow
+- a naive mix of:
+  - conda-forge base `pyside6`
+  - plus copied `pip` Addons files
+  is not stable enough to treat as the packaging boundary
+- the most plausible next boundary is now:
+  - an ABI-aligned `PySide6_Addons`-style package
+  - and possibly the matching bridge/runtime pieces it expects
+- this is still narrower than forking the entire Qt/PySide6 stack, but broader
+  than a tiny WebEngine-only drop-in
+
 ### Provisional naming direction for the addon-first attempt
 
 If this add-on route is attempted before a broader A2 fork, the current naming
