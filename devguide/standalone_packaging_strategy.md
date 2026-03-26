@@ -241,12 +241,17 @@ Observed in the restored conda-forge environment:
 - `qt6-main` is present
 - `PySide6.QtWebEngineWidgets` is missing
 - no `QtWebEngine*` artifacts are present inside `site-packages/PySide6`
+- no WebEngine runtime/resources are present under `site-packages/PySide6/Qt`
 
 Observed in the working pip-based environment:
 
 - `QtWebEngineCore.abi3.so`
 - `QtWebEngineWidgets.abi3.so`
 - `QtWebEngineQuick.abi3.so`
+- `Qt/lib/libQt6WebEngineCore.so.6`
+- `Qt/lib/libQt6WebEngineWidgets.so.6`
+- `Qt/lib/libQt6WebEngineQuick.so.6`
+- `Qt/lib/libQt6WebEngineQuickDelegatesQml.so.6`
 - `Qt/libexec/QtWebEngineProcess`
 - `Qt/qml/QtWebEngine`
 - `Qt/resources/qtwebengine*.pak`
@@ -272,11 +277,22 @@ The first add-on attempt should aim to provide at least:
 - `PySide6/QtWebEngineWidgets.pyi`
 - `PySide6/QtWebEngineQuick.abi3.so`
 - `PySide6/QtWebEngineQuick.pyi`
+- `PySide6/Qt/lib/libQt6WebEngineCore.so.6`
+- `PySide6/Qt/lib/libQt6WebEngineWidgets.so.6`
+- `PySide6/Qt/lib/libQt6WebEngineQuick.so.6`
+- `PySide6/Qt/lib/libQt6WebEngineQuickDelegatesQml.so.6`
 - `PySide6/Qt/libexec/QtWebEngineProcess`
 - `PySide6/Qt/qml/QtWebEngine`
+  - including `ControlsDelegates`
+  - including the QML WebEngine plugins
 - `PySide6/Qt/resources/qtwebengine*.pak`
 - `PySide6/Qt/translations/qtwebengine_locales`
 - `PySide6/Qt/translations/qtwebengine_*`
+
+That is now the minimum viable Linux inventory hypothesis for the first
+experiment. It also suggests the add-on is unlikely to work if it ships only
+the top-level PySide6 `.abi3.so` modules without the matching native Qt
+WebEngine runtime under `PySide6/Qt`.
 
 ### Provisional naming direction for the addon-first attempt
 
