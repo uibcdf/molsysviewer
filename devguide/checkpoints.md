@@ -1683,5 +1683,25 @@ This is preferred over a permanent lower band because it preserves canvas area w
       - `from PySide6.QtWebEngineWidgets import QWebEngineView`
     - this makes the first public packaging story materially more plausible
       than the earlier full-Addons reading
+- Pause checkpoint before the first real local conda builds:
+  - the three sibling repos are clean and pushed on branch `6.9.2`
+  - `shiboken6-uibcdf` stages from a repo-local boundary by default
+  - `pyside6-essentials-uibcdf` stages from a repo-local boundary by default
+  - `pyside6-addons-uibcdf` now defaults to the reduced standalone-focused
+    manifest rather than the full Addons payload
+  - local non-GUI family-level smoke is good for:
+    - `shiboken6-uibcdf`
+    - `pyside6-essentials-uibcdf`
+    - reduced `pyside6-addons-uibcdf`
+    with `QWebEngineView` importable
+  - `conda-build` was initially missing from the active environment
+  - the user then installed `conda-build`, so the next step on resume should
+    be the first real build sequence:
+    1. `conda build ../shiboken6-uibcdf/devtools/conda-build`
+    2. `conda build ../pyside6-essentials-uibcdf/devtools/conda-build`
+    3. `conda build ../pyside6-addons-uibcdf/devtools/conda-build`
+  - after those builds, the next checkpoint is not release yet:
+    - install the three locally built packages into a fresh test env
+    - verify the family by import and standalone smoke there
 - The next sensible direction is to keep reducing external-environment
   dependence repo by repo, starting from the smallest slice upward.
