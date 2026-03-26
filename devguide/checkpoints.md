@@ -218,6 +218,14 @@ Do not append dated historical entries unless a date is itself operationally rel
       - so the next serious packaging hypothesis is now:
         - an ABI-aligned `PySide6_Addons`-style package boundary
         - not a tiny WebEngine-only drop-in
+      - a fuller `PySide6_Addons` overlay experiment confirms the same
+        direction:
+        - the packaging boundary still points toward `Addons`
+        - but direct file transplant from the working `pip` environment onto
+          the current conda-forge base is not stable enough
+        - so the promising next route is:
+          - a curated/aligned `PySide6_Addons`-style package
+          - not a manual overlay solution
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
