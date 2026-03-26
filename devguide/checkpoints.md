@@ -226,6 +226,17 @@ Do not append dated historical entries unless a date is itself operationally rel
         - so the promising next route is:
           - a curated/aligned `PySide6_Addons`-style package
           - not a manual overlay solution
+      - the later pip-family comparison now also sharpens the runtime model:
+        - the natural `shiboken6 / PySide6_Essentials / PySide6_Addons` family
+          appears to carry and prefer its own Qt runtime under
+          `site-packages/PySide6/Qt`
+        - that family also carries its own ICU runtime and does not look like a
+          thin layer that can simply sit on top of the current `qt6-main`
+          conda-forge base
+        - the provisional clean route therefore looks more like:
+          - a self-aligned Qt-for-Python family in UIBCDF
+          - and less like:
+            - `qt6-main` from conda-forge plus a small extension package
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
