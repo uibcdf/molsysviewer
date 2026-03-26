@@ -1,0 +1,20 @@
+package:
+  name: shiboken6-uibcdf
+  version: "6.9.2"
+
+source:
+  path: ../../..
+
+build:
+  number: 0
+
+requirements:
+  host:
+    - python =3.13
+    - pip
+  run:
+    - python =3.13
+
+about:
+  summary: "Experimental UIBCDF-aligned shiboken6 package scaffold for Linux/Python 3.13."
+  license: "LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"

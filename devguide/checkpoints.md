@@ -244,6 +244,14 @@ Do not append dated historical entries unless a date is itself operationally rel
           - `shiboken6`
           - `PySide6_Essentials`
           - `PySide6_Addons`
+      - that scaffold is now also split locally as three future repo-shaped
+        units under `sandbox/qt_for_python_uibcdf_experiment/repos/`:
+        - `shiboken6-uibcdf`
+        - `pyside6-essentials-uibcdf`
+        - `pyside6-addons-uibcdf`
+      - first pass remains explicitly scoped to:
+        - Linux
+        - Python 3.13
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
