@@ -206,6 +206,18 @@ Do not append dated historical entries unless a date is itself operationally rel
       - the first add-on experiment will likely need both:
         - top-level `PySide6/QtWebEngine*.abi3.so` bindings
         - and the matching native Qt WebEngine runtime under `PySide6/Qt`
+    - the first scratch overlay has now tightened that reading further:
+      - a `webengine-only` drop-in is too small
+      - the validated `pip` stack shows the next missing boundary lives inside
+        `PySide6_Addons`:
+        - `QtPositioning`
+        - WebEngine bindings/runtime
+      - a naive overlay of those `pip` Addons files on top of the current
+        conda-forge base discovers the modules and gets past early loader
+        errors, but then segfaults
+      - so the next serious packaging hypothesis is now:
+        - an ABI-aligned `PySide6_Addons`-style package boundary
+        - not a tiny WebEngine-only drop-in
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
