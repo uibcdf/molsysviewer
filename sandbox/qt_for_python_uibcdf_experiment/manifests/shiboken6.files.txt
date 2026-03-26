@@ -1,0 +1,15 @@
+shiboken6-6.9.2.dist-info/INSTALLER
+shiboken6-6.9.2.dist-info/METADATA
+shiboken6-6.9.2.dist-info/RECORD
+shiboken6-6.9.2.dist-info/WHEEL
+shiboken6-6.9.2.dist-info/top_level.txt
+shiboken6/Shiboken.abi3.so
+shiboken6/Shiboken.pyi
+shiboken6/__init__.py
+shiboken6/__pycache__/__init__.cpython-313.pyc
+shiboken6/__pycache__/_config.cpython-313.pyc
+shiboken6/__pycache__/_git_shiboken_module_version.cpython-313.pyc
+shiboken6/_config.py
+shiboken6/_git_shiboken_module_version.py
+shiboken6/libshiboken6.abi3.so.6.9
+shiboken6/py.typed
