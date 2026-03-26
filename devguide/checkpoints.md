@@ -1654,6 +1654,21 @@ This is preferred over a permanent lower band because it preserves canvas area w
   this migration:
   - both already have vendored upstream subsets
   - both already have manifest-driven recipes
+  - `pyside6-essentials-uibcdf` has now also crossed the same first boundary:
+    - the initial manifest-driven recipe no longer depends by default on the
+      external `molsyssuite-qt-spike` environment
+    - the first validated `PySide6_Essentials` boundary was copied into:
+      - `package_boundary/site-packages`
+    - `devtools/conda-build/build.sh` now stages from that repo-local boundary
+      by default
+    - a non-GUI family-level smoke passes when staging:
+      - `shiboken6-uibcdf`
+      - `pyside6-essentials-uibcdf`
+      into a temporary `site-packages` and importing `PySide6.QtCore`
+    - the first repo-local boundary push is large but still accepted by GitHub;
+      at least one file (`PySide6/lupdate`) already triggers the GitHub
+      warning threshold at about 52.5 MB, so payload size needs to stay visible
+      before repeating the same pattern for `Addons`
   - `addons` has already passed the first meaningful family-level smoke when
     staged together with `shiboken6` and `essentials`
 - The next sensible direction is to keep reducing external-environment
