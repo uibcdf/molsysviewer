@@ -196,6 +196,9 @@ Do not append dated historical entries unless a date is itself operationally rel
     - and if A2 is pursued, the current naming preference is now:
       - stay close to the standard package roots
       - differentiate with a suffix rather than a completely unrelated name
+    - the first technical packaging attempt should now be narrower still:
+      - try a minimal WebEngine add-on slice first
+      - only escalate to a broader A2 fork if the add-on hypothesis fails
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
