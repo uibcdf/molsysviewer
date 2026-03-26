@@ -1628,3 +1628,33 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - `Navigate -> Workbench`
   - `Workbench -> Navigate`
 - This is still an intermediate step before the final shared `panel mode` container and its definitive navigator (`tabs` first, `carousel` later if it still proves useful).
+
+## Packaging Progress March 2026
+
+- The Qt-for-Python packaging split is now operational and pushed in sibling
+  repos on branch `6.9.2`:
+  - `../shiboken6-uibcdf`
+  - `../pyside6-essentials-uibcdf`
+  - `../pyside6-addons-uibcdf`
+- Each sibling repo now has a local `devguide/` documenting:
+  - where the upstream code came from
+  - how the first `6.9.2` boundary was derived
+  - and how to reopen the line for a future `6.10.x` family without depending
+    on this repo as the only memory of the process
+- `shiboken6-uibcdf` has now crossed an important first boundary:
+  - the initial manifest-driven recipe no longer depends by default on the
+    external `molsyssuite-qt-spike` environment
+  - the first validated `shiboken6` boundary was copied into:
+    - `package_boundary/site-packages`
+  - `devtools/conda-build/build.sh` now stages from that repo-local boundary by
+    default
+  - a non-GUI smoke still passes when staging to a temporary `site-packages`
+    and importing `shiboken6` from the staged tree
+- `pyside6-essentials-uibcdf` and `pyside6-addons-uibcdf` are still earlier in
+  this migration:
+  - both already have vendored upstream subsets
+  - both already have manifest-driven recipes
+  - `addons` has already passed the first meaningful family-level smoke when
+    staged together with `shiboken6` and `essentials`
+- The next sensible direction is to keep reducing external-environment
+  dependence repo by repo, starting from the smallest slice upward.
