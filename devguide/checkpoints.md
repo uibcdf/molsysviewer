@@ -249,6 +249,67 @@ Do not append dated historical entries unless a date is itself operationally rel
         - `shiboken6-uibcdf`
         - `pyside6-essentials-uibcdf`
         - `pyside6-addons-uibcdf`
+      - the packaging work is now also split operationally into sibling repos
+        next to `molsysviewer`:
+        - `../shiboken6-uibcdf`
+        - `../pyside6-essentials-uibcdf`
+        - `../pyside6-addons-uibcdf`
+      - `molsysviewer` should now keep the evidence and integration notes,
+        while recipe/build/release iteration for that family happens in those
+        sibling repos
+      - each sibling repo now also has its own `devguide/` with a local
+        bootstrap recipe for the `6.9.2` line, so future version work such as
+        `6.10.x` does not need to depend on `molsysviewer` as the only memory
+        of how the repo was assembled
+      - the first real recipe step is now underway in `../shiboken6-uibcdf`:
+        - manifests copied locally into the repo
+        - `build.sh` now follows that manifest and stages the boundary from the
+          validated `molsyssuite-qt-spike` environment
+        - a local non-conda smoke copy into a temporary `site-packages` worked
+        - `import shiboken6` succeeded from that staged boundary
+        - `conda build` itself could not yet be run from the current shell
+          because `conda-build` is not available in this environment
+      - `../shiboken6-uibcdf` now also contains the relevant upstream code
+        imported from the local `pyside-setup` checkout:
+        - `ApiExtractor`
+        - `generator`
+        - `libshiboken`
+        - `shibokenmodule`
+        - `cmake`
+        - `config.tests`
+        - `data`
+        - `tests`
+      - so that repo is no longer only a packaging shell; it now has both:
+        - the upstream source tree
+        - the first manifest-driven UIBCDF packaging attempt
+      - `../pyside6-essentials-uibcdf` now also has its first real packaging
+        step:
+        - manifests copied locally into the repo
+        - `build.sh` now stages the `PySide6_Essentials` boundary from the
+          validated `molsyssuite-qt-spike` environment
+        - the first pass intentionally excludes:
+          - wrapper commands under `bin/`
+          - a few inconsistent `PySide6/scripts/*` entries
+          - a few inconsistent `PySide6/support/*` entries
+        - a local non-conda smoke copy into a temporary `site-packages` worked
+        - `import PySide6.QtCore` succeeded from that staged boundary
+      - `../pyside6-addons-uibcdf` now also has its first real packaging step:
+        - manifests copied locally into the repo
+        - `build.sh` now stages the `PySide6_Addons` boundary from the
+          validated `molsyssuite-qt-spike` environment
+        - the first pass intentionally excludes:
+          - wrapper commands under `bin/`
+          - a few inconsistent `PySide6/scripts/*` entries
+          - a few inconsistent `PySide6/support/*` entries
+        - the meaningful smoke check for this repo is now family-level, not
+          isolated:
+          - staged together with `shiboken6-uibcdf`
+          - staged together with `pyside6-essentials-uibcdf`
+        - in that staged family layout:
+          - `import shiboken6` worked
+          - `import PySide6.QtCore` worked
+          - `import PySide6.QtWebChannel` worked
+          - `QtWebEngineProcess` and `QtWebEngineCore.abi3.so` were present
       - first pass remains explicitly scoped to:
         - Linux
         - Python 3.13

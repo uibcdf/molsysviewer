@@ -230,6 +230,25 @@ The current naming preference inside that provisional recommendation is:
 - if A2 is chosen, prefer a suffix-based naming scheme over a completely new
   root package name
 
+## Repo Split
+
+The packaging investigation is now split more cleanly by responsibility.
+
+`molsysviewer` should keep:
+
+- the evidence trail
+- the host-side integration reading
+- the packaging rationale in `devguide`
+
+The actual experimental package work should move into sibling repos:
+
+- `../shiboken6-uibcdf`
+- `../pyside6-essentials-uibcdf`
+- `../pyside6-addons-uibcdf`
+
+This keeps the Qt-family packaging logic out of the main MolSysViewer repo
+while preserving the reasoning that led to that split.
+
 ## Minimal Addon-First Hypothesis
 
 The latest environment comparison now suggests a narrower first attempt than a
