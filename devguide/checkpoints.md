@@ -1703,5 +1703,29 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - after those builds, the next checkpoint is not release yet:
     - install the three locally built packages into a fresh test env
     - verify the family by import and standalone smoke there
+- Real local conda builds now passed for the Linux / Python 3.13 line:
+  - `shiboken6-uibcdf-6.9.2-py313_0.conda`
+  - `pyside6-essentials-uibcdf-6.9.2-py313_0.conda`
+  - `pyside6-addons-uibcdf-6.9.2-py313_0.conda`
+- The first real build loop also exposed and validated a recipe fix:
+  - `source.path` in the three sibling repos needed to be `../..`
+  - not `../../..`
+  - otherwise `conda build` pulled in the parent `repos@uibcdf` tree instead of
+    the individual package repo
+- `shiboken6-uibcdf` now has a real local package build and test pass.
+- `pyside6-essentials-uibcdf` now has a real local package build and test pass.
+  - it also surfaces a cleanup target for later:
+    - template/script files under `PySide6/scripts/.../*.tmpl.py` should
+      probably not be compiled or shipped unchanged forever
+  - it emits many overlinking / missing-system-DSO warnings, but they did not
+    block the first local package build or test
+- `pyside6-addons-uibcdf` now has a real local package build and test pass.
+  - the reduced standalone-focused manifest remains good enough for:
+    - `from PySide6.QtWebEngineWidgets import QWebEngineView`
+    in the `_test_env`
+- The next checkpoint is now concrete:
+  - create a fresh test env
+  - install those three locally built conda artifacts
+  - verify family imports and the standalone smoke from that clean env
 - The next sensible direction is to keep reducing external-environment
   dependence repo by repo, starting from the smallest slice upward.
