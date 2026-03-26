@@ -308,6 +308,10 @@ Current reading:
   - A2: conda-native standalone runtime with specific package names
   - B: hybrid conda+pip route as fallback/bridge, not as the preferred final
     user story
+- inside that packaging evaluation, the first technical attempt should now be
+  narrower than a full fork:
+  - try a minimal WebEngine add-on slice first
+  - only expand toward a broader A2 fork if that slice proves insufficient
 - in parallel, document the supported standalone environment recipe more
   explicitly so the Qt path stops living partly in chat history
 

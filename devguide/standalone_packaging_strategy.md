@@ -229,3 +229,65 @@ The current naming preference inside that provisional recommendation is:
 
 - if A2 is chosen, prefer a suffix-based naming scheme over a completely new
   root package name
+
+## Minimal Addon-First Hypothesis
+
+The latest environment comparison now suggests a narrower first attempt than a
+full Qt/PySide6 fork.
+
+Observed in the restored conda-forge environment:
+
+- `pyside6` imports correctly
+- `qt6-main` is present
+- `PySide6.QtWebEngineWidgets` is missing
+- no `QtWebEngine*` artifacts are present inside `site-packages/PySide6`
+
+Observed in the working pip-based environment:
+
+- `QtWebEngineCore.abi3.so`
+- `QtWebEngineWidgets.abi3.so`
+- `QtWebEngineQuick.abi3.so`
+- `Qt/libexec/QtWebEngineProcess`
+- `Qt/qml/QtWebEngine`
+- `Qt/resources/qtwebengine*.pak`
+- `Qt/translations/qtwebengine_locales`
+- `Qt/translations/qtwebengine_*`
+
+Upstream `pyside-setup` packaging also treats that same group as the
+`QtWebEngineCore` / `QtWebEngineWidgets` / `QtWebEngineQuick` slice.
+
+This makes the following first experiment plausible:
+
+- try a minimal WebEngine add-on package first
+- only fork more of the Qt/PySide6 stack if that first attempt proves
+  insufficient
+
+### Minimal addon contents
+
+The first add-on attempt should aim to provide at least:
+
+- `PySide6/QtWebEngineCore.abi3.so`
+- `PySide6/QtWebEngineCore.pyi`
+- `PySide6/QtWebEngineWidgets.abi3.so`
+- `PySide6/QtWebEngineWidgets.pyi`
+- `PySide6/QtWebEngineQuick.abi3.so`
+- `PySide6/QtWebEngineQuick.pyi`
+- `PySide6/Qt/libexec/QtWebEngineProcess`
+- `PySide6/Qt/qml/QtWebEngine`
+- `PySide6/Qt/resources/qtwebengine*.pak`
+- `PySide6/Qt/translations/qtwebengine_locales`
+- `PySide6/Qt/translations/qtwebengine_*`
+
+### Provisional naming direction for the addon-first attempt
+
+If this add-on route is attempted before a broader A2 fork, the current naming
+preference is:
+
+- keep the root identity visible
+- use a suffix
+
+Example shape:
+
+- `pyside6-webengine-uibcdf`
+
+This is still only a working hypothesis, not yet a packaging commitment.
