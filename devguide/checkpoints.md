@@ -237,6 +237,13 @@ Do not append dated historical entries unless a date is itself operationally rel
           - a self-aligned Qt-for-Python family in UIBCDF
           - and less like:
             - `qt6-main` from conda-forge plus a small extension package
+      - a first experimental scaffold for that family now belongs in
+        `sandbox/qt_for_python_uibcdf_experiment/`:
+        - derive manifests from a validated `pip` environment first
+        - only then attempt conda recipes for:
+          - `shiboken6`
+          - `PySide6_Essentials`
+          - `PySide6_Addons`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the

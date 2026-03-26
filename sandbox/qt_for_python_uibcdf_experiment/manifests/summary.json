@@ -1,0 +1,28 @@
+{
+  "PySide6_Addons": {
+    "file_count": 1286,
+    "location": "/home/diego/Myopt/miniconda3/envs/molsyssuite-qt-spike/lib/python3.13/site-packages",
+    "name": "PySide6_Addons",
+    "requires": [
+      "PySide6_Essentials",
+      "shiboken6"
+    ],
+    "version": "6.9.2"
+  },
+  "PySide6_Essentials": {
+    "file_count": 2368,
+    "location": "/home/diego/Myopt/miniconda3/envs/molsyssuite-qt-spike/lib/python3.13/site-packages",
+    "name": "PySide6_Essentials",
+    "requires": [
+      "shiboken6"
+    ],
+    "version": "6.9.2"
+  },
+  "shiboken6": {
+    "file_count": 15,
+    "location": "/home/diego/Myopt/miniconda3/envs/molsyssuite-qt-spike/lib/python3.13/site-packages",
+    "name": "shiboken6",
+    "requires": [],
+    "version": "6.9.2"
+  }
+}
