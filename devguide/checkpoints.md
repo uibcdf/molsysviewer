@@ -1669,7 +1669,19 @@ This is preferred over a permanent lower band because it preserves canvas area w
       at least one file (`PySide6/lupdate`) already triggers the GitHub
       warning threshold at about 52.5 MB, so payload size needs to stay visible
       before repeating the same pattern for `Addons`
-  - `addons` has already passed the first meaningful family-level smoke when
-    staged together with `shiboken6` and `essentials`
+  - `addons` has now become much more concrete:
+    - the full observed Addons payload is about 400 MB
+    - the standalone-focused reduced subset
+      (`WebEngine + WebChannel + Positioning`) is about 244 MB
+    - `pyside6-addons-uibcdf` now defaults to that reduced manifest rather than
+      the full Addons payload
+    - a family-level smoke passes when staging:
+      - `shiboken6-uibcdf`
+      - `pyside6-essentials-uibcdf`
+      - reduced `pyside6-addons-uibcdf`
+      into a temporary `site-packages` and importing:
+      - `from PySide6.QtWebEngineWidgets import QWebEngineView`
+    - this makes the first public packaging story materially more plausible
+      than the earlier full-Addons reading
 - The next sensible direction is to keep reducing external-environment
   dependence repo by repo, starting from the smallest slice upward.
