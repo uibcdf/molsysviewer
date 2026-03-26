@@ -199,6 +199,13 @@ Do not append dated historical entries unless a date is itself operationally rel
     - the first technical packaging attempt should now be narrower still:
       - try a minimal WebEngine add-on slice first
       - only escalate to a broader A2 fork if the add-on hypothesis fails
+    - the current environment comparison now also makes that add-on hypothesis
+      more concrete:
+      - `pyside6` and `qt6-main` from conda-forge look partially usable
+      - the missing layer is concentrated in WebEngine
+      - the first add-on experiment will likely need both:
+        - top-level `PySide6/QtWebEngine*.abi3.so` bindings
+        - and the matching native Qt WebEngine runtime under `PySide6/Qt`
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
