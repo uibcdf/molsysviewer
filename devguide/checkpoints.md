@@ -17,6 +17,68 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- The active line to resume tomorrow is now unambiguous:
+  - clean `6.9.2`
+  - Linux
+  - Python `3.13`
+  - `qt6-main 6.9.2`
+  - sibling repos:
+    - `shiboken6-uibcdf`
+    - `pyside6-essentials-uibcdf`
+    - `pyside6-addons-uibcdf`
+  - runtime reference env:
+    - `molsyssuite-qt-spike`
+    - with `PySide6`, `PySide6_Essentials`, `PySide6_Addons`, `shiboken6`
+      all in `6.9.2`
+  - source reference:
+    - `pyside-setup@v6.9.2`
+    - commit `d5c8535130fafc65d868753f5cf72b6b9b10d628`
+  - operational rule:
+    - do not vendor from the current working tree of `pyside-setup`
+    - vendor only from the explicit `v6.9.2` reference
+
+- `shiboken6-uibcdf 6.9.2` is now the first cleanly closed member of the family:
+  - re-vendored from the real upstream `v6.9.2`
+  - `_uibcdf` namespace reapplied on the real `6.9.2` source
+  - split-repo helper gap fixed again for the `6.9.2` line
+  - source-build recipe passes on Linux / Python `3.13`
+  - package test passes with:
+    - `import shiboken6_uibcdf`
+  - the exported install-tree config was also corrected so downstreams now see:
+    - `SHIBOKEN_PYTHON_MODULE_DIR = .../site-packages/shiboken6_uibcdf`
+  - practical result:
+    - `shiboken6-uibcdf` should now be treated as stable enough to serve as
+      the base package for `pyside6-essentials-uibcdf`
+
+- `pyside6-essentials-uibcdf 6.9.2` is the exact resume point for tomorrow:
+  - the repo has already been re-vendored from `pyside-setup@v6.9.2`
+  - the core `_uibcdf` namespace split is already re-applied:
+    - `BINDING_NAME = PySide6_uibcdf`
+    - `libpyside` imports `PySide6_uibcdf`
+    - `PySide6/__init__.py.in` imports `shiboken6_uibcdf`
+  - `doc/` is already removed from this packaging build path
+  - the current build is no longer failing in namespace/toolchain setup
+  - the current failure is much narrower and CMake-local:
+    - `cmake/PySideSetup.cmake` still fails on:
+      - `include(ShibokenHelpers)`
+    - even after the current attempt to point at the installed Shiboken helper
+      path
+  - the other noisy Qt warnings about missing optional components are not the
+    main blocker right now
+  - the exact next task is:
+    - make `PySideSetup.cmake` consume `ShibokenHelpers.cmake` robustly from
+      the installed `shiboken6-uibcdf` package
+    - preferably after or through `find_package(Shiboken6 ...)`, rather than
+      through fragile early `CMAKE_MODULE_PATH` guesses
+  - only after that should the next failure be interpreted as the next real
+    `Essentials` blocker
+
+- The current packaging reading for tomorrow is therefore:
+  - `shiboken6-uibcdf 6.9.2`: closed enough
+  - `pyside6-essentials-uibcdf 6.9.2`: next active blocker
+  - `pyside6-addons-uibcdf 6.9.2`: do not reopen until `Essentials` is
+    materially further along
+
 - The clean `6.9.2` line has now crossed its first real closure point:
   - `shiboken6-uibcdf 6.9.2` was re-vendored from the actual upstream
     `pyside-setup@v6.9.2` tag
