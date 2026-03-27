@@ -1829,3 +1829,24 @@ This is preferred over a permanent lower band because it preserves canvas area w
      `pyside6-addons-uibcdf`
   4. only after that, adapt `molsysviewer.standalone_qt` to import the
      suffixed family and resume coexistence testing in `molsyssuite-qt-spike`
+
+- That line has now advanced materially:
+  - the working family line was realigned from the mislabeled `6.9.2` branch
+    to the actual vendored source line `6.10.2`
+  - the three sibling repos now also publish branch `6.10.2` on GitHub:
+    - `shiboken6-uibcdf`
+    - `pyside6-essentials-uibcdf`
+    - `pyside6-addons-uibcdf`
+  - `shiboken6-uibcdf` is no longer just a theory or partial build:
+    - `conda build ../shiboken6-uibcdf/devtools/conda-build` now passes end to
+      end on Linux/Python 3.13
+    - the successful artifact is:
+      - `shiboken6-uibcdf-6.10.2-py313h3fd9d12_0.conda`
+    - the package now:
+      - builds from source
+      - installs into `shiboken6_uibcdf`
+      - and passes its import test under conda-build
+- Practical consequence:
+  - the first member of the `_uibcdf` family is now real
+  - the next serious target is `pyside6-essentials-uibcdf`, not more theory on
+    whether the namespace-separated family can exist at all
