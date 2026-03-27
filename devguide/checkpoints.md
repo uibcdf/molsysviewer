@@ -1729,3 +1729,48 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - verify family imports and the standalone smoke from that clean env
 - The next sensible direction is to keep reducing external-environment
   dependence repo by repo, starting from the smallest slice upward.
+- The clean-env verification did prove one strong thing:
+  - the three locally built conda artifacts can be installed together
+  - and the canonical family imports work there:
+    - `import shiboken6`
+    - `import PySide6.QtCore`
+    - `from PySide6.QtWebEngineWidgets import QWebEngineView`
+- But the packaging target has now been tightened again:
+  - the user requirement is coexistence with a native `PySide6` installation
+  - so the provisional UIBCDF family must not keep importing as:
+    - `shiboken6`
+    - `PySide6`
+  - it must move to a separated Python namespace instead, for example:
+    - `shiboken6_uibcdf`
+    - `PySide6_uibcdf`
+  - and `molsysviewer.standalone_qt` must import that suffixed family
+- A scratch rename experiment already narrowed the difficulty:
+  - simple directory rename plus minimal `__init__.py` patching is enough for:
+    - `import shiboken6_uibcdf`
+    - `import PySide6_uibcdf.QtCore`
+  - but it is not enough for the Addons/WebEngine layer:
+    - `from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView`
+      currently segfaults
+    - `faulthandler` shows the loaded extension modules still register as:
+      - `PySide6.QtCore`
+      - `PySide6.QtGui`
+      - `PySide6.QtWidgets`
+      - `PySide6.QtNetwork`
+      - `PySide6.QtPrintSupport`
+      - `PySide6.QtWebChannel`
+      - `PySide6.QtWebEngineCore`
+    - so the current wheel-boundary repackage is not namespace-isolated
+- Operational consequence:
+  - do not treat the current `*-uibcdf` artifacts as ready for coexistence with
+    native `PySide6`
+  - the next real packaging step is source/build-time namespace separation for
+    the Qt-for-Python family, not more publication work on the current
+    canonical-name artifacts
+- The next checkpoint is therefore:
+  1. define the Python import namespace for the UIBCDF family
+     - likely `_uibcdf`, not `-uibcdf`, because Python imports cannot contain
+       hyphens
+  2. patch/rebuild `shiboken6`, `PySide6_Essentials`, and `PySide6_Addons` so
+     the compiled modules no longer register under `PySide6.*`
+  3. only after that, adapt `molsysviewer.standalone_qt` to import the
+     suffixed family and resume coexistence testing in `molsyssuite-qt-spike`
