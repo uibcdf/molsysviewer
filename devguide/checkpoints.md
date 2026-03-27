@@ -17,6 +17,32 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- The clean `6.9.2` line has now crossed its first real closure point:
+  - `shiboken6-uibcdf 6.9.2` was re-vendored from the actual upstream
+    `pyside-setup@v6.9.2` tag
+  - the `_uibcdf` namespace split was then re-applied on top of that real
+    source, not on the earlier mislabeled `6.10.2` tree
+  - the split-repo helper gap was also corrected explicitly for `6.9.2`:
+    - `build_scripts/` restored from `pyside-setup@v6.9.2`
+    - `libshiboken/embed/embedding_generator.py` patched again to understand
+      the split-repo layout
+  - the recipe is now no longer only a canonical source-build:
+    - post-install rewrites the installed package to
+      `site-packages/shiboken6_uibcdf/`
+    - `libshiboken6.abi3.so.*` is co-located with `Shiboken.abi3.so`
+      in that suffixed package directory
+  - the last runtime blocker was also closed:
+    - remaining `shibokensupport` imports of canonical `shiboken6`
+      were rewritten to `shiboken6_uibcdf`
+  - result:
+    - `conda build ../shiboken6-uibcdf/devtools/conda-build` now passes again
+      on Linux / Python 3.13 for the real `6.9.2` line
+    - the package test now passes with:
+      - `import shiboken6_uibcdf`
+  - practical consequence:
+    - the first clean member of the `6.9.2` `_uibcdf` family is now real
+    - the next package to reopen is `pyside6-essentials-uibcdf 6.9.2`
+
 - The current Qt-for-Python packaging reading is now:
   - `6.10.2` taught us the right architecture:
     - sibling `*-uibcdf` repos
