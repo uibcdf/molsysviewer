@@ -313,6 +313,25 @@ Do not append dated historical entries unless a date is itself operationally rel
       - first pass remains explicitly scoped to:
         - Linux
         - Python 3.13
+      - the namespace-split coexistence work is now also underway:
+        - `../shiboken6-uibcdf` and `../pyside6-essentials-uibcdf` already
+          carry first source-side `_uibcdf` namespace patches
+        - their `build.sh` recipes also now rewrite the staged package layout
+          to:
+          - `shiboken6_uibcdf`
+          - `PySide6_uibcdf`
+      - the first true `conda build` rerun for `../shiboken6-uibcdf` now gives
+        a decisive result:
+        - the package layout rewrite itself works
+        - but import still aborts inside the embedded
+          `signature_bootstrap.py` path bundled in `Shiboken.abi3.so`
+        - that embedded helper still imports canonical `shiboken6`
+      - so the current packaging conclusion is now sharper:
+        - boundary repackaging was a valid bootstrap step
+        - but it is no longer sufficient for coexistence with native
+          `shiboken6` / `PySide6`
+        - the next real step is a true source rebuild of the family with the
+          suffixed namespace carried through the embedded/runtime helpers too
 - Phase A should now be read as effectively closed unless a downstream need
   exposes a real structural gap.
 - The shared workspace launcher has now taken a first concrete step toward the
