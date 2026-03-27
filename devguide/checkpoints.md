@@ -1784,6 +1784,21 @@ This is preferred over a permanent lower band because it preserves canvas area w
     - `4954d4a` `feat: start uibcdf python namespace split`
   - `../pyside6-essentials-uibcdf`
     - `fc107ed` `feat: start uibcdf python namespace split`
+- The first rebuild loop after that patch also exposed the next necessary
+  packaging correction:
+  - the recipes were still staging canonical paths from the boundary
+    manifests into:
+    - `shiboken6/`
+    - `PySide6/`
+  - so even with source/CMake hooks patched, the built artifacts were still
+    being assembled under canonical install paths
+  - that has now been corrected in the two base repos:
+    - `../shiboken6-uibcdf`
+      - `6666f0e` `fix: stage suffixed shiboken package layout`
+    - `../pyside6-essentials-uibcdf`
+      - `dab1691` `fix: stage suffixed pyside package layout`
+  - the next rebuilds of those two repos are therefore the first ones that
+    really test the `_uibcdf` install layout end to end
 - The next checkpoint is therefore:
   1. define the Python import namespace for the UIBCDF family
      - likely `_uibcdf`, not `-uibcdf`, because Python imports cannot contain
