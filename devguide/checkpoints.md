@@ -17,6 +17,28 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- The current Qt-for-Python packaging reading is now:
+  - `6.10.2` taught us the right architecture:
+    - sibling `*-uibcdf` repos
+    - suffixed Python namespaces
+    - real source-builds rather than boundary-only repackaging
+  - but `6.10.2` against `qt6-main 6.9.2` is now clearly exploratory, not the
+    preferred release line
+  - the clean candidate line to resume now is:
+    - `shiboken6-uibcdf 6.9.2`
+    - `pyside6-essentials-uibcdf 6.9.2`
+    - `pyside6-addons-uibcdf 6.9.2`
+    - against `qt6-main 6.9.2`
+  - the `6.10.2` line remains useful and should not be discarded:
+    - it already validated the `_uibcdf` namespace split direction
+    - it already validated the first real `shiboken6-uibcdf` source-build
+    - it already exposed the concrete places where a mismatched Qt base starts
+      to hurt (`QRangeModel`, `QDirListing`, related typesystem/source list
+      drift)
+  - the operational rule from this point is:
+    - treat `6.10.2` as exploratory learning
+    - treat `6.9.2` as the first line to close cleanly
+
 - `0.16.0` should now be read as the checkpoint where:
   - the mature product stories were verified together as one coherent release
     surface
@@ -1850,3 +1872,11 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - the first member of the `_uibcdf` family is now real
   - the next serious target is `pyside6-essentials-uibcdf`, not more theory on
     whether the namespace-separated family can exist at all
+- One tactical pin is now also explicit to avoid future confusion:
+  - the current `6.10.2` source-build work is still using `qt6-main =6.9.2`
+  - that is a transition choice to keep the first `Essentials`/`Addons`
+    source-build loops focused on namespace/build issues
+  - it is not yet the final intended compatibility story
+  - a later validation remains required:
+    - test whether the `*_uibcdf 6.10.2` family also behaves correctly with
+      `qt6-main 6.10.2`
