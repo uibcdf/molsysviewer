@@ -1766,11 +1766,32 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - the next real packaging step is source/build-time namespace separation for
     the Qt-for-Python family, not more publication work on the current
     canonical-name artifacts
+- That namespace-separation work has now started in the two base repos:
+  - `shiboken6-uibcdf`
+    - initial source/CMake hooks now point at `shiboken6_uibcdf`
+    - lazy-loading and signature-support code now also targets
+      `PySide6_uibcdf` / `shiboken6_uibcdf`
+  - `pyside6-essentials-uibcdf`
+    - the missing top-level upstream `PySide6/` package templates were vendored
+      into the repo
+    - `BINDING_NAME` is now switched to `PySide6_uibcdf`
+    - `libpyside` now looks up the top-level package as `PySide6_uibcdf`
+    - the top-level `__init__.py.in` now imports `shiboken6_uibcdf`
+    - the install/RPATH side has started moving toward the suffixed package
+      family as well
+- Relevant namespace-split commits now exist upstream of this repo:
+  - `../shiboken6-uibcdf`
+    - `4954d4a` `feat: start uibcdf python namespace split`
+  - `../pyside6-essentials-uibcdf`
+    - `fc107ed` `feat: start uibcdf python namespace split`
 - The next checkpoint is therefore:
   1. define the Python import namespace for the UIBCDF family
      - likely `_uibcdf`, not `-uibcdf`, because Python imports cannot contain
        hyphens
-  2. patch/rebuild `shiboken6`, `PySide6_Essentials`, and `PySide6_Addons` so
-     the compiled modules no longer register under `PySide6.*`
-  3. only after that, adapt `molsysviewer.standalone_qt` to import the
+  2. rebuild `shiboken6-uibcdf` and `pyside6-essentials-uibcdf` after this
+     first namespace patch and see which additional generated/binary hooks
+     still register under canonical names
+  3. only then propagate the same namespace split to
+     `pyside6-addons-uibcdf`
+  4. only after that, adapt `molsysviewer.standalone_qt` to import the
      suffixed family and resume coexistence testing in `molsyssuite-qt-spike`
