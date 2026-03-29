@@ -2057,6 +2057,35 @@ This is preferred over a permanent lower band because it preserves canvas area w
     - `qt6-webengine-uibcdf`
   - reusar `Qt6WebChannel` desde `qt6-main 6.9.2`
 
+## 2026-03-28 qt6-positioning-uibcdf First Success
+
+- Se abrió el repo hermano:
+  - `../qt6-positioning-uibcdf`
+
+- Se definió un payload mínimo real desde `molsyssuite-qt-spike`:
+  - `Qt/lib/libQt6Positioning.so.6`
+  - `Qt/lib/libQt6PositioningQuick.so.6`
+  - `Qt/qml/QtPositioning/libpositioningquickplugin.so`
+  - `Qt/qml/QtPositioning/plugins.qmltypes`
+  - `Qt/qml/QtPositioning/qmldir`
+
+- Se montó una primera receta manifest-driven que instala ese payload en:
+  - `$PREFIX/lib`
+  - `$PREFIX/qml/QtPositioning`
+
+- El primer build local ya quedó verde:
+  - `qt6-positioning-uibcdf-6.9.2-py313_0.conda`
+
+- Los tests del paquete que ya pasaron:
+  - `test -f "$PREFIX/lib/libQt6Positioning.so.6"`
+  - `test -f "$PREFIX/lib/libQt6PositioningQuick.so.6"`
+  - `test -f "$PREFIX/qml/QtPositioning/libpositioningquickplugin.so"`
+
+- Lectura importante:
+  - la estrategia de separar la capa Qt faltante empieza a validarse
+  - `QtPositioning` se deja empaquetar como pieza pequeña y aislada
+  - el siguiente frente natural ya es `qt6-webengine-uibcdf`
+
 - Siguiente paso natural:
   - decidir si la estrategia correcta es
     - empaquetar módulos Qt adicionales tipo `qt6-positioning-uibcdf` / `qt6-webengine-uibcdf`
