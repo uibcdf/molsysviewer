@@ -1996,7 +1996,8 @@ This is preferred over a permanent lower band because it preserves canvas area w
 - El bloqueo actual es Qt base:
   - `find_package(Qt6 ...)` falla al buscar `Qt6QtPositioning`
   - `qt6-main 6.9.2` en el entorno host no expone `Qt6Positioning`
-  - inspección local del prefix y del cache conda no mostró piezas `Qt6Positioning` / `Qt6WebEngine`
+  - `mamba search -c conda-forge qt6-location` no devuelve resultados
+  - `mamba search -c conda-forge qt6-webengine` no devuelve resultados
 
 - Lectura actual:
   - para cerrar `pyside6-addons-uibcdf`, ya no basta con la familia Python:
@@ -2010,6 +2011,51 @@ This is preferred over a permanent lower band because it preserves canvas area w
 - Esto confirma la hipótesis central del trabajo:
   - la distribución limpia del standalone no termina solo en PySide6
   - acaba empujando también una capa Qt adicional no presente en `qt6-main 6.9.2`
+
+- Matiz importante refinado:
+  - `qt6-main 6.9.2` sí expone `Qt6WebChannel`
+  - en el prefix activo existen:
+    - `libQt6WebChannel.so.6`
+    - `libQt6WebChannelQuick.so.6`
+    - `lib/cmake/Qt6WebChannel*`
+  - por tanto, la capa Qt adicional que hoy falta no parece ser `WebChannel`
+  - los candidatos reales pasan a ser:
+    - `QtPositioning`
+    - `QtWebEngine`
+
+- Inventario útil desde `molsyssuite-qt-spike`:
+  - `QtPositioning` es pequeño:
+    - `libQt6Positioning.so.6` ~668 KB
+    - `libQt6PositioningQuick.so.6` ~424 KB
+  - `QtWebEngine` es el bloque grande:
+    - `libQt6WebEngineCore.so.6` ~190 MB
+    - `libQt6WebEngineQuick.so.6` ~780 KB
+    - `libQt6WebEngineWidgets.so.6` ~164 KB
+    - `libQt6WebEngineQuickDelegatesQml.so.6` ~148 KB
+    - `Qt/resources` ~24 MB
+    - `Qt/translations/qtwebengine_locales` ~38 MB
+    - `Qt/qml/QtWebEngine` ~236 KB
+    - `Qt/libexec/QtWebEngineProcess` ~32 KB
+
+- Dependencias directas relevantes:
+  - `libQt6Positioning.so.6` depende sobre todo de:
+    - `Qt6Core`
+    - ICU
+  - `libQt6WebEngineCore.so.6` depende de:
+    - `Qt6WebChannel`
+    - `Qt6Positioning`
+    - `Qt6Quick`
+    - `Qt6OpenGL`
+    - `Qt6Qml*`
+    - `Qt6Network`
+    - `Qt6Core`
+    - más librerías de sistema gráficas/X11/DBus/NSS
+
+- Siguiente corte natural de trabajo:
+  - estudiar una capa Qt provisional partida al menos en:
+    - `qt6-positioning-uibcdf`
+    - `qt6-webengine-uibcdf`
+  - reusar `Qt6WebChannel` desde `qt6-main 6.9.2`
 
 - Siguiente paso natural:
   - decidir si la estrategia correcta es
