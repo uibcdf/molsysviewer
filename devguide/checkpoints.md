@@ -2086,6 +2086,49 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - `QtPositioning` se deja empaquetar como pieza pequeña y aislada
   - el siguiente frente natural ya es `qt6-webengine-uibcdf`
 
+## 2026-03-28 qt6-webengine-uibcdf First Success
+
+- Se abrió el repo hermano:
+  - `../qt6-webengine-uibcdf`
+
+- Se definió un payload real desde `molsyssuite-qt-spike` con:
+  - `libQt6WebEngineCore.so.6`
+  - `libQt6WebEngineQuick.so.6`
+  - `libQt6WebEngineQuickDelegatesQml.so.6`
+  - `libQt6WebEngineWidgets.so.6`
+  - `QtWebEngineProcess`
+  - `qml/QtWebEngine/...`
+  - `resources/qtwebengine*.pak`
+  - `translations/qtwebengine_locales/...`
+
+- La receta se apoyó explícitamente en:
+  - `qt6-main 6.9.2`
+  - `qt6-positioning-uibcdf 6.9.2`
+
+- El primer build local ya quedó verde:
+  - `qt6-webengine-uibcdf-6.9.2-py313_0.conda`
+
+- Los tests del paquete que ya pasaron:
+  - `test -f "$PREFIX/lib/libQt6WebEngineCore.so.6"`
+  - `test -f "$PREFIX/lib/libQt6WebEngineQuick.so.6"`
+  - `test -f "$PREFIX/lib/libQt6WebEngineWidgets.so.6"`
+  - `test -f "$PREFIX/lib/libQt6WebEngineQuickDelegatesQml.so.6"`
+  - `test -f "$PREFIX/libexec/QtWebEngineProcess"`
+  - `test -f "$PREFIX/qml/QtWebEngine/libqtwebenginequickplugin.so"`
+  - `test -f "$PREFIX/qml/QtWebEngine/ControlsDelegates/libqtwebenginequickdelegatesplugin.so"`
+  - `test -f "$PREFIX/resources/qtwebengine_resources.pak"`
+  - `test -f "$PREFIX/translations/qtwebengine_locales/en-US.pak"`
+
+- Lectura importante:
+  - la capa Qt faltante ya no es una hipótesis
+  - `QtPositioning` y `QtWebEngine` ya construyen como paquetes conda locales
+  - el siguiente frente natural vuelve a ser:
+    - `pyside6-addons-uibcdf 6.9.2`
+  - esta vez con:
+    - `qt6-positioning-uibcdf`
+    - `qt6-webengine-uibcdf`
+    disponibles en el host build env
+
 - Siguiente paso natural:
   - decidir si la estrategia correcta es
     - empaquetar módulos Qt adicionales tipo `qt6-positioning-uibcdf` / `qt6-webengine-uibcdf`
