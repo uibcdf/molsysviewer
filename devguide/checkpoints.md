@@ -1968,3 +1968,50 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - a later validation remains required:
     - test whether the `*_uibcdf 6.10.2` family also behaves correctly with
       `qt6-main 6.10.2`
+## 2026-03-28 Addons 6.9.2 First Source-Build Blocker
+
+- `shiboken6-uibcdf 6.9.2` ya construye como paquete conda local.
+- `pyside6-essentials-uibcdf 6.9.2` ya construye como paquete conda local.
+- `pyside6-addons-uibcdf 6.9.2` ya fue realineado a:
+  - upstream `pyside-setup@v6.9.2`
+  - namespace `_uibcdf`
+  - source-build real
+  - módulo reducido:
+    - `QtPositioning`
+    - `QtWebChannel`
+    - `QtWebEngineCore`
+    - `QtWebEngineQuick`
+    - `QtWebEngineWidgets`
+
+- El primer `conda build` real de `pyside6-addons-uibcdf` ya pasó:
+  - metadata
+  - resolución de entorno
+  - entrada a `BUILD START`
+
+- El bloqueo actual ya no está en:
+  - namespace `_uibcdf`
+  - receta de conda
+  - toolchain general
+
+- El bloqueo actual es Qt base:
+  - `find_package(Qt6 ...)` falla al buscar `Qt6QtPositioning`
+  - `qt6-main 6.9.2` en el entorno host no expone `Qt6Positioning`
+  - inspección local del prefix y del cache conda no mostró piezas `Qt6Positioning` / `Qt6WebEngine`
+
+- Lectura actual:
+  - para cerrar `pyside6-addons-uibcdf`, ya no basta con la familia Python:
+    - `shiboken6-uibcdf`
+    - `pyside6-essentials-uibcdf`
+    - `pyside6-addons-uibcdf`
+  - también hará falta resolver la capa Qt que `Addons` consume:
+    - al menos `QtPositioning`
+    - y previsiblemente `QtWebEngine`
+
+- Esto confirma la hipótesis central del trabajo:
+  - la distribución limpia del standalone no termina solo en PySide6
+  - acaba empujando también una capa Qt adicional no presente en `qt6-main 6.9.2`
+
+- Siguiente paso natural:
+  - decidir si la estrategia correcta es
+    - empaquetar módulos Qt adicionales tipo `qt6-positioning-uibcdf` / `qt6-webengine-uibcdf`
+    - o cambiar el modelo de `Addons` para usar runtime Qt embebido más cercano al wheel family
