@@ -17,6 +17,43 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- The active `Addons` blocker is now more specific than before:
+  - `shiboken6-uibcdf 6.9.2` builds
+  - `pyside6-essentials-uibcdf 6.9.2` builds
+  - `qt6-positioning-uibcdf 6.9.2` builds
+  - `qt6-webengine-uibcdf 6.9.2` builds
+  - `pyside6-addons-uibcdf 6.9.2` now gets past the missing-runtime stage and
+    fails in the next layer:
+    - missing Qt development packages for `Positioning` / `WebEngine`
+    - concretely, CMake package exports such as `Qt6Positioning` and
+      `Qt6WebEngineQuick`
+    - and, very likely, the corresponding Qt headers/include trees too
+  - what is now confirmed:
+    - `qt6-main 6.9.2` does not provide `QtPositioning` or `QtWebEngine*`
+      headers or `lib/cmake` package directories
+    - local cached `qt6-main 6.10.2` also does not provide those module
+      headers or CMake package directories
+    - the functional `molsyssuite-qt-spike` env is still valid as a runtime
+      reference, but it does not expose a reusable development layer for these
+      Qt modules
+  - practical consequence:
+    - adding only runtime `.so` files was enough to unblock packaging of the
+      Qt helper packages
+    - it is not enough to let `pyside6-addons-uibcdf` source-build
+    - the next real decision is no longer about `_uibcdf` namespace work
+    - it is about how to supply the Qt development layer for:
+      - `QtPositioning`
+      - `QtWebEngineCore`
+      - `QtWebEngineQuick`
+      - `QtWebEngineWidgets`
+  - next task:
+    - do not keep patching `pyside6-addons-uibcdf` blindly
+    - first decide whether the Qt development layer will come from:
+      - local Qt source trees if they already exist,
+      - newly introduced Qt module source/vendor repos,
+      - or another controlled packaging route
+    - only after that should `Addons` be resumed
+
 - The active line to resume tomorrow is now unambiguous:
   - clean `6.9.2`
   - Linux
