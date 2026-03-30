@@ -17,6 +17,48 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+- Pause checkpoint for the clean `6.9.2` line:
+  - built successfully already:
+    - `shiboken6-uibcdf 6.9.2`
+    - `pyside6-essentials-uibcdf 6.9.2` (older successful build, before the latest layout-only rework)
+    - `qt6-positioning-uibcdf 6.9.2`
+    - `qt6-webengine-uibcdf 6.9.2`
+  - `pyside6-addons-uibcdf 6.9.2` is very near closure, but is intentionally paused until
+    `pyside6-essentials-uibcdf` is rebuilt again on top of the latest `_uibcdf` layout fixes
+  - the active packaging goal is now narrower than before:
+    - ensure the runtime tree no longer lands under canonical `site-packages/PySide6/...`
+    - ensure it lands under `site-packages/PySide6_uibcdf/...` instead
+    - then re-run `pyside6-addons-uibcdf` against that corrected base
+
+- The latest useful `pyside6-essentials-uibcdf` changes are already in-tree but not yet closed by a green rebuild:
+  - `devtools/conda-build/build.sh` now tries to relocate any canonical `PySide6` install tree into
+    `PySide6_uibcdf` after `cmake --install`
+  - `meta.yaml` now asserts the canonical `PySide6/Qt` tree should not remain
+  - the build script now exports `C_INCLUDE_PATH` and `CPLUS_INCLUDE_PATH` with `${PREFIX}/include` so
+    `GL/gl.h` is visible to `shiboken` during generation
+  - `QtCore` also has a fresh `6.9.2` compatibility cut for `QDirListing`:
+    - `QDirListing` and `QDirListingIterator` are marked `generate="no"` in
+      `PySide6/QtCore/typesystem_core_common.xml`
+    - generated wrapper entries were removed from `PySide6/QtCore/CMakeLists.txt`
+  - the last rebuild after those edits was interrupted intentionally for this pause; the next exact command is:
+    - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
+
+- The latest useful `pyside6-addons-uibcdf` changes are also already staged in the repo:
+  - `devtools/conda-build/build.sh` now has the same post-install relocation from canonical `PySide6`
+    to `PySide6_uibcdf`
+  - `meta.yaml` also asserts the canonical `PySide6/Qt` tree should not remain after install
+  - `Addons` should not be resumed before `Essentials` is rebuilt successfully with those layout changes
+  - once `Essentials` closes, the next exact command is:
+    - `conda build /home/diego/repos@uibcdf/pyside6-addons-uibcdf/devtools/conda-build`
+
+- Practical resume order from this checkpoint:
+  1. rebuild `pyside6-essentials-uibcdf`
+  2. confirm its `.conda` payload installs the Qt runtime under `PySide6_uibcdf/Qt/...` and no longer under `PySide6/Qt/...`
+  3. rebuild `pyside6-addons-uibcdf` on top of that corrected base
+  4. install the full family into a test env
+  5. adapt the standalone imports in `molsysviewer` to `PySide6_uibcdf` / `shiboken6_uibcdf`
+  6. validate coexistence in `molsyssuite-qt-spike`
+
 - The active `Addons` blocker is now more specific than before:
   - `shiboken6-uibcdf 6.9.2` builds
   - `pyside6-essentials-uibcdf 6.9.2` builds
