@@ -76,24 +76,29 @@ Do not append dated historical entries unless a date is itself operationally rel
       - `QTreeWidgetItemIterator`
 
 - Current exact blocker in `Essentials`:
-  - `QtGui` and most of `QtWidgets` now get much further than before
-  - the remaining hard failure is concentrated in:
-    - `QWidget::render(...)`
-  - the generated wrapper still uses:
-    - `QFlags<QTextItem::RenderFlag>`
-    - instead of:
-    - `QFlags<QWidget::RenderFlag>`
-  - this persists even after adding `remove="all"` entries for:
-    - `render(QPaintDevice*, const QPoint&, const QRegion&, QWidget::RenderFlags)`
-    - `render(QPainter*, const QPoint&, const QRegion&, QWidget::RenderFlags)`
-    - and the corresponding `QFlags<QWidget::RenderFlag>` spellings
+  - `QtWidgets` is no longer the active blocker
+  - `QtQml` is no longer blocked by `QQmlImageProviderBase::flags()`
+  - the build now gets further into `QtQuick`
+  - the active hard failures are now:
+    - `QQuickItem::flags() const`
+    - `QQuickItem::setFlags(...)`
+    - `QQuickRenderTarget::fromOpenGLTexture(...)`
+  - exact pattern:
+    - generated wrappers still use `QFlags<QCommandLineOption::Flag>`
+    - Qt expects:
+      - `QQuickItem::Flags`
+      - `QQuickRenderTarget::Flags`
   - practical reading:
-    - `QTreeWidgetItemIterator` is no longer the active failure
-    - `QWidget::render(...)` is the only hard blocker currently visible in the latest `Essentials` build
+    - removing `QQmlImageProviderBase` worked
+    - then `QQmlEngine` had to drop `addImageProvider(...)` and `imageProvider(...)`
+    - after that, the next dependency chain is now in `QtQuick`
+    - the architecture is still holding; the remaining work is peripheral binding cleanup
 
 - Next exact task:
-  1. find the real source of the `QWidget::render(...)` binding entry that survives the current `typesystem_widgets_common.xml` removals
-  2. disable that binding decisively for this `6.9.2` line
+  1. patch `QtQuick` for the current `6.9.2` line:
+     - remove `QQuickItem::flags() const`
+     - remove `QQuickItem::setFlags(...)`
+     - remove the problematic `QQuickRenderTarget::fromOpenGLTexture(...)` overload that takes flags
   3. rerun:
      - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
   4. only after `Essentials` closes again:
