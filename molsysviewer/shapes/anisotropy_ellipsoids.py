@@ -4,6 +4,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 
 
@@ -12,6 +13,17 @@ class AnisotropyEllipsoids:
 
     def __init__(self, view) -> None:
         self._view = view
+
+    @staticmethod
+    def _normalize_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
+        # Extract raw magnitudes in nanometers
+        centers_raw = puw.get_value(centers, to_unit="nm")
+        normalized: list[list[float]] = []
+        for idx, center in enumerate(centers_raw):
+            if len(center) != 3:
+                raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
+            normalized.append([float(center[0]), float(center[1]), float(center[2])])
+        return normalized
 
     @signal(tags=["shape", "ellipsoid"])
     @digest()
@@ -36,11 +48,10 @@ class AnisotropyEllipsoids:
     ):
         """Send oriented ellipsoids or flat disks based on anisotropy inputs."""
 
-        if centers is None or len(centers) == 0:
-            raise ValueError("centers must not be empty")
+        centers_list = self._normalize_centers(centers)
 
         options: dict = {
-            "centers": centers,
+            "centers": centers_list,
         }
         if eigenvalues is not None:
             options["eigenvalues"] = eigenvalues

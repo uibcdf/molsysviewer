@@ -6,6 +6,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 
 
@@ -28,8 +29,12 @@ class LinkShapes:
     def _to_coord_pairs(coords: Iterable[Sequence[Sequence[float]]] | None) -> list[list[list[float]]]:
         if coords is None:
             return []
+
+        # Extract raw magnitudes in nanometers
+        coords_raw = puw.get_value(coords, to_unit="nm")
+
         normalized: list[list[list[float]]] = []
-        for pair in coords:
+        for pair in coords_raw:
             if len(pair) != 2:
                 raise ValueError("Each entry in coordinate_pairs must have two points (start, end)")
             start, end = pair
@@ -102,7 +107,9 @@ class LinkShapes:
 
         n_links = len(coordinate_pairs_list) if coordinate_pairs_list else len(atom_pairs_list)
 
-        radii_list = self._normalize_optional_list(radii, n_links, float)
+        # Extract raw magnitudes in nanometers
+        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii_list = self._normalize_optional_list(radii_raw, n_links, float)
         colors_list = self._normalize_optional_list(colors, n_links, int)
         pocket_ids_list = self._normalize_optional_list(pocket_ids, n_links, lambda v: v)
         chain_ids_list = self._normalize_optional_list(chain_ids, n_links, str)

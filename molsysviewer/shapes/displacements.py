@@ -6,6 +6,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 
 import numpy as np
@@ -17,7 +18,9 @@ class DisplacementVectors:
 
     @staticmethod
     def _to_array(data: Iterable[Sequence[float]] | np.ndarray, name: str) -> np.ndarray:
-        arr = np.asarray(data, dtype=float)
+        # Extract raw magnitudes in nanometers
+        data_raw = puw.get_value(data, to_unit="nm")
+        arr = np.asarray(data_raw, dtype=float)
         if arr.ndim != 2 or arr.shape[1] != 3:
             raise ValueError(f"{name} must have shape (n, 3), got {arr.shape}")
         return arr
@@ -94,11 +97,11 @@ class DisplacementVectors:
 
         options: dict = {
             "vectors": vector_array.tolist(),
-            "length_scale": float(length_scale),
-            "min_length": float(min_length),
+            "length_scale": float(puw.get_value(length_scale)),
+            "min_length": float(puw.get_value(min_length, to_unit="nm")),
             "color_mode": color_mode,
             "color_component": int(color_component),
-            "radius_scale": float(radius_scale),
+            "radius_scale": float(puw.get_value(radius_scale)),
         }
 
         if origins_array is not None:
@@ -106,7 +109,7 @@ class DisplacementVectors:
         if atom_indices is not None:
             options["atom_indices"] = [int(i) for i in atom_indices]
         if max_length is not None:
-            options["max_length"] = float(max_length)
+            options["max_length"] = float(puw.get_value(max_length, to_unit="nm"))
         if color_map is not None:
             options["color_map"] = self._to_list(color_map)
         if radial_segments is not None:

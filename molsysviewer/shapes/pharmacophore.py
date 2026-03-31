@@ -5,6 +5,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 
 
@@ -28,8 +29,10 @@ class PharmacophoreShapes:
 
     @staticmethod
     def _norm_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
+        # Extract raw magnitudes in nanometers
+        centers_raw = puw.get_value(centers, to_unit="nm")
         out: list[list[float]] = []
-        for idx, c in enumerate(centers):
+        for idx, c in enumerate(centers_raw):
             if len(c) != 3:
                 raise ValueError(f"centers[{idx}] must have 3 coordinates")
             out.append([float(c[0]), float(c[1]), float(c[2])])
@@ -39,8 +42,10 @@ class PharmacophoreShapes:
     def _norm_vectors(vectors: Iterable[Sequence[float]] | None) -> list[list[float]] | None:
         if vectors is None:
             return None
+        # Extract raw magnitudes in nanometers
+        vectors_raw = puw.get_value(vectors, to_unit="nm")
         out: list[list[float]] = []
-        for idx, v in enumerate(vectors):
+        for idx, v in enumerate(vectors_raw):
             if len(v) != 3:
                 raise ValueError(f"directions[{idx}] must have 3 coordinates")
             out.append([float(v[0]), float(v[1]), float(v[2])])
@@ -76,7 +81,8 @@ class PharmacophoreShapes:
                 return [cast(seq[0])] * len(kinds_list)
             return [cast(v) for v in seq]
 
-        radii_list = _as_list(radii, float, 0.6)
+        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii_list = _as_list(radii_raw, float, 0.6)
         alphas_list = _as_list(alphas, float, 0.6)
         colors_list = colors if colors is not None else [INTERACTION_COLORS.get(k.lower(), 0xcccccc) for k in kinds_list]
         directions_list = self._norm_vectors(directions)
