@@ -17,194 +17,99 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-- Pause checkpoint for the clean `6.9.2` line:
-  - built successfully already:
-    - `shiboken6-uibcdf 6.9.2`
-    - `pyside6-essentials-uibcdf 6.9.2` (older successful build, before the latest layout-only rework)
-    - `qt6-positioning-uibcdf 6.9.2`
-    - `qt6-webengine-uibcdf 6.9.2`
-  - `pyside6-addons-uibcdf 6.9.2` is very near closure, but is intentionally paused until
-    `pyside6-essentials-uibcdf` is rebuilt again on top of the latest `_uibcdf` layout fixes
-  - the active packaging goal is now narrower than before:
-    - ensure the runtime tree no longer lands under canonical `site-packages/PySide6/...`
-    - ensure it lands under `site-packages/PySide6_uibcdf/...` instead
-    - then re-run `pyside6-addons-uibcdf` against that corrected base
-
-- The latest useful `pyside6-essentials-uibcdf` changes are already in-tree but not yet closed by a green rebuild:
-  - `devtools/conda-build/build.sh` now tries to relocate any canonical `PySide6` install tree into
-    `PySide6_uibcdf` after `cmake --install`
-  - `meta.yaml` now asserts the canonical `PySide6/Qt` tree should not remain
-  - the build script now exports `C_INCLUDE_PATH` and `CPLUS_INCLUDE_PATH` with `${PREFIX}/include` so
-    `GL/gl.h` is visible to `shiboken` during generation
-  - `QtCore` also has a fresh `6.9.2` compatibility cut for `QDirListing`:
-    - `QDirListing` and `QDirListingIterator` are marked `generate="no"` in
-      `PySide6/QtCore/typesystem_core_common.xml`
-    - generated wrapper entries were removed from `PySide6/QtCore/CMakeLists.txt`
-  - the last rebuild after those edits was interrupted intentionally for this pause; the next exact command is:
-    - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
-
-- The latest useful `pyside6-addons-uibcdf` changes are also already staged in the repo:
-  - `devtools/conda-build/build.sh` now has the same post-install relocation from canonical `PySide6`
-    to `PySide6_uibcdf`
-  - `meta.yaml` also asserts the canonical `PySide6/Qt` tree should not remain after install
-  - `Addons` should not be resumed before `Essentials` is rebuilt successfully with those layout changes
-  - once `Essentials` closes, the next exact command is:
-    - `conda build /home/diego/repos@uibcdf/pyside6-addons-uibcdf/devtools/conda-build`
-
-- Practical resume order from this checkpoint:
-  1. rebuild `pyside6-essentials-uibcdf`
-  2. confirm its `.conda` payload installs the Qt runtime under `PySide6_uibcdf/Qt/...` and no longer under `PySide6/Qt/...`
-  3. rebuild `pyside6-addons-uibcdf` on top of that corrected base
-  4. install the full family into a test env
-  5. adapt the standalone imports in `molsysviewer` to `PySide6_uibcdf` / `shiboken6_uibcdf`
-  6. validate coexistence in `molsyssuite-qt-spike`
-
-- The active `Addons` blocker is now more specific than before:
-  - `shiboken6-uibcdf 6.9.2` builds
-  - `pyside6-essentials-uibcdf 6.9.2` builds
-  - `qt6-positioning-uibcdf 6.9.2` builds
-  - `qt6-webengine-uibcdf 6.9.2` builds
-  - `pyside6-addons-uibcdf 6.9.2` now gets past the missing-runtime stage and
-    fails in the next layer:
-    - missing Qt development packages for `Positioning` / `WebEngine`
-    - concretely, CMake package exports such as `Qt6Positioning` and
-      `Qt6WebEngineQuick`
-    - and, very likely, the corresponding Qt headers/include trees too
-  - what is now confirmed:
-    - `qt6-main 6.9.2` does not provide `QtPositioning` or `QtWebEngine*`
-      headers or `lib/cmake` package directories
-    - local cached `qt6-main 6.10.2` also does not provide those module
-      headers or CMake package directories
-    - the functional `molsyssuite-qt-spike` env is still valid as a runtime
-      reference, but it does not expose a reusable development layer for these
-      Qt modules
-  - practical consequence:
-    - adding only runtime `.so` files was enough to unblock packaging of the
-      Qt helper packages
-    - it is not enough to let `pyside6-addons-uibcdf` source-build
-    - the next real decision is no longer about `_uibcdf` namespace work
-    - it is about how to supply the Qt development layer for:
-      - `QtPositioning`
-      - `QtWebEngineCore`
-      - `QtWebEngineQuick`
-      - `QtWebEngineWidgets`
-  - next task:
-    - do not keep patching `pyside6-addons-uibcdf` blindly
-    - first decide whether the Qt development layer will come from:
-      - local Qt source trees if they already exist,
-      - newly introduced Qt module source/vendor repos,
-      - or another controlled packaging route
-    - only after that should `Addons` be resumed
-
-- The active line to resume tomorrow is now unambiguous:
+- Active line:
   - clean `6.9.2`
   - Linux
   - Python `3.13`
   - `qt6-main 6.9.2`
-  - sibling repos:
-    - `shiboken6-uibcdf`
-    - `pyside6-essentials-uibcdf`
-    - `pyside6-addons-uibcdf`
   - runtime reference env:
     - `molsyssuite-qt-spike`
-    - with `PySide6`, `PySide6_Essentials`, `PySide6_Addons`, `shiboken6`
-      all in `6.9.2`
+    - `PySide6`, `PySide6_Essentials`, `PySide6_Addons`, `shiboken6` all `6.9.2`
   - source reference:
     - `pyside-setup@v6.9.2`
     - commit `d5c8535130fafc65d868753f5cf72b6b9b10d628`
   - operational rule:
-    - do not vendor from the current working tree of `pyside-setup`
-    - vendor only from the explicit `v6.9.2` reference
+    - do not vendor from the working tree of `pyside-setup`
+    - vendor only from explicit `v6.9.2`
 
-- `shiboken6-uibcdf 6.9.2` is now the first cleanly closed member of the family:
-  - re-vendored from the real upstream `v6.9.2`
-  - `_uibcdf` namespace reapplied on the real `6.9.2` source
-  - split-repo helper gap fixed again for the `6.9.2` line
-  - source-build recipe passes on Linux / Python `3.13`
-  - package test passes with:
-    - `import shiboken6_uibcdf`
-  - the exported install-tree config was also corrected so downstreams now see:
-    - `SHIBOKEN_PYTHON_MODULE_DIR = .../site-packages/shiboken6_uibcdf`
-  - practical result:
-    - `shiboken6-uibcdf` should now be treated as stable enough to serve as
-      the base package for `pyside6-essentials-uibcdf`
+- Family status:
+  - closed enough already:
+    - `shiboken6-uibcdf 6.9.2`
+    - `qt6-positioning-uibcdf 6.9.2`
+    - `qt6-webengine-uibcdf 6.9.2`
+  - partially closed:
+    - `pyside6-addons-uibcdf 6.9.2`
+    - it already got past namespace, runtime Qt, CMake exports, and most `QtWebEngine*` binding issues
+    - it should stay paused until `pyside6-essentials-uibcdf` closes again on top of the latest `_uibcdf` layout fixes
+  - active blocker:
+    - `pyside6-essentials-uibcdf 6.9.2`
 
-- `pyside6-essentials-uibcdf 6.9.2` is the exact resume point for tomorrow:
-  - the repo has already been re-vendored from `pyside-setup@v6.9.2`
-  - the core `_uibcdf` namespace split is already re-applied:
+- What `Essentials` already has in-tree:
+  - `_uibcdf` namespace split re-applied on real `6.9.2` source:
     - `BINDING_NAME = PySide6_uibcdf`
     - `libpyside` imports `PySide6_uibcdf`
     - `PySide6/__init__.py.in` imports `shiboken6_uibcdf`
-  - `doc/` is already removed from this packaging build path
-  - the current build is no longer failing in namespace/toolchain setup
-  - the current failure is much narrower and CMake-local:
-    - `cmake/PySideSetup.cmake` still fails on:
-      - `include(ShibokenHelpers)`
-    - even after the current attempt to point at the installed Shiboken helper
-      path
-  - the other noisy Qt warnings about missing optional components are not the
-    main blocker right now
-  - the exact next task is:
-    - make `PySideSetup.cmake` consume `ShibokenHelpers.cmake` robustly from
-      the installed `shiboken6-uibcdf` package
-    - preferably after or through `find_package(Shiboken6 ...)`, rather than
-      through fragile early `CMAKE_MODULE_PATH` guesses
-  - only after that should the next failure be interpreted as the next real
-    `Essentials` blocker
+  - post-install relocation from canonical `PySide6/...` to `PySide6_uibcdf/...`
+  - `meta.yaml` assertions against canonical `site-packages/PySide6/Qt`
+  - `C_INCLUDE_PATH` and `CPLUS_INCLUDE_PATH` exported so OpenGL headers remain visible to `shiboken`
+  - compatibility cuts already applied and intentional for this line:
+    - `QtCore`:
+      - `QDirListing`
+      - `QDirListingIterator`
+      - `QStringEncoder`
+      - `QStringDecoder`
+      - `QStringConverterBase::State`
+      - `QStringConverter`
+      - `QTextStream::encoding()`
+      - `QTextStream::setEncoding(...)`
+    - `QtNetwork`:
+      - `QLocalSocket`
+      - `QLocalServer`
+    - `QtGui`:
+      - RHI wrappers cut from the build
+      - `QTextOption` cut completely, plus all directly dependent overloads we found
+    - `QtWidgets`:
+      - `QFileDialog`
+      - `QFileSystemModel`
+      - `QMessageBox`
+      - `QPinchGesture`
+      - `QTreeWidgetItemIterator`
 
-- The current packaging reading for tomorrow is therefore:
-  - `shiboken6-uibcdf 6.9.2`: closed enough
-  - `pyside6-essentials-uibcdf 6.9.2`: next active blocker
-  - `pyside6-addons-uibcdf 6.9.2`: do not reopen until `Essentials` is
-    materially further along
+- Current exact blocker in `Essentials`:
+  - `QtGui` and most of `QtWidgets` now get much further than before
+  - the remaining hard failure is concentrated in:
+    - `QWidget::render(...)`
+  - the generated wrapper still uses:
+    - `QFlags<QTextItem::RenderFlag>`
+    - instead of:
+    - `QFlags<QWidget::RenderFlag>`
+  - this persists even after adding `remove="all"` entries for:
+    - `render(QPaintDevice*, const QPoint&, const QRegion&, QWidget::RenderFlags)`
+    - `render(QPainter*, const QPoint&, const QRegion&, QWidget::RenderFlags)`
+    - and the corresponding `QFlags<QWidget::RenderFlag>` spellings
+  - practical reading:
+    - `QTreeWidgetItemIterator` is no longer the active failure
+    - `QWidget::render(...)` is the only hard blocker currently visible in the latest `Essentials` build
 
-- The clean `6.9.2` line has now crossed its first real closure point:
-  - `shiboken6-uibcdf 6.9.2` was re-vendored from the actual upstream
-    `pyside-setup@v6.9.2` tag
-  - the `_uibcdf` namespace split was then re-applied on top of that real
-    source, not on the earlier mislabeled `6.10.2` tree
-  - the split-repo helper gap was also corrected explicitly for `6.9.2`:
-    - `build_scripts/` restored from `pyside-setup@v6.9.2`
-    - `libshiboken/embed/embedding_generator.py` patched again to understand
-      the split-repo layout
-  - the recipe is now no longer only a canonical source-build:
-    - post-install rewrites the installed package to
-      `site-packages/shiboken6_uibcdf/`
-    - `libshiboken6.abi3.so.*` is co-located with `Shiboken.abi3.so`
-      in that suffixed package directory
-  - the last runtime blocker was also closed:
-    - remaining `shibokensupport` imports of canonical `shiboken6`
-      were rewritten to `shiboken6_uibcdf`
-  - result:
-    - `conda build ../shiboken6-uibcdf/devtools/conda-build` now passes again
-      on Linux / Python 3.13 for the real `6.9.2` line
-    - the package test now passes with:
-      - `import shiboken6_uibcdf`
-  - practical consequence:
-    - the first clean member of the `6.9.2` `_uibcdf` family is now real
-    - the next package to reopen is `pyside6-essentials-uibcdf 6.9.2`
+- Next exact task:
+  1. find the real source of the `QWidget::render(...)` binding entry that survives the current `typesystem_widgets_common.xml` removals
+  2. disable that binding decisively for this `6.9.2` line
+  3. rerun:
+     - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
+  4. only after `Essentials` closes again:
+     - rerun `pyside6-addons-uibcdf`
+     - install the full family into a test env
+     - adapt standalone imports in `molsysviewer` to `PySide6_uibcdf` / `shiboken6_uibcdf`
+     - validate coexistence in `molsyssuite-qt-spike`
 
-- The current Qt-for-Python packaging reading is now:
-  - `6.10.2` taught us the right architecture:
-    - sibling `*-uibcdf` repos
-    - suffixed Python namespaces
-    - real source-builds rather than boundary-only repackaging
-  - but `6.10.2` against `qt6-main 6.9.2` is now clearly exploratory, not the
-    preferred release line
-  - the clean candidate line to resume now is:
-    - `shiboken6-uibcdf 6.9.2`
-    - `pyside6-essentials-uibcdf 6.9.2`
-    - `pyside6-addons-uibcdf 6.9.2`
-    - against `qt6-main 6.9.2`
-  - the `6.10.2` line remains useful and should not be discarded:
-    - it already validated the `_uibcdf` namespace split direction
-    - it already validated the first real `shiboken6-uibcdf` source-build
-    - it already exposed the concrete places where a mismatched Qt base starts
-      to hurt (`QRangeModel`, `QDirListing`, related typesystem/source list
-      drift)
-  - the operational rule from this point is:
-    - treat `6.10.2` as exploratory learning
-    - treat `6.9.2` as the first line to close cleanly
+- Strategic reading from this checkpoint:
+  - the architecture is no longer the problem
+  - the current work is narrow compatibility cleanup around peripheral bindings
+  - what we are cutting is intentionally narrower than general-purpose PySide:
+    - it is acceptable for the standalone distribution target
+    - it is not meant to preserve every convenience surface of upstream `QtWidgets`
+  - the clean `6.9.2` line remains the release candidate line
+  - the earlier `6.10.2` work remains useful as exploratory learning, but not as the preferred packaging target
 
 - `0.16.0` should now be read as the checkpoint where:
   - the mature product stories were verified together as one coherent release
