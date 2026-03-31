@@ -4,6 +4,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 
 
@@ -16,8 +17,11 @@ class TriangleFaces:
         if vertices is None:
             return []
 
+        # Extract raw magnitudes in nanometers
+        vertices_raw = puw.get_value(vertices, to_unit="nm")
+
         normalized: list[list[list[float]]] = []
-        for tri in vertices:
+        for tri in vertices_raw:
             tri_list = list(tri)
             if len(tri_list) == 3 and all(isinstance(v, Sequence) and len(v) == 3 for v in tri_list):
                 normalized.append(
@@ -119,13 +123,13 @@ class TriangleFaces:
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:
-            options["edge_radius"] = float(edge_radius)
+            options["edge_radius"] = float(puw.get_value(edge_radius, to_unit="nm"))
         if edge_color is not None:
             options["edge_color"] = int(edge_color)
         if show_normals is not None:
             options["show_normals"] = bool(show_normals)
         if normal_length is not None:
-            options["normal_length"] = float(normal_length)
+            options["normal_length"] = float(puw.get_value(normal_length, to_unit="nm"))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
         tag = tag or self._view._next_layer_tag()  # noqa: SLF001

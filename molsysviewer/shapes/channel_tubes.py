@@ -4,6 +4,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 
 
@@ -15,8 +16,10 @@ class ChannelTubes:
 
     @staticmethod
     def _normalize_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
+        # Extract raw magnitudes in nanometers
+        centers_raw = puw.get_value(centers, to_unit="nm")
         normalized: list[list[float]] = []
-        for idx, center in enumerate(centers):
+        for idx, center in enumerate(centers_raw):
             if len(center) != 3:
                 raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
             normalized.append([float(center[0]), float(center[1]), float(center[2])])
@@ -59,7 +62,7 @@ class ChannelTubes:
         """Generate a smoothed tube from ordered centers/radii (e.g., TopoMT routes)."""
 
         centers_list = self._normalize_centers(centers)
-        radii_list = [float(r) for r in radii]
+        radii_list = [float(r) for r in puw.get_value(radii, to_unit="nm")]
 
         if len(centers_list) < 2:
             raise ValueError("You need at least two centers for a channel")

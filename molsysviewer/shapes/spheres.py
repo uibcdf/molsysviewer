@@ -4,6 +4,7 @@ from typing import Sequence
 import numpy as np
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from ..layers import Layer
 from .._private.arg_digestion import digest
 
@@ -30,8 +31,8 @@ class SphereShapes:
             {
                 "op": "add_sphere",
                 "options": {
-                    "center": list(center),
-                    "radius": float(radius),
+                    "center": list(puw.get_value(center, to_unit="nm")),
+                    "radius": float(puw.get_value(radius, to_unit="nm")),
                     "color": int(color),
                     "alpha": float(alpha),
                     "tag": tag,
@@ -69,7 +70,8 @@ class SphereShapes:
         tags
             Optional tag (scalar or list, one per sphere).
         """
-        centers_list = [list(c) for c in centers]
+        centers_raw = puw.get_value(centers, to_unit="nm")
+        centers_list = [list(c) for c in centers_raw]
         n = len(centers_list)
 
         if n == 0:
@@ -85,7 +87,8 @@ class SphereShapes:
             else:
                 return [cast(value)] * n
 
-        radii = _as_list(radii, n, float)
+        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii = _as_list(radii_raw, n, float)
         colors = _as_list(colors, n, int)
         alphas = _as_list(alphas, n, float)
         tags = _as_list(tags, n, str) if tags is not None else [None] * n
@@ -118,8 +121,10 @@ class SphereShapes:
         - Separate colors and alpha for alpha-spheres and atoms.
         - Uses a single message to minimize per-shape overhead.
         """
-        centers_list = [list(c) for c in centers]
-        radii_list = [float(r) for r in radii]
+        centers_raw = puw.get_value(centers, to_unit="nm")
+        centers_list = [list(c) for c in centers_raw]
+        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii_list = [float(r) for r in radii_raw]
 
         if len(centers_list) != len(radii_list):
             raise ValueError("centers and radii must have the same length")
@@ -134,9 +139,10 @@ class SphereShapes:
         }
 
         if atom_centers is not None:
+            atom_centers_raw = puw.get_value(atom_centers, to_unit="nm")
             options["atom_spheres"] = {
-                "centers": [list(c) for c in atom_centers],
-                "radius": float(atom_radius),
+                "centers": [list(c) for c in atom_centers_raw],
+                "radius": float(puw.get_value(atom_radius, to_unit="nm")),
                 "color": int(color_atoms),
                 "alpha": float(alpha_atoms),
             }
