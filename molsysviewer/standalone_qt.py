@@ -12,11 +12,9 @@ from .standalone import _resolve_view, build_standalone0_html
 
 
 QT_IMPORT_ERROR = (
-    "PySide6 with Qt WebEngine is required for the standalone Qt prototype. "
-    "Install `pyside6` and ensure `PySide6.QtWebEngineWidgets` is available. "
-    "If the conda-forge build does not expose that module in your environment, "
-    "install the matching PyPI addons package, for example "
-    "`pip install PySide6-Addons==<your-pyside6-version>`."
+    "PySide6_uibcdf with Qt WebEngine is required for the standalone Qt prototype. "
+    "Install the UIBCDF conda stack from the uibcdf channel:\n"
+    "  conda install -c uibcdf -c conda-forge pyside6-addons-uibcdf"
 )
 
 QT_STATE_FILENAME = "standalone_qt0_state.json"
@@ -24,17 +22,21 @@ QT_STATE_FILENAME = "standalone_qt0_state.json"
 
 def _import_qt():
     try:
-        from PySide6.QtCore import QUrl
-        from PySide6.QtGui import QAction
-        from PySide6.QtWebEngineWidgets import QWebEngineView
-        from PySide6.QtWidgets import QApplication, QFileDialog, QInputDialog, QMainWindow, QMessageBox
+        from PySide6_uibcdf.QtCore import QUrl
+        from PySide6_uibcdf.QtGui import QAction
+        from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
+        from PySide6_uibcdf.QtWidgets import QApplication, QInputDialog, QMainWindow, QMessageBox
     except Exception as exc:  # pragma: no cover - exercised by contract test
         raise ImportError(QT_IMPORT_ERROR) from exc
 
+    # QFileDialog is not available in PySide6_uibcdf: shiboken confuses
+    # QFileDialog::Option with QAbstractFileIconProvider::Option across all
+    # methods, making the wrapper uncompilable. File dialogs are disabled;
+    # callers must guard with hasattr(qt["QFileDialog"], "getOpenFileName").
     return {
         "QAction": QAction,
         "QApplication": QApplication,
-        "QFileDialog": QFileDialog,
+        "QFileDialog": None,
         "QInputDialog": QInputDialog,
         "QMainWindow": QMainWindow,
         "QMessageBox": QMessageBox,
