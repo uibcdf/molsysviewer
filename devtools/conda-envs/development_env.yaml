@@ -4,7 +4,7 @@ channels:
 
 dependencies:
   # --- Python base ---
-  - python=3.12
+  - python=3.13
   - pip
   - versioningit
 
@@ -32,12 +32,10 @@ dependencies:
   # --- NodeJS for JS development and esbuild ---
   - nodejs>=18
 
-  # --- Optional: base Qt package only.
-  # The currently supported standalone Qt spike recipe itself is documented in:
-  # devguide/standalone_supported_environment.md
-  # Keep the main env conservative; use a derived Qt-spike env for coherent
-  # PySide6 + QtWebEngine work.
-  - pyside6
+  # --- Qt standalone stack (UIBCDF channel) ---
+  # Provides PySide6_uibcdf with QtWebEngineWidgets for the standalone Qt prototype.
+  # Requires the uibcdf channel (listed above).
+  - pyside6-addons-uibcdf ==6.9.2
 
   # --- Documentation with Sphinx and MyST ---
   - jupyterlab
@@ -50,7 +48,3 @@ dependencies:
   - sphinx-tabs
   - pydata-sphinx-theme
   - myst-nb
-  - pip:
-      # Do not treat this as the final supported standalone recipe by itself.
-      # See devguide/standalone_supported_environment.md.
-      - PySide6-Addons
