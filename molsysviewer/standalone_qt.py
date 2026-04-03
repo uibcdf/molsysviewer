@@ -25,21 +25,19 @@ def _import_qt():
         from PySide6_uibcdf.QtCore import QUrl
         from PySide6_uibcdf.QtGui import QAction
         from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
-        from PySide6_uibcdf.QtWidgets import QApplication, QInputDialog, QMainWindow
+        from PySide6_uibcdf.QtWidgets import (
+            QApplication, QFileDialog, QInputDialog, QMainWindow, QMessageBox,
+        )
     except Exception as exc:  # pragma: no cover - exercised by contract test
         raise ImportError(QT_IMPORT_ERROR) from exc
 
-    # QFileDialog and QMessageBox are not available in PySide6_uibcdf: shiboken
-    # confuses their enums (Option, StandardButton) with same-named enums in
-    # other classes, making the wrappers uncompilable. Callers must guard with
-    # hasattr(qt["QFileDialog"], "getOpenFileName") etc.
     return {
         "QAction": QAction,
         "QApplication": QApplication,
-        "QFileDialog": None,
+        "QFileDialog": QFileDialog,
         "QInputDialog": QInputDialog,
         "QMainWindow": QMainWindow,
-        "QMessageBox": None,
+        "QMessageBox": QMessageBox,
         "QUrl": QUrl,
         "QWebEngineView": QWebEngineView,
     }
