@@ -5,10 +5,10 @@ def digest_n_waters(n_waters, caller=None):
     if caller=='molsysmt.basic.get.get':
         if isinstance(n_waters, bool):
             return n_waters
-    elif caller=='molsysmt.basic.contains.contains':
+    elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
         if isinstance(n_waters, (bool, int)):
             return n_waters
-    elif caller=='molsysmt.basic.is_composed_of.is_composed_of':
+    elif caller in ('molsysmt.basic.is_composed_of.is_composed_of', 'molsysviewer.viewer.is_composed_of', 'molsysviewer.whole.is_composed_of', 'molsysviewer.regions.is_composed_of'):
         if isinstance(n_waters, (bool, int)):
             return n_waters
 

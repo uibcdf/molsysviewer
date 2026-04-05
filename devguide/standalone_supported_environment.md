@@ -27,17 +27,17 @@ packages. The two Qt helper packages (`qt6-positioning-uibcdf`,
 `qt6-webengine-uibcdf`) are pulled in as run dependencies automatically.
 
 ```bash
-conda install -c uibcdf -c conda-forge \
+mamba install -c uibcdf -c conda-forge \
     "shiboken6-uibcdf=6.9.2=*_3" \
     "pyside6-essentials-uibcdf=6.9.2=*_3" \
     "pyside6-addons-uibcdf=6.9.2=*_3"
 ```
 
-If the conda solver has trouble (common in complex envs), install from direct
+If the solver has trouble (common in complex envs), install from direct
 file paths instead:
 
 ```bash
-conda install -n <env> \
+mamba install -n <env> \
     /path/to/conda-bld/linux-64/shiboken6-uibcdf-6.9.2-*_3.conda \
     /path/to/conda-bld/linux-64/pyside6-essentials-uibcdf-6.9.2-*_3.conda \
     /path/to/conda-bld/linux-64/pyside6-addons-uibcdf-6.9.2-*_3.conda

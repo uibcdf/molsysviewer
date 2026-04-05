@@ -1,3 +1,6 @@
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
+
 from molsysviewer.shapes import SphereShapes
 
 
@@ -19,15 +22,15 @@ def test_add_set_alpha_spheres_message():
     view = DummyView()
     spheres = SphereShapes(view)
 
-    centers = [(0, 0, 0), (1, 1, 1)]
-    radii = [1.0, 1.5]
-    atom_centers = [(2, 2, 2)]
+    centers = puw.quantity([(0, 0, 0), (1, 1, 1)], "nm")
+    radii = puw.quantity([1.0, 1.5], "nm")
+    atom_centers = puw.quantity([(2, 2, 2)], "nm")
 
     spheres.add_set_alpha_spheres(
         centers=centers,
         radii=radii,
         atom_centers=atom_centers,
-        atom_radius=0.8,
+        atom_radius=puw.quantity(0.8, "nm"),
         color_alpha_spheres=0x111111,
         color_atoms=0x222222,
         alpha_alpha_spheres=0.2,
@@ -61,7 +64,10 @@ def test_add_set_alpha_spheres_requires_matching_lengths():
     view = DummyView()
     spheres = SphereShapes(view)
     try:
-        spheres.add_set_alpha_spheres(centers=[(0, 0, 0)], radii=[1.0, 2.0])
+        spheres.add_set_alpha_spheres(
+            centers=puw.quantity([(0, 0, 0)], "nm"),
+            radii=puw.quantity([1.0, 2.0], "nm"),
+        )
     except ValueError:
         pass
     else:

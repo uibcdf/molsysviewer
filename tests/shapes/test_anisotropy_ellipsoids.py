@@ -1,3 +1,6 @@
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
+
 from molsysviewer.shapes import AnisotropyEllipsoids
 
 
@@ -20,7 +23,7 @@ def test_add_anisotropy_ellipsoids_message():
     ell = AnisotropyEllipsoids(view)
 
     ell.add_anisotropy_ellipsoids(
-        centers=[(0, 0, 0), (1, 1, 1)],
+        centers=puw.quantity([(0, 0, 0), (1, 1, 1)], "nm"),
         eigenvalues=[(1.0, 0.5, 0.2), (0.8, 0.4, 0.1)],
         eigenvectors=[
             [(1, 0, 0), (0, 1, 0), (0, 0, 1)],

@@ -5,10 +5,10 @@ def digest_n_proteins(n_proteins, caller=None):
     if caller=='molsysmt.basic.get.get':
         if isinstance(n_proteins, bool):
             return n_proteins
-    elif caller=='molsysmt.basic.contains.contains':
+    elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
         if isinstance(n_proteins, (bool, int)):
             return n_proteins
-    elif caller=='molsysmt.basic.is_composed_of.is_composed_of':
+    elif caller in ('molsysmt.basic.is_composed_of.is_composed_of', 'molsysviewer.viewer.is_composed_of', 'molsysviewer.whole.is_composed_of', 'molsysviewer.regions.is_composed_of'):
         if isinstance(n_proteins, (bool, int)):
             return n_proteins
 

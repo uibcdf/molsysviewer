@@ -1,3 +1,6 @@
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401
+
 from molsysviewer import demo
 
 
@@ -30,7 +33,7 @@ def test_group_label_registers_annotation_layer_and_export_message():
 def test_clear_decorations_labels_clears_annotation_history_only():
     view = demo["dialanine"]
     view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
-    view.shapes.add_sphere(center=[0.0, 0.0, 0.0], radius=1.0, tag="shape-notes")
+    view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), radius=puw.quantity(1.0, "nm"), tag="shape-notes")
 
     assert len(view._annotation_history) == 1  # noqa: SLF001
     assert len(view._shape_history) == 1  # noqa: SLF001

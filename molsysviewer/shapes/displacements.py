@@ -46,7 +46,7 @@ class DisplacementVectors:
         *,
         atom_indices: Iterable[int] | None = None,
         length_scale: float = 1.0,
-        min_length: float = 0.0,
+        min_length="0.0 nm",
         max_length: float | None = None,
         color_mode: str = "norm",
         color_component: int = 2,
@@ -97,11 +97,11 @@ class DisplacementVectors:
 
         options: dict = {
             "vectors": vector_array.tolist(),
-            "length_scale": float(puw.get_value(length_scale)),
+            "length_scale": float(length_scale),
             "min_length": float(puw.get_value(min_length, to_unit="nm")),
             "color_mode": color_mode,
             "color_component": int(color_component),
-            "radius_scale": float(puw.get_value(radius_scale)),
+            "radius_scale": float(radius_scale),
         }
 
         if origins_array is not None:

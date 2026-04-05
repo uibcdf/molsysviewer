@@ -1,3 +1,6 @@
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401
+
 from molsysviewer import demo
 
 
@@ -268,7 +271,7 @@ def test_context_action_delete_annotation_executes_python_bridge():
 
 def test_context_action_delete_shape_executes_python_bridge():
     view = demo["dialanine"]
-    view.shapes.add_sphere(center=[0.0, 0.0, 0.0], radius=1.0, tag="shape-1")
+    view.shapes.add_sphere(center=puw.quantity([0.0, 0.0, 0.0], "nm"), radius=puw.quantity(1.0, "nm"), tag="shape-1")
 
     assert "shape-1" in view.layers
     assert len(view._shape_history) == 1  # noqa: SLF001

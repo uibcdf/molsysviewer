@@ -1,5 +1,6 @@
 from molsysviewer._private.exceptions import ArgumentError
 import numpy as np
+from molsysviewer._pyunitwizard import puw
 
 def digest_center(center, syntax="MolSysMT", caller=None):
     """ Checks if a given center has the correct type and syntax
@@ -49,6 +50,8 @@ def digest_center(center, syntax="MolSysMT", caller=None):
             return center
 
     elif caller is not None and caller.startswith("molsysviewer."):
+        if puw.is_quantity(center):
+            return center
         if isinstance(center, (np.ndarray, list, tuple)):
             array = np.asarray(center, dtype=float)
             if array.ndim == 1 and array.shape[0] == 3:
