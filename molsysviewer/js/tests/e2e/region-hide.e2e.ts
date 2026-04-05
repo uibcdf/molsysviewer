@@ -75,6 +75,7 @@ async function run() {
         throw lastErr instanceof Error ? lastErr : new Error(msg);
     }
     const page = await browser.newPage();
+    await page.setViewportSize({ width: 1280, height: 900 });
 
     const errors: string[] = [];
     page.on("pageerror", err => errors.push(String(err)));
@@ -87,13 +88,13 @@ async function run() {
     <!doctype html>
     <html>
       <body>
-        <div id="root" style="width: 600px; height: 400px;"></div>
+        <div id="root" style="width: 800px; height: 600px;"></div>
       </body>
     </html>`;
 
     await page.setContent(html, { waitUntil: "networkidle" });
     await page.addScriptTag({ path: harnessPath });
-    await page.waitForFunction(() => !!(window as any).Harness, { timeout: 60000 });
+    await page.waitForFunction(() => !!(window as any).Harness, { timeout: 30000 });
 
     await page.evaluate(async pdb => {
         const controller = await (window as any).Harness.createController("root");
@@ -114,12 +115,15 @@ async function run() {
             representation: "ball-and-stick",
         });
         await controller.handleMessage({ op: "hide_region", tag: "region1" });
+        await controller.handleMessage({ op: "set_panel_mode", panel: "navigate", expanded: true });
+        // Wait for panel CSS transition to complete
+        await new Promise(r => setTimeout(r, 300));
     }, PDB_TEXT);
 
-    await page.waitForSelector('[data-molsysviewer-group-strip="true"]', { timeout: 60000 });
+    await page.waitForSelector('[data-molsysviewer-group-strip="true"]', { timeout: 30000 });
     const firstGroup = page.locator('[data-molsysviewer-group-item="true"]').first();
     await firstGroup.click({ button: "right" });
-    await page.waitForSelector('[data-molsysviewer-context-menu="true"]', { timeout: 60000 });
+    await page.waitForSelector('[data-molsysviewer-context-menu="true"]', { timeout: 30000 });
     const menuTitle = await page.locator('[data-molsysviewer-context-menu-title="true"]').textContent();
     assert.ok(menuTitle && menuTitle !== "Canvas", `Expected a group context menu title, got: ${menuTitle}`);
     assert.ok(!String(menuTitle).includes("No target under cursor"), `Unexpected empty-target menu title: ${menuTitle}`);
@@ -142,9 +146,11 @@ async function run() {
         await controller.handleMessage({ op: "clear_shapes_by_tag", tag: "shape-e2e" });
 
         // Full scene reset and assert registry clear event propagated back.
+        const msgsBefore: number = ((window as any).__messages ?? []).length;
         await controller.handleMessage({ op: "clear_all" });
-        const lastMsg = (window as any).__lastMessage;
-        if (!lastMsg || lastMsg.event !== "registry_cleared") {
+        const msgsAfterClear: any[] = (window as any).__messages ?? [];
+        const hadRegistryCleared = msgsAfterClear.slice(msgsBefore).some((m: any) => m?.event === "registry_cleared");
+        if (!hadRegistryCleared) {
             throw new Error("Expected registry_cleared event after clear_all");
         }
 
