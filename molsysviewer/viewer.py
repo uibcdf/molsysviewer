@@ -23,6 +23,7 @@ from .annotations import AnnotationsManager
 from .active_selection import ActiveSelection
 from .addons import ViewAddonsManager, addons as global_addons
 from .exports import ExportManager
+from .figures import FigureSpec
 from .interaction_targets import InteractionTarget
 from .measurements import MeasurementsManager
 from .selections import SelectionsManager, Selection
@@ -287,6 +288,7 @@ class MolSysView:
         self._pending_messages: list[dict] = []
         self._message_history: list[dict] = []
         self._last_camera_snapshot: dict | None = None
+        self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
         self._last_hover_event: dict | None = None
         self._last_click_event: dict | None = None
@@ -1962,6 +1964,7 @@ class MolSysView:
         self._measurement_history.clear()
         self._selection_history.clear()
         self._last_label = None
+        self._current_figure_spec = None
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
@@ -2066,6 +2069,31 @@ class MolSysView:
                 "duration_ms": duration_value,
             }
         )
+
+    @signal(tags=["figure"])
+    @digest()
+    def set_figure_spec(self, figure_spec: FigureSpec, *, skip_digestion: bool = False) -> None:
+        """Anchor a figure recipe to the viewer workbench Scene section.
+
+        Sends a ``set_figure_spec`` op to the frontend so the Workbench → Scene
+        section reflects the explicit figure baseline.  The spec is also stored
+        for replay in HTML exports.
+
+        Parameters
+        ----------
+        figure_spec
+            A :class:`~molsysviewer.figures.FigureSpec` instance.
+        """
+        if not isinstance(figure_spec, FigureSpec):
+            raise TypeError("set_figure_spec expects a FigureSpec instance.")
+        payload: dict = {
+            "op": "set_figure_spec",
+            "figure_preset": figure_spec.preset,
+            "figure_scale": float(figure_spec.scale),
+            "figure_variants": list(figure_spec.build_publication_variants().keys()),
+        }
+        self._current_figure_spec = dict(payload)
+        self._send(payload)
 
     @signal(tags=["query"])
     @digest()
@@ -2808,6 +2836,8 @@ class MolSysView:
     def _build_export_messages(self) -> list[dict]:
         """Return the messages to replay when exporting HTML."""
         messages = self._clean_message_history()
+        if self._current_figure_spec:
+            messages.append(dict(self._current_figure_spec))
         if self._last_camera_snapshot:
             messages.append(
                 {

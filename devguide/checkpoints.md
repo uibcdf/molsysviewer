@@ -2290,3 +2290,74 @@ Los tests que asumían `ops[0] == "load_molsys_payload"` han sido corregidos a
 ### Resultado
 
 186 tests pasan (0 fallos) en la suite principal (excluyendo integration/loaders).
+
+## 2026-04-04 Phase C — Maduración de figure export y workbench Scene
+
+### Contexto
+
+El roadmap Phase C tiene como criterio de éxito: "the figure story feels like part of the
+workbench, not a bolt-on helper". El problema concreto: la sección Scene del Workbench
+mostraba "No scene style selected." para cualquier vista creada con `demo[...]` porque
+`workbenchScene` solo se inicializaba en `set_global_representation`.
+
+### Cambios implementados
+
+**Frontend (TS):**
+
+- `viewer-controller.ts` — On any load op (`load_molsys_payload`, `load_structure_from_string`,
+  `load_pdb_string`, `load_pdb_id`, `load_structure_from_url`), si `workbenchScene` es null,
+  se inicializa con el baseline de figura por defecto:
+  `{ figurePreset: "publication-light", figureScale: 2.0, figureVariants: ["dark", "transparent"] }`.
+  Esto garantiza que la sección Scene del Workbench siempre muestre información de figura
+  tras cargar una estructura.
+- `viewer-messages.ts` — Nuevo tipo `SetFigureSpecMessage` (`op: "set_figure_spec"`) añadido
+  al union `ViewerMessage`.
+- `viewer-controller.ts` — Maneja el op `set_figure_spec`: actualiza `workbenchScene` con los
+  campos de figura explícitos (figurePreset, figureScale, figureVariants).
+- `viewer-controller.ts` — `set_global_representation` ahora usa spread (`...this.workbenchScene`)
+  para preservar información de figura si ya había un baseline.
+
+**Python:**
+
+- `viewer.py` — Nuevo campo `_current_figure_spec: dict | None = None`.
+- `viewer.py` — Nuevo método `set_figure_spec(figure_spec: FigureSpec)`:
+  - Valida que el argumento sea un `FigureSpec`.
+  - Construye el payload `set_figure_spec` con `figure_preset`, `figure_scale`, `figure_variants`.
+  - Almacena en `_current_figure_spec` para replay en exports HTML.
+  - Envía el op al frontend.
+- `viewer.py` — `reset_viewer()` limpia `_current_figure_spec = None`.
+- `viewer.py` — `_build_export_messages()` incluye `_current_figure_spec` si no es None.
+- `viewer.py` — Importa `FigureSpec` directamente desde `.figures`.
+
+**Tests:**
+
+- `tests/test_image_export_request.py` — 3 nuevos tests:
+  - `test_set_figure_spec_sends_correct_op` — verifica el payload enviado al frontend.
+  - `test_set_figure_spec_stored_and_included_in_export_messages` — verifica que se incluye en el replay.
+  - `test_set_figure_spec_cleared_after_reset_viewer` — verifica limpieza tras reset.
+
+### Flujo de uso (smoke test step 12)
+
+```python
+from molsysviewer.figures import FigureSpec
+
+view.set_panel_mode(panel="workbench", expanded=True)
+# Scene section ya muestra baseline de figura (desde la carga)
+
+base = FigureSpec.from_view(view, preset="publication-light", scale=2.0)
+view.set_figure_spec(figure_spec=base)
+# Scene section ahora refleja el spec explícito
+
+view.export.figure("figure.png", figure_spec=base)
+view.export.figure_variants("figures/", variants=base.build_variants({
+    "dark": {"background": "dark", "preset": "publication-dark"},
+}), stem="scene")
+view.export.figure_publication_set("publication/", figure_spec=base, stem="scene")
+```
+
+### Criterio Phase C: ahora satisfecho
+
+- Scene section muestra figura baseline inmediatamente tras cargar una estructura ✓
+- `view.set_figure_spec(base)` conecta la FigureSpec con el workbench ✓
+- El spec se incluye en el replay de HTML exports ✓
+- JS unit tests: 64 passing ✓

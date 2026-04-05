@@ -435,3 +435,52 @@ def test_frontend_image_export_event_is_recorded():
     view._handle_frontend_event(event)  # noqa: SLF001
 
     assert view._last_image_export_event == event  # noqa: SLF001
+
+
+def test_set_figure_spec_sends_correct_op():
+    view = MolSysView(debug_js=True)
+    view._ready = True  # noqa: SLF001
+    sent = []
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+
+    spec = FigureSpec(preset="publication-dark", scale=3.0)
+    view.set_figure_spec(figure_spec=spec)
+
+    assert len(sent) == 1
+    msg = sent[0]
+    assert msg["op"] == "set_figure_spec"
+    assert msg["figure_preset"] == "publication-dark"
+    assert msg["figure_scale"] == 3.0
+    assert set(msg["figure_variants"]) == {"light", "dark", "transparent"}
+
+
+def test_set_figure_spec_stored_and_included_in_export_messages():
+    view = MolSysView(debug_js=True)
+    sent = []
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+
+    spec = FigureSpec(preset="publication-light", scale=2.0)
+    view.set_figure_spec(figure_spec=spec)
+
+    msgs = view._build_export_messages()  # noqa: SLF001
+    ops = [m["op"] for m in msgs]
+    assert "set_figure_spec" in ops
+    figure_msg = next(m for m in msgs if m["op"] == "set_figure_spec")
+    assert figure_msg["figure_preset"] == "publication-light"
+    assert figure_msg["figure_scale"] == 2.0
+
+
+def test_set_figure_spec_cleared_after_reset_viewer():
+    view = MolSysView(debug_js=True)
+
+    view.set_figure_spec(figure_spec=FigureSpec(preset="publication-light", scale=2.0))
+    assert view._current_figure_spec is not None  # noqa: SLF001
+
+    view.reset_viewer()
+
+    # _current_figure_spec is cleared so no figure spec is appended at export time.
+    assert view._current_figure_spec is None  # noqa: SLF001
+    msgs = view._build_export_messages()  # noqa: SLF001
+    # The last message in export should NOT be a set_figure_spec (it was cleared).
+    if msgs:
+        assert msgs[-1]["op"] != "set_figure_spec"

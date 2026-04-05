@@ -302,6 +302,13 @@ export type SetGlobalRepresentationMessage = {
     params?: Record<string, unknown>;
 };
 
+export type SetFigureSpecMessage = {
+    op: "set_figure_spec";
+    figure_preset?: string;
+    figure_scale?: number;
+    figure_variants?: string[];
+};
+
 export type ShowGlobalMessage = {
     op: "show_global";
     target?: "global" | "all";
@@ -495,6 +502,7 @@ export type ViewerMessage =
     DeleteLayerMessage |
     SetLayerTagMessage |
     SetGlobalRepresentationMessage |
+    SetFigureSpecMessage |
     ShowGlobalMessage |
     HideGlobalMessage |
     ZoomMessage |
