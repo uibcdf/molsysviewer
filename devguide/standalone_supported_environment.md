@@ -11,54 +11,55 @@ The goal here is:
 - keep the recipe explicit
 - avoid rediscovering the same conda/pip boundary by trial and error
 
-## Current Position
+## Current Position (2026-04-04)
 
-The standalone Qt host is already technically viable.
+The standalone Qt host is **technically complete and packaging-validated**.
 
-What is **not** yet final is the packaging/distribution strategy.
-
-So this document should be read as:
-
-- supported prototype/development recipe
-- not final end-user installation guidance
-
-## What Was Learned
-
-The current evidence says:
-
-- the browser-hosted standalone bridge is fine as a teaching bridge
-- the final standalone host direction remains:
-  - `PySide6 + Qt WebEngine`
-- a coherent `pip` Qt stack worked in practice
-- the tested conda-only path did **not** expose
-  `PySide6.QtWebEngineWidgets` reliably enough in the development environment
-- mixing:
-  - conda `pyside6`
-  - pip `PySide6-Addons`
-  inside the same main development environment was not reliable
+The supported recipe is now **conda-native** from the `uibcdf` channel.
+The previous `pip install PySide6==6.9.2` recipe is **obsolete**.
 
 ## Supported Development Recipe
 
-The currently supported recipe for Qt-host development is:
+### Conda-native recipe (current)
 
-1. start from a working MolSysSuite-capable environment
-2. derive a dedicated Qt-spike environment from it
-3. install a coherent Qt stack from `pip`
-4. keep the rest of the scientific/runtime stack intact
-
-### Practical shape
-
-The recommended approach is:
-
-1. clone the main working environment
-2. in that derived environment, install:
+Add the `uibcdf` channel to your environment and install the three Python-binding
+packages. The two Qt helper packages (`qt6-positioning-uibcdf`,
+`qt6-webengine-uibcdf`) are pulled in as run dependencies automatically.
 
 ```bash
-pip install PySide6==6.9.2 PySide6-Addons==6.9.2
+conda install -c uibcdf -c conda-forge \
+    "shiboken6-uibcdf=6.9.2=*_3" \
+    "pyside6-essentials-uibcdf=6.9.2=*_3" \
+    "pyside6-addons-uibcdf=6.9.2=*_3"
 ```
 
-This should be treated as the supported prototype recipe unless a new validated
-recipe replaces it in `devguide`.
+If the conda solver has trouble (common in complex envs), install from direct
+file paths instead:
+
+```bash
+conda install -n <env> \
+    /path/to/conda-bld/linux-64/shiboken6-uibcdf-6.9.2-*_3.conda \
+    /path/to/conda-bld/linux-64/pyside6-essentials-uibcdf-6.9.2-*_3.conda \
+    /path/to/conda-bld/linux-64/pyside6-addons-uibcdf-6.9.2-*_3.conda
+```
+
+### Validation smoke
+
+```python
+from PySide6_uibcdf.QtWidgets import (
+    QApplication, QFileDialog, QMainWindow, QMessageBox
+)
+from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
+print("OK")
+```
+
+## What Was Learned
+
+- A coherent `pip` Qt stack worked in practice as a prototype path.
+- Mixing conda `pyside6` + pip `PySide6-Addons` was not reliable.
+- The correct long-term path was a source-built, namespace-separated
+  (`PySide6_uibcdf`) family published to a UIBCDF conda channel.
+- The pip recipe is retained here only as historical context.
 
 ## Why Not The Main Environment
 

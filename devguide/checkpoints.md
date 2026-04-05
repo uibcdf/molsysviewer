@@ -2122,3 +2122,109 @@ This is preferred over a permanent lower band because it preserves canvas area w
   - decidir si la estrategia correcta es
     - empaquetar módulos Qt adicionales tipo `qt6-positioning-uibcdf` / `qt6-webengine-uibcdf`
     - o cambiar el modelo de `Addons` para usar runtime Qt embebido más cercano al wheel family
+
+## 2026-04-04 Stack completo publicado en el canal uibcdf — Checkpoint final de packaging
+
+### Lo que se completó
+
+El stack Qt-for-Python UIBCDF está ahora **completo, validado y publicado** en el canal
+conda `uibcdf` para Linux / Python 3.13. No quedan pasos de packaging pendientes para esta línea.
+
+#### Paquetes publicados (todos en build 3)
+
+| Paquete | Artifact |
+|---------|----------|
+| `shiboken6-uibcdf` | `6.9.2-py313h3fd9d12_3.conda` |
+| `pyside6-essentials-uibcdf` | `6.9.2-py313h3fd9d12_3.conda` |
+| `pyside6-addons-uibcdf` | `6.9.2-py313h3fd9d12_3.conda` |
+| `qt6-positioning-uibcdf` | `6.9.2-py313_0.conda` |
+| `qt6-webengine-uibcdf` | `6.9.2-py313_0.conda` |
+
+#### Repos en GitHub
+
+Los 5 repos están en GitHub bajo la organización `uibcdf`, rama `6.9.2`, con devguides
+actualizados incluyendo instrucciones de build local, upload y checklist para 6.10.x:
+
+- `uibcdf/shiboken6-uibcdf`
+- `uibcdf/pyside6-essentials-uibcdf`
+- `uibcdf/pyside6-addons-uibcdf`
+- `uibcdf/qt6-positioning-uibcdf`
+- `uibcdf/qt6-webengine-uibcdf`
+
+### Bug crítico resuelto: disambiguación de enums en shiboken
+
+**Síntoma original:** `QFileDialog` y `QMessageBox` requerían `generate="no"` como
+workaround porque shiboken confundía `QFlags<QFileDialog::Option>` con
+`QFlags<QAbstractFileIconProvider::Option>` (misma enum corta `Option` en clases distintas).
+
+**Causa raíz:** `TypeDatabase::findFlagsType` tiene un "last hope" que itera
+`m_flagsEntries` (un `QMap`, orden alfabético) buscando la primera clave que termine
+con el nombre buscado. Sin contexto de clase, `"QAbstractFileIconProvider::Options"`
+gana sobre `"QFileDialog::Options"` por ser anterior alfabéticamente.
+
+**Fix canónico (shiboken6-uibcdf, dos parches):**
+
+1. `ApiExtractor/typedatabase.cpp` — "last hope" usa `endsWith("::" + name)` en lugar
+   de `endsWith(name)`. Evita falsos positivos como `"CheckIndexOptions"` para `"Options"`.
+
+2. `ApiExtractor/abstractmetabuilder.cpp` — en el paso 6 de `findTypeEntriesHelper`,
+   antes del "last hope" general, se intentan primero `currentClass::name` y luego
+   `baseClass::name` para cada clase base. Resultado:
+   - `QFileDialog` + `"Options"` → encuentra `"QFileDialog::Options"` directamente ✓
+   - `QFileIconProvider` + `"Options"` → encuentra `"QAbstractFileIconProvider::Options"`
+     vía base class scope ✓
+
+**Consecuencia:** No se necesita `DROPPED_ENTRIES` en el CMakeLists de QtWidgets.
+`QFileDialog`, `QMessageBox` y `QFileIconProvider` compilan y funcionan sin workarounds.
+
+### Estado de molsysviewer
+
+`molsysviewer/standalone_qt.py` importa directamente desde el namespace `PySide6_uibcdf`:
+
+```python
+from PySide6_uibcdf.QtWidgets import (
+    QApplication, QFileDialog, QInputDialog, QMainWindow, QMessageBox,
+)
+```
+
+Validado en el entorno de desarrollo (`molsyssuite@uibcdf_3.13`):
+
+```python
+from PySide6_uibcdf.QtWidgets import QFileDialog, QMessageBox, QFileIconProvider
+from PySide6_uibcdf.QtGui import QAbstractFileIconProvider
+from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
+# → ALL OK
+```
+
+### Supported conda recipe (actualizada)
+
+El entorno de desarrollo del standalone ahora usa conda nativo, sin pip:
+
+```bash
+conda install -n <env> \
+    -c uibcdf -c conda-forge \
+    shiboken6-uibcdf pyside6-essentials-uibcdf pyside6-addons-uibcdf
+```
+
+O desde fichero directo (más fiable con el solver):
+
+```bash
+conda install -n <env> \
+    /path/to/conda-bld/linux-64/shiboken6-uibcdf-6.9.2-*_3.conda \
+    /path/to/conda-bld/linux-64/pyside6-essentials-uibcdf-6.9.2-*_3.conda \
+    /path/to/conda-bld/linux-64/pyside6-addons-uibcdf-6.9.2-*_3.conda
+```
+
+El recipe `pip install PySide6==6.9.2` documentado anteriormente queda **obsoleto**
+y no debe usarse para desarrollo del standalone.
+
+### Pendiente (no bloquea uso actual)
+
+- Python 3.11 y 3.12: los parches son Python-version-independent; requiere builds
+  adicionales con `python =3.11` / `=3.12` en meta.yaml.
+- macOS arm64/x86_64: los parches C++ son platform-independent; principales diferencias
+  son `.dylib`, RPATH, y disponibilidad de `qt6-webengine` en conda-forge para arm64.
+- Windows: requiere `bld.bat`, adaptación de test commands, y verificar disponibilidad
+  de `qt6-webengine` en conda-forge para Windows.
+- Runner self-hosted GitHub Actions: Diego planea runner organizacional en uibcdf para
+  acelerar CI en todos los repos del ecosistema.
