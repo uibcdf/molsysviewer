@@ -1386,6 +1386,18 @@ export class MolSysViewerController {
             return;
         }
 
+        if (op === "load_molsys_payload" || op === "load_structure_from_string" || op === "load_pdb_string" ||
+            op === "load_structure_from_url" || op === "load_pdb_id") {
+            if (this.workbenchScene === null) {
+                this.workbenchScene = {
+                    figurePreset: "publication-light",
+                    figureScale: 2.0,
+                    figureVariants: ["dark", "transparent"],
+                };
+            }
+            return;
+        }
+
         if (op === "set_global_representation") {
             const styleTag =
                 typeof (msg as any).user_preset?.name === "string"
@@ -1400,11 +1412,24 @@ export class MolSysViewerController {
                         ? (msg as any).representation
                         : undefined;
             this.workbenchScene = {
+                ...this.workbenchScene,
                 styleTag,
                 preset,
                 figurePreset: "publication-light",
                 figureScale: 2.0,
                 figureVariants: ["dark", "transparent"],
+            };
+        }
+
+        if (op === "set_figure_spec") {
+            const figurePreset = typeof (msg as any).figure_preset === "string" ? (msg as any).figure_preset : undefined;
+            const figureScale = typeof (msg as any).figure_scale === "number" ? (msg as any).figure_scale : undefined;
+            const figureVariants = Array.isArray((msg as any).figure_variants) ? (msg as any).figure_variants as string[] : undefined;
+            this.workbenchScene = {
+                ...this.workbenchScene,
+                ...(figurePreset !== undefined ? { figurePreset } : {}),
+                ...(figureScale !== undefined ? { figureScale } : {}),
+                ...(figureVariants !== undefined ? { figureVariants } : {}),
             };
         }
     }
