@@ -2228,3 +2228,65 @@ y no debe usarse para desarrollo del standalone.
   de `qt6-webengine` en conda-forge para Windows.
 - Runner self-hosted GitHub Actions: Diego planea runner organizacional en uibcdf para
   acelerar CI en todos los repos del ecosistema.
+
+## 2026-04-04 Corrección contratos de cantidad en argumentos espaciales y argdigest [skip ci]
+
+### Contexto
+
+Tras publicar el stack `PySide6_uibcdf` y validar el standalone, se detectaron fallos
+en la suite de tests relacionados con cambios de API en `pyunitwizard`:
+
+- `puw.get_form()` ya no acepta tipos Python planos (`float`, `list`, `tuple`,
+  `ndarray`). Solo acepta cantidades bien formadas.
+- `puw.get_value(quantity, to_unit=...)` requiere una cantidad como entrada.
+
+### Decisión de diseño
+
+**Los argumentos espaciales de las funciones `shapes.*` deben ser cantidades pint,
+no floats planos.** Esta es la política del ecosistema UIBCDF desde esta fecha.
+
+Los tests que pasaban valores planos estaban mal escritos y han sido corregidos.
+
+### Defaults visibles como strings
+
+Los valores por defecto de parámetros espaciales usan strings de cantidad (parseable
+por `puw.is_quantity()`), lo que hace el contrato visible en la firma sin importar puw:
+
+```python
+def add_sphere(self, center="[0.0, 0.0, 0.0] nm", radius="1.0 nm", ...):
+def add_links(self, ..., radii="0.2 nm", ...):
+def add_spheres(self, centers, radii="1.0 nm", ...):
+def add_set_alpha_spheres(self, ..., atom_radius="1.0 nm", ...):
+def add_displacement_vectors(self, ..., min_length="0.0 nm", ...):
+```
+
+`puw.is_quantity("1.0 nm")` devuelve `True`, así que los digestors y `puw.get_value`
+los tratan correctamente sin código especial.
+
+Los parámetros dimensionless (`length_scale`, `radius_scale`) se usan directamente
+con `float()` — no necesitan puw.
+
+### argdigest: callers de molsysviewer en digestors n_*
+
+`view.contains()`, `view.whole.contains()`, `view.regions.contains()` y sus variantes
+`is_composed_of` usan los digestors `n_*.py` heredados de molsysmt. Estos digestors
+aceptan `True` como valor válido solo para los callers conocidos. Se añadieron los
+callers de molsysviewer a los 20 digestors `n_*.py`.
+
+### Digestors actualizados: center, centers, radii, radius, atom_centers, alpha
+
+Se añadió soporte `puw.is_quantity()` en los digestors de argumentos espaciales para
+que manejen cantidades pint correctamente (incluyendo strings de cantidad).
+
+`digest_alpha` actualizado para aceptar `None` (usado como default en `add_pocket_surface`).
+
+### Orden de mensajes en `_build_export_messages`
+
+`set_addon_runtime_summary` siempre precede a `load_molsys_payload` en `_message_history`
+porque `bind_runtime()` se llama en `__init__` antes de que se cargue ninguna molécula.
+Los tests que asumían `ops[0] == "load_molsys_payload"` han sido corregidos a
+`assert "load_molsys_payload" in ops`.
+
+### Resultado
+
+186 tests pasan (0 fallos) en la suite principal (excluyendo integration/loaders).

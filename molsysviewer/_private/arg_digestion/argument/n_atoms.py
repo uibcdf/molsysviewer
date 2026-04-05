@@ -14,10 +14,10 @@ def digest_n_atoms(n_atoms, caller=None):
             return n_atoms
         else:
             raise ArgumentError('n_atoms', value=n_atoms, caller=caller, message=None)
-    elif caller=='molsysmt.basic.contains.contains':
+    elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
         if isinstance(n_atoms, (bool, int)):
             return n_atoms
-    elif caller=='molsysmt.basic.is_composed_of.is_composed_of':
+    elif caller in ('molsysmt.basic.is_composed_of.is_composed_of', 'molsysviewer.viewer.is_composed_of', 'molsysviewer.whole.is_composed_of', 'molsysviewer.regions.is_composed_of'):
         if isinstance(n_atoms, (bool, int)):
             return n_atoms
     elif caller=='molsysmt.native.topology.__init__':

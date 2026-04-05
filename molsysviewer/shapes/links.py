@@ -66,7 +66,7 @@ class LinkShapes:
         *,
         atom_pairs: Iterable[Sequence[int]] | None = None,
         coordinate_pairs: Iterable[Sequence[Sequence[float]]] | None = None,
-        radii: float | Sequence[float] = 0.2,
+        radii="0.2 nm",
         colors: int | Sequence[int] = 0x4499ff,
         pocket_ids: Sequence[int | str] | None = None,
         chain_ids: Sequence[str] | None = None,

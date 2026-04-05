@@ -1,4 +1,6 @@
 import pytest
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
 
 from molsysviewer.shapes import ShapesManager, SphereShapes
 
@@ -37,13 +39,19 @@ def test_shapes_exports_and_delegation(monkeypatch):
 def test_add_sphere_sends_message():
     view = DummyView()
     shapes = SphereShapes(view)
-    shapes.add_sphere(center=(1, 2, 3), radius=2.5, color=0x123456, alpha=0.7, tag="foo")
+    shapes.add_sphere(
+        center=puw.quantity([1, 2, 3], "nm"),
+        radius=puw.quantity(2.5, "nm"),
+        color=0x123456,
+        alpha=0.7,
+        tag="foo",
+    )
 
     assert view.messages == [
         {
             "op": "add_sphere",
             "options": {
-                "center": [1, 2, 3],
+                "center": [1.0, 2.0, 3.0],
                 "radius": 2.5,
                 "color": 0x123456,
                 "alpha": 0.7,
@@ -57,12 +65,12 @@ def test_add_spheres_broadcasts_and_validates():
     view = DummyView()
     shapes = SphereShapes(view)
 
-    centers = [(0, 0, 0), (1, 1, 1)]
-    shapes.add_spheres(centers, radii=[1.0, 2.0], colors=0x00FF00, alphas=[0.1, 0.2])
+    centers = puw.quantity([(0, 0, 0), (1, 1, 1)], "nm")
+    shapes.add_spheres(centers, radii=puw.quantity([1.0, 2.0], "nm"), colors=0x00FF00, alphas=[0.1, 0.2])
 
     assert len(view.messages) == 2
     assert view.messages[0]["options"]["radius"] == 1.0
     assert view.messages[1]["options"]["radius"] == 2.0
 
     with pytest.raises(ValueError):
-        shapes.add_spheres(centers, radii=[1.0], colors=[0xFFFFFF, 0x000000], alphas=0.5)
+        shapes.add_spheres(centers, radii=puw.quantity([1.0], "nm"), colors=[0xFFFFFF, 0x000000], alphas=0.5)

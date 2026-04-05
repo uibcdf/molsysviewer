@@ -5,7 +5,7 @@ def digest_n_amino_acids(n_amino_acids, caller=None):
     if caller=='molsysmt.basic.get.get':
         if isinstance(n_amino_acids, bool):
             return n_amino_acids
-    elif caller=='molsysmt.basic.contains.contains':
+    elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
         if isinstance(n_amino_acids, (bool, int)):
             return n_amino_acids
 

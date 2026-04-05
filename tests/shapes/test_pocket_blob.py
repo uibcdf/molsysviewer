@@ -1,3 +1,6 @@
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
+
 from molsysviewer.shapes import PocketBlobs
 
 
@@ -20,8 +23,8 @@ def test_add_pocket_blob_message():
     blobs = PocketBlobs(view)
 
     blobs.add_pocket_blob(
-        centers=[(0, 0, 0), (1, 1, 1)],
-        radii=[1.0, 1.5],
+        centers=puw.quantity([(0, 0, 0), (1, 1, 1)], "nm"),
+        radii=puw.quantity([1.0, 1.5], "nm"),
         radius_scale=1.1,
         resolution=0.5,
         iso_level=0.2,
@@ -58,7 +61,7 @@ def test_add_pocket_blob_validates_lengths():
     blobs = PocketBlobs(view)
 
     try:
-        blobs.add_pocket_blob(centers=[(0, 0, 0)], radii=[1.0, 2.0])
+        blobs.add_pocket_blob(centers=puw.quantity([(0, 0, 0)], "nm"), radii=puw.quantity([1.0, 2.0], "nm"))
     except ValueError:
         pass
     else:

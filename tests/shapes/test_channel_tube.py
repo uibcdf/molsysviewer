@@ -1,3 +1,6 @@
+import pyunitwizard as puw
+import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
+
 from molsysviewer.shapes import ChannelTubes
 
 
@@ -20,8 +23,8 @@ def test_add_channel_tube_message():
     tubes = ChannelTubes(view)
 
     tubes.add_channel_tube(
-        centers=[(0, 0, 0), (1, 1, 1), (2, 1, 0)],
-        radii=[1.0, 1.1, 1.2],
+        centers=puw.quantity([(0, 0, 0), (1, 1, 1), (2, 1, 0)], "nm"),
+        radii=puw.quantity([1.0, 1.1, 1.2], "nm"),
         color_mode="solvent",
         solvent_distances=[0.2, 0.4, 0.6],
         color_map="plasma",
@@ -55,7 +58,7 @@ def test_add_channel_tube_requires_two_points():
     view = DummyView()
     tubes = ChannelTubes(view)
     try:
-        tubes.add_channel_tube(centers=[(0, 0, 0)], radii=[1.0])
+        tubes.add_channel_tube(centers=puw.quantity([(0, 0, 0)], "nm"), radii=puw.quantity([1.0], "nm"))
     except ValueError:
         pass
     else:

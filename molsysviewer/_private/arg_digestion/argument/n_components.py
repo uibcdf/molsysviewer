@@ -13,10 +13,10 @@ def digest_n_components(n_components, caller=None):
             return n_components
         else:
             raise ArgumentError('n_components', value=n_components, caller=caller, message=None)
-    elif caller=='molsysmt.basic.contains.contains':
+    elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
         if isinstance(n_components, (bool, int)):
             return n_components
-    elif caller=='molsysmt.basic.is_composed_of.is_composed_of':
+    elif caller in ('molsysmt.basic.is_composed_of.is_composed_of', 'molsysviewer.viewer.is_composed_of', 'molsysviewer.whole.is_composed_of', 'molsysviewer.regions.is_composed_of'):
         if isinstance(n_components, (bool, int)):
             return n_components
     elif caller=='molsysmt.native.topology.__init__':

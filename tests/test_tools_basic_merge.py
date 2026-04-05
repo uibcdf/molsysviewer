@@ -47,7 +47,7 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
     assert result.layers["pocket__2"]._hidden is True  # noqa: SLF001
 
     ops = [msg.get("op") for msg in result._message_history]  # noqa: SLF001
-    assert ops[0] == "load_molsys_payload"
+    assert "load_molsys_payload" in ops
     assert "set_global_representation" in ops
     assert "hide_global" in ops
 

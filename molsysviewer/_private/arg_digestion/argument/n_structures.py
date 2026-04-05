@@ -13,7 +13,7 @@ def digest_n_structures(n_structures, caller=None):
                 return n_structures
             else:
                 raise ArgumentError('n_structures', value=n_structures, caller=caller, message=None)
-        elif caller=='molsysmt.basic.contains.contains':
+        elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
             if isinstance(n_structures, (bool, int)):
                 return n_structures
         elif caller.endswith('get_box_with_shape'):

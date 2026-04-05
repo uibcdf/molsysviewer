@@ -84,16 +84,16 @@ def test_create_standalone_qt0_window_raises_informative_import_error(monkeypatc
         raise ImportError(QT_IMPORT_ERROR)
 
     monkeypatch.setattr(standalone_qt, "_import_qt", _raise)
-    with pytest.raises(ImportError, match="PySide6 with Qt WebEngine is required"):
+    with pytest.raises(ImportError, match="PySide6_uibcdf with Qt WebEngine is required"):
         create_standalone_qt0_window(None)
 
 
 def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_path):
-    module_core = ModuleType("PySide6.QtCore")
-    module_gui = ModuleType("PySide6.QtGui")
-    module_widgets = ModuleType("PySide6.QtWidgets")
-    module_web = ModuleType("PySide6.QtWebEngineWidgets")
-    module_root = ModuleType("PySide6")
+    module_core = ModuleType("PySide6_uibcdf.QtCore")
+    module_gui = ModuleType("PySide6_uibcdf.QtGui")
+    module_widgets = ModuleType("PySide6_uibcdf.QtWidgets")
+    module_web = ModuleType("PySide6_uibcdf.QtWebEngineWidgets")
+    module_root = ModuleType("PySide6_uibcdf")
 
     class FakeSignal:
         def __init__(self):
@@ -252,11 +252,11 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_widgets.QMessageBox = FakeMessageBox
     module_web.QWebEngineView = FakeWebView
 
-    monkeypatch.setitem(sys.modules, "PySide6", module_root)
-    monkeypatch.setitem(sys.modules, "PySide6.QtCore", module_core)
-    monkeypatch.setitem(sys.modules, "PySide6.QtGui", module_gui)
-    monkeypatch.setitem(sys.modules, "PySide6.QtWidgets", module_widgets)
-    monkeypatch.setitem(sys.modules, "PySide6.QtWebEngineWidgets", module_web)
+    monkeypatch.setitem(sys.modules, "PySide6_uibcdf", module_root)
+    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtCore", module_core)
+    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtGui", module_gui)
+    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtWidgets", module_widgets)
+    monkeypatch.setitem(sys.modules, "PySide6_uibcdf.QtWebEngineWidgets", module_web)
     monkeypatch.setattr(
         "molsysviewer.standalone_qt._qt_shell_state_path",
         lambda: tmp_path / "standalone_qt0_state.json",

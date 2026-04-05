@@ -42,10 +42,10 @@ class PharmacophoreShapes:
     def _norm_vectors(vectors: Iterable[Sequence[float]] | None) -> list[list[float]] | None:
         if vectors is None:
             return None
-        # Extract raw magnitudes in nanometers
-        vectors_raw = puw.get_value(vectors, to_unit="nm")
+        import numpy as np
+        arr = np.asarray(vectors, dtype=float)
         out: list[list[float]] = []
-        for idx, v in enumerate(vectors_raw):
+        for idx, v in enumerate(arr):
             if len(v) != 3:
                 raise ValueError(f"directions[{idx}] must have 3 coordinates")
             out.append([float(v[0]), float(v[1]), float(v[2])])
@@ -81,7 +81,7 @@ class PharmacophoreShapes:
                 return [cast(seq[0])] * len(kinds_list)
             return [cast(v) for v in seq]
 
-        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii_raw = puw.get_value(radii, to_unit="nm") if radii is not None else None
         radii_list = _as_list(radii_raw, float, 0.6)
         alphas_list = _as_list(alphas, float, 0.6)
         colors_list = colors if colors is not None else [INTERACTION_COLORS.get(k.lower(), 0xcccccc) for k in kinds_list]

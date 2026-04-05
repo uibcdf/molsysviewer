@@ -61,7 +61,7 @@ class PocketSurfaces:
             raise ValueError("atom_indices is required and cannot be empty")
 
         options: dict = {
-            "atom_indices": atom_indices,
+            "atom_indices": list(atom_indices),
         }
 
         if scalars is not None:

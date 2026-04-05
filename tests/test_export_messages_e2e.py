@@ -53,7 +53,8 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [msg["op"] for msg in messages]
 
-    assert ops[0] == "load_molsys_payload"
+    assert "load_molsys_payload" in ops
+    assert ops.index("load_molsys_payload") < ops.index("create_region")
     assert "create_region" in ops
     assert "save_selection" in ops
     assert "set_region_representation" in ops

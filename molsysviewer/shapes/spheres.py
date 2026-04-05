@@ -18,8 +18,8 @@ class SphereShapes:
     @digest()
     def add_sphere(
         self,
-        center=(0.0, 0.0, 0.0),
-        radius: float = 10.0,
+        center="[0.0, 0.0, 0.0] nm",
+        radius="1.0 nm",
         color: int = 0x00FF00,
         alpha: float = 0.4,
         tag: str | None = None,
@@ -49,7 +49,7 @@ class SphereShapes:
     def add_spheres(
         self,
         centers: Sequence[Sequence[float]],
-        radii: float | Sequence[float] = 1.0,
+        radii="1.0 nm",
         colors: int | Sequence[int] = 0x00FF00,
         alphas: float | Sequence[float] = 0.4,
         tags: str | Sequence[str] | None = None,
@@ -95,7 +95,14 @@ class SphereShapes:
 
         layers = []
         for c, r, col, a, t in zip(centers_list, radii, colors, alphas, tags):
-            layers.append(self.add_sphere(center=c, radius=r, color=col, alpha=a, tag=t, skip_digestion=True))
+            layers.append(self.add_sphere(
+                center=puw.quantity(c, "nm"),
+                radius=puw.quantity(r, "nm"),
+                color=col,
+                alpha=a,
+                tag=t,
+                skip_digestion=True,
+            ))
         return layers
 
     @signal(tags=["shape", "sphere"])
@@ -106,7 +113,7 @@ class SphereShapes:
         centers: Sequence[Sequence[float]],
         radii: Sequence[float],
         atom_centers: Sequence[Sequence[float]] | None = None,
-        atom_radius: float = 1.0,
+        atom_radius="1.0 nm",
         color_alpha_spheres: int = 0x00FF00,
         color_atoms: int = 0x0000FF,
         alpha_alpha_spheres: float = 0.3,

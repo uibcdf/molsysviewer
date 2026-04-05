@@ -13,10 +13,10 @@ def digest_n_chains(n_chains, caller=None):
             return n_chains
         else:
             raise ArgumentError('n_chains', value=n_chains, caller=caller, message=None)
-    elif caller=='molsysmt.basic.contains.contains':
+    elif caller in ('molsysmt.basic.contains.contains', 'molsysviewer.viewer.contains', 'molsysviewer.whole.contains', 'molsysviewer.regions.contains'):
         if isinstance(n_chains, (bool, int)):
             return n_chains
-    elif caller=='molsysmt.basic.is_composed_of.is_composed_of':
+    elif caller in ('molsysmt.basic.is_composed_of.is_composed_of', 'molsysviewer.viewer.is_composed_of', 'molsysviewer.whole.is_composed_of', 'molsysviewer.regions.is_composed_of'):
         if isinstance(n_chains, (bool, int)):
             return n_chains
     elif caller=='molsysmt.native.topology.__init__':
