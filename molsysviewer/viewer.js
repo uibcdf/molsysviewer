@@ -140396,7 +140396,7 @@ var AnnotationHandlers = class {
     const tag = msg.tag ?? msg.options?.tag ?? "annotation";
     if (!text.trim() || atomIndices.length === 0) return;
     this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag });
-    this.callbacks.addLabelOverlay(msg);
+    this.callbacks.addLabelOverlay?.(msg);
     const loci = this.buildLociFromAtomIndices(structure, atomIndices);
     if (!loci) return;
     const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
@@ -143893,6 +143893,7 @@ var StateHandlers = class {
   }
   async removeStateObject(ref) {
     if (!ref) return;
+    if (!this.plugin.state.data.cells.has(ref)) return;
     await PluginCommands.State.RemoveObject(this.plugin, {
       state: this.plugin.state.data,
       ref,
@@ -144894,9 +144895,9 @@ function buildGroupItemsFromStructure(structure) {
   const model = atomicUnit.model;
   const hierarchy = model.atomicHierarchy;
   let atomSite = void 0;
-  if (model.sourceData.kind === "mmCIF") {
+  if (model?.sourceData?.kind === "mmCIF") {
     atomSite = model.sourceData.data.db?.atom_site;
-  } else if (model.sourceData.kind === "mol-viewer:molsysmt") {
+  } else if (model?.sourceData?.kind === "mol-viewer:molsysmt") {
     atomSite = model.sourceData.data;
   }
   const residueOffsets = hierarchy.residueAtomSegments.offsets;
@@ -144929,26 +144930,27 @@ function buildGroupItemsFromStructure(structure) {
       if (typeof col.value === "function") return col.value(idx);
       return col[idx];
     };
-    const molId = getValue(molIdCol, start4) ?? 0;
-    const molName = getValue(molNameCol, start4) ?? "Molecule";
-    const compIndex = getValue(compIdCol, start4) ?? 0;
-    const compName = getValue(compNameCol, start4) ?? "Component";
-    items.push({
+    const molId = getValue(molIdCol, start4);
+    const molName = getValue(molNameCol, start4);
+    const compIndex = getValue(compIdCol, start4);
+    const compName = getValue(compNameCol, start4);
+    const item2 = {
       source_kind: "element",
       element_level: "group",
       atom_indices: atomIndices,
       group_indices: [groupIndex],
-      component_indices: [compIndex],
       chain_indices: [chainIndex2],
-      molecule_indices: [molId],
       entity_indices: [entityIndex2],
       group_name: `${compId3} ${authSeqId}`,
       group_id: authSeqId,
-      component_name: compName,
       chain_name: chainName,
-      molecule_name: molName,
       entity_name: entityName
-    });
+    };
+    if (typeof compIndex === "number" && Number.isFinite(compIndex)) item2.component_indices = [compIndex];
+    if (typeof compName === "string" && compName.trim()) item2.component_name = compName;
+    if (typeof molId === "number" && Number.isFinite(molId)) item2.molecule_indices = [molId];
+    if (typeof molName === "string" && molName.trim()) item2.molecule_name = molName;
+    items.push(item2);
   }
   return items;
 }
@@ -144971,9 +144973,9 @@ function lociToGroupItems(rawLoci) {
     const hierarchy = model?.atomicHierarchy;
     const modelIndex = hierarchy?.index;
     let atomSite = void 0;
-    if (model.sourceData.kind === "mmCIF") {
+    if (model?.sourceData?.kind === "mmCIF") {
       atomSite = model.sourceData.data.db?.atom_site;
-    } else if (model.sourceData.kind === "mol-viewer:molsysmt") {
+    } else if (model?.sourceData?.kind === "mol-viewer:molsysmt") {
       atomSite = model.sourceData.data;
     }
     if (!hierarchy || !modelIndex) continue;
@@ -145012,26 +145014,27 @@ function lociToGroupItems(rawLoci) {
         if (typeof col.value === "function") return col.value(idx);
         return col[idx];
       };
-      const molId = getValue(molIdCol, atomIndex) ?? 0;
-      const molName = getValue(molNameCol, atomIndex) ?? "Molecule";
-      const compIndex = getValue(compIdCol, atomIndex) ?? 0;
-      const compName = getValue(compNameCol, atomIndex) ?? "Component";
-      items.push({
+      const molId = getValue(molIdCol, atomIndex);
+      const molName = getValue(molNameCol, atomIndex);
+      const compIndex = getValue(compIdCol, atomIndex);
+      const compName = getValue(compNameCol, atomIndex);
+      const item2 = {
         source_kind: "element",
         element_level: "group",
         atom_indices: atomIndices,
         group_indices: [groupIndex],
-        component_indices: [compIndex],
         chain_indices: [chainIndex2],
-        molecule_indices: [molId],
         entity_indices: [entityIndex2],
         group_name: groupName,
         group_id: authSeqId,
-        component_name: compName,
         chain_name: chainName,
-        molecule_name: molName,
         entity_name: entityName
-      });
+      };
+      if (typeof compIndex === "number" && Number.isFinite(compIndex)) item2.component_indices = [compIndex];
+      if (typeof compName === "string" && compName.trim()) item2.component_name = compName;
+      if (typeof molId === "number" && Number.isFinite(molId)) item2.molecule_indices = [molId];
+      if (typeof molName === "string" && molName.trim()) item2.molecule_name = molName;
+      items.push(item2);
     }
   }
   return items;
@@ -145050,9 +145053,7 @@ function lociToShapeItems(rawLoci) {
     tag: typeof data.tag === "string" ? data.tag : void 0,
     atom_indices: arrayOfNumbers(data.atom_indices),
     group_indices: arrayOfNumbers(data.group_indices),
-    component_indices: [],
     chain_indices: arrayOfNumbers(data.chain_indices),
-    molecule_indices: [],
     entity_indices: arrayOfNumbers(data.entity_indices)
   }];
 }
@@ -145085,6 +145086,7 @@ function signature(item2) {
   return `${item2.source_kind}:${item2.element_level}:${item2.group_indices.join(",")}:${item2.chain_indices.join(",")}`;
 }
 function appendUnique(target, seen, values2) {
+  if (!Array.isArray(values2)) return;
   for (const value of values2) {
     if (seen.has(value)) continue;
     seen.add(value);
@@ -145878,6 +145880,16 @@ var PanelShell = class {
       cursor: "pointer",
       textAlign: "left"
     });
+    this.workspaceCurrentMarkerElement = document.createElement("span");
+    this.workspaceCurrentMarkerElement.setAttribute("data-molsysviewer-panel-workspace-current-marker", "true");
+    Object.assign(this.workspaceCurrentMarkerElement.style, {
+      fontSize: "9px",
+      fontWeight: "700",
+      lineHeight: "1.1",
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+      color: "rgba(244,244,245,0.52)"
+    });
     this.workspaceCurrentTitleElement = document.createElement("span");
     this.workspaceCurrentTitleElement.setAttribute("data-molsysviewer-panel-workspace-current-title", "true");
     Object.assign(this.workspaceCurrentTitleElement.style, {
@@ -145893,6 +145905,7 @@ var PanelShell = class {
       lineHeight: "1.2",
       color: "rgba(244,244,245,0.68)"
     });
+    this.workspaceCurrentElement.appendChild(this.workspaceCurrentMarkerElement);
     this.workspaceCurrentElement.appendChild(this.workspaceCurrentTitleElement);
     this.workspaceCurrentElement.appendChild(this.workspaceCurrentSubtitleElement);
     this.workspaceCurrentElement.addEventListener("click", (event) => {
@@ -146033,6 +146046,8 @@ var PanelShell = class {
     }
     const current2 = items.find((item2) => item2.id === currentId) ?? items[0];
     const mosaic = items.length >= 3;
+    const currentMarker = current2.id === "core" ? "Core workspace" : "Add-on workspace";
+    this.workspaceCurrentMarkerElement.textContent = currentMarker;
     this.workspaceCurrentTitleElement.textContent = current2.title;
     this.workspaceCurrentSubtitleElement.textContent = current2.subtitle ?? "";
     this.workspaceCurrentSubtitleElement.style.display = current2.subtitle ? "block" : "none";
@@ -146107,6 +146122,16 @@ var PanelShell = class {
           fontSize: "10px",
           lineHeight: "1.1",
           color: "rgba(244,244,245,0.74)"
+        });
+        button.appendChild(marker);
+      } else if (item2.id === "core") {
+        const marker = document.createElement("span");
+        marker.setAttribute("data-molsysviewer-panel-workspace-option-marker", item2.id);
+        marker.textContent = "Core";
+        Object.assign(marker.style, {
+          fontSize: "10px",
+          lineHeight: "1.1",
+          color: "rgba(244,244,245,0.54)"
         });
         button.appendChild(marker);
       }
@@ -146549,6 +146574,14 @@ var WorkbenchPanel = class {
       overflowY: "auto",
       gap: "8px"
     });
+    this.workspaceRuntimeDeck = document.createElement("div");
+    this.workspaceRuntimeDeck.setAttribute("data-molsysviewer-workbench-workspace-runtime-deck", "true");
+    Object.assign(this.workspaceRuntimeDeck.style, {
+      display: "none",
+      flexDirection: "column",
+      gap: "8px"
+    });
+    this.body.appendChild(this.workspaceRuntimeDeck);
     this.workspaceOverviewHost = document.createElement("div");
     this.workspaceOverviewHost.setAttribute("data-molsysviewer-workbench-workspace-overview", "true");
     Object.assign(this.workspaceOverviewHost.style, {
@@ -146557,7 +146590,7 @@ var WorkbenchPanel = class {
       gap: "6px",
       padding: "10px",
       borderRadius: "10px",
-      background: "rgba(255,255,255,0.04)",
+      background: "rgba(255,255,255,0.045)",
       border: "1px solid rgba(255,255,255,0.08)"
     });
     this.workspaceOverviewTitle = document.createElement("div");
@@ -146579,7 +146612,7 @@ var WorkbenchPanel = class {
     });
     this.workspaceOverviewHost.appendChild(this.workspaceOverviewTitle);
     this.workspaceOverviewHost.appendChild(this.workspaceOverviewBody);
-    this.body.appendChild(this.workspaceOverviewHost);
+    this.workspaceRuntimeDeck.appendChild(this.workspaceOverviewHost);
     this.workspacePanelHost = document.createElement("div");
     this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
     Object.assign(this.workspacePanelHost.style, {
@@ -146588,8 +146621,8 @@ var WorkbenchPanel = class {
       gap: "6px",
       padding: "10px",
       borderRadius: "10px",
-      background: "rgba(255,255,255,0.05)",
-      border: "1px solid rgba(255,255,255,0.08)"
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.06)"
     });
     this.workspacePanelHostTitle = document.createElement("div");
     this.workspacePanelHostTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-title", "true");
@@ -146609,7 +146642,7 @@ var WorkbenchPanel = class {
     });
     this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
     this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
-    this.body.appendChild(this.workspacePanelHost);
+    this.workspaceRuntimeDeck.appendChild(this.workspacePanelHost);
     this.createSection("annotations", "Annotations", "No annotations yet.");
     this.createSection("measurements", "Measurements", "No measurements yet.");
     this.createSection("shapes", "Shapes", "No shapes yet.");
@@ -146767,10 +146800,12 @@ var WorkbenchPanel = class {
     const onSelect = this.onSelectWorkspace;
     this.workspaceOverviewBody.replaceChildren();
     if (!Array.isArray(items) || items.length <= 1) {
+      this.workspaceRuntimeDeck.style.display = this.activeWorkspacePanelSummary ? "flex" : "none";
       this.workspaceOverviewHost.style.display = "none";
       return;
     }
     const mosaic = items.length >= 3;
+    this.workspaceRuntimeDeck.style.display = "flex";
     this.workspaceOverviewHost.style.display = "flex";
     this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
     const appendSection = (key2, label2) => {
@@ -146845,12 +146880,177 @@ var WorkbenchPanel = class {
         entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
         card.appendChild(entry);
       }
+      const overviewCapabilityTexts = [];
+      if ((item2.panelCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.panelCount} panel${item2.panelCount === 1 ? "" : "s"}`);
+      if ((item2.workbenchSectionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.workbenchSectionCount} section${item2.workbenchSectionCount === 1 ? "" : "s"}`);
+      if ((item2.contextActionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.contextActionCount} context`);
+      if ((item2.exportHelperCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.exportHelperCount} export`);
+      if (overviewCapabilityTexts.length > 0) {
+        const capabilities = document.createElement("div");
+        capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capabilities", item2.id);
+        Object.assign(capabilities.style, {
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "4px",
+          marginTop: "2px"
+        });
+        for (const text of overviewCapabilityTexts) {
+          const chip = document.createElement("div");
+          chip.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capability", text.toLowerCase().replace(/\s+/g, "-"));
+          Object.assign(chip.style, {
+            padding: "3px 7px",
+            borderRadius: "999px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: isCurrent ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.035)",
+            fontSize: "10px",
+            fontWeight: "700",
+            color: isCurrent ? "rgba(244,244,245,0.82)" : "rgba(244,244,245,0.72)"
+          });
+          chip.textContent = text;
+          capabilities.appendChild(chip);
+        }
+        card.appendChild(capabilities);
+      }
+      if (!isCurrent && (item2.workbenchSectionTitles?.length ?? 0) > 0) {
+        const sections = document.createElement("div");
+        sections.setAttribute("data-molsysviewer-workbench-workspace-overview-card-sections", item2.id);
+        Object.assign(sections.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "3px",
+          width: "100%",
+          marginTop: "2px"
+        });
+        for (const titleText of item2.workbenchSectionTitles.slice(0, 2)) {
+          const section = document.createElement("div");
+          section.setAttribute("data-molsysviewer-workbench-workspace-overview-card-section", `${item2.id}:${titleText}`);
+          Object.assign(section.style, {
+            fontSize: "10px",
+            lineHeight: "1.25",
+            color: "rgba(244,244,245,0.62)"
+          });
+          section.textContent = titleText;
+          sections.appendChild(section);
+        }
+        card.appendChild(sections);
+      }
+      if (isCurrent && this.activeWorkspacePanelSummary) {
+        const preview = document.createElement("div");
+        preview.setAttribute("data-molsysviewer-workbench-workspace-overview-preview", item2.id);
+        Object.assign(preview.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+          width: "100%",
+          marginTop: "2px",
+          padding: "8px",
+          borderRadius: "8px",
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.08)"
+        });
+        if (this.activeWorkspacePanelSummary.description) {
+          const description = document.createElement("div");
+          description.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-description", item2.id);
+          Object.assign(description.style, {
+            fontSize: "11px",
+            lineHeight: "1.3",
+            color: "rgba(244,244,245,0.72)"
+          });
+          description.textContent = this.activeWorkspacePanelSummary.description;
+          preview.appendChild(description);
+        }
+        const capabilityTexts = [];
+        if ((this.activeWorkspacePanelSummary.contextActionTitles?.length ?? 0) > 0) {
+          capabilityTexts.push(`Context ${this.activeWorkspacePanelSummary.contextActionTitles.length}`);
+        }
+        if ((this.activeWorkspacePanelSummary.exportHelperTitles?.length ?? 0) > 0) {
+          capabilityTexts.push(`Export ${this.activeWorkspacePanelSummary.exportHelperTitles.length}`);
+        }
+        if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
+          capabilityTexts.push(`Sections ${this.activeWorkspacePanelSummary.sections.length}`);
+        }
+        if (capabilityTexts.length > 0) {
+          const capabilities = document.createElement("div");
+          capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capabilities", item2.id);
+          Object.assign(capabilities.style, {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "4px"
+          });
+          for (const text of capabilityTexts) {
+            const chip = document.createElement("div");
+            chip.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capability", text.toLowerCase().replace(/\s+/g, "-"));
+            Object.assign(chip.style, {
+              padding: "3px 7px",
+              borderRadius: "999px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.04)",
+              fontSize: "10px",
+              fontWeight: "700",
+              color: "rgba(244,244,245,0.76)"
+            });
+            chip.textContent = text;
+            capabilities.appendChild(chip);
+          }
+          preview.appendChild(capabilities);
+        }
+        if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
+          const sections = document.createElement("div");
+          sections.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-sections", item2.id);
+          Object.assign(sections.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px"
+          });
+          for (const section of this.activeWorkspacePanelSummary.sections.slice(0, 2)) {
+            const sectionRow = document.createElement("div");
+            sectionRow.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section", section.key);
+            Object.assign(sectionRow.style, {
+              display: "flex",
+              flexDirection: "column",
+              gap: "2px"
+            });
+            const sectionTitle = document.createElement("div");
+            sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-title", section.key);
+            Object.assign(sectionTitle.style, {
+              fontSize: "10px",
+              fontWeight: "700",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              color: "rgba(244,244,245,0.54)"
+            });
+            sectionTitle.textContent = section.title;
+            sectionRow.appendChild(sectionTitle);
+            const sectionItem = document.createElement("div");
+            sectionItem.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-item", section.key);
+            Object.assign(sectionItem.style, {
+              fontSize: "11px",
+              color: "rgba(244,244,245,0.78)"
+            });
+            sectionItem.textContent = section.itemTitle;
+            sectionRow.appendChild(sectionItem);
+            if (section.itemSubtitle) {
+              const sectionSubtitle = document.createElement("div");
+              sectionSubtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", section.key);
+              Object.assign(sectionSubtitle.style, {
+                fontSize: "10px",
+                color: "rgba(244,244,245,0.58)"
+              });
+              sectionSubtitle.textContent = section.itemSubtitle;
+              sectionRow.appendChild(sectionSubtitle);
+            }
+            sections.appendChild(sectionRow);
+          }
+          preview.appendChild(sections);
+        }
+        card.appendChild(preview);
+      }
       if (isCurrent && this.workspacePanelItems.length > 0) {
         const panelStrip = document.createElement("div");
         panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item2.id);
         Object.assign(panelStrip.style, {
           display: "flex",
-          flexWrap: "wrap",
+          flexDirection: "column",
           gap: "4px",
           marginTop: "2px"
         });
@@ -146862,16 +147062,49 @@ var WorkbenchPanel = class {
             panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-current", panel.id);
           }
           Object.assign(panelButton.style, {
-            padding: "3px 7px",
-            borderRadius: "999px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "2px",
+            width: "100%",
+            padding: "6px 8px",
+            borderRadius: "8px",
             border: panel.active ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
             background: panel.active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
             color: panel.active ? "#f4f4f5" : "rgba(244,244,245,0.76)",
-            fontSize: "10px",
-            fontWeight: "700",
-            cursor: "pointer"
+            cursor: "pointer",
+            textAlign: "left"
           });
-          panelButton.textContent = panel.title;
+          const panelTitle = document.createElement("div");
+          panelTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-title", panel.id);
+          Object.assign(panelTitle.style, {
+            fontSize: "10px",
+            fontWeight: "700"
+          });
+          panelTitle.textContent = panel.title;
+          panelButton.appendChild(panelTitle);
+          if (panel.description) {
+            const panelDescription = document.createElement("div");
+            panelDescription.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-description", panel.id);
+            Object.assign(panelDescription.style, {
+              fontSize: "10px",
+              lineHeight: "1.2",
+              color: panel.active ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.6)"
+            });
+            panelDescription.textContent = panel.description;
+            panelButton.appendChild(panelDescription);
+          }
+          if (panel.active && panel.entry) {
+            const panelEntry = document.createElement("div");
+            panelEntry.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-entry", panel.id);
+            Object.assign(panelEntry.style, {
+              fontSize: "9px",
+              lineHeight: "1.2",
+              color: "rgba(244,244,245,0.54)"
+            });
+            panelEntry.textContent = `Entry: ${panel.entry}`;
+            panelButton.appendChild(panelEntry);
+          }
           panelButton.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -148262,7 +148495,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.loadedStructure = void 0;
     this.currentStructure = void 0;
-    this.groupStrip.setStructure(void 0);
+    this.groupPanel.setStructure(void 0);
     this.workbenchPanel.setVisible(false);
   }
   applyWorkbenchMessage(msg) {
@@ -148605,7 +148838,9 @@ var MolSysViewerController = class _MolSysViewerController {
     ];
     for (const workspace of this.addonWorkspaces) {
       const panelCount = this.getWorkspacePanels(workspace.id).length;
-      const workbenchSectionCount = this.addonWorkbenchSections.filter((item2) => item2.workspaceId === workspace.id).length;
+      const workbenchSections = this.addonWorkbenchSections.filter((item2) => item2.workspaceId === workspace.id);
+      const workbenchSectionCount = workbenchSections.length;
+      const workbenchSectionTitles = workbenchSections.map((item2) => item2.title);
       const contextActionCount = this.addonContextActions.filter((item2) => this.workspaceBelongsToAddon(workspace.id, item2.addon)).length;
       const exportHelperCount = this.addonRuntimeSummary.find((item2) => item2.name === workspace.addon)?.exportHelperTitles.length ?? 0;
       const totalVisible = panelCount + workbenchSectionCount;
@@ -148617,7 +148852,12 @@ var MolSysViewerController = class _MolSysViewerController {
       if (exportHelperCount > 0) summaryParts.push(`${exportHelperCount} export helper${exportHelperCount === 1 ? "" : "s"}`);
       options.push({
         ...workspace,
-        subtitle: summaryParts.join(" \xB7 ")
+        subtitle: summaryParts.join(" \xB7 "),
+        panelCount,
+        workbenchSectionCount,
+        workbenchSectionTitles,
+        contextActionCount,
+        exportHelperCount
       });
     }
     return options;
@@ -148769,21 +149009,21 @@ var MolSysViewerController = class _MolSysViewerController {
   syncStripOverlaysForMessage(msg) {
     switch (msg.op) {
       case "add_label":
-        this.groupStrip.addLabelOverlay(msg);
+        this.groupPanel.addLabelOverlay(msg);
         break;
       case "clear_scene":
-        if (msg.options?.labels) this.groupStrip.clearAnnotationOverlays();
+        if (msg.options?.labels) this.groupPanel.clearAnnotationOverlays();
         break;
       case "delete_layer":
-        this.groupStrip.clearAnnotationOverlaysByTag(msg.tag);
+        this.groupPanel.clearAnnotationOverlaysByTag(msg.tag);
         break;
       case "set_layer_tag":
         if (typeof msg.tag === "string" && typeof msg.new_tag === "string") {
-          this.groupStrip.retagAnnotationOverlays(msg.tag, msg.new_tag);
+          this.groupPanel.retagAnnotationOverlays(msg.tag, msg.new_tag);
         }
         break;
       case "clear_all":
-        this.groupStrip.clearAnnotationOverlays();
+        this.groupPanel.clearAnnotationOverlays();
         break;
     }
   }

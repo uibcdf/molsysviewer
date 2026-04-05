@@ -1226,7 +1226,7 @@ export class MolSysViewerController {
         }
         this.loadedStructure = undefined;
         this.currentStructure = undefined;
-        this.groupStrip.setStructure(undefined);
+        this.groupPanel.setStructure(undefined);
         this.workbenchPanel.setVisible(false);
     }
 
@@ -1853,21 +1853,21 @@ export class MolSysViewerController {
     private syncStripOverlaysForMessage(msg: ViewerMessage) {
         switch ((msg as any).op) {
             case "add_label":
-                this.groupStrip.addLabelOverlay(msg as any);
+                this.groupPanel.addLabelOverlay(msg as any);
                 break;
             case "clear_scene":
-                if ((msg as any).options?.labels) this.groupStrip.clearAnnotationOverlays();
+                if ((msg as any).options?.labels) this.groupPanel.clearAnnotationOverlays();
                 break;
             case "delete_layer":
-                this.groupStrip.clearAnnotationOverlaysByTag((msg as any).tag);
+                this.groupPanel.clearAnnotationOverlaysByTag((msg as any).tag);
                 break;
             case "set_layer_tag":
                 if (typeof (msg as any).tag === "string" && typeof (msg as any).new_tag === "string") {
-                    this.groupStrip.retagAnnotationOverlays((msg as any).tag, (msg as any).new_tag);
+                    this.groupPanel.retagAnnotationOverlays((msg as any).tag, (msg as any).new_tag);
                 }
                 break;
             case "clear_all":
-                this.groupStrip.clearAnnotationOverlays();
+                this.groupPanel.clearAnnotationOverlays();
                 break;
         }
     }

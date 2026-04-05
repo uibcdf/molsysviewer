@@ -709,6 +709,7 @@ export class StateHandlers {
 
     private async removeStateObject(ref?: StateObjectRef) {
         if (!ref) return;
+        if (!this.plugin.state.data.cells.has(ref)) return;
         await PluginCommands.State.RemoveObject(this.plugin, {
             state: this.plugin.state.data,
             ref,
