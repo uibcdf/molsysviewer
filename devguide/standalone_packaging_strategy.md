@@ -1,7 +1,6 @@
 # Standalone Packaging Strategy
 
-This document records the current packaging/distribution position for the final
-standalone host.
+This document records the packaging/distribution position for the standalone host.
 
 It should be read together with:
 
@@ -9,7 +8,32 @@ It should be read together with:
 - `devguide/standalone_qt_prototype_plan.md`
 - `devguide/standalone_supported_environment.md`
 
-## Current Position
+## Decision Made (2026-04-04)
+
+**Option A2 was chosen and is complete.** A curated, source-built, suffix-named
+conda family is now published in the `uibcdf` channel:
+
+| Package | Version |
+|---------|---------|
+| `shiboken6-uibcdf` | `6.9.2=*_3` |
+| `pyside6-essentials-uibcdf` | `6.9.2=*_3` |
+| `pyside6-addons-uibcdf` | `6.9.2=*_3` |
+| `qt6-positioning-uibcdf` | `6.9.2` |
+| `qt6-webengine-uibcdf` | `6.9.2` |
+
+The Python import namespace is `PySide6_uibcdf` / `shiboken6_uibcdf`.
+`QFileDialog`, `QMessageBox`, `QWebEngineView` all work correctly.
+`molsysviewer.standalone_qt` imports from `PySide6_uibcdf` directly.
+
+The rest of this document is the **historical investigation record** that led
+to this decision. It is kept as context for future decisions (e.g. 6.10.x,
+multi-platform) but should not be read as open questions.
+
+---
+
+## Historical Record: Investigation and Decision Process
+
+### Former Current Position
 
 The host direction is now much clearer than the packaging direction.
 
