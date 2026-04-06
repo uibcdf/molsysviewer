@@ -44,13 +44,13 @@ esperable aquí es actualizar los pin de versión en
 
 ### Familia de packaging (referencia)
 
-| Paquete | Rol | Cómo llega |
-|---------|-----|------------|
-| `shiboken6-uibcdf 6.9.2=*_3` | bridge Python/C++ | install explícito |
-| `pyside6-essentials-uibcdf 6.9.2=*_3` | bindings Qt core | install explícito |
-| `pyside6-addons-uibcdf 6.9.2=*_3` | bindings Qt addons (WebEngine) | install explícito |
-| `qt6-positioning-uibcdf 6.9.2` | runtime Qt Positioning | dep automática de addons |
-| `qt6-webengine-uibcdf 6.9.2` | runtime Qt WebEngine | dep automática de addons |
+| Paquete | Build | Rol | Cómo llega |
+|---------|-------|-----|------------|
+| `shiboken6-uibcdf 6.9.2` | `_3` | bridge Python/C++ | install explícito |
+| `pyside6-essentials-uibcdf 6.9.2` | `_3` | bindings Qt core | install explícito |
+| `pyside6-addons-uibcdf 6.9.2` | `_3` | bindings Qt addons (WebEngine) | install explícito |
+| `qt6-positioning-uibcdf 6.9.2` | `_0` | runtime Qt Positioning | dep automática de addons |
+| `qt6-webengine-uibcdf 6.9.2` | `_0` | runtime Qt WebEngine | dep automática de addons |
 
 Sibling repos: `../shiboken6-uibcdf`, `../pyside6-essentials-uibcdf`,
 `../pyside6-addons-uibcdf`, `../qt6-positioning-uibcdf`, `../qt6-webengine-uibcdf`.
