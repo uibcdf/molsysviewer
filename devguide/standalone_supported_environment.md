@@ -24,13 +24,13 @@ The previous `pip install PySide6==6.9.2` recipe is **obsolete**.
 
 The full conda family is **5 packages**:
 
-| Package | Role | How it arrives |
-|---------|------|----------------|
-| `shiboken6-uibcdf` | Python/C++ bridge | install explicitly |
-| `pyside6-essentials-uibcdf` | Core Qt bindings | install explicitly |
-| `pyside6-addons-uibcdf` | Add-on Qt bindings (includes WebEngine) | install explicitly |
-| `qt6-positioning-uibcdf` | Qt Positioning native runtime | auto-pulled as dependency of `addons` |
-| `qt6-webengine-uibcdf` | Qt WebEngine native runtime | auto-pulled as dependency of `addons` |
+| Package | Version | Build | Role | How it arrives |
+|---------|---------|-------|------|----------------|
+| `shiboken6-uibcdf` | `6.9.2` | `_3` | Python/C++ bridge | install explicitly |
+| `pyside6-essentials-uibcdf` | `6.9.2` | `_3` | Core Qt bindings | install explicitly |
+| `pyside6-addons-uibcdf` | `6.9.2` | `_3` | Add-on Qt bindings (includes WebEngine) | install explicitly |
+| `qt6-positioning-uibcdf` | `6.9.2` | `_0` | Qt Positioning native runtime | auto-pulled as dependency of `addons` |
+| `qt6-webengine-uibcdf` | `6.9.2` | `_0` | Qt WebEngine native runtime | auto-pulled as dependency of `addons` |
 
 You only need to name the three Python-binding packages explicitly.
 The two Qt native-runtime packages are declared as `run` dependencies of

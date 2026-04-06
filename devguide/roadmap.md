@@ -226,97 +226,50 @@ Immediate `0.16.x` hardening gate:
 
 Status:
 
-- now the main execution focus
+- done for the pre-`1.0.0` host gate
+- packaging decision (A2) closed and validated
 
 Goal:
 
 - turn the already-validated Qt host direction into a credible standalone path
   to `1.0.0`
 
-Main work:
+Main work (completed):
 
-- continue making the Qt host feel like a real application shell:
-  - source state
-  - navigation affordances
-  - export affordances
-  - host-level persistence where it genuinely helps
-- keep the host thin:
-  - no duplicate viewer logic
-  - no separate addon/runtime model
-  - no forked panel semantics
-- separate host work from environment/packaging work:
-  - host behavior and UX slices
-  - supported standalone environment recipe
-  - final packaging/distribution strategy
+- Qt host satisfies the pre-`1.0.0` sufficiency gate ✓
+  - startup/empty-host flow explicit
+  - shell-owned load flows: demo, file, PDB ID, generic source ✓
+  - clean return to empty host ✓
+  - app-level navigation/export affordances ✓
+  - shell-level persistence: recent sources, last source, window size ✓
+  - host-side error handling no longer silent ✓
+  - host stays thin: no duplicate viewer logic, no forked panel semantics ✓
+- `standalone_qt.py` imports from `PySide6_uibcdf` directly ✓
+- A2 packaging decision chosen and closed ✓
+  - 5-package conda-native family published to `uibcdf` channel
+  - Python bindings (`shiboken6-uibcdf`, `pyside6-essentials-uibcdf`,
+    `pyside6-addons-uibcdf`) built and validated
+  - Qt native runtime (`qt6-positioning-uibcdf`, `qt6-webengine-uibcdf`)
+    built and validated
+  - supported environment recipe documented in
+    `devguide/standalone_supported_environment.md`
+- packaging strategy rationale documented in
+  `devguide/standalone_packaging_strategy.md` ✓
 
-Success criteria:
+What remains open (not a `molsysviewer` blocker):
 
-- the standalone host feels like a real desktop tool, not a browser tab in a
-  box
-- the same shared runtime remains the source of truth
-- the environment recipe needed to run that host is explicit and supportable
-- the main remaining work before `1.0.0` becomes packaging/distribution polish,
-  not uncertainty about the host direction itself
-
-Immediate next focus:
-
-- keep the next slices on the host itself, not on speculative packaging
-
-Pre-`1.0.0` host gate:
-
-- do not keep adding shell chrome indefinitely
-- treat the host as sufficient for pre-`1.0.0` once these conditions hold:
-  - startup/empty-host flow is clear without oral explanation
-  - load flows are credible from the shell:
-    - demo
-    - file
-    - PDB ID
-    - generic MolSysMT source
-  - the host can also return cleanly to an empty shell state
-  - view/export actions feel like app-owned affordances rather than raw debug
-    hooks
-  - shell-level persistence stays intentionally small and useful:
-    - recent sources
-    - last source
-    - window size
-  - error handling is good enough that load/export failures are not silent or
-    confusing
-  - the host still stays thin:
-    - no duplicate viewer semantics
-    - no standalone-only runtime model
-    - no host-side add-on logic that forks the shared runtime
-- work that should **not** be required for that gate:
-  - final packaging closure
-  - multi-window/project management
-  - rich session management
-  - speculative shell polish with no effect on host credibility
-- once that gate is satisfied, stop treating host UX as the main unknown and
-  move the remaining uncertainty to packaging/distribution
+- final end-user installation/distribution story (conda recipe for users,
+  not just for development)
+- multi-platform support (macOS, Windows) — documented in sibling repo devguides
+- future build iterations in sibling repos do not require changes here unless
+  version pins need updating
 
 Current reading:
 
-- the host now materially satisfies that gate:
-  - startup/empty-host flow is explicit
-  - shell-owned load paths are present and tested
-  - returning to empty host is present and tested
-  - app-level navigation/export affordances are present
-  - shell persistence remains intentionally small
-  - host-side error handling is no longer silent
-- because of that, the next major standalone uncertainty should now be treated
-  as packaging/distribution strategy rather than host credibility
-- do not keep opening new host slices by default unless a real runtime or QA
-  gap appears
-- the current packaging evaluation should now distinguish explicitly between:
-  - A1: conda-native route with standard Qt/PySide6 package names
-  - A2: conda-native standalone runtime with specific package names
-  - B: hybrid conda+pip route as fallback/bridge, not as the preferred final
-    user story
-- inside that packaging evaluation, the first technical attempt should now be
-  narrower than a full fork:
-  - try a minimal WebEngine add-on slice first
-  - only expand toward a broader A2 fork if that slice proves insufficient
-- in parallel, document the supported standalone environment recipe more
-  explicitly so the Qt path stops living partly in chat history
+- Phase E in `molsysviewer` is materially complete
+- the remaining standalone uncertainty is end-user distribution, not host
+  credibility or packaging direction
+- do not reopen host slices unless a real runtime or QA gap appears
 
 See also:
 
