@@ -282,7 +282,10 @@ Workflow:
 - open `Workbench`
 - inspect the `Scene` section
 - confirm that figure export is visible there as part of the workbench story
+  (the section should show the default baseline immediately after load, without
+  needing to call `set_global_representation` first)
 - capture the current camera with `FigureSpec.from_view(...)`
+- anchor the recipe to the workbench with `set_figure_spec`
 - export at least:
   - one explicit figure
   - one named variant batch
@@ -294,12 +297,24 @@ Suggested checks:
 from molsysviewer.figures import FigureSpec
 
 view.set_panel_mode(panel="workbench", expanded=True)
+# Workbench -> Scene should already show the default figure baseline
+
 base = FigureSpec.from_view(view, preset="publication-light", scale=2.0)
+view.set_figure_spec(figure_spec=base)
+# Workbench -> Scene now reflects the explicit spec
+
+view.export.figure("scene_light.png", figure_spec=base)
+view.export.figure_variants(
+    "figures/", stem="scene",
+    variants=base.build_variants({"dark": {"background": "dark", "preset": "publication-dark"}}),
+)
+view.export.figure_publication_set("publication/", figure_spec=base, stem="scene")
 ```
 
 Expected:
 
-- `Workbench -> Scene` exposes the current figure baseline
+- `Workbench -> Scene` shows the figure baseline immediately after loading a structure
+- `set_figure_spec(...)` updates the Scene section with the explicit recipe
 - one explicit figure export succeeds
 - `figure_variants(...)` writes a named batch
 - `figure_publication_set(...)` writes the standard bundle

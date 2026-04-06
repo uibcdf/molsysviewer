@@ -24,9 +24,10 @@ You will:
 1. open a demo viewer
 2. inspect the scene from the shared workbench
 3. capture the current camera into a `FigureSpec`
-4. export one figure
-5. export a few named variants
-6. export the standard publication bundle
+4. anchor that recipe to the workbench with `set_figure_spec`
+5. export one figure
+6. export a few named variants
+7. export the standard publication bundle
 
 ## 1. Open a real viewer and expose the shared workbench
 
@@ -79,7 +80,20 @@ This is the key step.
 You are not exporting yet.
 You are turning the current interactive view into an explicit figure recipe.
 
-## 3. Export one figure from the recipe
+## 3. Anchor the recipe to the workbench
+
+Now that you have a recipe, tell the workbench about it.
+This step updates `Workbench -> Scene` to reflect your explicit baseline,
+and also ensures the recipe is included in HTML exports:
+
+```python
+view.set_figure_spec(figure_spec=base_figure)
+```
+
+After this call, `Workbench -> Scene` will show the chosen preset and scale
+rather than only the default placeholders.
+
+## 4. Export one figure from the recipe
 
 ```python
 view.export.figure(
@@ -90,7 +104,7 @@ view.export.figure(
 
 This keeps the chosen camera and figure settings explicit.
 
-## 4. Derive small named variants
+## 5. Derive small named variants
 
 If you want a few closely related outputs, derive them from the same base
 recipe instead of rebuilding everything by hand:
@@ -118,7 +132,7 @@ view.export.figure_variants(
 This gives you a small named batch without losing the connection to the same
 base camera/state choice.
 
-## 5. Use the standard publication bundle
+## 6. Use the standard publication bundle
 
 If you do not want to define the variants yourself, use the built-in
 publication bundle:
@@ -148,7 +162,7 @@ view.export.figure_publication_set(
 )
 ```
 
-## 6. Keep the recipe reusable
+## 7. Keep the recipe reusable
 
 You can also derive a small override without mutating the base recipe:
 
@@ -186,6 +200,7 @@ That is exactly the kind of workflow MolSysViewer should encourage before
 - `view.set_panel_mode(...)`
 - `view.get_camera_snapshot()`
 - `FigureSpec.from_view(...)`
+- `view.set_figure_spec(figure_spec=...)`
 - `FigureSpec.with_overrides(...)`
 - `FigureSpec.build_variants(...)`
 - `view.export.figure(...)`
