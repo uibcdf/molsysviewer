@@ -22,9 +22,19 @@ The previous `pip install PySide6==6.9.2` recipe is **obsolete**.
 
 ### Conda-native recipe (current)
 
-Add the `uibcdf` channel to your environment and install the three Python-binding
-packages. The two Qt helper packages (`qt6-positioning-uibcdf`,
-`qt6-webengine-uibcdf`) are pulled in as run dependencies automatically.
+The full conda family is **5 packages**:
+
+| Package | Role | How it arrives |
+|---------|------|----------------|
+| `shiboken6-uibcdf` | Python/C++ bridge | install explicitly |
+| `pyside6-essentials-uibcdf` | Core Qt bindings | install explicitly |
+| `pyside6-addons-uibcdf` | Add-on Qt bindings (includes WebEngine) | install explicitly |
+| `qt6-positioning-uibcdf` | Qt Positioning native runtime | auto-pulled as dependency of `addons` |
+| `qt6-webengine-uibcdf` | Qt WebEngine native runtime | auto-pulled as dependency of `addons` |
+
+You only need to name the three Python-binding packages explicitly.
+The two Qt native-runtime packages are declared as `run` dependencies of
+`pyside6-addons-uibcdf` and are resolved automatically by the solver.
 
 ```bash
 mamba install -c uibcdf -c conda-forge \
@@ -33,14 +43,16 @@ mamba install -c uibcdf -c conda-forge \
     "pyside6-addons-uibcdf=6.9.2=*_3"
 ```
 
-If the solver has trouble (common in complex envs), install from direct
+If the solver has trouble (common in complex envs), install all five from direct
 file paths instead:
 
 ```bash
 mamba install -n <env> \
     /path/to/conda-bld/linux-64/shiboken6-uibcdf-6.9.2-*_3.conda \
     /path/to/conda-bld/linux-64/pyside6-essentials-uibcdf-6.9.2-*_3.conda \
-    /path/to/conda-bld/linux-64/pyside6-addons-uibcdf-6.9.2-*_3.conda
+    /path/to/conda-bld/linux-64/pyside6-addons-uibcdf-6.9.2-*_3.conda \
+    /path/to/conda-bld/linux-64/qt6-positioning-uibcdf-6.9.2-*.conda \
+    /path/to/conda-bld/linux-64/qt6-webengine-uibcdf-6.9.2-*.conda
 ```
 
 ### Validation smoke

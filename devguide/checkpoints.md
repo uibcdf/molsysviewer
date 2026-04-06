@@ -44,7 +44,7 @@ Do not append dated historical entries unless a date is itself operationally rel
   - active blocker:
     - `pyside6-essentials-uibcdf 6.9.2`
 
-- What `Essentials` already has in-tree:
+- What `Essentials` already has in-tree (second build iteration):
   - `_uibcdf` namespace split re-applied on real `6.9.2` source:
     - `BINDING_NAME = PySide6_uibcdf`
     - `libpyside` imports `PySide6_uibcdf`
@@ -69,13 +69,23 @@ Do not append dated historical entries unless a date is itself operationally rel
       - RHI wrappers cut from the build
       - `QTextOption` cut completely, plus all directly dependent overloads we found
     - `QtWidgets`:
-      - `QFileDialog`
       - `QFileSystemModel`
-      - `QMessageBox`
       - `QPinchGesture`
       - `QTreeWidgetItemIterator`
+      - Note: `QFileDialog` and `QMessageBox` were temporarily cut during `_3` build
+        iteration but restored via DROPPED_ENTRIES fix; both are present in the
+        validated `_3` builds and in the current `molsysviewer` standalone imports.
 
-- Current exact blocker in `Essentials`:
+- molsysviewer-side status (already done):
+  - `molsysviewer/standalone_qt.py` imports from `PySide6_uibcdf` directly
+    (`feat(standalone): switch to PySide6_uibcdf`, `fix(standalone): restore QFileDialog
+    and QMessageBox imports`)
+  - `devguide/standalone_supported_environment.md` documents the conda-native recipe
+    with all 5 packages (3 explicit + 2 auto-pulled as run dependencies)
+  - `standalone_packaging_strategy.md` records A2 as the chosen and complete
+    packaging decision
+
+- Current exact blocker (in sibling repo `pyside6-essentials-uibcdf`):
   - `QtWidgets` is no longer the active blocker
   - `QtQml` is no longer blocked by `QQmlImageProviderBase::flags()`
   - the build now gets further into `QtQuick`
@@ -94,18 +104,17 @@ Do not append dated historical entries unless a date is itself operationally rel
     - after that, the next dependency chain is now in `QtQuick`
     - the architecture is still holding; the remaining work is peripheral binding cleanup
 
-- Next exact task:
-  1. patch `QtQuick` for the current `6.9.2` line:
+- Next exact task (all in sibling repos, not in `molsysviewer`):
+  1. patch `QtQuick` in `../pyside6-essentials-uibcdf` for the current `6.9.2` line:
      - remove `QQuickItem::flags() const`
      - remove `QQuickItem::setFlags(...)`
      - remove the problematic `QQuickRenderTarget::fromOpenGLTexture(...)` overload that takes flags
-  3. rerun:
+  2. rerun:
      - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
-  4. only after `Essentials` closes again:
-     - rerun `pyside6-addons-uibcdf`
-     - install the full family into a test env
-     - adapt standalone imports in `molsysviewer` to `PySide6_uibcdf` / `shiboken6_uibcdf`
-     - validate coexistence in `molsyssuite-qt-spike`
+  3. only after `Essentials` closes again:
+     - rerun `../pyside6-addons-uibcdf`
+     - install the full 5-package family into a test env
+     - validate `molsysviewer-qt` coexistence in `molsyssuite-qt-spike`
 
 - Strategic reading from this checkpoint:
   - the architecture is no longer the problem
@@ -115,6 +124,8 @@ Do not append dated historical entries unless a date is itself operationally rel
     - it is not meant to preserve every convenience surface of upstream `QtWidgets`
   - the clean `6.9.2` line remains the release candidate line
   - the earlier `6.10.2` work remains useful as exploratory learning, but not as the preferred packaging target
+  - A2 packaging decision is final; the first validated builds (`_3`) proved the path
+  - the second build iteration is refining the namespace layout, not re-evaluating the decision
 
 - `0.16.0` should now be read as the checkpoint where:
   - the mature product stories were verified together as one coherent release
