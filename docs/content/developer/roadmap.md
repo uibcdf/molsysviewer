@@ -97,6 +97,8 @@ These are no longer roadmap wishes; they are implemented realities:
 - core camera helpers and HTML export
 - pocket / blob / tube / ellipsoid / pharmacophore / tetrahedra / triangle-face overlays
 - live editing with rebuild/replay contracts
+- figure-oriented export with reusable `FigureSpec` recipes, named variants, and publication bundles
+- `Workbench -> Scene` section exposes the figure baseline as part of the workbench story
 
 ## What Is Still Missing or Incomplete
 

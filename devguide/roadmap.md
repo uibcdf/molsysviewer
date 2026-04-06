@@ -138,25 +138,28 @@ Current reading:
 
 Status:
 
-- in strong progress
+- done
 
 Goal:
 
 - move from "serious image export exists" to "figure export feels deliberate"
 
-Main work:
+Main work (completed):
 
-- push `view.export.figure(...)` beyond a thin wrapper
-- strengthen camera/composition reuse
-- strengthen publication-oriented presets/looks
-- keep figure export tied to reproducible viewer state
+- `FigureSpec` as a frozen reusable recipe for figure export ✓
+- `FigureSpec.from_view(...)` captures the current camera ✓
+- `FigureSpec.with_overrides(...)` / `build_variants(...)` / `build_publication_variants(...)` ✓
+- `view.export.figure(...)`, `figure_variants(...)`, `figure_publication_set(...)` ✓
+- `view.set_figure_spec(figure_spec)` anchors a recipe to the workbench and replay ✓
+- `Workbench -> Scene` shows the figure baseline immediately on any structure load ✓
+- cookbook `figure_export_workbench` documents the full end-to-end flow ✓
 
 Success criteria:
 
-- exported figures reuse explicit camera/state choices
-- the figure story feels like part of the workbench, not a bolt-on helper
+- exported figures reuse explicit camera/state choices ✓
+- the figure story feels like part of the workbench, not a bolt-on helper ✓
 - the current Mol* pipeline is being exploited well before considering deeper
-  rendering ambitions
+  rendering ambitions ✓
 
 ### Phase D. Product Tightening
 

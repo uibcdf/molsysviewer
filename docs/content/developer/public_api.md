@@ -225,6 +225,12 @@ raw image export. It currently provides:
 - `view.export.figure_publication_set(...)` to export that standard bundle in
   one call
 
+`view.set_figure_spec(figure_spec=FigureSpec(...))` is now public.
+It anchors an explicit `FigureSpec` to the workbench (updates `Workbench -> Scene`)
+and stores the recipe for replay in HTML exports.
+This is the intended way to connect a Python-derived figure recipe to the live
+workbench view.
+
 The runtime `Workbench -> Scene` surface now also reflects the current built-in
 figure baseline so that figure export is visible as part of the workbench
 story, not only as a scripting API.
