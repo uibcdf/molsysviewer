@@ -33,9 +33,10 @@ Do not append dated historical entries unless a date is itself operationally rel
 **No hay trabajo pendiente en este repo para Phase E.**
 
 El bloqueador `QtQuick` que aparecía en versiones anteriores de este checkpoint
-describía una *segunda iteración de build* en el sibling repo
-`../pyside6-essentials-uibcdf` (refinamiento del layout de namespace, más allá
-de los `_3` builds validados). Eso no bloquea `molsysviewer`.
+ya está resuelto en el sibling repo `../pyside6-essentials-uibcdf`:
+`PySide6/QtQuick/typesystem_quick.xml` tiene los `remove="all"` aplicados para
+`QQuickItem::flags()`, `QQuickRenderTarget::fromOpenGLTexture(...Flags...)`, y
+todos los demás casos del mismo patrón de flag-type incorrecto.
 
 Si los sibling repos producen builds mejorados en el futuro, el único cambio
 esperable aquí es actualizar los pin de versión en
