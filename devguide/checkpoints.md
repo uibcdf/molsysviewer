@@ -17,115 +17,42 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-- Active line:
-  - clean `6.9.2`
-  - Linux
-  - Python `3.13`
-  - `qt6-main 6.9.2`
-  - runtime reference env:
-    - `molsyssuite-qt-spike`
-    - `PySide6`, `PySide6_Essentials`, `PySide6_Addons`, `shiboken6` all `6.9.2`
-  - source reference:
-    - `pyside-setup@v6.9.2`
-    - commit `d5c8535130fafc65d868753f5cf72b6b9b10d628`
-  - operational rule:
-    - do not vendor from the working tree of `pyside-setup`
-    - vendor only from explicit `v6.9.2`
+### Phase E — Standalone: estado actual
 
-- Family status:
-  - closed enough already:
-    - `shiboken6-uibcdf 6.9.2`
-    - `qt6-positioning-uibcdf 6.9.2`
-    - `qt6-webengine-uibcdf 6.9.2`
-  - partially closed:
-    - `pyside6-addons-uibcdf 6.9.2`
-    - it already got past namespace, runtime Qt, CMake exports, and most `QtWebEngine*` binding issues
-    - it should stay paused until `pyside6-essentials-uibcdf` closes again on top of the latest `_uibcdf` layout fixes
-  - active blocker:
-    - `pyside6-essentials-uibcdf 6.9.2`
+**Phase E en `molsysviewer` está materialmente completa.**
 
-- What `Essentials` already has in-tree (second build iteration):
-  - `_uibcdf` namespace split re-applied on real `6.9.2` source:
-    - `BINDING_NAME = PySide6_uibcdf`
-    - `libpyside` imports `PySide6_uibcdf`
-    - `PySide6/__init__.py.in` imports `shiboken6_uibcdf`
-  - post-install relocation from canonical `PySide6/...` to `PySide6_uibcdf/...`
-  - `meta.yaml` assertions against canonical `site-packages/PySide6/Qt`
-  - `C_INCLUDE_PATH` and `CPLUS_INCLUDE_PATH` exported so OpenGL headers remain visible to `shiboken`
-  - compatibility cuts already applied and intentional for this line:
-    - `QtCore`:
-      - `QDirListing`
-      - `QDirListingIterator`
-      - `QStringEncoder`
-      - `QStringDecoder`
-      - `QStringConverterBase::State`
-      - `QStringConverter`
-      - `QTextStream::encoding()`
-      - `QTextStream::setEncoding(...)`
-    - `QtNetwork`:
-      - `QLocalSocket`
-      - `QLocalServer`
-    - `QtGui`:
-      - RHI wrappers cut from the build
-      - `QTextOption` cut completely, plus all directly dependent overloads we found
-    - `QtWidgets`:
-      - `QFileSystemModel`
-      - `QPinchGesture`
-      - `QTreeWidgetItemIterator`
-      - Note: `QFileDialog` and `QMessageBox` were temporarily cut during `_3` build
-        iteration but restored via DROPPED_ENTRIES fix; both are present in the
-        validated `_3` builds and in the current `molsysviewer` standalone imports.
+- `molsysviewer/standalone_qt.py` importa de `PySide6_uibcdf` directamente.
+  `QFileDialog` y `QMessageBox` están restaurados y funcionales.
+- La receta conda-native (`_3` builds) está publicada en el canal `uibcdf`
+  y validada. El standalone abre, carga sistemas, menus funcionan.
+- `devguide/standalone_supported_environment.md` documenta los 5 paquetes
+  (3 installs explícitos + 2 dependencias automáticas).
+- `standalone_packaging_strategy.md` cierra A2 como decisión tomada y completa.
+- El host satisface el pre-`1.0.0` gate definido en el roadmap.
 
-- molsysviewer-side status (already done):
-  - `molsysviewer/standalone_qt.py` imports from `PySide6_uibcdf` directly
-    (`feat(standalone): switch to PySide6_uibcdf`, `fix(standalone): restore QFileDialog
-    and QMessageBox imports`)
-  - `devguide/standalone_supported_environment.md` documents the conda-native recipe
-    with all 5 packages (3 explicit + 2 auto-pulled as run dependencies)
-  - `standalone_packaging_strategy.md` records A2 as the chosen and complete
-    packaging decision
+**No hay trabajo pendiente en este repo para Phase E.**
 
-- Current exact blocker (in sibling repo `pyside6-essentials-uibcdf`):
-  - `QtWidgets` is no longer the active blocker
-  - `QtQml` is no longer blocked by `QQmlImageProviderBase::flags()`
-  - the build now gets further into `QtQuick`
-  - the active hard failures are now:
-    - `QQuickItem::flags() const`
-    - `QQuickItem::setFlags(...)`
-    - `QQuickRenderTarget::fromOpenGLTexture(...)`
-  - exact pattern:
-    - generated wrappers still use `QFlags<QCommandLineOption::Flag>`
-    - Qt expects:
-      - `QQuickItem::Flags`
-      - `QQuickRenderTarget::Flags`
-  - practical reading:
-    - removing `QQmlImageProviderBase` worked
-    - then `QQmlEngine` had to drop `addImageProvider(...)` and `imageProvider(...)`
-    - after that, the next dependency chain is now in `QtQuick`
-    - the architecture is still holding; the remaining work is peripheral binding cleanup
+El bloqueador `QtQuick` que aparecía en versiones anteriores de este checkpoint
+describía una *segunda iteración de build* en el sibling repo
+`../pyside6-essentials-uibcdf` (refinamiento del layout de namespace, más allá
+de los `_3` builds validados). Eso no bloquea `molsysviewer`.
 
-- Next exact task (all in sibling repos, not in `molsysviewer`):
-  1. patch `QtQuick` in `../pyside6-essentials-uibcdf` for the current `6.9.2` line:
-     - remove `QQuickItem::flags() const`
-     - remove `QQuickItem::setFlags(...)`
-     - remove the problematic `QQuickRenderTarget::fromOpenGLTexture(...)` overload that takes flags
-  2. rerun:
-     - `conda build /home/diego/repos@uibcdf/pyside6-essentials-uibcdf/devtools/conda-build`
-  3. only after `Essentials` closes again:
-     - rerun `../pyside6-addons-uibcdf`
-     - install the full 5-package family into a test env
-     - validate `molsysviewer-qt` coexistence in `molsyssuite-qt-spike`
+Si los sibling repos producen builds mejorados en el futuro, el único cambio
+esperable aquí es actualizar los pin de versión en
+`standalone_supported_environment.md` y validar el smoke import.
 
-- Strategic reading from this checkpoint:
-  - the architecture is no longer the problem
-  - the current work is narrow compatibility cleanup around peripheral bindings
-  - what we are cutting is intentionally narrower than general-purpose PySide:
-    - it is acceptable for the standalone distribution target
-    - it is not meant to preserve every convenience surface of upstream `QtWidgets`
-  - the clean `6.9.2` line remains the release candidate line
-  - the earlier `6.10.2` work remains useful as exploratory learning, but not as the preferred packaging target
-  - A2 packaging decision is final; the first validated builds (`_3`) proved the path
-  - the second build iteration is refining the namespace layout, not re-evaluating the decision
+### Familia de packaging (referencia)
+
+| Paquete | Rol | Cómo llega |
+|---------|-----|------------|
+| `shiboken6-uibcdf 6.9.2=*_3` | bridge Python/C++ | install explícito |
+| `pyside6-essentials-uibcdf 6.9.2=*_3` | bindings Qt core | install explícito |
+| `pyside6-addons-uibcdf 6.9.2=*_3` | bindings Qt addons (WebEngine) | install explícito |
+| `qt6-positioning-uibcdf 6.9.2` | runtime Qt Positioning | dep automática de addons |
+| `qt6-webengine-uibcdf 6.9.2` | runtime Qt WebEngine | dep automática de addons |
+
+Sibling repos: `../shiboken6-uibcdf`, `../pyside6-essentials-uibcdf`,
+`../pyside6-addons-uibcdf`, `../qt6-positioning-uibcdf`, `../qt6-webengine-uibcdf`.
 
 - `0.16.0` should now be read as the checkpoint where:
   - the mature product stories were verified together as one coherent release
