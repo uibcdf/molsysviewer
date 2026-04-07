@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Mapping
 import base64
+from importlib import import_module
 import time
 import inspect
 import json
@@ -121,6 +122,19 @@ def _write_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> d
         "mode": _signal_value(args, kwargs, 5, "mode"),
         "include_popout": _signal_value(args, kwargs, 4, "include_popout"),
     }
+
+
+def _resolve_entry_callable(entry: str) -> Any | None:
+    if not isinstance(entry, str) or entry.strip() == "" or "." not in entry:
+        return None
+    module_name, _, attr_name = entry.rpartition(".")
+    if not module_name or not attr_name:
+        return None
+    try:
+        module = import_module(module_name)
+    except Exception:
+        return None
+    return getattr(module, attr_name, None)
 
 
 def _panel_mode_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -435,6 +449,7 @@ class MolSysView:
                     dict(content),
                     skip_digestion=True,
                 )
+                self._sync_addons_runtime()
                 return
             if action == "create_region_from_selection":
                 self.new_region_from_active_selection(skip_digestion=True)
@@ -1119,7 +1134,7 @@ class MolSysView:
             record = dict(item)
             record["workspace"] = workspace
             records.append(record)
-        return records
+        return self._enrich_workbench_sections(records)
 
     @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_runtime_signal_extra)
     @digest()
@@ -1415,24 +1430,85 @@ class MolSysView:
             "options": {"visible_atom_indices": self.visible_atom_indices},
         })
 
-    def _sync_addons_runtime(self) -> None:
+    def _invoke_addon_entry(self, entry: str) -> Any | None:
+        candidate = _resolve_entry_callable(entry)
+        if candidate is None or not callable(candidate):
+            return None
+        try:
+            signature = inspect.signature(candidate)
+        except (TypeError, ValueError):
+            signature = None
+
+        if signature is not None and len(signature.parameters) == 0:
+            return candidate()
+
+        try:
+            return candidate(self)
+        except TypeError:
+            try:
+                return candidate(view=self)
+            except TypeError:
+                return None
+
+    def _materialize_addon_entry_payload(self, entry: Any) -> dict[str, Any] | None:
+        if not isinstance(entry, str) or entry.strip() == "":
+            return None
+        payload = self._invoke_addon_entry(entry)
+        if payload is None:
+            return None
+        if isinstance(payload, dict):
+            return dict(payload)
+        return {"value": payload}
+
+    def _enrich_workbench_sections(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        enriched: list[dict[str, Any]] = []
+        for item in records:
+            record = dict(item)
+            payload = self._materialize_addon_entry_payload(record.get("entry"))
+            if payload is not None:
+                record["runtime_payload"] = payload
+                if isinstance(payload.get("key"), str):
+                    record["key"] = payload["key"]
+                if isinstance(payload.get("item_title"), str):
+                    record["item_title"] = payload["item_title"]
+                if isinstance(payload.get("item_subtitle"), str):
+                    record["item_subtitle"] = payload["item_subtitle"]
+            enriched.append(record)
+        return enriched
+
+    def _enrich_export_helper_specs(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        enriched: list[dict[str, Any]] = []
+        for item in records:
+            record = dict(item)
+            payload = self._materialize_addon_entry_payload(record.get("entry"))
+            if payload is not None:
+                record["runtime_payload"] = payload
+            enriched.append(record)
+        return enriched
+
+    def _build_addon_runtime_summary_message(self) -> dict[str, Any]:
         addon_names = self.addons.enabled(skip_digestion=True)
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
         panel_specs = self.addons.panel_specs(skip_digestion=True)
-        workbench_sections = self.addons.workbench_section_specs(skip_digestion=True)
-        context_action_specs = self.addons.context_action_specs(skip_digestion=True)
-        export_helper_specs = self.addons.export_helper_specs(skip_digestion=True)
-        self._send(
-            {
-                "op": "set_addon_runtime_summary",
-                "addons": addon_names,
-                "workspace_specs": workspace_specs,
-                "panel_specs": panel_specs,
-                "workbench_sections": workbench_sections,
-                "context_action_specs": context_action_specs,
-                "export_helper_specs": export_helper_specs,
-            }
+        workbench_sections = self._enrich_workbench_sections(
+            self.addons.workbench_section_specs(skip_digestion=True)
         )
+        context_action_specs = self.addons.context_action_specs(skip_digestion=True)
+        export_helper_specs = self._enrich_export_helper_specs(
+            self.addons.export_helper_specs(skip_digestion=True)
+        )
+        return {
+            "op": "set_addon_runtime_summary",
+            "addons": addon_names,
+            "workspace_specs": workspace_specs,
+            "panel_specs": panel_specs,
+            "workbench_sections": workbench_sections,
+            "context_action_specs": context_action_specs,
+            "export_helper_specs": export_helper_specs,
+        }
+
+    def _sync_addons_runtime(self) -> None:
+        self._send(self._build_addon_runtime_summary_message())
 
     def _remap_indices(self, indices: Any, atom_index_map: dict[int, int] | None) -> list[int]:
         if atom_index_map is None:
@@ -2838,6 +2914,11 @@ class MolSysView:
         messages = self._clean_message_history()
         if self._current_figure_spec:
             messages.append(dict(self._current_figure_spec))
+        summary_message = self._build_addon_runtime_summary_message()
+        insert_at = len(messages)
+        if insert_at > 0 and messages[-1].get("op") == "set_camera_snapshot":
+            insert_at -= 1
+        messages.insert(insert_at, summary_message)
         if self._last_camera_snapshot:
             messages.append(
                 {

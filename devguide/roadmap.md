@@ -210,14 +210,41 @@ Immediate `0.16.x` hardening gate:
     - the Python smoke subset is green
     - `npm --prefix molsysviewer/js run test:js` is green again
     - docs/API/runtime parity across the three mature stories remains aligned
-  - the next useful work should be the next real product slice, not another
-    large conceptual pass over the shared runtime
+- the next useful work should be the next real product slice, not another
+  large conceptual pass over the shared runtime
 - concrete `0.16.0` release gate:
   - the recommended smoke subset remains green
   - docs navigation still makes the three mature stories easy to find:
     - panel/workspace runtime
     - add-on reference runtime
     - figure export from the workbench
+
+## Active Add-On Slice: ElasNetMT
+
+Status:
+
+- in progress
+
+Immediate working document:
+
+- [`elasnetmt_addon_plan.md`](/home/diego/repos@uibcdf/molsysviewer/devguide/elasnetmt_addon_plan.md)
+
+Reason to open this slice now:
+
+- the add-on host is credible enough that the next useful pressure should come
+  from one real downstream-shaped domain
+- `ElasNetMT` is a strong fit because it can already reuse existing overlay
+  primitives:
+  - links
+  - displacement vectors
+  - anisotropy ellipsoids
+
+Current execution intent:
+
+1. validate an ElasNetMT-shaped reference add-on inside the host
+2. define the minimal per-view runtime state
+3. implement the first real overlay-driven action path
+4. only then push the external integration package harder
   - the public notebook-facing APIs still match those stories honestly
   - no new host-structure issue appears while doing the last release-hardening
     pass

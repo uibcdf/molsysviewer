@@ -347,6 +347,28 @@ def test_addon_template_module_is_importable_and_registerable():
         addons.clear()
 
 
+def test_elasnetmt_addon_template_module_is_importable_and_registerable():
+    addons.clear()
+    try:
+        addon = addons.register_module("molsysviewer.addon_templates.minimal_elasnetmt")
+        assert addon.name == "elasnetmt-template"
+        assert addons.available() == ["elasnetmt-template"]
+        assert addons.workspace_specs()[0]["id"] == "elasnetmt"
+        assert [item["id"] for item in addons.panel_specs()] == ["model", "modes", "figures"]
+        assert [item["id"] for item in addons.context_action_specs()] == ["show-contact-network", "show-mode-vectors"]
+        assert [item["id"] for item in addons.workbench_section_specs()] == ["modes", "network-overlays"]
+        assert [item["id"] for item in addons.shape_provider_specs()] == ["contact-links", "mode-ellipsoids"]
+        assert addons.export_helper_specs()[0]["id"] == "enm-figure"
+        assert addons.lifecycle_for("elasnetmt-template") is not None
+        assert addons.lifecycle_for("elasnetmt-template").info() == {
+            "has_on_enable": True,
+            "has_on_disable": True,
+            "has_on_context_action": True,
+        }
+    finally:
+        addons.clear()
+
+
 def test_addon_template_module_has_visible_runtime_lifecycle_flow():
     addons.clear()
     try:
@@ -386,6 +408,45 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
         addons.clear()
 
 
+def test_elasnetmt_addon_template_module_has_visible_runtime_lifecycle_flow():
+    addons.clear()
+    try:
+        addons.register_module("molsysviewer.addon_templates.minimal_elasnetmt")
+        view = MolSysView(debug_js=True)
+
+        assert view._elasnetmt_template_enabled is True
+        assert ("enable", "elasnetmt-template") in view._elasnetmt_template_events
+        assert view._elasnetmt_template_runtime["enabled"] is True
+        assert view._elasnetmt_template_runtime["workspace"] == "elasnetmt"
+        assert view._elasnetmt_template_runtime["panels"] == ["model", "modes", "figures"]
+        assert view._elasnetmt_template_runtime["sections"] == ["modes", "network-overlays"]
+        assert view._elasnetmt_template_runtime["context_actions"] == ["show-contact-network", "show-mode-vectors"]
+        assert view._elasnetmt_template_runtime["export_helpers"] == ["enm-figure"]
+
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "interaction_context_action",
+                "action": "addon_context_action",
+                "addon": "elasnetmt-template",
+                "addon_action_id": "show-mode-vectors",
+                "addon_action_title": "Show Mode Vectors",
+                "context": {"kind": "structure", "atom_indices": [1, 2, 3]},
+            }
+        )
+
+        assert view._elasnetmt_template_last_context_action["action_id"] == "show-mode-vectors"
+        assert view._elasnetmt_template_last_context_action["payload"]["addon"] == "elasnetmt-template"
+        assert view._elasnetmt_template_runtime["last_context_action"]["action_id"] == "show-mode-vectors"
+        assert ("context", "show-mode-vectors") in view._elasnetmt_template_events
+
+        view.addons.disable("elasnetmt-template")
+        assert view._elasnetmt_template_enabled is False
+        assert view._elasnetmt_template_runtime["enabled"] is False
+        assert ("disable", "elasnetmt-template") in view._elasnetmt_template_events
+    finally:
+        addons.clear()
+
+
 def test_addon_template_module_syncs_richer_runtime_summary_message():
     addons.clear()
     view = MolSysView()
@@ -408,16 +469,18 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
 def test_addon_templates_helper_lists_and_registers_reference_addons():
     addons.clear()
     try:
-        assert addon_templates.list_reference_addons() == ["topomt"]
+        assert addon_templates.list_reference_addons() == ["elasnetmt", "topomt"]
+        assert addon_templates.resolve_reference_addon("elasnetmt") == "molsysviewer.addon_templates.minimal_elasnetmt"
+        assert addon_templates.resolve_reference_addon("minimal_elasnetmt") == "molsysviewer.addon_templates.minimal_elasnetmt"
         assert addon_templates.resolve_reference_addon("topomt") == "molsysviewer.addon_templates.minimal_topomt"
         assert addon_templates.resolve_reference_addon("minimal_topomt") == "molsysviewer.addon_templates.minimal_topomt"
 
-        addon = addon_templates.register_reference_addon("topomt")
-        assert addon.name == "topomt-template"
-        assert addons.available() == ["topomt-template"]
+        addon = addon_templates.register_reference_addon("elasnetmt")
+        assert addon.name == "elasnetmt-template"
+        assert addons.available() == ["elasnetmt-template"]
 
-        imported = addon_templates.import_reference_module("topomt")
-        assert imported.__name__ == "molsysviewer.addon_templates.minimal_topomt"
+        imported = addon_templates.import_reference_module("elasnetmt")
+        assert imported.__name__ == "molsysviewer.addon_templates.minimal_elasnetmt"
     finally:
         addons.clear()
 
@@ -426,8 +489,8 @@ def test_addon_templates_helper_can_register_all_reference_addons():
     addons.clear()
     try:
         registered = addon_templates.register_all_reference_addons()
-        assert [item.name for item in registered] == ["topomt-template"]
-        assert addons.available() == ["topomt-template"]
+        assert [item.name for item in registered] == ["elasnetmt-template", "topomt-template"]
+        assert addons.available() == ["elasnetmt-template", "topomt-template"]
     finally:
         addons.clear()
 
@@ -664,3 +727,129 @@ def test_view_addons_sync_runtime_summary_message():
         assert addon_msg["export_helper_specs"] == []
     finally:
         addons.clear()
+
+
+def test_view_addons_materialize_workbench_and_export_entry_payloads():
+    addons.clear()
+    module = ModuleType("fake_addon_runtime")
+
+    def _workbench(view):
+        count = getattr(view, "_fake_overlay_count", 0)
+        return {
+            "key": "fake:workbench",
+            "item_title": f"{count} overlays",
+            "item_subtitle": "runtime from python entry",
+        }
+
+    def _export(view):
+        count = getattr(view, "_fake_overlay_count", 0)
+        return {
+            "title": "Fake Export",
+            "figure_recipe": {"overlay_count": count},
+        }
+
+    module.workbench = _workbench
+    module.export = _export
+    sys.modules[module.__name__] = module
+
+    sent: list[dict] = []
+    view = MolSysView()
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+
+    try:
+        addons.register(
+            AddonSpec(
+                name="runtime-addon",
+                workspaces=(AddonWorkspaceSpec(id="runtime", title="Runtime", entry_panel="panel"),),
+                panels=(AddonPanelSpec(id="panel", title="Panel", entry="runtime.panel"),),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(
+                        id="summary",
+                        title="Summary",
+                        entry="fake_addon_runtime.workbench",
+                    ),
+                ),
+                export_helpers=(
+                    AddonExportHelperSpec(
+                        id="figure",
+                        title="Figure",
+                        entry="fake_addon_runtime.export",
+                        formats=("html",),
+                    ),
+                ),
+            )
+        )
+        view.addons.enable("runtime-addon")
+
+        sections = view.workspace_sections("runtime")
+        assert sections[0]["item_title"] == "0 overlays"
+        assert sections[0]["runtime_payload"]["item_subtitle"] == "runtime from python entry"
+
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "0 overlays"
+        assert addon_msg["export_helper_specs"][0]["runtime_payload"]["figure_recipe"]["overlay_count"] == 0
+    finally:
+        addons.clear()
+        sys.modules.pop(module.__name__, None)
+
+
+def test_view_addons_refresh_runtime_summary_after_context_action():
+    addons.clear()
+    module = ModuleType("fake_addon_runtime_refresh")
+
+    def _workbench(view):
+        count = getattr(view, "_fake_overlay_count", 0)
+        return {"key": "fake:workbench", "item_title": f"{count} overlays"}
+
+    module.workbench = _workbench
+    sys.modules[module.__name__] = module
+
+    def _on_context_action(view, action_id, payload):
+        view._fake_overlay_count = getattr(view, "_fake_overlay_count", 0) + 1
+
+    sent: list[dict] = []
+    view = MolSysView(debug_js=True)
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+
+    try:
+        addons.register(
+            AddonSpec(
+                name="runtime-addon",
+                workspaces=(AddonWorkspaceSpec(id="runtime", title="Runtime", entry_panel="panel"),),
+                panels=(AddonPanelSpec(id="panel", title="Panel", entry="runtime.panel"),),
+                context_actions=(
+                    AddonContextActionSpec(
+                        id="increment",
+                        title="Increment",
+                        entry="runtime.increment",
+                        target_kinds=("structure",),
+                    ),
+                ),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(
+                        id="summary",
+                        title="Summary",
+                        entry="fake_addon_runtime_refresh.workbench",
+                    ),
+                ),
+            ),
+            lifecycle=addons_module.AddonLifecycleSpec(on_context_action=_on_context_action),
+        )
+        view.addons.enable("runtime-addon")
+        view._handle_frontend_event(  # noqa: SLF001
+            {
+                "event": "interaction_context_action",
+                "action": "addon_context_action",
+                "addon": "runtime-addon",
+                "addon_action_id": "increment",
+                "context": {"kind": "structure", "atom_indices": [0]},
+            }
+        )
+
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "1 overlays"
+    finally:
+        addons.clear()
+        sys.modules.pop(module.__name__, None)
