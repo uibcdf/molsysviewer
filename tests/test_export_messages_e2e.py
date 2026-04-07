@@ -1,4 +1,7 @@
 from molsysviewer import demo
+from molsysviewer import addons, AddonExportHelperSpec, AddonPanelSpec, AddonSpec, AddonWorkbenchSectionSpec, AddonWorkspaceSpec
+from types import ModuleType
+import sys
 
 
 def test_build_export_messages_captures_reproducible_workbench_state_end_to_end():
@@ -104,3 +107,53 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
         },
         "duration_ms": 125,
     }
+
+
+def test_build_export_messages_include_materialized_addon_runtime_summary():
+    addons.clear()
+    module = ModuleType("fake_addon_export_runtime")
+
+    def _workbench(view):
+        return {"key": "fake:section", "item_title": "Runtime section"}
+
+    def _export(view):
+        return {"title": "Runtime export", "figure_recipe": {"workspace": "runtime"}}
+
+    module.workbench = _workbench
+    module.export = _export
+    sys.modules[module.__name__] = module
+
+    try:
+        view = demo["dialanine"]
+        addons.register(
+            AddonSpec(
+                name="runtime-addon",
+                workspaces=(AddonWorkspaceSpec(id="runtime", title="Runtime", entry_panel="panel"),),
+                panels=(AddonPanelSpec(id="panel", title="Panel", entry="runtime.panel"),),
+                workbench_sections=(
+                    AddonWorkbenchSectionSpec(
+                        id="summary",
+                        title="Summary",
+                        entry="fake_addon_export_runtime.workbench",
+                    ),
+                ),
+                export_helpers=(
+                    AddonExportHelperSpec(
+                        id="figure",
+                        title="Figure",
+                        entry="fake_addon_export_runtime.export",
+                        formats=("html",),
+                    ),
+                ),
+            )
+        )
+        view.addons.enable("runtime-addon")
+
+        messages = view._build_export_messages()  # noqa: SLF001
+        addon_msg = next(msg for msg in reversed(messages) if msg.get("op") == "set_addon_runtime_summary")
+
+        assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "Runtime section"
+        assert addon_msg["export_helper_specs"][0]["runtime_payload"]["figure_recipe"]["workspace"] == "runtime"
+    finally:
+        addons.clear()
+        sys.modules.pop(module.__name__, None)

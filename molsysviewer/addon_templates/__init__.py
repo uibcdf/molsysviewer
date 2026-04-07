@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
 
 REFERENCE_ADDON_MODULES: dict[str, str] = {
+    "elasnetmt": "molsysviewer.addon_templates.minimal_elasnetmt",
+    "minimal_elasnetmt": "molsysviewer.addon_templates.minimal_elasnetmt",
     "topomt": "molsysviewer.addon_templates.minimal_topomt",
     "minimal_topomt": "molsysviewer.addon_templates.minimal_topomt",
 }
