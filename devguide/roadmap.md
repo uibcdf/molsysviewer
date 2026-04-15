@@ -1,6 +1,6 @@
 # Development Roadmap (Status-Aligned)
 
-Last update: 2026-03-24
+Last update: 2026-04-11
 
 This roadmap is status-aligned with the current repository state.
 It is organized by execution priority and uses three labels:
@@ -340,6 +340,10 @@ should grow over time as additional project-level principles become clear.
   - Stable Python -> TS op protocol (`ViewerMessage` union).
   - MolSys payload path (`load_molsys_payload`) with native topology/trajectory construction.
   - Region/layer/whole abstractions with tag-based state.
+  - Trajectory control Python API: `view.set_structure(index)`, `view.play(...)`,
+    `view.pause()`, `view.set_play_speed(fps)`, `view.current_structure_id`.
+  - Workspace switch toast notification in TS (`ViewerController.showToast`):
+    shown when `selectWorkspace` changes the active workspace.
 
 - `In progress`
   - Contract hardening by test breadth across all ops and edge paths.
@@ -395,6 +399,12 @@ should grow over time as additional project-level principles become clear.
     - links, vectors, triangle faces, tetrahedra.
   - Tag-based registration for selective clear/hide.
   - Exhaustive Python-side digestion for major overlay/detail arguments (PocketSurfaces, AnisotropyEllipsoids).
+  - Dict-like interface on `ShapesManager`: `keys()`, `values()`, `items()`.
+  - `Shape.focus(duration_ms, extra_radius)`: bounding-sphere focus for any
+    shape op family; Python extracts geometry, converts nm → Å, sends generic
+    `zoom_to_position` op.
+  - `zoom_to_position` TS op + `SceneHandlers.zoomToPosition()`: generic camera
+    focus via `plugin.managers.camera.focusSphere(Sphere3D)`.
 
 - `In progress`
   - Deep coverage of TS shape handler branches and error paths.
@@ -603,6 +613,17 @@ should grow over time as additional project-level principles become clear.
   - `view.export.html(...)` in `standalone` and `lite` modes.
   - Message-history replay and camera snapshot embedding.
   - Popup host logic with runtime source/module URL modes.
+  - `view.export.html(mode='lite')` and `mode='standalone'` are fully
+    headless-capable: Python-side only, no live frontend required.
+  - `view.export.image(...)` now works without a live Jupyter frontend via a
+    three-layer fallback:
+    1. live anywidget frontend round-trip (existing path)
+    2. Qt WebEngine offscreen rendering (primary headless backend; uses
+       `PySide6_uibcdf` or `PySide6` with SwiftShader software WebGL)
+    3. playwright fallback (browser binary assumed present; clear error if not)
+  - `data-molsysviewer-rendered` DOM signal on `#molsysviewer-root` after
+    `boot()` + 2000ms settle: shared synchronization point for both headless
+    backends.
 
 - `In progress`
   - Robustness tests for popup sync flows and camera sync edge cases.
