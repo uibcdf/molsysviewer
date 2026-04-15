@@ -17,30 +17,740 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-### Phase E — Standalone: estado actual
+### Pending proposals and bugs: current state
 
-**Phase E en `molsysviewer` está materialmente completa.**
+`devguide/pending_proposals/` has 1 file: `PROPOSAL_advanced_sectioning_api.md`
+(parts 1 & 2 done; context-menu "Create Section from Selection" done;
+parts 3 & 4 — interactive gizmos and TopoMT integration — pending).
 
-- `molsysviewer/standalone_qt.py` importa de `PySide6_uibcdf` directamente.
-  `QFileDialog` y `QMessageBox` están restaurados y funcionales.
-- La receta conda-native (`_3` builds) está publicada en el canal `uibcdf`
-  y validada. El standalone abre, carga sistemas, menus funcionan.
-- `devguide/standalone_supported_environment.md` documenta los 5 paquetes
-  (3 installs explícitos + 2 dependencias automáticas).
-- `standalone_packaging_strategy.md` cierra A2 como decisión tomada y completa.
-- El host satisface el pre-`1.0.0` gate definido en el roadmap.
+`devguide/pending_bugs/` is now empty.
 
-**No hay trabajo pendiente en este repo para Phase E.**
+Recently closed and implemented in this session (sixth batch):
 
-El bloqueador `QtQuick` que aparecía en versiones anteriores de este checkpoint
-ya está resuelto en el sibling repo `../pyside6-essentials-uibcdf`:
-`PySide6/QtQuick/typesystem_quick.xml` tiene los `remove="all"` aplicados para
-`QQuickItem::flags()`, `QQuickRenderTarget::fromOpenGLTexture(...Flags...)`, y
-todos los demás casos del mismo patrón de flag-type incorrecto.
+**Context menu: "Create Section from Selection"**:
 
-Si los sibling repos producen builds mejorados en el futuro, el único cambio
-esperable aquí es actualizar los pin de versión en
-`standalone_supported_environment.md` y validar el smoke import.
+- New `ContextMenuAction` value `"create_section_from_selection"` in `context-menu.ts`.
+- `ContextActionDetails` extended with `camera_forward?: [number, number, number]`.
+- `ViewerContextMenu` constructor gains optional 5th param `getCameraDirection`.
+- Button added in the active-selection section of the context menu, after
+  "Create Region from Selection".
+- `resolveActionDetails` computes `camera_forward` from the getter when the action fires.
+- `viewer-controller.ts` passes `getCameraDirection` (computes normalized view vector
+  from `canvas3d.camera.getSnapshot().target - position`) and lists the new action in
+  the pass-through block (no local TS handling needed).
+- `core.py` handler: reads `active_selection.atom_indices`, calls
+  `_molsys.structures.get_coordinates` to get atom positions (nm), computes centroid,
+  reads `camera_forward` from the event payload (falling back to `[0,0,-1]`), then
+  calls `self.scene.add_section(point=centroid, normal=camera_forward)`.
+
+Recently closed and implemented in this session (fifth batch):
+
+**World-space sectioning API — parts 1 & 2** (PROPOSAL_advanced_sectioning_api):
+
+- `view.scene.add_section(point, normal, *, invert, tag)` — adds a clipping plane
+  to all structural representations; returns a `Section` object.
+- `view.scene.remove_section(tag)` / `view.scene.clear_sections()`.
+- `Section` class in `layers.py`: `get_point()`, `get_normal()`, `is_inverted()`,
+  `set_point()`, `set_normal()`, `set_invert()`, `delete()`.  Mutations resend the
+  full section list automatically.
+- `_section_history: list[dict]` added to `MolSysView.__init__` and reset paths.
+- TS op `set_sections` → `setSections` in `scene-handlers.ts`:
+  - Converts `point` (nm) × 10 → Mol* Å.
+  - Converts `normal` [nx,ny,nz] → `{axis, angle(deg)}` rotation from Mol*'s
+    default plane normal [0,1,0] using cross/dot product.
+  - Applies via `plugin.managers.structure.component.setOptions({ clipObjects })`.
+  - Empty sections list resets clip to Mol* defaults.
+- Pilot props confirmed from Mol* source:
+  `Clip.Type.plane = 1`, normal computed in shader as
+  `quaternionTransform(rotation, vec3(0,1,0))`.
+
+Recently closed and implemented in this session (fourth batch):
+
+**Fog visual sync failure** (BUG_fog_visual_sync_failure):
+
+- Root cause: Mol* `CameraFogParams.intensity` is a 1–100 integer scale, but the Python
+  API was sending 0.0–1.0 floats directly — resulting in values < 1 that Mol* treated as
+  nearly zero fog.
+- Fix: `setFog` in `scene-handlers.ts` now scales `intensityRaw * 100` (clamped to 1–100)
+  before passing to `canvas3d.setProps({ cameraFog: ... })`.
+- Python default changed from `0.5` to `0.15` to match Mol*'s built-in default (15/100).
+
+**`view.navigation` renamed to `view.player`** (PROPOSAL_rename_navigation_manager):
+
+- `molsysviewer/navigation.py` → `molsysviewer/player.py`; `NavigationManager` → `PlayerManager`.
+- `view.navigation = NavigationManager(self)` → `view.player = PlayerManager(self)` in `__init__`.
+- All internal delegate references updated. No aliases left.
+
+**`view.camera` manager** (PROPOSAL_camera_manager_api):
+
+- `molsysviewer/viewer/camera.py` — `CameraManager` class, wired to `view.camera`.
+- `molsysviewer/viewer/utils.py` — shared `quantity_value_in_unit` helper (replaces local
+  function in `core.py`).
+- Methods: `zoom`, `focus_selection`, `focus_region`, `focus_on_object(tag)`, `reset`,
+  `get_snapshot`, `set_snapshot`, `mode` (property), `set_mode`.
+- New TS op `set_camera_mode` → `setCameraMode` in `scene-handlers.ts` via
+  `canvas3d.setProps({ camera: { mode } })`.
+- `view.zoom`, `view.focus_selection`, `view.focus_region`, `view.reset_camera`,
+  `view.get_camera_snapshot`, `view.set_camera_snapshot` kept as one-liner delegates
+  (no deprecation period — breaking change).
+
+**Custom background colors** (PROPOSAL_custom_background_colors):
+
+- `view.scene.set_background(color)` now accepts any value that `normalize_color()` handles:
+  ``"light"``/``"dark"`` (existing presets), hex string ``"#f0f0f0"``, integer ``0xffffff``,
+  named CSS/Mol* color ``"skyblue"``.
+- Non-preset values send a new op `set_background_color` → `setBackgroundColor` in
+  `scene-handlers.ts`, which sets `renderer.backgroundColor` directly.
+
+**Lighting and clipping API expansion** (PROPOSAL_lighting_api_expansion):
+
+- `view.scene.set_lighting(ambient, diffuse, specular)` — maps to `renderer.ambientIntensity`
+  and `renderer.lightIntensity` via new TS op `set_lighting` → `setLighting`.
+- `view.scene.set_projection(mode)` — delegates to `view.camera.set_mode(mode)`.
+- `view.scene.set_clip_planes(near, far, min_near)` — maps to `cameraClipping` via new TS
+  op `set_clip_planes` → `setClipPlanes`.
+- JS rebuilt with all new handlers.
+
+Recently closed and implemented in this session (third batch):
+
+**`view.navigation` module** (PROPOSAL_navigation_module):
+
+- `molsysviewer/navigation.py` — `NavigationManager` class, wired to `view.navigation`
+- Read-only properties: `index`, `n_structures`, `is_playing`
+- Mutable-default properties: `fps`, `step_size`, `mode`, `direction`
+- Navigation: `go_to_structure(index)`, `go_to_first()`, `go_to_last()`,
+  `step_forward(n)`, `step_backward(n)`
+- Playback: `play(fps, mode, direction, step_size)`, `pause()`
+- Setters: `set_fps(fps)`, `set_step_size(step_size)`, `set_mode(mode)`,
+  `set_direction(direction)`
+- Existing top-level methods kept as one-liner delegates:
+  `view.set_structure()` → `navigation.go_to_structure()`,
+  `view.play()` → `navigation.play()`,
+  `view.pause()` → `navigation.pause()`,
+  `view.set_play_speed()` → `navigation.set_fps()`
+
+**`view.get_coordinates` / `view.set_coordinates`** (PROPOSAL_coordinates_api — fully closed):
+
+- `view.get_coordinates(selection, structure_indices, syntax)` — resolves
+  `selection` with `msm.select()`, then calls
+  `_molsys.structures.get_coordinates(indices, structure_indices)`; returns
+  puw quantity ``(n_structures, n_atoms, 3)`` in nm.
+- `view.set_coordinates(coordinates, selection, structure_indices, syntax)` —
+  same resolution path, calls
+  `_molsys.structures.set_coordinates(indices, structure_indices, value)`,
+  then rebuilds the canvas via `_rebuild_view_from_current_molsys`.
+  Operates only on `_molsys`.
+- `Shape.set_coordinates` now fully covers all shape types including
+  `add_pocket_blob`, `add_pocket_surface`, `add_alpha_sphere_set` via a new
+  `_apply_pocket_centers_update` helper (deep-merges into
+  `options["alpha_spheres"]["centers"]` without losing other sub-keys).
+- `Annotation.get_coordinates()` — returns the centroid of the anchor atoms
+  (from `_annotation_history` options `atom_indices`) at the current frame as
+  a puw ``(3,)`` in nm.
+- `Annotation.set_coordinates()` — raises `NotImplementedError`; annotations
+  are atom-anchored; use `view.annotations.set_group_index()` instead.
+- `Measurement.get_coordinates()` — returns puw ``(n_endpoints, 3)`` in nm,
+  resolving `endpoint_atom_indices` (or fallback `picks_atom_indices`) from
+  `_measurement_history` at the current frame.  Read-only by design.
+
+Recently closed and implemented in this session (second batch):
+
+**Measurement focus overzoom** (BUG_measurement_focus_overzoom):
+
+- `Measurement.focus()` in `layers.py` now retrieves the 3D coordinates of the
+  endpoint atoms via `msm.get(coordinates=True)`, computes a bounding sphere
+  with `_bounding_sphere_nm`, and sends a `zoom_to_position` op (same path as
+  `Shape.focus()`).  Falls back to `view.zoom(selection=flat)` if coordinates
+  are unavailable.
+- The old code called `view.zoom(atom_indices=flat)` which (a) passed a
+  non-existent keyword argument and (b) would have zoomed to the whole bounding
+  box of all picks atoms — which for a centroid measurement can span two
+  residues far apart.
+
+**Measurement value units missing** (BUG_measurement_info_units_missing):
+
+- `MeasurementsManager.info()` in `measurements.py` now wraps the raw float
+  value from the history with `puw.quantity()`: `"angstrom"` for distances,
+  `"degrees"` for angles and dihedrals.
+- Added `from . import pyunitwizard as puw` to `measurements.py`.
+
+**Region vanishes on set_representation** (BUG_region_update_vanishing):
+
+- `setRegionRepresentation` in `state-handlers.ts` was calling
+  `removeStateObject(reprRef)` with `removeParentGhosts: true` for each old
+  representation.  When the last representation was removed, Mol* silently
+  cascade-deleted the parent `StructureComponent` as a ghost.  The subsequent
+  `buildRepresentation` call then targeted a dangling ref and failed silently
+  (`revertOnError: false`), leaving the region empty.
+- Fix: delete the entire component ref first (which also removes all
+  representation children in one sweep), then rebuild component + representation
+  from `entry.atomIndices` using `addRepresentation` — the same pattern used by
+  `createRegion`.  Restores `entry.hidden` state after the rebuild.
+
+**Camera locks after set_representation** (BUG_representation_camera_lock):
+
+- `setGlobalRepresentation` in `state-handlers.ts` now saves the current camera
+  snapshot at the start of the method and restores it with
+  `PluginCommands.Camera.SetSnapshot` after `handleShowHideGlobal`.  This
+  prevents Mol*-internal camera adjustments during the representation swap (e.g.
+  a tight `minRadius` calculation on the new empty/licorice scene) from leaving
+  the camera unable to zoom out.
+
+**Shape API unification** (PROPOSAL_shape_api_unification):
+
+- `SphereShapes.add_sphere` in `shapes/spheres.py` is now polymorphic:
+  - Single center (3-D point): same as before, returns one `Shape`.
+  - List of centers: batch path, returns `list[Shape]`; all spheres share one
+    `layer_tag` so they can be managed as a group.
+- Batch tag-naming rules:
+  - `tag=None` → auto-generate `shapeN` names (sequential counter).
+  - `tag="prefix"` → generate `prefix1`, `prefix2`, …
+  - `tag=[...]` → 1:1 mapping (must have length == number of centers).
+  - `layer_tag` → shared layer; auto-generates `layerN` if omitted.
+- `SphereShapes.add_spheres` is now a deprecated wrapper that calls `add_sphere`
+  with the list of centers and emits `DeprecationWarning`.
+- `ShapesManager.add_sphere` updated to expose the unified signature.
+- `viewer.js` rebuilt from updated TypeScript sources.
+
+**`add_spheres` removed, `Shape.get_coordinates` / `set_coordinates` added**:
+
+- `SphereShapes.add_spheres` deleted entirely (no deprecation period — no
+  external users); `ShapesManager.add_spheres` entry point also removed.
+- `Shape.get_coordinates()` added to `layers.py`: dispatches on the stored
+  shape op and returns a `puw` quantity in nm:
+  - sphere → `(3,)` center
+  - channel tube / pharmacophore / anisotropy ellipsoids / displacement
+    vectors → `(n, 3)` centers
+  - network links → `(n, 2, 3)` coordinate pairs
+  - triangle faces → `(n, 3, 3)` vertex triples
+  - tetrahedra → `(n, 4, 3)` vertex quads
+  - pocket blob / surface → `(n, 3)` alpha-sphere centers
+- `Shape.set_coordinates(coordinates)` added: same dispatch, routes to the
+  existing `_apply_*_update` helpers.
+
+**New pending proposals**:
+
+- `PROPOSAL_coordinates_api.md` — unified `get_coordinates` / `set_coordinates`
+  for molecular system atom selections, shapes (gaps remaining), annotations,
+  and measurements (read-only endpoints).
+- `PROPOSAL_navigation_module.md` — `view.navigation` manager that encapsulates
+  all structure-navigation state and methods (`current_index`, `go_to()`,
+  `play()`, `pause()`, `fps`, `step`, `direction`, `loop`); existing top-level
+  methods become thin delegates.
+
+Recently closed and implemented in this session (first batch):
+
+**Canvas picking for multi-chain and multi-load systems** (BUG_picking_broken_after_rebuild):
+
+- `group_PDB` column in `createAtomSiteTable` (structure.ts) was hardcoded
+  `"HETATM"` for all atoms. Mol*'s "auto" preset uses `group_PDB = "ATOM"` to
+  detect polymer chains; with all-HETATM payloads it cannot build the standard
+  cartoon representation, which caused one chain of a dimer to be rendered but
+  not properly integrated into the pick buffer. Fix: derive `group_PDB` from
+  `group_type` (atoms with `group_type` containing "protein", "aminoacid",
+  "peptide", "nucleic", "dna", "rna", or "nucleotide" become `"ATOM"`;
+  everything else stays `"HETATM"`).
+- `buildGroupItemsFromStructure` (active-selection.ts) only iterated the
+  FIRST atomic unit, so only chain A's residues ended up in `allAvailableItems`.
+  Range selection and navigate-panel navigation were broken for all subsequent
+  chains. Fix: collect the set of atom indices across ALL atomic units, then
+  iterate the model's residue table skipping groups not present in the
+  structure.
+- `setFromAtomIndices` (active-selection.ts) also searched only the first
+  atomic unit, silently dropping atoms from second+ chains when Python called
+  `set_active_selection` (e.g. via `view.select()` or saved-selection recall).
+  Fix: iterate ALL atomic units, building per-unit loci elements.
+- `atomIndicesToLoci` (viewer-controller.ts) searched only the first atomic
+  unit, so `syncVisualSelection`, `focusCurrentSelection`, and `focusTarget`
+  all produced `null` for atoms in chain B+. The canvas received no highlight
+  call even though the Python backend reported the selection correctly. Fix:
+  same multi-unit pattern — iterate all `Unit.isAtomic()` units with
+  `SortedArray.ofSortedArray(matched)`.
+- `makeLociForItem` (group-strip.ts) same single-unit bug: hover highlights
+  and Navigate-panel clicks for chain B+ residues showed nothing in the
+  canvas. Fix: same multi-unit iteration.
+- `load_from_molsysmt.py`: fixed stale `_get_n_atoms()` usage (private method;
+  was already deleted from `core.py`); replaced with `view._molsys.get_n_atoms()`.
+- `viewer.js` rebuilt from the updated TypeScript sources.
+
+**Load accounting and additive regions** (BUG_load_accounting_failure,
+BUG_add_method_missing_auto_regions):
+
+- `_get_molsys_n_atoms()` deleted entirely — was using a private/nonexistent
+  method (`_get_n_atoms()`) that failed silently inside the `@signal` decorator,
+  leaving `_load_blocks` empty after the first `load()`
+- All four call sites replaced with `obj.get_n_atoms()` (for `_molsys` objects)
+  or `added_molsys.get_n_atoms()` (for intermediate merge targets)
+- `_rebuild_view_from_current_molsys` also updated to use `get_n_atoms()`
+- `registry_cleared` frontend event handler emptied to a `pass` — it was
+  destructively resetting `_load_blocks` and `_regions` after Python had already
+  rebuilt them synchronously during the rebuild path
+- Six regression tests added in `tests/molsysviewer/test_molsysview_load.py`
+  covering: first-load block accounting, no regions on first load, race condition
+  survival for blocks and regions, two- and three-block additive load scenarios
+
+**Rich display for `view.info()`** (PROPOSAL_rich_display_for_info):
+
+- `ViewerInfo` class added to `molsysviewer/viewer/core.py` (just before
+  `MolSysView`)
+- `info(source='all')` now returns a `ViewerInfo` instance instead of a raw dict
+- `_repr_html_()` renders both sections (Molecular system / Viewer) sequentially
+  with `<h4>` headings and inline Styler HTML; plain `__repr__` preserved for
+  non-notebook contexts
+- `__getitem__` and `keys()` keep the old dict-like access pattern
+- `ViewerInfo` exported from `molsysviewer.viewer` and `molsysviewer`
+- Bug fix: `_repr_html_()` was calling `to_html()` on each section instead of
+  `_repr_html_()`; `_repr_html_()` is the correct Jupyter display protocol
+  method for pandas Styler objects — using `to_html()` caused sections to render
+  unstyled or produce empty output in some pandas versions
+
+Previously closed and implemented:
+
+Recently closed and implemented in first operational slices:
+
+**Trajectory and structure control** (`PROPOSAL_trajectory_and_structure_control`):
+
+- `view.current_structure_id` — reads the MolSysMT structure ID at the current
+  trajectory index
+- `view.set_structure(index)` — sends `set_trajectory_frame` op, updates
+  `_current_structure_index`
+- `view.play(fps, mode, direction, step)` — starts trajectory playback
+- `view.pause()` — stops trajectory playback
+- `view.set_play_speed(fps)` — adjusts playback speed without restarting
+
+**Shape registry dict-like interface** (part of `PROPOSAL_shape_layer_separation_and_naming`):
+
+- `view.shapes.keys()` — delegates to `tags()`
+- `view.shapes.values()` — iterates `get()` for each tag
+- `view.shapes.items()` — returns `(tag, shape)` pairs
+
+**Shape.focus()** (part of `PROPOSAL_shape_layer_separation_and_naming`):
+
+- `shape.focus(duration_ms, extra_radius)` — computes a bounding sphere from
+  stored shape geometry (all op families supported: spheres, pockets, channels,
+  ellipsoids, pharmacophore, links, vectors, triangles, tetrahedra), converts
+  nm → Å, sends `zoom_to_position` op
+- `zoom_to_position` TS op added: generic camera focus taking `center` (Å) and
+  `radius` (Å); dispatched through `SceneHandlers.zoomToPosition()` via
+  `plugin.managers.camera.focusSphere()`
+
+**Workspace switch toast** (`BUG_addon_workspace_confusion`):
+
+- `ViewerController.showToast(message, durationMs)` — self-contained CSS toast
+  injected into the viewer host element
+- `selectWorkspace()` now calls `showToast` when the active workspace changes
+
+**MolSysMT integration decision** (`PROP_MolSysMT_integration`):
+
+- closed as architecture decision: MolSysMT integration stays behind a future
+  dedicated addon layer; current `view.convert(...)` path is the interim bridge
+- no new surface needed; the existing implementation slice satisfies the proposal
+
+**ElasNetMT addon integration** (`PROPOSAL_elasnetmt_addon_integration`):
+
+- closed against the existing overlay primitive set (links, displacement vectors,
+  anisotropy ellipsoids); the addon plan lives in `devguide/elasnetmt_addon_plan.md`
+- no new primitives needed before ElasNetMT can start using the current host
+
+**Headless image export** (`PROPOSAL_headless_export_support`):
+
+- `view.export.image(...)` now works without a live Jupyter frontend
+- three-layer fallback in `_export_image_impl`:
+  1. live frontend (anywidget event round-trip) — existing path
+  2. Qt WebEngine headless backend — primary offline path, using
+     `PySide6_uibcdf` or `PySide6` with `QT_QPA_PLATFORM=offscreen` +
+     `QTWEBENGINE_CHROMIUM_FLAGS=--use-gl=swiftshader --disable-gpu`
+  3. playwright fallback — browser binary assumed present (shared with e2e
+     suite); no mandatory install; clear error message if missing
+- `_build_lite_html` JS template now sets
+  `data-molsysviewer-rendered` on `#molsysviewer-root` after `boot()` + 2000ms
+  settle; used by both Qt polling and playwright `wait_for_selector`
+- `view.export.html(mode='lite')` and `mode='standalone'` confirmed fully
+  headless-capable (Python-side only, no frontend required)
+- playwright is NOT a mandatory package dependency; users install it when needed
+
+Previously closed from `pending_proposals` and `pending_bugs` (earlier sessions):
+
+- `MolSysView.convert(...)`
+- active-selection-driven removal from the canvas/context menu
+- repeated `load(...)` with:
+  - `mode="add"`
+  - `mode="replace"`
+  - `mode="append_structures"`
+  - `mode="auto"`
+
+### Additive load logic: current state
+
+The repeated-`load()` proposal is now implemented in its first operational
+slice.
+
+Reference status document:
+
+- `devguide/load_modes_and_append_structures_status.md`
+
+Implemented now:
+
+- `view.load(..., mode="add")` is the current default
+- `view.load(..., mode="replace")` resets the scene before loading
+- `view.load(..., mode="append_structures")` is now implemented as the
+  explicit structural-append path
+- `view.load(..., mode="auto")` is now implemented as a conservative
+  first-version heuristic
+- first load:
+  - initializes `whole`
+  - records block 0 in `_load_blocks`
+  - does not create an automatic region
+- second additive load:
+  - structurally adds the new system
+  - back-fills an automatic region for block 0
+  - creates an automatic region for block 1
+- third and later additive loads:
+  - create only the new automatic load-region
+- automatic load-region naming uses:
+  - the load label when present
+  - otherwise `Load1`, `Load2`, ...
+- `view.add(...)` remains the lower-level structural primitive:
+  - merges into `_molsys`
+  - updates `_load_blocks`
+  - does not create automatic load-regions
+- `view.load(..., mode="append_structures")` follows a first-version
+  conservative policy:
+  - empty viewer -> clear error
+  - topology-only `_molsys` -> allowed
+  - topology + structures -> append frames
+  - no `_load_blocks` changes
+  - no automatic load-regions
+- `view.load(..., mode="auto")` currently resolves as:
+  - empty viewer -> `replace`
+  - same atom count + no topology in the input -> `append_structures`
+  - same atom count + matching topology -> `append_structures`
+  - different atom count -> `add`
+- reset paths now clear additive-load bookkeeping
+
+Internal state now uses:
+
+- `_empty`
+- `_load_blocks`
+
+Each load block currently tracks:
+
+- `index`
+- `label`
+- `n_atoms`
+- `start`
+- `stop`
+- `region_tag`
+
+Adjacent cleanup done while landing this slice:
+
+- `tools.basic.add(...)` now forwards `label=...`
+- the minimal `load()` integration path is more robust against missing
+  optional hierarchy attributes in small MolSysMT inputs
+- a few `arg_digestion` callers were normalized for the `viewer/` package split
+  where tests were already touching that surface
+
+What remains for this front:
+
+- decide whether additive-load block metadata needs explicit provenance/source
+  fields
+- decide how much of `_load_blocks` should become part of a public inspection
+  surface later
+- add broader export/replay tests for multi-load scenes beyond the first
+  targeted regression slice
+- refine the first-version detection/execution split for structural append if a
+  lighter MolSysMT inspection path proves preferable in practice
+- decide whether `mode="auto"` should consider structure-count compatibility
+  more explicitly before choosing `add`
+
+### Visual API / styling: checkpoint before switching focus
+
+The Python-side color subsystem now has an explicit baseline module:
+
+- `molsysviewer/colors.py`
+
+This first slice is intended to make color handling coherent without forcing an
+immediate public-API rewrite across all shape families.
+
+Implemented now:
+
+- named colors normalized from the Mol* color table
+- flexible single-color parsing:
+  - integer `0xRRGGBB`
+  - hex strings
+  - RGB tuples/lists
+  - named strings such as `red` or `light_blue`
+- continuous palette registration and resolution
+- categorical scheme registration and resolution
+- adaptation from Matplotlib colormaps on the Python side
+- public access through:
+  - `molsysviewer.colors`
+  - `molsysviewer.normalize_color(...)`
+  - `molsysviewer.normalize_colors(...)`
+  - `view.colors`
+- built-in categorical presets now available in the registry:
+  - static schemes:
+    - `pharmacophore_default`
+    - `element_cpk`
+    - `secondary_structure_default`
+  - generated schemes:
+    - `chain_default`
+    - `pocket_default`
+  - categorical base palette:
+    - `categorical_default`
+- first shape-family migrations on top of the new model:
+  - `displacement_vectors`
+    - `color_by`
+    - `palette`
+  - `channel_tube`
+    - `color_by`
+    - `palette`
+  - `anisotropy_ellipsoids`
+    - `color_by`
+    - `palette`
+  - `pharmacophore`
+    - `color_scheme`
+    - `color_table`
+  - `links`
+    - `color_by`
+    - `color_table`
+
+Development reference:
+
+- `devguide/molstar_color_strings.md`
+
+Status of this front:
+
+- the color subsystem is no longer just an internal helper layer
+- structural styles, curated schemes, advanced Mol* themes, and public
+  discovery/catalog APIs are now all present
+- this front is in a good checkpoint state and does not block switching to a
+  different area of the codebase
+
+What remains for this front, if work resumes later:
+
+- decide how aggressively to migrate existing shape APIs from `color_mode` /
+  `color_map` toward a cleaner `color_by` / `palette` / `color_scheme` model
+- decide whether these built-in presets are enough as a first public set or
+  whether more should be promoted now (`residue/group`, `molecule type`, etc.)
+- continue the progressive migration family by family rather than rewriting the
+  whole shape surface at once
+- decide whether the next migration slice should focus on:
+  - remaining shape families with scalar coloring,
+  - built-in categorical schemes,
+  - or structural representations/styles beyond the custom-shape layer
+
+### Structural color schemes: current state
+
+The new color model is no longer limited to custom shapes.
+
+Implemented now:
+
+- structural `Style` / `whole.set_representation(...)` calls can carry
+  `params.color_scheme`
+- structural `Style` / `whole.set_representation(...)` calls can also carry
+  `params.size_scheme`
+- advanced structural escape hatches are now available:
+  - `params.molstar_color_theme`
+  - `params.molstar_size_theme`
+- advanced theme values accept either:
+  - a plain Mol* theme name string
+  - or a dictionary with:
+    - `name`
+    - `params`
+- the current public structural color-scheme bridge maps:
+  - `element_cpk` -> Mol* `element-symbol`
+  - `secondary_structure_default` -> Mol* `secondary-structure`
+  - `chain_default` -> Mol* `chain-id`
+  - `residue_name` -> Mol* `residue-name`
+  - `molecule_type` -> Mol* `molecule-type`
+  - `entity_default` -> Mol* `entity-id`
+  - `illustrative_default` -> Mol* `illustrative`
+- the current public structural size-scheme bridge maps:
+  - `uniform` -> Mol* `uniform`
+  - `physical` -> Mol* `physical`
+  - `uncertainty` -> Mol* `uncertainty`
+- this already works both for direct global representations and for preset-based
+  application paths for color schemes
+- size schemes are currently active on the direct global-representation path
+- replay/export keeps the public `color_scheme` parameter rather than leaking
+  Mol* internals into the Python-side history
+- replay/export also keeps the public `size_scheme` parameter
+- replay/export also keeps the advanced `molstar_color_theme` and
+  `molstar_size_theme` parameters when used
+- `view.styles` now exposes query helpers for the curated public structural
+  scheme catalogs:
+  - `structural_color_schemes()`
+  - `structural_color_scheme_records()`
+  - `structural_size_schemes()`
+  - `structural_size_scheme_records()`
+- `view.styles` now also exposes public discovery catalogs for the broader
+  visual surface:
+  - `representation_types()`
+  - `representation_type_records()`
+  - `representation_param_schema(representation)`
+  - `representation_param_schema_records()`
+  - `representation_presets()`
+  - `representation_preset_records()`
+  - `molstar_color_themes()`
+  - `molstar_color_theme_records()`
+  - `molstar_size_themes()`
+  - `molstar_size_theme_records()`
+- the built-in style catalog now includes structural color variants such as:
+  - `cartoon-secondary-structure`
+  - `cartoon-chain`
+  - `ball-and-stick-element-cpk`
+  - `spacefill-element-cpk`
+- curated structural schemes have priority over advanced Mol* theme escape
+  hatches when both are provided
+
+What remains for this front:
+
+- decide which additional Mol* structural themes deserve promotion into the
+  public API beyond the current curated set
+- decide whether preset-based structural application should also gain explicit
+  size-theme support or whether direct-representation support is sufficient
+- decide how broad the curated representation-parameter schemas should become
+  relative to the underlying Mol* parameter surface
+
+### Suggested next focus
+
+The visual/style front is now in a strong checkpoint state.
+
+The next work does not need to continue here immediately.
+If development switches to a different area, this file should be treated as the
+handoff point for resuming visual/styling work later.
+
+### MolSysMT-facing view operations: current state
+
+Two MolSysMT-oriented viewer operations are now implemented in a first public
+slice:
+
+- `view.convert(...)`
+- `view.remove(...)` through active-selection canvas interaction
+
+Implemented now:
+
+- `view.convert(...)` exists as a public method
+- `molsysviewer.tools.basic.convert(...)` exists as the functional wrapper
+- the current implementation delegates conversion to the molecular system
+  currently stored in the viewer
+- this is intentionally a first operational version:
+  - it already matches the most common expectation for molecular and
+    trajectory-like target forms
+  - it does not preclude richer future conversions from `MolSysView` itself
+    once MolSysMT exposes them
+- the active-selection context menu now exposes:
+  - `Remove Selected Atoms`
+- that action now bridges to Python and executes:
+  - `view.remove(selection=<active atom indices>)`
+  - followed by `active_selection.clear()`
+
+Why this is still a first slice:
+
+- `convert(...)` is still implemented in the main viewer surface instead of a
+  future dedicated MolSysMT-facing addon layer
+- canvas removal is currently selection-driven, not a broader generalized
+  destructive edit surface for arbitrary interaction targets
+
+What remains for this front:
+
+- decide whether `convert(...)` and other MolSysMT-backed operations should
+  eventually move behind a dedicated integration/addon layer
+- decide whether richer viewer-aware conversion targets should be promoted once
+  MolSysMT supports them directly
+- expand destructive canvas editing beyond active selection only if that proves
+  worth the added interaction complexity
+
+### `MolSysView.info()`: current state
+
+`view.info()` is no longer only a direct proxy to `molsysmt.basic.info(...)`.
+
+Implemented now:
+
+- `view.info(source="molsys")`
+  - preserves the molecular-system-oriented path
+- `view.info(source="view")`
+  - returns a notebook-friendly Pandas table for viewer-state inspection
+- `view.info(source="all")`
+  - returns both sections together as:
+    - `{"molsys": ..., "view": ...}`
+- `output_type` is now supported for `view.info(...)` and the
+  `molsysviewer.tools.basic.info(...)` wrapper
+- supported `output_type` values are:
+  - `"styler"` (default)
+  - `"dataframe"`
+  - `"dictionary"`
+
+The current viewer-side summary includes compact rows for:
+
+- `whole`
+- `styles`
+- `regions`
+- `layers`
+- `shapes`
+- `annotations`
+- `measurements`
+- `selections`
+- `active_selection`
+
+What remains for this front:
+
+- decide whether `source="all"` should remain a mapping of two outputs or gain
+  a more unified presentation later
+- decide whether the viewer-side table should grow richer details for some
+  sections or stay intentionally compact
+
+### Viewer / Scene Refactor: current state
+
+The `viewer` refactor and the `shape/layer/tag` model are no longer only an
+architecture discussion. The operational base is already implemented:
+
+- `molsysviewer/viewer.py` has been replaced by the `molsysviewer/viewer/`
+  package
+- `Layer` is now the grouping abstraction
+- `view.shapes[...]`, `view.annotations[...]`, `view.measurements[...]`, and
+  `view.layers[...]` are already part of the active public model
+- `layer_tag` is explicit and reproducible
+- the first rich mutability slice already exists for `sphere`, `links`, and
+  `triangle_faces`
+- measurements already follow the new stable, manageable object model
+
+The operational checkpoint for this front is:
+
+- `devguide/TMP_shape_layer_tag_checkpoint.md`
+
+What remains is no longer “resolve the architecture”, but rather broaden
+coverage and reduce inherited compatibility paths:
+
+- extend rich mutability to more shape families
+- continue removing assumptions from the old model
+- keep strengthening scene-object identity/interaction semantics in the frontend
+
+### Phase E — Standalone: current state
+
+**Phase E in `molsysviewer` is materially complete.**
+
+- `molsysviewer/standalone_qt.py` imports directly from `PySide6_uibcdf`.
+  `QFileDialog` and `QMessageBox` are restored and functional.
+- The conda-native recipe (`_3` builds) is published on the `uibcdf` channel
+  and validated. The standalone opens, loads systems, and the menus work.
+- `devguide/standalone_supported_environment.md` documents the 5 packages
+  involved (3 explicit installs + 2 automatic dependencies).
+- `standalone_packaging_strategy.md` closes A2 as a completed decision.
+- The host satisfies the pre-`1.0.0` gate defined in the roadmap.
+
+**There is no pending work in this repo for Phase E.**
+
+The `QtQuick` blocker mentioned in older checkpoint versions is already
+resolved in the sibling repo `../pyside6-essentials-uibcdf`:
+`PySide6/QtQuick/typesystem_quick.xml` has the required `remove="all"`
+entries for `QQuickItem::flags()`,
+`QQuickRenderTarget::fromOpenGLTexture(...Flags...)`, and the other instances
+of the same incorrect flag-type pattern.
+
+If sibling repos produce improved builds in the future, the only expected
+change here is updating version pins in
+`standalone_supported_environment.md` and validating the smoke import.
 
 ### Familia de packaging (referencia)
 
