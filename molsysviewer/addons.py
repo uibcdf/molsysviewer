@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from importlib import import_module
+from importlib.util import find_spec
 from types import ModuleType
 from collections.abc import Callable
 from typing import Any
@@ -606,9 +607,11 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         discovered: list[AddonSpec] = []
         module_names = KNOWN_ADDON_MODULES if modules is None else tuple(modules)
         for module_name in module_names:
+            if find_spec(module_name) is None:
+                continue
             try:
                 addon = self.register_module(module_name)
-            except ModuleNotFoundError:
+            except Exception:
                 continue
             discovered.append(addon)
         return discovered
