@@ -39,7 +39,7 @@ def test_group_label_uses_annotation_prefix_by_default():
 
     assert layer.tag == "annotation1"
     assert layer.layer_tag == "annotation1"
-    assert view.annotations.tags() == ["annotation1"]
+    assert view.annotations.tags == ["annotation1"]
     assert view.annotations.records()[0]["tag"] == "annotation1"
     assert view.annotations.records()[0]["options"]["tag"] == "annotation1"
     assert view.annotations.records()[0]["options"]["layer_tag"] == "annotation1"
@@ -64,7 +64,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
     view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
 
     assert view.annotations.count() == 1
-    assert view.annotations.tags() == ["notes"]
+    assert view.annotations.tags == ["notes"]
     assert view.annotations.contains("notes") is True
     layer = view.annotations.get("notes")
     assert layer is not None
@@ -99,7 +99,7 @@ def test_annotation_manager_supports_query_and_layer_operations():
     assert view.annotations.records()[0]["options"]["tag"] == "analysis-label"
 
     view.annotations.delete("analysis-label")
-    assert view.annotations.tags() == []
+    assert view.annotations.tags == []
     assert view.annotations.count() == 0
 
 
@@ -157,7 +157,7 @@ def test_annotation_manager_clear_tag_and_global_clear():
     assert [item["tag"] for item in view.annotations.records()] == ["notes-2"]
 
     view.annotations.clear()
-    assert view.annotations.tags() == []
+    assert view.annotations.tags == []
     assert view.annotations.records() == []
     assert view.annotations.count() == 0
 

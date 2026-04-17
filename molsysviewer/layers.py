@@ -300,7 +300,7 @@ class Layer(LayerHandle):
         if hasattr(self._view, "_unregister_layer"):
             self._view._unregister_layer(self.tag)  # noqa: SLF001
 
-    def add(self, obj: "SceneObject") -> None:
+    def attach(self, obj: "SceneObject") -> None:
         """Move *obj* into this layer (top-down membership management).
 
         Equivalent to ``obj.set_layer_tag(self.tag)`` but expressed from the
@@ -319,6 +319,19 @@ class Layer(LayerHandle):
         if not self._active:
             raise ValueError(f"Layer {self.tag!r} is no longer active.")
         obj.set_layer_tag(self.tag)
+
+    def info(self) -> list[dict]:
+        """Return a summary of all objects in this layer."""
+        rows = []
+        for tag, obj in self.members.items():
+            kind = getattr(obj, "kind", "unknown")
+            rows.append({
+                "kind": kind,
+                "tag": tag,
+                "visible": not getattr(obj, "_hidden", False),
+                "type": getattr(obj, "shape_type", getattr(obj, "meta", {}).get("kind", kind)),
+            })
+        return rows
 
     def detach(self, obj: "SceneObject") -> None:
         """Detach *obj* from this layer, making it its own independent layer.

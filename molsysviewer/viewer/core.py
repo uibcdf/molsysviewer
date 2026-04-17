@@ -2326,7 +2326,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         shape_tags = sorted(
             tag for tag, item in self._scene_objects.items() if getattr(item, "kind", None) == "shape"
         )
-        annotation_tags = sorted(self.annotations.tags(skip_digestion=True))
+        annotation_tags = sorted(self.annotations.tags)
         measurement_tags = sorted(self.measurements.tags(skip_digestion=True))
         selection_tags = sorted(self.selections.tags)
 
