@@ -45,10 +45,30 @@ def test_add_interaction_sites():
                 "colors": [0x3b82f6, 0xef4444],
                 "directions": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
                 "tag": "ph4",
+                "layer_tag": "ph4",
                 "name": "demo",
             },
         }
     ]
+
+
+def test_add_interaction_sites_accepts_color_scheme_and_color_table():
+    view = DummyView()
+    ph4 = PharmacophoreShapes(view)
+
+    ph4.add_interaction_sites(
+        centers=puw.quantity([(0, 0, 0), (1, 1, 1)], "nm"),
+        kinds=["donor", "acceptor"],
+        color_scheme="pharmacophore_default",
+        color_table={"donor": "white", "acceptor": "#112233"},
+        tag="ph4",
+        skip_digestion=True,
+    )
+
+    options = view.messages[0]["options"]
+    assert options["color_scheme"] == "pharmacophore_default"
+    assert options["color_table"] == {"donor": 0xFFFFFF, "acceptor": 0x112233}
+    assert options["colors"] == [0xFFFFFF, 0x112233]
 
 
 def test_add_pharmacophore_features_warns_and_uses_same_payload():
@@ -77,6 +97,7 @@ def test_add_pharmacophore_features_warns_and_uses_same_payload():
                 "alphas": [0.6],
                 "colors": [0x3b82f6],
                 "tag": "ph4",
+                "layer_tag": "ph4",
             },
         }
     ]

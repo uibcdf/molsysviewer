@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import warnings
-from typing import Iterable, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
 from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..colors import colors as global_colors
+from ._registry import register_shape_layer
 
 
 INTERACTION_COLORS = {
@@ -60,6 +62,8 @@ class PharmacophoreShapes:
         directions: Iterable[Sequence[float]] | None = None,
         alphas: float | Sequence[float] | None = None,
         colors: Sequence[int] | None = None,
+        color_scheme: str | None = None,
+        color_table: Mapping[str, Any] | None = None,
         tag: str | None = None,
         name: str | None = None,
     ) -> dict:
@@ -84,7 +88,25 @@ class PharmacophoreShapes:
         radii_raw = puw.get_value(radii, to_unit="nm") if radii is not None else None
         radii_list = _as_list(radii_raw, float, 0.6)
         alphas_list = _as_list(alphas, float, 0.6)
-        colors_list = colors if colors is not None else [INTERACTION_COLORS.get(k.lower(), 0xcccccc) for k in kinds_list]
+        color_registry = getattr(self._view, "colors", global_colors)
+        normalized_color_table = None
+        resolved_color_scheme = None
+        if colors is None:
+            if color_table is not None:
+                resolved_color_scheme = color_scheme
+                normalized_color_table = {
+                    str(key).lower(): color_registry.normalize_color(value)
+                    for key, value in color_table.items()
+                }
+            elif color_scheme is not None:
+                resolved_scheme = color_registry.resolve_scheme(color_scheme)
+                resolved_color_scheme = color_scheme
+                normalized_color_table = {
+                    str(key).lower(): value for key, value in resolved_scheme.mapping.items()
+                }
+        colors_list = colors if colors is not None else [
+            (normalized_color_table or INTERACTION_COLORS).get(k.lower(), 0xcccccc) for k in kinds_list
+        ]
         directions_list = self._norm_vectors(directions)
 
         options = {
@@ -96,6 +118,10 @@ class PharmacophoreShapes:
         }
         if directions_list is not None:
             options["directions"] = directions_list
+        if resolved_color_scheme is not None:
+            options["color_scheme"] = resolved_color_scheme
+        if normalized_color_table is not None:
+            options["color_table"] = dict(normalized_color_table)
         if tag is not None:
             options["tag"] = tag
         if name is not None:
@@ -113,11 +139,16 @@ class PharmacophoreShapes:
         directions: Iterable[Sequence[float]] | None = None,
         alphas: float | Sequence[float] | None = None,
         colors: Sequence[int] | None = None,
+        color_scheme: str | None = None,
+        color_table: Mapping[str, Any] | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         name: str | None = None,
         skip_digestion: bool = False,
-    ) -> None:
+    ):
         """Render standard interaction-site glyphs (sphere/disk/arrow)."""
+        shape_tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(self._view, shape_tag, layer_tag=layer_tag)
         options = self._build_interaction_site_options(
             centers=centers,
             kinds=kinds,
@@ -125,10 +156,14 @@ class PharmacophoreShapes:
             directions=directions,
             alphas=alphas,
             colors=colors,
-            tag=tag,
+            color_scheme=color_scheme,
+            color_table=color_table,
+            tag=layer.tag,
             name=name,
         )
+        options["layer_tag"] = layer.layer_tag
         self._view._send({"op": "add_pharmacophore_features", "options": options})
+        return layer
 
     @signal(tags=["shape", "pharmacophore"])
     @digest()
@@ -137,11 +172,11 @@ class PharmacophoreShapes:
         *args,
         skip_digestion: bool = False,
         **kwargs,
-    ) -> None:
+    ):
         """Deprecated alias for `add_interaction_sites(...)`."""
         warnings.warn(
             "add_pharmacophore_features(...) is deprecated; use add_interaction_sites(...) instead.",
             DeprecationWarning,
             stacklevel=2,
         )
-        self.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+        return self.add_interaction_sites(*args, skip_digestion=True, **kwargs)

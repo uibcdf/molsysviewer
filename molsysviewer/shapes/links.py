@@ -8,6 +8,8 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..colors import colors as global_colors
+from ._registry import register_shape_layer
 
 
 class LinkShapes:
@@ -66,14 +68,20 @@ class LinkShapes:
         *,
         atom_pairs: Iterable[Sequence[int]] | None = None,
         coordinate_pairs: Iterable[Sequence[Sequence[float]]] | None = None,
-        radii="0.2 nm",
-        colors: int | Sequence[int] = 0x4499ff,
+        radius="0.2 nm",
+        color: int | Sequence[int] = 0x4499ff,
+        radii=None,
+        colors=None,
         pocket_ids: Sequence[int | str] | None = None,
         chain_ids: Sequence[str] | None = None,
+        color_by: str | None = None,
+        color_scheme: str | None = None,
+        color_table: dict | None = None,
         color_mode: str = "link",
         alpha: float = 1.0,
         radial_segments: int | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         skip_digestion: bool = False,
     ):
         """Add cylinders/bars connecting pairs of points or atoms.
@@ -89,8 +97,16 @@ class LinkShapes:
             Scalars or lists (one per link) for radius and color.
         pocket_ids, chain_ids
             Optional identifiers to color by pocket or chain.
+        color_by
+            Preferred categorical color driver for the new API surface.
+            Currently `"link"`, `"pocket"`, or `"chain"`.
+        color_scheme
+            Optional categorical color scheme name resolved through the Python
+            color registry.
+        color_table
+            Optional explicit mapping for categorical colors.
         color_mode
-            "link" | "pocket" | "chain".
+            Legacy alias for `color_by`.
         alpha
             Global alpha (0-1).
         radial_segments
@@ -98,6 +114,14 @@ class LinkShapes:
         tag
             Optional tag for the Mol* state node.
         """
+
+        import warnings
+        if radii is not None:
+            warnings.warn("'radii' is deprecated; use 'radius'.", DeprecationWarning, stacklevel=2)
+            radius = radii
+        if colors is not None:
+            warnings.warn("'colors' is deprecated; use 'color'.", DeprecationWarning, stacklevel=2)
+            color = colors
 
         coordinate_pairs_list = self._to_coord_pairs(coordinate_pairs)
         atom_pairs_list = self._to_pair_list(atom_pairs) if atom_pairs is not None else []
@@ -108,16 +132,32 @@ class LinkShapes:
         n_links = len(coordinate_pairs_list) if coordinate_pairs_list else len(atom_pairs_list)
 
         # Extract raw magnitudes in nanometers
-        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii_raw = puw.get_value(radius, to_unit="nm")
         radii_list = self._normalize_optional_list(radii_raw, n_links, float)
-        colors_list = self._normalize_optional_list(colors, n_links, int)
+        colors_list = self._normalize_optional_list(color, n_links, int)
         pocket_ids_list = self._normalize_optional_list(pocket_ids, n_links, lambda v: v)
         chain_ids_list = self._normalize_optional_list(chain_ids, n_links, str)
+        color_registry = getattr(self._view, "colors", global_colors)
+        resolved_color_by = color_by or color_mode
+        normalized_color_table = None
+        dynamic_categories = None
+        if resolved_color_by == "chain" and chain_ids_list is not None:
+            dynamic_categories = [str(item) for item in chain_ids_list]
+        elif resolved_color_by == "pocket" and pocket_ids_list is not None:
+            dynamic_categories = [str(item) for item in pocket_ids_list]
+        if color_table is not None:
+            normalized_color_table = {
+                str(key): color_registry.normalize_color(value) for key, value in color_table.items()
+            }
+        elif color_scheme is not None:
+            resolved_scheme = color_registry.resolve_scheme(color_scheme, categories=dynamic_categories)
+            normalized_color_table = dict(resolved_scheme.mapping)
 
         options: dict = {
             "mode": "atom-indices" if atom_pairs_list else "coordinates",
             "alpha": float(alpha),
-            "color_mode": color_mode,
+            "color_mode": resolved_color_by,
+            "color_by": resolved_color_by,
         }
 
         if atom_pairs_list:
@@ -132,13 +172,21 @@ class LinkShapes:
             options["pocket_ids"] = pocket_ids_list
         if chain_ids_list is not None:
             options["chain_ids"] = chain_ids_list
+        if color_scheme is not None:
+            options["color_scheme"] = color_scheme
+        if normalized_color_table is not None:
+            options["color_table"] = normalized_color_table
         if radial_segments is not None:
             options["radial_segments"] = int(radial_segments)
-        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        options["tag"] = tag
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(
+            self._view,
+            tag,
+            layer_tag=layer_tag,
+            meta={"shape_kind": "links", "shape_name": "Links"},
+        )
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
 
         self._view._send({"op": "add_network_links", "options": options})
-        if tag not in self._view._layers:  # noqa: SLF001
-            from ..layers import Layer
-            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+        return layer

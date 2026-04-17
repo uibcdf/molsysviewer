@@ -1,6 +1,6 @@
 # Development Roadmap (Status-Aligned)
 
-Last update: 2026-04-11
+Last update: 2026-04-15
 
 This roadmap is status-aligned with the current repository state.
 It is organized by execution priority and uses three labels:
@@ -223,13 +223,14 @@ Immediate `0.16.x` hardening gate:
 
 Status:
 
-- in progress
+- panel widget contract implemented and first proof complete (2026-04-17)
 
-Immediate working document:
+Immediate working documents:
 
 - [`elasnetmt_addon_plan.md`](/home/diego/repos@uibcdf/molsysviewer/devguide/elasnetmt_addon_plan.md)
+- [`addon_panel_widget_contract.md`](/home/diego/repos@uibcdf/molsysviewer/devguide/addon_panel_widget_contract.md)
 
-Reason to open this slice now:
+Reason to open this slice:
 
 - the add-on host is credible enough that the next useful pressure should come
   from one real downstream-shaped domain
@@ -239,15 +240,22 @@ Reason to open this slice now:
   - displacement vectors
   - anisotropy ellipsoids
 
-Current execution intent:
+What is done:
 
-1. validate an ElasNetMT-shaped reference add-on inside the host
-2. define the minimal per-view runtime state
-3. implement the first real overlay-driven action path
-4. only then push the external integration package harder
-  - the public notebook-facing APIs still match those stories honestly
-  - no new host-structure issue appears while doing the last release-hardening
-    pass
+- add-on registration, lifecycle, context actions, workbench sections: done
+- per-view runtime state (`ElasNetMTAddonRuntime`): done
+- overlay adapters (contacts, modes, anisotropy): done
+- export helper (`build_figure_export_payload`): done
+- `AddonPanelWidget` base class + `widget_class` in `AddonPanelSpec`: done
+- TS panel host: `workspaceAddonWidgetHost`, ESM blob import, model proxy: done
+- Python panel lifecycle: `_mount_addon_panel`, `_unmount_addon_panel`: done
+- `ElasNetMTModelPanel` — first `AddonPanelWidget` in production: done
+- 12 integration tests in `molsysviewer_elasnetmt`: all passing
+
+What remains:
+
+- `ElasNetMTModesPanel` and `ElasNetMTFiguresPanel` (Modes and Figures panels)
+- broader panel widget coverage in downstream add-ons
 
 ### Phase E. Final Standalone Push
 
@@ -479,47 +487,52 @@ should grow over time as additional project-level principles become clear.
 ### Status
 
 - `In progress`
-  - The first JS -> Python interaction transport now exists for Mol* `hover` and `click`.
-  - Right-click context transport now also exists as a first viewer-owned slice:
+  - JS → Python interaction transport exists for Mol* `hover` and `click`.
+  - Right-click context transport exists as a viewer-owned slice:
     - host context menu suppression inside the canvas,
     - separate context-target event,
-    - minimal viewer context menu with seed actions.
-  - The current contract is intentionally minimal and atom-centric:
+    - viewer context menu with seed actions.
+  - Event contract covers four event types:
     - `interaction_hover`
     - `interaction_click`
     - `interaction_context_menu`
     - `interaction_context_action`
-    - `kind: "structure"` with `atom_indices`
-    - `kind: "empty"` for canvas-empty interactions
-  - Python now stores the last hover/click payload on `MolSysView`.
-  - Python now also stores the last context-menu target payload and the last context-menu action payload.
+  - Supported target families: `kind: "structure"` (atom_indices), `kind: "shape"`,
+    `kind: "annotation"`, `kind: "empty"`.
+  - Python stores the last hover/click/context-menu-target/context-menu-action payloads
+    on `MolSysView`.
+  - `active_selection` is a mature bidirectional state object: element (group-centric),
+    shape, annotation, and element+annotation mixed paths all have real slices.
+    Payload includes atom/group/shape/annotation counts and target-level metadata.
+    Context menu exposes `Focus Selection`, `Clear Selection`, and `Save Selection`.
+  - `GroupStrip` is the live 1D navigation band: rich callback integration
+    (onSelect, onFocus, onHover, onContext, onAnnotationContext), annotation mark support,
+    molecule/component/chain hierarchy, synchronized with canvas active_selection.
+    Regression-tested.
 
 ### Next actions
 
 - Use the interaction pages in `devguide/` as the implementation contract for the next slices.
 - Add Python-side callback registration only after the transport contract settles.
-- Decide whether region-aware and shape-aware picks belong in the same event family or in richer payload variants.
+- Decide whether region-aware picks belong in a richer payload variant or in the existing
+  `kind: "structure"` family.
 - Add pointer semantics and shared highlight/selection only after event ownership is clear.
-- Turn menu-seeded `distance` / `angle` / `dihedral` actions into real tool-mode state machines.
+- Formalize tool-mode state machines for `distance` / `angle` / `dihedral` measurements:
+  menu seeds the action but explicit mode transitions, visual feedback, and cancellation
+  UX are not yet implemented.
 - Keep interactive measurement in Mol* first:
   - it already owns picked loci and measurement representations,
   - Python/MolSysMT can consume emitted results later without entering the immediate click loop.
-- Add visible tool-mode feedback and cancellation semantics before layering richer selection state on top.
-- Build `active_selection` after the measurement path is locally coherent, then reuse it for strips, menus, and annotation interaction.
-- Broaden `active_selection` from the first atom-centric element slice toward the documented element/shape/annotation/mixed contract.
-  - `annotation` now has a first narrow slice via `GroupStrip` label badges.
-  - `element + annotation` mixed selection is now supported as the first mixed path.
-  - `shape` now has a first narrow slice via Mol* `shape-loci`.
-- Keep the current element slice group-centric and only add hierarchy levels when the runtime can support them cleanly.
-- Grow `GroupStrip` from the first chain-grouped selection/focus slice toward the full strip contract documented in `devguide/strips.md`.
-- The next strip step should be a `GroupPanel` evolution, not more investment in a permanently visible lower band.
-- Keep `chain` as the first organizer, but plan explicit visual cues for `component` and `molecule`.
-- Do not assume middle-click is available for the panel toggle; Mol* already uses the middle/wheel path for camera behavior.
+- Advance `GroupStrip` toward the `GroupPanel` evolution — the next step is a panel-mode
+  view, not further investment in the permanently visible lower band.
+- Plan explicit visual cues for `component` and `molecule` hierarchy levels within the strip.
+- Do not assume middle-click is available for the panel toggle; Mol* already uses the
+  middle/wheel path for camera behavior.
 - Keep strip interactions converged with canvas interactions:
-  - hover and context menu should use the same event families instead of becoming a separate UX island.
-- Make the active selection materially useful through the context menu before opening more target families:
-  - selection-focused actions such as `Focus Selection` and `Clear Selection` are now the first concrete slice.
-  - the next priority is not broader interaction for its own sake, but turning interaction into reproducible artifacts.
+  - hover and context menu should use the same event families instead of becoming a
+    separate UX island.
+- The next priority is not broader interaction for its own sake, but turning interaction
+  into reproducible artifacts.
 
 ### Criteria
 
@@ -559,35 +572,28 @@ should grow over time as additional project-level principles become clear.
 ### Status
 
 - `In progress`
-- `active_selection` now has a first explicit Python bridge into reproducible state:
+- `active_selection` has a solid Python bridge into reproducible state:
   - `new_region_from_active_selection(...)`
   - `view.annotations.add_label_from_active_selection(...)`
   - `view.measurements.persist_last_measurement(...)`
   - `active_selection.save(tag=...)`
-- `view.selections` now exists as the first persistent named-selection surface.
-- Persistent selections can now be restored into `active_selection` via API, and the next UX step is to use the context menu as the first browser-side activator for those saved selections.
-- After saved-selection activation is in place, the next context-menu broadening should prioritize relevant `regions`, then richer `annotations`, and only later carefully-scoped `shapes` actions.
-- The context menu now also exposes `Save Selection`, backed by the same Python-side reproducible API.
-  - The current contract is intentionally narrow and deterministic.
-  - Persisted measurement ops now also exist in the runtime:
-    - `add_distance_measurement`
-    - `add_angle_measurement`
-    - `add_dihedral_measurement`
-    - replayed through Mol* from stored `picks_atom_indices`
+- `view.selections` is the persistent named-selection surface; saved selections can be
+  restored into `active_selection` via API.
+- Context menu exposes `Save Selection` and `Add Label from Selection`
+  (with inline composer), backed by the Python-side reproducible API.
+- Persisted measurement ops are fully implemented and replay-safe:
+  - `add_distance_measurement`, `add_angle_measurement`, `add_dihedral_measurement`
+  - replayed through Mol* from stored `picks_atom_indices`
+- Next context-menu broadening should prioritize `regions`, then richer `annotations`,
+  and only later carefully-scoped `shapes` actions.
 
 ### Next actions
 
-- Keep the new Python bridge validated as `pyunitwizard` continues stabilizing; the current targeted regressions are green again.
 - Add the next explicit bridge only after deciding its stable replay/rebuild/export contract:
-  - named selections,
-  - richer selection -> annotation flows.
-- Broaden persisted measurements only after the first replayable `distance` / `angle` / `dihedral` slice is validated end to end.
-- The explicit menu action path for persisted measurements now exists and executes.
-- The explicit menu action path for `Add Label from Selection` now also exists
-  and executes through a minimal inline composer.
-- The next improvement is refining that inline composer or replacing it with a
-  better small integrated text-entry UX without weakening the reproducibility
-  contract.
+  - richer selection → annotation flows.
+- The inline composer for `Add Label from Selection` exists and executes; the next
+  improvement is refining it or replacing it with a better integrated text-entry UX
+  without weakening the reproducibility contract.
 - Keep hardening `annotations` as a Python API surface, not only as a UI flow:
   - explicit query/inspection methods,
   - explicit show/hide/delete/rename/text-edit/reanchor/clear methods by tag,
@@ -675,7 +681,8 @@ To reach a successful **1.0 release**, these three pillars must be prioritized o
 
 ### 2. GroupStrip: The 1D Navigation Pivot
 - The 1D strip view (`GroupStrip`) is a primary differentiator. It's the key tool for navigating long proteins or complex systems where the 3D scene is cluttered.
-- **Priority:** Ensure the strip is synchronized with the 3D canvas from day one, using the shared `active_selection` model.
+- **Current state:** Strip is live, synchronized with the 3D canvas via `active_selection`, and regression-tested. Annotation marks, hierarchy (chain/component/molecule), and context callbacks are all implemented.
+- **Priority:** Advance from the current strip toward the `GroupPanel` evolution — a panel-mode view that can replace the permanently visible lower band. Add explicit visual cues for `component` and `molecule` hierarchy levels.
 
 ### 3. Documentation for the "Scientific Workbench"
 - The documentation must shift from API reference to case-study-driven tutorials.

@@ -8,6 +8,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ._registry import register_shape_layer
 
 import numpy as np
 
@@ -48,12 +49,15 @@ class DisplacementVectors:
         length_scale: float = 1.0,
         min_length="0.0 nm",
         max_length: float | None = None,
+        color_by: str | None = None,
+        palette=None,
         color_mode: str = "norm",
         color_component: int = 2,
         color_map: Sequence[int] | str | None = None,
         radius_scale: float = 0.05,
         radial_segments: int | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         skip_digestion: bool = False,
     ):
         """Add arrows (cylinder + cone) for displacement vectors.
@@ -72,12 +76,18 @@ class DisplacementVectors:
             Minimum length after scaling; shorter vectors are skipped.
         max_length
             Normalize the resulting maximum length to this value (if set).
+        color_by
+            Preferred color driver for the new API surface. Currently
+            `"norm"` or `"component"`.
+        palette
+            Preferred continuous palette input for the new API surface. May be
+            a palette name, a color sequence, or a Matplotlib colormap.
         color_mode
-            "norm" or "component" to map colors by norm or by component.
+            Legacy alias for `color_by`.
         color_component
             Component used for "component" coloring (0, 1, or 2).
         color_map
-            Optional palette (color list or a Mol*-recognized name).
+            Legacy alias for `palette`.
         radius_scale
             Relative radius factor (relative to final length).
         radial_segments
@@ -95,11 +105,18 @@ class DisplacementVectors:
         if origins_array is not None and origins_array.shape[0] != vector_array.shape[0]:
             raise ValueError("origins and vectors must have the same number of rows")
 
+        resolved_color_by = color_by or color_mode
+        resolved_palette = palette if palette is not None else color_map
+        serialized_palette = None
+        if resolved_palette is not None:
+            serialized_palette = self._view.colors.resolve_palette(resolved_palette).colors
+
         options: dict = {
             "vectors": vector_array.tolist(),
             "length_scale": float(length_scale),
             "min_length": float(puw.get_value(min_length, to_unit="nm")),
-            "color_mode": color_mode,
+            "color_mode": resolved_color_by,
+            "color_by": resolved_color_by,
             "color_component": int(color_component),
             "radius_scale": float(radius_scale),
         }
@@ -110,15 +127,15 @@ class DisplacementVectors:
             options["atom_indices"] = [int(i) for i in atom_indices]
         if max_length is not None:
             options["max_length"] = float(puw.get_value(max_length, to_unit="nm"))
-        if color_map is not None:
-            options["color_map"] = self._to_list(color_map)
+        if serialized_palette is not None:
+            options["palette"] = serialized_palette
+            options["color_map"] = serialized_palette
         if radial_segments is not None:
             options["radial_segments"] = int(radial_segments)
-        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        options["tag"] = tag
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(self._view, tag, layer_tag=layer_tag)
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
 
         self._view._send({"op": "add_displacement_vectors", "options": options})
-        if tag not in self._view._layers:  # noqa: SLF001
-            from ..layers import Layer
-            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+        return layer

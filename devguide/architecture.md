@@ -64,6 +64,49 @@ Important invariant:
 
 This is part of the runtime contract because it affects rebuilds, exports, and popup sync.
 
+## Scene Object and Layer Model
+
+There are two parallel registries on every `MolSysView` instance:
+
+- **`_scene_objects: dict[str, SceneObject]`** — individual Shape, Annotation,
+  and Measurement objects.  Each entry is keyed by its unique `tag`.
+- **`_layers: dict[str, Layer]`** — `GroupLayer` instances that group one or
+  more scene objects (or structural regions) under a shared visibility/color
+  toggle.  Each entry is keyed by the layer's `tag`.
+
+### Key invariants
+
+1. **Tag uniqueness is global.** A tag can appear in `_scene_objects` OR in
+   `_layers`, never both.  Auto-tag counters (`_shape_counter`,
+   `_layer_counter`, etc.) are incremented monotonically; they are propagated
+   when views are extracted or merged so collisions cannot occur.
+
+2. **`layer_tag` is the grouping channel.**  A `SceneObject` carries a
+   `layer_tag` attribute that names the `Layer` it belongs to.  When no
+   explicit `layer_tag` is given, the object's own `tag` is used as a
+   degenerate single-object layer.  To move an object between layers, call
+   `obj.set_layer_tag(new_tag)`; the registry cleanup (de-register from the old
+   layer, register into the new one) is handled inside `set_layer_tag`.
+
+3. **`Layer.add(obj)` / `Layer.detach(obj)`** are the high-level membership
+   management methods.  Both delegate to `obj.set_layer_tag(...)` and therefore
+   respect the same registry cleanup semantics.
+
+4. **`layer_ack` events from the JS side must not pollute `_layers`.**  When
+   a batch shape op (e.g. adding 10 spheres) is sent, the JS side emits one
+   `layer_ack` per Mol* node.  The Python handler checks
+   `tag not in self._scene_objects` before registering into `_layers`, so
+   individual shape tags are never promoted to group layers.
+
+5. **Flat layer model.** Layers are one level deep.  There is no nesting.
+   A `Layer` cannot contain another `Layer`; it can only contain
+   `SceneObject` entries.
+
+6. **`get_center()` / `focus()` naming convention.** Methods that return a
+   geometric position use `get_center()`; methods that move the camera to
+   focus on an object use `focus()`.  Both exist on `Region`, `Shape`,
+   `Measurement`, and `Annotation` (where applicable).
+
 ## Static Exports
 
 MolSysViewer supports high-fidelity static HTML exports:

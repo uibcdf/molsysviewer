@@ -22,6 +22,20 @@ export type AddSphereMessage = {
         color?: number;
         alpha?: number;
         tag?: string;
+        layer_tag?: string;
+    };
+};
+
+export type UpdateSphereMessage = {
+    op: "update_sphere";
+    tag?: string;
+    options?: {
+        center?: [number, number, number];
+        radius?: number;
+        color?: number;
+        alpha?: number;
+        tag?: string;
+        layer_tag?: string;
     };
 };
 
@@ -114,6 +128,10 @@ export type AddDistanceMeasurementMessage = {
     tag?: string;
     options?: {
         picks_atom_indices?: number[][];
+        endpoint_kinds?: string[];
+        endpoint_policy?: string;
+        endpoint_labels?: string[];
+        endpoint_atom_indices?: number[][];
         tag?: string;
     };
 };
@@ -123,6 +141,10 @@ export type AddAngleMeasurementMessage = {
     tag?: string;
     options?: {
         picks_atom_indices?: number[][];
+        endpoint_kinds?: string[];
+        endpoint_policy?: string;
+        endpoint_labels?: string[];
+        endpoint_atom_indices?: number[][];
         tag?: string;
     };
 };
@@ -132,7 +154,19 @@ export type AddDihedralMeasurementMessage = {
     tag?: string;
     options?: {
         picks_atom_indices?: number[][];
+        endpoint_kinds?: string[];
+        endpoint_policy?: string;
+        endpoint_labels?: string[];
+        endpoint_atom_indices?: number[][];
         tag?: string;
+    };
+};
+
+export type SetMeasurementSettingsMessage = {
+    op: "set_measurement_settings";
+    options?: {
+        endpoint_policy_default?: string;
+        representative_atoms?: Record<string, string>;
     };
 };
 
@@ -202,11 +236,68 @@ export type ToggleBackgroundMessage = {
 export type ToggleSwingMessage = {
     op: "toggle_swing";
     enable?: boolean;
+    speed?: number;
 };
 
 export type ToggleSpinMessage = {
     op: "toggle_spin";
     enable?: boolean;
+    speed?: number;
+};
+
+export type SetFogMessage = {
+    op: "set_fog";
+    enable?: boolean;
+    intensity?: number;
+};
+
+export type SetBackgroundColorMessage = {
+    op: "set_background_color";
+    /** 0xRRGGBB integer. */
+    color: number;
+};
+
+export type SetLightingMessage = {
+    op: "set_lighting";
+    ambient?: number;
+    diffuse?: number;
+    specular?: number;
+};
+
+export type SetClipPlanesMessage = {
+    op: "set_clip_planes";
+    near?: number;
+    far?: boolean;
+    min_near?: number;
+};
+
+export type SectionEntry = {
+    tag: string;
+    /** Point on the plane in nm (Python convention). */
+    point: [number, number, number];
+    /** Unit normal vector. */
+    normal: [number, number, number];
+    invert?: boolean;
+};
+
+export type SetSectionsMessage = {
+    op: "set_sections";
+    sections: SectionEntry[];
+};
+
+export type SetSectionDragMessage = {
+    op: "set_section_drag";
+    tag: string;
+    enabled?: boolean;
+};
+
+export type ZoomToPositionMessage = {
+    op: "zoom_to_position";
+    /** Camera target center in Å (scene units). */
+    center: [number, number, number];
+    /** Bounding radius in Å used to set the zoom level. */
+    radius?: number;
+    duration_ms?: number;
 };
 
 export type StepTrajectoryMessage = {
@@ -457,8 +548,26 @@ export type ClearSelectionsMessage = {
     op: "clear_selections";
 };
 
+export type SetAtomColorsMessage = {
+    op: "set_atom_colors";
+    /** Atom indices (model-level, 0-based). */
+    atom_indices: number[];
+    /** Parallel array of 0xRRGGBB color integers. */
+    colors: number[];
+    /** When true, replace existing per-atom color map (default true). */
+    replace?: boolean;
+};
+
+export type ClearAtomColorsMessage = {
+    op: "clear_atom_colors";
+};
+
 export type ViewerMessage =
+    SetAtomColorsMessage |
+    ClearAtomColorsMessage |
+    SetSectionDragMessage |
     AddSphereMessage |
+    UpdateSphereMessage |
     AddAlphaSphereSetMessage |
     AddPocketSurfaceMessage |
     AddPocketBlobMessage |
@@ -474,6 +583,7 @@ export type ViewerMessage =
     AddDistanceMeasurementMessage |
     AddAngleMeasurementMessage |
     AddDihedralMeasurementMessage |
+    SetMeasurementSettingsMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
     LoadStructureFromUrlMessage |
@@ -506,6 +616,7 @@ export type ViewerMessage =
     ShowGlobalMessage |
     HideGlobalMessage |
     ZoomMessage |
+    ZoomToPositionMessage |
     SetCameraSnapshotMessage |
     SetPanelModeMessage |
     SetWorkspaceMessage |

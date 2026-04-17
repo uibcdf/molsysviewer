@@ -1,8 +1,11 @@
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer._private.variables import is_all
+from ..helpers import normalize_viewer_caller
 import numpy as np
 
 def digest_mask(mask, caller=None):
+
+    caller = normalize_viewer_caller(caller)
 
     if caller in [
         'molsysmt.basic.select.select',

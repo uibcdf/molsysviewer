@@ -1,4 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 nglview_representations = [
         "cartoon",
@@ -11,6 +12,7 @@ nglview_representations = [
 
 def digest_representation(representation, caller=None):
 
+    caller = normalize_viewer_caller(caller)
 
     if caller.startswith('molsysmt.thirds.nglview.'):
 
@@ -33,6 +35,8 @@ def digest_representation(representation, caller=None):
         'molsysviewer.regions.set_representation',
         'molsysviewer.styles.StylesManager.apply',
         'molsysviewer.styles.apply',
+        'molsysviewer.styles.StylesManager.representation_param_schema',
+        'molsysviewer.styles.representation_param_schema',
     }:
         if representation is None:
             return representation

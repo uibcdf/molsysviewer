@@ -71,7 +71,7 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
     ) {
-        this.shell = new PanelShell(this.host, { title: "Navigate", width: 240, toggleWidth: 26, navButtonLabel: "Workbench" });
+        this.shell = new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
         this.body = this.shell.content;
@@ -93,11 +93,40 @@ export class GroupPanel {
 
         this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
         Object.assign(this.body.style, {
-            flexDirection: "column",
-            overflowX: "hidden",
-            overflowY: "auto",
-            gap: "8px",
+            flexDirection: "row",
+            overflow: "hidden",
+            gap: "0",
         });
+
+        // ── Left column: Active / Saved / Regions summary cards ───────────
+        const leftColumn = document.createElement("div");
+        leftColumn.setAttribute("data-molsysviewer-group-panel-left", "true");
+        Object.assign(leftColumn.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            width: "180px",
+            minWidth: "180px",
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingRight: "8px",
+        });
+        this.body.appendChild(leftColumn);
+
+        // ── Right column: Structure (chain strips) ─────────────────────────
+        const rightColumn = document.createElement("div");
+        rightColumn.setAttribute("data-molsysviewer-group-panel-right", "true");
+        Object.assign(rightColumn.style, {
+            display: "flex",
+            flexDirection: "column",
+            flex: "1 1 0",
+            minWidth: "0",
+            gap: "8px",
+            overflow: "hidden",
+        });
+        this.body.appendChild(rightColumn);
+
+        rightColumn.appendChild(this.makeSectionHeader("Structure"));
 
         this.structureSection = document.createElement("div");
         this.structureSection.setAttribute("data-molsysviewer-group-panel-section", "structure");
@@ -107,15 +136,15 @@ export class GroupPanel {
             gap: "10px",
             overflowX: "auto",
             overflowY: "hidden",
-            minHeight: "96px",
+            flex: "1 1 0",
+            minHeight: "0",
         });
-        this.body.appendChild(this.makeSectionHeader("Structure"));
-        this.body.appendChild(this.structureSection);
+        rightColumn.appendChild(this.structureSection);
 
         this.summarySections = {
-            active: this.createSummarySection("Active", "No active selection."),
-            saved: this.createSummarySection("Saved", "No saved selections yet."),
-            regions: this.createSummarySection("Regions", "No regions yet."),
+            active: this.createSummarySection("Active", "No active selection.", leftColumn),
+            saved: this.createSummarySection("Saved", "No saved selections yet.", leftColumn),
+            regions: this.createSummarySection("Regions", "No regions yet.", leftColumn),
         };
     }
 
@@ -123,6 +152,10 @@ export class GroupPanel {
         this.structure = structure;
         if (!structure) this.annotationMessages.length = 0;
         this.render();
+    }
+
+    get panelContentWidth(): number {
+        return this.shell.width;
     }
 
     isVisible(): boolean {
@@ -306,7 +339,7 @@ export class GroupPanel {
         return header;
     }
 
-    private createSummarySection(title: string, emptyText: string): SummarySectionView {
+    private createSummarySection(title: string, emptyText: string, parent: HTMLElement = this.body): SummarySectionView {
         const key = title.toLowerCase() as SummarySectionKey;
         const section = document.createElement("div");
         section.setAttribute("data-molsysviewer-group-panel-section", key);
@@ -338,7 +371,7 @@ export class GroupPanel {
 
         section.appendChild(list);
         section.appendChild(empty);
-        this.body.appendChild(section);
+        parent.appendChild(section);
         return { root: section, list, empty };
     }
 

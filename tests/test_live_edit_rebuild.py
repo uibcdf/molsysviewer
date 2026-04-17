@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import pytest
+import numpy as np
 
 pytest.importorskip("molsysmt")
+from molsysmt.native import Structures
 
+from molsysviewer import MolSysView
 from molsysviewer.demo import demo
 from molsysviewer._pyunitwizard import puw
 
@@ -54,6 +57,82 @@ def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures(
 
     assert {"op": "hide_layer", "tag": "pocket"} in view._message_history
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
+
+
+def test_load_mode_append_structures_delegates_to_append_path():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys, mode="append_structures", skip_digestion=True)  # noqa: SLF001
+
+    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    assert payload_msg["multiple_structures"] is True
+    assert len(payload_msg["payload"]["structures"]) == 2
+    assert len(view._load_blocks) == 1  # noqa: SLF001
+    assert list(view.regions) == []
+
+
+def test_load_mode_append_structures_errors_on_empty_view():
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    with pytest.raises(ValueError, match="mode='append_structures'"):
+        view.load(demo["dialanine"]._molsys, mode="append_structures", skip_digestion=True)  # noqa: SLF001
+
+
+def test_load_mode_append_structures_supports_topology_only_view():
+    topology_only = demo["dialanine"]._molsys.copy()  # noqa: SLF001
+    topology_only.structures = Structures(skip_digestion=True)
+
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    view._molsys = topology_only  # noqa: SLF001
+    view.molecular_system = topology_only
+    view.selection = "all"
+    view.structure_indices = "all"
+    view.atom_mask = np.ones(topology_only.topology.get_n_atoms(), dtype=bool)
+    view._last_label = "topology"  # noqa: SLF001
+
+    view.load(demo["dialanine"]._molsys, mode="append_structures", skip_digestion=True)  # noqa: SLF001
+
+    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    assert payload_msg["multiple_structures"] is False
+    assert len(payload_msg["payload"]["structures"]) == 1
+
+
+def test_load_mode_auto_replaces_on_empty_view():
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys, mode="auto", skip_digestion=True)  # noqa: SLF001
+
+    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    assert payload_msg["multiple_structures"] is False
+    assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 22
+    assert len(view._load_blocks) == 1  # noqa: SLF001
+
+
+def test_load_mode_auto_appends_when_input_has_same_atom_count_and_no_topology():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys.structures.copy(), mode="auto", skip_digestion=True)  # noqa: SLF001
+
+    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    assert payload_msg["multiple_structures"] is True
+    assert len(payload_msg["payload"]["structures"]) == 2
+    assert len(view._load_blocks) == 1  # noqa: SLF001
+
+
+def test_load_mode_auto_adds_when_input_has_different_atom_count():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["1TCD"]._molsys, mode="auto", label="protein", skip_digestion=True)  # noqa: SLF001
+
+    assert len(view._load_blocks) == 2  # noqa: SLF001
+    assert view._load_blocks[1]["label"] == "protein"  # noqa: SLF001
+    assert view._load_blocks[1]["start"] == 22  # noqa: SLF001
 
 
 def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
@@ -172,6 +251,68 @@ def test_set_rebuild_updates_coordinates_with_quantity():
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
 
 
+def test_load_first_block_does_not_create_automatic_regions():
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys, label="first", skip_digestion=True)  # noqa: SLF001
+
+    assert list(view.regions) == []
+    assert view._empty is False  # noqa: SLF001
+    assert view._load_blocks == [  # noqa: SLF001
+        {
+            "index": 0,
+            "label": "first",
+            "n_atoms": 22,
+            "start": 0,
+            "stop": 22,
+            "region_tag": None,
+        }
+    ]
+
+
+def test_second_additive_load_backfills_first_region_and_creates_second():
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys, label="first", skip_digestion=True)  # noqa: SLF001
+    view.load(demo["dialanine"]._molsys, label="second", skip_digestion=True)  # noqa: SLF001
+
+    assert set(view.regions) == {"first", "second"}
+    assert view.regions["first"].atom_indices == tuple(range(22))
+    assert view.regions["second"].atom_indices == tuple(range(22, 44))
+    assert [block["region_tag"] for block in view._load_blocks] == ["first", "second"]  # noqa: SLF001
+
+
+def test_third_additive_load_creates_only_new_automatic_region():
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+    view.load(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+    view.load(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+
+    assert set(view.regions) == {"Load1", "Load2", "Load3"}
+    assert view.regions["Load1"].atom_indices == tuple(range(22))
+    assert view.regions["Load2"].atom_indices == tuple(range(22, 44))
+    assert view.regions["Load3"].atom_indices == tuple(range(44, 66))
+
+
+def test_add_updates_load_blocks_without_creating_automatic_regions():
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.load(demo["dialanine"]._molsys, label="first", skip_digestion=True)  # noqa: SLF001
+    view.add(demo["dialanine"]._molsys, label="second", skip_digestion=True)  # noqa: SLF001
+
+    assert list(view.regions) == []
+    assert len(view._load_blocks) == 2  # noqa: SLF001
+    assert view._load_blocks[0]["label"] == "first"  # noqa: SLF001
+    assert view._load_blocks[1]["label"] == "second"  # noqa: SLF001
+    assert view._load_blocks[1]["start"] == 22  # noqa: SLF001
+    assert view._load_blocks[1]["stop"] == 44  # noqa: SLF001
+
+
 def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
 
@@ -201,7 +342,6 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     assert ops == [
         "clear_all",
         "load_molsys_payload",
-        "create_layer",
         "hide_layer",
         "create_region",
         "set_region_representation",
@@ -261,7 +401,6 @@ def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
     assert [msg.get("op") for msg in exported] == [
         "clear_all",
         "load_molsys_payload",
-        "create_layer",
         "hide_layer",
         "create_region",
         "set_region_representation",

@@ -1,7 +1,9 @@
 from ...exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 
 def digest_labels(labels, caller=None):
+    caller = normalize_viewer_caller(caller)
     if labels is None:
         return None
     if caller == "molsysviewer.viewer.clear_decorations" and isinstance(labels, bool):

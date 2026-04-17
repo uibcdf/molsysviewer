@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
+import molsysmt as msm
 from smonitor import signal
 
 from ._private.arg_digestion import digest
+from .colors import expand_values_to_atoms, normalize_color
 
 
 class Whole:
@@ -39,6 +41,9 @@ class Whole:
             `coarse-surface`, `empty`). When provided, supersedes ``representation`` and applies
             the preconfigured style bundle.
         """
+        color = params.pop("color", None)
+        if color is not None:
+            params["molstar_color_theme"] = {"name": "uniform", "params": {"value": normalize_color(color)}}
         normalized_preset = self._view._normalize_representation_preset(preset)  # noqa: SLF001
         user_preset_payload = self._view._resolve_user_preset(normalized_preset)  # noqa: SLF001
         normalized_repr = None if normalized_preset else self._view._normalize_representation_type(representation)  # noqa: SLF001
@@ -169,3 +174,62 @@ class Whole:
     def remove(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
         """Remove atoms/structures from the system (delegates to `MolSysView.remove`)."""
         return self._view.remove(*args, skip_digestion=skip_digestion, **kwargs)
+
+    # --- Scalar colour mapping ---
+
+    @signal(tags=["color", "whole"])
+    @digest()
+    def set_color_by_values(
+        self,
+        values: Any,
+        element: str = "atom",
+        palette: Any = "viridis",
+        value_range: Any = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Map a scalar array to per-atom colors on the whole structure.
+
+        One scalar value is mapped to a color and then broadcast to all atoms
+        that belong to the corresponding structural element.
+
+        Parameters
+        ----------
+        values
+            Iterable of numeric scalars, one per *element* in the whole system
+            (e.g. one per atom when ``element="atom"``, one per residue when
+            ``element="group"``).
+        element
+            Structural level at which *values* are defined.  Accepted levels
+            are the same as for ``msm.get``: ``"atom"``, ``"group"``,
+            ``"component"``, ``"molecule"``, ``"chain"``, ``"entity"``.
+            Defaults to ``"atom"``.
+        palette
+            Palette name (str), matplotlib colormap, or list of colors.
+            Defaults to ``"viridis"``.
+        value_range
+            ``[vmin, vmax]`` normalization range.  Auto-detected from *values*
+            when ``None``.
+        """
+        atom_indices, per_atom_colors = expand_values_to_atoms(
+            self._view._molsys,  # noqa: SLF001
+            values=values,
+            element=element,
+            palette=palette,
+            value_range=value_range,
+            scope_atom_indices=None,
+        )
+        # Replace the entire map (whole = always replace)
+        self._view._atom_color_map = dict(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+        self._view._send({  # noqa: SLF001
+            "op": "set_atom_colors",
+            "atom_indices": atom_indices,
+            "colors": per_atom_colors,
+            "replace": True,
+        })
+
+    @signal(tags=["color", "whole"])
+    @digest()
+    def reset_colors(self, skip_digestion: bool = False) -> None:
+        """Remove any per-atom color override and revert to the current representation theme."""
+        self._view._atom_color_map.clear()  # noqa: SLF001
+        self._view._send({"op": "clear_atom_colors"})  # noqa: SLF001

@@ -1,4 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 def digest_element(element, caller=None):
     """ Checks if a syntax has the correct type and value
@@ -18,6 +19,7 @@ def digest_element(element, caller=None):
     """
 
     from molsysmt.element import _elements, _plural_elements_to_singular
+    caller = normalize_viewer_caller(caller)
 
     if isinstance(element, str):
         element_name_lower = element.lower()

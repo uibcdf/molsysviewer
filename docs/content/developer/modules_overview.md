@@ -6,7 +6,7 @@ It is still useful as a conceptual map, but the current source of truth is alway
 
 ## 1. `MolSysView` (Python facade)
 
-**File:** `molsysviewer/viewer.py`
+**Package:** `molsysviewer/viewer/`
 
 Responsibilities
 
@@ -19,6 +19,19 @@ Responsibilities
   - Shapes (`self.shapes`).
   - Export (`view.export.html(...)` with `standalone` and `lite` modes).
 - Encapsulate Python ↔ JS messaging (`_send`, `_message_history`, `_clean_message_history`).
+
+Current package split
+
+- `core.py`
+  - high-level `MolSysView` facade and frontend event handling
+- `history.py`
+  - replayable history recording and message rewriting
+- `export.py`
+  - export-time message assembly and HTML serialization helpers
+- `scene_registry.py`
+  - non-structural scene-object and layer registries
+- `representations.py`, `presets.py`
+  - normalization tables and preset resolution
 
 In practice, `MolSysView` plays multiple “logical module” roles:
 

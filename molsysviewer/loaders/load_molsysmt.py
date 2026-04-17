@@ -58,13 +58,7 @@ def load_from_molsysmt(
         skip_digestion=True,
     )
 
-    try:
-        n_atoms = int(view._molsys.topology.get_n_atoms())
-    except Exception:
-        if hasattr(view._molsys, "get"):
-            n_atoms = int(view._molsys.get(element="atom", n_atoms=True))  # type: ignore[call-arg]
-        else:
-            n_atoms = int(msm.get(view._molsys, element="atom", n_atoms=True, skip_digestion=True))
+    n_atoms = int(view._molsys.get_n_atoms())
     n_structures: int | None = None
     try:
         n_structures = int(view._molsys.structures.get_n_structures())
@@ -75,17 +69,25 @@ def load_from_molsysmt(
     viewer_json = view._molsys.to_form("molsysmt.ViewerJSON")
 
     # Extract hierarchy indices from MolSysMT to enrich the payload
-    molecule_indices = msm.get(view._molsys, element="atom", molecule_index=True, skip_digestion=True)
-    component_indices = msm.get(view._molsys, element="atom", component_index=True, skip_digestion=True)
-    molecule_names = msm.get(view._molsys, element="atom", molecule_name=True, skip_digestion=True)
-    component_names = msm.get(view._molsys, element="atom", component_name=True, skip_digestion=True)
+    def _safe_get_atom_attribute(**kwargs):
+        try:
+            return msm.get(view._molsys, element="atom", skip_digestion=True, **kwargs)
+        except Exception:
+            return None
+
+    molecule_indices = _safe_get_atom_attribute(molecule_index=True)
+    component_indices = _safe_get_atom_attribute(component_index=True)
+    molecule_names = _safe_get_atom_attribute(molecule_name=True)
+    component_names = _safe_get_atom_attribute(component_name=True)
+    group_types = _safe_get_atom_attribute(group_type=True)
 
     payload = _serialize_molsys_payload(
         viewer_json,
         molecule_indices=molecule_indices,
         component_indices=component_indices,
         molecule_names=molecule_names,
-        component_names=component_names
+        component_names=component_names,
+        group_types=group_types,
     )
     if payload is None:
         raise ValueError("Unable to serialize MolSysMT viewer payload")
@@ -110,7 +112,8 @@ def _serialize_molsys_payload(
     molecule_indices: Any = None,
     component_indices: Any = None,
     molecule_names: Any = None,
-    component_names: Any = None
+    component_names: Any = None,
+    group_types: Any = None,
 ) -> dict[str, Any] | None:
     """Convert MolSysMT ViewerJSON (new schema) into the MolSysPayload expected by the JS layer."""
     # Accept ViewerJSON object or plain dict
@@ -163,6 +166,7 @@ def _serialize_molsys_payload(
     mol_name = _column(molecule_names, lambda _i: "Molecule", str)
     comp_id = _column(component_indices, lambda _i: 0, int)
     comp_name = _column(component_names, lambda _i: "Component", str)
+    group_type = _column(group_types, lambda _i: "", str)
 
     structures_payload = _extract_structures(structures, n_atoms)
     if not structures_payload:
@@ -184,6 +188,7 @@ def _serialize_molsys_payload(
             "molecule_name": mol_name,
             "component_id": comp_id,
             "component_name": comp_name,
+            "group_type": group_type,
         },
         "structures": structures_payload,
     }

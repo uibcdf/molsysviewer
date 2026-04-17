@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, Mapping
 import base64
-from importlib import import_module
+import json
 import time
 import inspect
-import json
 import re
 
 import molsysmt as msm
@@ -14,261 +13,133 @@ from smonitor import signal
 from smonitor.integrations import emit_from_catalog
 from depdigest import dep_digest
 
-from ._pyunitwizard import puw
-from ._private.arg_digestion import digest
-from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
-from ._private.variables import is_all
-from .widget import MolSysViewerWidget
-from .loaders import load_from_molsysmt as _load_from_molsysmt
-from .annotations import AnnotationsManager
-from .active_selection import ActiveSelection
-from .addons import ViewAddonsManager, addons as global_addons
-from .exports import ExportManager
-from .figures import FigureSpec
-from .interaction_targets import InteractionTarget
-from .measurements import MeasurementsManager
-from .selections import SelectionsManager, Selection
-from .styles import StylesManager
-from .shapes import ShapesManager
-from .regions import Region
-from .whole import Whole
-from .layers import Layer
-from . import config
-from .config.user_presets import user_presets
+from .._pyunitwizard import puw
+from .._private.arg_digestion import digest
+from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from .._private.variables import is_all
+from ..widget import MolSysViewerWidget
+from ..loaders import load_from_molsysmt as _load_from_molsysmt
+from ..annotations import AnnotationsManager
+from ..active_selection import ActiveSelection
+from ..addons import AddonPanelWidget, ViewAddonsManager, addons as global_addons
+from ..exports import ExportManager
+from ..figures import FigureSpec
+from ..interaction_targets import InteractionTarget
+from ..measurements import MeasurementsManager
+from ..player import PlayerManager
+from ..scene import SceneManager
+from ..selections import SelectionsManager, Selection
+from ..styles import StylesManager
+from ..shapes import ShapesManager
+from ..regions import Region
+from ..whole import Whole
+from ..layers import Layer, SceneObject
+from ..colors import colors as global_colors
+from .. import config
+from .history import HistoryMixin
+from .camera import CameraManager
+from .export import ExportMixin
+from .scene_registry import SceneRegistryMixin
+from .representations import normalize_representation_type
+from .presets import normalize_representation_preset, resolve_user_preset
+from .signals import (
+    camera_snapshot_extra as _camera_snapshot_extra,
+    controls_signal_extra as _controls_signal_extra,
+    load_signal_extra as _load_signal_extra,
+    panel_mode_signal_extra as _panel_mode_signal_extra,
+    panel_mode_state_query_extra as _panel_mode_state_query_extra,
+    resolve_entry_callable as _resolve_entry_callable,
+    workspace_catalog_signal_extra as _workspace_catalog_signal_extra,
+    workspace_panel_signal_extra as _workspace_panel_signal_extra,
+    workspace_panels_signal_extra as _workspace_panels_signal_extra,
+    workspace_runtime_signal_extra as _workspace_runtime_signal_extra,
+    workspace_sections_signal_extra as _workspace_sections_signal_extra,
+    workspace_signal_extra as _workspace_signal_extra,
+    zoom_signal_extra as _zoom_signal_extra,
+)
 
 _HTML_MANAGER_VERSION = "1.0.1"
 _WIDGETS_BASE_VERSION = "2.0.0"
 
-_REPR_ALIASES = {
-    "sticks": "ball-and-stick",
-    "ball_and_stick": "ball-and-stick",
-    "ballstick": "ball-and-stick",
-    "licorice": "line",
-    "lines": "line",
-    "wire": "line",
-    "wireframe": "line",
-    "ribbon": "backbone",
-    "surface": "molecular-surface",
-    "vdw": "spacefill",
-}
 
-_ALLOWED_REPRS = {
-    "cartoon",
-    "backbone",
-    "ball-and-stick",
-    "carbohydrate",
-    "ellipsoid",
-    "gaussian-surface",
-    "gaussian-volume",
-    "label",
-    "line",
-    "molecular-surface",
-    "orientation",
-    "plane",
-    "point",
-    "putty",
-    "spacefill",
-}
+class ViewerInfo:
+    """Wrapper for the dual-section output of ``MolSysView.info(source='all')``.
 
-_PRESET_ALIASES = {
-    "automatic": "auto",
-}
+    Holds the *molsys* and *view* sections (pandas Stylers by default) and
+    renders both sequentially in Jupyter via ``_repr_html_()``.
+    """
 
-_ALLOWED_PRESETS = {
-    "auto",
-    "atomic-detail",
-    "polymer-and-ligand",
-    "polymer-cartoon",
-    "coarse-surface",
-    "empty",
-}
+    def __init__(self, molsys_section: Any, view_section: Any) -> None:
+        self.molsys = molsys_section
+        self.view = view_section
+
+    def _repr_html_(self) -> str:
+        parts: list[str] = []
+        for label, section in (("Molecular system", self.molsys), ("Viewer", self.view)):
+            parts.append(f"<h4 style='margin:0.6em 0 0.2em'>{label}</h4>")
+            html_method = getattr(section, "_repr_html_", None)
+            if html_method is not None:
+                parts.append(html_method())
+            else:
+                parts.append(f"<pre>{section!r}</pre>")
+        return "\n".join(parts)
+
+    def __repr__(self) -> str:
+        return f"ViewerInfo(molsys={self.molsys!r}, view={self.view!r})"
+
+    def __getitem__(self, key: str) -> Any:
+        if key == "molsys":
+            return self.molsys
+        if key == "view":
+            return self.view
+        raise KeyError(key)
+
+    def keys(self):
+        return ("molsys", "view")
 
 
-def _signal_value(args: tuple[Any, ...], kwargs: dict[str, Any], index: int, name: str) -> Any:
-    if name in kwargs:
-        return kwargs[name]
-    if len(args) > index:
-        return args[index]
-    return None
+class RegionInfo:
+    """Wrapper for the dual-section output of ``Region.info()``.
+
+    Holds a *molsys* section (filtered to the region's atoms) and a *region*
+    section (tag, atom count, visibility, representation) and renders both
+    sequentially in Jupyter via ``_repr_html_()``.
+    """
+
+    def __init__(self, tag: str, molsys_section: Any, region_section: Any) -> None:
+        self.tag = tag
+        self.molsys = molsys_section
+        self.region = region_section
+
+    def _repr_html_(self) -> str:
+        parts: list[str] = [f"<h4 style='margin:0.6em 0 0.2em'>Region: {self.tag}</h4>"]
+        for label, section in (("Molecular system", self.molsys), ("Region state", self.region)):
+            parts.append(f"<h5 style='margin:0.4em 0 0.15em;color:#555'>{label}</h5>")
+            html_method = getattr(section, "_repr_html_", None)
+            if html_method is not None:
+                parts.append(html_method())
+            else:
+                parts.append(f"<pre>{section!r}</pre>")
+        return "\n".join(parts)
+
+    def __repr__(self) -> str:
+        return f"RegionInfo(tag={self.tag!r}, molsys={self.molsys!r}, region={self.region!r})"
+
+    def __getitem__(self, key: str) -> Any:
+        if key == "molsys":
+            return self.molsys
+        if key == "region":
+            return self.region
+        raise KeyError(key)
+
+    def keys(self):
+        return ("molsys", "region")
 
 
-def _load_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    molecular_system = _signal_value(args, kwargs, 1, "molecular_system")
-    return {"molecular_system": type(molecular_system).__name__ if molecular_system is not None else None}
+from .utils import quantity_value_in_unit as _quantity_value_in_unit
 
 
-def _zoom_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {"selection": _signal_value(args, kwargs, 1, "selection")}
-
-
-def _controls_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "visible": _signal_value(args, kwargs, 1, "visible"),
-        "autohide": _signal_value(args, kwargs, 2, "autohide"),
-    }
-
-
-def _camera_snapshot_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    snapshot = _signal_value(args, kwargs, 1, "snapshot")
-    return {
-        "duration_ms": _signal_value(args, kwargs, 2, "duration_ms"),
-        "snapshot_keys": sorted(snapshot.keys()) if isinstance(snapshot, dict) else [],
-    }
-
-
-def _write_html_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "output_filename": _signal_value(args, kwargs, 1, "output_filename"),
-        "mode": _signal_value(args, kwargs, 5, "mode"),
-        "include_popout": _signal_value(args, kwargs, 4, "include_popout"),
-    }
-
-
-def _resolve_entry_callable(entry: str) -> Any | None:
-    if not isinstance(entry, str) or entry.strip() == "" or "." not in entry:
-        return None
-    module_name, _, attr_name = entry.rpartition(".")
-    if not module_name or not attr_name:
-        return None
-    try:
-        module = import_module(module_name)
-    except Exception:
-        return None
-    return getattr(module, attr_name, None)
-
-
-def _panel_mode_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "panel": _signal_value(args, kwargs, 1, "panel"),
-        "expanded": _signal_value(args, kwargs, 2, "expanded")
-        if _signal_value(args, kwargs, 2, "expanded") is not None
-        else True,
-    }
-
-
-def _workspace_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "workspace": _signal_value(args, kwargs, 1, "workspace") or "core",
-    }
-
-
-def _workspace_panel_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "panel": _signal_value(args, kwargs, 1, "panel"),
-        "workspace": _signal_value(args, kwargs, 2, "workspace"),
-    }
-
-
-def _workspace_panels_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "workspace": _signal_value(args, kwargs, 1, "workspace") or "core",
-    }
-
-
-def _workspace_sections_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "workspace": _signal_value(args, kwargs, 1, "workspace") or "core",
-    }
-
-
-def _workspace_catalog_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    view = args[0] if args else None
-    state = getattr(view, "_last_panel_mode_state_event", None)
-    current_workspace = "core"
-    if isinstance(state, dict):
-        workspace = state.get("workspace")
-        if isinstance(workspace, str) and workspace.strip() != "":
-            current_workspace = workspace
-
-    workspace_count = 1
-    if view is not None:
-        try:
-            workspace_specs = view.addons.workspace_specs(skip_digestion=True)
-            panel_specs = view.addons.panel_specs(skip_digestion=True)
-            workbench_specs = view.addons.workbench_section_specs(skip_digestion=True)
-            for workspace in workspace_specs:
-                workspace_id = workspace.get("id")
-                addon_name = workspace.get("addon")
-                if not isinstance(workspace_id, str) or not isinstance(addon_name, str):
-                    continue
-                panel_count = sum(
-                    1
-                    for item in panel_specs
-                    if item.get("addon") == addon_name and item.get("target", "panel_mode") == "panel_mode"
-                )
-                workbench_section_count = sum(
-                    1
-                    for item in workbench_specs
-                    if item.get("addon") == addon_name and item.get("target_panel", "workbench") == "workbench"
-                )
-                if panel_count + workbench_section_count > 0:
-                    workspace_count += 1
-        except Exception:
-            pass
-
-    return {
-        "current_workspace": current_workspace,
-        "workspace_count": workspace_count,
-    }
-
-
-def _workspace_runtime_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    view = args[0] if args else None
-    state = getattr(view, "_last_panel_mode_state_event", None)
-    current_workspace = "core"
-    if isinstance(state, dict):
-        workspace = state.get("workspace")
-        if isinstance(workspace, str) and workspace.strip() != "":
-            current_workspace = workspace
-
-    panel_count = 2 if current_workspace == "core" else 0
-    if view is not None and current_workspace != "core":
-        try:
-            workspace_specs = view.addons.workspace_specs(skip_digestion=True)
-            panel_specs = view.addons.panel_specs(skip_digestion=True)
-            addon_name = next(
-                (
-                    item.get("addon")
-                    for item in workspace_specs
-                    if item.get("id") == current_workspace and isinstance(item.get("addon"), str)
-                ),
-                None,
-            )
-            if isinstance(addon_name, str):
-                panel_count = sum(
-                    1
-                    for item in panel_specs
-                    if item.get("addon") == addon_name and item.get("target", "panel_mode") == "panel_mode"
-                )
-        except Exception:
-            pass
-
-    return {
-        "current_workspace": current_workspace,
-        "panel_count": panel_count,
-        "pretty": _signal_value(args, kwargs, 1, "pretty")
-        if _signal_value(args, kwargs, 1, "pretty") is not None
-        else False,
-    }
-
-
-def _panel_mode_state_query_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "pretty": _signal_value(args, kwargs, 1, "pretty")
-        if _signal_value(args, kwargs, 1, "pretty") is not None
-        else False,
-    }
-
-
-def _quantity_value_in_unit(value: Any, unit_name: str) -> float:
-    if isinstance(value, (int, float, np.integer, np.floating)):
-        return float(value)
-    if puw.is_unit(value):
-        value = puw.quantity(1.0, value)
-    return float(puw.get_value(value, to_unit=unit_name))
-
-
-class MolSysView:
+class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
     """Mol* viewer widget with a Python-facing API.
 
     Provides structure loading, visibility control, shape management, and
@@ -315,18 +186,32 @@ class MolSysView:
         self._shape_history: list[dict] = []
         self._annotation_history: list[dict] = []
         self._measurement_history: list[dict] = []
+        self._section_history: list[dict] = []
         self._selection_history: list[dict] = []
         self._last_label: str | None = None
+        self._empty = True
+        self._load_blocks: list[dict[str, Any]] = []
+        self._current_structure_index: int = 0
 
         self._regions: Dict[str, Region] = {}
         self._layers: Dict[str, Layer] = {}
+        self._scene_objects: Dict[str, SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
         self._region_counter = 0
+        self._annotation_counter = 0
         self._layer_counter = 0
+        self._measurement_counter = 0
+        self._shape_counter = 0
+        self._section_counter = 0
         self._global_hidden = False
+        self._box_visible = False
+        self._box_record: dict | None = None  # params last passed to show_box
+        self._atom_color_map: dict[int, int] = {}  # atomIndex → 0xRRGGBB
+        self._active_panel_widget: tuple[str, str, AddonPanelWidget] | None = None
 
         self.whole = Whole(self)
         self.styles = StylesManager(self)
+        self.colors = global_colors
         self.addons = ViewAddonsManager(self, global_addons)
         self.addons.bind_runtime()
         self.export = ExportManager(self)
@@ -359,6 +244,9 @@ class MolSysView:
         self.active_selection = ActiveSelection(self)
         self.measurements = MeasurementsManager(self)
         self.selections = SelectionsManager(self)
+        self.scene = SceneManager(self)
+        self.player = PlayerManager(self)
+        self.camera = CameraManager(self)
         try:
             self.widget.autohide_controls = bool(config.autohide_controls)
         except Exception:
@@ -396,25 +284,25 @@ class MolSysView:
                 self._unregister_region(tag)
         elif event == "layer_ack":
             tag = content.get("tag")
-            if tag and tag not in self._layers:
-                layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
-                self._layers[tag] = layer
-            elif tag and tag in self._layers:
-                layer = self._layers[tag]
-                layer.kind = content.get("kind", layer.kind)
-                if content.get("meta"):
-                    layer.meta.update(content.get("meta"))
+            # Ignore acks for tags that are already registered as individual scene
+            # objects (shapes/annotations/measurements).  Mol* sends a layer_ack
+            # for every Mol* node — including one per sphere in a batch — but
+            # Python tracks those under _scene_objects, not _layers.
+            if tag and tag not in self._scene_objects:
+                if tag not in self._layers:
+                    layer = Layer(self, tag, kind=content.get("kind"), meta=content.get("meta") or {})
+                    self._layers[tag] = layer
+                else:
+                    layer = self._layers[tag]
+                    layer.kind = content.get("kind", layer.kind)
+                    if content.get("meta"):
+                        layer.meta.update(content.get("meta"))
         elif event == "layer_deleted":
             tag = content.get("tag")
             if tag:
                 self._unregister_layer(tag)
         elif event == "registry_cleared":
-            self._regions.clear()
-            self._layers.clear()
-            self._region_counter = 0
-            self._layer_counter = 0
-            self._global_hidden = False
-            self.whole = Whole(self)
+            pass  # frontend acknowledged clear_all; Python state is managed explicitly
         elif event == "js_log" and self._debug_js:
             level = str(content.get("level", "info")).upper()
             message = content.get("message", "")
@@ -453,6 +341,35 @@ class MolSysView:
                 return
             if action == "create_region_from_selection":
                 self.new_region_from_active_selection(skip_digestion=True)
+            elif action == "create_section_from_selection":
+                atom_indices = list(self.active_selection.atom_indices)
+                if len(atom_indices) == 0:
+                    raise ValueError("create_section_from_selection requires a non-empty active selection.")
+                coords = self._molsys.structures.get_coordinates(
+                    indices=atom_indices,
+                    structure_indices=[0],
+                    skip_digestion=True,
+                )
+                # coords shape: (1, n_atoms, 3) in nm
+                arr = puw.get_value(coords)
+                centroid = arr[0].mean(axis=0).tolist()
+                raw_fwd = content.get("camera_forward")
+                if isinstance(raw_fwd, (list, tuple)) and len(raw_fwd) == 3:
+                    normal = [float(v) for v in raw_fwd]
+                else:
+                    normal = [0.0, 0.0, -1.0]
+                n = np.array(normal, dtype=float)
+                length = float(np.linalg.norm(n))
+                if length > 1e-8:
+                    n = n / length
+                normal = n.tolist()
+                self.scene.add_section(point=centroid, normal=normal)
+            elif action == "remove_selection":
+                atom_indices = list(self.active_selection.atom_indices)
+                if len(atom_indices) == 0:
+                    raise ValueError("remove_selection requires a non-empty active selection.")
+                self.remove(selection=atom_indices, skip_digestion=True)
+                self.active_selection.clear(skip_digestion=True)
             elif action == "activate_selection":
                 tag = content.get("tag")
                 if not isinstance(tag, str) or tag.strip() == "":
@@ -481,16 +398,69 @@ class MolSysView:
                 if layer is None:
                     raise ValueError(f"No layer found for shape tag {tag!r}.")
                 layer.delete(skip_digestion=True)
-            elif action == "persist_last_measurement":
-                self.measurements.persist_last_measurement(skip_digestion=True)
+            elif action == "delete_measurement":
+                tag = content.get("tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("delete_measurement requires non-empty tag.")
+                layer = self._layers.get(tag.strip())
+                if layer is None:
+                    raise ValueError(f"No layer found for measurement tag {tag!r}.")
+                layer.delete(skip_digestion=True)
+            elif action == "hide_measurement":
+                tag = content.get("tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("hide_measurement requires non-empty tag.")
+                layer = self._layers.get(tag.strip())
+                if layer is None:
+                    raise ValueError(f"No layer found for measurement tag {tag!r}.")
+                layer.hide(skip_digestion=True)
+        elif event == "section_moved":
+            tag = content.get("tag")
+            raw_point = content.get("point")
+            raw_normal = content.get("normal")
+            if isinstance(tag, str) and tag.strip():
+                tag = tag.strip()
+                for record in self._section_history:
+                    if record.get("tag") == tag:
+                        if isinstance(raw_point, (list, tuple)) and len(raw_point) == 3:
+                            record["point"] = [float(v) for v in raw_point]
+                        if isinstance(raw_normal, (list, tuple)) and len(raw_normal) == 3:
+                            record["normal"] = [float(v) for v in raw_normal]
+                        break
         elif event == "interaction_active_selection_changed":
             self._last_active_selection_event = dict(content)
         elif event == "interaction_tool_state":
             self._last_tool_state_event = dict(content)
         elif event == "interaction_measurement_created":
-            self._last_measurement_created_event = dict(content)
+            self.measurements._register_interactive_measurement(dict(content))  # noqa: SLF001
+        elif event == "trajectory_frame_changed":
+            # Emitted by TS when playback stops; update Python-side frame index and NPT box.
+            frame = content.get("frame", 0)
+            self._current_structure_index = int(frame)
+            self.player._is_playing = False  # noqa: SLF001  # keep Python flag in sync
+            if self._box_record is not None:
+                self.show_box(
+                    color=self._box_record["color"],
+                    width=self._box_record["width"],
+                    alpha=self._box_record["alpha"],
+                    structure_indices=int(frame),
+                    skip_digestion=True,
+                )
         elif event == "panel_mode_state":
             self._last_panel_mode_state_event = dict(content)
+        elif event == "panel_navigate":
+            addon_name = content.get("addon")
+            panel_id = content.get("panel")
+            if isinstance(addon_name, str) and isinstance(panel_id, str):
+                self._mount_addon_panel(addon_name.strip(), panel_id.strip())
+        elif event == "panel_unmount":
+            self._unmount_addon_panel()
+        elif event == "addon_panel_action":
+            if self._active_panel_widget is not None:
+                _, _, widget = self._active_panel_widget
+                msg_content = content.get("content")
+                if isinstance(msg_content, dict):
+                    widget._route_frontend_message(widget, msg_content, [])  # noqa: SLF001
         elif event == "viewer_init_failed":
             reason = content.get("reason", "unknown")
             message = content.get("message") or "Mol* viewer failed to initialize."
@@ -502,6 +472,14 @@ class MolSysView:
             )
 
     # --- Regions / Layers registry ---
+
+    @property
+    def current_structure_index(self) -> int:
+        """Index of the structure currently displayed.
+
+        Delegate to ``view.player.index``.
+        """
+        return self._current_structure_index
 
     @property
     def regions(self) -> Mapping[str, Region]:
@@ -544,9 +522,178 @@ class MolSysView:
         self._region_counter += 1
         return f"region{self._region_counter}"
 
+    def _next_annotation_tag(self) -> str:
+        while True:
+            self._annotation_counter += 1
+            tag = f"annotation{self._annotation_counter}"
+            if tag not in self._scene_objects:
+                return tag
+
     def _next_layer_tag(self) -> str:
         self._layer_counter += 1
         return f"layer{self._layer_counter}"
+
+    def _next_measurement_tag(self) -> str:
+        self._measurement_counter += 1
+        return f"measurement{self._measurement_counter}"
+
+    def _next_shape_tag(self) -> str:
+        self._shape_counter += 1
+        return f"shape{self._shape_counter}"
+
+    def _reset_load_blocks(self) -> None:
+        self._load_blocks = []
+        self._empty = True
+
+    @property
+    def load_blocks(self) -> list[dict]:
+        """Read-only list of load records for every successful load operation.
+
+        Each entry is a dict with keys ``index``, ``label``, ``start``, ``stop``,
+        and ``n_atoms``.  Returns a shallow copy so the internal accounting cannot
+        be mutated accidentally.
+        """
+        return list(self._load_blocks)
+
+
+
+    def _get_input_n_atoms(
+        self,
+        molecular_system: Any,
+        *,
+        selection: Any = "all",
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+    ) -> int:
+        return int(
+            msm.get(
+                molecular_system,
+                element="system",
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                n_atoms=True,
+                skip_digestion=True,
+            )
+        )
+
+    def _input_has_topology(self, molecular_system: Any) -> bool:
+        for attribute in ("atom_id", "group_index", "bonded_atom_pairs"):
+            try:
+                if bool(msm.has_attribute(molecular_system, attribute, include_none=True, skip_digestion=True)):
+                    return True
+            except Exception:
+                continue
+        return False
+
+    def _auto_load_mode(
+        self,
+        molecular_system: Any,
+        *,
+        selection: Any = "all",
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+    ) -> str:
+        if self._molsys is None:
+            return "replace"
+
+        current_n_atoms = self._molsys.get_n_atoms()
+        incoming_n_atoms = self._get_input_n_atoms(
+            molecular_system,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+        )
+
+        if incoming_n_atoms != current_n_atoms:
+            return "add"
+
+        if not self._input_has_topology(molecular_system):
+            return "append_structures"
+
+        same_topology = bool(
+            msm.compare(
+                self._molsys,
+                molecular_system,
+                selection="all",
+                structure_indices="all",
+                selection_2=selection,
+                structure_indices_2=structure_indices,
+                syntax=syntax,
+                attribute_type="topological",
+                output_type="boolean",
+                include_none=True,
+                skip_digestion=True,
+            )
+        )
+        return "append_structures" if same_topology else "add"
+
+    def _register_initial_load_block(self, *, n_atoms: int, label: str | None = None) -> None:
+        normalized_label = label.strip() if isinstance(label, str) and label.strip() else None
+        self._load_blocks = [
+            {
+                "index": 0,
+                "label": normalized_label,
+                "n_atoms": int(n_atoms),
+                "start": 0,
+                "stop": int(n_atoms),
+                "region_tag": None,
+            }
+        ]
+        self._empty = False
+
+    def _append_load_block(self, *, n_atoms: int, label: str | None = None) -> dict[str, Any]:
+        normalized_label = label.strip() if isinstance(label, str) and label.strip() else None
+        start = 0
+        if self._load_blocks:
+            start = int(self._load_blocks[-1]["stop"])
+        block = {
+            "index": len(self._load_blocks),
+            "label": normalized_label,
+            "n_atoms": int(n_atoms),
+            "start": start,
+            "stop": start + int(n_atoms),
+            "region_tag": None,
+        }
+        self._load_blocks.append(block)
+        self._empty = False
+        return block
+
+    def _collapse_load_blocks_to_current_whole(self) -> None:
+        if self._molsys is None:
+            self._reset_load_blocks()
+            return
+        self._register_initial_load_block(n_atoms=self._molsys.get_n_atoms(), label=self._last_label)
+
+    def _load_region_base_tag(self, block: Mapping[str, Any]) -> str:
+        label = block.get("label")
+        if isinstance(label, str) and label.strip():
+            return self._slugify_region_tag(label)
+        load_index = int(block.get("index", 0)) + 1
+        return f"Load{load_index}"
+
+    def _ensure_load_regions_after_addition(self) -> None:
+        if len(self._load_blocks) < 2:
+            return
+
+        used_tags = set(self._regions.keys())
+        for block in self._load_blocks:
+            if block.get("region_tag") is not None:
+                continue
+            start = int(block["start"])
+            stop = int(block["stop"])
+            atom_indices = list(range(start, stop))
+            if len(atom_indices) == 0:
+                continue
+            base_tag = self._load_region_base_tag(block)
+            tag = self._unique_region_tag(base_tag, used_tags)
+            used_tags.add(tag)
+            self.new_region(
+                atom_indices=atom_indices,
+                tag=tag,
+                skip_digestion=True,
+            )
+            block["region_tag"] = tag
 
     def _slugify_region_tag(self, value: str) -> str:
         text = re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_")
@@ -649,73 +796,29 @@ class MolSysView:
         return created
 
     def _normalize_representation_type(self, value: str | None) -> str | None:
-        if value is None:
-            return None
-        key = value.replace("_", "-").lower().strip()
-        key = _REPR_ALIASES.get(key, key)
-        if key not in _ALLOWED_REPRS:
-            raise ValueError(f"Unsupported representation type '{value}'. Allowed: {sorted(_ALLOWED_REPRS)}")
-        return key
+        return normalize_representation_type(value)
 
     def _normalize_representation_preset(self, value: str | None) -> str | None:
-        if value is None:
-            return None
-        key = value.replace("_", "-").lower().strip()
-        key = _PRESET_ALIASES.get(key, key)
-        if key in _ALLOWED_PRESETS:
-            return key
-        if key in user_presets:
-            return key
-        raise ValueError(f"Unsupported preset '{value}'. Allowed: {sorted(_ALLOWED_PRESETS)} + user presets {list(user_presets)}")
+        return normalize_representation_preset(value)
+
+    @property
+    def representations(self) -> list[str]:
+        """Sorted list of allowed representation type identifiers."""
+        from .representations import ALLOWED_REPRESENTATIONS
+        return sorted(ALLOWED_REPRESENTATIONS)
+
+    @property
+    def presets(self) -> list[str]:
+        """Sorted list of allowed preset identifiers (built-in and user-defined)."""
+        from .presets import ALLOWED_PRESETS
+        from ..config.user_presets import user_presets
+        return sorted(ALLOWED_PRESETS | set(user_presets.keys()))
 
     def _unregister_region(self, tag: str) -> None:
         self._regions.pop(tag, None)
 
-    def _unregister_layer(self, tag: str) -> None:
-        self._layers.pop(tag, None)
-
-    def _reregister_layer(self, old_tag: str, new_tag: str, layer: Layer) -> None:
-        if old_tag in self._layers:
-            self._layers.pop(old_tag, None)
-        self._layers[new_tag] = layer
-
     def _resolve_user_preset(self, preset: str | None):
-        if preset is None:
-            return None
-        key = preset.replace("_", "-").lower().strip()
-        cfg = user_presets.get(key)
-        if cfg is None:
-            return None
-        if self._molsys is None:
-            raise ValueError("User presets require a loaded molecular system to resolve selections.")
-        rules = []
-        for rule in cfg.get("rules", []) or []:
-            if not isinstance(rule, dict):
-                continue
-            new_rule = dict(rule)
-            if "atom_indices" not in new_rule:
-                sel = new_rule.get("selection")
-                if sel is not None:
-                    try:
-                        from ._private.arg_digestion import digest_selection_and_syntax
-
-                        sel, syntax = digest_selection_and_syntax(
-                            sel,
-                            syntax="MolSysMT",
-                            caller="molsysviewer.viewer.MolSysView._resolve_user_preset",
-                        )
-                        new_rule["atom_indices"] = list(
-                            msm.select(self._molsys, selection=sel, syntax=syntax, skip_digestion=True)
-                        )
-                    except Exception:
-                        raise ValueError(f"Unable to resolve selection '{sel}' for user preset '{preset}'")
-            rules.append(new_rule)
-        return {
-            "name": key,
-            "base": cfg.get("base"),
-            "options": cfg.get("options") or {},
-            "rules": rules,
-        }
+        return resolve_user_preset(self, preset)
 
     @dep_digest('molsysmt')
     @signal(tags=["region"])
@@ -851,6 +954,7 @@ class MolSysView:
     ) -> Layer:
         """Create a new layer (non-structural visual group)."""
         tag = tag or self._next_layer_tag()
+        tag = self._assert_nonstructural_tag_available(tag)
         layer = Layer(self, tag, kind=kind, meta=meta)
         self._layers[tag] = layer
         layer._send_create()  # noqa: SLF001
@@ -1180,248 +1284,6 @@ class MolSysView:
         # Use a plain list so the payload is JSON-serializable.
         return np.nonzero(self.structure_mask)[0].tolist()
 
-    # --- util interno ---
-
-    def _tag_from_message(self, msg: dict) -> str | None:
-        tag = msg.get("tag")
-        if isinstance(tag, str) and tag:
-            return tag
-        options = msg.get("options")
-        if isinstance(options, dict):
-            opt_tag = options.get("tag")
-            if isinstance(opt_tag, str) and opt_tag:
-                return opt_tag
-        return None
-
-    def _record_shape_message(self, msg: dict) -> None:
-        op = msg.get("op")
-        if not isinstance(op, str):
-            return
-
-        if op == "delete_layer":
-            cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
-                return
-            self._shape_history = [
-                m for m in self._shape_history if self._tag_from_message(m) != cleared_tag
-            ]
-            return
-
-        if op == "set_layer_tag":
-            old_tag = msg.get("tag")
-            new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
-                return
-            rewritten: list[dict] = []
-            for item in self._shape_history:
-                tag = self._tag_from_message(item)
-                if tag != old_tag:
-                    rewritten.append(item)
-                    continue
-                updated = dict(item)
-                updated["tag"] = new_tag
-                options = updated.get("options")
-                if isinstance(options, dict):
-                    options = dict(options)
-                    options["tag"] = new_tag
-                    updated["options"] = options
-                rewritten.append(updated)
-            self._shape_history = rewritten
-            return
-
-        if op == "clear_shapes_by_tag":
-            cleared_tag = msg.get("tag")
-            if cleared_tag is None:
-                self._shape_history.clear()
-                return
-            if not isinstance(cleared_tag, str):
-                return
-            self._shape_history = [
-                m for m in self._shape_history if self._tag_from_message(m) != cleared_tag
-            ]
-            return
-
-        if op in {"add_label", "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
-            return
-
-        if not op.startswith("add_"):
-            return
-
-        self._shape_history.append(dict(msg))
-
-    def _record_annotation_message(self, msg: dict) -> None:
-        op = msg.get("op")
-        if not isinstance(op, str):
-            return
-
-        if op == "clear_scene":
-            options = msg.get("options")
-            if isinstance(options, dict) and bool(options.get("labels")):
-                self._annotation_history.clear()
-            return
-
-        if op == "delete_layer":
-            cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
-                return
-            self._annotation_history = [
-                m for m in self._annotation_history if self._tag_from_message(m) != cleared_tag
-            ]
-            return
-
-        if op == "set_layer_tag":
-            old_tag = msg.get("tag")
-            new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
-                return
-            rewritten: list[dict] = []
-            for item in self._annotation_history:
-                tag = self._tag_from_message(item)
-                if tag != old_tag:
-                    rewritten.append(item)
-                    continue
-                updated = dict(item)
-                updated["tag"] = new_tag
-                options = updated.get("options")
-                if isinstance(options, dict):
-                    options = dict(options)
-                    options["tag"] = new_tag
-                    updated["options"] = options
-                rewritten.append(updated)
-            self._annotation_history = rewritten
-            return
-
-        if op == "update_label":
-            updated_tag = self._tag_from_message(msg)
-            if updated_tag is None:
-                return
-            rewritten: list[dict] = []
-            for item in self._annotation_history:
-                if self._tag_from_message(item) != updated_tag:
-                    rewritten.append(item)
-                    continue
-                updated = dict(item)
-                options = updated.get("options")
-                if isinstance(options, dict):
-                    options = dict(options)
-                else:
-                    options = {}
-                new_options = msg.get("options")
-                if isinstance(new_options, dict):
-                    if "text" in new_options:
-                        options["text"] = new_options["text"]
-                    if "atom_indices" in new_options:
-                        options["atom_indices"] = new_options["atom_indices"]
-                    if "tag" in new_options:
-                        options["tag"] = new_options["tag"]
-                updated["options"] = options
-                rewritten.append(updated)
-            self._annotation_history = rewritten
-            return
-
-        if op != "add_label":
-            return
-
-        self._annotation_history.append(dict(msg))
-
-    def _record_measurement_message(self, msg: dict) -> None:
-        op = msg.get("op")
-        if not isinstance(op, str):
-            return
-
-        if op == "delete_layer":
-            cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
-                return
-            self._measurement_history = [
-                m for m in self._measurement_history if self._tag_from_message(m) != cleared_tag
-            ]
-            return
-
-        if op == "set_layer_tag":
-            old_tag = msg.get("tag")
-            new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
-                return
-            rewritten: list[dict] = []
-            for item in self._measurement_history:
-                tag = self._tag_from_message(item)
-                if tag != old_tag:
-                    rewritten.append(item)
-                    continue
-                updated = dict(item)
-                updated["tag"] = new_tag
-                options = updated.get("options")
-                if isinstance(options, dict):
-                    options = dict(options)
-                    options["tag"] = new_tag
-                    updated["options"] = options
-                rewritten.append(updated)
-            self._measurement_history = rewritten
-            return
-
-        if op not in {"add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"}:
-            return
-
-        self._measurement_history.append(dict(msg))
-
-    def _record_selection_message(self, msg: dict) -> None:
-        op = msg.get("op")
-        if not isinstance(op, str):
-            return
-
-        if op == "clear_selections":
-            self._selection_history.clear()
-            return
-
-        if op == "delete_selection":
-            cleared_tag = msg.get("tag")
-            if not isinstance(cleared_tag, str):
-                return
-            self._selection_history = [m for m in self._selection_history if m.get("tag") != cleared_tag]
-            return
-
-        if op == "set_selection_tag":
-            old_tag = msg.get("tag")
-            new_tag = msg.get("new_tag")
-            if not isinstance(old_tag, str) or not isinstance(new_tag, str):
-                return
-            rewritten: list[dict] = []
-            for item in self._selection_history:
-                if item.get("tag") != old_tag:
-                    rewritten.append(item)
-                    continue
-                updated = dict(item)
-                updated["tag"] = new_tag
-                rewritten.append(updated)
-            self._selection_history = rewritten
-            return
-
-        if op != "save_selection":
-            return
-
-        self._selection_history.append(dict(msg))
-
-    def _send(self, msg: dict) -> None:
-        """Send a message to the frontend or queue it if the frontend is not ready yet."""
-        self._message_history.append(msg)
-        self._record_shape_message(msg)
-        self._record_annotation_message(msg)
-        self._record_measurement_message(msg)
-        self._record_selection_message(msg)
-        if self._ready:
-            self.widget.send(msg)
-        else:
-            self._pending_messages.append(msg)
-
-    def _send_replay(self, msg: dict) -> None:
-        """Send a message while rebuilding state, without updating shape registries."""
-        self._message_history.append(msg)
-        if self._ready:
-            self.widget.send(msg)
-        else:
-            self._pending_messages.append(msg)
-
     def _update_visibility_in_frontend(self):
         if self.atom_mask is None:
             return
@@ -1509,6 +1371,49 @@ class MolSysView:
 
     def _sync_addons_runtime(self) -> None:
         self._send(self._build_addon_runtime_summary_message())
+
+    def _mount_addon_panel(self, addon_name: str, panel_id: str) -> None:
+        self._unmount_addon_panel()
+        widget = self.addons.resolve_panel_widget(addon_name, panel_id)
+        if widget is None:
+            return
+
+        # Route push_state and all sends through the viewer's comm channel
+        def _routed_send(msg: dict, buffers: Any = None) -> None:
+            self._send_runtime_only({
+                "op": "addon_panel_message",
+                "addon": addon_name,
+                "panel": panel_id,
+                "content": msg,
+            })
+
+        widget.send = _routed_send  # type: ignore[method-assign]
+        self._active_panel_widget = (addon_name, panel_id, widget)
+
+        widget.on_mount(self)
+
+        # Push initial context to panel JS
+        ctx = widget._build_viewer_context()  # noqa: SLF001
+        _routed_send({"type": "context", "context": ctx})
+
+        # Tell TS canvas to mount the panel ESM
+        self._send_runtime_only({
+            "op": "mount_addon_panel",
+            "addon": addon_name,
+            "panel": panel_id,
+            "esm": widget._esm,  # noqa: SLF001
+            "css": getattr(widget, "_css", "") or "",
+        })
+
+    def _unmount_addon_panel(self) -> None:
+        if self._active_panel_widget is None:
+            return
+        _, _, widget = self._active_panel_widget
+        self._active_panel_widget = None
+        try:
+            widget.on_unmount(self)
+        except Exception:
+            pass
 
     def _remap_indices(self, indices: Any, atom_index_map: dict[int, int] | None) -> list[int]:
         if atom_index_map is None:
@@ -1603,6 +1508,15 @@ class MolSysView:
         if any(len(pick) == 0 for pick in remapped_picks):
             return None
         options["picks_atom_indices"] = remapped_picks
+        endpoint_atom_indices = options.get("endpoint_atom_indices")
+        if isinstance(endpoint_atom_indices, list):
+            remapped_endpoint_atoms = [self._remap_indices(pick, atom_index_map) for pick in endpoint_atom_indices]
+            if any(
+                len(original) > 0 and len(remapped_pick) == 0
+                for original, remapped_pick in zip(endpoint_atom_indices, remapped_endpoint_atoms)
+            ):
+                return None
+            options["endpoint_atom_indices"] = remapped_endpoint_atoms
         return remapped
 
     def _remap_selection_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
@@ -1630,7 +1544,7 @@ class MolSysView:
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before mutating the view.")
 
-        from .loaders.load_molsysmt import _serialize_molsys_payload
+        from ..loaders.load_molsysmt import _serialize_molsys_payload
         import molsysmt as msm
 
         viewer_json = self._molsys.to_form("molsysmt.ViewerJSON")
@@ -1651,7 +1565,7 @@ class MolSysView:
         if payload is None:
             raise ValueError("Unable to serialize MolSysMT viewer payload")
 
-        n_atoms = int(self._molsys.topology.get_n_atoms())
+        n_atoms = int(self._molsys.get_n_atoms())
         n_structures = len(payload.get("structures") or [])
         multiple_structures = n_structures > 1
         self.atom_mask = np.ones(n_atoms, dtype=bool)
@@ -1768,19 +1682,60 @@ class MolSysView:
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
         label: str | None = None,
+        mode: str = "add",
         skip_digestion: bool = False,
     ) -> None:
         """Load a molecular system (MolSysMT-compatible) into the viewer."""
-        _load_from_molsysmt(
-            molecular_system=molecular_system,
+        if mode == "replace":
+            self.reset_viewer(skip_digestion=True)
+        elif mode == "auto":
+            mode = self._auto_load_mode(
+                molecular_system,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+            )
+
+        if self._molsys is None:
+            if mode == "append_structures":
+                raise ValueError(
+                    "No molecular system loaded. Load a topology or full system before calling "
+                    "load(..., mode='append_structures')."
+                )
+            _load_from_molsysmt(
+                molecular_system=molecular_system,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                label=label,
+                skip_digestion=True,
+                view=self,
+            )
+            self._register_initial_load_block(n_atoms=self._molsys.get_n_atoms(), label=label)
+            self._last_label = label
+            return
+
+        if mode != "add":
+            if mode == "append_structures":
+                self.append_structures(
+                    molecular_system,
+                    selection=selection,
+                    structure_indices=structure_indices,
+                    syntax=syntax,
+                    skip_digestion=True,
+                )
+                return
+            raise ValueError(f"Unsupported load mode: {mode!r}")
+
+        self.add(
+            molecular_system,
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
             label=label,
             skip_digestion=True,
-            view=self,
         )
-        self._last_label = label
+        self._ensure_load_regions_after_addition()
 
     @signal(tags=["visibility"])
     @digest()
@@ -1847,6 +1802,115 @@ class MolSysView:
         self.atom_mask[atom_indices] = True
         self._update_visibility_in_frontend()
 
+    # ── Unit cell / box visualization ──────────────────────────────────────
+
+    _BOX_TAG = "__msv_box"
+
+    @signal(tags=["scene", "box"])
+    @digest()
+    def show_box(
+        self,
+        color: Any = "grey",
+        width: float = 0.15,
+        alpha: float = 1.0,
+        structure_indices: Any = 0,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Render the unit-cell or simulation-box edges in the canvas.
+
+        Reads the box vectors from the first (or *structure_indices*-th) structure
+        of the loaded system, converts them from nm to Å, and draws the 12 box
+        edges as cylinders.  A subsequent call replaces the previous box.
+
+        Parameters
+        ----------
+        color
+            Edge color. Accepts any value supported by ``view.colors.normalize_color``.
+        width
+            Cylinder radius in Å.
+        alpha
+            Opacity (0 = transparent, 1 = opaque).
+        structure_indices
+            Which structure's box to visualise (0-based integer or ``"all"``).
+            Defaults to the first structure (index 0).
+        """
+        from .._private.arg_digestion.argument.structure_indices import digest_structure_indices  # noqa: PLC0415
+
+        sidx = 0 if structure_indices in ("all", None) else int(structure_indices)
+
+        box_q = msm.get(self._molsys, element="system", box=True, skip_digestion=True)
+        if box_q is None:
+            raise ValueError("The loaded system does not have box information.")
+
+        box_nm = puw.get_value(box_q)  # shape (n_structures, 3, 3) in nm
+        if box_nm.ndim == 3:
+            box_nm = box_nm[sidx]  # shape (3, 3)
+
+        # Convert nm → Å
+        box_a = box_nm * 10.0  # (3, 3) in Å
+        a, b, c = box_a[0], box_a[1], box_a[2]
+
+        # Build 8 vertices
+        O = np.array([0.0, 0.0, 0.0])
+        v000 = O
+        v100 = O + a
+        v010 = O + b
+        v001 = O + c
+        v110 = O + a + b
+        v101 = O + a + c
+        v011 = O + b + c
+        v111 = O + a + b + c
+
+        # 12 box edges as coordinate pairs [[x0,y0,z0], [x1,y1,z1]]
+        edges = [
+            # along a
+            [v000.tolist(), v100.tolist()], [v010.tolist(), v110.tolist()],
+            [v001.tolist(), v101.tolist()], [v011.tolist(), v111.tolist()],
+            # along b
+            [v000.tolist(), v010.tolist()], [v100.tolist(), v110.tolist()],
+            [v001.tolist(), v011.tolist()], [v101.tolist(), v111.tolist()],
+            # along c
+            [v000.tolist(), v001.tolist()], [v100.tolist(), v101.tolist()],
+            [v010.tolist(), v011.tolist()], [v110.tolist(), v111.tolist()],
+        ]
+
+        from ..colors import normalize_color as _nc  # noqa: PLC0415
+        color_int = _nc(color)
+
+        # Remove previous box (if any) then redraw
+        if self._box_visible:
+            self._send({"op": "clear_shapes_by_tag", "tag": self._BOX_TAG})
+
+        msg = {
+            "op": "add_network_links",
+            "options": {
+                "mode": "coordinates",
+                "coordinate_pairs": edges,
+                "radii": float(width),
+                "colors": color_int,
+                "alpha": float(alpha),
+                "tag": self._BOX_TAG,
+            },
+        }
+        self._send(msg)
+        self._box_visible = True
+        self._box_record = {
+            "color": color,
+            "width": float(width),
+            "alpha": float(alpha),
+            "structure_indices": sidx,
+        }
+
+    @signal(tags=["scene", "box"])
+    @digest()
+    def hide_box(self, skip_digestion: bool = False) -> None:
+        """Remove the box edge display from the canvas."""
+        if not self._box_visible:
+            return
+        self._send({"op": "clear_shapes_by_tag", "tag": self._BOX_TAG})
+        self._box_visible = False
+        self._box_record = None
+
     @signal(tags=["camera"], extra_factory=_zoom_signal_extra)
     @digest()
     def zoom(
@@ -1861,55 +1925,16 @@ class MolSysView:
         min_radius: Any = '1.0 angstroms',
         skip_digestion: bool = False,
     ) -> None:
-        """Focus the camera on the geometric center of a selection of atoms.
-
-        Parameters
-        ----------
-        selection
-            MolSysMT selection string/expression or a list of atom indices. If a list
-            is provided, it is passed through MolSysMT and used directly.
-        structure_indices
-            Structure indices to apply when resolving the selection.
-        syntax
-            Selection syntax understood by MolSysMT.
-        duration
-            Transition duration for the camera move (any time unit supported by PyUnitWizard).
-        duration_ms
-            Backward-compatible alias for ``duration``. If provided, it overrides ``duration``.
-        extra_radius
-            Extra padding (Å) added to the selection's bounding sphere.
-        min_radius
-            Minimum radius (Å) to enforce for the camera focus.
-        """
-        if self._molsys is None:
-            raise ValueError("No molecular system loaded. Load a system before calling zoom().")
-
-        atom_indices = msm.select(
-            self._molsys,
+        """Focus the camera on a selection. Delegate to ``view.camera.zoom()``."""
+        self.camera.zoom(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
+            duration=duration,
+            duration_ms=duration_ms,
+            extra_radius=extra_radius,
+            min_radius=min_radius,
             skip_digestion=True,
-        )
-        if not atom_indices:
-            raise ValueError("Cannot zoom: empty selection.")
-
-        if duration_ms is not None:
-            duration = duration_ms
-        duration_ms_value = _quantity_value_in_unit(duration, "ms")
-        extra_radius = round(_quantity_value_in_unit(extra_radius, "angstroms"), 6)
-        min_radius = round(_quantity_value_in_unit(min_radius, "angstroms"), 6)
-
-        self._send(
-            {
-                "op": "zoom",
-                "atom_indices": atom_indices,
-                "options": {
-                    "duration_ms": int(duration_ms_value),
-                    "extra_radius": float(extra_radius),
-                    "min_radius": float(min_radius),
-                },
-            }
         )
 
     @signal(tags=["camera", "selection"], extra_factory=_zoom_signal_extra)
@@ -1926,8 +1951,8 @@ class MolSysView:
         min_radius: Any = '1.0 angstroms',
         skip_digestion: bool = False,
     ) -> None:
-        """Focus the camera on a selection of atoms."""
-        self.zoom(
+        """Focus the camera on a selection. Delegate to ``view.camera.focus_selection()``."""
+        self.camera.focus_selection(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
@@ -1939,6 +1964,7 @@ class MolSysView:
         )
 
     @signal(tags=["camera", "region"])
+    @digest()
     def focus_region(
         self,
         region: str | Region,
@@ -1949,27 +1975,9 @@ class MolSysView:
         min_radius: Any = '1.0 angstroms',
         skip_digestion: bool = False,
     ) -> None:
-        """Focus the camera on a region identified by tag or region object."""
-        if isinstance(region, str):
-            target = self._regions.get(region)
-            if target is None:
-                raise KeyError(f"Unknown region tag: {region!r}")
-        elif isinstance(region, Region):
-            target = region
-        else:
-            raise TypeError("region must be a region tag or Region instance.")
-
-        selection: Any
-        syntax = "MolSysMT"
-        if target.atom_indices is not None:
-            selection = list(target.atom_indices)
-        else:
-            selection = target.selection
-            syntax = "MolSysMT"
-
-        self.focus_selection(
-            selection=selection,
-            syntax=syntax,
+        """Focus the camera on a region. Delegate to ``view.camera.focus_region()``."""
+        self.camera.focus_region(
+            region=region,
             duration=duration,
             duration_ms=duration_ms,
             extra_radius=extra_radius,
@@ -1993,9 +2001,10 @@ class MolSysView:
         if labels:
             self._annotation_history.clear()
             annotation_tags = [
-                tag for tag, layer in self._layers.items() if getattr(layer, "kind", None) == "annotation"
+                tag for tag, layer in self._scene_objects.items() if getattr(layer, "kind", None) == "annotation"
             ]
             for tag in annotation_tags:
+                self._scene_objects.pop(tag, None)
                 self._layers.pop(tag, None)
         self._send(
             {
@@ -2011,11 +2020,166 @@ class MolSysView:
     @signal(tags=["camera"])
     @digest()
     def reset_camera(self, skip_digestion: bool = False) -> None:
-        """Reset the camera / view in the frontend."""
-        self._send({
-            "op": "reset_view",
-            "options": {},
-        })
+        """Reset the camera. Delegate to ``view.camera.reset()``."""
+        self.camera.reset(skip_digestion=True)
+
+    @property
+    def current_structure_id(self):
+        """ID of the structure currently displayed (requires a loaded molecular system).
+
+        Returns the ``structure_id`` value at the current frame index, or ``None``
+        if no system is loaded or the system has no structure IDs.
+        """
+        if self._molsys is None:
+            return None
+        try:
+            ids = msm.get(
+                self._molsys,
+                element="structure",
+                structure_indices=[self._current_structure_index],
+                structure_id=True,
+                skip_digestion=True,
+            )
+            if ids is not None:
+                try:
+                    return ids[0]
+                except (IndexError, TypeError):
+                    return ids
+        except Exception:
+            pass
+        return None
+
+    @signal(tags=["trajectory"])
+    @digest()
+    def set_structure(self, index: int, skip_digestion: bool = False) -> None:
+        """Jump to a specific structure (frame) index.
+
+        Delegate to ``view.player.go_to_structure()``.
+        """
+        self.player.go_to_structure(int(index), skip_digestion=True)
+
+    @signal(tags=["trajectory"])
+    @digest()
+    def play(
+        self,
+        fps: int | None = None,
+        mode: str | None = None,
+        direction: str | None = None,
+        step: int | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Start trajectory playback.
+
+        Delegate to ``view.player.play()``.
+        """
+        self.player.play(
+            fps=fps,
+            mode=mode,
+            direction=direction,
+            step_size=step,
+            skip_digestion=True,
+        )
+
+    @signal(tags=["trajectory"])
+    @digest()
+    def pause(self, skip_digestion: bool = False) -> None:
+        """Pause trajectory playback.
+
+        Delegate to ``view.player.pause()``.
+        """
+        self.player.pause(skip_digestion=True)
+
+    @signal(tags=["trajectory"])
+    @digest()
+    def set_play_speed(self, fps: int, skip_digestion: bool = False) -> None:
+        """Update the playback frame rate.
+
+        Delegate to ``view.player.set_fps()``.
+        """
+        self.player.set_fps(int(fps), skip_digestion=True)
+
+    @signal(tags=["query"])
+    @digest()
+    def get_coordinates(
+        self,
+        selection: Any = "all",
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ):
+        """Return atom coordinates from the loaded molecular system.
+
+        Parameters
+        ----------
+        selection
+            Atom selection (MolSysMT string or list of indices).
+        structure_indices
+            Structure indices to include (default ``"all"``).
+        syntax
+            Selection syntax (default ``"MolSysMT"``).
+
+        Returns
+        -------
+        puw quantity
+            Coordinates with shape ``(n_structures, n_atoms, 3)`` in nm.
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        atom_indices = msm.select(
+            self._molsys,
+            selection=selection,
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        return self._molsys.structures.get_coordinates(
+            indices=atom_indices,
+            structure_indices=structure_indices,
+            skip_digestion=True,
+        )
+
+    @signal(tags=["viewer"])
+    @digest()
+    def set_coordinates(
+        self,
+        coordinates,
+        selection: Any = "all",
+        structure_indices: Any = "all",
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ) -> None:
+        """Replace atom coordinates in the loaded molecular system and update the canvas.
+
+        Parameters
+        ----------
+        coordinates
+            New coordinates as a puw quantity or array with shape
+            ``(n_structures, n_atoms, 3)`` in nm.
+        selection
+            Atom selection (MolSysMT string or list of indices).
+        structure_indices
+            Structure indices to update (default ``"all"``).
+        syntax
+            Selection syntax (default ``"MolSysMT"``).
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        atom_indices = msm.select(
+            self._molsys,
+            selection=selection,
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        self._molsys.structures.set_coordinates(
+            indices=atom_indices,
+            structure_indices=structure_indices,
+            value=coordinates,
+            skip_digestion=True,
+        )
+        visible = self.visible_atom_indices
+        self._rebuild_view_from_current_molsys(
+            label=self._last_label,
+            visible_atom_indices=visible,
+        )
 
     @signal(tags=["viewer"])
     @digest()
@@ -2030,17 +2194,28 @@ class MolSysView:
         self.structure_mask = None
         self._regions.clear()
         self._layers.clear()
+        self._scene_objects.clear()
         self._selections.clear()
         self._region_counter = 0
+        self._annotation_counter = 0
         self._layer_counter = 0
+        self._measurement_counter = 0
+        self._shape_counter = 0
+        self._section_counter = 0
         self._global_hidden = False
+        self._box_visible = False
+        self._box_record = None
+        self._atom_color_map = {}
         self.whole = Whole(self)
         self._shape_history.clear()
         self._annotation_history.clear()
         self._measurement_history.clear()
+        self._section_history.clear()
         self._selection_history.clear()
         self._last_label = None
         self._current_figure_spec = None
+        self._current_structure_index = 0
+        self._reset_load_blocks()
 
         # Ask frontend to clear everything (molecule + shapes + view)
         self._send(
@@ -2053,18 +2228,8 @@ class MolSysView:
     @signal(tags=["camera"], extra_factory=lambda args, kwargs: {"pretty": _signal_value(args, kwargs, 1, "pretty")})
     @digest()
     def get_camera_snapshot(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
-        """Return the last camera snapshot received from the frontend.
-
-        Parameters
-        ----------
-        pretty
-            If ``True``, return a formatted JSON string instead of a dict.
-        """
-        if self._last_camera_snapshot is None:
-            return None
-        if not pretty:
-            return dict(self._last_camera_snapshot)
-        return json.dumps(self._last_camera_snapshot, indent=2, sort_keys=True)
+        """Return the last camera snapshot. Delegate to ``view.camera.get_snapshot()``."""
+        return self.camera.get_snapshot(pretty=pretty, skip_digestion=True)
 
     @signal(tags=["interaction", "query"])
     def get_last_hover_event(self) -> dict | None:
@@ -2126,25 +2291,8 @@ class MolSysView:
     @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()
     def set_camera_snapshot(self, snapshot: dict, *, duration_ms: int = 0, skip_digestion: bool = False) -> None:
-        """Apply a previously saved camera snapshot.
-
-        Parameters
-        ----------
-        snapshot
-            Camera snapshot dict (Mol* format).
-        duration_ms
-            Transition duration in milliseconds.
-        """
-        if not snapshot:
-            return
-        duration_value = int(puw.get_value(duration_ms, to_unit="ms")) if puw.is_quantity(duration_ms) else int(duration_ms)
-        self._send(
-            {
-                "op": "set_camera_snapshot",
-                "snapshot": snapshot,
-                "duration_ms": duration_value,
-            }
-        )
+        """Apply a camera snapshot. Delegate to ``view.camera.set_snapshot()``."""
+        self.camera.set_snapshot(snapshot, duration_ms=duration_ms, skip_digestion=True)
 
     @signal(tags=["figure"])
     @digest()
@@ -2171,6 +2319,298 @@ class MolSysView:
         self._current_figure_spec = dict(payload)
         self._send(payload)
 
+    def _viewer_info_summary(self) -> dict[str, Any]:
+        current_style = self.styles.current(skip_digestion=True) if hasattr(self, "styles") else None
+        layer_tags = sorted(self._layers.keys())
+        region_tags = sorted(self._regions.keys())
+        shape_tags = sorted(
+            tag for tag, item in self._scene_objects.items() if getattr(item, "kind", None) == "shape"
+        )
+        annotation_tags = sorted(self.annotations.tags(skip_digestion=True))
+        measurement_tags = sorted(self.measurements.tags(skip_digestion=True))
+        selection_tags = sorted(self.selections.tags)
+
+        return {
+            "whole": {
+                "representation": getattr(self.whole, "_representation", None),
+                "preset": getattr(self.whole, "_preset", None),
+                "params": dict(getattr(self.whole, "_repr_params", {}) or {}),
+                "visible": not bool(self._global_hidden),
+            },
+            "loads": [
+                {
+                    "index": b.get("index"),
+                    "label": b.get("label"),
+                    "n_atoms": b.get("n_atoms"),
+                    "atom_range": (b.get("start", 0), b.get("stop", 0)),
+                    "region_tag": b.get("region_tag"),
+                }
+                for b in self._load_blocks
+            ],
+            "current_structure_index": self._current_structure_index,
+            "styles": {
+                "current": None if current_style is None else current_style.info(),
+                "registered_count": self.styles.count(skip_digestion=True),
+                "builtin_count": len(self.styles.builtin_tags(skip_digestion=True)),
+            },
+            "regions": {
+                "count": len(region_tags),
+                "tags": region_tags,
+            },
+            "layers": {
+                "count": len(layer_tags),
+                "tags": layer_tags,
+            },
+            "shapes": {
+                "count": len(shape_tags),
+                "tags": shape_tags,
+            },
+            "annotations": {
+                "count": len(annotation_tags),
+                "tags": annotation_tags,
+            },
+            "measurements": {
+                "count": len(measurement_tags),
+                "tags": measurement_tags,
+                "settings": self.measurements.settings(skip_digestion=True),
+            },
+            "selections": {
+                "count": len(selection_tags),
+                "tags": selection_tags,
+            },
+            "active_selection": {
+                "is_empty": self.active_selection.is_empty(skip_digestion=True),
+                "info": self.active_selection.info(skip_digestion=True),
+            },
+        }
+
+    def _viewer_info_records(self) -> list[dict[str, Any]]:
+        summary = self._viewer_info_summary()
+        records: list[dict[str, Any]] = []
+
+        whole = summary["whole"]
+        records.append(
+            {
+                "section": "whole",
+                "tag": "whole",
+                "kind": "whole",
+                "visible": whole["visible"],
+                "active": True,
+                "layer tag": None,
+                "representation": whole["representation"],
+                "preset": whole["preset"],
+                "n atoms": None,
+                "n members": None,
+                "n picks": None,
+                "details": ", ".join(f"{key}={value}" for key, value in sorted(whole["params"].items())) if whole["params"] else "",
+            }
+        )
+
+        for block in summary.get("loads", []):
+            records.append(
+                {
+                    "section": "loads",
+                    "tag": block.get("label") or f"load{block.get('index', '')}",
+                    "kind": "load",
+                    "visible": None,
+                    "active": True,
+                    "layer tag": block.get("region_tag"),
+                    "representation": None,
+                    "preset": None,
+                    "n atoms": block.get("n_atoms"),
+                    "n members": None,
+                    "n picks": None,
+                    "details": f"atoms {block.get('atom_range', (0, 0))[0]}–{block.get('atom_range', (0, 0))[1]}",
+                }
+            )
+
+        styles = summary["styles"]
+        current_style = styles.get("current")
+        records.append(
+            {
+                "section": "styles",
+                "tag": "current",
+                "kind": "style",
+                "visible": None,
+                "active": current_style is not None,
+                "layer tag": None,
+                "representation": None if current_style is None else current_style.get("representation"),
+                "preset": None if current_style is None else (current_style.get("user_preset") or current_style.get("preset")),
+                "n atoms": None,
+                "n members": styles["registered_count"],
+                "n picks": None,
+                "details": (
+                    f"builtins={styles['builtin_count']}"
+                    if current_style is None
+                    else ", ".join(
+                        [f"builtins={styles['builtin_count']}"]
+                        + [f"{key}={value}" for key, value in sorted((current_style.get("params") or {}).items())]
+                    )
+                ),
+            }
+        )
+
+        for item in self.annotations.info(skip_digestion=True):
+            records.append(
+                {
+                    "section": "annotations",
+                    "tag": item.get("tag"),
+                    "kind": item.get("kind"),
+                    "visible": item.get("visible"),
+                    "active": item.get("active"),
+                    "layer tag": item.get("layer_tag"),
+                    "representation": None,
+                    "preset": None,
+                    "n atoms": item.get("n_atoms"),
+                    "n members": None,
+                    "n picks": None,
+                    "details": item.get("text"),
+                }
+            )
+
+        for item in self.measurements.info():
+            records.append(
+                {
+                    "section": "measurements",
+                    "tag": item.get("tag"),
+                    "kind": item.get("kind"),
+                    "visible": item.get("visible"),
+                    "active": item.get("active"),
+                    "layer tag": item.get("layer_tag"),
+                    "representation": None,
+                    "preset": None,
+                    "n atoms": None,
+                    "n members": None,
+                    "n picks": item.get("n_picks"),
+                    "details": f"policy={item.get('endpoint_policy')}",
+                }
+            )
+
+        for tag, region in sorted(self._regions.items()):
+            records.append(
+                {
+                    "section": "regions",
+                    "tag": tag,
+                    "kind": "region",
+                    "visible": not bool(getattr(region, "_hidden", False)),
+                    "active": bool(getattr(region, "_active", False)),
+                    "layer tag": None,
+                    "representation": getattr(region, "representation", None),
+                    "preset": getattr(region, "preset", None),
+                    "n atoms": len(getattr(region, "atom_indices", ()) or ()),
+                    "n members": None,
+                    "n picks": None,
+                    "details": getattr(region, "selection", None) or "",
+                }
+            )
+
+        for tag, layer in sorted(self._layers.items()):
+            members = getattr(layer, "members", {})
+            n_shapes = sum(1 for member in members.values() if getattr(member, "kind", None) == "shape")
+            n_annotations = sum(1 for member in members.values() if getattr(member, "kind", None) == "annotation")
+            n_measurements = sum(1 for member in members.values() if getattr(member, "kind", None) == "measurement")
+            records.append(
+                {
+                    "section": "layers",
+                    "tag": tag,
+                    "kind": getattr(layer, "kind", "layer"),
+                    "visible": not bool(getattr(layer, "_hidden", False)),
+                    "active": bool(getattr(layer, "_active", False)),
+                    "layer tag": tag,
+                    "representation": None,
+                    "preset": None,
+                    "n atoms": None,
+                    "n members": len(members),
+                    "n picks": None,
+                    "details": f"shapes={n_shapes}, annotations={n_annotations}, measurements={n_measurements}",
+                }
+            )
+
+        for tag, item in sorted(self._scene_objects.items()):
+            if getattr(item, "kind", None) != "shape":
+                continue
+            records.append(
+                {
+                    "section": "shapes",
+                    "tag": tag,
+                    "kind": getattr(item, "meta", {}).get("shape_kind", "shape"),
+                    "visible": not bool(getattr(item, "_hidden", False)),
+                    "active": bool(getattr(item, "_active", False)),
+                    "layer tag": getattr(item, "layer_tag", None),
+                    "representation": None,
+                    "preset": None,
+                    "n atoms": None,
+                    "n members": None,
+                    "n picks": None,
+                    "details": f"layer={getattr(item, 'layer_tag', None)}",
+                }
+            )
+
+        for item in self.selections.info(skip_digestion=True):
+            records.append(
+                {
+                    "section": "selections",
+                    "tag": item.get("tag"),
+                    "kind": "selection",
+                    "visible": None,
+                    "active": True,
+                    "layer tag": None,
+                    "representation": None,
+                    "preset": None,
+                    "n atoms": item.get("n_atoms"),
+                    "n members": None,
+                    "n picks": None,
+                    "details": f"{item.get('source_kind')} / {item.get('element_level')}",
+                }
+            )
+
+        active_selection = summary["active_selection"]
+        active_info = active_selection["info"]
+        records.append(
+            {
+                "section": "active_selection",
+                "tag": "active_selection",
+                "kind": active_info.get("source_kind"),
+                "visible": None,
+                "active": not active_selection["is_empty"],
+                "layer tag": None,
+                "representation": None,
+                "preset": None,
+                "n atoms": active_info.get("count_atoms"),
+                "n members": None,
+                "n picks": None,
+                "details": f"{active_info.get('source_kind')} / {active_info.get('element_level')}",
+            }
+        )
+
+        return records
+
+    def _records_to_styler(self, records: list[dict[str, Any]]):
+        from pandas import DataFrame as df
+
+        return df(records).style.hide(axis='index')
+
+    def _styler_to_dataframe(self, styler):
+        data = getattr(styler, "data", None)
+        if data is None:
+            raise ValueError("Unable to extract DataFrame from Styler output.")
+        return data
+
+    def _convert_info_output(self, value: Any, output_type: str):
+        if output_type == "styler":
+            if isinstance(value, list):
+                return self._records_to_styler(value)
+            return value
+        if output_type == "dataframe":
+            if isinstance(value, list):
+                return self._styler_to_dataframe(self._records_to_styler(value))
+            return self._styler_to_dataframe(value)
+        if output_type == "dictionary":
+            if isinstance(value, list):
+                return [dict(item) for item in value]
+            return self._styler_to_dataframe(value).to_dict(orient="records")
+        raise ValueError(f"Unsupported output_type {output_type!r}.")
+
     @signal(tags=["query"])
     @digest()
     def info(self,
@@ -2178,8 +2618,13 @@ class MolSysView:
              selection='all',
              syntax='MolSysMT',
              mask='all',
+             source='all',
+             output_type='styler',
              skip_digestion=False
             ):
+        if source == "view":
+            return self._convert_info_output(self._viewer_info_records(), output_type)
+
         kwargs = dict(
             element=element,
             selection=selection,
@@ -2188,7 +2633,18 @@ class MolSysView:
         )
         if "mask" in inspect.signature(msm.info).parameters:
             kwargs["mask"] = mask
-        return msm.info(self._molsys, **kwargs)
+        molsys_info = msm.info(self._molsys, **kwargs)
+
+        if source == "molsys":
+            return self._convert_info_output(molsys_info, output_type)
+
+        if source == "all":
+            return ViewerInfo(
+                molsys_section=self._convert_info_output(molsys_info, output_type),
+                view_section=self._convert_info_output(self._viewer_info_records(), output_type),
+            )
+
+        raise ValueError("info(source=...) only accepts 'all', 'molsys', or 'view'.")
 
     @signal(tags=["selection"])
     @digest()
@@ -2245,6 +2701,40 @@ class MolSysView:
             **kwargs,
         )
 
+    @signal(tags=["convert"])
+    @dep_digest("molsysmt")
+    @digest()
+    def convert(
+        self,
+        to_form="molsysmt.MolSys",
+        *,
+        selection="all",
+        structure_indices="all",
+        syntax="MolSysMT",
+        skip_digestion=False,
+        **kwargs,
+    ):
+        """Convert this viewer to another form.
+
+        Notes
+        -----
+        The initial implementation delegates conversion to the current
+        molecular system stored in the view. Future target forms may support
+        richer viewer-state-aware conversions when MolSysMT exposes them.
+        """
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before calling convert().")
+
+        return msm.convert(
+            self._molsys,
+            to_form=to_form,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            skip_digestion=True,
+            **kwargs,
+        )
+
     @signal(tags=["query"])
     @digest()
     def contains(
@@ -2296,8 +2786,14 @@ class MolSysView:
         debug_js: bool | None = None,
         skip_digestion: bool = False,
     ):
-        """Return a new view built from a subset of this view."""
-        from .tools.basic.extract import extract as _extract_view
+        """Return a new view built from a structural subset of this view.
+
+        Regions, shapes, annotations, measurements, saved selections, and
+        sections are migrated to the new view with atom indices remapped to
+        the extracted subset.  See :func:`~tools.basic.extract.extract` for
+        full details.
+        """
+        from ..tools.basic.extract import extract as _extract_view
 
         return _extract_view(
             self,
@@ -2447,24 +2943,38 @@ class MolSysView:
         structure_indices: str | Any = "all",
         keep_ids: bool = True,
         syntax: str = "MolSysMT",
+        label: str | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Add atoms/structures from another system into this view and refresh the viewer (live)."""
         if self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before calling add().")
+        if not self._load_blocks:
+            self._collapse_load_blocks_to_current_whole()
 
+        added_molsys = msm.convert(
+            from_molecular_system,
+            to_form="molsysmt.MolSys",
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        added_n_atoms = added_molsys.get_n_atoms()
         visible = self.visible_atom_indices
         msm.add(
             self._molsys,
-            from_molecular_system,
-            selection=selection,
-            structure_indices=structure_indices,
+            added_molsys,
+            selection="all",
+            structure_indices="all",
             keep_ids=keep_ids,
             in_place=True,
             syntax=syntax,
             skip_digestion=True,
         )
         self.molecular_system = self._molsys
+        self._append_load_block(n_atoms=added_n_atoms, label=label)
+        self._last_label = label
         self._rebuild_view_from_current_molsys(label=self._last_label, visible_atom_indices=visible)
 
     @signal(tags=["edit"])
@@ -2502,6 +3012,7 @@ class MolSysView:
             skip_digestion=True,
         )
         self.molecular_system = self._molsys
+        self._collapse_load_blocks_to_current_whole()
 
         self._rebuild_view_from_current_molsys(
             label=self._last_label,
@@ -2636,6 +3147,288 @@ class MolSysView:
             time.sleep(0.01)
         return None
 
+    def _export_image_headless(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        scale: float = 1.0,
+        transparent: bool = False,
+        timeout_s: float = 15.0,
+    ) -> None:
+        """Render the scene without a live Jupyter frontend and save a PNG.
+
+        Tries rendering backends in priority order:
+
+        1. **Qt WebEngine** (``PySide6_uibcdf`` or ``PySide6``) — zero extra setup on
+           Linux standalone installations where the package is already bundled.
+        2. **playwright** — true headless rendering for all other environments;
+           requires ``playwright install chromium`` once (shared with e2e tests).
+
+        Called automatically by ``_export_image_impl`` when the Jupyter frontend is
+        not ready.
+        """
+        errors: list[str] = []
+
+        # --- Backend 1: Qt WebEngine (preferred on Linux standalone) ---
+        try:
+            self._export_image_headless_qt(
+                output_filename,
+                width_px=width_px,
+                height_px=height_px,
+                scale=scale,
+                transparent=transparent,
+                timeout_s=timeout_s,
+            )
+            return
+        except ImportError as exc:
+            errors.append(f"Qt backend unavailable: {exc}")
+        except Exception as exc:
+            errors.append(f"Qt backend failed: {exc}")
+
+        # --- Backend 2: playwright ---
+        try:
+            self._export_image_headless_playwright(
+                output_filename,
+                width_px=width_px,
+                height_px=height_px,
+                scale=scale,
+                transparent=transparent,
+                timeout_s=timeout_s,
+            )
+            return
+        except ImportError as exc:
+            errors.append(f"playwright backend unavailable: {exc}")
+        except Exception as exc:
+            errors.append(f"playwright backend failed: {exc}")
+
+        raise RuntimeError(
+            "Headless image export failed — no rendering backend is available.\n"
+            + "\n".join(f"  • {e}" for e in errors)
+            + "\n\nTo enable headless export, install playwright and its browser:\n"
+            "  pip install playwright\n"
+            "  playwright install chromium"
+        )
+
+    def _export_image_headless_qt(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        scale: float = 1.0,
+        transparent: bool = False,
+        timeout_s: float = 15.0,
+    ) -> None:
+        """Headless render via Qt WebEngine (PySide6_uibcdf or PySide6)."""
+        import os
+        import pathlib
+        import sys
+        import tempfile
+
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        # Enable SwiftShader software WebGL so Mol* renders without a GPU.
+        os.environ.setdefault(
+            "QTWEBENGINE_CHROMIUM_FLAGS",
+            "--use-gl=swiftshader --disable-gpu",
+        )
+
+        # Try UIBCDF standalone package first, then standard PySide6.
+        QApplication = QWebEngineView = QUrl = QTimer = QEventLoop = None
+        for _pkg in ("PySide6_uibcdf", "PySide6"):
+            try:
+                _w = __import__(f"{_pkg}.QtWidgets", fromlist=["QApplication"])
+                _e = __import__(f"{_pkg}.QtWebEngineWidgets", fromlist=["QWebEngineView"])
+                _c = __import__(f"{_pkg}.QtCore", fromlist=["QUrl", "QTimer", "QEventLoop"])
+                QApplication = _w.QApplication
+                QWebEngineView = _e.QWebEngineView
+                QUrl = _c.QUrl
+                QTimer = _c.QTimer
+                QEventLoop = _c.QEventLoop
+                break
+            except ImportError:
+                continue
+
+        if QApplication is None:
+            raise ImportError(
+                "Neither PySide6_uibcdf nor PySide6 with QtWebEngineWidgets is available."
+            )
+
+        viewer_js = pathlib.Path(__file__).parent.parent / "viewer.js"
+        if not viewer_js.exists():
+            raise RuntimeError(f"Cannot find bundled viewer.js at {viewer_js}")
+
+        messages = self._build_export_messages()
+        html = self._build_lite_html(
+            title="MolSysViewer Headless Export",
+            include_controls=False,
+            include_popout=False,
+            messages=messages,
+            inline_messages=True,
+            # Qt WebEngine can load file:// imports from the same local origin.
+            runtime_urls=[viewer_js.resolve().as_uri()],
+        )
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".html", delete=False, encoding="utf-8"
+        ) as _f:
+            _f.write(html)
+            tmp_html = _f.name
+
+        try:
+            w = int(width_px or 1280)
+            h = int(height_px or 720)
+
+            app = QApplication.instance() or QApplication(sys.argv)  # type: ignore[misc]
+
+            loop = QEventLoop()
+            view = QWebEngineView()
+            view.resize(w, h)
+            view.show()
+
+            state: dict[str, Any] = {"done": False, "error": None}
+
+            def _check_rendered() -> None:
+                def _cb(result: Any) -> None:
+                    if result:
+                        state["done"] = True
+                        loop.quit()
+                    else:
+                        QTimer.singleShot(200, _check_rendered)
+                view.page().runJavaScript(  # type: ignore[union-attr]
+                    "!!document.getElementById('molsysviewer-root')"
+                    "?.getAttribute('data-molsysviewer-rendered')",
+                    _cb,
+                )
+
+            def _on_load(ok: bool) -> None:
+                if not ok:
+                    state["error"] = "Qt WebEngine failed to load the page."
+                    loop.quit()
+                    return
+                QTimer.singleShot(300, _check_rendered)
+
+            def _on_timeout() -> None:
+                if not state["done"]:
+                    state["error"] = "Timeout waiting for viewer to render (Qt backend)."
+                    loop.quit()
+
+            view.loadFinished.connect(_on_load)  # type: ignore[attr-defined]
+            view.setUrl(QUrl.fromLocalFile(tmp_html))  # type: ignore[union-attr]
+            QTimer.singleShot(int(timeout_s * 1000), _on_timeout)
+            loop.exec()
+
+            if state["error"]:
+                raise RuntimeError(state["error"])
+
+            pixmap = view.grab()
+            pixmap.save(output_filename, "PNG")
+        finally:
+            try:
+                os.unlink(tmp_html)
+            except OSError:
+                pass
+
+    def _export_image_headless_playwright(
+        self,
+        output_filename: str,
+        *,
+        width_px: int | None = None,
+        height_px: int | None = None,
+        scale: float = 1.0,
+        transparent: bool = False,
+        timeout_s: float = 15.0,
+    ) -> None:
+        """Headless render via playwright (shared Chromium browser binary)."""
+        import http.server
+        import os
+        import pathlib
+        import socket
+        import tempfile
+        import threading
+
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            raise ImportError(
+                "playwright is not installed. Install it with:\n"
+                "  pip install playwright\n"
+                "  playwright install chromium"
+            )
+
+        viewer_js_path = pathlib.Path(__file__).parent.parent / "viewer.js"
+        if not viewer_js_path.exists():
+            raise RuntimeError(f"Cannot find bundled viewer.js at {viewer_js_path}")
+        pkg_dir = str(viewer_js_path.parent)
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as _s:
+            _s.bind(("localhost", 0))
+            port = _s.getsockname()[1]
+
+        messages = self._build_export_messages()
+        html = self._build_lite_html(
+            title="MolSysViewer Headless Export",
+            include_controls=False,
+            include_popout=False,
+            messages=messages,
+            inline_messages=True,
+            runtime_urls=[f"http://localhost:{port}/viewer.js"],
+        )
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".html", dir=pkg_dir, delete=False, encoding="utf-8"
+        ) as _f:
+            _f.write(html)
+            html_name = os.path.basename(_f.name)
+            html_abs = _f.name
+
+        _pkg_dir_ref = pkg_dir
+
+        class _SilentHandler(http.server.SimpleHTTPRequestHandler):
+            def __init__(self, *args: Any, **kwargs: Any) -> None:
+                super().__init__(*args, directory=_pkg_dir_ref, **kwargs)
+
+            def log_message(self, *args: Any) -> None:
+                pass
+
+        httpd = http.server.HTTPServer(("localhost", port), _SilentHandler)
+        threading.Thread(
+            target=httpd.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True
+        ).start()
+
+        try:
+            w = int(width_px or 1280)
+            h = int(height_px or 720)
+            dpr = max(0.1, float(scale))
+            with sync_playwright() as pw:
+                browser = pw.chromium.launch()
+                ctx = browser.new_context(
+                    viewport={"width": w, "height": h},
+                    device_scale_factor=dpr,
+                )
+                page = ctx.new_page()
+                page.goto(
+                    f"http://localhost:{port}/{html_name}",
+                    timeout=int(timeout_s * 1000),
+                )
+                page.wait_for_selector(
+                    "[data-molsysviewer-rendered]",
+                    timeout=int(timeout_s * 1000),
+                )
+                page.screenshot(
+                    path=output_filename,
+                    full_page=False,
+                    omit_background=bool(transparent),
+                )
+                browser.close()
+        finally:
+            httpd.shutdown()
+            try:
+                os.unlink(html_abs)
+            except OSError:
+                pass
+
     def _export_image_impl(
         self,
         output_filename: str,
@@ -2658,7 +3451,15 @@ class MolSysView:
             camera_snapshot=camera_snapshot,
         )
         if not event:
-            raise RuntimeError("Image export requires a live ready frontend.")
+            # No live frontend — fall back to headless playwright rendering
+            self._export_image_headless(
+                output_filename,
+                width_px=width_px,
+                height_px=height_px,
+                scale=scale,
+                transparent=transparent,
+            )
+            return
 
         data_uri = event.get("data_uri")
         if not isinstance(data_uri, str) or not data_uri.startswith("data:image/png;base64,"):
@@ -2837,7 +3638,7 @@ class MolSysView:
         # This HTML is meant to be embedded and load the runtime from the CDN
         # (jsDelivr). Keep it independent from the widget manager to avoid
         # bundling megabytes per example.
-        from ._version import __version__ as _pkg_version
+        from .._version import __version__ as _pkg_version
         base_version = _pkg_version.split("+", 1)[0]
         runtime_cdn = f"https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@{base_version}/dist/viewer.js"
 
@@ -2893,6 +3694,10 @@ class MolSysView:
           ui,
           runtimeUrl: moduleUrl,
         }});
+        // Allow Mol* to finish rendering all queued frames before signalling
+        // headless screenshot tools (e.g. playwright) that the scene is ready.
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        el.setAttribute("data-molsysviewer-rendered", "true");
         lastError = null;
         break;
       }} catch (e) {{
@@ -2909,66 +3714,12 @@ class MolSysView:
 """
         return template
 
-    def _build_export_messages(self) -> list[dict]:
-        """Return the messages to replay when exporting HTML."""
-        messages = self._clean_message_history()
-        if self._current_figure_spec:
-            messages.append(dict(self._current_figure_spec))
-        summary_message = self._build_addon_runtime_summary_message()
-        insert_at = len(messages)
-        if insert_at > 0 and messages[-1].get("op") == "set_camera_snapshot":
-            insert_at -= 1
-        messages.insert(insert_at, summary_message)
-        if self._last_camera_snapshot:
-            messages.append(
-                {
-                    "op": "set_camera_snapshot",
-                    "snapshot": self._last_camera_snapshot,
-                    "duration_ms": 0,
-                }
-            )
-        return messages
-
-    def _clean_message_history(self) -> list[dict]:
-        """Remove redundant messages to keep exports lean."""
-        deleted_dead_layer_tags = {
-            msg.get("tag")
-            for msg in self._message_history
-            if msg.get("op") == "delete_layer"
-            and isinstance(msg.get("tag"), str)
-            and msg.get("tag") not in self.layers
-        }
-        dead_layer_ops = {
-            "add_label",
-            "update_label",
-            "create_layer",
-            "show_layer",
-            "hide_layer",
-            "delete_layer",
-        }
-        cleaned: list[dict] = []
-        for msg in self._message_history:
-            if msg.get("op") in dead_layer_ops and msg.get("tag") in deleted_dead_layer_tags:
-                continue
-            if msg.get("op") == "update_visibility":
-                opts = msg.get("options") or {}
-                vis = opts.get("visible_atom_indices")
-                if vis is None or vis == []:
-                    continue
-                if isinstance(vis, list) and vis == list(range(len(vis))):
-                    # Default "show all" is redundant
-                    continue
-            cleaned.append(msg)
-        return cleaned
-
-    def _json_for_html_script(self, obj: Any) -> str:
-        """Serialize JSON safely for embedding inside an HTML <script> tag."""
-        text = json.dumps(obj, separators=(",", ":"))
-        # Prevent `</script>`-style early termination and reduce HTML parsing surprises.
-        return (
-            text.replace("&", "\\u0026")
-            .replace("<", "\\u003c")
-            .replace(">", "\\u003e")
-            .replace("\u2028", "\\u2028")
-            .replace("\u2029", "\\u2029")
-        )
+# Preserve the historical public module identity for decorated methods.
+# Several argument-digestion rules key off `molsysviewer.viewer...` caller paths.
+MolSysView.__module__ = "molsysviewer.viewer"
+for _name, _value in MolSysView.__dict__.items():
+    if callable(_value) and getattr(_value, "__module__", None) == __name__:
+        try:
+            _value.__module__ = "molsysviewer.viewer"
+        except Exception:
+            pass

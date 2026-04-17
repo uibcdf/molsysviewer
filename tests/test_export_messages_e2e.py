@@ -35,6 +35,7 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
 
     label_layer = view.annotations.add_label_from_active_selection(text="Seed", tag="notes")
     assert label_layer.tag == "notes"
+    view.annotations.set_layer_tag("notes", "analysis")
     view.annotations.set_text("notes", "Edited")
 
     dist = view.measurements.add_distance([0], [1], tag="dist")
@@ -43,6 +44,7 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     assert dist.tag == "dist"
     assert ang.tag == "ang"
     assert dih.tag == "dih"
+    view.measurements.set_layer_tag("dist", "geom")
 
     view.set_camera_snapshot(
         {
@@ -82,6 +84,8 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
 
     label_msgs = [msg for msg in messages if msg.get("tag") == "notes"]
     assert [msg["op"] for msg in label_msgs] == ["add_label", "update_label"]
+    assert label_msgs[0]["options"]["layer_tag"] == "analysis"
+    assert label_msgs[1]["options"]["layer_tag"] == "analysis"
     assert label_msgs[0]["options"]["text"] == "Seed"
     assert label_msgs[1]["options"]["text"] == "Edited"
     assert label_msgs[0]["options"]["atom_indices"] == atom_indices
@@ -91,11 +95,15 @@ def test_build_export_messages_captures_reproducible_workbench_state_end_to_end(
     angle_msg = next(msg for msg in messages if msg.get("tag") == "ang")
     dihedral_msg = next(msg for msg in messages if msg.get("tag") == "dih")
     assert distance_msg["op"] == "add_distance_measurement"
+    assert distance_msg["options"]["layer_tag"] == "geom"
     assert distance_msg["options"]["picks_atom_indices"] == [[0], [1]]
+    assert distance_msg["options"]["endpoint_policy"] == "centroid"
     assert angle_msg["op"] == "add_angle_measurement"
     assert angle_msg["options"]["picks_atom_indices"] == [[0], [1], [2]]
+    assert angle_msg["options"]["endpoint_policy"] == "centroid"
     assert dihedral_msg["op"] == "add_dihedral_measurement"
     assert dihedral_msg["options"]["picks_atom_indices"] == [[0], [1], [2], [3]]
+    assert dihedral_msg["options"]["endpoint_policy"] == "centroid"
 
     camera_msg = messages[-1]
     assert camera_msg == {

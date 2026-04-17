@@ -92,6 +92,20 @@ That principle should guide prioritization throughout the repository.
    - Work lines, roadmap, premium/publication goals, and open questions for image export on top of the current Mol* runtime.
 29. [**MolSysSuite Add-On Direction**](molsyssuite_addon_direction.md)
    - Core-vs-add-on boundary for MolSysViewer, optional ecosystem panels, and the requirement that 1.0 already leave plugin entry points or a template/test in place.
+30. [**Path to 8.5**](path_to_8_5.md)
+   - Competitive assessment of MolSysViewer and the concrete steps needed to reach parity/differentiation at a "8.5/10" quality level.
+31. [**ElasNetMT Add-On Plan**](elasnetmt_addon_plan.md)
+   - Concrete integration plan for the ElasNetMT add-on, using the existing overlay primitive set (links, displacement vectors, anisotropy ellipsoids).
+32. [**Course Structure**](course_structure.md)
+   - Proposed 23-module curriculum for an "Introduction to MolSysViewer" course, from basic loading to advanced cinematic production.
+33. [**MolSysMovie Vision**](molsysmovie_vision.md)
+   - Long-term strategic vision for a `MolSysMovie` cinematic/VR animation layer (post-1.0).
+34. [**Load Modes and Append Structures Status**](load_modes_and_append_structures_status.md)
+   - Reference status document for `load()` mode variants and the structure-append workflow.
+35. [**Render Quality Vision**](render_quality_vision.md)
+   - Strategic vision for high-fidelity rendering and Blender integration (post-1.0).
+36. [**Mol\* Color Strings**](molstar_color_strings.md)
+   - Baseline record of named color strings that MolSysViewer treats as valid Mol\* color names.
 
 ## Workbench Tutorials (Planned)
 

@@ -10,6 +10,7 @@ type BaseTarget =
         chain_name?: string;
     }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
+    | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
     | { event: "interaction_context_menu"; kind: "annotation"; atom_indices: number[]; tag?: string; text?: string };
 
 export type ContextMenuTarget = BaseTarget;
@@ -20,20 +21,25 @@ export type ContextMenuAction =
     | "dihedral"
     | "focus_target"
     | "focus_region"
+    | "hide_measurement"
     | "delete_annotation"
     | "delete_shape"
+    | "delete_measurement"
     | "focus_selection"
     | "activate_selection"
     | "save_selection"
+    | "remove_selection"
     | "clear_selection"
     | "create_region_from_selection"
+    | "create_section_from_selection"
     | "add_label_from_selection"
-    | "persist_last_measurement"
     | "addon_context_action";
 
 export type ContextActionDetails = {
+    endpoint_policy?: "atom" | "centroid" | "representative_atom";
     text?: string;
     tag?: string;
+    camera_forward?: [number, number, number];
 };
 
 export type LastMeasurementSummary = {
@@ -65,6 +71,7 @@ export type AddonContextActionSummary = {
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
     if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
+    if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
     if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
     if (target.group_name?.trim()) {
         return target.chain_name?.trim()
@@ -110,6 +117,7 @@ export class ViewerContextMenu {
         private readonly notify?: (msg: any) => void,
         private readonly onAction?: (action: ContextMenuAction, target: ContextMenuTarget, details?: ContextActionDetails) => void,
         private readonly onClose?: () => void,
+        private readonly getCameraDirection?: () => [number, number, number],
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-context-menu", "true");
@@ -168,12 +176,21 @@ export class ViewerContextMenu {
         if (target.kind === "structure") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             this.root.appendChild(this.makeActionButton("Distance", "distance"));
+            this.root.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
             this.root.appendChild(this.makeActionButton("Angle", "angle"));
+            this.root.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
             this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
+            this.root.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
         } else if (target.kind === "shape") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             if (target.tag?.trim()) {
                 this.root.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+            }
+        } else if (target.kind === "measurement") {
+            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            if (target.tag?.trim()) {
+                this.root.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
+                this.root.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
             }
         } else if (target.kind === "annotation") {
             this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
@@ -209,30 +226,14 @@ export class ViewerContextMenu {
             section.appendChild(this.makeActionButton("Focus Selection", "focus_selection"));
             section.appendChild(this.makeActionButton("Save Selection", "save_selection"));
             section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
+            section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
             if (this.currentSelection.count_groups === 1) {
                 section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
             }
+            if (this.currentSelection.count_atoms > 0) {
+                section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
+            }
             section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
-            this.root.appendChild(section);
-        }
-
-        if (this.currentLastMeasurement) {
-            const section = document.createElement("div");
-            Object.assign(section.style, {
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgba(255,255,255,0.10)",
-            });
-
-            const title = document.createElement("div");
-            title.textContent = `Last measurement: ${this.currentLastMeasurement.action} (${this.currentLastMeasurement.picked_count})`;
-            Object.assign(title.style, {
-                padding: "4px 8px 8px 8px",
-                opacity: "0.82",
-                fontSize: "12px",
-            });
-            section.appendChild(title);
-            section.appendChild(this.makeActionButton("Persist Last Measurement", "persist_last_measurement"));
             this.root.appendChild(section);
         }
 
@@ -342,7 +343,7 @@ export class ViewerContextMenu {
         this.root.remove();
     }
 
-    private makeActionButton(label: string, action: ContextMenuAction): HTMLButtonElement {
+    private makeActionButton(label: string, action: ContextMenuAction, detailsOverride?: ContextActionDetails): HTMLButtonElement {
         const button = document.createElement("button");
         button.type = "button";
         button.textContent = label;
@@ -377,7 +378,7 @@ export class ViewerContextMenu {
             if (action === "activate_selection") {
                 return;
             }
-            const details = this.resolveActionDetails(action);
+            const details = detailsOverride ?? this.resolveActionDetails(action);
             if (details === null) return;
             this.onAction?.(action, this.currentTarget, details ?? undefined);
             this.notify?.({
@@ -471,13 +472,17 @@ export class ViewerContextMenu {
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {
-        if (action === "delete_annotation" || action === "delete_shape") {
+        if (action === "delete_annotation" || action === "delete_shape" || action === "delete_measurement" || action === "hide_measurement") {
             const tag =
-                this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape"
+                this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement"
                     ? this.currentTarget.tag
                     : undefined;
             if (!tag || tag.trim() === "") return null;
             return { tag };
+        }
+        if (action === "create_section_from_selection") {
+            const camera_forward = this.getCameraDirection?.() ?? [0, 0, -1] as [number, number, number];
+            return { camera_forward };
         }
         return {};
     }

@@ -2,13 +2,14 @@ import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
 import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
 import { StateObjectRef } from "molstar/lib/mol-state";
-import { Structure, StructureElement } from "molstar/lib/mol-model/structure";
+import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { Loci } from "molstar/lib/mol-model/loci";
 import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 
 import { ViewerMessage } from "../messages/viewer-messages";
@@ -21,12 +22,13 @@ import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
-import { MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
+import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
 import { WorkbenchPanel } from "../ui/workbench-panel";
+import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
@@ -58,6 +60,7 @@ type AddonPanelRuntime = {
     title: string;
     description?: string;
     entry?: string;
+    widget_class?: string;
 };
 type AddonWorkbenchSectionRuntime = {
     key: string;
@@ -82,7 +85,8 @@ type InteractionPayload =
         chain_name?: string;
         entity_name?: string;
     }
-    | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string };
+    | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
+    | { event: "interaction_hover" | "interaction_click"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string };
 
 type ContextInteractionPayload =
     | { event: "interaction_context_menu"; kind: "empty"; page_x?: number; page_y?: number }
@@ -100,6 +104,7 @@ type ContextInteractionPayload =
         page_y?: number;
     }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; page_x?: number; page_y?: number }
+    | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string; page_x?: number; page_y?: number }
     | {
         event: "interaction_context_menu";
         kind: "annotation";
@@ -333,6 +338,12 @@ export class MolSysViewerController {
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly groupPanel: GroupPanel;
     private readonly workbenchPanel: WorkbenchPanel;
+    private readonly canvasHost: HTMLDivElement;
+    private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
+    private canvasInsetFrom = { left: 0, right: 0 };
+    private canvasInsetTo = { left: 0, right: 0 };
+    private canvasInsetStart = 0;
+    private readonly canvasInsetDuration = 160; // ms — must match panel slide duration
     private readonly releaseContextMenuSuppression?: () => void;
     private readonly releaseGlobalEscapeHandler?: () => void;
     private lastContextLoci: any = null;
@@ -341,9 +352,9 @@ export class MolSysViewerController {
     private lastHoverPayload: InteractionPayload | null = null;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
-    private readonly workbenchAnnotations = new Map<string, { text: string; hidden: boolean; atomIndices: number[] }>();
-    private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; hidden: boolean; atomIndices: number[] }>();
-    private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; hidden: boolean; atomIndices: number[] }>();
+    private readonly workbenchAnnotations = new Map<string, { text: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
     private workbenchScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
     private workbenchAddons: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
@@ -357,6 +368,9 @@ export class MolSysViewerController {
     private lastCorePanelMode: "navigate" | "workbench" = "navigate";
     private currentWorkspace = "core";
     private readonly currentWorkspacePanelByWorkspace = new Map<string, string>();
+    private activePanelMsgListeners: Array<(msg: any) => void> = [];
+    private activePanelCleanup: (() => void) | null = null;
+    private activePanelWidgetKey: string | null = null;
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -381,23 +395,40 @@ export class MolSysViewerController {
     }
 
     static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement): Promise<MolSysViewerController> {
+        // Wrap the Mol* canvas in a host div so panels can shift it without
+        // resizing the outer target element.  No CSS transition here — inset
+        // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
+        // fires on every frame and keeps the molecule in sync with the panel.
+        const canvasHost = document.createElement("div");
+        Object.assign(canvasHost.style, {
+            position: "absolute",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+        });
+        target.appendChild(canvasHost);
+
         const canvas = existingCanvas ?? document.createElement("canvas");
         if (!existingCanvas) {
             canvas.style.width = "100%";
             canvas.style.height = "100%";
             canvas.style.display = "block";
-            target.appendChild(canvas);
-        } else if (existingCanvas.parentElement !== target) {
-            target.appendChild(existingCanvas);
+            canvasHost.appendChild(canvas);
+        } else if (existingCanvas.parentElement !== canvasHost) {
+            canvasHost.appendChild(existingCanvas);
         }
 
         const plugin = new PluginContext(createMolSysViewerPluginSpec());
         await plugin.init();
 
+        // Register custom colour themes after plugin init.
+        plugin.representation.structure.themes.colorThemeRegistry.add(MsvPerAtomColorThemeProvider);
+
         const init = (plugin as any).initViewerAsync ?? (plugin as any).initViewer;
         let ok = false;
         if (typeof init === "function") {
-            const result = init.call(plugin, canvas, target);
+            const result = init.call(plugin, canvas, canvasHost);
             ok = typeof result?.then === "function" ? await result : !!result;
         } else {
             console.error("[MolSysViewer] Plugin init function not found (initViewer/initViewerAsync missing)");
@@ -409,7 +440,7 @@ export class MolSysViewerController {
             notify?.({ event: "viewer_init_failed", reason: "webgl", message });
         }
 
-        return new MolSysViewerController(plugin, target, notify);
+        return new MolSysViewerController(plugin, target, notify, canvasHost);
     }
 
     public readonly loader: LoaderHandlers;
@@ -424,13 +455,20 @@ export class MolSysViewerController {
     private loadedStructure?: LoadedStructure; // Loaded structure bundle
     private currentActiveSelection: ActiveSelectionPayload | null = null;
     private lastMeasurementSummary: LastMeasurementSummary | null = null;
+    private measurementTagCounter = 0;
 
     // Getters for scene state delegated to scene handler
     get isSpinActive() { return this.scene.isSpinActive; }
     get isSwingActive() { return this.scene.isSwingActive; }
     get isDarkMode() { return this.scene.isDarkMode; }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void) {
+    private nextMeasurementTag(): string {
+        this.measurementTagCounter += 1;
+        return `measurement_${this.measurementTagCounter}`;
+    }
+
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement) {
+        this.canvasHost = canvasHost ?? (() => { const d = document.createElement("div"); host.appendChild(d); return d; })();
         const emitInteractionEvent = (msg: any) => {
             if (msg?.event === "interaction_tool_state") {
                 if (msg?.status === "started" || msg?.status === "progress") {
@@ -457,7 +495,47 @@ export class MolSysViewerController {
         };
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
-        this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent);
+        this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
+            const tag = this.nextMeasurementTag();
+            const structure = this.getStructureData();
+            const measurementOptions = this.measurements.buildMeasurementOptions(
+                picks_atom_indices,
+                endpoint_policy,
+                structure,
+            );
+            const value = this.measurements.computeMeasurementValue(picks_atom_indices, measurementOptions, structure);
+            const msg = {
+                op: action === "distance"
+                    ? "add_distance_measurement"
+                    : action === "angle"
+                        ? "add_angle_measurement"
+                        : "add_dihedral_measurement",
+                tag,
+                options: {
+                    tag,
+                    picks_atom_indices,
+                    endpoint_policy: measurementOptions.endpoint_policy,
+                    endpoint_kinds: measurementOptions.endpoint_kinds,
+                    endpoint_labels: measurementOptions.endpoint_labels,
+                    endpoint_atom_indices: measurementOptions.endpoint_atom_indices,
+                },
+            } as const;
+            if (action === "distance") {
+                await this.measurements.addDistance(msg);
+            } else if (action === "angle") {
+                await this.measurements.addAngle(msg);
+            } else {
+                await this.measurements.addDihedral(msg);
+            }
+            return {
+                tag,
+                endpoint_policy: measurementOptions.endpoint_policy,
+                endpoint_kinds: measurementOptions.endpoint_kinds,
+                endpoint_labels: measurementOptions.endpoint_labels,
+                endpoint_atom_indices: measurementOptions.endpoint_atom_indices,
+                value,
+            };
+        });
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
         this.groupPanel = new GroupPanel(host, (items, additive) => {
             this.activeSelection.setItems(items, additive);
@@ -501,6 +579,15 @@ export class MolSysViewerController {
         this.workbenchPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("workbench", expanded);
         });
+        const getCameraDirection = (): [number, number, number] => {
+            const snap = this.plugin.canvas3d?.camera.getSnapshot?.();
+            if (!snap) return [0, 0, -1];
+            const dx = snap.target[0] - snap.position[0];
+            const dy = snap.target[1] - snap.position[1];
+            const dz = snap.target[2] - snap.position[2];
+            const len = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+            return [dx / len, dy / len, dz / len];
+        };
         this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
             if (action === "focus_target") {
                 this.focusTarget(target);
@@ -518,6 +605,18 @@ export class MolSysViewerController {
                 this.focusCurrentSelection();
                 return;
             }
+            if (action === "hide_measurement") {
+                const tag = typeof details?.tag === "string" ? details.tag : null;
+                if (!tag) return;
+                void this.handleMessage({ op: "hide_layer", tag });
+                return;
+            }
+            if (action === "delete_measurement") {
+                const tag = typeof details?.tag === "string" ? details.tag : null;
+                if (!tag) return;
+                void this.handleMessage({ op: "clear_layer", tag });
+                return;
+            }
             if (action === "activate_selection") {
                 return;
             }
@@ -529,17 +628,18 @@ export class MolSysViewerController {
                 action === "delete_annotation"
                 || action === "delete_shape"
                 || action === "save_selection"
+                || action === "remove_selection"
                 || action === "create_region_from_selection"
+                || action === "create_section_from_selection"
                 || action === "add_label_from_selection"
-                || action === "persist_last_measurement"
             ) {
                 return;
             }
-            this.startMeasurementTool(action);
+            this.startMeasurementTool(action, details?.endpoint_policy);
         }, () => {
             this.workbenchContext = null;
             this.refreshWorkbenchPanel();
-        });
+        }, getCameraDirection);
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
         if (canvas) {
             this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, canvas as HTMLElement);
@@ -557,11 +657,13 @@ export class MolSysViewerController {
             const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
             const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
             let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
+            payload = this.normalizeManagedContextPayload(payload);
             if (typeof page_x === "number" && typeof page_y === "number") {
                 const pickData = this.plugin.canvas3d?.identify?.([page_x, page_y] as any);
                 const pickedLoci = pickData ? this.plugin.canvas3d?.getLoci?.(pickData.id)?.loci : null;
                 if (pickedLoci) {
                     payload = normalizeContextPayloadFromLoci(pickedLoci, page_x, page_y);
+                    payload = this.normalizeManagedContextPayload(payload);
                 }
             }
             if (payload.kind === "empty" && this.lastHoverPayload && this.lastHoverPayload.kind !== "empty") {
@@ -589,6 +691,16 @@ export class MolSysViewerController {
                         page_x: payload.page_x,
                         page_y: payload.page_y,
                     };
+                } else if (this.lastHoverPayload.kind === "measurement") {
+                    payload = {
+                        event: "interaction_context_menu",
+                        kind: "measurement",
+                        atom_indices: this.lastHoverPayload.atom_indices,
+                        tag: this.lastHoverPayload.tag,
+                        measurement_name: this.lastHoverPayload.measurement_name,
+                        page_x: payload.page_x,
+                        page_y: payload.page_y,
+                    };
                 }
             }
             const pageX = payload.page_x ?? 0;
@@ -609,7 +721,7 @@ export class MolSysViewerController {
             );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
-            this.lastHoverPayload = normalizeInteractionEvent("hover", ev);
+            this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
         });
 
         // Initialize handlers with necessary context callbacks
@@ -656,6 +768,7 @@ export class MolSysViewerController {
                 this.groupPanel.clearAnnotationOverlaysByTag(tag);
                 this.annotations.clearLabelByTag(tag);
             },
+            registerShapeRef: (ref, tag) => this.state.registerShapeRef(ref, tag),
             removeLoadedStructure: () => this.removeLoadedStructure(),
             notify: (msg) => this.notify?.(msg)
         });
@@ -670,7 +783,8 @@ export class MolSysViewerController {
 
         this.trajectory = new TrajectoryHandlers(plugin, {
             getLoadedStructure: () => this.loadedStructure,
-            notifyTrajectoryState: () => this.notifyTrajectoryState()
+            notifyTrajectoryState: () => this.notifyTrajectoryState(),
+            onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
         });
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
@@ -687,9 +801,9 @@ export class MolSysViewerController {
         this.plugin.dispose();
     }
 
-    private startMeasurementTool(action: MeasurementToolAction): void {
+    private startMeasurementTool(action: MeasurementToolAction, endpointPolicy?: MeasurementEndpointPolicy): void {
         if (!this.lastContextLoci) return;
-        this.measurementTools.start(action, this.lastContextLoci);
+        this.measurementTools.start(action, this.lastContextLoci, endpointPolicy);
     }
 
     private installGlobalEscapeHandler(): () => void {
@@ -722,7 +836,57 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+        this.updateCanvasInsets();
         this.emitPanelModeState();
+    }
+
+    private updateCanvasInsets(): void {
+        const leftOpen = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
+        const rightOpen = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
+        const toLeft = leftOpen ? this.groupPanel.panelContentWidth : 0;
+        const toRight = rightOpen ? this.workbenchPanel.panelContentWidth : 0;
+
+        // Cancel any running animation and read current *animated* position as start.
+        if (this.canvasInsetAnimFrame !== null) {
+            cancelAnimationFrame(this.canvasInsetAnimFrame);
+            this.canvasInsetAnimFrame = null;
+        }
+        const fromLeft = parseFloat(this.canvasHost.style.left) || 0;
+        const fromRight = parseFloat(this.canvasHost.style.right) || 0;
+        if (fromLeft === toLeft && fromRight === toRight) return;
+
+        this.canvasInsetFrom = { left: fromLeft, right: fromRight };
+        this.canvasInsetTo = { left: toLeft, right: toRight };
+        this.canvasInsetStart = performance.now();
+
+        // CSS `ease` ≈ easeOutQuad: starts fast, decelerates — matches the
+        // panel's `transition: transform 160ms ease`.
+        const ease = (t: number) => t * (2 - t);
+
+        const tick = (now: number) => {
+            const t = Math.min((now - this.canvasInsetStart) / this.canvasInsetDuration, 1);
+            const e = ease(t);
+            const l = this.canvasInsetFrom.left + (this.canvasInsetTo.left - this.canvasInsetFrom.left) * e;
+            const r = this.canvasInsetFrom.right + (this.canvasInsetTo.right - this.canvasInsetFrom.right) * e;
+            this.canvasHost.style.left = `${l}px`;
+            this.canvasHost.style.right = `${r}px`;
+            // Force a synchronous layout flush so that plugin.handleResize()
+            // reads the *new* offsetWidth in this same rAF tick and not the
+            // stale value from the previous frame.
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            void this.canvasHost.offsetWidth;
+            // Tell Mol* to resize now: resizeCanvas() reads the new offsetWidth,
+            // sets canvas.width, and schedules a viewport update for the next
+            // _animate tick — keeps the molecule one frame behind at most.
+            this.plugin.handleResize();
+            if (t < 1) {
+                this.canvasInsetAnimFrame = requestAnimationFrame(tick);
+            } else {
+                this.canvasInsetAnimFrame = null;
+            }
+        };
+
+        this.canvasInsetAnimFrame = requestAnimationFrame(tick);
     }
 
     private handlePanelExpansionChanged(source: "navigate" | "workbench", expanded: boolean): void {
@@ -733,7 +897,10 @@ export class MolSysViewerController {
                 this.lastCorePanelMode = source;
             }
         }
-        if (!expanded) return;
+        if (!expanded) {
+            this.updateCanvasInsets();
+            return;
+        }
         this.syncingPanelExpansion = true;
         try {
             if (source === "navigate") {
@@ -744,6 +911,7 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+        this.updateCanvasInsets();
         this.emitPanelModeState();
     }
 
@@ -781,6 +949,7 @@ export class MolSysViewerController {
         } finally {
             this.syncingPanelExpansion = false;
         }
+        this.updateCanvasInsets();
         this.emitPanelModeState();
     }
 
@@ -935,12 +1104,40 @@ export class MolSysViewerController {
         }
         if (payload.kind === "annotation" && typeof payload.tag === "string") {
             this.workbenchContext = { section: "annotations", tag: payload.tag };
+        } else if (payload.kind === "measurement" && typeof payload.tag === "string") {
+            this.workbenchContext = { section: "measurements", tag: payload.tag };
         } else if (payload.kind === "shape" && typeof payload.tag === "string") {
             this.workbenchContext = { section: "shapes", tag: payload.tag };
         } else {
             this.workbenchContext = null;
         }
         this.refreshWorkbenchPanel();
+    }
+
+    private normalizeManagedInteractionPayload(payload: InteractionPayload): InteractionPayload {
+        if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
+        if (!this.measurements.hasTag(payload.tag)) return payload;
+        return {
+            event: payload.event,
+            kind: "measurement",
+            atom_indices: payload.atom_indices,
+            tag: payload.tag,
+            measurement_name: payload.shape_name,
+        };
+    }
+
+    private normalizeManagedContextPayload(payload: ContextInteractionPayload): ContextInteractionPayload {
+        if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
+        if (!this.measurements.hasTag(payload.tag)) return payload;
+        return {
+            event: payload.event,
+            kind: "measurement",
+            atom_indices: payload.atom_indices,
+            tag: payload.tag,
+            measurement_name: payload.shape_name,
+            page_x: payload.page_x,
+            page_y: payload.page_y,
+        };
     }
 
     private getRelevantRegionSummaries(target: { atom_indices?: number[] }): RegionSummary[] {
@@ -999,15 +1196,22 @@ export class MolSysViewerController {
     private atomIndicesToLoci(atomIndices: number[]): StructureElement.Loci | null {
         const structure = this.getStructureData();
         if (!structure) return null;
-        const unit = structure.units.find((candidate) => candidate.kind === 0);
-        if (!unit) return null;
-        const unitIndices: number[] = [];
-        for (const atomIndex of atomIndices) {
-            const unitIndex = unit.elements.indexOf(atomIndex as any);
-            if (unitIndex >= 0) unitIndices.push(unitIndex);
+        const target = new Set(atomIndices);
+        const lociElements: { unit: Unit.Atomic; indices: any }[] = [];
+        for (const unit of structure.units) {
+            if (!Unit.isAtomic(unit)) continue;
+            const elements = unit.elements;
+            const count = OrderedSet.size(elements);
+            const matched: number[] = [];
+            for (let i = 0; i < count; i++) {
+                if (target.has(OrderedSet.getAt(elements, i))) matched.push(i);
+            }
+            if (matched.length > 0) {
+                lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });
+            }
         }
-        if (unitIndices.length === 0) return null;
-        return StructureElement.Loci(structure, [{ unit, indices: unitIndices } as any]);
+        if (lociElements.length === 0) return null;
+        return StructureElement.Loci(structure, lociElements as any);
     }
 
     private syncVisualSelection(selection: ActiveSelectionPayload): void {
@@ -1053,6 +1257,18 @@ export class MolSysViewerController {
 
                 // Shape Ops
                 case "add_sphere": await this.shapes.addSphere(msg); break;
+                case "update_sphere": {
+                    const tag = typeof (msg as any).tag === "string"
+                        ? (msg as any).tag
+                        : typeof (msg as any).options?.tag === "string"
+                            ? (msg as any).options.tag
+                            : undefined;
+                    if (typeof tag === "string") {
+                        await this.state.deleteLayer({ op: "delete_layer", tag });
+                        await this.shapes.addSphere({ op: "add_sphere", options: { ...((msg as any).options ?? {}), tag } });
+                    }
+                    break;
+                }
                 case "add_alpha_sphere_set": await this.shapes.addAlphaSphereSet(msg); break;
                 case "add_pocket_surface": await this.shapes.addPocketSurface(msg); break;
                 case "add_pocket_blob": await this.shapes.addPocketBlob(msg); break;
@@ -1068,6 +1284,7 @@ export class MolSysViewerController {
                 case "add_distance_measurement": await this.measurements.addDistance(msg); break;
                 case "add_angle_measurement": await this.measurements.addAngle(msg); break;
                 case "add_dihedral_measurement": await this.measurements.addDihedral(msg); break;
+                case "set_measurement_settings": this.measurements.setSettings(msg.options); break;
 
                 // Scene Ops
                 case "reset_view":
@@ -1076,6 +1293,13 @@ export class MolSysViewerController {
                 case "toggle_background": await this.scene.toggleBackground(msg); break;
                 case "toggle_swing": await this.scene.toggleSwing(msg); break;
                 case "toggle_spin": await this.scene.toggleSpin(msg); break;
+                case "set_fog": await this.scene.setFog(msg as any); break;
+                case "set_sections": await this.scene.setSections(msg as any); break;
+                case "set_section_drag": await this.scene.setActiveSectionDrag(msg as any); break;
+                case "set_background_color": await this.scene.setBackgroundColor(msg as any); break;
+                case "set_lighting": await this.scene.setLighting(msg as any); break;
+                case "set_clip_planes": await this.scene.setClipPlanes(msg as any); break;
+                case "set_camera_mode": await this.scene.setCameraMode(msg as any); break;
                 case "set_panel_mode": this.setPanelMode((msg as any).panel, (msg as any).expanded); break;
                 case "set_workspace": this.selectWorkspace((msg as any).workspace ?? "core"); break;
                 case "set_workspace_panel": {
@@ -1111,12 +1335,29 @@ export class MolSysViewerController {
                 case "create_layer": await this.state.createLayer(msg); break;
                 case "show_layer": await this.state.showLayer(msg); break;
                 case "hide_layer": await this.state.hideLayer(msg); break;
-                case "delete_layer": await this.state.deleteLayer(msg); break;
-                case "set_layer_tag": await this.state.setLayerTag(msg); break;
+                case "delete_layer":
+                    if (typeof (msg as any).tag === "string" && this.measurements.hasTag((msg as any).tag)) {
+                        this.measurements.dropTag((msg as any).tag);
+                    }
+                    await this.state.deleteLayer(msg);
+                    break;
+                case "set_layer_tag":
+                    if (
+                        typeof (msg as any).tag === "string"
+                        && typeof (msg as any).new_tag === "string"
+                        && this.measurements.hasTag((msg as any).tag)
+                    ) {
+                        this.measurements.renameTag((msg as any).tag, (msg as any).new_tag);
+                    }
+                    await this.state.setLayerTag(msg);
+                    break;
+                case "set_atom_colors": await this.state.setAtomColors(msg as any); break;
+                case "clear_atom_colors": await this.state.clearAtomColors(msg as any); break;
                 case "set_global_representation": await this.state.setGlobalRepresentation(msg); break;
                 case "show_global": await this.state.showGlobal(msg); break;
                 case "hide_global": await this.state.hideGlobal(msg); break;
                 case "zoom": await this.state.zoom(msg); break;
+                case "zoom_to_position": await this.scene.zoomToPosition(msg as any); break;
                 case "set_camera_snapshot": await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms); break;
                 case "clear_active_selection":
                     this.activeSelection.clear();
@@ -1155,6 +1396,74 @@ export class MolSysViewerController {
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
                     this.refreshWorkbenchPanel();
                     break;
+
+                case "mount_addon_panel": {
+                    const mAddon = (msg as any).addon as string | undefined;
+                    const mPanel = (msg as any).panel as string | undefined;
+                    const mEsm = (msg as any).esm as string | undefined;
+                    const mCss = (msg as any).css as string | undefined;
+                    if (!mAddon || !mPanel || !mEsm) break;
+                    const mKey = `${mAddon}:${mPanel}`;
+                    if (this.activePanelWidgetKey === mKey) break; // already mounted
+                    this.cleanupActivePanelWidget();
+                    const el = document.createElement("div");
+                    Object.assign(el.style, { display: "flex", flexDirection: "column", gap: "8px", width: "100%" });
+                    let styleEl: HTMLStyleElement | null = null;
+                    if (mCss) {
+                        styleEl = document.createElement("style");
+                        styleEl.textContent = mCss;
+                        el.appendChild(styleEl);
+                    }
+                    const msgListeners: Array<(msg: any) => void> = [];
+                    this.activePanelMsgListeners = msgListeners;
+                    const panelModel = {
+                        send: (content: any) => {
+                            this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
+                        },
+                        on: (event: string, cb: (msg: any) => void) => {
+                            if (event === "msg:custom") msgListeners.push(cb);
+                        },
+                        off: (event: string, cb: (msg: any) => void) => {
+                            if (event === "msg:custom") {
+                                const idx = msgListeners.indexOf(cb);
+                                if (idx >= 0) msgListeners.splice(idx, 1);
+                            }
+                        },
+                        get: (_key: string) => undefined,
+                    };
+                    const blob = new Blob([mEsm], { type: "application/javascript" });
+                    const blobUrl = URL.createObjectURL(blob);
+                    try {
+                        const module = await import(/* @vite-ignore */ blobUrl);
+                        const renderFn = module.default?.render ?? module.render;
+                        let cleanup: (() => void) | undefined;
+                        if (typeof renderFn === "function") {
+                            const result = renderFn({ model: panelModel, el });
+                            if (typeof result === "function") cleanup = result;
+                        }
+                        this.activePanelCleanup = () => {
+                            if (typeof cleanup === "function") { try { cleanup(); } catch { /* ignore */ } }
+                            URL.revokeObjectURL(blobUrl);
+                        };
+                    } catch (err) {
+                        console.error("[MolSysViewer] Error loading addon panel ESM:", err);
+                        URL.revokeObjectURL(blobUrl);
+                        break;
+                    }
+                    this.activePanelWidgetKey = mKey;
+                    this.workbenchPanel.mountAddonWidget(el);
+                    break;
+                }
+
+                case "addon_panel_message": {
+                    const content = (msg as any).content;
+                    if (content) {
+                        for (const cb of this.activePanelMsgListeners) {
+                            try { cb(content); } catch { /* ignore */ }
+                        }
+                    }
+                    break;
+                }
 
                 default:
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
@@ -1234,6 +1543,23 @@ export class MolSysViewerController {
         const op = (msg as any)?.op;
         if (typeof op !== "string") return;
 
+        const upsertWorkbenchShape = (
+            tag: string,
+            title: string,
+            subtitle: string | undefined,
+            layerTag: string | undefined,
+            atomIndices: number[],
+        ) => {
+            const existing = this.workbenchShapes.get(tag);
+            this.workbenchShapes.set(tag, {
+                title: existing?.title ?? title,
+                subtitle: existing?.subtitle ?? subtitle,
+                layerTag,
+                hidden: existing?.hidden ?? false,
+                atomIndices: atomIndices.length > 0 ? atomIndices : (existing?.atomIndices ?? []),
+            });
+        };
+
         if (op === "clear_all") {
             this.workbenchAnnotations.clear();
             this.workbenchMeasurements.clear();
@@ -1259,11 +1585,12 @@ export class MolSysViewerController {
         if (op === "add_label") {
             const tag = (msg as any).tag ?? (msg as any).options?.tag;
             const text = (msg as any).options?.text;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             const atomIndices = Array.isArray((msg as any).options?.atom_indices)
                 ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
                 : [];
             if (typeof tag === "string" && typeof text === "string" && text.trim()) {
-                this.workbenchAnnotations.set(tag, { text: text.trim(), hidden: false, atomIndices });
+                this.workbenchAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
             }
             return;
         }
@@ -1278,6 +1605,7 @@ export class MolSysViewerController {
                 : existing.atomIndices;
             this.workbenchAnnotations.set(tag, {
                 text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
+                layerTag: typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : existing.layerTag,
                 hidden: existing.hidden,
                 atomIndices: nextAtomIndices,
             });
@@ -1293,8 +1621,131 @@ export class MolSysViewerController {
                     .filter((value: unknown) => typeof value === "number")
             ));
             const kind = op === "add_distance_measurement" ? "distance" : op === "add_angle_measurement" ? "angle" : "dihedral";
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             if (typeof tag === "string") {
-                this.workbenchMeasurements.set(tag, { kind, picks, hidden: false, atomIndices });
+                this.workbenchMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
+            }
+            return;
+        }
+
+        if (op === "add_sphere" || op === "update_sphere") {
+            const tag = (msg as any).tag ?? (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Sphere", "sphere", layerTag, []);
+            }
+            return;
+        }
+
+        if (op === "add_network_links") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            const atomPairs = Array.isArray((msg as any).options?.atom_pairs) ? (msg as any).options.atom_pairs : [];
+            const atomIndices = Array.from(new Set(
+                atomPairs.flatMap((item: unknown) => Array.isArray(item) ? item : [])
+                    .filter((value: unknown) => typeof value === "number")
+            ));
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Links", "links", layerTag, atomIndices);
+            }
+            return;
+        }
+
+        if (op === "add_triangle_faces") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            const atomTriplets = Array.isArray((msg as any).options?.atom_triplets)
+                ? (msg as any).options.atom_triplets
+                : Array.isArray((msg as any).options?.atomTriplets)
+                    ? (msg as any).options.atomTriplets
+                    : [];
+            const atomIndices = Array.from(new Set(
+                atomTriplets.flatMap((item: unknown) => Array.isArray(item) ? item : [])
+                    .filter((value: unknown) => typeof value === "number")
+            ));
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Triangle Faces", "triangle_faces", layerTag, atomIndices);
+            }
+            return;
+        }
+
+        if (op === "add_channel_tube") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Channel Tube", "channel_tube", layerTag, []);
+            }
+            return;
+        }
+
+        if (op === "add_tetrahedra") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            const atomQuads = Array.isArray((msg as any).options?.atom_quads)
+                ? (msg as any).options.atom_quads
+                : Array.isArray((msg as any).options?.atomQuads)
+                    ? (msg as any).options.atomQuads
+                    : [];
+            const atomIndices = Array.from(new Set(
+                atomQuads.flatMap((item: unknown) => Array.isArray(item) ? item : [])
+                    .filter((value: unknown) => typeof value === "number")
+            ));
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Tetrahedra", "tetrahedra", layerTag, atomIndices);
+            }
+            return;
+        }
+
+        if (op === "add_anisotropy_ellipsoids") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
+                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                : [];
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Anisotropy Ellipsoids", "anisotropy_ellipsoids", layerTag, atomIndices);
+            }
+            return;
+        }
+
+        if (op === "add_pharmacophore_features") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Pharmacophore", "pharmacophore", layerTag, []);
+            }
+            return;
+        }
+
+        if (op === "add_displacement_vectors") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
+                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                : [];
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Displacement Vectors", "displacement_vectors", layerTag, atomIndices);
+            }
+            return;
+        }
+
+        if (op === "add_pocket_blob") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Pocket Blob", "pocket_blob", layerTag, []);
+            }
+            return;
+        }
+
+        if (op === "add_pocket_surface") {
+            const tag = (msg as any).options?.tag;
+            const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
+            const atomIndices = Array.isArray((msg as any).options?.atom_indices)
+                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                : [];
+            if (typeof tag === "string") {
+                upsertWorkbenchShape(tag, "Pocket Surface", "pocket_surface", layerTag, atomIndices);
             }
             return;
         }
@@ -1311,10 +1762,11 @@ export class MolSysViewerController {
                             ? meta.label.trim()
                             : "Shape";
                 const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : undefined;
+                const layerTag = typeof meta.layer_tag === "string" && meta.layer_tag.trim() ? meta.layer_tag.trim() : undefined;
                 const atomIndices = Array.isArray(meta.atom_indices)
                     ? meta.atom_indices.filter((value: unknown) => typeof value === "number")
                     : [];
-                this.workbenchShapes.set(tag, { title, subtitle, hidden: false, atomIndices });
+                this.workbenchShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
             }
             return;
         }
@@ -1441,7 +1893,7 @@ export class MolSysViewerController {
                 .map(([tag, item]) => ({
                     key: tag,
                     title: item.text,
-                    subtitle: tag,
+                    subtitle: item.layerTag && item.layerTag !== tag ? `${tag} · layer: ${item.layerTag}` : tag,
                     hidden: item.hidden,
                     active: this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === tag,
                     context: this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === tag,
@@ -1461,7 +1913,9 @@ export class MolSysViewerController {
                 .map(([tag, item]) => ({
                     key: tag,
                     title: item.kind[0].toUpperCase() + item.kind.slice(1),
-                    subtitle: `${tag} · ${item.picks} picks`,
+                    subtitle: item.layerTag && item.layerTag !== tag
+                        ? `${tag} · ${item.picks} picks · layer: ${item.layerTag}`
+                        : `${tag} · ${item.picks} picks`,
                     hidden: item.hidden,
                     active: this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
@@ -1480,7 +1934,9 @@ export class MolSysViewerController {
                 .map(([tag, item]) => ({
                     key: tag,
                     title: item.title,
-                    subtitle: item.subtitle ? `${tag} · ${item.subtitle}` : tag,
+                    subtitle: item.layerTag && item.layerTag !== tag
+                        ? item.subtitle ? `${tag} · ${item.subtitle} · layer: ${item.layerTag}` : `${tag} · layer: ${item.layerTag}`
+                        : item.subtitle ? `${tag} · ${item.subtitle}` : tag,
                     hidden: item.hidden,
                     active: this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === tag,
                     context: this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === tag,
@@ -1585,6 +2041,7 @@ export class MolSysViewerController {
                 title: item.title as string,
                 description: typeof item?.description === "string" ? item.description as string : undefined,
                 entry: typeof item?.entry === "string" ? item.entry as string : undefined,
+                widget_class: typeof item?.widget_class === "string" ? item.widget_class as string : undefined,
             }))
             .sort((left, right) => left.key.localeCompare(right.key));
     }
@@ -1728,10 +2185,41 @@ export class MolSysViewerController {
         return next;
     }
 
+    private cleanupActivePanelWidget(): void {
+        if (this.activePanelCleanup) {
+            try { this.activePanelCleanup(); } catch { /* ignore */ }
+            this.activePanelCleanup = null;
+        }
+        this.activePanelMsgListeners = [];
+        this.activePanelWidgetKey = null;
+        this.workbenchPanel.unmountAddonWidget();
+    }
+
     private selectWorkspacePanel(workspaceId: string, panelId: string): void {
         const panels = this.getWorkspacePanels(workspaceId);
         if (!panels.some((item) => item.id === panelId)) return;
+
+        // Unmount previous widget panel if navigating away from one
+        const prevPanelId = this.currentWorkspacePanelByWorkspace.get(workspaceId);
+        if (prevPanelId && prevPanelId !== panelId) {
+            const prevPanel = panels.find((item) => item.id === prevPanelId);
+            if (prevPanel?.widget_class) {
+                this.notify?.({ event: "panel_unmount", addon: prevPanel.addon, panel: prevPanelId });
+                this.cleanupActivePanelWidget();
+            }
+        }
+
         this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
+
+        // Mount new widget panel if it has one
+        const newPanel = panels.find((item) => item.id === panelId);
+        const newKey = `${workspaceId}:${panelId}`;
+        if (newPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
+            this.notify?.({ event: "panel_navigate", addon: newPanel.addon, panel: panelId });
+        } else if (!newPanel?.widget_class) {
+            this.cleanupActivePanelWidget();
+        }
+
         this.refreshWorkbenchPanel();
         this.emitPanelModeState();
     }
@@ -1740,11 +2228,75 @@ export class MolSysViewerController {
         return this.addonWorkspaces.some((item) => item.id === workspaceId && item.addon === addonName);
     }
 
+    private showToast(message: string, durationMs = 3000): void {
+        const toast = document.createElement("div");
+        toast.setAttribute("data-molsysviewer-toast", "true");
+        Object.assign(toast.style, {
+            position: "absolute",
+            bottom: "48px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "rgba(24,24,30,0.93)",
+            color: "rgba(244,244,245,0.96)",
+            border: "1px solid rgba(255,255,255,0.14)",
+            borderRadius: "8px",
+            padding: "7px 16px",
+            fontSize: "12px",
+            fontWeight: "500",
+            zIndex: "9999",
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+            opacity: "1",
+            transition: "opacity 0.35s ease",
+        });
+        toast.textContent = message;
+        if (!this.host.style.position || this.host.style.position === "static") {
+            this.host.style.position = "relative";
+        }
+        this.host.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 400);
+        }, durationMs);
+    }
+
     private selectWorkspace(workspaceId: string): void {
+        const prevWorkspace = this.currentWorkspace;
         const available = new Set(this.getWorkspaceOptions().map((item) => item.id));
         this.currentWorkspace = available.has(workspaceId) ? workspaceId : "core";
+
+        // Unmount widget panel from the previous workspace if navigating away
+        if (prevWorkspace !== this.currentWorkspace && prevWorkspace !== "core") {
+            const prevPanelId = this.currentWorkspacePanelByWorkspace.get(prevWorkspace);
+            if (prevPanelId) {
+                const prevPanel = this.getWorkspacePanels(prevWorkspace).find((item) => item.id === prevPanelId);
+                if (prevPanel?.widget_class) {
+                    this.notify?.({ event: "panel_unmount", addon: prevPanel.addon, panel: prevPanelId });
+                    this.cleanupActivePanelWidget();
+                }
+            }
+        }
+
+        if (this.currentWorkspace !== prevWorkspace) {
+            if (this.currentWorkspace !== "core") {
+                const title = this.getWorkspaceOptions().find((item) => item.id === this.currentWorkspace)?.title ?? this.currentWorkspace;
+                this.showToast(`Switching to workspace: ${title}`);
+            } else if (prevWorkspace !== "core") {
+                this.showToast("Returning to default workspace");
+            }
+        }
+
         this.refreshPanelWorkspaceChrome();
         if (this.currentWorkspace !== "core") {
+            // If the active panel of the new workspace has a widget_class, request mount
+            const selectedPanelId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+            if (selectedPanelId) {
+                const selectedPanel = this.getWorkspacePanels(this.currentWorkspace).find((item) => item.id === selectedPanelId);
+                const newKey = `${this.currentWorkspace}:${selectedPanelId}`;
+                if (selectedPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
+                    this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
+                }
+            }
             this.setPanelMode("workbench", true);
             this.emitPanelModeState();
             return;

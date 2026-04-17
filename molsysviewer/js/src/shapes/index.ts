@@ -338,6 +338,7 @@ export interface PocketBlobOptions {
     color_map?: number[] | string;
     alpha?: number;
     tag?: string;
+    layer_tag?: string;
     name?: string;
 }
 
@@ -636,12 +637,15 @@ export interface ChannelTubeOptions {
     radii?: number[];
     solvent_distances?: number[];
     colors?: number[];
+    palette?: number[] | string;
     color_map?: number[] | string;
+    color_by?: ChannelColorMode;
     color_mode?: ChannelColorMode;
     radial_segments?: number;
     smoothing_subdivisions?: number;
     alpha?: number;
     tag?: string;
+    layer_tag?: string;
     name?: string;
 }
 
@@ -726,11 +730,11 @@ function buildChannelSegments(options: ChannelTubeOptions): { segments: ChannelS
         }
     }
 
-    const colorMode: ChannelColorMode = options.color_mode ?? "segment";
+    const colorMode: ChannelColorMode = options.color_by ?? options.color_mode ?? "segment";
     const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));
     const colors = options.colors;
     const solventDistances = distanceList ?? options.solvent_distances;
-    const colorMap = options.color_map;
+    const colorMap = options.palette ?? options.color_map;
 
     const segments: ChannelSegment[] = [];
 
@@ -950,12 +954,15 @@ export interface AnisotropyEllipsoidOptions {
     principal_directions?: Array<[number, number, number]>;
     scale?: number;
     max_eccentricity?: number;
+    color_by?: EllipsoidColorMode;
+    palette?: number[] | string;
     color_mode?: EllipsoidColorMode;
     color_map?: number[] | string;
     colors?: number[];
     values?: number[];
     alpha?: number;
     tag?: string;
+    layer_tag?: string;
     name?: string;
 }
 
@@ -1037,10 +1044,10 @@ function buildEllipsoidSpecs(
     const maxEcc = options.max_eccentricity ?? 0;
 
     const specs: EllipsoidSpec[] = [];
-    const colorMode: EllipsoidColorMode = options.color_mode ?? "anisotropy";
+    const colorMode: EllipsoidColorMode = options.color_by ?? options.color_mode ?? "anisotropy";
     const values = options.values;
     const colors = options.colors;
-    const colorMap = options.color_map;
+    const colorMap = options.palette ?? options.color_map;
 
     let scaleLookup: ColorScale | undefined;
     if (colorMode === "anisotropy") {
@@ -1265,7 +1272,10 @@ export interface PharmacophoreOptions {
     alphas?: number[];
     directions?: Array<[number, number, number]>;
     colors?: number[];
+    color_scheme?: string;
+    color_table?: Record<string, number>;
     tag?: string;
+    layer_tag?: string;
     name?: string;
 }
 
@@ -1422,9 +1432,14 @@ function preparePharmacophoreData(options: PharmacophoreOptions): PharmacophoreD
     const alphas = options.alphas && options.alphas.length === centers.length
         ? options.alphas
         : new Array(centers.length).fill(0.6);
+    const colorTable = options.color_table;
+    const colorScheme = options.color_scheme;
+    const schemeLookup = colorScheme === "pharmacophore_default" || colorScheme === undefined
+        ? PharmColors
+        : PharmColors;
     const colors = options.colors && options.colors.length === centers.length
         ? options.colors
-        : kinds.map(k => PharmColors[k.toLowerCase()] ?? ColorNames.gray);
+        : kinds.map(k => colorTable?.[k.toLowerCase()] ?? schemeLookup[k.toLowerCase()] ?? ColorNames.gray);
     const directions = options.directions;
 
     const glyphs: PharmacophoreGlyph[] = centers.map((c, i) => ({
@@ -1629,10 +1644,14 @@ export interface NetworkLinkOptions {
     colors?: number | number[];
     pocket_ids?: Array<string | number>;
     chain_ids?: string[];
+    color_by?: NetworkLinkColorMode;
+    color_scheme?: string;
+    color_table?: Record<string, number>;
     color_mode?: NetworkLinkColorMode;
     alpha?: number;
     radial_segments?: number;
     tag?: string;
+    layer_tag?: string;
 }
 
 function normalizeCoordinatePair(entry: CoordinatePair): { start: [number, number, number]; end: [number, number, number] } | null {
@@ -1667,7 +1686,18 @@ function expandToList<T>(value: T | T[] | undefined, count: number, cast: (v: T)
     return Array(count).fill(cast((value ?? fallback) as T));
 }
 
-function prepareColorLookup(keys: Array<string | number>, fallback: number) {
+function normalizeCategoryKey(key: string | number | undefined): string | undefined {
+    if (key === undefined) return undefined;
+    return String(key);
+}
+
+function prepareColorLookup(keys: Array<string | number>, fallback: number, colorTable?: Record<string, number>) {
+    if (colorTable) {
+        return (key?: string | number) => {
+            const normalized = normalizeCategoryKey(key);
+            return normalized !== undefined ? colorTable[normalized] ?? fallback : fallback;
+        };
+    }
     const paletteCount = DefaultLinkPalette.length;
     const colorByKey = new Map<string | number, number>();
     keys.forEach((key, idx) => {
@@ -1709,10 +1739,11 @@ function buildLinksFromCoordinates(options: NetworkLinkOptions): NetworkLinkSpec
     const radii = expandToList<number>(options.radii, count, Number, 0.2);
     const chainIds = expandToList<string>(options.chain_ids, count, String, "");
     const pocketIds = expandToList<string | number>(options.pocket_ids, count, v => v, "");
-    const colorMode: NetworkLinkColorMode = options.color_mode ?? "link";
+    const colorMode: NetworkLinkColorMode = options.color_by ?? options.color_mode ?? "link";
     const colors = expandToList<number>(options.colors, count, Number, ColorNames.skyblue);
+    const colorTable = options.color_table;
 
-    const paletteLookup = prepareColorLookup(colorMode === "pocket" ? pocketIds : chainIds, colors[0]);
+    const paletteLookup = prepareColorLookup(colorMode === "pocket" ? pocketIds : chainIds, colors[0], colorTable);
 
     return normalizedPairs.map((pair, idx) => {
         const linkColor =
@@ -1738,8 +1769,9 @@ function buildLinksFromAtoms(structure: Structure, options: NetworkLinkOptions):
     const lookup = buildUnitLookup(structure);
     const radii = expandToList<number>(options.radii, count, Number, 0.2);
     const pocketIds = expandToList<string | number>(options.pocket_ids, count, v => v, "");
-    const colorMode: NetworkLinkColorMode = options.color_mode ?? "link";
+    const colorMode: NetworkLinkColorMode = options.color_by ?? options.color_mode ?? "link";
     const colors = expandToList<number>(options.colors, count, Number, ColorNames.skyblue);
+    const colorTable = options.color_table;
 
     const positionsStart = Vec3();
     const positionsEnd = Vec3();
@@ -1775,12 +1807,12 @@ function buildLinksFromAtoms(structure: Structure, options: NetworkLinkOptions):
     if (specs.length === 0) return [];
 
     if (colorMode === "chain") {
-        const paletteLookup = prepareColorLookup(chainIdList, colors[0]);
+        const paletteLookup = prepareColorLookup(chainIdList, colors[0], colorTable);
         specs.forEach((spec, idx) => {
             spec.color = paletteLookup(chainIdList[idx]);
         });
     } else if (colorMode === "pocket") {
-        const paletteLookup = prepareColorLookup(pocketIds, colors[0]);
+        const paletteLookup = prepareColorLookup(pocketIds, colors[0], colorTable);
         specs.forEach(spec => {
             spec.color = paletteLookup(spec.pocketId);
         });
@@ -2087,6 +2119,7 @@ export interface TriangleFacesOptions {
     normal_length?: number;
     normal_color?: number;
     tag?: string;
+    layer_tag?: string;
 }
 
 function normalizeTriangle(entry: TriangleVerticesInput): TriangleFaceSpec["vertices"] | null {
@@ -2603,6 +2636,7 @@ export interface TetrahedraOptions {
     normal_length?: number;
     normal_color?: number;
     tag?: string;
+    layer_tag?: string;
     name?: string;
 }
 
@@ -2931,12 +2965,15 @@ export interface DisplacementVectorOptions {
     length_scale?: number;
     min_length?: number;
     max_length?: number;
+    color_by?: "norm" | "component";
     color_mode?: "norm" | "component";
     color_component?: number;
+    palette?: number[] | string;
     color_map?: number[] | string;
     radius_scale?: number;
     radial_segments?: number;
     tag?: string;
+    layer_tag?: string;
 }
 
 function resolveOriginsFromAtoms(
@@ -2998,7 +3035,7 @@ function prepareDisplacementVectorData(
     const maxLength = options.max_length ?? 0;
     const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 12));
     const radiusScale = options.radius_scale ?? 0.05;
-    const colorMode: "norm" | "component" = options.color_mode ?? "norm";
+    const colorMode: "norm" | "component" = options.color_by ?? options.color_mode ?? "norm";
     const colorComponent = Math.max(0, Math.min(2, Math.floor(options.color_component ?? 2)));
 
     const processed: { start: [number, number, number]; vector: Vec3; magnitude: number }[] = [];
@@ -3059,9 +3096,10 @@ function prepareDisplacementVectorData(
     const minValue = Math.min(...colorValues);
     const maxValue = Math.max(...colorValues);
     const domain = minValue === maxValue ? [minValue, minValue + 1] : [minValue, maxValue];
-    const palette = options.color_map && Array.isArray(options.color_map) && options.color_map.length === 0
+    const paletteInput = options.palette ?? options.color_map;
+    const palette = paletteInput && Array.isArray(paletteInput) && paletteInput.length === 0
         ? undefined
-        : options.color_map;
+        : paletteInput;
     const scale = ColorScale.create({ domain, listOrName: palette ?? "turbo", minLabel: "min", maxLabel: "max" });
 
     arrows.forEach((arrow, idx) => {

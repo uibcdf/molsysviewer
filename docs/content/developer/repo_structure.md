@@ -28,10 +28,14 @@ Use this page as the repo map when you need to find code quickly.
 
 Key modules
 
-- `molsysviewer/viewer.py`
-  - `MolSysView` facade: loading, visibility masks, regions/layers/whole, shapes,
-    camera helpers, and HTML export.
-  - Owns message queue/history and the widget instance.
+- `molsysviewer/viewer/`
+  - `MolSysView` lives here now as a package, not a single monolithic file.
+  - `__init__.py` preserves the public import path `molsysviewer.viewer.MolSysView`.
+  - `core.py` keeps the high-level facade/orchestration.
+  - `history.py` owns replayable message/history recording.
+  - `export.py` owns HTML/export message assembly.
+  - `scene_registry.py` owns non-structural scene objects and layer grouping.
+  - `representations.py` and `presets.py` keep normalization logic out of the facade.
 - `molsysviewer/widget.py`
   - AnyWidget wrapper, exports `viewer.js` as `_esm` and synced traits.
 - `molsysviewer/new_view.py`

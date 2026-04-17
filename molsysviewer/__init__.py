@@ -18,6 +18,7 @@ from .addons import (
     AddonExportHelperSpec,
     AddonLifecycleSpec,
     AddonPanelSpec,
+    AddonPanelWidget,
     AddonShapeProviderSpec,
     AddonSpec,
     AddonStyleHelperSpec,
@@ -27,7 +28,17 @@ from .addons import (
 )
 from .styles import Style
 from .figures import FigureSpec
-from .viewer import MolSysView
+from .viewer import MolSysView, ViewerInfo
+from .colors import (
+    ColorRegistry,
+    ContinuousPalette,
+    CategoricalColorScheme,
+    colors,
+    normalize_color,
+    normalize_colors,
+    scalar_to_color_list,
+    expand_values_to_atoms,
+)
 
 
 def __print_version__():
@@ -60,6 +71,7 @@ def launch_standalone_qt0(*args, **kwargs):
 
 __all__ = [
     "MolSysView",
+    "ViewerInfo",
     "new_view",
     "demo",
     "tools",
@@ -67,6 +79,14 @@ __all__ = [
     "addons",
     "Style",
     "FigureSpec",
+    "colors",
+    "normalize_color",
+    "normalize_colors",
+    "scalar_to_color_list",
+    "expand_values_to_atoms",
+    "ColorRegistry",
+    "ContinuousPalette",
+    "CategoricalColorScheme",
     "build_standalone0_html",
     "launch_standalone0",
     "create_standalone_qt0_window",
@@ -81,4 +101,5 @@ __all__ = [
     "AddonExportHelperSpec",
     "AddonToolModeSpec",
     "AddonLifecycleSpec",
+    "AddonPanelWidget",
 ]

@@ -162,6 +162,11 @@ export const bootPopup = async (loadedModule?: any) => {
         await new Promise(r => setTimeout(r, 100));
 
         const ctrl = await MolSysViewerController.create(container, (msg: any) => {
+            // Forward interactive measurements to the host so it can apply them to
+            // its own canvas and record them in Python history.
+            if (msg?.event === "interaction_measurement_created") {
+                sendToHost("molsysviewer-popup-interaction", msg);
+            }
             sendToHost("molsysviewer-log-from-popout", msg);
         });
 

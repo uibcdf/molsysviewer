@@ -96,7 +96,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
     try {
         const host = new FakeElement() as any;
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1,2,3,4,5], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {
@@ -138,7 +138,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         assert.strictEqual(title?.textContent, "Navigate");
         assert.strictEqual(root.style.display, 'flex');
         assert.strictEqual(toggle.textContent, '>');
-        assert.strictEqual(root.style.transform, 'translateX(-240px)');
+        assert.strictEqual(root.style.transform, 'translateX(-560px)');
         panel.dispose();
     } finally {
         restore();
@@ -150,7 +150,7 @@ test("GroupPanel renders active, saved, and region summaries", () => {
     try {
         const host = new FakeElement() as any;
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {
@@ -217,7 +217,7 @@ test("GroupPanel preserves collapse state when strips are recreated", () => {
     try {
         const host = new FakeElement() as any;
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1,2,3], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {
@@ -276,7 +276,7 @@ test("GroupPanel saved and region summaries trigger their primary actions", () =
             (tag) => { restoredTag = tag; },
             (tag) => { focusedRegion = tag; },
         );
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {
@@ -326,7 +326,7 @@ test("GroupPanel exposes shared expanded state API", () => {
         const host = new FakeElement() as any;
         let lastExpanded: boolean | null = null;
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {
@@ -360,7 +360,7 @@ test("GroupPanel exposes shared expanded state API", () => {
         panel.setExpanded(false);
         assert.strictEqual(panel.isExpanded(), false);
         assert.strictEqual(lastExpanded, false);
-        assert.strictEqual(root.style.transform, "translateX(-240px)");
+        assert.strictEqual(root.style.transform, "translateX(-560px)");
 
         panel.dispose();
     } finally {
@@ -434,7 +434,7 @@ test("GroupPanel can be force-hidden for non-core workspaces", () => {
     try {
         const host = new FakeElement() as any;
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {
@@ -536,7 +536,7 @@ test("GroupPanel header nav button triggers navigate-to-workbench callback", () 
         let navigated = 0;
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         panel.setOnNavigateToWorkbench(() => { navigated += 1; });
-        const structure = { units: [{ kind: 0, model: {
+        const structure = { units: [{ kind: 0, elements: [0,1], model: {
             sourceData: {
                 kind: "mol-viewer:molsysmt",
                 data: {

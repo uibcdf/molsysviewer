@@ -1,4 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 functions_with_boolean = (
         'molsysmt.basic.get.get',
@@ -8,6 +9,8 @@ functions_with_boolean = (
 
 
 def digest_n_atoms(n_atoms, caller=None):
+
+    caller = normalize_viewer_caller(caller)
 
     if caller.endswith(functions_with_boolean):
         if isinstance(n_atoms, bool):

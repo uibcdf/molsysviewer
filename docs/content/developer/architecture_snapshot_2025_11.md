@@ -6,6 +6,13 @@ It is not the source of truth, but it is useful when you need a compact descript
 
 If you want the current high-level view, see {doc}`architecture` and {doc}`architecture_full`.
 
+Historical note:
+
+- This snapshot preserves behavior and responsibilities from late 2025.
+- The current codebase no longer keeps `MolSysView` in a monolithic
+  `molsysviewer/viewer.py`; it now lives under the `molsysviewer/viewer/`
+  package.
+
 ## 1. High-level layers
 
 MolSysViewer is split into:
@@ -15,6 +22,8 @@ MolSysViewer is split into:
   - Loaders for MolSysMT/PDB/mmCIF/URL.
   - Regions/layers/whole and shapes APIs.
   - HTML export helpers (standalone + docs-lite).
+  - In the current tree, `MolSysView` is implemented under
+    `molsysviewer/viewer/` rather than a single `viewer.py` module.
 - **TypeScript/Mol* layer (`molsysviewer/js/src/`)**
   - AnyWidget entry (`index.ts`).
   - `MolSysViewerController` and handlers (`loader`, `scene`, `state`, `trajectory`).

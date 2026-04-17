@@ -1,4 +1,5 @@
 import pyunitwizard as puw
+import molsysmt as msm
 import molsysviewer._pyunitwizard  # noqa: F401
 
 from molsysviewer import demo
@@ -131,6 +132,25 @@ def test_context_action_save_selection_executes_python_bridge():
     assert records[0]["atom_indices"] == atom_indices
 
 
+def test_context_action_remove_selection_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = _seed_group_selection(view, 0)
+    n_atoms_before = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "remove_selection",
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
+        }
+    )
+
+    n_atoms_after = int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
+    assert n_atoms_after == n_atoms_before - len(atom_indices)
+    assert view.active_selection.is_empty(skip_digestion=True) is True
+    assert view._message_history[-1]["op"] == "clear_active_selection"  # noqa: SLF001
+
+
 def test_context_action_activate_selection_executes_python_bridge():
     view = demo["dialanine"]
     atom_indices = list(view.select(selection="group_index==1"))
@@ -201,6 +221,7 @@ def test_add_label_from_active_selection_creates_replayable_annotation():
             "options": {
                 "text": "Selected group",
                 "tag": "picked-label",
+                "layer_tag": "picked-label",
                 "atom_indices": atom_indices,
             },
         }
@@ -296,6 +317,86 @@ def test_context_action_delete_shape_executes_python_bridge():
     assert [msg for msg in view._build_export_messages() if msg.get("tag") == "shape-1"] == []  # noqa: SLF001
 
 
+def test_context_action_delete_measurement_executes_python_bridge():
+    view = demo["dialanine"]
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_measurement_created",
+            "action": "distance",
+            "picked_count": 2,
+            "picks_atom_indices": [[0], [1]],
+        }
+    )
+    view.layers["layer1"].set_tag("dist-1", skip_digestion=True)
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "delete_measurement",
+            "tag": "dist-1",
+            "context": {
+                "event": "interaction_context_menu",
+                "kind": "measurement",
+                "atom_indices": [0, 1],
+                "tag": "dist-1",
+            },
+        }
+    )
+
+    assert "dist-1" not in view.layers
+    assert view.measurements.info("dist-1") == []
+    assert [msg for msg in view._build_export_messages() if msg.get("tag") == "dist-1"] == []  # noqa: SLF001
+
+
+def test_context_action_hide_measurement_executes_python_bridge():
+    view = demo["dialanine"]
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_measurement_created",
+            "action": "distance",
+            "picked_count": 2,
+            "picks_atom_indices": [[0], [1]],
+        }
+    )
+    view.layers["layer1"].set_tag("dist-1", skip_digestion=True)
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "hide_measurement",
+            "tag": "dist-1",
+            "context": {
+                "event": "interaction_context_menu",
+                "kind": "measurement",
+                "atom_indices": [0, 1],
+                "tag": "dist-1",
+            },
+        }
+    )
+
+    endpoint_labels = list(
+        msm.get(view._molsys, element="atom", selection=[0, 1], atom_name=True, skip_digestion=True)  # noqa: SLF001
+    )
+
+    assert "dist-1" in view.layers
+    assert view.layers["dist-1"]._hidden is True  # noqa: SLF001
+    assert view.measurements.info("dist-1") == [
+        {
+            "kind": "distance",
+            "tag": "dist-1",
+            "layer_tag": "dist-1",
+            "n_picks": 2,
+            "picks_atom_indices": [[0], [1]],
+            "endpoint_kinds": ["atom", "atom"],
+            "endpoint_policy": "centroid",
+            "endpoint_labels": endpoint_labels,
+            "endpoint_atom_indices": [[0], [1]],
+            "visible": False,
+            "active": True,
+        }
+    ]
+
+
 def test_add_label_from_active_selection_requires_exactly_one_group():
     view = demo["dialanine"]
     event = {
@@ -341,7 +442,8 @@ def test_full_reproducible_workflow_exports_region_selection_label_and_measureme
             "picks_atom_indices": [[group_1_atoms[0]], [group_2_atoms[0]]],
         }
     )
-    measurement = view.measurements.persist_last_measurement(tag="picked-distance")
+    measurement = view.layers["layer1"]
+    measurement.set_tag("picked-distance", skip_digestion=True)
 
     assert region.tag == "picked-region"
     assert selection.tag == "picked"
@@ -385,12 +487,21 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
             "picks_atom_indices": [[group_1_atoms[0]], [group_2_atoms[0]]],
         }
     )
-    view.measurements.persist_last_measurement(tag="picked-distance")
+    view.layers["layer1"].set_tag("picked-distance", skip_digestion=True)
 
     view.remove(selection="group_index==0")
 
     remapped_group_0_atoms = list(view.select(selection="group_index==0"))
     remapped_group_1_atoms = list(view.select(selection="group_index==1"))
+    endpoint_labels = list(
+        msm.get(
+            view._molsys,  # noqa: SLF001
+            element="atom",
+            selection=[remapped_group_0_atoms[0], remapped_group_1_atoms[0]],
+            atom_name=True,
+            skip_digestion=True,
+        )
+    )
 
     assert view.regions["picked-region"].atom_indices == tuple(remapped_group_0_atoms)
     assert view.selections.info("picked")["atom_indices"] == remapped_group_0_atoms
@@ -400,8 +511,13 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
         {
             "kind": "distance",
             "tag": "picked-distance",
+            "layer_tag": "picked-distance",
             "n_picks": 2,
             "picks_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
+            "endpoint_kinds": ["atom", "atom"],
+            "endpoint_policy": "centroid",
+            "endpoint_labels": endpoint_labels,
+            "endpoint_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
             "visible": True,
             "active": True,
         }

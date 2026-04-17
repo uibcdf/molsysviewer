@@ -103,3 +103,379 @@ test("state handler registerShapeRef indexes ref and emits layer ack for new tag
         { event: "layer_ack", tag: "shape-tag", kind: "shape", meta: {} },
     ]);
 });
+
+test("state handler clears orphan default global representations before applying a new global representation", async () => {
+    const removed: string[] = [];
+    const structureRef = "structure-ref";
+    const plugin: any = {
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: {
+                        structures: [
+                            {
+                                representations: [{ cell: { transform: { ref: "default-repr" } } }],
+                                components: [],
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        builders: {
+            structure: {
+                representation: {
+                    async applyPreset(_ref: any, _preset: any, _params: any) {
+                        return { representations: { main: { ref: "new-global-repr" } } };
+                    },
+                },
+            },
+        },
+        state: {
+            data: {
+                cells: new Map([
+                    ["default-repr", {}],
+                    ["new-global-repr", {}],
+                ]),
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: structureRef } as any),
+        getCurrentStructureRef: () => structureRef as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    plugin.state.data.cells.has = (ref: string) => ref === "default-repr" || ref === "new-global-repr";
+    (handler as any).removeStateObject = async (ref?: string) => {
+        if (ref) removed.push(ref);
+    };
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.setGlobalRepresentation({
+        op: "set_global_representation",
+        preset: "auto",
+        params: {},
+    } as any);
+
+    assert.deepStrictEqual(removed, ["default-repr"]);
+    const globalReprs = (handler as any).globalReprs as Set<string>;
+    assert.deepStrictEqual(Array.from(globalReprs), ["new-global-repr"]);
+});
+
+test("state handler captures initial global representations on structure load", async () => {
+    const plugin: any = {
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: {
+                        structures: [
+                            {
+                                representations: [{ cell: { transform: { ref: "default-repr" } } }],
+                                components: [],
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        state: { data: {} },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: "structure-ref" } as any),
+        getCurrentStructureRef: () => "structure-ref" as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).ensureDefaultGlobalRepresentation = async () => {};
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.onStructureLoaded();
+
+    const globalReprs = (handler as any).globalReprs as Set<string>;
+    assert.deepStrictEqual(Array.from(globalReprs), ["default-repr"]);
+});
+
+test("state handler maps structural color_scheme to a Mol* color theme for direct global representations", async () => {
+    const applied: any[] = [];
+    const structureRef = "structure-ref";
+    const plugin: any = {
+        state: {
+            data: {
+                build() {
+                    return {
+                        to(ref: string) {
+                            assert.strictEqual(ref, structureRef);
+                            return {
+                                apply(_transform: any, params: any, opts: any) {
+                                    applied.push({ params, opts });
+                                    return { ref: "repr-ref" };
+                                },
+                            };
+                        },
+                        async commit() {},
+                    };
+                },
+                cells: new Map(),
+            },
+        },
+        representation: {
+            structure: {
+                registry: {
+                    default: { provider: { defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) } },
+                    get: () => ({ name: "cartoon", defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) }),
+                },
+                themes: {
+                    colorThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                    sizeThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                },
+            },
+        },
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: { structures: [{ representations: [], components: [] }] },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: structureRef } as any),
+        getCurrentStructureRef: () => structureRef as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.setGlobalRepresentation({
+        op: "set_global_representation",
+        representation: "cartoon",
+        params: { color_scheme: "secondary_structure_default" },
+    } as any);
+
+    assert.strictEqual(applied.length, 1);
+    assert.strictEqual(applied[0].params.type.name, "cartoon");
+    assert.strictEqual(applied[0].params.colorTheme.name, "secondary-structure");
+    assert.deepStrictEqual(applied[0].opts, { tags: "global" });
+});
+
+test("state handler maps curated structural color and size schemes for direct global representations", async () => {
+    const applied: any[] = [];
+    const structureRef = "structure-ref";
+    const plugin: any = {
+        state: {
+            data: {
+                build() {
+                    return {
+                        to(ref: string) {
+                            assert.strictEqual(ref, structureRef);
+                            return {
+                                apply(_transform: any, params: any, opts: any) {
+                                    applied.push({ params, opts });
+                                    return { ref: "repr-ref" };
+                                },
+                            };
+                        },
+                        async commit() {},
+                    };
+                },
+                cells: new Map(),
+            },
+        },
+        representation: {
+            structure: {
+                registry: {
+                    default: { provider: { defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) } },
+                    get: () => ({ name: "cartoon", defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) }),
+                },
+                themes: {
+                    colorThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                    sizeThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                },
+            },
+        },
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: { structures: [{ representations: [], components: [] }] },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: structureRef } as any),
+        getCurrentStructureRef: () => structureRef as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.setGlobalRepresentation({
+        op: "set_global_representation",
+        representation: "cartoon",
+        params: { color_scheme: "residue_name", size_scheme: "physical" },
+    } as any);
+
+    assert.strictEqual(applied.length, 1);
+    assert.strictEqual(applied[0].params.type.name, "cartoon");
+    assert.strictEqual(applied[0].params.colorTheme.name, "residue-name");
+    assert.strictEqual(applied[0].params.sizeTheme.name, "physical");
+    assert.deepStrictEqual(applied[0].opts, { tags: "global" });
+});
+
+test("state handler accepts advanced Mol* color and size themes for direct global representations", async () => {
+    const applied: any[] = [];
+    const structureRef = "structure-ref";
+    const plugin: any = {
+        state: {
+            data: {
+                build() {
+                    return {
+                        to(ref: string) {
+                            assert.strictEqual(ref, structureRef);
+                            return {
+                                apply(_transform: any, params: any, opts: any) {
+                                    applied.push({ params, opts });
+                                    return { ref: "repr-ref" };
+                                },
+                            };
+                        },
+                        async commit() {},
+                    };
+                },
+                cells: new Map(),
+            },
+        },
+        representation: {
+            structure: {
+                registry: {
+                    default: { provider: { defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) } },
+                    get: () => ({ name: "cartoon", defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) }),
+                },
+                themes: {
+                    colorThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                    sizeThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                },
+            },
+        },
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: { structures: [{ representations: [], components: [] }] },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: structureRef } as any),
+        getCurrentStructureRef: () => structureRef as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.setGlobalRepresentation({
+        op: "set_global_representation",
+        representation: "cartoon",
+        params: {
+            molstar_color_theme: { name: "residue-name", params: { saturation: 0 } },
+            molstar_size_theme: { name: "uniform", params: { value: 2.0 } },
+        },
+    } as any);
+
+    assert.strictEqual(applied.length, 1);
+    assert.strictEqual(applied[0].params.colorTheme.name, "residue-name");
+    assert.deepStrictEqual(applied[0].params.colorTheme.params, { saturation: 0 });
+    assert.strictEqual(applied[0].params.sizeTheme.name, "uniform");
+    assert.deepStrictEqual(applied[0].params.sizeTheme.params, { value: 2.0 });
+});
+
+test("state handler gives curated structural color and size schemes priority over advanced Mol* themes", async () => {
+    const applied: any[] = [];
+    const structureRef = "structure-ref";
+    const plugin: any = {
+        state: {
+            data: {
+                build() {
+                    return {
+                        to(ref: string) {
+                            assert.strictEqual(ref, structureRef);
+                            return {
+                                apply(_transform: any, params: any, opts: any) {
+                                    applied.push({ params, opts });
+                                    return { ref: "repr-ref" };
+                                },
+                            };
+                        },
+                        async commit() {},
+                    };
+                },
+                cells: new Map(),
+            },
+        },
+        representation: {
+            structure: {
+                registry: {
+                    default: { provider: { defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) } },
+                    get: () => ({ name: "cartoon", defaultColorTheme: { name: "chain-id", props: {} }, defaultSizeTheme: { name: "uniform", props: {} }, getParams: () => ({}) }),
+                },
+                themes: {
+                    colorThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                    sizeThemeRegistry: {
+                        get: (name: string) => ({ name, getParams: () => ({}), defaultValues: {} }),
+                    },
+                },
+            },
+        },
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: { structures: [{ representations: [], components: [] }] },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: structureRef } as any),
+        getCurrentStructureRef: () => structureRef as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.setGlobalRepresentation({
+        op: "set_global_representation",
+        representation: "cartoon",
+        params: {
+            color_scheme: "secondary_structure_default",
+            size_scheme: "physical",
+            molstar_color_theme: "residue-name",
+            molstar_size_theme: "uniform",
+        },
+    } as any);
+
+    assert.strictEqual(applied.length, 1);
+    assert.strictEqual(applied[0].params.colorTheme.name, "secondary-structure");
+    assert.strictEqual(applied[0].params.sizeTheme.name, "physical");
+});

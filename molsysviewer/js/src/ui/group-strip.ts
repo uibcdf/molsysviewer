@@ -1,4 +1,6 @@
-import { StructureElement, Structure } from "molstar/lib/mol-model/structure";
+import { StructureElement, Structure, Unit } from "molstar/lib/mol-model/structure";
+import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 
 import { ActiveSelectionItem, ActiveSelectionPayload } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
@@ -24,16 +26,22 @@ function selectionKey(item: ActiveSelectionItem): string {
 }
 
 function makeLociForItem(structure: Structure, item: ActiveSelectionItem): StructureElement.Loci | null {
-    const unit = structure.units.find((candidate) => candidate.kind === 0);
-    if (!unit) return null;
-    const indices: number[] = [];
-    const unitElements = unit.elements;
-    for (const atomIndex of item.atom_indices) {
-        const unitIndex = unitElements.indexOf(atomIndex as any);
-        if (unitIndex >= 0) indices.push(unitIndex);
+    const target = new Set(item.atom_indices);
+    const lociElements: { unit: Unit.Atomic; indices: any }[] = [];
+    for (const unit of structure.units) {
+        if (!Unit.isAtomic(unit)) continue;
+        const elements = unit.elements;
+        const count = OrderedSet.size(elements);
+        const matched: number[] = [];
+        for (let i = 0; i < count; i++) {
+            if (target.has(OrderedSet.getAt(elements, i))) matched.push(i);
+        }
+        if (matched.length > 0) {
+            lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });
+        }
     }
-    if (indices.length === 0) return null;
-    return StructureElement.Loci(structure, [{ unit, indices } as any]);
+    if (lociElements.length === 0) return null;
+    return StructureElement.Loci(structure, lociElements as any);
 }
 
 function buildHierarchyCaption(kind: "molecule" | "component", index: number, name?: string): string {

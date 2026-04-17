@@ -28,7 +28,8 @@ export class PanelShell {
     public readonly workspaceGroupElement: HTMLDivElement;
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
-    private readonly width: number;
+    public readonly width: number;
+    public readonly toggleWidth: number;
     private readonly workspaceCurrentElement: HTMLButtonElement;
     private readonly workspaceCurrentMarkerElement: HTMLSpanElement;
     private readonly workspaceCurrentTitleElement: HTMLSpanElement;
@@ -43,6 +44,7 @@ export class PanelShell {
         const width = options.width ?? 240;
         const toggleWidth = options.toggleWidth ?? 26;
         this.width = width;
+        this.toggleWidth = toggleWidth;
 
         this.root = document.createElement("div");
         Object.assign(this.root.style, {
@@ -55,6 +57,7 @@ export class PanelShell {
             alignItems: "stretch",
             pointerEvents: "auto",
             zIndex: "16",
+            overflow: "hidden",
             transform: `translateX(-${width}px)`,
             transition: "transform 160ms ease",
         });
@@ -78,7 +81,6 @@ export class PanelShell {
             borderLeft: "0",
             background: "rgba(18, 18, 22, 0.92)",
             color: "#f4f4f5",
-            boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
             fontSize: "12px",
         });
@@ -268,12 +270,11 @@ export class PanelShell {
             width: `${toggleWidth}px`,
             minWidth: `${toggleWidth}px`,
             height: "54px",
-            border: "1px solid rgba(255,255,255,0.16)",
+            border: "1px solid rgba(255,255,255,0.14)",
             borderLeft: "0",
             borderRadius: "0 10px 10px 0",
-            background: "rgba(18, 18, 22, 0.94)",
-            color: "#f4f4f5",
-            boxShadow: "0 10px 24px rgba(0,0,0,0.24)",
+            background: "rgba(18, 18, 22, 0.92)",
+            color: "rgba(248, 250, 252, 0.94)",
             cursor: "pointer",
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
             fontSize: "16px",

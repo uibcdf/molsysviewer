@@ -1,8 +1,11 @@
 import numpy as np
 from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 def digest_force(force, caller=None):
+
+    caller = normalize_viewer_caller(caller)
 
     if caller in {"molsysviewer.viewer.MolSysView.show", "molsysviewer.viewer.show"}:
         if isinstance(force, bool):

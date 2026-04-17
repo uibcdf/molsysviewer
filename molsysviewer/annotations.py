@@ -6,7 +6,7 @@ import molsysmt as msm
 from smonitor import signal
 
 from ._private.arg_digestion import digest
-from .layers import Layer
+from .layers import Annotation, Layer
 
 
 class AnnotationsManager:
@@ -15,15 +15,22 @@ class AnnotationsManager:
     def __init__(self, view: Any) -> None:
         self._view = view
 
-    def _ensure_layer(self, tag: str) -> Layer:
-        if tag not in self._view._layers:  # noqa: SLF001
-            self._view._layers[tag] = Layer(self._view, tag, kind="annotation", meta={})  # noqa: SLF001
-        else:
-            self._view._layers[tag].kind = "annotation"  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+    def __getitem__(self, tag: str) -> Layer:
+        layer = self.get(tag, skip_digestion=True)
+        if layer is None:
+            raise KeyError(tag)
+        return layer
+
+    def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
+        tag = self._view._assert_scene_object_tag_available(tag)  # noqa: SLF001
+        resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
+        self._view._ensure_layer_group(resolved_layer_tag, kind="annotation")  # noqa: SLF001
+        annotation = Annotation(self._view, tag, layer_tag=resolved_layer_tag, meta={})
+        self._view._scene_objects[tag] = annotation  # noqa: SLF001
+        return annotation
 
     def _annotation_layer(self, tag: str) -> Layer | None:
-        layer = self._view._layers.get(tag)  # noqa: SLF001
+        layer = self._view._scene_objects.get(tag)  # noqa: SLF001
         if layer is None or getattr(layer, "kind", None) != "annotation":
             return None
         return layer
@@ -34,30 +41,67 @@ class AnnotationsManager:
             raise ValueError(f"No annotation layer found for tag {tag!r}.")
         return layer
 
-    def _resolve_group_atom_indices(self, group_index: Any) -> list[int]:
+    def _resolve_anchor_atom_indices(
+        self,
+        selection: Any = None,
+        *,
+        atom_indices: Any = None,
+        group_index: Any = None,
+    ) -> list[int]:
+        """Resolve the label anchor to a flat list of atom indices."""
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded. Load a system before adding labels.")
 
-        if not isinstance(group_index, list) or len(group_index) != 1:
-            raise ValueError("Annotation label operations currently require exactly one group_index.")
+        if atom_indices is not None:
+            resolved = [int(i) for i in atom_indices]
+            if not resolved:
+                raise ValueError("atom_indices is empty.")
+            return resolved
 
-        group_idx = int(group_index[0])
-        atom_indices = msm.select(
-            self._view._molsys,  # noqa: SLF001
-            selection=f"group_index=={group_idx}",
-            syntax="MolSysMT",
-            skip_digestion=True,
-        )
-        atom_indices = [int(ii) for ii in atom_indices]
-        if len(atom_indices) == 0:
-            raise ValueError(f"Group index {group_idx} did not resolve to any atoms.")
-        return atom_indices
+        if selection is not None:
+            resolved = [
+                int(i)
+                for i in msm.select(
+                    self._view._molsys,  # noqa: SLF001
+                    selection=selection,
+                    syntax="MolSysMT",
+                    skip_digestion=True,
+                )
+            ]
+            if not resolved:
+                raise ValueError(f"Selection {selection!r} did not resolve to any atoms.")
+            return resolved
+
+        if group_index is not None:
+            import warnings
+            warnings.warn(
+                "The group_index parameter is deprecated. Use selection or atom_indices instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            if not isinstance(group_index, list) or len(group_index) != 1:
+                raise ValueError("group_index must be a single-element list.")
+            group_idx = int(group_index[0])
+            resolved = [
+                int(i)
+                for i in msm.select(
+                    self._view._molsys,  # noqa: SLF001
+                    selection=f"group_index=={group_idx}",
+                    syntax="MolSysMT",
+                    skip_digestion=True,
+                )
+            ]
+            if not resolved:
+                raise ValueError(f"Group index {group_idx} did not resolve to any atoms.")
+            return resolved
+
+        raise ValueError("Provide selection, atom_indices, or group_index.")
 
     @signal(tags=["annotation"])
     @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
         """Return the active annotation tags."""
-        return [tag for tag, layer in self._view._layers.items() if getattr(layer, "kind", None) == "annotation"]  # noqa: SLF001
+        return [tag for tag, layer in self._view._scene_objects.items() if getattr(layer, "kind", None) == "annotation"]  # noqa: SLF001
 
     @signal(tags=["annotation"])
     @digest()
@@ -101,6 +145,7 @@ class AnnotationsManager:
             return {
                 "kind": "label" if record.get("op") == "add_label" else "annotation",
                 "tag": record_tag,
+                "layer_tag": None if layer is None else getattr(layer, "layer_tag", record_tag),
                 "text": options.get("text"),
                 "n_atoms": len(atom_indices),
                 "atom_indices": list(atom_indices),
@@ -121,31 +166,96 @@ class AnnotationsManager:
 
     @signal(tags=["annotation"])
     @digest()
-    def add_label(
+    def add_annotation(
         self,
         text: str,
-        group_index: Any,
+        kind: str = "label",
+        selection: Any = None,
+        *,
+        atom_indices: Any = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
+        syntax: str = "MolSysMT",
         skip_digestion: bool = False,
     ) -> Layer:
-        """Add a persistent label anchored to a single group."""
-        atom_indices = self._resolve_group_atom_indices(group_index)
+        """Add a persistent annotation anchored to a set of atoms.
 
-        layer_tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        layer = self._ensure_layer(layer_tag)
+        The anchor position is the geometric centroid of the resolved atoms.
+
+        Parameters
+        ----------
+        text
+            Annotation text to display.
+        kind
+            Annotation kind.  Currently only ``"label"`` is supported.
+        selection
+            MolSysMT selection string or expression (e.g. ``'group_index==5'``).
+        atom_indices
+            Explicit list of atom indices. Takes priority over *selection*.
+        tag
+            Unique identifier for this annotation object.
+        layer_tag
+            Layer group for this annotation.
+        syntax
+            Selection syntax (default ``"MolSysMT"``).
+        """
+        resolved_atom_indices = self._resolve_anchor_atom_indices(
+            selection, atom_indices=atom_indices
+        )
+
+        object_tag = tag or self._view._next_annotation_tag()  # noqa: SLF001
+        resolved_layer_tag = layer_tag if layer_tag is not None else object_tag
+        layer = self._ensure_layer(object_tag, layer_tag=resolved_layer_tag)
 
         self._view._send(  # noqa: SLF001
             {
                 "op": "add_label",
-                "tag": layer_tag,
+                "tag": object_tag,
                 "options": {
                     "text": text,
-                    "tag": layer_tag,
-                    "atom_indices": atom_indices,
+                    "tag": object_tag,
+                    "layer_tag": resolved_layer_tag,
+                    "atom_indices": resolved_atom_indices,
                 },
             }
         )
         return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def add_label(
+        self,
+        text: str,
+        selection: Any = None,
+        *,
+        atom_indices: Any = None,
+        group_index: Any = None,
+        tag: str | None = None,
+        layer_tag: str | None = None,
+        skip_digestion: bool = False,
+    ) -> Layer:
+        """Deprecated: use ``add_annotation()`` instead."""
+        import warnings
+        warnings.warn(
+            "annotations.add_label() is deprecated; use add_annotation() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        # Resolve group_index here so add_annotation() doesn't need it.
+        resolved_atom_indices = atom_indices
+        if group_index is not None and atom_indices is None and selection is None:
+            resolved_atom_indices = self._resolve_anchor_atom_indices(
+                selection=None, atom_indices=None, group_index=group_index
+            )
+        return self.add_annotation(
+            text=text,
+            kind="label",
+            selection=selection,
+            atom_indices=resolved_atom_indices,
+            tag=tag,
+            layer_tag=layer_tag,
+            skip_digestion=True,
+        )
 
     @signal(tags=["annotation", "selection"])
     @digest()
@@ -154,6 +264,7 @@ class AnnotationsManager:
         text: str,
         *,
         tag: str | None = None,
+        layer_tag: str | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
         """Add a persistent label from the last active selection.
@@ -178,6 +289,7 @@ class AnnotationsManager:
             text=text,
             group_index=[int(group_indices[0])],
             tag=tag,
+            layer_tag=layer_tag,
             skip_digestion=True,
         )
 
@@ -210,6 +322,14 @@ class AnnotationsManager:
         """Rename an annotation layer tag."""
         layer = self._require_annotation_layer(tag)
         layer.set_tag(new_tag, skip_digestion=True)
+        return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_layer_tag(self, tag: str, new_layer_tag: str, skip_digestion: bool = False) -> Layer:
+        """Move an annotation to a different grouping layer."""
+        layer = self._require_annotation_layer(tag)
+        layer.set_layer_tag(new_layer_tag, skip_digestion=True)
         return layer
 
     @signal(tags=["annotation"])

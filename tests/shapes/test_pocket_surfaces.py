@@ -31,6 +31,7 @@ def test_add_pocket_surface_basic_message():
                 "scalars": [0.1, 0.2, 0.3],
                 "alpha": 0.5,
                 "tag": "shape-1",
+                "layer_tag": "shape-1",
             },
         }
     ]

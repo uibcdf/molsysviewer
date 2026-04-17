@@ -89,7 +89,7 @@ class ActiveSelection:
     @digest()
     def is_empty(self, skip_digestion: bool = False) -> bool:
         """Return whether the active selection is empty."""
-        return self.source_kind == "empty" or len(self.atom_indices) == 0 and len(self.items) == 0
+        return (self.source_kind == "empty") or (len(self.atom_indices) == 0 and len(self.items) == 0)
 
     @signal(tags=["selection", "camera"])
     @digest()

@@ -6,6 +6,8 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..colors import colors as global_colors
+from ._registry import register_shape_layer
 
 
 class ChannelTubes:
@@ -48,6 +50,8 @@ class ChannelTubes:
         *,
         centers: Iterable[Sequence[float]],
         radii: Iterable[float],
+        color_by: str | None = None,
+        palette=None,
         color_mode: str | None = None,
         solvent_distances: Iterable[float] | None = None,
         colors: Sequence[int] | None = None,
@@ -56,6 +60,7 @@ class ChannelTubes:
         smoothing_subdivisions: int | None = None,
         alpha: float | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         name: str | None = None,
         skip_digestion: bool = False,
     ):
@@ -71,32 +76,39 @@ class ChannelTubes:
 
         distances_list = self._normalize_sequence(solvent_distances, len(centers_list), float)
         colors_list = self._normalize_sequence(colors, len(centers_list), int)
+        color_registry = getattr(self._view, "colors", global_colors)
+        resolved_color_by = color_by or color_mode
+        resolved_palette = palette if palette is not None else color_map
+        serialized_palette = None
+        if resolved_palette is not None:
+            serialized_palette = color_registry.resolve_palette(resolved_palette).colors
 
         options: dict = {
             "centers": centers_list,
             "radii": radii_list,
         }
-        if color_mode is not None:
-            options["color_mode"] = color_mode
+        if resolved_color_by is not None:
+            options["color_mode"] = resolved_color_by
+            options["color_by"] = resolved_color_by
         if distances_list is not None:
             options["solvent_distances"] = distances_list
         if colors_list is not None:
             options["colors"] = colors_list
-        if color_map is not None:
-            options["color_map"] = color_map
+        if serialized_palette is not None:
+            options["palette"] = serialized_palette
+            options["color_map"] = serialized_palette
         if radial_segments is not None:
             options["radial_segments"] = int(radial_segments)
         if smoothing_subdivisions is not None:
             options["smoothing_subdivisions"] = int(smoothing_subdivisions)
         if alpha is not None:
             options["alpha"] = float(alpha)
-        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        options["tag"] = tag
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(self._view, tag, layer_tag=layer_tag)
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
         if name is not None:
             options["name"] = name
 
         self._view._send({"op": "add_channel_tube", "options": options})
-        if tag not in self._view._layers:  # noqa: SLF001
-            from ..layers import Layer
-            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+        return layer

@@ -6,6 +6,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ._registry import register_shape_layer
 
 
 class TriangleFaces:
@@ -23,7 +24,7 @@ class TriangleFaces:
         normalized: list[list[list[float]]] = []
         for tri in vertices_raw:
             tri_list = list(tri)
-            if len(tri_list) == 3 and all(isinstance(v, Sequence) and len(v) == 3 for v in tri_list):
+            if len(tri_list) == 3 and all(hasattr(v, "__len__") and len(v) == 3 for v in tri_list):
                 normalized.append(
                     [
                         [float(tri_list[0][0]), float(tri_list[0][1]), float(tri_list[0][2])],
@@ -90,6 +91,7 @@ class TriangleFaces:
         normal_length: float | None = None,
         normal_color: int | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         skip_digestion: bool = False,
     ):
         """Add custom triangle faces using coordinates or atom indices.
@@ -132,11 +134,15 @@ class TriangleFaces:
             options["normal_length"] = float(puw.get_value(normal_length, to_unit="nm"))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
-        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        options["tag"] = tag
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(
+            self._view,
+            tag,
+            layer_tag=layer_tag,
+            meta={"shape_kind": "triangle_faces", "shape_name": "Triangle Faces"},
+        )
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
 
         self._view._send({"op": "add_triangle_faces", "options": options})
-        if tag not in self._view._layers:  # noqa: SLF001
-            from ..layers import Layer
-            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+        return layer

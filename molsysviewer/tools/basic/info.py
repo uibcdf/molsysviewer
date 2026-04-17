@@ -14,6 +14,8 @@ def info(
     selection: Any = "all",
     syntax: str = "MolSysMT",
     mask: Any = "all",
+    source: str = "all",
+    output_type: str = "styler",
     skip_digestion: bool = False,
 ):
     """Functional wrapper over ``MolSysView.info(...)``."""
@@ -22,5 +24,7 @@ def info(
         selection=selection,
         syntax=syntax,
         mask=mask,
+        source=source,
+        output_type=output_type,
         skip_digestion=False,
     )
