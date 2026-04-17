@@ -97,9 +97,8 @@ class AnnotationsManager:
 
         raise ValueError("Provide selection, atom_indices, or group_index.")
 
-    @signal(tags=["annotation"])
-    @digest()
-    def tags(self, skip_digestion: bool = False) -> list[str]:
+    @property
+    def tags(self) -> list[str]:
         """Return the active annotation tags."""
         return [tag for tag, layer in self._view._scene_objects.items() if getattr(layer, "kind", None) == "annotation"]  # noqa: SLF001
 

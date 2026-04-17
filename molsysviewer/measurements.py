@@ -231,6 +231,72 @@ class MeasurementsManager:
         }
         return layer
 
+    def _endpoint_position_nm(self, pick: list[int], ea_indices: list[int], policy: str) -> "np.ndarray | None":
+        molsys = self._view._molsys  # noqa: SLF001
+        if molsys is None:
+            return None
+        try:
+            if policy == "centroid" and len(pick) > 1:
+                atoms = pick
+            elif ea_indices:
+                atoms = [ea_indices[0]]
+            elif pick:
+                atoms = [pick[0]]
+            else:
+                return None
+            result = msm.get(molsys, element="atom", selection=atoms, output_type="dictionary", coordinates=True, skip_digestion=True)
+            coords = result.get("coordinates")
+            if coords is None:
+                return None
+            arr = np.asarray(coords)  # (n_structures, n_atoms, 3) in nm
+            return arr[0].mean(axis=0)  # centroid of selected atoms, shape (3,)
+        except Exception:
+            return None
+
+    def _compute_measurement_value(
+        self,
+        op: str,
+        picks_atom_indices: list[list[int]],
+        endpoint_atom_indices: list[list[int]],
+        endpoint_policy: str,
+    ) -> float | None:
+        positions = []
+        for i, pick in enumerate(picks_atom_indices):
+            ea = endpoint_atom_indices[i] if i < len(endpoint_atom_indices) else []
+            pos = self._endpoint_position_nm(pick, ea, endpoint_policy)
+            if pos is None:
+                return None
+            positions.append(pos)
+
+        try:
+            if op == "add_distance_measurement" and len(positions) == 2:
+                return float(np.linalg.norm(positions[1] - positions[0]) * 10)  # nm → Å
+            if op == "add_angle_measurement" and len(positions) == 3:
+                v1 = positions[0] - positions[1]
+                v2 = positions[2] - positions[1]
+                n1, n2 = np.linalg.norm(v1), np.linalg.norm(v2)
+                if n1 == 0 or n2 == 0:
+                    return None
+                return float(np.degrees(np.arccos(np.clip(np.dot(v1, v2) / (n1 * n2), -1.0, 1.0))))
+            if op == "add_dihedral_measurement" and len(positions) == 4:
+                b1 = positions[1] - positions[0]
+                b2 = positions[2] - positions[1]
+                b3 = positions[3] - positions[2]
+                n1 = np.cross(b1, b2)
+                n2 = np.cross(b2, b3)
+                nn1, nn2 = np.linalg.norm(n1), np.linalg.norm(n2)
+                if nn1 == 0 or nn2 == 0:
+                    return None
+                n1 /= nn1
+                n2 /= nn2
+                m1 = np.cross(n1, b2 / (np.linalg.norm(b2) or 1))
+                x = np.dot(n1, n2)
+                y = np.dot(m1, n2)
+                return float(np.degrees(np.arctan2(y, x)))
+        except Exception:
+            return None
+        return None
+
     def _send_measurement(
         self,
         op: str,
@@ -241,6 +307,10 @@ class MeasurementsManager:
         endpoint_policy: str | None = None,
         value: float | None = None,
     ) -> Layer:
+        if value is None:
+            policy = self._normalize_endpoint_policy(endpoint_policy)
+            _, _, ea_indices = self._resolve_endpoint_metadata(picks_atom_indices, policy)
+            value = self._compute_measurement_value(op, picks_atom_indices, ea_indices, policy)
         layer = self._record_measurement(op, picks_atom_indices, tag, layer_tag=layer_tag, endpoint_policy=endpoint_policy, value=value)
         self._view._send(
             self._build_measurement_message(
@@ -249,6 +319,7 @@ class MeasurementsManager:
                 tag,
                 layer_tag=getattr(layer, "layer_tag", tag),
                 endpoint_policy=endpoint_policy,
+                value=value,
             )
         )  # noqa: SLF001
         return layer
