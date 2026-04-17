@@ -29,6 +29,21 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 `devguide/pending_bugs/` is empty.
 
+Recently closed and implemented in this session (twenty-first batch):
+
+**Workspace UI disappearance bug — stale field name in `getWorkspaceOptions`**:
+
+- Root cause: `viewer-controller.ts:2148` referenced `this.addonRuntimeSummary`
+  (an undefined field) instead of `this.workbenchAddons`. When any addon with a
+  workspace was enabled, `getWorkspaceOptions()` threw a TypeError, crashing
+  `refreshPanelWorkspaceChrome()` and `refreshWorkbenchPanel()`, causing the
+  right panel to go blank.
+- Fix: one-line rename `addonRuntimeSummary` → `workbenchAddons` at the call site.
+- TS build: `npm run build` — exit 0, `viewer.js` updated.
+- `devguide/pending_bugs/BUG_addon_workspace_ui_disappearance.md` deleted.
+- `devguide/pending_bugs/BUG_addon_anisotropy_scaling_mismatch.md` deleted
+  (already fixed by the nm→Å shape wire format fix in the previous session).
+
 Recently closed and implemented in this session (twentieth batch):
 
 **Add-on panel widget contract — full implementation**:

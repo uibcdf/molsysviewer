@@ -1,6 +1,6 @@
 # Development Roadmap (Status-Aligned)
 
-Last update: 2026-04-15
+Last update: 2026-04-17
 
 This roadmap is status-aligned with the current repository state.
 It is organized by execution priority and uses three labels:

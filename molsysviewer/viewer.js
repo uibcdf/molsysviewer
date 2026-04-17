@@ -150322,7 +150322,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const workbenchSectionCount = workbenchSections.length;
       const workbenchSectionTitles = workbenchSections.map((item2) => item2.title);
       const contextActionCount = this.addonContextActions.filter((item2) => this.workspaceBelongsToAddon(workspace.id, item2.addon)).length;
-      const exportHelperCount = this.addonRuntimeSummary.find((item2) => item2.name === workspace.addon)?.exportHelperTitles.length ?? 0;
+      const exportHelperCount = this.workbenchAddons.find((item2) => item2.name === workspace.addon)?.exportHelperTitles.length ?? 0;
       const totalVisible = panelCount + workbenchSectionCount;
       if (totalVisible <= 0) continue;
       const summaryParts = [];
