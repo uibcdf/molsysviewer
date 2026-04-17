@@ -7,6 +7,7 @@ from smonitor import signal
 from .. import pyunitwizard as puw
 from ..layers import Layer, Shape
 from .._private.arg_digestion import digest
+from ..colors import normalize_color
 from ._registry import register_shape_layer, normalize_new_shape_tag
 
 
@@ -94,7 +95,7 @@ class SphereShapes:
 
         # Detect batch vs single by inspecting the resolved numpy array.
         try:
-            arr = np.asarray(puw.get_value(center, to_unit="nm"), dtype=float)
+            arr = np.asarray(puw.get_value(center, to_unit="angstroms"), dtype=float)
         except Exception:
             arr = None
 
@@ -111,14 +112,14 @@ class SphereShapes:
             layer_tag=layer_tag,
             meta={"shape_kind": "sphere", "shape_name": "Sphere"},
         )
-        center_val = arr.tolist() if arr is not None else [float(v) for v in puw.get_value(center, to_unit="nm")]
+        center_val = arr.tolist() if arr is not None else [float(v) for v in puw.get_value(center, to_unit="angstroms")]
         self._view._send(  # noqa: SLF001
             {
                 "op": "add_sphere",
                 "options": {
                     "center": center_val,
-                    "radius": float(puw.get_value(radius, to_unit="nm")),
-                    "color": int(color),
+                    "radius": float(puw.get_value(radius, to_unit="angstroms")),
+                    "color": normalize_color(color),
                     "alpha": float(alpha),
                     "tag": layer.tag,
                     "layer_tag": layer.layer_tag,
@@ -159,8 +160,8 @@ class SphereShapes:
                 return [cast(v) for v in seq]
             return [cast(value)] * n
 
-        radii_list = _as_list(puw.get_value(radii, to_unit="nm"), float)
-        colors_list = _as_list(colors, int)
+        radii_list = _as_list(puw.get_value(radii, to_unit="angstroms"), float)
+        colors_list = _as_list(colors, normalize_color)
         alphas_list = _as_list(alphas, float)
 
         layers = []
@@ -217,9 +218,9 @@ class SphereShapes:
         - Separate colors and alpha for alpha-spheres and atoms.
         - Uses a single message to minimize per-shape overhead.
         """
-        centers_raw = puw.get_value(centers, to_unit="nm")
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         centers_list = [list(c) for c in centers_raw]
-        radii_raw = puw.get_value(radii, to_unit="nm")
+        radii_raw = puw.get_value(radii, to_unit="angstroms")
         radii_list = [float(r) for r in radii_raw]
 
         if len(centers_list) != len(radii_list):
@@ -229,17 +230,17 @@ class SphereShapes:
             "alpha_spheres": {
                 "centers": centers_list,
                 "radii": radii_list,
-                "color": int(color_alpha_spheres),
+                "color": normalize_color(color_alpha_spheres),
                 "alpha": float(alpha_alpha_spheres),
             }
         }
 
         if atom_centers is not None:
-            atom_centers_raw = puw.get_value(atom_centers, to_unit="nm")
+            atom_centers_raw = puw.get_value(atom_centers, to_unit="angstroms")
             options["atom_spheres"] = {
                 "centers": [list(c) for c in atom_centers_raw],
-                "radius": float(puw.get_value(atom_radius, to_unit="nm")),
-                "color": int(color_atoms),
+                "radius": float(puw.get_value(atom_radius, to_unit="angstroms")),
+                "color": normalize_color(color_atoms),
                 "alpha": float(alpha_atoms),
             }
 

@@ -54,8 +54,8 @@ def test_add_sphere_sends_message():
         {
             "op": "add_sphere",
             "options": {
-                "center": [1.0, 2.0, 3.0],
-                "radius": 2.5,
+                "center": [10.0, 20.0, 30.0],  # 1 nm = 10 Å (wire format is Å for Mol*)
+                "radius": 25.0,                  # 2.5 nm = 25 Å
                 "color": 0x123456,
                 "alpha": 0.7,
                 "tag": "foo",
@@ -146,7 +146,7 @@ def test_sphere_shape_supports_rich_mutators_and_replay_state():
         layer_tag="cluster",
     )
 
-    assert puw.get_value(layer.get_center(), to_unit="nm").tolist() == [1.0, 2.0, 3.0]
+    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == [10.0, 20.0, 30.0]
 
     layer.set_color(0xabcdef)
     layer.set_alpha(0.8)
@@ -155,16 +155,16 @@ def test_sphere_shape_supports_rich_mutators_and_replay_state():
 
     assert view._shape_history[0]["options"]["color"] == 0xABCDEF  # noqa: SLF001
     assert view._shape_history[0]["options"]["alpha"] == 0.8  # noqa: SLF001
-    assert view._shape_history[0]["options"]["center"] == [4.0, 5.0, 6.0]  # noqa: SLF001
-    assert view._shape_history[0]["options"]["radius"] == 7.0  # noqa: SLF001
+    assert view._shape_history[0]["options"]["center"] == [40.0, 50.0, 60.0]  # 4 nm = 40 Å  # noqa: SLF001
+    assert view._shape_history[0]["options"]["radius"] == 70.0  # 7 nm = 70 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "cluster"  # noqa: SLF001
-    assert puw.get_value(layer.get_center(), to_unit="nm").tolist() == [4.0, 5.0, 6.0]
+    assert puw.get_value(layer.get_center(), to_unit="angstroms").tolist() == [40.0, 50.0, 60.0]  # 4 nm = 40 Å
 
     exported = [msg for msg in view._build_export_messages() if msg.get("options", {}).get("tag") == "foo"]  # noqa: SLF001
     assert exported[0]["options"]["color"] == 0xABCDEF
     assert exported[0]["options"]["alpha"] == 0.8
-    assert exported[0]["options"]["center"] == [4.0, 5.0, 6.0]
-    assert exported[0]["options"]["radius"] == 7.0
+    assert exported[0]["options"]["center"] == [40.0, 50.0, 60.0]  # 4 nm = 40 Å
+    assert exported[0]["options"]["radius"] == 70.0  # 7 nm = 70 Å
     assert exported[0]["options"]["layer_tag"] == "cluster"
 
 
@@ -191,13 +191,13 @@ def test_link_shape_supports_rich_mutators_and_replay_state():
 
     assert view._shape_history[0]["options"]["alpha"] == 0.8  # noqa: SLF001
     assert view._shape_history[0]["options"]["colors"] == [0x333333, 0x444444]  # noqa: SLF001
-    assert view._shape_history[0]["options"]["radii"] == [0.3, 0.4]  # noqa: SLF001
+    assert view._shape_history[0]["options"]["radii"] == [3.0, 4.0]  # 0.3 nm = 3 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "cluster"  # noqa: SLF001
 
     exported = [msg for msg in view._build_export_messages() if msg.get("options", {}).get("tag") == "links_1"]  # noqa: SLF001
     assert exported[0]["options"]["alpha"] == 0.8
     assert exported[0]["options"]["colors"] == [0x333333, 0x444444]
-    assert exported[0]["options"]["radii"] == [0.3, 0.4]
+    assert exported[0]["options"]["radii"] == [3.0, 4.0]  # 0.3 nm = 3 Å
     assert exported[0]["options"]["layer_tag"] == "cluster"
 
 
@@ -302,14 +302,14 @@ def test_channel_tube_shape_supports_rich_mutators_and_replay_state():
     assert view._shape_history[0]["options"]["alpha"] == 0.75  # noqa: SLF001
     assert view._shape_history[0]["options"]["colors"] == [0x444444, 0x555555, 0x666666]  # noqa: SLF001
     assert view._shape_history[0]["options"]["color_mode"] == "segment"  # noqa: SLF001
-    assert view._shape_history[0]["options"]["radii"] == [0.5, 0.6, 0.7]  # noqa: SLF001
+    assert view._shape_history[0]["options"]["radii"] == [5.0, 6.0, 7.0]  # 0.5 nm = 5 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "channels"  # noqa: SLF001
 
     exported = [msg for msg in view._build_export_messages() if msg.get("options", {}).get("tag") == "tube_1"]  # noqa: SLF001
     assert exported[0]["options"]["alpha"] == 0.75
     assert exported[0]["options"]["colors"] == [0x444444, 0x555555, 0x666666]
     assert exported[0]["options"]["color_mode"] == "segment"
-    assert exported[0]["options"]["radii"] == [0.5, 0.6, 0.7]
+    assert exported[0]["options"]["radii"] == [5.0, 6.0, 7.0]  # 0.5 nm = 5 Å
     assert exported[0]["options"]["layer_tag"] == "channels"
 
 
@@ -433,7 +433,7 @@ def test_pharmacophore_shape_supports_rich_mutators_and_replay_state():
 
     assert view._shape_history[0]["options"]["alphas"] == [0.8, 0.8]  # noqa: SLF001
     assert view._shape_history[0]["options"]["colors"] == [0xAAAAAA, 0xBBBBBB]  # noqa: SLF001
-    assert view._shape_history[0]["options"]["radii"] == [0.6, 0.7]  # noqa: SLF001
+    assert view._shape_history[0]["options"]["radii"] == [6.0, 7.0]  # 0.6 nm = 6 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "sites"  # noqa: SLF001
 
 
@@ -508,7 +508,7 @@ def test_pocket_blob_shape_supports_mutators_and_replay_state():
     layer.set_radius_scale(1.2)
 
     assert view._shape_history[0]["options"]["alpha"] == 0.6  # noqa: SLF001
-    assert view._shape_history[0]["options"]["radii"] == [0.7, 0.8]  # noqa: SLF001
+    assert view._shape_history[0]["options"]["radii"] == [7.0, 8.0]  # 0.7 nm = 7 Å  # noqa: SLF001
     assert view._shape_history[0]["options"]["radius_scale"] == 1.2  # noqa: SLF001
     assert view._shape_history[0]["options"]["layer_tag"] == "pockets"  # noqa: SLF001
 

@@ -6,6 +6,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..colors import normalize_color
 from ._registry import register_shape_layer
 
 
@@ -18,8 +19,8 @@ class TriangleFaces:
         if vertices is None:
             return []
 
-        # Extract raw magnitudes in nanometers
-        vertices_raw = puw.get_value(vertices, to_unit="nm")
+        # Extract raw magnitudes in Angstroms (wire format for Mol*)
+        vertices_raw = puw.get_value(vertices, to_unit="angstroms")
 
         normalized: list[list[list[float]]] = []
         for tri in vertices_raw:
@@ -109,7 +110,7 @@ class TriangleFaces:
 
         n = len(vertices_list) if vertices_list else len(atom_triplets_list)
 
-        colors_list = self._normalize_optional_list(colors, n, int)
+        colors_list = self._normalize_optional_list(colors, n, normalize_color)
         labels_list = self._normalize_optional_list(labels, n, str)
 
         options: dict = {"alpha": float(alpha)}
@@ -125,13 +126,13 @@ class TriangleFaces:
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:
-            options["edge_radius"] = float(puw.get_value(edge_radius, to_unit="nm"))
+            options["edge_radius"] = float(puw.get_value(edge_radius, to_unit="angstroms"))
         if edge_color is not None:
             options["edge_color"] = int(edge_color)
         if show_normals is not None:
             options["show_normals"] = bool(show_normals)
         if normal_length is not None:
-            options["normal_length"] = float(puw.get_value(normal_length, to_unit="nm"))
+            options["normal_length"] = float(puw.get_value(normal_length, to_unit="angstroms"))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001

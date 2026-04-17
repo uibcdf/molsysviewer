@@ -6,7 +6,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
-from ..colors import colors as global_colors
+from ..colors import colors as global_colors, normalize_color
 from ._registry import register_shape_layer
 
 
@@ -18,8 +18,8 @@ class ChannelTubes:
 
     @staticmethod
     def _normalize_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
-        # Extract raw magnitudes in nanometers
-        centers_raw = puw.get_value(centers, to_unit="nm")
+        # Extract raw magnitudes in Angstroms (wire format for Mol*)
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         normalized: list[list[float]] = []
         for idx, center in enumerate(centers_raw):
             if len(center) != 3:
@@ -67,7 +67,7 @@ class ChannelTubes:
         """Generate a smoothed tube from ordered centers/radii (e.g., TopoMT routes)."""
 
         centers_list = self._normalize_centers(centers)
-        radii_list = [float(r) for r in puw.get_value(radii, to_unit="nm")]
+        radii_list = [float(r) for r in puw.get_value(radii, to_unit="angstroms")]
 
         if len(centers_list) < 2:
             raise ValueError("You need at least two centers for a channel")
@@ -75,7 +75,7 @@ class ChannelTubes:
             raise ValueError("centers and radii must have the same length")
 
         distances_list = self._normalize_sequence(solvent_distances, len(centers_list), float)
-        colors_list = self._normalize_sequence(colors, len(centers_list), int)
+        colors_list = self._normalize_sequence(colors, len(centers_list), normalize_color)
         color_registry = getattr(self._view, "colors", global_colors)
         resolved_color_by = color_by or color_mode
         resolved_palette = palette if palette is not None else color_map

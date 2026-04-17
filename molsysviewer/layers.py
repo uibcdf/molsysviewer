@@ -566,10 +566,10 @@ class Shape(SceneObject):
         center = options.get("center") if isinstance(options, dict) else None
         if not isinstance(center, list) or len(center) != 3:
             raise ValueError(f"Shape {self.tag!r} does not expose a geometric center.")
-        return puw.quantity(list(center), "nm")
+        return puw.quantity(list(center), "angstroms")
 
     def get_coordinates(self):
-        """Return the geometric coordinates of this shape as a ``puw`` quantity in nm.
+        """Return the geometric coordinates of this shape as a ``puw`` quantity in angstroms.
 
         The return value depends on the shape type:
 
@@ -590,19 +590,19 @@ class Shape(SceneObject):
             center = options.get("center")
             if not isinstance(center, list) or len(center) != 3:
                 raise ValueError(f"Shape {self.tag!r} has no geometric center.")
-            return puw.quantity(center, "nm")
+            return puw.quantity(center, "angstroms")
 
         if op in ("add_channel_tube", "add_pharmacophore_features",
                   "add_displacement_vectors", "add_anisotropy_ellipsoids"):
             centers = options.get("centers")
             if not isinstance(centers, list) or len(centers) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no centers data.")
-            return puw.quantity(centers, "nm")
+            return puw.quantity(centers, "angstroms")
 
         if op == "add_network_links":
             pairs = options.get("coordinate_pairs")
             if isinstance(pairs, list) and len(pairs) > 0:
-                return puw.quantity(pairs, "nm")
+                return puw.quantity(pairs, "angstroms")
             raise ValueError(
                 f"Shape {self.tag!r} is a link shape with atom-pair-only data; "
                 "no explicit coordinates are stored."
@@ -612,20 +612,20 @@ class Shape(SceneObject):
             alpha = options.get("alpha_spheres") or {}
             centers = alpha.get("centers")
             if isinstance(centers, list) and len(centers) > 0:
-                return puw.quantity(centers, "nm")
+                return puw.quantity(centers, "angstroms")
             raise ValueError(f"Shape {self.tag!r} has no alpha-sphere centers.")
 
         if op == "add_triangle_faces":
             vertices = options.get("vertices")
             if not isinstance(vertices, list) or len(vertices) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no vertex data.")
-            return puw.quantity(vertices, "nm")
+            return puw.quantity(vertices, "angstroms")
 
         if op == "add_tetrahedra":
             coords = options.get("tetra_coords") or options.get("tetraCoords")
             if not isinstance(coords, list) or len(coords) == 0:
                 raise ValueError(f"Shape {self.tag!r} has no tetrahedra coordinate data.")
-            return puw.quantity(coords, "nm")
+            return puw.quantity(coords, "angstroms")
 
         raise NotImplementedError(
             f"get_coordinates is not implemented for shape op {op!r}."
@@ -634,7 +634,7 @@ class Shape(SceneObject):
     def set_coordinates(self, coordinates) -> None:
         """Replace the geometric coordinates of this shape.
 
-        Accepts a ``puw`` quantity or a plain array in nm with the same layout
+        Accepts a ``puw`` quantity or a plain array in angstroms with the same layout
         as returned by :meth:`get_coordinates`.
 
         Shape-type mapping
@@ -649,44 +649,44 @@ class Shape(SceneObject):
         msg = self._require_shape_message()
         op = msg.get("op", "")
 
-        coords_nm = puw.get_value(coordinates, to_unit="nm")
-        if hasattr(coords_nm, "tolist"):
-            coords_nm = coords_nm.tolist()
+        coords_a = puw.get_value(coordinates, to_unit="angstroms")
+        if hasattr(coords_a, "tolist"):
+            coords_a = coords_a.tolist()
 
         if op == "add_sphere":
-            self._apply_sphere_update(center=list(coords_nm))
+            self._apply_sphere_update(center=list(coords_a))
             return
 
         if op == "add_channel_tube":
-            self._apply_channel_tube_update(centers=coords_nm)
+            self._apply_channel_tube_update(centers=coords_a)
             return
 
         if op in ("add_pharmacophore_features",):
-            self._apply_pharmacophore_update(centers=coords_nm)
+            self._apply_pharmacophore_update(centers=coords_a)
             return
 
         if op == "add_displacement_vectors":
-            self._apply_displacement_update(centers=coords_nm)
+            self._apply_displacement_update(centers=coords_a)
             return
 
         if op == "add_anisotropy_ellipsoids":
-            self._apply_anisotropy_ellipsoid_update(centers=coords_nm)
+            self._apply_anisotropy_ellipsoid_update(centers=coords_a)
             return
 
         if op == "add_network_links":
-            self._apply_links_update(coordinate_pairs=coords_nm)
+            self._apply_links_update(coordinate_pairs=coords_a)
             return
 
         if op == "add_triangle_faces":
-            self._apply_triangle_faces_update(vertices=coords_nm)
+            self._apply_triangle_faces_update(vertices=coords_a)
             return
 
         if op == "add_tetrahedra":
-            self._apply_tetrahedra_update(tetra_coords=coords_nm)
+            self._apply_tetrahedra_update(tetra_coords=coords_a)
             return
 
         if op in ("add_pocket_blob", "add_pocket_surface", "add_alpha_sphere_set"):
-            self._apply_pocket_centers_update(op=op, centers=coords_nm)
+            self._apply_pocket_centers_update(op=op, centers=coords_a)
             return
 
         raise NotImplementedError(
@@ -694,10 +694,10 @@ class Shape(SceneObject):
         )
 
     def set_center(self, center, skip_digestion: bool = False) -> None:
-        self._apply_sphere_update(center=list(puw.get_value(center, to_unit="nm")))
+        self._apply_sphere_update(center=list(puw.get_value(center, to_unit="angstroms")))
 
     def set_radius(self, radius, skip_digestion: bool = False) -> None:
-        self._apply_sphere_update(radius=float(puw.get_value(radius, to_unit="nm")))
+        self._apply_sphere_update(radius=float(puw.get_value(radius, to_unit="angstroms")))
 
     def set_color(self, color, skip_digestion: bool = False) -> None:
         from .colors import normalize_color
@@ -792,7 +792,7 @@ class Shape(SceneObject):
         if op == "add_network_links":
             count = self._shape_element_count(options, "atom_pairs", "coordinate_pairs", "radii")
             normalized = self._normalize_to_count(
-                puw.get_value(radii, to_unit="nm"),
+                puw.get_value(radii, to_unit="angstroms"),
                 count,
                 float,
             )
@@ -801,7 +801,7 @@ class Shape(SceneObject):
         if op == "add_channel_tube":
             count = self._shape_element_count(options, "centers", "radii")
             normalized = self._normalize_to_count(
-                puw.get_value(radii, to_unit="nm"),
+                puw.get_value(radii, to_unit="angstroms"),
                 count,
                 float,
             )
@@ -810,7 +810,7 @@ class Shape(SceneObject):
         if op == "add_pharmacophore_features":
             count = self._shape_element_count(options, "centers", "kinds", "radii")
             normalized = self._normalize_to_count(
-                puw.get_value(radii, to_unit="nm"),
+                puw.get_value(radii, to_unit="angstroms"),
                 count,
                 float,
             )
@@ -819,7 +819,7 @@ class Shape(SceneObject):
         if op == "add_pocket_blob":
             count = self._shape_element_count(options, "centers", "radii")
             normalized = self._normalize_to_count(
-                puw.get_value(radii, to_unit="nm"),
+                puw.get_value(radii, to_unit="angstroms"),
                 count,
                 float,
             )

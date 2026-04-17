@@ -19,8 +19,8 @@ class DisplacementVectors:
 
     @staticmethod
     def _to_array(data: Iterable[Sequence[float]] | np.ndarray, name: str) -> np.ndarray:
-        # Extract raw magnitudes in nanometers
-        data_raw = puw.get_value(data, to_unit="nm")
+        # Extract raw magnitudes in Angstroms (wire format for Mol*)
+        data_raw = puw.get_value(data, to_unit="angstroms")
         arr = np.asarray(data_raw, dtype=float)
         if arr.ndim != 2 or arr.shape[1] != 3:
             raise ValueError(f"{name} must have shape (n, 3), got {arr.shape}")
@@ -114,7 +114,7 @@ class DisplacementVectors:
         options: dict = {
             "vectors": vector_array.tolist(),
             "length_scale": float(length_scale),
-            "min_length": float(puw.get_value(min_length, to_unit="nm")),
+            "min_length": float(puw.get_value(min_length, to_unit="angstroms")),
             "color_mode": resolved_color_by,
             "color_by": resolved_color_by,
             "color_component": int(color_component),
@@ -126,7 +126,7 @@ class DisplacementVectors:
         if atom_indices is not None:
             options["atom_indices"] = [int(i) for i in atom_indices]
         if max_length is not None:
-            options["max_length"] = float(puw.get_value(max_length, to_unit="nm"))
+            options["max_length"] = float(puw.get_value(max_length, to_unit="angstroms"))
         if serialized_palette is not None:
             options["palette"] = serialized_palette
             options["color_map"] = serialized_palette

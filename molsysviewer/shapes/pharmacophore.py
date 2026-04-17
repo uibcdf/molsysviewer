@@ -31,8 +31,8 @@ class PharmacophoreShapes:
 
     @staticmethod
     def _norm_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
-        # Extract raw magnitudes in nanometers
-        centers_raw = puw.get_value(centers, to_unit="nm")
+        # Extract raw magnitudes in Angstroms (wire format for Mol*)
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         out: list[list[float]] = []
         for idx, c in enumerate(centers_raw):
             if len(c) != 3:
@@ -85,7 +85,7 @@ class PharmacophoreShapes:
                 return [cast(seq[0])] * len(kinds_list)
             return [cast(v) for v in seq]
 
-        radii_raw = puw.get_value(radii, to_unit="nm") if radii is not None else None
+        radii_raw = puw.get_value(radii, to_unit="angstroms") if radii is not None else None
         radii_list = _as_list(radii_raw, float, 0.6)
         alphas_list = _as_list(alphas, float, 0.6)
         color_registry = getattr(self._view, "colors", global_colors)
