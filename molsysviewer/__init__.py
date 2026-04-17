@@ -70,6 +70,8 @@ def launch_standalone_qt0(*args, **kwargs):
     return _launch_standalone_qt0(*args, **kwargs)
 
 
+addons.discover()
+
 __all__ = [
     "MolSysView",
     "ViewerInfo",
