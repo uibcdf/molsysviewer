@@ -18,8 +18,8 @@ class AnisotropyEllipsoids:
 
     @staticmethod
     def _normalize_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
-        # Extract raw magnitudes in nanometers
-        centers_raw = puw.get_value(centers, to_unit="nm")
+        # Extract raw magnitudes in Angstroms (wire format for Mol*)
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         normalized: list[list[float]] = []
         for idx, center in enumerate(centers_raw):
             if len(center) != 3:

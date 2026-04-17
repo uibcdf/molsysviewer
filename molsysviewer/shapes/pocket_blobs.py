@@ -21,8 +21,8 @@ class PocketBlobs:
         for idx, center in enumerate(centers):
             if len(center) != 3:
                 raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
-            # Extract raw magnitude in nanometers to avoid DimensionalityError
-            val = puw.get_value(center, to_unit="nm")
+            # Extract raw magnitude in Angstroms (wire format for Mol*)
+            val = puw.get_value(center, to_unit="angstroms")
             normalized.append([float(val[0]), float(val[1]), float(val[2])])
         return normalized
 
@@ -64,7 +64,7 @@ class PocketBlobs:
         """Create a volumetric blob (iso-surface) from alpha-spheres."""
 
         centers_list = self._normalize_centers(centers)
-        radii_list = [float(r) for r in puw.get_value(radii, to_unit="nm")]
+        radii_list = [float(r) for r in puw.get_value(radii, to_unit="angstroms")]
 
         if len(centers_list) == 0:
             raise ValueError("centers must not be empty")
