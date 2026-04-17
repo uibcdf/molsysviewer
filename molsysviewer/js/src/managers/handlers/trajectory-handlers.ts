@@ -13,6 +13,8 @@ import { LoadedStructure } from "../../plugin/structure";
 export interface TrajectoryContext {
     getLoadedStructure: () => LoadedStructure | undefined;
     notifyTrajectoryState: () => void;
+    /** Called when playback stops; receives the final frame index. */
+    onPlaybackStopped?: (frame: number) => void;
 }
 
 export interface TrajectoryState {
@@ -99,6 +101,7 @@ export class TrajectoryHandlers {
     }
 
     async stopTrajectoryPlayback() {
+        const wasPlaying = !!this.playbackTimer;
         this.plugin.managers.animation.stop();
         if (this.playbackTimer) {
             clearInterval(this.playbackTimer);
@@ -109,6 +112,9 @@ export class TrajectoryHandlers {
             this.trajectoryPoll = void 0;
         }
         this.updateTrajectoryState();
+        if (wasPlaying) {
+            this.context.onPlaybackStopped?.(this.getCurrentFrameIndex());
+        }
     }
 
     getTrajectoryState(): TrajectoryState {
@@ -163,7 +169,7 @@ export class TrajectoryHandlers {
         return traj?.frameCount ?? 0;
     }
 
-    private getCurrentFrameIndex(): number {
+    getCurrentFrameIndex(): number {
         const trajRef = this.getTrajectoryRef();
         if (!trajRef) return 0;
         const models = this.getTrajectoryModels(trajRef);

@@ -9,7 +9,7 @@
 - For a detailed architecture reference, see {doc}`architecture_full`.
 
 Developer-facing structure
-- `molsysviewer/viewer.py`: message queue, visibility masks, shape manager, exports.
+- `molsysviewer/viewer/`: `MolSysView` package with `core.py`, `history.py`, `export.py`, `scene_registry.py`, `representations.py`, and `presets.py`.
 - `molsysviewer/shapes/`: Python APIs; normalize inputs and send ops.
 - `molsysviewer/js/src/`: Mol* plugin init, message routing, geometry builders (organized into managers/, shapes/, plugin/, messages/, index.ts).
 - `docs/`: Sphinx site (pydata theme, MyST, notebooks off), static views under `_static/views/`.

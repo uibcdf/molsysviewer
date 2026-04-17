@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 import molsysmt as msm
 from smonitor import signal
 from ._private.arg_digestion import digest
+from .colors import expand_values_to_atoms, normalize_color
 
 
 class Region:
@@ -210,6 +211,31 @@ class Region:
             **kwargs,
         )
 
+    def _region_info_records(self) -> list[dict]:
+        """Build the region-state rows for the info table."""
+        return [
+            {
+                "field": "tag",
+                "value": self.tag,
+            },
+            {
+                "field": "n atoms",
+                "value": len(self.atom_indices) if self.atom_indices is not None else "all",
+            },
+            {
+                "field": "visible",
+                "value": not self._hidden,
+            },
+            {
+                "field": "representation",
+                "value": self.representation,
+            },
+            {
+                "field": "preset",
+                "value": self.preset,
+            },
+        ]
+
     @signal(tags=["region", "query"])
     @digest()
     def info(
@@ -218,31 +244,63 @@ class Region:
         selection="all",
         syntax="MolSysMT",
         mask="all",
+        output_type="styler",
         skip_digestion=False,
     ):
-        """Show a summary table, scoped to this region."""
+        """Show a summary table, scoped to this region.
+
+        Returns a ``RegionInfo`` with a *molsys* section (filtered to the region's
+        atoms) and a *region* section (tag, atom count, visibility, representation).
+        When the region has no fixed atom set, delegates to the full viewer info.
+        """
+        from .viewer.core import RegionInfo  # noqa: PLC0415 – avoid circular import at module level
+
+        # --- element != "system": scope to region atoms for that element ---
         scope = self._scoped_indices_for_element(element)
-        if scope is None or element == "system":
+        if element != "system" and scope is not None:
+            indices = self.select(
+                selection=selection,
+                element=element,
+                mask=mask,
+                syntax=syntax,
+                skip_digestion=True,
+            )
             return self._view.info(  # noqa: SLF001
                 element=element,
-                selection=selection,
+                selection=indices,
                 syntax=syntax,
-                mask=mask,
+                mask="all",
+                output_type=output_type,
                 skip_digestion=True,
             )
 
-        indices = self.select(
-            selection=selection,
-            element=element,
-            mask=mask,
-            syntax=syntax,
-            skip_digestion=True,
-        )
+        # --- element == "system" with defined atom_indices: return RegionInfo ---
+        if self.atom_indices is not None:
+            molsys_section = self._view.info(  # noqa: SLF001
+                element="system",
+                selection=list(self.atom_indices),
+                syntax=syntax,
+                mask="all",
+                source="molsys",
+                output_type=output_type,
+                skip_digestion=True,
+            )
+            region_section = self._view._convert_info_output(  # noqa: SLF001
+                self._region_info_records(), output_type
+            )
+            return RegionInfo(
+                tag=self.tag,
+                molsys_section=molsys_section,
+                region_section=region_section,
+            )
+
+        # --- fallback: region covers the full system ---
         return self._view.info(  # noqa: SLF001
             element=element,
-            selection=indices,
+            selection=selection,
             syntax=syntax,
-            mask="all",
+            mask=mask,
+            output_type=output_type,
             skip_digestion=True,
         )
 
@@ -308,6 +366,53 @@ class Region:
             **kwargs,
         )
 
+    @signal(tags=["region", "query"])
+    @digest()
+    def get_center(
+        self,
+        structure_indices: str | Any = "all",
+        skip_digestion: bool = False,
+    ):
+        """Return the geometric centroid of this region's atoms as a ``puw`` quantity in nm.
+
+        Parameters
+        ----------
+        structure_indices
+            Structure frame(s) to average over.  Defaults to ``"all"``.
+
+        Returns
+        -------
+        puw.Quantity
+            ``[x, y, z]`` centroid in nanometres.
+        """
+        from . import pyunitwizard as puw
+
+        if self.atom_indices is None:
+            raise ValueError("get_center() requires known atom_indices for this region.")
+        if self._view._molsys is None:  # noqa: SLF001
+            raise ValueError("No molecular system loaded.")
+
+        import molsysmt as msm
+        import numpy as np
+
+        coords = msm.get(
+            self._view._molsys,  # noqa: SLF001
+            element="atom",
+            selection=list(self.atom_indices),
+            structure_indices=structure_indices,
+            coordinates=True,
+            output_type="values",
+            skip_digestion=True,
+        )
+        # coords shape: (n_structures, n_atoms, 3) with units already in nm
+        arr = np.asarray(puw.get_value(coords, to_unit="nm"), dtype=float)
+        if arr.ndim == 3:
+            # Average over frames first, then atoms
+            centroid = arr.mean(axis=(0, 1))
+        else:
+            centroid = arr.mean(axis=0)
+        return puw.quantity(centroid.tolist(), "nm")
+
     @signal(tags=["region", "camera"])
     @digest()
     def focus(
@@ -348,6 +453,9 @@ class Region:
         If ``preset`` is provided, it supersedes ``representation`` and applies a Mol* preset
         (auto, atomic-detail, polymer-and-ligand, polymer-cartoon, coarse-surface, empty).
         """
+        color = params.pop("color", None)
+        if color is not None:
+            params["molstar_color_theme"] = {"name": "uniform", "params": {"value": normalize_color(color)}}
         normalized_preset = self._view._normalize_representation_preset(preset)  # noqa: SLF001
         user_preset_payload = self._view._resolve_user_preset(normalized_preset)  # noqa: SLF001
         normalized = None if normalized_preset else self._view._normalize_representation_type(representation)  # noqa: SLF001
@@ -413,3 +521,66 @@ class Region:
         self._active = False
         self._send("delete_region")
         self._view._unregister_region(self.tag)  # noqa: SLF001
+
+    # --- Scalar colour mapping ---
+
+    @signal(tags=["color", "region"])
+    @digest()
+    def set_color_by_values(
+        self,
+        values: Any,
+        element: str = "atom",
+        palette: Any = "viridis",
+        value_range: Any = None,
+        replace: bool = False,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Map a scalar array to per-atom colors for this region.
+
+        One scalar value is mapped to a color and broadcast to all atoms in the
+        corresponding structural element *within this region*.
+
+        Parameters
+        ----------
+        values
+            Iterable of scalars, one per *element* present in this region.
+        element
+            Structural level: ``"atom"``, ``"group"``, ``"component"``,
+            ``"molecule"``, ``"chain"``, ``"entity"``.  Defaults to ``"atom"``.
+        palette
+            Palette name, matplotlib colormap, or list of colors.
+        value_range
+            ``[vmin, vmax]`` normalization range.  Auto-detected when ``None``.
+        replace
+            If ``True``, replace any existing per-atom color map for the entire
+            canvas.  If ``False`` (default), the region colors are *merged*
+            with any existing assignments.
+        """
+        if self.atom_indices is None:
+            raise ValueError("set_color_by_values requires known atom_indices for this region.")
+        atom_indices, per_atom_colors = expand_values_to_atoms(
+            self._view._molsys,  # noqa: SLF001
+            values=values,
+            element=element,
+            palette=palette,
+            value_range=value_range,
+            scope_atom_indices=list(self.atom_indices),
+        )
+        # Update Python-side map: merge or replace depending on the flag
+        if replace:
+            self._view._atom_color_map = dict(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+        else:
+            self._view._atom_color_map.update(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+        self._view._send({  # noqa: SLF001
+            "op": "set_atom_colors",
+            "atom_indices": atom_indices,
+            "colors": per_atom_colors,
+            "replace": replace,
+        })
+
+    @signal(tags=["color", "region"])
+    @digest()
+    def reset_colors(self, skip_digestion: bool = False) -> None:
+        """Remove per-atom color overrides for the whole canvas and revert to the representation theme."""
+        self._view._atom_color_map.clear()  # noqa: SLF001
+        self._view._send({"op": "clear_atom_colors"})  # noqa: SLF001

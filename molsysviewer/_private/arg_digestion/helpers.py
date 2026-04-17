@@ -7,6 +7,13 @@ from .argument.structure_indices import digest_structure_indices
 from .argument.syntax import digest_syntax
 
 
+def normalize_viewer_caller(caller: str | None) -> str | None:
+    """Keep historical viewer caller paths stable after the viewer package split."""
+    if isinstance(caller, str) and caller.startswith("molsysviewer.viewer.core."):
+        return caller.replace("molsysviewer.viewer.core.", "molsysviewer.viewer.", 1)
+    return caller
+
+
 def digest_selection_and_syntax(
     selection: Any = "all",
     *,

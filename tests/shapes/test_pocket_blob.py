@@ -50,6 +50,7 @@ def test_add_pocket_blob_message():
                 "color_map": "viridis",
                 "alpha": 0.4,
                 "tag": "blob",
+                "layer_tag": "blob",
                 "name": "demo",
             },
         }

@@ -10,7 +10,16 @@ def test_frontend_interaction_events_are_stored_on_view():
     action = {"event": "interaction_context_action", "action": "distance", "context": context}
     active_selection = {"event": "interaction_active_selection_changed", "source_kind": "element", "atom_indices": [4]}
     tool_state = {"event": "interaction_tool_state", "action": "distance", "status": "started", "picked_count": 1}
-    measurement = {"event": "interaction_measurement_created", "action": "distance", "picked_count": 2}
+    measurement = {
+        "event": "interaction_measurement_created",
+        "action": "distance",
+        "picked_count": 2,
+        "picks_atom_indices": [[1], [2, 3]],
+        "endpoint_kinds": ["atom", "centroid"],
+        "endpoint_policy": "centroid",
+        "endpoint_labels": ["atom", "centroid"],
+        "endpoint_atom_indices": [[1], []],
+    }
 
     view._handle_frontend_event(hover)  # noqa: SLF001
     view._handle_frontend_event(click)  # noqa: SLF001
@@ -26,7 +35,7 @@ def test_frontend_interaction_events_are_stored_on_view():
     assert view.get_last_context_action_event() == action
     assert view.get_last_active_selection_event() == active_selection
     assert view.get_last_tool_state_event() == tool_state
-    assert view.get_last_measurement_created_event() == measurement
+    assert view.get_last_measurement_created_event() == {**measurement, "tag": "layer1"}
 
 
 def test_hover_and_context_targets_expose_lightweight_public_wrappers():
@@ -60,3 +69,62 @@ def test_hover_and_context_targets_expose_lightweight_public_wrappers():
     assert view.context_target.page_x == 10
     assert view.context_target.page_y == 20
     assert view.context_target.info() == context
+
+
+def test_shape_targets_and_shape_active_selection_are_exposed_in_python():
+    view = MolSysView()
+
+    hover = {"event": "interaction_hover", "kind": "shape", "atom_indices": [8, 9], "tag": "shape-1", "shape_name": "Sphere"}
+    context = {
+        "event": "interaction_context_menu",
+        "kind": "shape",
+        "atom_indices": [8, 9],
+        "tag": "shape-1",
+        "shape_name": "Sphere",
+        "page_x": 12,
+        "page_y": 24,
+    }
+    active_selection = {
+        "event": "interaction_active_selection_changed",
+        "source_kind": "shape",
+        "target_level": "shape",
+        "element_level": "none",
+        "items": [{
+            "source_kind": "shape",
+            "shape_kind": "sphere",
+            "shape_name": "Sphere",
+            "tag": "shape-1",
+            "atom_indices": [8, 9],
+            "group_indices": [],
+            "component_indices": [],
+            "chain_indices": [],
+            "molecule_indices": [],
+            "entity_indices": [],
+        }],
+        "atom_indices": [8, 9],
+        "group_indices": [],
+        "component_indices": [],
+        "chain_indices": [],
+        "molecule_indices": [],
+        "entity_indices": [],
+        "count_atoms": 2,
+        "count_groups": 0,
+        "count_shapes": 1,
+        "count_annotations": 0,
+    }
+
+    view._handle_frontend_event(hover)  # noqa: SLF001
+    view._handle_frontend_event(context)  # noqa: SLF001
+    view._handle_frontend_event(active_selection)  # noqa: SLF001
+
+    assert view.hover_target.kind == "shape"
+    assert view.hover_target.tag == "shape-1"
+    assert view.hover_target.atom_indices == [8, 9]
+    assert view.context_target.kind == "shape"
+    assert view.context_target.tag == "shape-1"
+    assert view.context_target.page_x == 12
+    assert view.context_target.page_y == 24
+    assert view.active_selection.source_kind == "shape"
+    assert view.active_selection.target_level == "shape"
+    assert view.active_selection.is_empty() is False
+    assert view.active_selection.info() == active_selection

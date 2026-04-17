@@ -1,7 +1,9 @@
 from ...exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 
 def digest_panel(panel, caller=None):
+    caller = normalize_viewer_caller(caller)
     if panel is None:
         return None
     if isinstance(panel, str) and caller in {

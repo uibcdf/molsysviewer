@@ -1,6 +1,8 @@
 from molsysviewer._private.exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 def digest_n_peptides(n_peptides, caller=None):
+    caller = normalize_viewer_caller(caller)
 
     if caller=='molsysmt.basic.get.get':
         if isinstance(n_peptides, bool):
@@ -13,4 +15,3 @@ def digest_n_peptides(n_peptides, caller=None):
             return n_peptides
 
     raise ArgumentError('n_peptides', value=n_peptides, caller=caller, message=None)
-

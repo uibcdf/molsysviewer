@@ -1,4 +1,5 @@
 from ...exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 functions_with_boolean = (
         'merge.merge',
@@ -9,6 +10,7 @@ functions_with_boolean = (
 
 
 def digest_keep_ids(keep_ids, caller=None):
+    caller = normalize_viewer_caller(caller)
 
     if caller.endswith(functions_with_boolean):
         if isinstance(keep_ids, bool):

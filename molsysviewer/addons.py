@@ -6,10 +6,82 @@ from types import ModuleType
 from collections.abc import Callable
 from typing import Any
 
+import anywidget
+import traitlets as T
 from smonitor import signal
 
 from ._private.arg_digestion import digest
 from .config.project_config import load_project_config
+
+
+class AddonPanelWidget(anywidget.AnyWidget):
+    """Base class for interactive add-on panel widgets.
+
+    Add-on authors subclass this, set ``_esm`` (and optionally ``_css``),
+    and implement ``handle_action``.  MolSysViewer instantiates the widget
+    when the user navigates to the panel and tears it down on navigation away.
+    """
+
+    _esm: str = T.Unicode("").tag(sync=True)
+    _css: str = T.Unicode("").tag(sync=True)
+
+    def __init__(self, view: Any = None, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._view = view
+        self.on_msg(self._route_frontend_message)
+
+    def _route_frontend_message(self, widget: Any, content: Any, buffers: Any) -> None:
+        if not isinstance(content, dict):
+            return
+        msg_type = content.get("type")
+        if msg_type == "action":
+            self.handle_action(
+                self._view,
+                content.get("id", ""),
+                content.get("payload") or {},
+            )
+        elif msg_type == "query" and content.get("id") == "viewer.context":
+            self.send({"type": "context", "context": self._build_viewer_context()})
+
+    def _build_viewer_context(self) -> dict[str, Any]:
+        view = self._view
+        if view is None:
+            return {"has_system": False}
+        molsys = getattr(view, "_molsys", None)
+        ctx: dict[str, Any] = {"has_system": molsys is not None}
+        if molsys is not None:
+            active_sel = getattr(view, "active_selection", None)
+            if active_sel is not None:
+                try:
+                    ctx["active_selection"] = {
+                        "n_atoms": active_sel.n_atoms,
+                        "target_level": active_sel.target_level,
+                    }
+                except Exception:
+                    pass
+        workspace = getattr(view, "_active_workspace", None)
+        if workspace is not None:
+            ctx["workspace"] = workspace
+        return ctx
+
+    def push_state(self, state: dict[str, Any]) -> None:
+        """Push a state dict to the JS panel."""
+        self.send({"type": "state", "state": state})
+
+    def request_context(self) -> dict[str, Any]:
+        """Build and push the viewer context snapshot; also return it."""
+        ctx = self._build_viewer_context()
+        self.send({"type": "context", "context": ctx})
+        return ctx
+
+    def handle_action(self, view: Any, action_id: str, payload: dict[str, Any]) -> None:
+        """Override to handle panel actions sent from JS."""
+
+    def on_mount(self, view: Any) -> None:
+        """Called by MolSysViewer when this panel is displayed."""
+
+    def on_unmount(self, view: Any) -> None:
+        """Called by MolSysViewer when the user navigates away from this panel."""
 
 
 def _ensure_non_empty_text(value: str, field_name: str) -> str:
@@ -79,6 +151,7 @@ class AddonPanelSpec:
     id: str
     title: str
     entry: str | None = None
+    widget_class: str | None = None
     description: str | None = None
     order: int = 0
     target: str = "panel_mode"
@@ -89,6 +162,8 @@ class AddonPanelSpec:
         object.__setattr__(self, "title", _ensure_non_empty_text(self.title, "AddonPanelSpec.title"))
         if self.entry is not None:
             object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonPanelSpec.entry"))
+        if self.widget_class is not None:
+            object.__setattr__(self, "widget_class", _ensure_non_empty_text(self.widget_class, "AddonPanelSpec.widget_class"))
         if self.description is not None:
             object.__setattr__(self, "description", self.description.strip())
         object.__setattr__(self, "target", _ensure_non_empty_text(self.target, "AddonPanelSpec.target"))
@@ -99,6 +174,7 @@ class AddonPanelSpec:
             "id": self.id,
             "title": self.title,
             "entry": self.entry,
+            "widget_class": self.widget_class,
             "description": self.description,
             "order": self.order,
             "target": self.target,
@@ -830,6 +906,41 @@ class ViewAddonsManager(_AddonAggregationMixin):
             return False
         handler(self._view, action_id, dict(payload))
         return True
+
+    def resolve_panel_widget(
+        self, addon_name: str, panel_id: str
+    ) -> AddonPanelWidget | None:
+        """Instantiate and return the AddonPanelWidget for a given panel, or None.
+
+        Returns ``None`` when the add-on is not enabled, the panel does not
+        exist, or the panel has no ``widget_class`` registered.  Raises
+        ``ImportError`` / ``AttributeError`` if ``widget_class`` is set but
+        cannot be imported.
+        """
+        if addon_name not in self._effective_enabled():
+            return None
+        addon = self._host.get(addon_name, skip_digestion=True)
+        if addon is None:
+            return None
+        panel_spec: AddonPanelSpec | None = next(
+            (p for p in addon.panels if p.id == panel_id), None
+        )
+        if panel_spec is None or panel_spec.widget_class is None:
+            return None
+
+        dotted = panel_spec.widget_class
+        module_path, _, class_name = dotted.rpartition(".")
+        if not module_path:
+            raise ImportError(
+                f"AddonPanelSpec.widget_class {dotted!r} must be a fully-qualified dotted path."
+            )
+        mod = import_module(module_path)
+        cls = getattr(mod, class_name)
+        if not (isinstance(cls, type) and issubclass(cls, AddonPanelWidget)):
+            raise TypeError(
+                f"{dotted!r} must be a subclass of AddonPanelWidget."
+            )
+        return cls(view=self._view)
 
 
 addons = GlobalAddonsRegistry()

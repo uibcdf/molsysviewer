@@ -37,8 +37,10 @@ def test_tools_basic_query_wrappers_operate_on_view():
     assert tools.get(view, element="system", n_atoms=True) == 22
     assert tools.contains(view, peptides=True) is True
     assert tools.is_composed_of(view, n_molecules=1) is True
+    converted = tools.convert(view, to_form="molsysmt.MolSys")
+    assert msm.get(converted, element="system", n_atoms=True, skip_digestion=True) == 22
 
-    info = tools.info(view, element="group", selection=[0])
+    info = tools.info(view, element="group", selection=[0], source="molsys")
     assert hasattr(info, "data")
     assert info.data.shape[0] == 1
 
@@ -191,6 +193,15 @@ def test_tools_basic_live_edit_wrappers_delegate_to_view(monkeypatch):
 
     tools.remove(view, selection=[0])
     assert msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True) == 21  # noqa: SLF001
+
+
+def test_object_api_convert_delegates_to_current_molecular_system():
+    view = demo["dialanine"]
+
+    converted = view.convert(to_form="molsysmt.MolSys")
+
+    assert msm.get(converted, element="system", n_atoms=True, skip_digestion=True) == 22
+    assert msm.get(converted, element="system", n_structures=True, skip_digestion=True) == 1
 
 
 def test_tools_basic_add_wrapper_delegates_to_view(monkeypatch):

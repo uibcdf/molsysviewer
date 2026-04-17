@@ -8,6 +8,13 @@ you need a compact description of the data flow and message protocol.
 If you want the current high-level view, see {doc}`architecture` and
 {doc}`architecture_full`.
 
+Snapshot note:
+
+- This page preserves the runtime/data-flow picture from early 2026.
+- The current codebase now implements `MolSysView` under the
+  `molsysviewer/viewer/` package instead of a single `molsysviewer/viewer.py`
+  file.
+
 ## 1. High-level layers
 
 MolSysViewer is split into:
@@ -17,6 +24,9 @@ MolSysViewer is split into:
   - Loaders for MolSysMT/PDB/mmCIF/URL.
   - Regions/layers/whole and shapes APIs.
   - HTML export helpers (standalone + docs-lite).
+  - In the current tree, `MolSysView` is split across
+    `molsysviewer/viewer/core.py`, `history.py`, `export.py`,
+    `scene_registry.py`, `representations.py`, and `presets.py`.
 - **TypeScript/Mol* layer (`molsysviewer/js/src/`)**
   - AnyWidget entry (`index.ts`).
   - `MolSysViewerController` and handlers (`loader`, `scene`, `state`, `trajectory`).

@@ -1,14 +1,110 @@
 from __future__ import annotations
 
+import math
 from typing import Any, Dict, Optional
 
 from smonitor import signal
 
 from ._private.arg_digestion import digest
+from . import pyunitwizard as puw
 
 
-class Layer:
-    """Wrapper for a non-structural visual layer (shapes, overlays) addressed by tag."""
+_NM_TO_ANGSTROM = 10.0
+
+
+def _extract_shape_points_nm(options: dict, op: str) -> list[list[float]]:
+    """Return a flat list of 3D points (in nm) extracted from any shape message."""
+    def _flat(seq):
+        out = []
+        for item in seq or []:
+            if isinstance(item, (list, tuple)) and len(item) == 3:
+                try:
+                    out.append([float(item[0]), float(item[1]), float(item[2])])
+                except (TypeError, ValueError):
+                    pass
+        return out
+
+    if op == "add_sphere":
+        c = options.get("center")
+        if isinstance(c, (list, tuple)) and len(c) == 3:
+            return [[float(c[0]), float(c[1]), float(c[2])]]
+        return []
+
+    if op in ("add_pocket_blob", "add_pocket_surface", "add_channel_tube",
+              "add_pharmacophore_features", "add_anisotropy_ellipsoids",
+              "add_displacement_vectors"):
+        # alpha spheres: two sub-arrays (alpha_spheres and atom_spheres)
+        if op == "add_pocket_blob":
+            pts = []
+            alpha = options.get("alpha_spheres") or {}
+            pts += _flat(alpha.get("centers"))
+            atom = options.get("atom_spheres") or {}
+            pts += _flat(atom.get("centers"))
+            return pts if pts else _flat(options.get("centers"))
+        return _flat(options.get("centers"))
+
+    if op == "add_alpha_sphere_set":
+        pts = []
+        alpha = options.get("alpha_spheres") or {}
+        pts += _flat(alpha.get("centers"))
+        atom = options.get("atom_spheres") or {}
+        pts += _flat(atom.get("centers"))
+        return pts
+
+    if op == "add_network_links":
+        pts = []
+        for pair in options.get("coordinate_pairs") or []:
+            if isinstance(pair, (list, tuple)) and len(pair) >= 2:
+                for endpoint in pair[:2]:
+                    if isinstance(endpoint, (list, tuple)) and len(endpoint) == 3:
+                        try:
+                            pts.append([float(endpoint[0]), float(endpoint[1]), float(endpoint[2])])
+                        except (TypeError, ValueError):
+                            pass
+        # fall back to atom-pair midpoints — no coordinate data available without atoms
+        return pts
+
+    if op == "add_tetrahedra":
+        pts = []
+        for quad in options.get("tetra_coords") or options.get("tetraCoords") or []:
+            # quad is a list of 4 vertices, each [x,y,z]
+            for v in quad:
+                if isinstance(v, (list, tuple)) and len(v) == 3:
+                    try:
+                        pts.append([float(v[0]), float(v[1]), float(v[2])])
+                    except (TypeError, ValueError):
+                        pass
+        return pts
+
+    if op == "add_triangle_faces":
+        pts = []
+        for tri in options.get("vertices") or []:
+            for v in tri:
+                if isinstance(v, (list, tuple)) and len(v) == 3:
+                    try:
+                        pts.append([float(v[0]), float(v[1]), float(v[2])])
+                    except (TypeError, ValueError):
+                        pass
+        return pts
+
+    return []
+
+
+def _bounding_sphere_nm(points: list[list[float]]) -> tuple[list[float], float]:
+    """Return (centroid, radius) in nm for a list of 3D points."""
+    n = len(points)
+    cx = sum(p[0] for p in points) / n
+    cy = sum(p[1] for p in points) / n
+    cz = sum(p[2] for p in points) / n
+    radius = max(
+        math.sqrt((p[0] - cx) ** 2 + (p[1] - cy) ** 2 + (p[2] - cz) ** 2)
+        for p in points
+    )
+    return [cx, cy, cz], max(radius, 0.1)  # at least 0.1 nm
+
+
+class LayerHandle:
+    """Base wrapper for non-structural scene handles addressed by tag."""
 
     def __init__(
         self,
@@ -24,6 +120,38 @@ class Layer:
         self.meta = meta or {}
         self._active = True
         self._hidden = False
+
+    @property
+    def shapes(self) -> Dict[str, "Shape"]:
+        return {
+            item.tag: item
+            for item in getattr(self._view, "_scene_objects", {}).values()  # noqa: SLF001
+            if isinstance(item, Shape) and getattr(item, "layer_tag", None) == self.tag
+        }
+
+    @property
+    def annotations(self) -> Dict[str, "Annotation"]:
+        return {
+            item.tag: item
+            for item in getattr(self._view, "_scene_objects", {}).values()  # noqa: SLF001
+            if isinstance(item, Annotation) and getattr(item, "layer_tag", None) == self.tag
+        }
+
+    @property
+    def measurements(self) -> Dict[str, "Measurement"]:
+        return {
+            item.tag: item
+            for item in getattr(self._view, "_scene_objects", {}).values()  # noqa: SLF001
+            if isinstance(item, Measurement) and getattr(item, "layer_tag", None) == self.tag
+        }
+
+    @property
+    def members(self) -> Dict[str, "SceneObject"]:
+        members: Dict[str, SceneObject] = {}
+        members.update(self.shapes)
+        members.update(self.annotations)
+        members.update(self.measurements)
+        return members
 
     def _send(self, op: str, **payload: Any) -> None:
         if not self._active:
@@ -67,7 +195,947 @@ class Layer:
         """Change this layer's tag (and update the registry)."""
         if not self._active or new_tag == self.tag:
             return
+        if hasattr(self._view, "_assert_nonstructural_tag_available"):
+            new_tag = self._view._assert_nonstructural_tag_available(new_tag, current_tag=self.tag)  # noqa: SLF001
         old_tag = self.tag
         self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag})  # noqa: SLF001
         self.tag = new_tag
         self._view._reregister_layer(old_tag, new_tag, self)  # noqa: SLF001
+
+
+class SceneObject(LayerHandle):
+    """First-slice retrievable non-structural object.
+
+    For now it still shares the same operational tag used by the current
+    frontend bridge, but it also carries an explicit `layer_tag` field so the
+    public model can evolve toward distinct object identity vs grouping.
+    """
+
+    def __init__(
+        self,
+        view: Any,
+        tag: str,
+        *,
+        kind: str,
+        layer_tag: str | None = None,
+        meta: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        super().__init__(view, tag, kind=kind, meta=meta)
+        self.layer_tag = layer_tag or tag
+
+    def _sync_group_layer_hidden_state(self) -> None:
+        if hasattr(self._view, "_sync_layer_group_hidden_state"):
+            self._view._sync_layer_group_hidden_state(self.layer_tag)  # noqa: SLF001
+
+    def show(self, skip_digestion: bool = False) -> None:
+        super().show(skip_digestion=True)
+        self._sync_group_layer_hidden_state()
+
+    def hide(self, skip_digestion: bool = False) -> None:
+        super().hide(skip_digestion=True)
+        self._sync_group_layer_hidden_state()
+
+    def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
+        if not self._active or new_tag == self.tag:
+            return
+        if hasattr(self._view, "_assert_scene_object_tag_available"):
+            new_tag = self._view._assert_scene_object_tag_available(new_tag, current_tag=self.tag)  # noqa: SLF001
+        old_tag = self.tag
+        old_layer_tag = self.layer_tag
+        self._view._send({"op": "set_layer_tag", "tag": old_tag, "new_tag": new_tag})  # noqa: SLF001
+        self.tag = new_tag
+        self._view._reregister_scene_object(old_tag, new_tag, self)  # noqa: SLF001
+        if old_layer_tag == old_tag:
+            if hasattr(self._view, "_move_or_rename_layer_group_for_object_tag_change"):
+                self._view._move_or_rename_layer_group_for_object_tag_change(old_tag, new_tag, self)  # noqa: SLF001
+            self.layer_tag = new_tag
+
+    def set_layer_tag(self, new_layer_tag: str, skip_digestion: bool = False) -> None:
+        if not self._active:
+            return
+        if hasattr(self._view, "_set_scene_object_layer_tag"):
+            self._view._set_scene_object_layer_tag(self, new_layer_tag)  # noqa: SLF001
+
+    def delete(self, skip_digestion: bool = False) -> None:
+        if not self._active:
+            return
+        self._view._send({"op": "delete_layer", "tag": self.tag})  # noqa: SLF001
+        self._active = False
+        if hasattr(self._view, "_unregister_scene_object"):
+            self._view._unregister_scene_object(self.tag)  # noqa: SLF001
+        self._sync_group_layer_hidden_state()
+
+
+class Layer(LayerHandle):
+    """Pure Python grouping layer for scene objects."""
+
+    def _send_create(self) -> None:
+        return
+
+    def set_tag(self, new_tag: str, skip_digestion: bool = False) -> None:
+        members = list(self.members.values())
+        if len(members) == 1:
+            member = members[0]
+            if getattr(member, "tag", None) == self.tag and getattr(member, "layer_tag", None) == self.tag:
+                member.set_tag(new_tag, skip_digestion=True)
+                return
+        super().set_tag(new_tag, skip_digestion=True)
+
+    def show(self, skip_digestion: bool = False) -> None:
+        self._hidden = False
+        for member in list(self.members.values()):
+            member.show(skip_digestion=True)
+
+    def hide(self, skip_digestion: bool = False) -> None:
+        self._hidden = True
+        for member in list(self.members.values()):
+            member.hide(skip_digestion=True)
+
+    def delete(self, skip_digestion: bool = False) -> None:
+        if not self._active:
+            return
+        for member in list(self.members.values()):
+            member.delete(skip_digestion=True)
+        self._active = False
+        if hasattr(self._view, "_unregister_layer"):
+            self._view._unregister_layer(self.tag)  # noqa: SLF001
+
+    def add(self, obj: "SceneObject") -> None:
+        """Move *obj* into this layer (top-down membership management).
+
+        Equivalent to ``obj.set_layer_tag(self.tag)`` but expressed from the
+        layer's point of view.  If *obj* was the sole member of its previous
+        layer and that layer shared the same tag as the object, the old layer
+        is automatically cleaned up.
+
+        Parameters
+        ----------
+        obj
+            A :class:`Shape`, :class:`Annotation`, or :class:`Measurement`
+            instance to bring into this layer.
+        """
+        if not isinstance(obj, SceneObject):
+            raise TypeError(f"Expected a SceneObject (Shape/Annotation/Measurement), got {type(obj).__name__!r}.")
+        if not self._active:
+            raise ValueError(f"Layer {self.tag!r} is no longer active.")
+        obj.set_layer_tag(self.tag)
+
+    def detach(self, obj: "SceneObject") -> None:
+        """Detach *obj* from this layer, making it its own independent layer.
+
+        Equivalent to ``obj.set_layer_tag(obj.tag)``.  A new layer group is
+        automatically created for the object, and this layer is cleaned up if
+        it becomes empty as a result.
+
+        Parameters
+        ----------
+        obj
+            A :class:`Shape`, :class:`Annotation`, or :class:`Measurement`
+            that is currently a member of this layer.
+        """
+        if not isinstance(obj, SceneObject):
+            raise TypeError(f"Expected a SceneObject (Shape/Annotation/Measurement), got {type(obj).__name__!r}.")
+        if getattr(obj, "layer_tag", None) != self.tag:
+            raise ValueError(f"Object {obj.tag!r} is not a member of layer {self.tag!r}.")
+        obj.set_layer_tag(obj.tag)
+
+
+class Shape(SceneObject):
+    def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(view, tag, kind="shape", layer_tag=layer_tag, meta=meta)
+
+    def _replace_shape_and_refresh_runtime(self, next_msg: dict, *, runtime_msg: dict | None = None) -> None:
+        if hasattr(self._view, "_replace_shape_message"):
+            self._view._replace_shape_message(self.tag, next_msg)  # noqa: SLF001
+        if hasattr(self._view, "_send_runtime_only"):
+            self._view._send_runtime_only({"op": "delete_layer", "tag": self.tag})  # noqa: SLF001
+            payload = dict(runtime_msg or next_msg)
+            options = payload.get("options")
+            if isinstance(options, dict):
+                options = dict(options)
+            else:
+                options = {}
+            options["tag"] = self.tag
+            options["layer_tag"] = self.layer_tag
+            payload["options"] = options
+            self._view._send_runtime_only(payload)  # noqa: SLF001
+            if getattr(self, "_hidden", False):
+                self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag})  # noqa: SLF001
+
+    def _require_shape_message(self) -> dict:
+        getter = getattr(self._view, "_get_shape_message", None)
+        if not callable(getter):
+            raise ValueError("Shape mutation requires a viewer with shape history support.")
+        msg = getter(self.tag)
+        if not isinstance(msg, dict):
+            raise ValueError(f"No replayable shape message found for tag {self.tag!r}.")
+        return msg
+
+    def _apply_sphere_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_sphere":
+            raise NotImplementedError("Rich shape mutators are currently implemented only for spheres.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        next_msg = {"op": "add_sphere", "options": next_options}
+        if hasattr(self._view, "_replace_shape_message"):
+            self._view._replace_shape_message(self.tag, next_msg)  # noqa: SLF001
+        if hasattr(self._view, "_send_runtime_only"):
+            self._view._send_runtime_only({"op": "update_sphere", "tag": self.tag, "options": next_options})  # noqa: SLF001
+            if getattr(self, "_hidden", False):
+                self._view._send_runtime_only({"op": "hide_layer", "tag": self.tag})  # noqa: SLF001
+
+    @staticmethod
+    def _normalize_to_count(values, count: int, cast) -> list[Any]:
+        if count <= 0:
+            raise ValueError("Shape update requires at least one geometric element.")
+        if isinstance(values, (str, bytes)):
+            return [cast(values)] * count
+        try:
+            seq = list(values)
+        except TypeError:
+            return [cast(values)] * count
+        if len(seq) not in (1, count):
+            raise ValueError(f"Expected 1 or {count} values, got {len(seq)}")
+        if len(seq) == 1:
+            return [cast(seq[0])] * count
+        return [cast(v) for v in seq]
+
+    def _shape_element_count(self, options: dict, *keys: str) -> int:
+        for key in keys:
+            values = options.get(key)
+            if isinstance(values, list):
+                return len(values)
+        raise ValueError(f"Shape {self.tag!r} does not expose the requested editable payload.")
+
+    def _apply_links_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_network_links":
+            raise NotImplementedError("This mutator is currently implemented only for link shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_network_links", "options": next_options})
+
+    def _apply_triangle_faces_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_triangle_faces":
+            raise NotImplementedError("This mutator is currently implemented only for triangle-face shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_triangle_faces", "options": next_options})
+
+    def _apply_channel_tube_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_channel_tube":
+            raise NotImplementedError("This mutator is currently implemented only for channel-tube shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_channel_tube", "options": next_options})
+
+    def _apply_tetrahedra_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_tetrahedra":
+            raise NotImplementedError("This mutator is currently implemented only for tetrahedra shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_tetrahedra", "options": next_options})
+
+    def _apply_anisotropy_ellipsoid_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_anisotropy_ellipsoids":
+            raise NotImplementedError("This mutator is currently implemented only for anisotropy-ellipsoid shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_anisotropy_ellipsoids", "options": next_options})
+
+    def _apply_pharmacophore_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_pharmacophore_features":
+            raise NotImplementedError("This mutator is currently implemented only for pharmacophore shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_pharmacophore_features", "options": next_options})
+
+    def _apply_displacement_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_displacement_vectors":
+            raise NotImplementedError("This mutator is currently implemented only for displacement-vector shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_displacement_vectors", "options": next_options})
+
+    def _apply_pocket_blob_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_pocket_blob":
+            raise NotImplementedError("This mutator is currently implemented only for pocket-blob shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_pocket_blob", "options": next_options})
+
+    def _apply_pocket_surface_update(self, **updates: Any) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != "add_pocket_surface":
+            raise NotImplementedError("This mutator is currently implemented only for pocket-surface shapes.")
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        next_options.update(updates)
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": "add_pocket_surface", "options": next_options})
+
+    def _apply_pocket_centers_update(self, op: str, centers) -> None:
+        msg = self._require_shape_message()
+        if msg.get("op") != op:
+            raise NotImplementedError(
+                f"_apply_pocket_centers_update called with op {op!r} but shape has op {msg.get('op')!r}."
+            )
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            options = {}
+        next_options = dict(options)
+        alpha = dict(next_options.get("alpha_spheres") or {})
+        alpha["centers"] = centers
+        next_options["alpha_spheres"] = alpha
+        next_options["tag"] = self.tag
+        next_options["layer_tag"] = self.layer_tag
+        self._replace_shape_and_refresh_runtime({"op": op, "options": next_options})
+
+    def get_center(self):
+        msg = self._require_shape_message()
+        options = msg.get("options")
+        center = options.get("center") if isinstance(options, dict) else None
+        if not isinstance(center, list) or len(center) != 3:
+            raise ValueError(f"Shape {self.tag!r} does not expose a geometric center.")
+        return puw.quantity(list(center), "nm")
+
+    def get_coordinates(self):
+        """Return the geometric coordinates of this shape as a ``puw`` quantity in nm.
+
+        The return value depends on the shape type:
+
+        - **sphere** — center as a ``(3,)`` array.
+        - **channel tube / pharmacophore / anisotropy ellipsoids /
+          displacement vectors** — center path as a ``(n, 3)`` array.
+        - **network links** — coordinate pairs as a ``(n, 2, 3)`` array.
+        - **triangle faces** — vertex triples as a ``(n, 3, 3)`` array.
+        - **tetrahedra** — vertex quads as a ``(n, 4, 3)`` array.
+        - **pocket blob / pocket surface / alpha sphere set** — alpha-sphere
+          centers as a ``(n, 3)`` array.
+        """
+        msg = self._require_shape_message()
+        op = msg.get("op", "")
+        options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
+
+        if op == "add_sphere":
+            center = options.get("center")
+            if not isinstance(center, list) or len(center) != 3:
+                raise ValueError(f"Shape {self.tag!r} has no geometric center.")
+            return puw.quantity(center, "nm")
+
+        if op in ("add_channel_tube", "add_pharmacophore_features",
+                  "add_displacement_vectors", "add_anisotropy_ellipsoids"):
+            centers = options.get("centers")
+            if not isinstance(centers, list) or len(centers) == 0:
+                raise ValueError(f"Shape {self.tag!r} has no centers data.")
+            return puw.quantity(centers, "nm")
+
+        if op == "add_network_links":
+            pairs = options.get("coordinate_pairs")
+            if isinstance(pairs, list) and len(pairs) > 0:
+                return puw.quantity(pairs, "nm")
+            raise ValueError(
+                f"Shape {self.tag!r} is a link shape with atom-pair-only data; "
+                "no explicit coordinates are stored."
+            )
+
+        if op in ("add_pocket_blob", "add_pocket_surface", "add_alpha_sphere_set"):
+            alpha = options.get("alpha_spheres") or {}
+            centers = alpha.get("centers")
+            if isinstance(centers, list) and len(centers) > 0:
+                return puw.quantity(centers, "nm")
+            raise ValueError(f"Shape {self.tag!r} has no alpha-sphere centers.")
+
+        if op == "add_triangle_faces":
+            vertices = options.get("vertices")
+            if not isinstance(vertices, list) or len(vertices) == 0:
+                raise ValueError(f"Shape {self.tag!r} has no vertex data.")
+            return puw.quantity(vertices, "nm")
+
+        if op == "add_tetrahedra":
+            coords = options.get("tetra_coords") or options.get("tetraCoords")
+            if not isinstance(coords, list) or len(coords) == 0:
+                raise ValueError(f"Shape {self.tag!r} has no tetrahedra coordinate data.")
+            return puw.quantity(coords, "nm")
+
+        raise NotImplementedError(
+            f"get_coordinates is not implemented for shape op {op!r}."
+        )
+
+    def set_coordinates(self, coordinates) -> None:
+        """Replace the geometric coordinates of this shape.
+
+        Accepts a ``puw`` quantity or a plain array in nm with the same layout
+        as returned by :meth:`get_coordinates`.
+
+        Shape-type mapping
+        ------------------
+        - **sphere** — new center ``(3,)``.
+        - **channel tube / pharmacophore / anisotropy ellipsoids /
+          displacement vectors** — new centers ``(n, 3)``.
+        - **network links** — new coordinate pairs ``(n, 2, 3)``.
+        - **triangle faces** — new vertex triples ``(n, 3, 3)``.
+        - **tetrahedra** — new vertex quads ``(n, 4, 3)``.
+        """
+        msg = self._require_shape_message()
+        op = msg.get("op", "")
+
+        coords_nm = puw.get_value(coordinates, to_unit="nm")
+        if hasattr(coords_nm, "tolist"):
+            coords_nm = coords_nm.tolist()
+
+        if op == "add_sphere":
+            self._apply_sphere_update(center=list(coords_nm))
+            return
+
+        if op == "add_channel_tube":
+            self._apply_channel_tube_update(centers=coords_nm)
+            return
+
+        if op in ("add_pharmacophore_features",):
+            self._apply_pharmacophore_update(centers=coords_nm)
+            return
+
+        if op == "add_displacement_vectors":
+            self._apply_displacement_update(centers=coords_nm)
+            return
+
+        if op == "add_anisotropy_ellipsoids":
+            self._apply_anisotropy_ellipsoid_update(centers=coords_nm)
+            return
+
+        if op == "add_network_links":
+            self._apply_links_update(coordinate_pairs=coords_nm)
+            return
+
+        if op == "add_triangle_faces":
+            self._apply_triangle_faces_update(vertices=coords_nm)
+            return
+
+        if op == "add_tetrahedra":
+            self._apply_tetrahedra_update(tetra_coords=coords_nm)
+            return
+
+        if op in ("add_pocket_blob", "add_pocket_surface", "add_alpha_sphere_set"):
+            self._apply_pocket_centers_update(op=op, centers=coords_nm)
+            return
+
+        raise NotImplementedError(
+            f"set_coordinates is not implemented for shape op {op!r}."
+        )
+
+    def set_center(self, center, skip_digestion: bool = False) -> None:
+        self._apply_sphere_update(center=list(puw.get_value(center, to_unit="nm")))
+
+    def set_radius(self, radius, skip_digestion: bool = False) -> None:
+        self._apply_sphere_update(radius=float(puw.get_value(radius, to_unit="nm")))
+
+    def set_color(self, color, skip_digestion: bool = False) -> None:
+        from .colors import normalize_color
+        self._apply_sphere_update(color=normalize_color(color))
+
+    def set_alpha(self, alpha: float, skip_digestion: bool = False) -> None:
+        msg = self._require_shape_message()
+        op = msg.get("op")
+        options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
+        if op == "add_sphere":
+            self._apply_sphere_update(alpha=float(alpha))
+            return
+        if op == "add_network_links":
+            self._apply_links_update(alpha=float(alpha))
+            return
+        if op == "add_channel_tube":
+            self._apply_channel_tube_update(alpha=float(alpha))
+            return
+        if op == "add_tetrahedra":
+            self._apply_tetrahedra_update(alphas=float(alpha))
+            return
+        if op == "add_anisotropy_ellipsoids":
+            self._apply_anisotropy_ellipsoid_update(alpha=float(alpha))
+            return
+        if op == "add_pharmacophore_features":
+            count = self._shape_element_count(options, "centers", "kinds", "radii", "alphas")
+            self._apply_pharmacophore_update(alphas=self._normalize_to_count(alpha, count, float))
+            return
+        if op == "add_pocket_blob":
+            self._apply_pocket_blob_update(alpha=float(alpha))
+            return
+        if op == "add_pocket_surface":
+            self._apply_pocket_surface_update(alpha=float(alpha))
+            return
+        if op == "add_triangle_faces":
+            self._apply_triangle_faces_update(alpha=float(alpha))
+            return
+        raise NotImplementedError(f"set_alpha is not implemented for shape op {op!r}.")
+
+    def set_colors(self, colors, skip_digestion: bool = False) -> None:
+        from .colors import normalize_color
+        msg = self._require_shape_message()
+        op = msg.get("op")
+        options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
+
+        def _cast_color(v):
+            return normalize_color(v)
+
+        if op == "add_network_links":
+            count = self._shape_element_count(options, "atom_pairs", "coordinate_pairs", "colors")
+            self._apply_links_update(
+                color_by="link",
+                color_mode="link",
+                colors=self._normalize_to_count(colors, count, _cast_color),
+            )
+            return
+        if op == "add_channel_tube":
+            count = self._shape_element_count(options, "centers", "radii", "colors")
+            self._apply_channel_tube_update(
+                color_by="segment",
+                color_mode="segment",
+                colors=self._normalize_to_count(colors, count, _cast_color),
+            )
+            return
+        if op == "add_tetrahedra":
+            count = self._shape_element_count(options, "tetra_coords", "tetraCoords", "atom_quads", "atomQuads", "colors")
+            self._apply_tetrahedra_update(colors=self._normalize_to_count(colors, count, _cast_color))
+            return
+        if op == "add_anisotropy_ellipsoids":
+            count = self._shape_element_count(options, "centers", "atom_indices", "colors")
+            self._apply_anisotropy_ellipsoid_update(
+                color_by="fixed",
+                color_mode="fixed",
+                colors=self._normalize_to_count(colors, count, _cast_color),
+            )
+            return
+        if op == "add_pharmacophore_features":
+            count = self._shape_element_count(options, "centers", "kinds", "colors")
+            self._apply_pharmacophore_update(colors=self._normalize_to_count(colors, count, _cast_color))
+            return
+        if op == "add_triangle_faces":
+            count = self._shape_element_count(options, "vertices", "atom_triplets", "atomTriplets", "colors")
+            self._apply_triangle_faces_update(colors=self._normalize_to_count(colors, count, _cast_color))
+            return
+        raise NotImplementedError(f"set_colors is not implemented for shape op {op!r}.")
+
+    def set_radii(self, radii, skip_digestion: bool = False) -> None:
+        msg = self._require_shape_message()
+        op = msg.get("op")
+        options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
+        normalized = None
+        if op == "add_network_links":
+            count = self._shape_element_count(options, "atom_pairs", "coordinate_pairs", "radii")
+            normalized = self._normalize_to_count(
+                puw.get_value(radii, to_unit="nm"),
+                count,
+                float,
+            )
+            self._apply_links_update(radii=normalized)
+            return
+        if op == "add_channel_tube":
+            count = self._shape_element_count(options, "centers", "radii")
+            normalized = self._normalize_to_count(
+                puw.get_value(radii, to_unit="nm"),
+                count,
+                float,
+            )
+            self._apply_channel_tube_update(radii=normalized)
+            return
+        if op == "add_pharmacophore_features":
+            count = self._shape_element_count(options, "centers", "kinds", "radii")
+            normalized = self._normalize_to_count(
+                puw.get_value(radii, to_unit="nm"),
+                count,
+                float,
+            )
+            self._apply_pharmacophore_update(radii=normalized)
+            return
+        if op == "add_pocket_blob":
+            count = self._shape_element_count(options, "centers", "radii")
+            normalized = self._normalize_to_count(
+                puw.get_value(radii, to_unit="nm"),
+                count,
+                float,
+            )
+            self._apply_pocket_blob_update(radii=normalized)
+            return
+        raise NotImplementedError(f"set_radii is not implemented for shape op {op!r}.")
+
+    def set_radius_scale(self, radius_scale: float, skip_digestion: bool = False) -> None:
+        msg = self._require_shape_message()
+        op = msg.get("op")
+        if op == "add_displacement_vectors":
+            self._apply_displacement_update(radius_scale=float(radius_scale))
+            return
+        if op == "add_pocket_blob":
+            self._apply_pocket_blob_update(radius_scale=float(radius_scale))
+            return
+        raise NotImplementedError(f"set_radius_scale is not implemented for shape op {op!r}.")
+
+    def set_length_scale(self, length_scale: float, skip_digestion: bool = False) -> None:
+        msg = self._require_shape_message()
+        op = msg.get("op")
+        if op != "add_displacement_vectors":
+            raise NotImplementedError(f"set_length_scale is not implemented for shape op {op!r}.")
+        self._apply_displacement_update(length_scale=float(length_scale))
+
+    def focus(self, duration_ms: int = 250, extra_radius: float = 0.5) -> None:
+        """Center the camera on this shape.
+
+        Extracts all geometric coordinates from the shape message, computes
+        the bounding sphere (centroid + radius), and sends a ``zoom_to_position``
+        op to the frontend. Works for all shape types.
+
+        Parameters
+        ----------
+        duration_ms
+            Camera transition duration in milliseconds.
+        extra_radius
+            Extra padding added to the bounding radius (nm, default 0.5).
+        """
+        msg = self._require_shape_message()
+        op = msg.get("op", "")
+        options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
+        points = _extract_shape_points_nm(options, op)
+        if not points:
+            raise ValueError(
+                f"Cannot focus shape {self.tag!r}: no geometric coordinates found in message (op={op!r})."
+            )
+        center_nm, radius_nm = _bounding_sphere_nm(points)
+        radius_nm += float(extra_radius)
+        # Convert nm → Å (scene coordinates match atomic coordinates which are in Å)
+        center_ang = [v * _NM_TO_ANGSTROM for v in center_nm]
+        radius_ang = radius_nm * _NM_TO_ANGSTROM
+        self._view._send({  # noqa: SLF001
+            "op": "zoom_to_position",
+            "center": center_ang,
+            "radius": radius_ang,
+            "duration_ms": int(duration_ms),
+        })
+
+
+class Annotation(SceneObject):
+    def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(view, tag, kind="annotation", layer_tag=layer_tag, meta=meta)
+
+    def _require_annotation_record(self) -> dict:
+        history = getattr(self._view, "_annotation_history", [])
+        record = next((r for r in history if r.get("tag") == self.tag), None)
+        if record is None:
+            raise ValueError(f"No annotation record found for tag {self.tag!r}.")
+        return record
+
+    def get_coordinates(self):
+        """Return the anchor position of this annotation as a ``puw`` quantity ``(3,)`` in nm.
+
+        The anchor is the centroid of the atom indices stored in the annotation
+        record, evaluated at the current structure frame.
+        """
+        import numpy as _np
+
+        record = self._require_annotation_record()
+        options = record.get("options") or {}
+        atom_indices = options.get("atom_indices")
+        if not isinstance(atom_indices, list) or len(atom_indices) == 0:
+            raise ValueError(
+                f"Annotation {self.tag!r} has no atom-index anchor; cannot resolve coordinates."
+            )
+        molsys = getattr(self._view, "_molsys", None)
+        if molsys is None:
+            raise ValueError("No molecular system loaded.")
+        frame = getattr(self._view, "_current_structure_index", 0)
+        coords = molsys.structures.get_coordinates(
+            indices=atom_indices,
+            structure_indices=[frame],
+            skip_digestion=True,
+        )
+        # coords shape: (1, n_atoms, 3) in nm — return centroid
+        arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
+        centroid = arr[0].mean(axis=0).tolist()
+        return puw.quantity(centroid, "nm")
+
+    def set_coordinates(self, new_pos) -> None:
+        """Not supported: annotation anchors are tied to atom indices.
+
+        Use ``view.annotations.set_group_index(tag, group_index)`` to reanchor
+        the label to a different atom group.
+        """
+        raise NotImplementedError(
+            f"Annotation {self.tag!r} is atom-anchored. "
+            "To move it, use view.annotations.set_group_index(tag, group_index)."
+        )
+
+
+class Measurement(SceneObject):
+    def __init__(self, view: Any, tag: str, *, layer_tag: str | None = None, meta: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(view, tag, kind="measurement", layer_tag=layer_tag, meta=meta)
+
+    def get_coordinates(self):
+        """Return the 3D positions of the endpoint atoms as a ``puw`` quantity.
+
+        The shape is ``(n_endpoints, 3)`` in nm, where ``n_endpoints`` is 2
+        (distance), 3 (angle), or 4 (dihedral).  Positions are resolved from
+        the current structure frame.
+
+        Measurements are read-only — endpoints are tied to atoms and cannot be
+        moved independently.
+        """
+        import numpy as _np
+
+        history = getattr(self._view, "_measurement_history", [])
+        record = next((r for r in history if r.get("tag") == self.tag), None)
+        if record is None:
+            raise ValueError(f"No measurement record found for tag {self.tag!r}.")
+
+        options = record.get("options") or {}
+        endpoint_indices: list[list[int]] = options.get("endpoint_atom_indices") or []
+        flat = [idx for group in endpoint_indices for idx in (group or [])]
+        if not flat:
+            picks: list[list[int]] = options.get("picks_atom_indices") or []
+            flat = [idx for pick in picks for idx in (pick or [])]
+        if not flat:
+            raise ValueError(f"Measurement {self.tag!r} has no resolvable endpoint atoms.")
+
+        molsys = getattr(self._view, "_molsys", None)
+        if molsys is None:
+            raise ValueError("No molecular system loaded.")
+        frame = getattr(self._view, "_current_structure_index", 0)
+        coords = molsys.structures.get_coordinates(
+            indices=flat,
+            structure_indices=[frame],
+            skip_digestion=True,
+        )
+        # coords shape: (1, n_endpoints, 3) → squeeze to (n_endpoints, 3)
+        arr = _np.asarray(puw.get_value(coords, to_unit="nm"))
+        return puw.quantity(arr[0].tolist(), "nm")
+
+    def focus(self, duration_ms: int = 250, extra_radius: float = 0.5) -> None:
+        """Center the camera on the atoms involved in this measurement.
+
+        Uses the actual 3D coordinates of the endpoint atoms to compute a tight
+        bounding sphere and sends a ``zoom_to_position`` op.  Falls back to
+        ``view.zoom()`` if coordinates cannot be retrieved.
+
+        Parameters
+        ----------
+        duration_ms
+            Camera transition duration in milliseconds.
+        extra_radius
+            Extra padding added to the bounding radius (nm, default 0.5).
+        """
+        history = getattr(self._view, "_measurement_history", [])
+        record = next((r for r in history if r.get("tag") == self.tag), None)
+        if record is None:
+            return
+        options = record.get("options", {})
+        # Prefer resolved endpoint atoms; fall back to raw picks for centroid endpoints.
+        endpoint_indices: list[list[int]] = options.get("endpoint_atom_indices") or []
+        flat = [idx for group in endpoint_indices for idx in (group or [])]
+        if not flat:
+            picks: list[list[int]] = options.get("picks_atom_indices") or []
+            flat = [idx for pick in picks for idx in (pick or [])]
+        if not flat:
+            return
+
+        molsys = getattr(self._view, "_molsys", None)
+        if molsys is not None:
+            try:
+                import molsysmt as _msm
+                import numpy as _np
+                result = _msm.get(
+                    molsys,
+                    element="atom",
+                    selection=flat,
+                    output_type="dictionary",
+                    coordinates=True,
+                    skip_digestion=True,
+                )
+                coords = result.get("coordinates")
+                if coords is not None:
+                    arr = _np.asarray(coords)
+                    # shape: (n_structures, n_atoms, 3) in nm
+                    frame = arr[0]
+                    points = [
+                        [float(frame[i, 0]), float(frame[i, 1]), float(frame[i, 2])]
+                        for i in range(frame.shape[0])
+                    ]
+                    if points:
+                        center_nm, radius_nm = _bounding_sphere_nm(points)
+                        radius_nm = max(radius_nm + float(extra_radius), 0.5)
+                        self._view._send({  # noqa: SLF001
+                            "op": "zoom_to_position",
+                            "center": [v * _NM_TO_ANGSTROM for v in center_nm],
+                            "radius": radius_nm * _NM_TO_ANGSTROM,
+                            "duration_ms": int(duration_ms),
+                        })
+                        return
+            except Exception:
+                pass
+        # Fallback: use the public zoom() path (may zoom out further than ideal)
+        self._view.zoom(selection=flat, duration_ms=duration_ms, skip_digestion=True)  # noqa: SLF001
+
+
+class Section(SceneObject):
+    """A world-space clipping plane applied to all structural representations.
+
+    Access via the objects returned by ``view.scene.add_section()``.
+
+    Coordinates are in nm.  The plane discards everything on the side the
+    normal points *towards* when ``invert=False``, or the opposite side when
+    ``invert=True``.
+
+    Canvas gizmos
+    -------------
+    When a section is active the canvas shows two interactive handles:
+
+    * **Centre handle** (cyan circle) — drag to translate the plane along
+      its normal.  Left-click and drag in any direction; only the component
+      along the normal is applied, so the plane cannot slide off its own axis.
+
+    * **Rim handle** (yellow ↻ square, offset from centre) — drag to rotate
+      the normal.  Horizontal drag rotates around the camera's vertical axis;
+      vertical drag rotates around the camera's horizontal axis.  Rate: 0.4
+      degrees per pixel.
+
+    Both handles use pointer capture so they do not interfere with the
+    trackball rotation.  After each drag step the Python attributes
+    ``get_point()`` and ``get_normal()`` reflect the current live values.
+
+    Gizmo handles are shown by default.  Use :meth:`disable_drag` /
+    :meth:`enable_drag` to hide or re-show them without affecting the plane.
+    """
+
+    def __init__(self, view: Any, tag: str, *, meta: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(view, tag, kind="section", layer_tag=None, meta=meta)
+
+    def _require_record(self) -> dict:
+        history = getattr(self._view, "_section_history", [])
+        record = next((r for r in history if r.get("tag") == self.tag), None)
+        if record is None:
+            raise ValueError(f"No section record found for tag {self.tag!r}.")
+        return record
+
+    def _push_update(self) -> None:
+        """Re-send the full section list after an in-place record update."""
+        history = getattr(self._view, "_section_history", [])
+        self._view._send({"op": "set_sections", "sections": list(history)})  # noqa: SLF001
+
+    def get_point(self):
+        """Return the plane's anchor point as a puw quantity ``(3,)`` in nm."""
+        return puw.quantity(list(self._require_record()["point"]), "nm")
+
+    def get_normal(self):
+        """Return the plane's normal vector as a plain list ``[nx, ny, nz]``."""
+        return list(self._require_record()["normal"])
+
+    def is_inverted(self) -> bool:
+        """Return ``True`` if the clipping side is inverted."""
+        return bool(self._require_record().get("invert", False))
+
+    def set_point(self, point) -> None:
+        """Move the plane anchor to *point* (puw quantity or plain ``[x,y,z]`` in nm)."""
+        import numpy as _np
+        coords_nm = puw.get_value(point, to_unit="nm") if puw.is_quantity(point) else point
+        arr = _np.asarray(coords_nm, dtype=float).tolist()
+        if len(arr) != 3:
+            raise ValueError("point must be a 3-element vector.")
+        record = self._require_record()
+        record["point"] = arr
+        self._push_update()
+
+    def set_normal(self, normal) -> None:
+        """Set the plane normal direction (plain list or array, no units required)."""
+        import numpy as _np
+        arr = _np.asarray(normal, dtype=float)
+        norm = float(_np.linalg.norm(arr))
+        if norm < 1e-10:
+            raise ValueError("normal must be a non-zero vector.")
+        record = self._require_record()
+        record["normal"] = (arr / norm).tolist()
+        self._push_update()
+
+    def set_invert(self, invert: bool) -> None:
+        """Flip which side of the plane is clipped."""
+        record = self._require_record()
+        record["invert"] = bool(invert)
+        self._push_update()
+
+    def enable_drag(self) -> None:
+        """Show the interactive gizmo handles (centre + rim) for this section.
+
+        Both handles are visible by default.  Call this after a previous
+        :meth:`disable_drag` to restore them.
+        """
+        self._view._send({"op": "set_section_drag", "tag": self.tag, "enabled": True})  # noqa: SLF001
+
+    def disable_drag(self) -> None:
+        """Hide the interactive gizmo handles for this section.
+
+        The clipping plane remains active; only the visual handles are hidden.
+        Call :meth:`enable_drag` to restore them.
+        """
+        self._view._send({"op": "set_section_drag", "tag": self.tag, "enabled": False})  # noqa: SLF001
+
+    def delete(self, skip_digestion: bool = False) -> None:
+        """Remove this clipping plane."""
+        history = getattr(self._view, "_section_history", [])
+        new_history = [r for r in history if r.get("tag") != self.tag]
+        self._view._section_history = new_history  # noqa: SLF001
+        self._view._scene_objects.pop(self.tag, None)  # noqa: SLF001
+        self._view._send({"op": "set_sections", "sections": new_history})  # noqa: SLF001
+
+
+GroupLayer = Layer

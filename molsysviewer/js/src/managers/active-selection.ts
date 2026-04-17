@@ -2,6 +2,7 @@ import { Structure } from "molstar/lib/mol-model/structure";
 import { StructureElement } from "molstar/lib/mol-model/structure";
 import { Loci } from "molstar/lib/mol-model/loci";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 
 export type ActiveSelectionItem = {
@@ -62,13 +63,14 @@ export type ActiveSelectionPayload = {
 };
 
 export function buildGroupItemsFromStructure(structure: Structure): ActiveSelectionItem[] {
-    const atomicUnit = structure.units.find((unit) => unit.kind === 0);
-    if (!atomicUnit) return [];
+    // Find the first atomic unit to access the shared model/hierarchy.
+    const firstAtomicUnit = structure.units.find((unit) => unit.kind === 0);
+    if (!firstAtomicUnit) return [];
 
-    const model = atomicUnit.model;
+    const model = firstAtomicUnit.model;
     const hierarchy = model.atomicHierarchy;
     let atomSite: any = undefined;
-    
+
     if (model?.sourceData?.kind === "mmCIF") {
         atomSite = (model.sourceData.data as any).db?.atom_site;
     } else if (model?.sourceData?.kind === "mol-viewer:molsysmt") {
@@ -89,10 +91,26 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
     const compIdCol = (atomSite as any)?.molsys_component_id || (atomSite as any)?.component_id;
     const compNameCol = (atomSite as any)?.molsys_component_name || (atomSite as any)?.component_name;
 
+    // Collect the set of atom indices that actually appear in the structure
+    // (spanning ALL atomic units, not just the first chain).
+    const presentAtoms = new Set<number>();
+    for (const unit of structure.units) {
+        if (unit.kind !== 0) continue; // skip non-atomic units
+        const elements = unit.elements;
+        const count = OrderedSet.size(elements);
+        for (let i = 0; i < count; i++) {
+            presentAtoms.add(OrderedSet.getAt(elements, i));
+        }
+    }
+
     for (let groupIndex = 0; groupIndex < residueOffsets.length - 1; groupIndex++) {
         const start = residueOffsets[groupIndex];
         const end = residueOffsets[groupIndex + 1];
         if (end <= start) continue;
+
+        // Skip groups whose atoms are not present in this structure (e.g., deleted residues).
+        if (!presentAtoms.has(start)) continue;
+
         const atomIndices: number[] = [];
         for (let atomIndex = start; atomIndex < end; atomIndex++) {
             atomIndices.push(atomIndex);
@@ -471,21 +489,27 @@ export class ActiveSelectionController {
             this.clear();
             return;
         }
-        const unit = structure.units.find((candidate) => candidate.kind === 0);
-        if (!unit) {
+        const target = new Set(atomIndices);
+        // Build loci elements across ALL atomic units so that atoms on any chain
+        // (e.g. monomer B of a dimer, or the second additively-loaded system) are found.
+        const lociElements: { unit: any; indices: any }[] = [];
+        for (const unit of structure.units) {
+            if (unit.kind !== 0) continue; // skip non-atomic units
+            const matched: number[] = [];
+            const elements = unit.elements;
+            const count = OrderedSet.size(elements);
+            for (let i = 0; i < count; i++) {
+                if (target.has(OrderedSet.getAt(elements, i))) matched.push(i);
+            }
+            if (matched.length > 0) {
+                lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });
+            }
+        }
+        if (lociElements.length === 0) {
             this.clear();
             return;
         }
-        const unitIndices: number[] = [];
-        for (const atomIndex of atomIndices) {
-            const unitIndex = unit.elements.indexOf(atomIndex as any);
-            if (unitIndex >= 0) unitIndices.push(unitIndex);
-        }
-        if (unitIndices.length === 0) {
-            this.clear();
-            return;
-        }
-        const loci = StructureElement.Loci(structure, [{ unit, indices: unitIndices } as any]);
+        const loci = StructureElement.Loci(structure, lociElements as any);
         const items = lociToGroupItems(loci);
         this.setItems(items, false);
     }

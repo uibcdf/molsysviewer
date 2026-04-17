@@ -19,11 +19,456 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ### Pending proposals and bugs: current state
 
-`devguide/pending_proposals/` has 1 file: `PROPOSAL_advanced_sectioning_api.md`
-(parts 1 & 2 done; context-menu "Create Section from Selection" done;
-parts 3 & 4 — interactive gizmos and TopoMT integration — pending).
+`devguide/pending_proposals/` has 2 files:
 
-`devguide/pending_bugs/` is now empty.
+* `PROPOSAL_box_merging_logic_refinement.md` — MolSysMT-level concern; not
+  actionable in MolSysViewer until MolSysMT exposes per-frame box API.
+* `PROPOSAL_orientation_plane_api.md` — dedicated methods for Mol* orientation
+  axes and best-fit plane helpers (removed from `ALLOWED_REPRESENTATIONS`);
+  low priority, no user demand yet.
+
+`devguide/pending_bugs/` is empty.
+
+Recently closed and implemented in this session (twentieth batch):
+
+**Add-on panel widget contract — full implementation**:
+
+- `AddonPanelWidget` base class added to `molsysviewer/addons.py`:
+  - anywidget subclass with `push_state`, `request_context`, `handle_action`,
+    `on_mount`, `on_unmount`
+  - message routing from `_route_frontend_message` dispatches `action` and
+    `query` (viewer context) types
+  - `_build_viewer_context()` exposes `has_system`, `active_selection`,
+    `workspace`
+- `widget_class: str | None = None` added to `AddonPanelSpec`, exported from
+  `molsysviewer.__init__`
+- `ViewAddonsManager.resolve_panel_widget(addon_name, panel_id)` imports and
+  instantiates the class bound to the current view
+- TS canvas panel host:
+  - `workspaceAddonWidgetHost` div appended to `WorkbenchPanel`
+  - `mount_addon_panel` op: creates Blob URL from ESM string, dynamically
+    imports it, calls `render({ model, el })` via a model proxy
+  - model proxy: `model.send` → `addon_panel_action` event to Python;
+    `model.on("msg:custom", cb)` → registered in `activePanelMsgListeners`
+  - `addon_panel_message` op: forwards content to all registered listeners
+  - `cleanupActivePanelWidget` called on workspace switch or panel navigation
+- Python panel lifecycle in `viewer/core.py`:
+  - `panel_navigate` JS event → `_mount_addon_panel(addon, panel)`
+  - `panel_unmount` JS event → `_unmount_addon_panel()`
+  - `addon_panel_action` JS event → routes content to active widget
+  - `_mount_addon_panel` patches `widget.send` to route through
+    `_send_runtime_only` with `op: "addon_panel_message"`, calls `on_mount`,
+    pushes initial context, sends `mount_addon_panel` op to TS
+- 10 new tests in `tests/test_addons.py` — all passing
+- TS build: `npm run build` — exit 0, `viewer.js` updated
+
+**ElasNetMT `ElasNetMTModelPanel` — first proof of the panel widget contract**:
+
+- `molsysviewer_elasnetmt/panels/model.py` — subclass of `AddonPanelWidget`
+- `_esm`: vanilla JS panel with GNM/ANM tab toggle, cutoff input, Compute button
+- `on_mount`: pushes current runtime state to the panel
+- `handle_action`: `set_model_kind`, `set_cutoff`, `compute`
+  - `compute` calls `get_or_build_contact_model` (GNM) or
+    `get_or_build_anm_model` (ANM) via existing adapters; reports `n_nodes`
+- `widget_class` wired in `AddonPanelSpec` for the `model` panel
+- 4 new integration tests in `tests/integration/test_molsysviewer_addon.py`;
+  12 total, all passing
+
+Recently closed and implemented in this session (nineteenth batch):
+
+**Camera zoom animation bug — PyUnitWizard `api_string.is_unit` root-cause fix**:
+
+- `view.camera.zoom(..., duration='250 ms')` was snapping instantly (no animation) because
+  `duration_ms: 0` was reaching the JS frontend.
+- Root cause: `pyunitwizard/forms/api_string.py::is_unit` forced `to_type="unit"` when
+  parsing the string, stripping the numeric value. This made `is_unit('250 ms') = True`,
+  so `puw.standardize('250 ms')` took the unit branch and returned
+  `<Unit('picosecond')>` instead of `<Quantity(2.5e+11, 'picosecond')>`.
+  `quantity_value_in_unit` then wrapped it as `1.0 ps → 1e-9 ms → int = 0`.
+- Fix applied in **pyunitwizard** (`api_string.is_unit`): now parses the string normally
+  and checks `get_value(result) == 1`, consistent with `puw.is_unit` in `introspection.py`.
+- Full chain verified: `standardize('250 ms')` → `250000000000.0 ps` (Quantity) →
+  `quantity_value_in_unit(..., 'ms')` → `250.0` → `int` → `250` → JS animates correctly.
+- No changes needed in MolSysViewer; `digest_duration` + `quantity_value_in_unit` are correct.
+
+**`puw.standardize` — added `to_unit=` parameter**:
+
+- `pyunitwizard/api/standardization.py::standardize` now accepts an optional `to_unit`
+  parameter; when given, converts to that unit instead of the configured standard for the
+  dimensionality. Behavior unchanged when `to_unit=None`.
+
+**`camera.set_mode` `ArgumentError` — already fixed**:
+
+- `BUG_camera_set_mode_validation_error.md` was stale; the whitelist entry
+  `"molsysviewer.viewer.camera.CameraManager.set_mode"` was already present in
+  `digest_mode`. Bug report deleted.
+
+Recently closed and implemented in this session (eighteenth batch):
+
+**Representation taxonomy cleanup — `licorice` alias and non-molecular types**:
+
+- `licorice` alias corrected: was mapped to `"line"` (2D flat wireframe); now
+  correctly mapped to `"ball-and-stick"` (3D cylinders + spheres, which is the
+  VMD/NGLview meaning of "licorice").
+- Additional aliases added: `"cylinders"` → `"ball-and-stick"`, `"dots"` → `"point"`.
+- `ALLOWED_REPRESENTATIONS` audited against the full Mol* built-in list (15 types):
+  - `"label"` removed — not a molecular visualization style; text labels are
+    exposed through `view.annotations.add_annotation()`.
+  - `"orientation"` removed — structural axes helper; accessible via the
+    `molstar_repr_type` escape-hatch if needed.
+  - `"plane"` removed — best-fit plane helper; same escape-hatch route.
+  - All 11 remaining entries are genuine molecular representation types.
+- `REPRESENTATION_PARAM_SCHEMAS` entries for `label`, `orientation`, `plane`
+  removed to keep the module internally consistent with `ALLOWED_REPRESENTATIONS`.
+- The comment block above `ALLOWED_REPRESENTATIONS` documents the three excluded
+  types and their correct alternatives.
+
+Recently closed and implemented in this session (seventeenth batch):
+
+**`molsysmt.basic.info()` — subset and structure_indices support**:
+
+- `structure_indices='all'` added to the signature of `info()`.
+- `element='system'` branch now has two paths:
+  - `selection='all'` (default): existing behavior unchanged.
+  - `selection != 'all'`: resolves atom indices with `select()`, then calls
+    `get(element='atom', selection=atom_indices_resolved, n_atoms=True,
+    n_groups=True, ..., n_saccharides=True)` — all these scalar-count
+    `from_atom` implementations already support index subsets.
+    `n_structures` is fetched separately via `get(element='system',
+    n_structures=True)` since it is a trajectory attribute.
+  - After either path: if `structure_indices != 'all'`, `n_structures` is
+    overridden to `len(structure_indices)`.
+- All other element branches (`atom`, `group`, `chain`, etc.) are unchanged.
+- When `selection='all'` and `structure_indices='all'`: output identical to
+  previous behavior.
+
+**`SelectionsManager.add_selection` — aligned with `msm.select` signature**:
+
+- Old `atom_indices` keyword removed; replaced by the `selection` positional
+  arg which already accepts integer lists (interpreted at `element` level).
+- New params: `element='atom'` and `mask=None`, matching `msm.select`.
+- Implementation now always calls `msm.select(molsys, selection, element,
+  mask, syntax)` — the molsysmt function handles all cases (string query,
+  int list at any hierarchy level, `"all"`).
+- Raises `ValueError` if no system is loaded (the old `atom_indices` path
+  bypassed molsysmt; that bypass is no longer needed).
+
+Recently closed and implemented in this session (sixteenth batch):
+
+**`set_representation(color=...)` greys out other atoms**:
+
+- Root cause: the previous fix routed through `set_atom_colors`, which is a
+  global Mol* per-atom color theme.  Atoms NOT in the color map fall back to
+  grey.  For a region, only its own atoms were colored, making everything else
+  grey.
+- Fix: instead of using `set_atom_colors`, the color is now injected as
+  `molstar_color_theme = {"name": "uniform", "params": {"value": c}}` into
+  `params` BEFORE the send — both in `whole.py` and `regions.py`.
+- TS change: `setRegionRepresentation` in `state-handlers.ts` now calls
+  `getStructuralColorThemeFromParams` (same as `setGlobalRepresentation`) and
+  spreads `color` / `colorParams` into `addRepresentation` options for the
+  direct-type path.  Preset paths receive the cleaned params + `theme`.
+- JS rebuilt successfully.
+- The per-atom `_atom_color_map` and `set_atom_colors` path is now only used
+  for scalar coloring (`set_color_by_values`), not for uniform colors.
+
+**`Region.info()` returns per-atom table instead of system summary**:
+
+- Root cause: `molsysmt.info()` does not support returning a system-level
+  summary (N atoms, N groups, N chains…) for a subset of atoms.  `Region.info()`
+  falls through to `element="atom"` which returns the full per-atom table.
+- This requires a MolSysMT change.
+- Filed as `pending_proposals/PROPOSAL_molsysmt_info_system_subset.md`.
+
+Recently closed and implemented in this session (fifteenth batch):
+
+**`SelectionsManager` API cleanup** (`BUG_selections_manager_api_overhaul` /
+`PROPOSAL_selections_manager_signature_alignment`):
+
+- `add_selection(tag, selection="all", *, atom_indices=None, syntax="MolSysMT",
+  skip_digestion=False)` — clean public signature; internal Mol* metadata
+  (`source_kind`, `target_level`, `items`, `group_indices`, etc.) removed from
+  the public surface.
+- New internal `_store_selection_record(tag, atom_indices, *, source_kind, ...)`:
+  builds and sends the `save_selection` message; carries all the frontend
+  metadata needed for `activate()` replay without polluting the public API.
+- `add_from_active_selection` now calls `_store_selection_record` directly,
+  passing the full frontend event payload.
+- Deprecated `add()` method removed (no external callers; already deprecated
+  in the previous session).
+
+Recently closed and implemented in this session (fourteenth batch):
+
+**Bug fixes**
+
+*`Region.set_representation(color='...')` fails with `ValueError: Unsupported element level 'system'` (`BUG_region_color_string_conversion_failure`):*
+
+- Root cause: `set_representation` was delegating to `set_color_by_values(values=[color],
+  element="system", ...)`.  `expand_values_to_atoms` does not accept `element="system"`,
+  and even if it did, it would treat the color int as a scalar to be mapped through viridis
+  rather than as a literal color.
+- Fix in `regions.py`: replaced the delegation with a direct `set_atom_colors` send:
+  normalise `color` with `normalize_color()`, broadcast to all `self.atom_indices`, merge
+  into `_atom_color_map`, send `{"op": "set_atom_colors", ..., "replace": False}`.
+- Same broken pattern fixed in `whole.py`: uniform color now broadcasts to all `n_atoms`
+  with `replace: True`.
+- `normalize_color` added to the import from `.colors` in both files.
+
+*`Region.info()` fails with `ArgumentError` on `output_type` (`BUG_region_info_output_type_error`):*
+
+- Root cause: the actual caller string emitted by `@digest()` is
+  `'molsysviewer.regions.info'`, not `'molsysviewer.regions.Region.info'`.
+- Fix: both `'molsysviewer.regions.info'` and `'molsysviewer.regions.Region.info'` added
+  to the `caller` whitelist in `_private/arg_digestion/argument/output_type.py`.
+
+**Devguide**
+
+- `PROPOSAL_box_merging_logic_refinement.md` marked with a prominent
+  "TEMPORALMENTE IGNORADA" notice: depends on a per-frame box API in MolSysMT
+  that does not yet exist.
+
+Recently closed and implemented in this session (thirteenth batch):
+
+**API unification and discovery**
+
+*Discovery API (`PROPOSAL_discovery_api`):*
+
+- `view.representations` property — lists all active representation names on
+  the whole system.
+- `view.presets` property — lists available preset names.
+
+*Direct color in `set_representation` (`PROPOSAL_direct_color_in_set_representation`):*
+
+- `whole.set_representation(name, color=...)` and
+  `region.set_representation(name, color=...)` accept a `color` keyword.
+- Internally pops `color` from params and delegates to `set_color_by_values`.
+
+*Measurement API unification (`PROPOSAL_measurement_api_unification`):*
+
+- `add_distance`, `add_angle`, `add_dihedral` primary positional params
+  renamed to `selection_a/b/c/d`.
+- Old `atom_indices_a/b/c/d` names accepted as deprecated keyword-only args
+  (emit `DeprecationWarning`, then set the new variable).
+
+*Selections manager API (`PROPOSAL_selections_manager_api`):*
+
+- `SelectionsManager.__getitem__(tag)` and `__iter__` added.
+- `add_selection(tag, selection=None, *, atom_indices=None, syntax, ...)`
+  as primary method; resolves selection string via `msm.select()` or uses
+  `atom_indices` directly.
+- `add()` deprecated alias for `add_selection()`.
+
+*Annotation refactor (`PROPOSAL_annotation_refactor`):*
+
+- `add_annotation(text, kind, selection=None, *, atom_indices=None, tag,
+  layer_tag, syntax)` as primary method.
+- `add_label()` deprecated alias; resolves `group_index` to `atom_indices`
+  internally before delegating to `add_annotation()`.
+
+*Shape API unification (remaining) (`PROPOSAL_shape_api_unification`):*
+
+- `add_links()` gains `radius` and `color` as primary params; old `radii` /
+  `colors` accepted with `DeprecationWarning`.
+
+*Shapes info (`PROPOSAL_shapes_info`):*
+
+- `ShapesManager.info(tag=None)` — iterates `_shape_history` and returns
+  a list of dicts: `kind`, `tag`, `layer_tag`, `color` (hex), `radius` /
+  `width` (when applicable), `visible`.
+
+*Shape named colors (`PROPOSAL_shapes_named_colors`):*
+
+- `Shape.set_color()` and `Shape.set_colors()` now delegate to
+  `normalize_color()` so named strings, hex strings, and int values all work.
+
+**Bug fixes**
+
+*Batch shapes creating extra layers (`BUG_batch_shapes_extra_layers`):*
+
+- `layer_ack` handler in `core.py` now checks `tag not in self._scene_objects`
+  before registering into `_layers`; this prevents individual shape tags from
+  polluting the layer registry after batch ops.
+
+*Region.get_center() missing (`BUG_region_get_center_missing`):*
+
+- `Region.get_center(structure_indices)` added: calls
+  `msm.get(coordinates=True)` for the region's `atom_indices`, computes
+  centroid via numpy, returns a `puw.quantity` in nm.
+
+*Layer membership management (`PROPOSAL_layer_membership_management`):*
+
+- `Layer.add(obj)` — calls `obj.set_layer_tag(self.tag)`; raises `TypeError`
+  if not a `SceneObject`, `ValueError` if layer inactive.
+- `Layer.detach(obj)` — calls `obj.set_layer_tag(obj.tag)` (reverts to
+  self-tag); raises if obj not belonging to this layer.
+
+**Devguide cleanup**
+
+- Deleted `devguide/TMP_shape_layer_tag_checkpoint.md` (refactor notes
+  absorbed into `architecture.md`).
+- Deleted `devguide/pending_closure_2026_04_08.md` (served historical
+  purpose; no longer needed).
+- All resolved `pending_bugs/` and `pending_proposals/` files removed;
+  only `PROPOSAL_box_merging_logic_refinement.md` remains.
+
+Recently closed and implemented in this session (twelfth batch):
+
+**Technical debt resolution (Debts 3–5)**
+
+*Debt 3 — Box state migrated in `extract` / `merge`:*
+
+- `MolSysView.__init__` gains `_box_record: dict | None = None`.
+- `show_box` saves `{color, width, alpha, structure_indices}` to `_box_record`.
+- `hide_box` sets `_box_record = None`.
+- `reset_viewer` resets both `_box_visible = False` and `_box_record = None`.
+- `_import_extracted_state` (extract.py): if source had `_box_record`, calls
+  `result.show_box(**box_record, structure_indices=0)` after extraction.
+- `_import_view_state` (merge.py): same, taking the box from the first source
+  that had one.
+
+*Debt 4 — Per-atom color map migrated in `extract` / `merge`:*
+
+- `MolSysView.__init__` gains `_atom_color_map: dict[int, int] = {}`.
+- `Whole.set_color_by_values` now: sets `_atom_color_map = dict(zip(...))` (full replace),
+  sends `replace: True` to frontend.
+- `Whole.reset_colors` clears `_atom_color_map`.
+- `Region.set_color_by_values` now: merges or replaces `_atom_color_map` based on
+  `replace` flag; passes `replace` to the frontend message.
+- `Region.reset_colors` clears `_atom_color_map`.
+- `reset_viewer` resets `_atom_color_map = {}`.
+- `_import_extracted_state` (extract.py): remaps `_atom_color_map` through
+  `atom_index_map` and replays as a single `set_atom_colors` message.
+- `_import_view_state` (merge.py): accumulates offset-remapped color maps from
+  all sources and sends one final `set_atom_colors` message.
+
+*Debt 5 — NPT box auto-update on frame change:*
+
+- `PlayerManager.go_to_structure`: after updating `_current_structure_index`,
+  auto-calls `show_box(**_box_record, structure_indices=index)` when `_box_record`
+  is set.
+- `TrajectoryContext` interface gains `onPlaybackStopped?: (frame: number) => void`.
+- `TrajectoryHandlers.stopTrajectoryPlayback`: after clearing timers, calls
+  `onPlaybackStopped(getCurrentFrameIndex())` when playback was active.
+- `ViewerController` wires `onPlaybackStopped` to emit `{ event: "trajectory_frame_changed", frame }`.
+- `MolSysView._handle_frontend_event` handles `"trajectory_frame_changed"`:
+  updates `_current_structure_index` and `player._is_playing`, then redraws box.
+
+Recently closed and implemented in this session (eleventh batch):
+
+**Merge gap: measurements + saved selections** (future debt from surgical_view_extraction):
+
+- `_OffsetMap` class added to `merge.py`: proxy with `.get(key)` → `key + offset`,
+  compatible with the `dict.get` protocol expected by `_remap_measurement_message`
+  and `_remap_selection_message`.
+- `_import_view_state` in `merge.py` now migrates `_measurement_history` and
+  `_selection_history` from each source view by calling `result._remap_*_message`
+  with an `_OffsetMap(atom_offset)` — all source atoms survive a merge, so
+  no measurement or selection is ever dropped.
+
+**Scalar Color Mapping API** (`PROPOSAL_scalar_color_mapping_api`):
+
+- `colors.py`:
+  - `scalar_to_color_list(values, palette, value_range)` — normalises scalars
+    and maps each to a `0xRRGGBB` int.
+  - `expand_values_to_atoms(molsys, values, element, palette, value_range, scope_atom_indices)`
+    — supports any hierarchy level (`"atom"`, `"group"`, `"component"`, `"molecule"`,
+    `"chain"`, `"entity"`); broadcasts the per-element color to all belonging atoms.
+- `whole.py` and `regions.py` gain `set_color_by_values(values, element, palette, value_range)`
+  and `reset_colors()` methods.  `Region.set_color_by_values` has a `replace` flag
+  (default `False`) to merge with existing color assignments.
+- TS messages: `set_atom_colors` (`{atom_indices, colors, replace?}`) and
+  `clear_atom_colors`.
+- `src/themes/per-atom-color.ts`: custom Mol* `ColorTheme.Provider` `"msv-per-atom"`,
+  registered at plugin init via
+  `plugin.representation.structure.themes.colorThemeRegistry.add(...)`.
+- `StateHandlers.setAtomColors` / `clearAtomColors`: update the module-level
+  `Map<atomIndex, Color>` then call
+  `updateRepresentationsTheme(components, { color: "msv-per-atom" })`.
+- `scalar_to_color_list` and `expand_values_to_atoms` exported from `__init__.py`.
+
+**Unit Cell Visualization** (`PROPOSAL_unit_cell_visualization`):
+
+- `MolSysView.show_box(color, width, alpha, structure_indices)` and `hide_box()`.
+- Reads box vectors via `msm.get(_molsys, element="system", box=True)` (pint nm),
+  converts to Å, builds 8 vertices + 12 edges, sends as `add_network_links` with
+  fixed tag `"__msv_box"`.
+- `_box_visible: bool` state tracks whether a box is shown; reset in `reset_viewer()`.
+
+Recently closed and implemented in this session (tenth batch):
+
+**Surgical view extraction** (PROPOSAL_surgical_view_extraction):
+
+- `_build_atom_index_map(molsys, selection, syntax)` in `extract.py`: calls
+  `msm.select()` and builds `{old_index: new_index}` for all surviving atoms.
+- `_import_extracted_state(result, source, atom_index_map)`: migrates all
+  scene state from source to result using the map:
+  - Layers: always.
+  - Regions: any region with ≥ 1 surviving atom, remapped to surviving indices.
+  - Shapes / Annotations: via `source._remap_shape_message` (world-space
+    shapes always pass; atom-anchored only if anchor atoms survive).
+  - Measurements: via `source._remap_measurement_message` (all endpoints
+    must survive).
+  - Saved selections: via `source._remap_selection_message`.
+  - Sections: always (world-space).
+  - Global: whole representation, camera snapshot, widget controls.
+  - Auto-tag counters propagated so new objects don't collide with migrated tags.
+- `extract()` in `extract.py` rewritten to call `_build_atom_index_map` then
+  `_import_extracted_state` after the structural extraction.
+- `view.extract()` docstring updated to describe scene-state migration.
+
+Recently closed and implemented in this session (ninth batch):
+
+**Sectioning API — rotation gizmo (Part 3 complement)**:
+
+- **Rim handle**: second DOM element (yellow square ↻) positioned at
+  `center + u * discRadius * 0.75` in Å, projected to screen space.
+- **Rotation math**: `_rotateVec(v, axis, angleDeg)` applies Rodrigues'
+  formula.  `_onRimHandleDrag` maps screen `dx` → rotation around camera up,
+  `dy` → rotation around camera right, at 0.4 deg/px.
+- **Helpers**: `_computeDiscRadius`, `_computeDiscU`, `_getRimWorldPosA`
+  extracted to share geometry between gizmo disc and rim handle position.
+- `_syncHandles` / `_repositionHandles` / `setActiveSectionDrag` all updated
+  to manage rim handles alongside the existing center handles.
+- `_onHandleDrag` (translation) now also emits `normal` in the `section_moved`
+  event for consistency.
+- Python `core.py` `section_moved` handler extended to update both `point` and
+  `normal` in `_section_history`, so `Section.get_normal()` stays live during
+  interactive rotation.
+
+Recently closed and implemented in this session (eighth batch):
+
+**Sectioning API — Part 4: string resolution**:
+
+- `add_section(point="centroid:<tag>", ...)` resolves to the centroid (nm) of
+  the scene object with that tag by calling `obj.get_coordinates()` + mean.
+- `add_section(normal="toward:<tag>", ...)` and `"mouth:<tag>"` resolve to the
+  unit vector from the resolved `point_nm` toward that object's centroid.
+- Helper methods `_resolve_point_string` / `_resolve_normal_string` /
+  `_get_object_centroid_nm` added to `SceneManager`.
+- Both string forms raise clear errors for coincident points or unknown syntax.
+
+Recently closed and implemented in this session (seventh batch):
+
+**Sectioning API — Part 3: interactive gizmos**:
+
+- **3D disc gizmo**: `_buildDiscVertices` + `_updateSectionGizmos` in
+  `scene-handlers.ts` render a translucent triangle-fan disc (32 segments,
+  radius = `max(15, camera.radius * 0.3)` Å) at each active section plane.
+  Tag prefix `__msv_sgizmo_` keeps gizmo shapes separate from user shapes.
+- **2D drag handle**: `_createSectionHandle` adds a circular DOM element over
+  the canvas (z-index 10).  Pointer events use `setPointerCapture` so drags
+  don't trigger Mol*'s trackball.
+- **Drag math**: screen `dx/dy` → world delta via `camera.getPixelSize` and
+  camera right/up vectors → projected onto section normal → section point
+  updated in nm.
+- **Camera reprojection**: `_ensureCameraSubscription` subscribes to
+  `camera.stateChanged` so handles follow the projected section center.
+- **Python sync**: TS emits `section_moved`; Python `core.py` updates
+  `_section_history` so `Section.get_point()` returns the live value.
+- **`Section.enable_drag()` / `disable_drag()`**: send `set_section_drag` op
+  to show/hide the drag handle.
+- New message type `SetSectionDragMessage` added to `viewer-messages.ts`.
+- `SceneCallbacks` extended with `registerShapeRef` callback.
 
 Recently closed and implemented in this session (sixth batch):
 

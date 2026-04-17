@@ -6,6 +6,8 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ..colors import colors as global_colors
+from ._registry import register_shape_layer
 
 
 class AnisotropyEllipsoids:
@@ -37,12 +39,15 @@ class AnisotropyEllipsoids:
         principal_directions: Iterable[Sequence[float]] | None = None,
         scale: float | None = None,
         max_eccentricity: float | None = None,
+        color_by: str | None = None,
+        palette=None,
         color_mode: str | None = None,
         colors: Sequence[int] | None = None,
         color_map: Sequence[int] | str | None = None,
         values: Sequence[float] | None = None,
         alpha: float | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         name: str | None = None,
         skip_digestion: bool = False,
     ):
@@ -53,6 +58,12 @@ class AnisotropyEllipsoids:
         options: dict = {
             "centers": centers_list,
         }
+        color_registry = getattr(self._view, "colors", global_colors)
+        resolved_color_by = color_by or color_mode
+        resolved_palette = palette if palette is not None else color_map
+        serialized_palette = None
+        if resolved_palette is not None:
+            serialized_palette = color_registry.resolve_palette(resolved_palette).colors
         if eigenvalues is not None:
             options["eigenvalues"] = eigenvalues
         if eigenvectors is not None:
@@ -65,24 +76,25 @@ class AnisotropyEllipsoids:
             options["scale"] = scale
         if max_eccentricity is not None:
             options["max_eccentricity"] = max_eccentricity
-        if color_mode is not None:
-            options["color_mode"] = color_mode
+        if resolved_color_by is not None:
+            options["color_mode"] = resolved_color_by
+            options["color_by"] = resolved_color_by
         if colors is not None:
             options["colors"] = colors
-        if color_map is not None:
-            options["color_map"] = color_map
+        if serialized_palette is not None:
+            options["palette"] = serialized_palette
+            options["color_map"] = serialized_palette
         if values is not None:
             options["values"] = values
         if alpha is not None:
             options["alpha"] = alpha
         
-        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        options["tag"] = tag
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(self._view, tag, layer_tag=layer_tag)
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
         if name is not None:
             options["name"] = name
 
         self._view._send({"op": "add_anisotropy_ellipsoids", "options": options})
-        if tag not in self._view._layers:  # noqa: SLF001
-            from ..layers import Layer
-            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+        return layer

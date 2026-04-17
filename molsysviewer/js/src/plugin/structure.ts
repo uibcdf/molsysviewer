@@ -35,6 +35,7 @@ export interface MolSysAtomPayload {
     element_symbol?: string[];
     residue_id?: number[];
     residue_name?: string[];
+    group_type?: string[];
     chain_id?: string[];
     entity_id?: string[];
     formal_charge?: number[];
@@ -232,6 +233,27 @@ export async function loadStructureFromMolSysPayload(
     };
 }
 
+function isPolymerGroupType(groupType: string): boolean {
+    const t = groupType.toLowerCase().replace(/[\s_-]/g, "");
+    return (
+        t.includes("protein") ||
+        t.includes("aminoacid") ||
+        t.includes("peptide") ||
+        t.includes("nucleic") ||
+        t.includes("dna") ||
+        t.includes("rna") ||
+        t.includes("nucleotide")
+    );
+}
+
+function groupTypesToGroupPDB(groupTypes: string[], atomCount: number): string[] {
+    const out = new Array<string>(atomCount);
+    for (let i = 0; i < atomCount; i++) {
+        out[i] = isPolymerGroupType(groupTypes[i]) ? "ATOM" : "HETATM";
+    }
+    return out;
+}
+
 function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structure: MolSysStructurePayload) {
     const atoms = payload.atoms;
     const ids = ensureNumericArray(atoms.atom_id, atomCount, i => i + 1);
@@ -239,6 +261,7 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structur
     const elements = ensureStringArray(atoms.element_symbol, atomCount, () => "C");
     const residueIds = ensureNumericArray(atoms.residue_id, atomCount, () => 1);
     const residueNames = ensureStringArray(atoms.residue_name, atomCount, () => "RES");
+    const groupTypes = ensureStringArray(atoms.group_type, atomCount, () => "");
     const chainIds = ensureStringArray(atoms.chain_id, atomCount, () => "A");
     const entityIds = ensureStringArray(atoms.entity_id, atomCount, () => "1");
     const charges = ensureNumericArray(atoms.formal_charge, atomCount, () => 0);
@@ -271,13 +294,14 @@ function createAtomSiteTable(payload: MolSysPayload, atomCount: number, structur
         Cartn_x: Column.ofFloatArray(x),
         Cartn_y: Column.ofFloatArray(y),
         Cartn_z: Column.ofFloatArray(z),
-        group_PDB: Column.ofConst("HETATM", atomCount, Column.Schema.str),
+        group_PDB: Column.ofStringArray(groupTypesToGroupPDB(groupTypes, atomCount)),
         // Add custom columns for hierarchy
         // Note: we use names that won't conflict with standard CIF but Mol* can carry
         ["molsys_molecule_id" as any]: Column.ofIntArray(molId),
         ["molsys_molecule_name" as any]: Column.ofStringArray(molName),
         ["molsys_component_id" as any]: Column.ofIntArray(compId),
         ["molsys_component_name" as any]: Column.ofStringArray(compName),
+        ["molsys_group_type" as any]: Column.ofStringArray(groupTypes),
     } as any, atomCount);
 }
 

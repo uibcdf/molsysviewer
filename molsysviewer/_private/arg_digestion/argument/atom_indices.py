@@ -1,5 +1,6 @@
 from ...exceptions import ArgumentError
 from ...variables import is_all
+from ..helpers import normalize_viewer_caller
 import numpy as np
 
 def digest_atom_indices(atom_indices, caller=None):
@@ -24,6 +25,8 @@ def digest_atom_indices(atom_indices, caller=None):
     ArgumentError
         If the given indices are not of the correct type.
     """
+
+    caller = normalize_viewer_caller(caller)
 
     if atom_indices is None:
         return None

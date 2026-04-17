@@ -156,6 +156,16 @@ class SelectionsManager:
     def __init__(self, view: Any) -> None:
         self._view = view
 
+    def __getitem__(self, tag: str) -> Selection:
+        sel = self.get(tag, skip_digestion=True)
+        if sel is None:
+            raise KeyError(tag)
+        return sel
+
+    def __iter__(self):
+        for tag in self.tags:
+            yield self._selection(tag)
+
     def _selection(self, tag: str) -> Selection:
         if tag not in self._view._selections:  # noqa: SLF001
             self._view._selections[tag] = Selection(self._view, tag)  # noqa: SLF001
@@ -167,9 +177,8 @@ class SelectionsManager:
                 return dict(record)
         return None
 
-    @signal(tags=["selection"])
-    @digest()
-    def tags(self, skip_digestion: bool = False) -> list[str]:
+    @property
+    def tags(self) -> list[str]:
         """Return the stored persistent selection tags."""
         return [str(record.get("tag")) for record in self._view._selection_history if isinstance(record.get("tag"), str)]  # noqa: SLF001
 
@@ -335,12 +344,10 @@ class SelectionsManager:
                 return summarize(record)
         raise ValueError(f"No persistent selection found for tag {tag!r}.")
 
-    @signal(tags=["selection"])
-    @digest()
-    def add(
+    def _store_selection_record(
         self,
         tag: str,
-        atom_indices: Any,
+        atom_indices: list[int],
         *,
         source_kind: str = "element",
         element_level: str = "group",
@@ -351,15 +358,10 @@ class SelectionsManager:
         chain_indices: list[int] | None = None,
         molecule_indices: list[int] | None = None,
         entity_indices: list[int] | None = None,
-        skip_digestion: bool = False,
     ) -> Selection:
-        """Store a persistent selection explicitly from atom indices and derived metadata."""
-        atom_indices = [int(ii) for ii in atom_indices]
-        if len(atom_indices) == 0:
-            raise ValueError("Persistent selections require non-empty atom_indices.")
+        """Internal: build and send a save_selection message, return the Selection wrapper."""
         if self.contains(tag, skip_digestion=True):
             raise ValueError(f"A persistent selection with tag {tag!r} already exists.")
-
         msg = {
             "op": "save_selection",
             "tag": tag,
@@ -367,7 +369,7 @@ class SelectionsManager:
             "element_level": element_level,
             "target_level": target_level,
             "items": [dict(item) for item in (items or [])],
-            "atom_indices": list(atom_indices),
+            "atom_indices": atom_indices,
             "group_indices": list(group_indices or []),
             "component_indices": list(component_indices or []),
             "chain_indices": list(chain_indices or []),
@@ -377,19 +379,69 @@ class SelectionsManager:
         self._view._send(msg)  # noqa: SLF001
         return self._selection(tag)
 
+    @signal(tags=["selection"])
+    @digest()
+    def add_selection(
+        self,
+        tag: str,
+        selection: Any = "all",
+        *,
+        element: str = "atom",
+        mask: Any = None,
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ) -> Selection:
+        """Store a persistent selection by MolSysMT selection expression.
+
+        The signature mirrors ``msm.select()``: *selection* can be a string
+        query, a list of integer indices (interpreted at *element* level), or
+        ``"all"``.  *element* controls which hierarchy level the indices refer
+        to (``"atom"``, ``"group"``, ``"chain"``, etc.).  *mask* restricts
+        the search universe.
+
+        Parameters
+        ----------
+        tag
+            Unique identifier for this persistent selection.
+        selection
+            MolSysMT selection string or integer index list.
+        element
+            Hierarchy level of *selection* indices (default ``"atom"``).
+        mask
+            Additional atom mask to restrict the selection universe.
+        syntax
+            Selection syntax (default ``"MolSysMT"``).
+        """
+        if self._view._molsys is None:  # noqa: SLF001
+            raise ValueError("No molecular system loaded.")
+        resolved = [
+            int(i)
+            for i in msm.select(
+                self._view._molsys,  # noqa: SLF001
+                selection=selection,
+                element=element,
+                mask=mask,
+                syntax=syntax,
+                skip_digestion=True,
+            )
+        ]
+        if len(resolved) == 0:
+            raise ValueError("Persistent selections require non-empty atom indices.")
+        return self._store_selection_record(tag, resolved)
+
     @signal(tags=["selection", "interaction"])
     @digest()
     def add_from_active_selection(self, tag: str, skip_digestion: bool = False) -> Selection:
         """Persist the current active selection as a named selection."""
-        event = self._view.get_last_active_selection_event()
+        event = self._view.get_last_active_selection_event()  # noqa: SLF001
         if event is None:
             raise ValueError("No active selection stored. Select something before saving a named selection.")
         atom_indices = event.get("atom_indices") or []
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
             raise ValueError("The current active selection does not resolve to any atoms.")
-        return self.add(
-            tag=tag,
-            atom_indices=list(atom_indices),
+        return self._store_selection_record(
+            tag,
+            list(atom_indices),
             source_kind=str(event.get("source_kind", "element")),
             element_level=str(event.get("element_level", "group")),
             target_level=str(event.get("target_level", "none")),
@@ -399,7 +451,6 @@ class SelectionsManager:
             chain_indices=list(event.get("chain_indices") or []),
             molecule_indices=list(event.get("molecule_indices") or []),
             entity_indices=list(event.get("entity_indices") or []),
-            skip_digestion=True,
         )
 
     @signal(tags=["selection"])

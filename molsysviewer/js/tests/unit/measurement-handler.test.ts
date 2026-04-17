@@ -86,3 +86,72 @@ test("MeasurementHandlers.setVisibility rebuilds persisted measurements from sto
         (PluginCommands.State as any).RemoveObject = originalRemove;
     }
 });
+
+test("MeasurementHandlers can rename and drop measurement tags", async () => {
+    const fakeMeasurement = {
+        async addDistance(_a: any, _b: any, _opts: any) {
+            return {
+                selection: { ref: "sel-ref" },
+                representation: { ref: "repr-ref" },
+            };
+        },
+    };
+    const plugin = { managers: { structure: { measurement: fakeMeasurement } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+    (handlers as any).buildLociFromAtomIndices = (_structure: any, atomIndices: number[]) => ({ atomIndices });
+
+    await handlers.addDistance({
+        op: "add_distance_measurement",
+        tag: "m1",
+        options: {
+            tag: "m1",
+            picks_atom_indices: [[0], [1]],
+        },
+    });
+
+    assert.strictEqual(handlers.hasTag("m1"), true);
+    handlers.renameTag("m1", "m2");
+    assert.strictEqual(handlers.hasTag("m1"), false);
+    assert.strictEqual(handlers.hasTag("m2"), true);
+    handlers.dropTag("m2");
+    assert.strictEqual(handlers.hasTag("m2"), false);
+});
+
+test("MeasurementHandlers resolves representative atoms from molsys_group_type metadata", () => {
+    const plugin = { managers: { structure: { measurement: {} } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+
+    (handlers as any).modelForAtomIndex = (_structure: any, atomIndex: number) => ({
+        atomicHierarchy: {
+            atoms: {
+                label_atom_id: {
+                    value: (index: number) => {
+                        const names: Record<number, string> = { 10: "N", 11: "CA", 12: "C", 20: "O1", 21: "P", 22: "O2" };
+                        return names[index];
+                    },
+                },
+                molsys_group_type: {
+                    value: (index: number) => {
+                        const types: Record<number, string> = { 10: "amino acid", 11: "amino acid", 12: "amino acid", 20: "lipid", 21: "lipid", 22: "lipid" };
+                        return types[index];
+                    },
+                },
+            },
+        },
+    });
+
+    const protein = handlers.buildMeasurementOptions([[10, 11, 12], [21]], "representative_atom");
+    assert.deepStrictEqual(protein.endpoint_kinds, ["representative_atom", "atom"]);
+    assert.deepStrictEqual(protein.endpoint_labels, ["CA", "P"]);
+    assert.deepStrictEqual(protein.endpoint_atom_indices, [[11], [21]]);
+
+    const lipid = handlers.buildMeasurementOptions([[20, 21, 22]], "representative_atom");
+    assert.deepStrictEqual(lipid.endpoint_labels, ["P"]);
+    assert.deepStrictEqual(lipid.endpoint_atom_indices, [[21]]);
+});

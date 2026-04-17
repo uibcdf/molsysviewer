@@ -1,4 +1,5 @@
 from molsysviewer._private.exceptions import ArgumentError
+from ..helpers import normalize_viewer_caller
 
 functions_with_boolean = (
         'molsysmt.basic.get.get',
@@ -7,6 +8,7 @@ functions_with_boolean = (
 
 
 def digest_n_molecules(n_molecules, caller=None):
+    caller = normalize_viewer_caller(caller)
 
     if caller.endswith(functions_with_boolean):
         if isinstance(n_molecules, bool):
@@ -27,4 +29,3 @@ def digest_n_molecules(n_molecules, caller=None):
             return n_molecules
 
     raise ArgumentError('n_molecules', value=n_molecules, caller=caller, message=None)
-

@@ -1,6 +1,6 @@
 # ElasNetMT Add-On Plan
 
-Last update: 2026-04-06
+Last update: 2026-04-17
 
 This note records the current development plan for an **ElasNetMT add-on** on
 top of the now-explicit MolSysViewer add-on platform.
@@ -262,13 +262,42 @@ The right first proof is narrower:
 - one real overlay path
 - one real export helper
 
+### Phase 6. Interactive Panel Widgets (done 2026-04-17)
+
+Goal:
+
+- give each ElasNetMT panel a real interactive UI embedded in the canvas panel
+  host, without requiring TypeScript or MolSysViewer-internal knowledge
+
+Work:
+
+- `AddonPanelWidget` base class added to `molsysviewer.addons` ✓
+- `widget_class` field added to `AddonPanelSpec` ✓
+- `ViewAddonsManager.resolve_panel_widget(addon, panel)` ✓
+- TS panel host in `workbench-panel.ts` + ESM model proxy in
+  `viewer-controller.ts` ✓
+- Python panel lifecycle in `viewer/core.py`:
+  - `panel_navigate` → `_mount_addon_panel` ✓
+  - `panel_unmount` → `_unmount_addon_panel` ✓
+  - `addon_panel_action` → routes to active widget ✓
+- `ElasNetMTModelPanel` in `molsysviewer_elasnetmt/panels/model.py`:
+  - GNM/ANM tab toggle, cutoff input, Compute button ✓
+  - `on_mount` pushes initial runtime state ✓
+  - `handle_action` handles `set_model_kind`, `set_cutoff`, `compute` ✓
+  - `compute` action builds and caches the GNM/ANM model via existing adapters ✓
+- 4 new integration tests in `test_molsysviewer_addon.py` ✓
+
+Deliverable:
+
+- the first real interactive add-on panel is embedded and working end-to-end
+
 ## Current Immediate Next Step
 
-The immediate next engineering step should be:
+Phases 1–6 are complete. The immediate next step is:
 
-1. write this plan into the devguide
-2. add a bundled reference ElasNetMT add-on template
-3. validate it in tests
-4. then start implementing the first real overlay-driven lifecycle behavior
+- `ElasNetMTModesPanel` — normal mode selection UI in the `Modes` panel
+- `ElasNetMTFiguresPanel` — export preset selection UI in the `Figures` panel
 
-That sequence keeps documentation, host validation, and implementation aligned.
+Both follow the same pattern as `ElasNetMTModelPanel`: subclass
+`AddonPanelWidget`, write `_esm` + `_css`, implement `on_mount` and
+`handle_action`, wire `widget_class` in the `AddonPanelSpec`.

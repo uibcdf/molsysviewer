@@ -1,5 +1,10 @@
 
+from .helpers import normalize_viewer_caller
+
+
 def argument_names_standardization(caller, kwargs):
+
+    caller = normalize_viewer_caller(caller)
 
     from molsysmt.attribute import _attribute_synonyms
 

@@ -7,6 +7,34 @@ import { PopupHostManager } from "./managers/popup-host";
 import { buildControls } from "./ui/controls";
 import { createLogger } from "./utils/logger";
 
+/**
+ * Given an `interaction_measurement_created` event, build the corresponding
+ * `add_*_measurement` op that can be replayed in another canvas.
+ * Returns null if the event is not a recognised measurement event.
+ */
+function buildMeasurementOpFromInteractionEvent(event: any): ViewerMessage | null {
+    if (!event || event.event !== "interaction_measurement_created") return null;
+    const action: string = event.action;
+    const op =
+        action === "distance" ? "add_distance_measurement" :
+        action === "angle"    ? "add_angle_measurement"    :
+        action === "dihedral" ? "add_dihedral_measurement" :
+        null;
+    if (!op) return null;
+    return {
+        op,
+        tag: event.tag,
+        options: {
+            tag: event.tag,
+            picks_atom_indices: event.picks_atom_indices ?? [],
+            endpoint_policy: event.endpoint_policy,
+            endpoint_kinds: event.endpoint_kinds,
+            endpoint_labels: event.endpoint_labels,
+            endpoint_atom_indices: event.endpoint_atom_indices,
+        },
+    } as unknown as ViewerMessage;
+}
+
 const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
     let frameCount: number | undefined = undefined;
     let multipleStructures = false;
@@ -245,7 +273,19 @@ export default {
         el.appendChild(target);
 
         // 2. Initialize Controller
-        const controllerPromise = MolSysViewerController.create(target, msg => model.send(msg));
+        const controllerPromise = MolSysViewerController.create(target, msg => {
+            model.send(msg);
+            // Sync interactive measurements to popup: the host already has them (created in-place),
+            // so we push the equivalent add_*_measurement op to the commandLog and forward to any
+            // open popup so it reflects the same measurement without going through Python round-trip.
+            if (msg?.event === "interaction_measurement_created") {
+                const op = buildMeasurementOpFromInteractionEvent(msg);
+                if (op) {
+                    commandLog.push(op);
+                    popupMgr.send("molsysviewer-sync-op", op);
+                }
+            }
+        });
 
         // 3. Initialize Popup Manager with Payload
         // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.
@@ -374,6 +414,17 @@ export default {
                         // Apply camera from popup ONLY if user is NOT interacting with host
                         if (data && !isUserInteracting) {
                             controller.setCameraSnapshot(data, 0);
+                        }
+                        break;
+
+                    case "molsysviewer-popup-interaction":
+                        // A measurement was created interactively inside the popup.
+                        // 1. Forward to Python so it is recorded in measurement history.
+                        if (data) model.send(data);
+                        // 2. Apply to the host canvas (popup already has it, so do NOT re-sync to popup).
+                        if (data) {
+                            const op = buildMeasurementOpFromInteractionEvent(data);
+                            if (op) enqueueMessage(op, { syncToPopup: false });
                         }
                         break;
 

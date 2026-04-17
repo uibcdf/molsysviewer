@@ -3,6 +3,7 @@ import { StructureElement } from "molstar/lib/mol-model/structure";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 
 export type MeasurementToolAction = "distance" | "angle" | "dihedral";
+export type MeasurementEndpointPolicy = "atom" | "centroid" | "representative_atom";
 
 type Notify = (msg: any) => void;
 
@@ -21,7 +22,26 @@ type MeasurementCreatedPayload = {
     action: MeasurementToolAction;
     picked_count: number;
     picks_atom_indices: number[][];
+    endpoint_kinds: Array<"atom" | "centroid" | "representative_atom">;
+    endpoint_policy: MeasurementEndpointPolicy;
+    endpoint_labels: string[];
+    endpoint_atom_indices: number[][];
+    tag?: string;
+    value?: number;
 };
+
+type CreateManagedMeasurement = (payload: {
+    action: MeasurementToolAction;
+    picks_atom_indices: number[][];
+    endpoint_policy?: MeasurementEndpointPolicy;
+}) => Promise<{
+    tag?: string;
+    endpoint_kinds?: Array<"atom" | "centroid" | "representative_atom">;
+    endpoint_policy?: MeasurementEndpointPolicy;
+    endpoint_labels?: string[];
+    endpoint_atom_indices?: number[][];
+    value?: number;
+} | undefined>;
 
 function lociToAtomIndices(loci: StructureElement.Loci): number[] {
     const atomIndices: number[] = [];
@@ -56,13 +76,22 @@ function requiredPicks(action: MeasurementToolAction): number {
     }
 }
 
+function endpointKindFromAtomIndices(atomIndices: number[]): "atom" | "centroid" {
+    return atomIndices.length === 1 ? "atom" : "centroid";
+}
+
 export class MeasurementToolController {
     private activeAction: MeasurementToolAction | null = null;
     private picks: StructureElement.Loci[] = [];
+    private activeEndpointPolicy: MeasurementEndpointPolicy = "centroid";
     private previousGranularity: any = null;
     private readonly keydownHandler: (event: KeyboardEvent) => void;
 
-    constructor(private readonly plugin: any, private readonly notify?: Notify) {
+    constructor(
+        private readonly plugin: any,
+        private readonly notify?: Notify,
+        private readonly createManagedMeasurement?: CreateManagedMeasurement,
+    ) {
         this.keydownHandler = (event: KeyboardEvent) => {
             if (event.key !== "Escape") return;
             if (!this.activeAction) return;
@@ -84,13 +113,14 @@ export class MeasurementToolController {
         }
     }
 
-    start(action: MeasurementToolAction, rawLoci: any): void {
+    start(action: MeasurementToolAction, rawLoci: any, endpointPolicy: MeasurementEndpointPolicy = "centroid"): void {
         const loci = normalizeToElementLoci(rawLoci);
         if (!loci) return;
         if (this.activeAction) this.cancel(false);
         this.previousGranularity = this.plugin?.managers?.interactivity?.props?.granularity ?? null;
         this.plugin?.managers?.interactivity?.setProps?.({ granularity: "element" });
         this.activeAction = action;
+        this.activeEndpointPolicy = endpointPolicy;
         this.picks = [loci];
         void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.(this.picks);
         this.emitState("started", action);
@@ -117,6 +147,7 @@ export class MeasurementToolController {
         void this.plugin?.managers?.structure?.measurement?.addOrderLabels?.([]);
         this.restoreGranularity();
         this.activeAction = null;
+        this.activeEndpointPolicy = "centroid";
         this.picks = [];
         if (notify) {
             this.notify?.({
@@ -133,24 +164,40 @@ export class MeasurementToolController {
 
     private async complete(action: MeasurementToolAction): Promise<void> {
         const picks = [...this.picks];
+        const picksAtomIndices = picks.map((loci) => lociToAtomIndices(loci));
         const measurement = this.plugin?.managers?.structure?.measurement;
-        try {
-            if (action === "distance") {
-                await measurement?.addDistance?.(picks[0], picks[1]);
-            } else if (action === "angle") {
-                await measurement?.addAngle?.(picks[0], picks[1], picks[2]);
-            } else {
-                await measurement?.addDihedral?.(picks[0], picks[1], picks[2], picks[3]);
+        let created:
+            | {
+                tag?: string;
+                endpoint_kinds?: Array<"atom" | "centroid" | "representative_atom">;
+                endpoint_policy?: MeasurementEndpointPolicy;
+                endpoint_labels?: string[];
+                endpoint_atom_indices?: number[][];
+                value?: number;
             }
+            | undefined = undefined;
+        try {
+            created = await this.createManagedMeasurement?.({
+                action,
+                picks_atom_indices: picksAtomIndices,
+                endpoint_policy: this.activeEndpointPolicy,
+            });
         } catch (e) {
-            console.error("[MeasurementTool] Error adding measurement in Mol*:", e);
+            console.error("[MeasurementTool] Error creating managed measurement:", e);
         }
         await measurement?.addOrderLabels?.([]);
+        const endpointKinds = created?.endpoint_kinds ?? picksAtomIndices.map((item) => endpointKindFromAtomIndices(item));
         this.notify?.({
             event: "interaction_measurement_created",
             action,
             picked_count: picks.length,
-            picks_atom_indices: picks.map((loci) => lociToAtomIndices(loci)),
+            picks_atom_indices: picksAtomIndices,
+            endpoint_kinds: endpointKinds,
+            endpoint_policy: created?.endpoint_policy ?? this.activeEndpointPolicy,
+            endpoint_labels: created?.endpoint_labels ?? endpointKinds,
+            endpoint_atom_indices: created?.endpoint_atom_indices ?? endpointKinds.map((kind, index) => kind === "centroid" ? [] : [picksAtomIndices[index][0]]),
+            tag: created?.tag,
+            value: created?.value,
         } satisfies MeasurementCreatedPayload);
         this.notify?.({
             event: "interaction_tool_state",
@@ -163,6 +210,7 @@ export class MeasurementToolController {
         } satisfies MeasurementToolStatePayload);
         this.restoreGranularity();
         this.activeAction = null;
+        this.activeEndpointPolicy = "centroid";
         this.picks = [];
     }
 

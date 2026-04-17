@@ -48,6 +48,7 @@ export interface PocketSurfaceOptions {
         normal: [number, number, number];
     };
     tag?: string;
+    layer_tag?: string;
 }
 
 type PocketSurfaceData = {

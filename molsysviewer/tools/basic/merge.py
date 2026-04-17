@@ -12,6 +12,24 @@ from ...new_view import new_view
 from ...viewer import MolSysView
 
 
+class _OffsetMap:
+    """Proxy dict for offset-based atom index remapping (merge use case).
+
+    All source atoms survive the merge, so ``get`` always returns
+    ``key + offset``.  This is compatible with the ``dict.get`` protocol used
+    by ``MolSysView._remap_measurement_message`` and
+    ``MolSysView._remap_selection_message``.
+    """
+
+    __slots__ = ("_offset",)
+
+    def __init__(self, offset: int) -> None:
+        self._offset = offset
+
+    def get(self, key: int, default: int | None = None) -> int:  # noqa: ARG002
+        return key + self._offset
+
+
 def _remap_indices(indices: Any, atom_offset: int) -> list[int]:
     if not isinstance(indices, (list, tuple)):
         return []
@@ -158,6 +176,21 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
             remapped_msg = _remap_tagged_message(annotation_msg, atom_offset, tag_map)
             result._send(remapped_msg)  # noqa: SLF001
 
+        # ── Measurements ───────────────────────────────────────────────────
+        offset_map = _OffsetMap(atom_offset)
+        for measurement_msg in getattr(view, "_measurement_history", []):  # noqa: SLF001
+            remapped = result._remap_measurement_message(measurement_msg, offset_map)  # noqa: SLF001
+            if remapped is not None:
+                result._measurement_history.append(remapped)  # noqa: SLF001
+                result._send(remapped)  # noqa: SLF001
+
+        # ── Saved selections ───────────────────────────────────────────────
+        for selection_msg in getattr(view, "_selection_history", []):  # noqa: SLF001
+            remapped = result._remap_selection_message(selection_msg, offset_map)  # noqa: SLF001
+            if remapped is not None:
+                result._selection_history.append(remapped)  # noqa: SLF001
+                result._send(remapped)  # noqa: SLF001
+
         for original_tag, new_tag in tag_map.items():
             source_layer = view.layers.get(original_tag)
             if source_layer is not None and getattr(source_layer, "_hidden", False):
@@ -167,9 +200,40 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
         if visible:
             result.atom_mask[_remap_indices(list(visible), atom_offset)] = True
 
+        # ── Per-atom colors (accumulated with offset) ──────────────────────
+        atom_color_map = getattr(view, "_atom_color_map", {})
+        for old_idx, color_int in atom_color_map.items():
+            result._atom_color_map[old_idx + atom_offset] = color_int  # noqa: SLF001
+
         atom_offset += int(msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True))  # noqa: SLF001
 
     result._update_visibility_in_frontend()  # noqa: SLF001
+
+    # ── Per-atom colors — send accumulated map to frontend ─────────────────
+    if result._atom_color_map:  # noqa: SLF001
+        result._send(  # noqa: SLF001
+            {
+                "op": "set_atom_colors",
+                "atom_indices": list(result._atom_color_map.keys()),  # noqa: SLF001
+                "colors": list(result._atom_color_map.values()),  # noqa: SLF001
+                "replace": True,
+            }
+        )
+
+    # ── Box — take from the first source that had one ─────────────────────
+    box_record = None
+    for view in source_views:
+        box_record = getattr(view, "_box_record", None)
+        if box_record is not None:
+            break
+    if box_record is not None:
+        result.show_box(
+            color=box_record["color"],
+            width=box_record["width"],
+            alpha=box_record["alpha"],
+            structure_indices=0,
+            skip_digestion=True,
+        )
 
     if result._last_camera_snapshot:
         result.set_camera_snapshot(result._last_camera_snapshot, duration_ms=0, skip_digestion=True)

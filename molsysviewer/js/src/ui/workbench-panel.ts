@@ -93,6 +93,7 @@ export class WorkbenchPanel {
     private readonly workspacePanelHost: HTMLDivElement;
     private readonly workspacePanelHostTitle: HTMLDivElement;
     private readonly workspacePanelHostBody: HTMLDivElement;
+    private readonly workspaceAddonWidgetHost: HTMLDivElement;
     private readonly sections = new Map<WorkbenchSectionKey, SectionView>();
     private readonly sectionExpanded = new Map<WorkbenchSectionKey, boolean>();
     private readonly builtInSectionKeys: BuiltInWorkbenchSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
@@ -108,7 +109,7 @@ export class WorkbenchPanel {
     private onNavigateToNavigate?: () => void;
 
     constructor(private readonly host: HTMLElement) {
-        this.shell = new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
+        this.shell = new PanelShell(host, { title: "Workbench", width: 360, toggleWidth: 26, navButtonLabel: "Navigate" });
         this.root = this.shell.root;
         this.body = this.shell.content;
         this.toggleButton = this.shell.toggleButton;
@@ -120,7 +121,7 @@ export class WorkbenchPanel {
         Object.assign(this.root.style, {
             left: "unset",
             right: "0",
-            transform: "translateX(240px)",
+            transform: `translateX(${this.shell.width}px)`,
         });
         Object.assign(this.shell.panel.style, {
             borderLeft: "1px solid rgba(255,255,255,0.14)",
@@ -129,10 +130,9 @@ export class WorkbenchPanel {
         });
         Object.assign(this.toggleButton.style, {
             order: "-1",
-            borderLeft: "1px solid rgba(255,255,255,0.16)",
+            borderLeft: "1px solid rgba(255,255,255,0.14)",
             borderRight: "0",
             borderRadius: "10px 0 0 10px",
-            boxShadow: "0 10px 24px rgba(0,0,0,0.18)",
         });
 
         this.toggleButton.addEventListener("click", (event) => {
@@ -228,8 +228,19 @@ export class WorkbenchPanel {
             color: "rgba(244,244,245,0.78)",
         });
 
+        this.workspaceAddonWidgetHost = document.createElement("div");
+        this.workspaceAddonWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
+        Object.assign(this.workspaceAddonWidgetHost.style, {
+            display: "none",
+            flexDirection: "column",
+            gap: "4px",
+            flex: "1 1 auto",
+            overflow: "auto",
+        });
+
         this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
         this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
+        this.workspacePanelHost.appendChild(this.workspaceAddonWidgetHost);
         this.workspaceRuntimeDeck.appendChild(this.workspacePanelHost);
 
         this.createSection("annotations", "Annotations", "No annotations yet.");
@@ -248,6 +259,10 @@ export class WorkbenchPanel {
             this.expanded = false;
             this.applyExpandedState();
         }
+    }
+
+    get panelContentWidth(): number {
+        return this.shell.width;
     }
 
     isVisible(): boolean {
@@ -883,13 +898,23 @@ export class WorkbenchPanel {
         this.reorderSections();
     }
 
+    mountAddonWidget(el: HTMLElement): void {
+        this.workspaceAddonWidgetHost.replaceChildren(el);
+        this.workspaceAddonWidgetHost.style.display = "flex";
+    }
+
+    unmountAddonWidget(): void {
+        this.workspaceAddonWidgetHost.replaceChildren();
+        this.workspaceAddonWidgetHost.style.display = "none";
+    }
+
     dispose(): void {
         this.shell.dispose();
     }
 
     private applyExpandedState(): void {
         this.toggleButton.textContent = this.expanded ? ">" : "<";
-        this.root.style.transform = this.expanded ? "translateX(0)" : "translateX(240px)";
+        this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(${this.shell.width}px)`;
         this.onExpandedChange?.(this.expanded);
     }
 

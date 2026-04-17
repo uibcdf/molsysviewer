@@ -1,12 +1,27 @@
 from ...exceptions import ArgumentError
 from ...variables import is_all
+from ..helpers import normalize_viewer_caller
 
 def digest_output_type(output_type, caller=None):
+
+    caller = normalize_viewer_caller(caller)
 
     if caller=='molsysmt.basic.info.info':
 
         if isinstance(output_type, str):
             if output_type.lower() in ['dataframe', 'short_string', 'long_string']:
+                return output_type.lower()
+
+    elif caller in {
+        'molsysviewer.viewer.MolSysView.info',
+        'molsysviewer.viewer.info',
+        'molsysviewer.tools.basic.info.info',
+        'molsysviewer.regions.Region.info',
+        'molsysviewer.regions.info',
+    }:
+
+        if isinstance(output_type, str):
+            if output_type.lower() in ['styler', 'dataframe', 'dictionary']:
                 return output_type.lower()
 
     elif caller in [

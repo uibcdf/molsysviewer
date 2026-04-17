@@ -8,6 +8,7 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 import { PresetStructureRepresentations } from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
+import { createStructureRepresentationParams } from "molstar/lib/mol-plugin-state/helpers/structure-representation-params";
 import {
     clearStructureTransparency,
     setStructureTransparency,
@@ -15,6 +16,7 @@ import {
 import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 
 import {
+    ClearAtomColorsMessage,
     CreateLayerMessage,
     CreateRegionMessage,
     DeleteLayerMessage,
@@ -22,6 +24,7 @@ import {
     HideGlobalMessage,
     HideLayerMessage,
     HideRegionMessage,
+    SetAtomColorsMessage,
     SetGlobalRepresentationMessage,
     SetLayerTagMessage,
     SetRegionRepresentationMessage,
@@ -32,6 +35,11 @@ import {
     ZoomMessage,
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
+import {
+    clearPerAtomColors,
+    MsvPerAtomColorThemeName,
+    setPerAtomColors,
+} from "../../themes/per-atom-color";
 
 interface RegionEntry {
     component?: StateObjectRef;
@@ -71,6 +79,97 @@ export class StateHandlers {
     private pendingZoom?: ZoomMessage;
 
     constructor(private plugin: PluginContext, private callbacks: StateCallbacks) {}
+
+    private parseMolstarThemeSpec(
+        value: unknown,
+    ): { name: string; params: Record<string, unknown> } | undefined {
+        if (typeof value === "string" && value.trim() !== "") {
+            return { name: value, params: {} };
+        }
+        if (value && typeof value === "object") {
+            const candidate = value as Record<string, unknown>;
+            if (typeof candidate.name === "string" && candidate.name.trim() !== "") {
+                const params =
+                    candidate.params && typeof candidate.params === "object"
+                        ? { ...(candidate.params as Record<string, unknown>) }
+                        : {};
+                return { name: candidate.name, params };
+            }
+        }
+        return undefined;
+    }
+
+    private getStructuralColorThemeFromParams(
+        reprType: string | undefined,
+        params: Record<string, unknown> | undefined,
+    ): { color?: string; colorParams?: Record<string, unknown>; theme?: Record<string, unknown> } {
+        const scheme = typeof params?.color_scheme === "string" ? params.color_scheme : undefined;
+        if (scheme) {
+            const mapped = ({
+                element_cpk: "element-symbol",
+                secondary_structure_default: "secondary-structure",
+                chain_default: "chain-id",
+                residue_name: "residue-name",
+                molecule_type: "molecule-type",
+                entity_default: "entity-id",
+                illustrative_default: "illustrative",
+            } as Record<string, string>)[scheme];
+            if (mapped) {
+                return {
+                    color: mapped,
+                    colorParams: {},
+                    theme: { globalName: mapped },
+                };
+            }
+        }
+        const advanced = this.parseMolstarThemeSpec(params?.molstar_color_theme);
+        if (advanced) {
+            return {
+                color: advanced.name,
+                colorParams: advanced.params,
+                theme: { globalName: advanced.name, globalColorParams: advanced.params },
+            };
+        }
+        return {};
+    }
+
+    private getStructuralSizeThemeFromParams(
+        reprType: string | undefined,
+        params: Record<string, unknown> | undefined,
+    ): { size?: string; sizeParams?: Record<string, unknown> } {
+        const scheme = typeof params?.size_scheme === "string" ? params.size_scheme : undefined;
+        if (scheme) {
+            const mapped = ({
+                uniform: "uniform",
+                physical: "physical",
+                uncertainty: "uncertainty",
+            } as Record<string, string>)[scheme];
+            if (mapped) {
+                return {
+                    size: mapped,
+                    sizeParams: {},
+                };
+            }
+        }
+        const advanced = this.parseMolstarThemeSpec(params?.molstar_size_theme);
+        if (advanced) {
+            return {
+                size: advanced.name,
+                sizeParams: advanced.params,
+            };
+        }
+        return {};
+    }
+
+    private omitStructuralColorKeys(params: Record<string, unknown> | undefined): Record<string, unknown> {
+        if (!params) return {};
+        const next = { ...params };
+        delete next.color_scheme;
+        delete next.size_scheme;
+        delete next.molstar_color_theme;
+        delete next.molstar_size_theme;
+        return next;
+    }
 
     registerTaggedRef(ref?: StateObjectRef, tag?: string, kind: string = "shape") {
         if (!ref) return;
@@ -231,56 +330,105 @@ export class StateHandlers {
         const entry = this.regionIndex.get(tag);
         if (!entry || !entry.component) return;
 
-        if (entry.representations.length) {
-            await Promise.all(entry.representations.map(ref => this.removeStateObject(ref)));
-            entry.representations = [];
+        const structure = this.callbacks.getStructure();
+        const structureRef = this.callbacks.getLoadedStructure()?.structure;
+        if (!structure || !structureRef) return;
+
+        // Delete the entire component (cascades to all representation children).
+        // Removing only the representation refs with removeParentGhosts:true can
+        // silently delete the parent component when it becomes empty, leaving
+        // entry.component pointing at a dangling ref that subsequent addRepresentation
+        // calls fail against with revertOnError:false — the region then vanishes.
+        await this.removeStateObject(entry.component);
+        entry.component = undefined as any;
+        entry.representations = [];
+
+        // Rebuild the component from the stored atom indices.
+        const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
+        if (!selection) return;
+
+        const bundle = StructureElement.Bundle.fromSelection(selection);
+        const root = this.plugin.state.data.build().to(structureRef);
+        const component = root.apply(StateTransforms.Model.StructureComponent, {
+            type: { name: "bundle", params: bundle },
+            nullIfEmpty: true,
+            label: tag,
+        });
+        await component.commit({ revertOnError: false });
+        const componentRef = component.selector?.ref;
+        if (!component.selector?.isOk || !componentRef) {
+            console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
+            return;
         }
+        entry.component = componentRef;
+
+        const structuralColor = this.getStructuralColorThemeFromParams(
+            msg.representation ?? undefined,
+            msg.params,
+        );
+        const cleanParams = this.omitStructuralColorKeys(msg.params);
+
         if (msg.user_preset) {
             const { base, rules } = msg.user_preset || {};
             if (base) {
                 const applied = await this.plugin.builders.structure.representation.applyPreset(
-                    { ref: entry.component } as any,
+                    { ref: componentRef } as any,
                     base as any,
-                    (msg.params ?? {}) as any
+                    {
+                        ...cleanParams,
+                        ...(structuralColor.theme ? { theme: structuralColor.theme } : {}),
+                    } as any
                 );
                 const refs = this.collectRefsFromPreset(applied as any);
                 entry.representations.push(...refs);
             }
             if (Array.isArray(rules)) {
-                const update = this.plugin.state.data.build();
                 for (const rule of rules) {
                     const type = rule?.representation ?? "cartoon";
-                    const params = (rule?.params ?? msg.params ?? {}) as any;
-                    const repr = this.plugin.builders.structure.representation.buildRepresentation(
-                        update,
-                        { ref: entry.component } as any,
-                        { type: type as any, typeParams: params },
+                    const repr = await this.plugin.builders.structure.representation.addRepresentation(
+                        componentRef as any,
+                        {
+                            type: type as any,
+                            typeParams: (rule?.params ?? cleanParams) as any,
+                            ...(structuralColor.color ? { color: structuralColor.color as any } : {}),
+                            ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams as any } : {}),
+                        },
                         { tag }
                     );
                     if (repr?.ref) entry.representations.push(repr.ref);
                 }
-                await update.commit({ revertOnError: false });
             }
         } else if (msg.preset) {
             const applied = await this.plugin.builders.structure.representation.applyPreset(
-                { ref: entry.component } as any,
+                { ref: componentRef } as any,
                 msg.preset as any,
-                (msg.params ?? {}) as any
+                {
+                    ...cleanParams,
+                    ...(structuralColor.theme ? { theme: structuralColor.theme } : {}),
+                } as any
             );
             const refs = this.collectRefsFromPreset(applied as any);
             entry.representations.push(...refs);
         } else {
-            const update = this.plugin.state.data.build();
             const reprType = msg.representation ?? "cartoon";
-            const repr = this.plugin.builders.structure.representation.buildRepresentation(
-                update,
-                { ref: entry.component } as any,
-                { type: reprType as any, typeParams: (msg.params ?? {}) as any },
+            const repr = await this.plugin.builders.structure.representation.addRepresentation(
+                componentRef as any,
+                {
+                    type: reprType as any,
+                    typeParams: cleanParams as any,
+                    ...(structuralColor.color ? { color: structuralColor.color as any } : {}),
+                    ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams as any } : {}),
+                },
                 { tag }
             );
-            await update.commit({ revertOnError: false });
-            const reprRef = repr?.ref;
-            if (reprRef) entry.representations.push(reprRef);
+            if (repr?.ref) entry.representations.push(repr.ref);
+        }
+
+        // Restore visibility state.
+        if (entry.hidden) {
+            entry.representations.forEach(ref =>
+                setSubtreeVisibility(this.plugin.state.data, ref, true)
+            );
         }
     }
 
@@ -350,10 +498,27 @@ export class StateHandlers {
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structureRef) return;
 
-        if (this.globalReprs.size) {
-            await Promise.all(Array.from(this.globalReprs).map(ref => this.removeStateObject(ref)));
-            this.globalReprs.clear();
+        // Preserve camera state: removing then re-adding representations can trigger
+        // Mol*-internal camera adjustments that leave the orbit minRadius too small,
+        // preventing the user from zooming back out.
+        const cameraSnap = this.plugin.canvas3d?.camera.getSnapshot?.();
+
+        const structure = this.callbacks.getStructure();
+        const structuralColor = this.getStructuralColorThemeFromParams(
+            msg.representation ?? undefined,
+            msg.params,
+        );
+        const structuralSize = this.getStructuralSizeThemeFromParams(
+            msg.representation ?? undefined,
+            msg.params,
+        );
+        const cleanParams = this.omitStructuralColorKeys(msg.params);
+
+        const refsToClear = this.collectBaselineGlobalRepresentationRefs();
+        if (refsToClear.length > 0) {
+            await Promise.all(refsToClear.map(ref => this.removeStateObject(ref)));
         }
+        this.globalReprs.clear();
         if (msg.user_preset) {
             const userPreset = msg.user_preset || {};
             const base = userPreset.base as string | undefined;
@@ -362,7 +527,7 @@ export class StateHandlers {
                 const applied = await this.plugin.builders.structure.representation.applyPreset(
                     { ref: structureRef } as any,
                     base as any,
-                    (msg.params ?? {}) as any
+                    { ...cleanParams, ...(structuralColor.theme ? { theme: structuralColor.theme } : {}) } as any
                 );
                 const refs = this.collectRefsFromPreset(applied as any);
                 refs.forEach(ref => this.globalReprs.add(ref));
@@ -392,12 +557,19 @@ export class StateHandlers {
                 
                 const update = this.plugin.state.data.build();
                 const reprType = rule?.representation ?? "cartoon";
-                const repr = this.plugin.builders.structure.representation.buildRepresentation(
-                    update,
-                    { ref: componentRef } as any,
-                    { type: reprType as any, typeParams: (rule?.params ?? {}) as any },
-                    { tag: "global" }
-                );
+                    const repr = this.plugin.builders.structure.representation.buildRepresentation(
+                        update,
+                        { ref: componentRef } as any,
+                        {
+                            type: reprType as any,
+                            typeParams: (rule?.params ?? {}) as any,
+                            ...(structuralColor.color ? { color: structuralColor.color } : {}),
+                            ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}),
+                            ...(structuralSize.size ? { size: structuralSize.size } : {}),
+                            ...(structuralSize.sizeParams ? { sizeParams: structuralSize.sizeParams } : {}),
+                        },
+                        { tag: "global" }
+                    );
                 await update.commit({ revertOnError: false });
                 if (repr?.ref) this.globalReprs.add(repr.ref);
             }
@@ -406,23 +578,59 @@ export class StateHandlers {
             const applied = await this.plugin.builders.structure.representation.applyPreset(
                 { ref: structureRef } as any,
                 presetId as any,
-                (msg.params ?? {}) as any
+                { ...cleanParams, ...(structuralColor.theme ? { theme: structuralColor.theme } : {}) } as any
             );
             const refs = this.collectRefsFromPreset(applied as any);
             refs.forEach(ref => this.globalReprs.add(ref));
         } else {
             const update = this.plugin.state.data.build();
             const reprType = msg.representation ?? "cartoon";
-            const repr = this.plugin.builders.structure.representation.buildRepresentation(
-                update,
-                { ref: structureRef } as any,
-                { type: reprType as any, typeParams: (msg.params ?? {}) as any },
-                { tag: "global" }
+            const reprParams = createStructureRepresentationParams(
+                this.plugin,
+                structure,
+                {
+                    type: reprType as any,
+                    typeParams: cleanParams as any,
+                    ...(structuralColor.color ? { color: structuralColor.color } : {}),
+                    ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}),
+                    ...(structuralSize.size ? { size: structuralSize.size } : {}),
+                    ...(structuralSize.sizeParams ? { sizeParams: structuralSize.sizeParams } : {}),
+                } as any,
+            );
+            if (structuralColor.color) {
+                (reprParams as any).colorTheme = {
+                    name: structuralColor.color,
+                    params: structuralColor.colorParams ?? {},
+                };
+            }
+            if (structuralSize.size) {
+                (reprParams as any).sizeTheme = {
+                    name: structuralSize.size,
+                    params: structuralSize.sizeParams ?? {},
+                };
+            }
+            const repr = update.to(structureRef).apply(
+                StateTransforms.Representation.StructureRepresentation3D,
+                reprParams,
+                { tags: "global" }
             );
             await update.commit({ revertOnError: false });
-            if (repr?.ref) this.globalReprs.add(repr.ref);
+            const reprRef = (repr as any)?.ref ?? (repr as any)?.selector?.ref;
+            if (reprRef) this.globalReprs.add(reprRef);
         }
         await this.handleShowHideGlobal(false);
+
+        // Restore camera position after the representation swap.
+        if (cameraSnap) {
+            try {
+                await PluginCommands.Camera.SetSnapshot(this.plugin, {
+                    snapshot: cameraSnap,
+                    durationMs: 0,
+                });
+            } catch {
+                // Non-fatal: if the snapshot restore fails the user just loses their view.
+            }
+        }
     }
 
     async showGlobal(msg: ShowGlobalMessage) {
@@ -483,6 +691,7 @@ export class StateHandlers {
                 await this.createRegion(msg);
             }
         }
+        this.captureInitialGlobalRepresentations();
         if (this.globalReprs.size === 0) {
             await this.ensureDefaultGlobalRepresentation();
         }
@@ -665,6 +874,39 @@ export class StateHandlers {
         }
     }
 
+    private collectBaselineGlobalRepresentationRefs(): StateObjectRef[] {
+        const refs = new Set<StateObjectRef>();
+        const hierarchy = this.plugin.managers.structure.hierarchy.current;
+        const structures = hierarchy?.structures ?? [];
+
+        const regionReprRefs = new Set<string>();
+        this.regionIndex.forEach(entry => entry.representations.forEach(ref => {
+            regionReprRefs.add(ref as any);
+        }));
+
+        this.globalReprs.forEach(ref => refs.add(ref));
+        structures.forEach(s => {
+            (s.representations ?? []).forEach(r => {
+                const ref = r.cell.transform.ref;
+                if (!regionReprRefs.has(ref)) refs.add(ref);
+            });
+            (s.components ?? []).forEach(c =>
+                (c.representations ?? []).forEach(r => {
+                    const ref = r.cell.transform.ref;
+                    if (!regionReprRefs.has(ref)) refs.add(ref);
+                })
+            );
+        });
+
+        return Array.from(refs);
+    }
+
+    private captureInitialGlobalRepresentations() {
+        if (this.globalReprs.size > 0) return;
+        const refs = this.collectBaselineGlobalRepresentationRefs();
+        refs.forEach(ref => this.globalReprs.add(ref));
+    }
+
     private buildSelectionFromAtomIndices(structure: Structure, atomIndices: number[]) {
         if (!Array.isArray(atomIndices) || atomIndices.length === 0) return void 0;
         const selectionBuilder = StructureSelection.LinearBuilder(structure);
@@ -715,5 +957,29 @@ export class StateHandlers {
             ref,
             removeParentGhosts: true,
         });
+    }
+
+    // ── Per-atom color mapping ─────────────────────────────────────────────
+
+    async setAtomColors(msg: SetAtomColorsMessage) {
+        const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices : [];
+        const colorInts = Array.isArray(msg.colors) ? msg.colors : [];
+        const replace = msg.replace !== false;
+        setPerAtomColors(atomIndices, colorInts, replace);
+        await this._applyPerAtomColorTheme();
+    }
+
+    async clearAtomColors(_msg: ClearAtomColorsMessage) {
+        clearPerAtomColors();
+        await this._applyPerAtomColorTheme();
+    }
+
+    private async _applyPerAtomColorTheme() {
+        const components = this.callbacks.getComponents();
+        if (components.length === 0) return;
+        await this.plugin.managers.structure.component.updateRepresentationsTheme(
+            components,
+            { color: MsvPerAtomColorThemeName as any },
+        );
     }
 }

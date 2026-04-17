@@ -1,3 +1,4 @@
+import pytest
 import pyunitwizard as puw
 import molsysviewer._pyunitwizard  # noqa: F401
 
@@ -21,6 +22,7 @@ def test_group_label_registers_annotation_layer_and_export_message():
             "options": {
                 "text": "Group 0",
                 "tag": "notes",
+                "layer_tag": "notes",
                 "atom_indices": expected_atom_indices,
             },
         }
@@ -28,6 +30,19 @@ def test_group_label_registers_annotation_layer_and_export_message():
 
     ops = [msg["op"] for msg in view._build_export_messages()]  # noqa: SLF001
     assert "add_label" in ops
+
+
+def test_group_label_uses_annotation_prefix_by_default():
+    view = demo["dialanine"]
+
+    layer = view.annotations.add_label(text="Group 0", group_index=0)
+
+    assert layer.tag == "annotation1"
+    assert layer.layer_tag == "annotation1"
+    assert view.annotations.tags() == ["annotation1"]
+    assert view.annotations.records()[0]["tag"] == "annotation1"
+    assert view.annotations.records()[0]["options"]["tag"] == "annotation1"
+    assert view.annotations.records()[0]["options"]["layer_tag"] == "annotation1"
 
 
 def test_clear_decorations_labels_clears_annotation_history_only():
@@ -53,11 +68,15 @@ def test_annotation_manager_supports_query_and_layer_operations():
     assert view.annotations.contains("notes") is True
     layer = view.annotations.get("notes")
     assert layer is not None
+    assert view.annotations["notes"] is layer
+    assert view.layers["notes"].annotations == {"notes": layer}
+    assert view.layers["notes"].members == {"notes": layer}
     assert layer.tag == "notes"
     assert view.annotations.records()[0]["options"]["text"] == "Group 0"
     assert view.annotations.info("notes") == {
         "kind": "label",
         "tag": "notes",
+        "layer_tag": "notes",
         "text": "Group 0",
         "n_atoms": len(view.select(selection="group_index==0")),
         "atom_indices": list(view.select(selection="group_index==0")),
@@ -82,6 +101,46 @@ def test_annotation_manager_supports_query_and_layer_operations():
     view.annotations.delete("analysis-label")
     assert view.annotations.tags() == []
     assert view.annotations.count() == 0
+
+
+def test_annotation_manager_rejects_duplicate_tags():
+    view = demo["dialanine"]
+    view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
+
+    with pytest.raises(ValueError, match="already exists"):
+        view.annotations.add_label(text="Group 1", group_index=1, tag="notes")
+
+    with pytest.raises(KeyError):
+        _ = view.annotations["missing"]
+
+
+def test_annotation_manager_supports_explicit_shared_layer_tag():
+    view = demo["dialanine"]
+    first = view.annotations.add_label(text="Group 0", group_index=0, tag="notes-a", layer_tag="analysis")
+    second = view.annotations.add_label(text="Group 1", group_index=1, tag="notes-b", layer_tag="analysis")
+
+    assert first.layer_tag == "analysis"
+    assert second.layer_tag == "analysis"
+    assert "analysis" in view.layers
+    assert set(view.layers["analysis"].annotations.keys()) == {"notes-a", "notes-b"}
+    assert set(view.layers["analysis"].members.keys()) == {"notes-a", "notes-b"}
+
+
+def test_annotation_manager_can_move_annotation_between_layers():
+    view = demo["dialanine"]
+    layer = view.annotations.add_label(text="Group 0", group_index=0, tag="notes")
+
+    moved = view.annotations.set_layer_tag("notes", "analysis")
+
+    assert moved is layer
+    assert view.annotations["notes"].layer_tag == "analysis"
+    assert "notes" not in view.layers
+    assert "analysis" in view.layers
+    assert view.layers["analysis"].annotations == {"notes": layer}
+    assert view.annotations.info("notes")["layer_tag"] == "analysis"
+    assert view.annotations.records()[0]["options"]["layer_tag"] == "analysis"
+    exported = [msg for msg in view._build_export_messages() if msg.get("tag") == "notes"]  # noqa: SLF001
+    assert exported[0]["options"]["layer_tag"] == "analysis"
 
 
 def test_annotation_manager_clear_tag_and_global_clear():

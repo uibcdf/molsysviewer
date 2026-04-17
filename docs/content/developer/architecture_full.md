@@ -15,6 +15,9 @@ MolSysViewer is split into two runtime layers with a thin protocol between them.
   - Owns the MolSysMT system and visibility masks.
   - Sends JSON-like messages to the frontend and stores a message history.
   - Exports HTML by replaying stored messages (standalone and docs-lite).
+  - `MolSysView` now lives in the `molsysviewer/viewer/` package
+    (`core.py`, `history.py`, `export.py`, `scene_registry.py`,
+    `representations.py`, `presets.py`) rather than a single `viewer.py` file.
 - TypeScript/Mol* layer (`molsysviewer/js/src/`)
   - AnyWidget entrypoint, controller, handlers, and shape builders.
   - Owns the Mol* plugin, state tree, and WebGL rendering.

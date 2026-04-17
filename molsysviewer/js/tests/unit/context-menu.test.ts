@@ -142,6 +142,7 @@ test("ViewerContextMenu renders active selection section and selection actions",
         assert.ok(texts.includes("Save Selection"));
         assert.ok(texts.includes("Create Region from Selection"));
         assert.ok(texts.includes("Add Label from Selection"));
+        assert.ok(texts.includes("Remove Selected Atoms"));
         assert.ok(texts.includes("Clear Selection"));
 
         const targetButton = findNodeByText(root, "Focus Target");
@@ -184,6 +185,64 @@ test("ViewerContextMenu renders active selection section and selection actions",
             {
                 action: "focus_selection",
                 target: { event: "interaction_context_menu", kind: "annotation", atom_indices: [0, 1], tag: "notes", text: "Catalytic" },
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu renders remove action for active selection atoms", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "structure" as const, atom_indices: [0, 1], group_name: "ALA", chain_name: "A" };
+        menu.open(
+            target,
+            10,
+            20,
+            {
+                event: "interaction_active_selection_changed",
+                source_kind: "element",
+                element_level: "group",
+                target_level: "none",
+                items: [],
+                atom_indices: [0, 1],
+                group_indices: [0],
+                component_indices: [],
+                chain_indices: [0],
+                molecule_indices: [],
+                entity_indices: [0],
+                count_atoms: 2,
+                count_groups: 1,
+                count_shapes: 0,
+                count_annotations: 0,
+            },
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const button = findNodeByText(root, "Remove Selected Atoms");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "remove_selection", target, details: {} },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "remove_selection",
+                context: target,
             },
         ]);
 
@@ -268,6 +327,106 @@ test("ViewerContextMenu renders delete action for shape targets", () => {
                 action: "delete_shape",
                 context: target,
                 tag: "pocket-shape",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu renders representative-atom measurement actions for structure targets", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "structure" as const, atom_indices: [0, 1], group_name: "ALA", chain_name: "A" };
+        menu.open(target, 10, 20, null, null, null, null);
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Distance"));
+        assert.ok(texts.includes("Distance (Representative Atom)"));
+        assert.ok(texts.includes("Angle (Representative Atom)"));
+        assert.ok(texts.includes("Dihedral (Representative Atom)"));
+
+        const button = findNodeByText(root, "Distance (Representative Atom)");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "distance", target, details: { endpoint_policy: "representative_atom" } },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "distance",
+                context: target,
+                endpoint_policy: "representative_atom",
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("ViewerContextMenu renders delete action for measurement targets", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+
+        const target = { event: "interaction_context_menu", kind: "measurement" as const, atom_indices: [0, 1], tag: "measurement_1", measurement_name: "Distance" };
+        menu.open(target, 10, 20, null, null, null, null);
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("Focus Target"));
+        assert.ok(texts.includes("Hide Measurement"));
+        assert.ok(texts.includes("Delete Measurement"));
+
+        const hideButton = findNodeByText(root, "Hide Measurement");
+        assert.ok(hideButton);
+        hideButton!.dispatch("click");
+
+        menu.open(target, 10, 20, null, null, null, null);
+        const refreshedRoot = (menu as any).root as FakeElement;
+        const button = findNodeByText(refreshedRoot, "Delete Measurement");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(actions, [
+            { action: "hide_measurement", target, details: { tag: "measurement_1" } },
+            { action: "delete_measurement", target, details: { tag: "measurement_1" } },
+        ]);
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "hide_measurement",
+                context: target,
+                tag: "measurement_1",
+            },
+            {
+                event: "interaction_context_action",
+                action: "delete_measurement",
+                context: target,
+                tag: "measurement_1",
             },
         ]);
 
@@ -697,14 +856,11 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
     }
 });
 
-test("ViewerContextMenu exposes persist-last-measurement when recent measurement exists", () => {
+test("ViewerContextMenu no longer exposes persist-last-measurement when recent measurement exists", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const actions: Array<{ action: string; target: any }> = [];
-        const menu = new ViewerContextMenu(host, undefined, (action, target) => {
-            actions.push({ action, target });
-        });
+        const menu = new ViewerContextMenu(host, undefined, () => {});
 
         menu.open(
             { event: "interaction_context_menu", kind: "empty" },
@@ -716,19 +872,8 @@ test("ViewerContextMenu exposes persist-last-measurement when recent measurement
 
         const root = (menu as any).root as FakeElement;
         const texts = collectTexts(root);
-        assert.ok(texts.includes("Last measurement: distance (2)"));
-        assert.ok(texts.includes("Persist Last Measurement"));
-
-        const persistButton = findNodeByText(root, "Persist Last Measurement");
-        assert.ok(persistButton);
-        persistButton!.dispatch("click");
-
-        assert.deepStrictEqual(actions, [
-            {
-                action: "persist_last_measurement",
-                target: { event: "interaction_context_menu", kind: "empty" },
-            },
-        ]);
+        assert.ok(!texts.includes("Last measurement: distance (2)"));
+        assert.ok(!texts.includes("Persist Last Measurement"));
 
         menu.dispose();
     } finally {

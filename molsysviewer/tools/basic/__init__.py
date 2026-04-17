@@ -3,6 +3,7 @@ from .append_structures import append_structures
 from .compare import compare
 from .concatenate_structures import concatenate_structures
 from .contains import contains
+from .convert import convert
 from .copy import copy
 from .extract import extract
 from .get import get
@@ -19,6 +20,7 @@ __all__ = [
     "compare",
     "concatenate_structures",
     "contains",
+    "convert",
     "copy",
     "extract",
     "get",

@@ -6,6 +6,7 @@ from smonitor import signal
 
 from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
+from ._registry import register_shape_layer
 
 
 class Tetrahedra:
@@ -82,6 +83,7 @@ class Tetrahedra:
         normal_length: float | None = None,
         normal_color: int | None = None,
         tag: str | None = None,
+        layer_tag: str | None = None,
         name: str | None = None,
         skip_digestion: bool = False,
     ):
@@ -132,11 +134,10 @@ class Tetrahedra:
             options["normal_length"] = float(puw.get_value(normal_length, to_unit="nm"))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
-        tag = tag or self._view._next_layer_tag()  # noqa: SLF001
-        options["tag"] = tag
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(self._view, tag, layer_tag=layer_tag)
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
 
         self._view._send({"op": "add_tetrahedra", "options": options})
-        if tag not in self._view._layers:  # noqa: SLF001
-            from ..layers import Layer
-            self._view._layers[tag] = Layer(self._view, tag, kind="shape", meta={})  # noqa: SLF001
-        return self._view._layers[tag]  # noqa: SLF001
+        return layer

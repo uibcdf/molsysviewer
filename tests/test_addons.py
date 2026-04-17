@@ -7,6 +7,7 @@ from molsysviewer import (
     AddonContextActionSpec,
     AddonExportHelperSpec,
     AddonPanelSpec,
+    AddonPanelWidget,
     AddonShapeProviderSpec,
     AddonSpec,
     AddonStyleHelperSpec,
@@ -142,6 +143,7 @@ def test_global_addons_registry_supports_complete_fake_addon():
             "id": "topo",
             "title": "Topo",
             "entry": "topomt.panel.topo",
+            "widget_class": None,
             "description": "Main cavity/topography panel",
             "order": 20,
             "target": "panel_mode",
@@ -850,6 +852,162 @@ def test_view_addons_refresh_runtime_summary_after_context_action():
 
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
         assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "1 overlays"
+    finally:
+        addons.clear()
+        sys.modules.pop(module.__name__, None)
+
+
+# ---------------------------------------------------------------------------
+# AddonPanelWidget
+# ---------------------------------------------------------------------------
+
+class _EchoPanel(AddonPanelWidget):
+    _esm = "export function render() {}"
+
+    def __init__(self, view=None, **kwargs):
+        super().__init__(view=view, **kwargs)
+        self.mounted_views = []
+        self.unmounted_views = []
+        self.received_actions = []
+
+    def handle_action(self, view, action_id, payload):
+        self.received_actions.append((action_id, payload))
+
+    def on_mount(self, view):
+        self.mounted_views.append(view)
+
+    def on_unmount(self, view):
+        self.unmounted_views.append(view)
+
+
+def test_addon_panel_widget_is_subclass():
+    import anywidget
+    assert issubclass(AddonPanelWidget, anywidget.AnyWidget)
+    assert issubclass(_EchoPanel, AddonPanelWidget)
+
+
+def test_addon_panel_widget_push_state_sends_message():
+    sent = []
+    panel = _EchoPanel(view=None)
+    panel.send = lambda msg, buffers=None: sent.append(msg)
+
+    panel.push_state({"n_nodes": 42, "cutoff": "7.5 angstroms"})
+
+    assert len(sent) == 1
+    assert sent[0] == {"type": "state", "state": {"n_nodes": 42, "cutoff": "7.5 angstroms"}}
+
+
+def test_addon_panel_widget_request_context_no_view():
+    sent = []
+    panel = _EchoPanel(view=None)
+    panel.send = lambda msg, buffers=None: sent.append(msg)
+
+    ctx = panel.request_context()
+
+    assert ctx == {"has_system": False}
+    assert sent[0] == {"type": "context", "context": {"has_system": False}}
+
+
+def test_addon_panel_widget_routes_action_message():
+    panel = _EchoPanel(view="fake-view")
+    panel._route_frontend_message(panel, {"type": "action", "id": "compute", "payload": {"cutoff": 7.5}}, [])
+
+    assert panel.received_actions == [("compute", {"cutoff": 7.5})]
+
+
+def test_addon_panel_widget_routes_context_query():
+    sent = []
+    panel = _EchoPanel(view=None)
+    panel.send = lambda msg, buffers=None: sent.append(msg)
+
+    panel._route_frontend_message(panel, {"type": "query", "id": "viewer.context"}, [])
+
+    assert len(sent) == 1
+    assert sent[0]["type"] == "context"
+    assert sent[0]["context"]["has_system"] is False
+
+
+def test_addon_panel_widget_lifecycle_hooks():
+    panel = _EchoPanel(view=None)
+    panel.on_mount("view-a")
+    panel.on_unmount("view-a")
+
+    assert panel.mounted_views == ["view-a"]
+    assert panel.unmounted_views == ["view-a"]
+
+
+def test_addon_panel_spec_widget_class_field():
+    spec = AddonPanelSpec(
+        id="model",
+        title="Model",
+        entry="myaddon.panels.model",
+        widget_class="myaddon.panels.ModelPanel",
+    )
+    assert spec.widget_class == "myaddon.panels.ModelPanel"
+    info = spec.info()
+    assert info["widget_class"] == "myaddon.panels.ModelPanel"
+
+
+def test_addon_panel_spec_widget_class_optional():
+    spec = AddonPanelSpec(id="model", title="Model")
+    assert spec.widget_class is None
+    assert spec.info()["widget_class"] is None
+
+
+def test_resolve_panel_widget_returns_none_when_no_widget_class():
+    addons.clear()
+    try:
+        addon = AddonSpec(
+            name="nopanel-addon",
+            package="NoPanelAddon",
+            version="0.1.0",
+            description="Addon without widget_class",
+            panels=(
+                AddonPanelSpec(id="main", title="Main", entry="nopanel.panels.main"),
+            ),
+        )
+        addons.register(addon)
+        view = MolSysView.__new__(MolSysView)
+        from molsysviewer.addons import ViewAddonsManager
+        mgr = ViewAddonsManager(view, addons)
+        result = mgr.resolve_panel_widget("nopanel-addon", "main")
+        assert result is None
+    finally:
+        addons.clear()
+
+
+def test_resolve_panel_widget_returns_instance():
+    import types
+    addons.clear()
+    module = types.ModuleType("_test_panel_mod")
+
+    class _TestPanel(AddonPanelWidget):
+        _esm = "export function render() {}"
+
+    module._TestPanel = _TestPanel
+    sys.modules[module.__name__] = module
+
+    try:
+        addon = AddonSpec(
+            name="panel-addon",
+            package="PanelAddon",
+            version="0.1.0",
+            description="Addon with widget_class",
+            panels=(
+                AddonPanelSpec(
+                    id="main",
+                    title="Main",
+                    widget_class="_test_panel_mod._TestPanel",
+                ),
+            ),
+        )
+        addons.register(addon)
+        view = MolSysView.__new__(MolSysView)
+        from molsysviewer.addons import ViewAddonsManager
+        mgr = ViewAddonsManager(view, addons)
+        widget = mgr.resolve_panel_widget("panel-addon", "main")
+        assert isinstance(widget, AddonPanelWidget)
+        assert widget._view is view
     finally:
         addons.clear()
         sys.modules.pop(module.__name__, None)

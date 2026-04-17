@@ -42,6 +42,7 @@ Current scope clarification for `Style`:
 - `remove(...)`
 - `add(...)`
 - `append_structures(...)`
+- `convert(...)`
 - `contains(...)`
 - `is_composed_of(...)`
 - `copy(...)`
@@ -51,9 +52,25 @@ Current scope clarification for `Style`:
 
 `MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include, in addition to the older load/query/edit surface:
 
+- `load(..., mode="add" | "replace" | "append_structures" | "auto", ...)`
+  - current default is `mode="add"`
+  - first load initializes `whole` without creating an automatic region
+  - second additive load back-fills block 1 and creates block 2 as automatic regions
+  - later additive loads create only the new automatic load-region
+  - `mode="append_structures"` is explicit structural extension:
+    - it does not add atoms
+    - it does not create automatic load-regions
+    - it may attach the first structures to a topology-only `_molsys`
+  - `mode="auto"` is currently a conservative first version:
+    - empty viewer -> `replace`
+    - same atom count + no topology in the input -> `append_structures`
+    - same atom count + matching topology -> `append_structures`
+    - different atom count -> `add`
 - `contains(...)`
+- `convert(...)`
 - `extract(...)`
 - `is_composed_of(...)`
+- `info(source="all" | "molsys" | "view", output_type="styler" | "dataframe" | "dictionary", ...)`
 - `focus_selection(...)`
 - `focus_region(...)`
 - `make_regions_by(...)`
@@ -73,6 +90,12 @@ Current scope clarification for `Style`:
   - `apply(...)`
   - `builtin_tags()`
   - `builtin_records()`
+  - `representation_types()`
+  - `representation_type_records()`
+  - `representation_param_schema(representation)`
+  - `representation_param_schema_records()`
+  - `representation_presets()`
+  - `representation_preset_records()`
   - `contains(tag)`
   - `get(tag)`
   - `get_builtin(tag)`
@@ -82,6 +105,14 @@ Current scope clarification for `Style`:
   - `clear(tag=None)`
   - `current()`
   - `info()`
+  - `structural_color_schemes()`
+  - `structural_color_scheme_records()`
+  - `structural_size_schemes()`
+  - `structural_size_scheme_records()`
+  - `molstar_color_themes()`
+  - `molstar_color_theme_records()`
+  - `molstar_size_themes()`
+  - `molstar_size_theme_records()`
   - `load_project_config(path, apply_default=False)`
 - `active_selection`
   - `info()`
@@ -91,6 +122,8 @@ Current scope clarification for `Style`:
   - `new_region(...)`
   - `add_label(...)`
   - `save(...)`
+  - current canvas context-menu slice also supports destructive
+    `Remove Selected Atoms`, bridged through `view.remove(...)`
 - `view.selections`
   - `add(...)`
   - `add_from_active_selection(...)`
@@ -107,11 +140,14 @@ Current scope clarification for `Style`:
 - `get_last_measurement_created_event()`
 - `new_region_from_active_selection(...)`
 - `view.annotations.add_label_from_active_selection(...)`
-- `view.measurements.persist_last_measurement(...)`
- - `view.measurements.count()`
- - `view.measurements.records()`
- - `view.measurements.info()`
-  - current first slice: persist the last interactive `distance` / `angle` / `dihedral` as replayable viewer state
+- `view.measurements.count()`
+- `view.measurements.records()`
+- `view.measurements.info()`
+  - current first slice: interactive `distance` / `angle` / `dihedral` measurements are registered automatically as replayable viewer state
+  - `info()` and `records()` now expose endpoint metadata:
+    - `endpoint_kinds`
+    - `endpoint_policy`
+    - `endpoint_labels`
 
 Related object wrappers are also part of the intended public surface:
 
@@ -143,8 +179,16 @@ Related object wrappers are also part of the intended public surface:
 - `view.measurements.add_distance(...)`
 - `view.measurements.add_angle(...)`
 - `view.measurements.add_dihedral(...)`
-- `view.measurements.persist_last_measurement(...)`
 - `view.selections.add_from_active_selection(...)`
+- `add(...)`
+  - lower-level structural merge into `_molsys`
+  - updates additive-load block bookkeeping
+  - does **not** create automatic load-regions
+- `convert(...)`
+  - current first slice delegates to the molecular system currently stored in
+    the viewer
+  - this is intentionally compatible with richer future conversions once
+    MolSysMT supports direct `MolSysView` target-form conversions
 
 ### Notebook rendering
 
