@@ -1386,7 +1386,8 @@ export class MolSysViewerController {
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;
                 case "set_trajectory_frame": await this.trajectory.setTrajectoryFrame(msg); break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
-                case "set_addon_runtime_summary":
+                case "set_addon_runtime_summary": {
+                    const prevWorkspaceIds = new Set(this.getWorkspaceOptions().map((item) => item.id));
                     this.addonWorkspaces = this.buildAddonWorkspaceSummary(msg as any);
                     this.addonPanels = this.buildAddonPanelSummary(msg as any);
                     if (!this.getWorkspaceOptions().some((item) => item.id === this.currentWorkspace)) {
@@ -1395,8 +1396,14 @@ export class MolSysViewerController {
                     this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
                     this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg as any);
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
-                    this.refreshWorkbenchPanel();
+                    const newWorkspaces = this.getWorkspaceOptions().filter((item) => !prevWorkspaceIds.has(item.id));
+                    if (newWorkspaces.length === 1 && this.currentWorkspace === "core") {
+                        this.selectWorkspace(newWorkspaces[0].id);
+                    } else {
+                        this.refreshWorkbenchPanel();
+                    }
                     break;
+                }
 
                 case "mount_addon_panel": {
                     const mAddon = (msg as any).addon as string | undefined;
