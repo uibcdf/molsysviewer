@@ -202,6 +202,16 @@ export class SceneHandlers {
         this._repositionHandles();
     }
 
+    async syncSectionPosition(msg: { tag: string; point: [number, number, number]; normal?: [number, number, number] }) {
+        const entry = this._activeSections.find(s => s.tag === msg.tag);
+        if (!entry) return;
+        entry.point = [...msg.point] as [number, number, number];
+        if (msg.normal) entry.normal = [...msg.normal] as [number, number, number];
+        await this._applyClipFromSections(this._activeSections);
+        this._repositionHandles();
+        await this._updateSectionGizmos(this._activeSections);
+    }
+
     // Apply only the Mol* clip plane (fast path used during drag).
     private async _applyClipFromSections(sections: SectionEntry[]) {
         const NM_TO_ANGSTROM = 10.0;
@@ -677,7 +687,7 @@ export class SceneHandlers {
         if (!canvas3d) return;
         const clipping: any = { ...(canvas3d.props?.cameraClipping ?? {}) };
         if (msg.near !== undefined) clipping.radius = msg.near;
-        if (msg.far !== undefined) clipping.far = msg.far;
+        if (msg.far !== undefined) clipping.far = msg.far > 0;
         if (msg.min_near !== undefined) clipping.minNear = msg.min_near;
         canvas3d.setProps({ cameraClipping: clipping } as any);
     }

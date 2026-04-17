@@ -143566,6 +143566,15 @@ var SceneHandlers = class {
     this._ensureCameraSubscription();
     this._repositionHandles();
   }
+  async syncSectionPosition(msg) {
+    const entry = this._activeSections.find((s) => s.tag === msg.tag);
+    if (!entry) return;
+    entry.point = [...msg.point];
+    if (msg.normal) entry.normal = [...msg.normal];
+    await this._applyClipFromSections(this._activeSections);
+    this._repositionHandles();
+    await this._updateSectionGizmos(this._activeSections);
+  }
   // Apply only the Mol* clip plane (fast path used during drag).
   async _applyClipFromSections(sections) {
     const NM_TO_ANGSTROM = 10;
@@ -143974,7 +143983,7 @@ var SceneHandlers = class {
     if (!canvas3d) return;
     const clipping = { ...canvas3d.props?.cameraClipping ?? {} };
     if (msg.near !== void 0) clipping.radius = msg.near;
-    if (msg.far !== void 0) clipping.far = msg.far;
+    if (msg.far !== void 0) clipping.far = msg.far > 0;
     if (msg.min_near !== void 0) clipping.minNear = msg.min_near;
     canvas3d.setProps({ cameraClipping: clipping });
   }
@@ -149539,6 +149548,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_sections":
           await this.scene.setSections(msg);
           break;
+        case "sync_section_position":
+          await this.scene.syncSectionPosition(msg);
+          break;
         case "set_section_drag":
           await this.scene.setActiveSectionDrag(msg);
           break;
@@ -151847,6 +151859,10 @@ var index_default = {
           popupMgr.send("molsysviewer-sync-op", op4);
         }
       }
+      if (msg?.event === "section_moved") {
+        const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
+        popupMgr.send("molsysviewer-sync-op", syncOp);
+      }
     });
     const popupJsSource = model.get("popup_js_source");
     const esmSource = model.get("_esm");
@@ -151953,6 +151969,10 @@ var index_default = {
             if (data) {
               const op4 = buildMeasurementOpFromInteractionEvent(data);
               if (op4) enqueueMessage(op4, { syncToPopup: false });
+            }
+            if (data?.event === "section_moved") {
+              const syncOp = { op: "sync_section_position", tag: data.tag, point: data.point, normal: data.normal };
+              enqueueMessage(syncOp, { syncToPopup: false });
             }
             break;
           case "molsysviewer-log-from-popout":

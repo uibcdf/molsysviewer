@@ -9,6 +9,7 @@ _check_dependency(__name__)
 from ._pyunitwizard import puw as pyunitwizard
 from ._version import __version__
 from .demo import demo
+from .systems import systems
 from .new_view import new_view
 from . import tools
 from . import addon_templates
@@ -74,6 +75,7 @@ __all__ = [
     "ViewerInfo",
     "new_view",
     "demo",
+    "systems",
     "tools",
     "addon_templates",
     "addons",

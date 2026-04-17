@@ -28,5 +28,11 @@ def digest_mode(mode, caller=None):
         }:
             if mode in ["perspective", "orthographic"]:
                 return mode
+        if caller in {
+            "molsysviewer.player.play",
+            "molsysviewer.player.set_mode",
+        }:
+            if mode in ["loop", "once", "ping-pong"]:
+                return mode
 
     raise ArgumentError('mode', value=mode, caller=caller, message=None)

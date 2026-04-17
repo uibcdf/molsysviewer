@@ -145,30 +145,42 @@ class SceneManager:
     def set_clip_planes(
         self,
         near: float | None = None,
-        far: bool | None = None,
+        far: float | None = None,
         min_near: float | None = None,
+        thickness: float | None = None,
     ) -> None:
         """Adjust camera Z-clipping planes.
 
         Parameters
         ----------
         near
-            Near-clip radius as a percentage (0–100) of the scene radius.
+            Near-clip radius as a percentage (0–99) of the scene radius.
             0 means no near clipping; larger values clip more of the front.
         far
-            ``True`` to enable far-plane clipping, ``False`` to disable.
+            Far-clip depth as a percentage (0–100) of the scene radius from
+            the back. 0 disables far clipping; any positive value enables it.
         min_near
             Minimum near-plane distance in scene units to prevent Z-fighting.
+        thickness
+            Convenience parameter: if given together with ``near``, ``far`` is
+            automatically set to ``min(100, near + thickness)`` (enabling far
+            clipping to isolate a depth slice).
 
-        At least one parameter must be given.
+        At least one of ``near``, ``far``, ``min_near``, or ``thickness``
+        must be provided.
         """
-        if near is None and far is None and min_near is None:
-            raise ValueError("At least one of near, far, or min_near must be provided.")
+        if near is None and far is None and min_near is None and thickness is None:
+            raise ValueError("At least one of near, far, min_near, or thickness must be provided.")
+        if thickness is not None:
+            if near is None:
+                raise ValueError("thickness requires near to be specified.")
+            if far is None:
+                far = min(100.0, float(near) + float(thickness))
         msg: dict = {"op": "set_clip_planes"}
         if near is not None:
             msg["near"] = float(near)
         if far is not None:
-            msg["far"] = bool(far)
+            msg["far"] = float(far)
         if min_near is not None:
             msg["min_near"] = float(min_near)
         self._view._send(msg)  # noqa: SLF001
