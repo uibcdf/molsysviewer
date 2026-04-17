@@ -254,8 +254,8 @@ What is done:
 
 What remains:
 
-- `ElasNetMTModesPanel` and `ElasNetMTFiguresPanel` (Modes and Figures panels)
 - broader panel widget coverage in downstream add-ons
+- no structural ElasNetMT host work pending
 
 ### Phase E. Final Standalone Push
 
