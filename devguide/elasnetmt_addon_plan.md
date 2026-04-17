@@ -291,13 +291,15 @@ Deliverable:
 
 - the first real interactive add-on panel is embedded and working end-to-end
 
-## Current Immediate Next Step
+## Current State
 
-Phases 1–6 are complete. The immediate next step is:
+Phases 1–6 are complete. All three ElasNetMT panels have interactive widgets:
 
-- `ElasNetMTModesPanel` — normal mode selection UI in the `Modes` panel
-- `ElasNetMTFiguresPanel` — export preset selection UI in the `Figures` panel
+- `ElasNetMTModelPanel` (`model`): GNM/ANM toggle, cutoff, Compute ✓
+- `ElasNetMTModesPanel` (`modes`): mode index selector, Show Vectors ✓
+- `ElasNetMTFiguresPanel` (`figures`): preset selector, format toggle, Export ✓
 
-Both follow the same pattern as `ElasNetMTModelPanel`: subclass
-`AddonPanelWidget`, write `_esm` + `_css`, implement `on_mount` and
-`handle_action`, wire `widget_class` in the `AddonPanelSpec`.
+19 integration tests in `tests/integration/test_molsysviewer_addon.py` — all passing.
+
+The ElasNetMT add-on is now a complete proof of the `AddonPanelWidget` contract.
+No structural work pending in either `molsysviewer` or `molsysviewer_elasnetmt`.
