@@ -4,6 +4,13 @@ from ...exceptions import ArgumentError
 
 def digest_direction(direction, caller=None):
 
+    if caller is not None and caller.startswith("molsysviewer.player."):
+        if direction is None:
+            return None
+        if isinstance(direction, str) and direction in ("forward", "backward"):
+            return direction
+        raise ArgumentError('direction', value=direction, caller=caller, message=None)
+
     if caller.endswith('move_away'):
         if direction is None:
             return direction

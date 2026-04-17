@@ -1295,6 +1295,7 @@ export class MolSysViewerController {
                 case "toggle_spin": await this.scene.toggleSpin(msg); break;
                 case "set_fog": await this.scene.setFog(msg as any); break;
                 case "set_sections": await this.scene.setSections(msg as any); break;
+                case "sync_section_position": await this.scene.syncSectionPosition(msg as any); break;
                 case "set_section_drag": await this.scene.setActiveSectionDrag(msg as any); break;
                 case "set_background_color": await this.scene.setBackgroundColor(msg as any); break;
                 case "set_lighting": await this.scene.setLighting(msg as any); break;

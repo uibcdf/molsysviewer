@@ -285,6 +285,11 @@ export default {
                     popupMgr.send("molsysviewer-sync-op", op);
                 }
             }
+            // Sync section gizmo position to popup when user drags in host canvas.
+            if (msg?.event === "section_moved") {
+                const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
+                popupMgr.send("molsysviewer-sync-op", syncOp);
+            }
         });
 
         // 3. Initialize Popup Manager with Payload
@@ -418,13 +423,17 @@ export default {
                         break;
 
                     case "molsysviewer-popup-interaction":
-                        // A measurement was created interactively inside the popup.
-                        // 1. Forward to Python so it is recorded in measurement history.
+                        // 1. Forward to Python so it is recorded.
                         if (data) model.send(data);
                         // 2. Apply to the host canvas (popup already has it, so do NOT re-sync to popup).
                         if (data) {
                             const op = buildMeasurementOpFromInteractionEvent(data);
                             if (op) enqueueMessage(op, { syncToPopup: false });
+                        }
+                        // 3. Sync section gizmo position to host when user drags in popup.
+                        if (data?.event === "section_moved") {
+                            const syncOp = { op: "sync_section_position", tag: data.tag, point: data.point, normal: data.normal };
+                            enqueueMessage(syncOp as any, { syncToPopup: false });
                         }
                         break;
 
