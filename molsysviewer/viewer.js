@@ -148657,6 +148657,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.workbenchAddons = [];
     this.addonWorkspaces = [];
     this.addonPanels = [];
+    this.addonRuntimeInitialized = false;
     this.workbenchAddonSections = [];
     this.addonContextActions = [];
     this.workbenchActive = null;
@@ -149692,7 +149693,7 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.trajectory.setTrajectoryPlayback(msg);
           break;
         case "set_addon_runtime_summary": {
-          const prevWorkspaceIds = new Set(this.getWorkspaceOptions().map((item2) => item2.id));
+          const prevWorkspaceIds = this.addonRuntimeInitialized ? new Set(this.getWorkspaceOptions().map((item2) => item2.id)) : null;
           this.addonWorkspaces = this.buildAddonWorkspaceSummary(msg);
           this.addonPanels = this.buildAddonPanelSummary(msg);
           if (!this.getWorkspaceOptions().some((item2) => item2.id === this.currentWorkspace)) {
@@ -149701,12 +149702,15 @@ var MolSysViewerController = class _MolSysViewerController {
           this.workbenchAddons = this.buildAddonRuntimeSummary(msg);
           this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg);
           this.addonContextActions = this.buildAddonContextActionSummary(msg);
-          const newWorkspaces = this.getWorkspaceOptions().filter((item2) => !prevWorkspaceIds.has(item2.id));
-          if (newWorkspaces.length === 1 && this.currentWorkspace === "core") {
-            this.selectWorkspace(newWorkspaces[0].id);
-          } else {
-            this.refreshWorkbenchPanel();
+          this.addonRuntimeInitialized = true;
+          if (prevWorkspaceIds !== null) {
+            const newWorkspaces = this.getWorkspaceOptions().filter((item2) => !prevWorkspaceIds.has(item2.id));
+            if (newWorkspaces.length === 1 && this.currentWorkspace === "core") {
+              this.selectWorkspace(newWorkspaces[0].id);
+              break;
+            }
           }
+          this.refreshWorkbenchPanel();
           break;
         }
         case "mount_addon_panel": {
