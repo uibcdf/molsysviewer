@@ -359,6 +359,7 @@ export class MolSysViewerController {
     private workbenchAddons: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
     private addonPanels: AddonPanelRuntime[] = [];
+    private addonRuntimeInitialized = false;
     private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
@@ -1387,7 +1388,9 @@ export class MolSysViewerController {
                 case "set_trajectory_frame": await this.trajectory.setTrajectoryFrame(msg); break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
                 case "set_addon_runtime_summary": {
-                    const prevWorkspaceIds = new Set(this.getWorkspaceOptions().map((item) => item.id));
+                    const prevWorkspaceIds = this.addonRuntimeInitialized
+                        ? new Set(this.getWorkspaceOptions().map((item) => item.id))
+                        : null;
                     this.addonWorkspaces = this.buildAddonWorkspaceSummary(msg as any);
                     this.addonPanels = this.buildAddonPanelSummary(msg as any);
                     if (!this.getWorkspaceOptions().some((item) => item.id === this.currentWorkspace)) {
@@ -1396,12 +1399,15 @@ export class MolSysViewerController {
                     this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
                     this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg as any);
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
-                    const newWorkspaces = this.getWorkspaceOptions().filter((item) => !prevWorkspaceIds.has(item.id));
-                    if (newWorkspaces.length === 1 && this.currentWorkspace === "core") {
-                        this.selectWorkspace(newWorkspaces[0].id);
-                    } else {
-                        this.refreshWorkbenchPanel();
+                    this.addonRuntimeInitialized = true;
+                    if (prevWorkspaceIds !== null) {
+                        const newWorkspaces = this.getWorkspaceOptions().filter((item) => !prevWorkspaceIds.has(item.id));
+                        if (newWorkspaces.length === 1 && this.currentWorkspace === "core") {
+                            this.selectWorkspace(newWorkspaces[0].id);
+                            break;
+                        }
                     }
+                    this.refreshWorkbenchPanel();
                     break;
                 }
 
