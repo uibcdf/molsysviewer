@@ -284,9 +284,12 @@ class AnnotationsManager:
                 "add_label_from_active_selection() currently requires an active selection resolving to exactly one group."
             )
 
-        return self.add_label(
+        resolved_atom_indices = self._resolve_anchor_atom_indices(
+            selection=f"group_index=={int(group_indices[0])}"
+        )
+        return self.add_annotation(
             text=text,
-            group_index=[int(group_indices[0])],
+            atom_indices=resolved_atom_indices,
             tag=tag,
             layer_tag=layer_tag,
             skip_digestion=True,
@@ -368,14 +371,32 @@ class AnnotationsManager:
 
     @signal(tags=["annotation"])
     @digest()
-    def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Layer:
-        """Reanchor an existing label to a different single group."""
+    def set_anchor(
+        self,
+        tag: str,
+        selection: Any = None,
+        *,
+        atom_indices: Any = None,
+        skip_digestion: bool = False,
+    ) -> Layer:
+        """Reanchor an existing label to a different set of atoms.
+
+        Parameters
+        ----------
+        tag
+            Tag of the annotation to reanchor.
+        selection
+            MolSysMT selection string (e.g. ``'group_index==3'``).
+        atom_indices
+            Explicit atom indices list.  Takes priority over *selection*.
+        """
         layer = self._require_annotation_layer(tag)
-        atom_indices = self._resolve_group_atom_indices(group_index)
+        resolved_atom_indices = self._resolve_anchor_atom_indices(
+            selection, atom_indices=atom_indices
+        )
         record = self.info(tag, skip_digestion=True)
         if not isinstance(record, dict):
             raise ValueError(f"No annotation record found for tag {tag!r}.")
-
         self._view._send(  # noqa: SLF001
             {
                 "op": "update_label",
@@ -383,11 +404,24 @@ class AnnotationsManager:
                 "options": {
                     "tag": tag,
                     "text": record.get("text"),
-                    "atom_indices": list(atom_indices),
+                    "atom_indices": list(resolved_atom_indices),
                 },
             }
         )
         return layer
+
+    @signal(tags=["annotation"])
+    @digest()
+    def set_group_index(self, tag: str, group_index: Any, skip_digestion: bool = False) -> Layer:
+        """Deprecated: use ``set_anchor(selection='group_index==N')`` instead."""
+        import warnings
+        warnings.warn(
+            "annotations.set_group_index() is deprecated; use set_anchor(selection='group_index==N') instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        gi = int(group_index) if not isinstance(group_index, list) else int(group_index[0])
+        return self.set_anchor(tag, selection=f"group_index=={gi}", skip_digestion=True)
 
 
 __all__ = ["AnnotationsManager"]
