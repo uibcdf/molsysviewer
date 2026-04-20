@@ -146475,8 +146475,7 @@ var GroupStrip = class {
         gap: "4px",
         paddingLeft: "8px",
         marginLeft: "2px",
-        borderLeft: `3px solid ${molColor}44`,
-        // Molecule border (semi-transparent)
+        borderLeft: `3px solid ${molColor}88`,
         borderRadius: "4px 0 0 4px",
         marginBottom: "8px",
         position: "relative"
@@ -146484,18 +146483,18 @@ var GroupStrip = class {
       molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
       const molCaption = document.createElement("div");
       molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
-      molCaption.textContent = `${moleculeCollapsed ? ">" : "v"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
+      molCaption.textContent = `${moleculeCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
       Object.assign(molCaption.style, {
         alignSelf: "flex-start",
         marginLeft: "2px",
         marginBottom: "2px",
-        padding: "1px 6px",
+        padding: "2px 7px",
         borderRadius: "999px",
-        background: `${molColor}22`,
+        background: `${molColor}28`,
         color: molColor,
-        fontSize: "9px",
+        fontSize: "10px",
         fontWeight: "700",
-        letterSpacing: "0.04em",
+        letterSpacing: "0.03em",
         textTransform: "uppercase",
         maxWidth: "100%",
         overflow: "hidden",
@@ -146543,7 +146542,6 @@ var GroupStrip = class {
       }
       for (const [compId3, items] of components.entries()) {
         const compBox = document.createElement("div");
-        const compColor = COLORS[compId3 % COLORS.length];
         const componentKey2 = `${molId}:${compId3}`;
         const componentCollapsed = this.collapsedComponents.has(componentKey2);
         Object.assign(compBox.style, {
@@ -146552,25 +146550,24 @@ var GroupStrip = class {
           gap: "4px",
           paddingLeft: "8px",
           marginLeft: "2px",
-          borderLeft: `2px solid ${compColor}aa`,
-          // Component border (more opaque)
+          borderLeft: "1.5px solid rgba(255,255,255,0.22)",
           borderRadius: "2px 0 0 2px",
           position: "relative"
         });
         compBox.title = `Component: ${componentNames.get(compId3) ?? compId3}`;
         const compCaption = document.createElement("div");
         compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId3));
-        compCaption.textContent = `${componentCollapsed ? ">" : "v"} ${buildHierarchyCaption("component", compId3, componentNames.get(compId3))}`;
+        compCaption.textContent = `${componentCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("component", compId3, componentNames.get(compId3))}`;
         Object.assign(compCaption.style, {
           alignSelf: "flex-start",
           marginLeft: "2px",
           marginBottom: "2px",
           padding: "1px 5px",
           borderRadius: "999px",
-          background: `${compColor}20`,
-          color: compColor,
+          background: "rgba(255,255,255,0.08)",
+          color: "rgba(244,244,245,0.72)",
           fontSize: "9px",
-          fontWeight: "700",
+          fontWeight: "600",
           letterSpacing: "0.03em",
           textTransform: "uppercase",
           maxWidth: "100%",

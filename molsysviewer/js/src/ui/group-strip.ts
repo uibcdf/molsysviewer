@@ -266,7 +266,7 @@ export class GroupStrip {
                 gap: "4px",
                 paddingLeft: "8px",
                 marginLeft: "2px",
-                borderLeft: `3px solid ${molColor}44`, // Molecule border (semi-transparent)
+                borderLeft: `3px solid ${molColor}88`,
                 borderRadius: "4px 0 0 4px",
                 marginBottom: "8px",
                 position: "relative",
@@ -275,18 +275,18 @@ export class GroupStrip {
 
             const molCaption = document.createElement("div");
             molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
-            molCaption.textContent = `${moleculeCollapsed ? ">" : "v"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
+            molCaption.textContent = `${moleculeCollapsed ? "▶" : "▼"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
             Object.assign(molCaption.style, {
                 alignSelf: "flex-start",
                 marginLeft: "2px",
                 marginBottom: "2px",
-                padding: "1px 6px",
+                padding: "2px 7px",
                 borderRadius: "999px",
-                background: `${molColor}22`,
+                background: `${molColor}28`,
                 color: molColor,
-                fontSize: "9px",
+                fontSize: "10px",
                 fontWeight: "700",
-                letterSpacing: "0.04em",
+                letterSpacing: "0.03em",
                 textTransform: "uppercase",
                 maxWidth: "100%",
                 overflow: "hidden",
@@ -338,7 +338,6 @@ export class GroupStrip {
 
             for (const [compId, items] of components.entries()) {
                 const compBox = document.createElement("div");
-                const compColor = COLORS[compId % COLORS.length];
                 const componentKey = `${molId}:${compId}`;
                 const componentCollapsed = this.collapsedComponents.has(componentKey);
                 Object.assign(compBox.style, {
@@ -347,7 +346,7 @@ export class GroupStrip {
                     gap: "4px",
                     paddingLeft: "8px",
                     marginLeft: "2px",
-                    borderLeft: `2px solid ${compColor}aa`, // Component border (more opaque)
+                    borderLeft: "1.5px solid rgba(255,255,255,0.22)",
                     borderRadius: "2px 0 0 2px",
                     position: "relative",
                 });
@@ -355,17 +354,17 @@ export class GroupStrip {
 
                 const compCaption = document.createElement("div");
                 compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId));
-                compCaption.textContent = `${componentCollapsed ? ">" : "v"} ${buildHierarchyCaption("component", compId, componentNames.get(compId))}`;
+                compCaption.textContent = `${componentCollapsed ? "▶" : "▼"} ${buildHierarchyCaption("component", compId, componentNames.get(compId))}`;
                 Object.assign(compCaption.style, {
                     alignSelf: "flex-start",
                     marginLeft: "2px",
                     marginBottom: "2px",
                     padding: "1px 5px",
                     borderRadius: "999px",
-                    background: `${compColor}20`,
-                    color: compColor,
+                    background: "rgba(255,255,255,0.08)",
+                    color: "rgba(244,244,245,0.72)",
                     fontSize: "9px",
-                    fontWeight: "700",
+                    fontWeight: "600",
                     letterSpacing: "0.03em",
                     textTransform: "uppercase",
                     maxWidth: "100%",
