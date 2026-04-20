@@ -146153,7 +146153,6 @@ var ActiveSelectionController = class {
     if (shift2 && alt && this.anchorItem && this.anchorItem.source_kind === "element" && current2.source_kind === "element") {
       if (this.anchorItem.chain_name === current2.chain_name) {
         const rangeItems = this.getRangeItems(this.anchorItem, current2);
-        console.log(`[ActiveSelection] range items found: ${rangeItems.length}`);
         if (rangeItems.length > 0) {
           this.setItems(rangeItems, true, true);
           return;
@@ -146367,9 +146366,14 @@ var GroupStrip = class {
         nextAnnotations.add(selectionKey(item2));
       }
     }
+    const selectionChanged = nextElements.size !== this.selectedElementKeys.size || [...nextElements].some((k) => !this.selectedElementKeys.has(k));
     this.selectedElementKeys = nextElements;
     this.selectedAnnotationKeys = nextAnnotations;
     this.render();
+    if (selectionChanged && nextElements.size > 0) {
+      const btn = this.row.querySelector?.("[data-group-item-selected]");
+      btn?.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
+    }
   }
   updateContextTarget(target) {
     this.currentContextTarget = target;
@@ -146636,6 +146640,7 @@ var GroupStrip = class {
             textAlign: "left",
             fontSize: "11px"
           });
+          if (selected) button.setAttribute("data-group-item-selected", "true");
           const text = document.createElement("span");
           text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
           button.appendChild(text);

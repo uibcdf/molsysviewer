@@ -142,9 +142,15 @@ export class GroupStrip {
                 nextAnnotations.add(selectionKey(item));
             }
         }
+        const selectionChanged = nextElements.size !== this.selectedElementKeys.size
+            || [...nextElements].some((k) => !this.selectedElementKeys.has(k));
         this.selectedElementKeys = nextElements;
         this.selectedAnnotationKeys = nextAnnotations;
         this.render();
+        if (selectionChanged && nextElements.size > 0) {
+            const btn = this.row.querySelector?.("[data-group-item-selected]") as HTMLElement | null;
+            btn?.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
+        }
     }
 
     updateContextTarget(target: ContextMenuTarget | null): void {
@@ -448,6 +454,7 @@ export class GroupStrip {
                         textAlign: "left",
                         fontSize: "11px",
                     });
+                    if (selected) button.setAttribute("data-group-item-selected", "true");
                     const text = document.createElement("span");
                     text.textContent = item.group_name ?? `${item.group_indices[0] ?? "?"}`;
                     button.appendChild(text);

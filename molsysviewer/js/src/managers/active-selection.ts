@@ -401,7 +401,6 @@ export class ActiveSelectionController {
             // Range selection logic
             if (this.anchorItem.chain_name === current.chain_name) {
                 const rangeItems = this.getRangeItems(this.anchorItem, current);
-                console.log(`[ActiveSelection] range items found: ${rangeItems.length}`);
                 if (rangeItems.length > 0) {
                     this.setItems(rangeItems, true, true);
                     // Do not update anchor on range selection to allow expanding the range
