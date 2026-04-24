@@ -8,21 +8,21 @@ from molsysviewer.demo import demo
 
 def test_rebuild_persistence_and_hierarchy():
     """Stress test for persistence of annotations, measurements, and selections after rebuild."""
-    
+
     # 1. Load a system (pentalanine)
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None # Mock send
     mol = view._molsys
-    
+
     initial_n_atoms = int(msm.get(mol, element='atom', n_atoms=True))
 
     # 2. Setup artifacts
     # Label on residue 2
-    view.annotations.add_label(text="LabelRes2", group_index=[2], tag="L2", skip_digestion=True)
+    view.annotations.add_annotation(text="LabelRes2", selection="group_index==2", tag="L2", skip_digestion=True)
     # Distance between atoms 10 and 11
-    view.measurements.add_distance(atom_indices_a=[10], atom_indices_b=[11], tag="D10-11", skip_digestion=True)
+    view.measurements.add_distance(selection_a=[10], selection_b=[11], tag="D10-11", skip_digestion=True)
     # Save selection for atoms 10, 11
-    view.selections.add(atom_indices=[10, 11], tag="S10-11", items=[], skip_digestion=True)
+    view.selections.add(tag="S10-11", atom_indices=[10, 11], skip_digestion=True)
     
     # Get the actual atom indices for residue 2 before removal
     res2_atoms_before = list(msm.select(mol, selection='group_index==2', syntax='MolSysMT'))

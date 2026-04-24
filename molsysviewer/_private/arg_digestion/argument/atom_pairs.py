@@ -12,6 +12,11 @@ def digest_atom_pairs(atom_pairs, caller=None):
                 return [[atom_pairs[0], atom_pairs[1]]]
         elif is_iterable_of_pairs(atom_pairs):
             return [[ii, jj] for ii,jj in atom_pairs]
+    elif caller.endswith('add_links'):
+        if atom_pairs is None:
+            return None
+        if is_iterable_of_pairs(atom_pairs):
+            return [[int(ii), int(jj)] for ii, jj in atom_pairs]
     elif caller.endswith('add_contacts'):
         if atom_pairs is None:
             return None

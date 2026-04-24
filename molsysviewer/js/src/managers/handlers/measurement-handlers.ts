@@ -6,12 +6,32 @@ import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra/3d/vec3";
+import { Color } from "molstar/lib/mol-util/color";
 
 import {
     AddAngleMeasurementMessage,
     AddDihedralMeasurementMessage,
     AddDistanceMeasurementMessage,
+    LabelStyle,
 } from "../../messages/viewer-messages";
+
+function styleToVisualParams(style?: LabelStyle): Record<string, unknown> | undefined {
+    if (!style) return undefined;
+    const params: Record<string, unknown> = {};
+    if (style.color !== undefined) {
+        const hex = style.color.trim();
+        if (hex.startsWith("#") && (hex.length === 7 || hex.length === 4)) {
+            const full = hex.length === 4
+                ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`
+                : hex;
+            params.textColor = Color(parseInt(full.slice(1), 16));
+        }
+    }
+    if (style.size_em !== undefined) params.textSize = style.size_em;
+    if (style.background !== undefined) params.background = style.background;
+    if (style.background_opacity !== undefined) params.backgroundOpacity = style.background_opacity;
+    return Object.keys(params).length > 0 ? params : undefined;
+}
 
 type MeasurementMessage =
     | AddDistanceMeasurementMessage
@@ -43,6 +63,8 @@ export class MeasurementHandlers {
     private readonly measurementRefs = new Set<StateObjectRef>();
     private readonly refsByTag = new Map<string, Set<StateObjectRef>>();
     private readonly specsByTag = new Map<string, MeasurementMessage>();
+    /** Maps layer_tag → Set of measurement tags that belong to it. */
+    private readonly layerTagIndex = new Map<string, Set<string>>();
     private endpointPolicyDefault: MeasurementEndpointPolicy = "centroid";
     private representativeAtoms: Record<string, string> = { ...DEFAULT_REPRESENTATIVE_ATOMS };
 
@@ -94,6 +116,11 @@ export class MeasurementHandlers {
     }
 
     async setVisibility(tag: string, visible: boolean) {
+        const layerGroup = this.layerTagIndex.get(tag);
+        if (layerGroup && layerGroup.size > 0) {
+            await Promise.all(Array.from(layerGroup).map(t => this.setVisibility(t, visible)));
+            return;
+        }
         if (!visible) {
             await this.clearMeasurementByTag(tag);
             return;
@@ -108,6 +135,15 @@ export class MeasurementHandlers {
         } else {
             await this.addDihedral(spec);
         }
+    }
+
+    getSpec(tag: string): { kind: "distance" | "angle" | "dihedral"; atom_indices: number[] } | undefined {
+        const spec = this.specsByTag.get(tag);
+        if (!spec) return undefined;
+        const kind = spec.op === "add_distance_measurement" ? "distance"
+            : spec.op === "add_angle_measurement" ? "angle" : "dihedral";
+        const atomIndices = (spec.options?.endpoint_atom_indices ?? []).flat();
+        return { kind, atom_indices: atomIndices };
     }
 
     hasTag(tag: string): boolean {
@@ -205,6 +241,8 @@ export class MeasurementHandlers {
 
         const picks = Array.isArray(msg.options?.picks_atom_indices) ? msg.options!.picks_atom_indices! : [];
         const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+        const layer_tag = msg.options?.layer_tag;
+        const style = msg.options?.style;
         const measurementOptions = this.buildMeasurementOptions(
             picks,
             typeof msg.options?.endpoint_policy === "string" ? msg.options.endpoint_policy : undefined,
@@ -216,6 +254,7 @@ export class MeasurementHandlers {
             options: {
                 ...(msg.options ?? {}),
                 tag,
+                layer_tag,
                 picks_atom_indices: picks.map(item => Array.isArray(item) ? [...item] : []),
                 endpoint_policy: measurementOptions.endpoint_policy,
                 endpoint_kinds: [...measurementOptions.endpoint_kinds],
@@ -223,6 +262,11 @@ export class MeasurementHandlers {
                 endpoint_atom_indices: measurementOptions.endpoint_atom_indices.map((item) => [...item]),
             },
         } as MeasurementMessage);
+        if (layer_tag && layer_tag !== tag) {
+            const group = this.layerTagIndex.get(layer_tag) ?? new Set<string>();
+            group.add(tag);
+            this.layerTagIndex.set(layer_tag, group);
+        }
         const actualAtomIndices = measurementOptions.endpoint_atom_indices.map((item, index) => {
             if (Array.isArray(item) && item.length > 0) return item;
             return picks[index] ?? [];
@@ -230,6 +274,9 @@ export class MeasurementHandlers {
         const locis = actualAtomIndices.map((pick) => this.buildLociFromAtomIndices(structure, pick)).filter(Boolean);
         const expected = kind === "distance" ? 2 : kind === "angle" ? 3 : 4;
         if (locis.length !== expected) return;
+
+        const styleParams = styleToVisualParams(style) ?? {};
+        const visualParams = { ...styleParams, tooltip: tag } as any;
 
         const measurement = this.plugin.managers.structure.measurement;
         let added:
@@ -240,16 +287,19 @@ export class MeasurementHandlers {
             added = await measurement.addDistance(locis[0]!, locis[1]!, {
                 selectionTags: [tag],
                 reprTags: [tag],
+                visualParams,
             });
         } else if (kind === "angle") {
             added = await measurement.addAngle(locis[0]!, locis[1]!, locis[2]!, {
                 selectionTags: [tag],
                 reprTags: [tag],
+                visualParams,
             });
         } else {
             added = await measurement.addDihedral(locis[0]!, locis[1]!, locis[2]!, locis[3]!, {
                 selectionTags: [tag],
                 reprTags: [tag],
+                visualParams,
             });
         }
 

@@ -46,6 +46,19 @@ class LinkShapes:
         return normalized
 
     @staticmethod
+    def _to_coord_pairs_raw(coords: Iterable | None) -> list[list[list[float]]]:
+        """Like _to_coord_pairs but skips puw conversion — for raw Angstrom data."""
+        if coords is None:
+            return []
+        normalized: list[list[list[float]]] = []
+        for pair in coords:
+            if len(pair) != 2:
+                raise ValueError("Each entry must have two points (start, end)")
+            start, end = pair
+            normalized.append([[float(start[0]), float(start[1]), float(start[2])], [float(end[0]), float(end[1]), float(end[2])]])
+        return normalized
+
+    @staticmethod
     def _normalize_optional_list(values, n, cast):
         if values is None:
             return None
@@ -68,6 +81,7 @@ class LinkShapes:
         *,
         atom_pairs: Iterable[Sequence[int]] | None = None,
         coordinate_pairs: Iterable[Sequence[Sequence[float]]] | None = None,
+        structure_coordinate_pairs: Iterable | None = None,
         radius="0.2 nm",
         color: int | Sequence[int] = 0x4499ff,
         radii=None,
@@ -125,6 +139,15 @@ class LinkShapes:
 
         coordinate_pairs_list = self._to_coord_pairs(coordinate_pairs)
         atom_pairs_list = self._to_pair_list(atom_pairs) if atom_pairs is not None else []
+
+        structures_list: list | None = None
+        if structure_coordinate_pairs is not None:
+            structures_list = [
+                self._to_coord_pairs_raw(fcp) if fcp is not None else None
+                for fcp in structure_coordinate_pairs
+            ]
+            if not coordinate_pairs_list and structures_list and structures_list[0] is not None:
+                coordinate_pairs_list = structures_list[0]
 
         if not coordinate_pairs_list and not atom_pairs_list:
             raise ValueError("You must provide coordinate_pairs or atom_pairs")
@@ -187,6 +210,76 @@ class LinkShapes:
         )
         options["tag"] = layer.tag
         options["layer_tag"] = layer.layer_tag
+        if structures_list is not None:
+            options["structures_coords"] = structures_list
 
         self._view._send({"op": "add_network_links", "options": options})
+        return layer
+
+    @signal(tags=["shape", "link"])
+    @digest()
+    def add_hbonds(
+        self,
+        *,
+        structures,
+        radius="0.1 nm",
+        color: int = 0x4499ff,
+        alpha: float = 0.8,
+        radial_segments: int | None = None,
+        tag: str | None = None,
+        layer_tag: str | None = None,
+        skip_digestion: bool = False,
+    ):
+        """Add hydrogen-bond links that vary per structure.
+
+        Parameters
+        ----------
+        structures
+            List indexed by structure. Each entry is either ``None`` (no
+            H-bonds visible on that structure) or a list of ``[donor, acceptor]``
+            atom-index pairs (0-based).  Example::
+
+                viewer.shapes.links.add_hbonds(structures=[
+                    None,
+                    [[3, 7], [8, 35]],
+                    None,
+                    [[1, 9], [24, 27]],
+                ])
+
+        radius
+            Cylinder radius (puw quantity or plain value in nm).
+        color
+            Default link colour as ``0xRRGGBB``.
+        alpha
+            Global opacity 0–1.
+        radial_segments
+            Cylinder facet count (default 16).
+        """
+        structures_list = [
+            [[int(d), int(a)] for d, a in entry] if entry is not None else None
+            for entry in structures
+        ]
+
+        radius_ang = float(puw.get_value(radius, to_unit="angstroms"))
+
+        options: dict = {
+            "structures_atom_pairs": structures_list,
+            "radii": [radius_ang],
+            "colors": [normalize_color(color)],
+            "alpha": float(alpha),
+        }
+        if radial_segments is not None:
+            options["radial_segments"] = int(radial_segments)
+
+        tag = tag or self._view._next_shape_tag()  # noqa: SLF001
+        layer = register_shape_layer(
+            self._view,
+            tag,
+            layer_tag=layer_tag,
+            meta={"shape_kind": "links", "shape_name": "H-bonds"},
+        )
+        options["tag"] = layer.tag
+        options["layer_tag"] = layer.layer_tag
+
+        self._view._send({"op": "add_hbonds", "options": options})
         return layer

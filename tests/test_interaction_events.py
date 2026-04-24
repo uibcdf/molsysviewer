@@ -35,7 +35,7 @@ def test_frontend_interaction_events_are_stored_on_view():
     assert view.get_last_context_action_event() == action
     assert view.get_last_active_selection_event() == active_selection
     assert view.get_last_tool_state_event() == tool_state
-    assert view.get_last_measurement_created_event() == {**measurement, "tag": "layer1"}
+    assert view.get_last_measurement_created_event() == {**measurement, "tag": "measurement1"}
 
 
 def test_hover_and_context_targets_expose_lightweight_public_wrappers():
@@ -128,3 +128,74 @@ def test_shape_targets_and_shape_active_selection_are_exposed_in_python():
     assert view.active_selection.target_level == "shape"
     assert view.active_selection.is_empty() is False
     assert view.active_selection.info() == active_selection
+
+
+def test_on_hover_callback_is_called_with_event_dict():
+    view = MolSysView()
+    received = []
+
+    def handler(ev):
+        received.append(ev)
+
+    view.on_hover(handler)
+
+    hover1 = {"event": "interaction_hover", "kind": "structure", "atom_indices": [1]}
+    hover2 = {"event": "interaction_hover", "kind": "annotation", "atom_indices": [2], "tag": "ann-1", "text": "X"}
+    view._handle_frontend_event(hover1)  # noqa: SLF001
+    view._handle_frontend_event(hover2)  # noqa: SLF001
+
+    assert received == [hover1, hover2]
+
+
+def test_on_click_callback_is_called_with_event_dict():
+    view = MolSysView()
+    received = []
+
+    view.on_click(received.append)
+
+    click = {"event": "interaction_click", "kind": "measurement", "atom_indices": [3, 7], "tag": "m1", "measurement_name": "distance"}
+    view._handle_frontend_event(click)  # noqa: SLF001
+
+    assert received == [click]
+
+
+def test_on_context_callback_is_called_with_event_dict():
+    view = MolSysView()
+    received = []
+
+    view.on_context(received.append)
+
+    ctx = {"event": "interaction_context_menu", "kind": "annotation", "atom_indices": [5], "tag": "ann-2", "page_x": 10, "page_y": 20}
+    view._handle_frontend_event(ctx)  # noqa: SLF001
+
+    assert received == [ctx]
+
+
+def test_off_hover_removes_callback():
+    view = MolSysView()
+    received = []
+
+    def handler(ev):
+        received.append(ev)
+
+    view.on_hover(handler)
+    view.off_hover(handler)
+
+    view._handle_frontend_event({"event": "interaction_hover", "kind": "empty"})  # noqa: SLF001
+
+    assert received == []
+
+
+def test_on_hover_ignores_duplicate_registration():
+    view = MolSysView()
+    count = [0]
+
+    def handler(_ev):
+        count[0] += 1
+
+    view.on_hover(handler)
+    view.on_hover(handler)
+
+    view._handle_frontend_event({"event": "interaction_hover", "kind": "empty"})  # noqa: SLF001
+
+    assert count[0] == 1

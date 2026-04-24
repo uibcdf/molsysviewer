@@ -16,6 +16,12 @@ controls_position = ["top", "right"]
 # Overlay position when fullscreen is active.
 controls_position_fullscreen = ["bottom", "right"]
 
+# Controls surface style: "classic" (text buttons) or "minimal" (3-icon cluster).
+controls_mode: str = "classic"
+
+# Panel container architecture: "drawer" (side drawers) or "floating" (centered overlay).
+panel_mode_style: str = "drawer"
+
 from .user_presets import user_presets, load_user_presets
 from .project_config import load_project_config
 from .._private.arg_digestion import digest
@@ -26,6 +32,8 @@ __all__ = [
     "autohide_controls",
     "controls_position",
     "controls_position_fullscreen",
+    "controls_mode",
+    "panel_mode_style",
     "user_presets",
     "load_user_presets",
     "load_project_config",

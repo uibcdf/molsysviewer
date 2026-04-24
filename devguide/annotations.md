@@ -215,29 +215,40 @@ This should also come later.
 
 ## First Implementation Scope
 
-### v1 should support
+### v1 (implemented)
 
-- persistent labels as `annotations`
-- labels anchored to element targets
-- `group` first
-- replay-safe/export-safe persistence
-- rebuild-safe persistence
-- integration with existing layer semantics
-- actual `clear labels` support in the frontend instead of the current placeholder
-- **integration with `GroupStrip` via badge overlays ("L")**
-- a narrow public API:
-  - `view.annotations.add_label(text=..., group_index=..., tag=...)`
-  - `view.annotations.add_label_from_active_selection(text=..., tag=...)`
+- persistent labels as `annotations` ✓
+- labels anchored to element targets via selection string or atom_indices ✓
+- replay-safe/export-safe persistence ✓
+- rebuild-safe persistence (atom-index remapping on `view.remove`) ✓
+- integration with existing layer semantics ✓
+- `clear labels` support in the frontend ✓
+- integration with `GroupStrip` via badge overlays ("L") ✓
+- full management API (`set_anchor`, `set_text`, `set_tag`, `set_layer_tag`, `show`, `hide`, `delete`, `clear`) ✓
+- shared `layer_tag` support (multiple annotations in one layer) ✓
+- `add_annotation(selection=...)` as primary API; `add_label(group_index=...)` deprecated ✓
 
-### v1 should not try to solve
+- label visual knobs (`label_style` dict: `color`, `size_em`, `background`, `background_opacity`) — Objective A ✓
+  - `add_annotation(..., label_style={"color": "#RRGGBB", "size_em": 1.5, ...})`
+  - forwarded to Mol* `addLabel` as `visualParams` (`textColor`, `textSize`, `background`, `backgroundOpacity`)
+  - `LabelStyle` type added to TS `viewer-messages.ts`; `styleToVisualParams` helper in `annotation-handlers.ts`
+- layer-level visibility propagation to 3D canvas — Objective B ✓
+  - `hide_layer` → `toggleLayerVisibility` → `annotations.setVisibility(tag, false)` → `clearLabelByTag`
+  - shared `layer_tag` groups now supported: `layerTagIndex` maps layer_tag → Set of annotation tags
+  - `setVisibility(layerTag, visible)` iterates all member annotations
+- canvas pickability (hover/click label in 3D as annotation interaction target) — Objective C ✓
+  - `tooltip: tag` passed in `visualParams` enables `pickable: true` in Mol*'s `StructureSelectionsLabel3D`
+  - hover/click events on labels detected via `ev.current.repr.props.tooltip` and emitted as `{ kind: "annotation", tag, text, atom_indices }`
+  - `registerInteractionObservers` extended with optional `notifyHover`/`notifyClick` override callbacks to intercept annotation/measurement repr events before falling back to atom-loci normalization
+  - `resolveTooltipPayload(kind, ev, annotations, measurements)` extracted as testable pure exported function; covered by 5 unit tests
+  - same `tooltip: tag` mechanism applied to measurements (`MeasurementHandlers`)
 
-- every annotation subtype
-- atom-attached labels unless a concrete product need appears immediately
-- fully general shape-attached labels
-- free-floating point labels
-- rich annotation editing UI
-- annotation-aware mixed-selection behavior in full detail
-- strip-aware label overlays
+### Pending / next steps
+
+- shape-attached labels (label anchored to a shape tag)
+- explicit point labels (label at a 3D coordinate, not tied to atoms)
+- richer annotation types beyond labels (callouts, badges)
+- full `annotation` participation in `active_selection` (currently only via strip badge context)
 
 ## Intended Layer Semantics
 
@@ -383,9 +394,18 @@ So the minimum management surface for v1 should effectively cover:
 - clear labels
 - show/hide through layers
 
-Current API direction is now stronger than that first minimum:
+Current API (implemented and stable):
 
-- `view.annotations.tags()`
+- `view.annotations.add_annotation(text, selection=..., atom_indices=..., tag=..., layer_tag=...)`
+  - **primary entry point** for persistent labels
+  - anchor resolves via MolSysMT selection string or explicit `atom_indices`
+- `view.annotations.add_label_from_active_selection(text, tag=..., layer_tag=...)`
+- `view.annotations.set_anchor(tag, selection=..., atom_indices=...)`
+  - reanchor an existing label; replay-safe (emits `update_label`)
+- `view.annotations.set_text(tag, text)`
+- `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.set_layer_tag(tag, new_layer_tag)`
+- `view.annotations.tags` (property, list)
 - `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`
@@ -394,10 +414,12 @@ Current API direction is now stronger than that first minimum:
 - `view.annotations.show(tag)`
 - `view.annotations.hide(tag)`
 - `view.annotations.delete(tag)`
-- `view.annotations.set_tag(tag, new_tag)`
-- `view.annotations.set_text(tag, text)`
-- `view.annotations.set_group_index(tag, group_index)`
 - `view.annotations.clear(tag=None)`
+
+Deprecated (kept with `DeprecationWarning`, do not use in new code):
+
+- `view.annotations.add_label(text, group_index=..., tag=...)` → use `add_annotation(selection=...)`
+- `view.annotations.set_group_index(tag, group_index)` → use `set_anchor(tag, selection='group_index==N')`
 
 This is intentional.
 Annotations should be manageable through a robust Python API, not only through
@@ -496,9 +518,9 @@ Plausible growth after the first label slice:
 
 Current narrowing decision:
 
-- annotation-aware context begins from `GroupStrip` overlay badges before canvas label pickability
-- this gives `annotation` a real `context_target` path without yet depending on Mol* label picking semantics
-- canvas-side annotation pickability remains a later step
+- annotation-aware context is established from both `GroupStrip` overlay badges and canvas pickability (`tooltip: tag` mechanism)
+- canvas hover/click on labels emits `{ kind: "annotation", tag, text, atom_indices }` via `resolveTooltipPayload`
+- full annotation participation in `active_selection` beyond the first strip-based slice remains later work
 
 `GroupStrip` alignment note:
 

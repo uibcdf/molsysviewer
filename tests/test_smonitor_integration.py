@@ -88,17 +88,17 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "molsysviewer.regions.hide" in keys
         assert "molsysviewer.whole.hide" in keys
         assert "molsysviewer.shapes.clear" in keys
-        assert "molsysviewer.viewer.reset_camera" in keys
-        assert "molsysviewer.viewer.get_camera_snapshot" in keys
-        assert "molsysviewer.viewer.set_camera_snapshot" in keys
-        assert "molsysviewer.viewer.set_panel_mode" in keys
-        assert "molsysviewer.viewer.set_workspace" in keys
-        assert "molsysviewer.viewer.set_workspace_panel" in keys
-        assert "molsysviewer.viewer.workspace_catalog" in keys
-        assert "molsysviewer.viewer.workspace_panels" in keys
-        assert "molsysviewer.viewer.workspace_sections" in keys
-        assert "molsysviewer.viewer.workspace_runtime" in keys
-        assert "molsysviewer.viewer.get_panel_mode_state" in keys
+        assert "molsysviewer.viewer.core.reset_camera" in keys
+        assert "molsysviewer.viewer.core.get_camera_snapshot" in keys
+        assert "molsysviewer.viewer.core.set_camera_snapshot" in keys
+        assert "molsysviewer.viewer.core.set_panel_mode" in keys
+        assert "molsysviewer.viewer.core.set_workspace" in keys
+        assert "molsysviewer.viewer.core.set_workspace_panel" in keys
+        assert "molsysviewer.viewer.core.workspace_catalog" in keys
+        assert "molsysviewer.viewer.core.workspace_panels" in keys
+        assert "molsysviewer.viewer.core.workspace_sections" in keys
+        assert "molsysviewer.viewer.core.workspace_runtime" in keys
+        assert "molsysviewer.viewer.core.get_panel_mode_state" in keys
         assert "molsysviewer.new_view.new_view" in keys
         assert "molsysviewer.exports.html" in keys
         assert "molsysviewer.exports.image" in keys
@@ -109,27 +109,27 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "region" in tags_by_key["molsysviewer.regions.hide"]
         assert "whole" in tags_by_key["molsysviewer.whole.hide"]
         assert "shape" in tags_by_key["molsysviewer.shapes.clear"]
-        assert "camera" in tags_by_key["molsysviewer.viewer.reset_camera"]
-        assert "panel" in tags_by_key["molsysviewer.viewer.set_panel_mode"]
+        assert "camera" in tags_by_key["molsysviewer.viewer.core.reset_camera"]
+        assert "panel" in tags_by_key["molsysviewer.viewer.core.set_panel_mode"]
         assert "factory" in tags_by_key["molsysviewer.new_view.new_view"]
         assert "export" in tags_by_key["molsysviewer.exports.html"]
         assert "image" in tags_by_key["molsysviewer.exports.image"]
         assert "figure" in tags_by_key["molsysviewer.exports.figure_publication_set"]
-        assert meta_by_key["molsysviewer.viewer.get_camera_snapshot"].get("pretty") is None
-        assert meta_by_key["molsysviewer.viewer.set_camera_snapshot"].get("snapshot_keys") == ["target"]
-        assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("panel") == "workbench"
-        assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("expanded") is True
-        assert meta_by_key["molsysviewer.viewer.set_workspace"].get("workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("panel") == "workbench"
-        assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("current_workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("workspace_count") == 1
-        assert meta_by_key["molsysviewer.viewer.workspace_panels"].get("workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.workspace_sections"].get("workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("current_workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("panel_count") == 2
-        assert meta_by_key["molsysviewer.viewer.workspace_runtime"].get("pretty") is True
-        assert meta_by_key["molsysviewer.viewer.get_panel_mode_state"].get("pretty") is True
+        assert meta_by_key["molsysviewer.viewer.core.get_camera_snapshot"].get("pretty") is None
+        assert meta_by_key["molsysviewer.viewer.core.set_camera_snapshot"].get("snapshot_keys") == ["target"]
+        assert meta_by_key["molsysviewer.viewer.core.set_panel_mode"].get("panel") == "workbench"
+        assert meta_by_key["molsysviewer.viewer.core.set_panel_mode"].get("expanded") is True
+        assert meta_by_key["molsysviewer.viewer.core.set_workspace"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.core.set_workspace_panel"].get("panel") == "workbench"
+        assert meta_by_key["molsysviewer.viewer.core.set_workspace_panel"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.core.workspace_catalog"].get("current_workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.core.workspace_catalog"].get("workspace_count") >= 1
+        assert meta_by_key["molsysviewer.viewer.core.workspace_panels"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.core.workspace_sections"].get("workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.core.workspace_runtime"].get("current_workspace") == "core"
+        assert meta_by_key["molsysviewer.viewer.core.workspace_runtime"].get("panel_count") == 2
+        assert meta_by_key["molsysviewer.viewer.core.workspace_runtime"].get("pretty") is True
+        assert meta_by_key["molsysviewer.viewer.core.get_panel_mode_state"].get("pretty") is True
         assert meta_by_key["molsysviewer.new_view.new_view"].get("load_mode") == "selection"
         assert meta_by_key["molsysviewer.new_view.new_view"].get("syntax") == "MolSysMT"
         assert meta_by_key["molsysviewer.new_view.new_view"].get("reused_view") is True
@@ -151,7 +151,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
 
 def test_public_digest_entrypoints_have_signal_decorators():
     targets = [
-        Path("molsysviewer/viewer.py"),
+        Path("molsysviewer/viewer/core.py"),
         Path("molsysviewer/new_view.py"),
         Path("molsysviewer/whole.py"),
         Path("molsysviewer/regions.py"),

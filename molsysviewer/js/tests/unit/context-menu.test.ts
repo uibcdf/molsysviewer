@@ -812,9 +812,17 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
         assert.ok(collectTexts(root).includes("Create Region from Selection"));
         assert.ok(collectTexts(root).includes("Add Label from Selection"));
 
+        // Clicking "Create Region from Selection" opens the region composer inline
         const regionButton = findNodeByText(root, "Create Region from Selection");
         assert.ok(regionButton);
         regionButton!.dispatch("click");
+
+        // Composer is now shown — submit with empty tag (tag is optional)
+        root = (menu as any).root as FakeElement;
+        assert.ok(collectTexts(root).includes("New Region from Selection"));
+        const submitBtn = findNodeByText(root, "Create Region");
+        assert.ok(submitBtn);
+        submitBtn!.dispatch("click");
 
         menu.open(
             { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },

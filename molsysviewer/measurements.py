@@ -179,6 +179,7 @@ class MeasurementsManager:
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
         value: float | None = None,
+        style: dict | None = None,
     ) -> dict:
         policy = self._normalize_endpoint_policy(endpoint_policy)
         endpoint_kinds, endpoint_labels, endpoint_atom_indices = self._resolve_endpoint_metadata(picks_atom_indices, policy)
@@ -193,6 +194,8 @@ class MeasurementsManager:
         }
         if value is not None:
             options["value"] = float(value)
+        if style:
+            options["style"] = dict(style)
         return {
             "op": op,
             "tag": tag,
@@ -208,10 +211,11 @@ class MeasurementsManager:
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
         value: float | None = None,
+        style: dict | None = None,
     ) -> Layer:
         layer = self._ensure_layer(tag, layer_tag=layer_tag)
         msg = self._build_measurement_message(
-            op, picks_atom_indices, tag, layer_tag=getattr(layer, "layer_tag", tag), endpoint_policy=endpoint_policy, value=value
+            op, picks_atom_indices, tag, layer_tag=getattr(layer, "layer_tag", tag), endpoint_policy=endpoint_policy, value=value, style=style,
         )
         self._view._record_measurement_message(msg)  # noqa: SLF001
         self._view._last_measurement_created_event = {  # noqa: SLF001
@@ -306,12 +310,13 @@ class MeasurementsManager:
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
         value: float | None = None,
+        style: dict | None = None,
     ) -> Layer:
         if value is None:
             policy = self._normalize_endpoint_policy(endpoint_policy)
             _, _, ea_indices = self._resolve_endpoint_metadata(picks_atom_indices, policy)
             value = self._compute_measurement_value(op, picks_atom_indices, ea_indices, policy)
-        layer = self._record_measurement(op, picks_atom_indices, tag, layer_tag=layer_tag, endpoint_policy=endpoint_policy, value=value)
+        layer = self._record_measurement(op, picks_atom_indices, tag, layer_tag=layer_tag, endpoint_policy=endpoint_policy, value=value, style=style)
         self._view._send(
             self._build_measurement_message(
                 op,
@@ -320,6 +325,7 @@ class MeasurementsManager:
                 layer_tag=getattr(layer, "layer_tag", tag),
                 endpoint_policy=endpoint_policy,
                 value=value,
+                style=style,
             )
         )  # noqa: SLF001
         return layer
@@ -539,6 +545,7 @@ class MeasurementsManager:
         tag: str | None = None,
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
+        measurement_style: dict | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
         import warnings
@@ -559,6 +566,7 @@ class MeasurementsManager:
             object_tag,
             layer_tag=layer_tag,
             endpoint_policy=endpoint_policy,
+            style=measurement_style,
         )
 
     @signal(tags=["measurement"])
@@ -575,6 +583,7 @@ class MeasurementsManager:
         tag: str | None = None,
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
+        measurement_style: dict | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
         import warnings
@@ -603,6 +612,7 @@ class MeasurementsManager:
             object_tag,
             layer_tag=layer_tag,
             endpoint_policy=endpoint_policy,
+            style=measurement_style,
         )
 
     @signal(tags=["measurement"])
@@ -621,6 +631,7 @@ class MeasurementsManager:
         tag: str | None = None,
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
+        measurement_style: dict | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
         import warnings
@@ -654,6 +665,7 @@ class MeasurementsManager:
             object_tag,
             layer_tag=layer_tag,
             endpoint_policy=endpoint_policy,
+            style=measurement_style,
         )
 
 

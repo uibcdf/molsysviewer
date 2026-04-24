@@ -201,11 +201,8 @@ def test_styles_visual_discovery_catalogs_expose_representations_presets_and_adv
         "ellipsoid",
         "gaussian-surface",
         "gaussian-volume",
-        "label",
         "line",
         "molecular-surface",
-        "orientation",
-        "plane",
         "point",
         "putty",
         "spacefill",
@@ -235,7 +232,7 @@ def test_styles_representation_param_schema_catalog_exposes_curated_public_knobs
     view = MolSysView()
 
     cartoon = view.styles.representation_param_schema("cartoon")
-    line = view.styles.representation_param_schema("licorice")
+    line = view.styles.representation_param_schema("line")
     records = view.styles.representation_param_schema_records()
 
     assert cartoon["tag"] == "cartoon"

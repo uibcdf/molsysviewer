@@ -1,5 +1,6 @@
 import { MolSysViewerController } from "../managers/viewer-controller";
 import { ViewerMessage } from "../messages/viewer-messages";
+import { HelpOverlay } from "./help-overlay";
 
 // Helper to send sync messages to popout
 type SyncCallback = (msg: ViewerMessage) => void;
@@ -226,30 +227,85 @@ export const buildControls = (
     overlay.style.opacity = "0"; // Reveal after initial trajectory state to avoid flash
     overlay.style.display = "none"; // Keep hidden until we know if trajectory bar is needed
 
-    const mk = (label: string, handler: () => void) => {
-        const b = makeButton(label, handler);
-        b.style.pointerEvents = "auto";
-        overlay.appendChild(b);
-    };
+    const controlsMode = (model.get("controls_mode") as string) || "classic";
 
-    mk("Reset", async () => {
-        await c.resetView();
-        sendSync({ op: "reset_view" });
-    });
-    mk("Full", () => c.toggleFullscreen());
-    mk("Bg", async () => {
-        await c.toggleBackground();
-        sendSync({ op: "toggle_background", mode: c.isDarkMode ? "dark" : "light" });
-    });
-    mk("Spin", async () => {
-        await c.toggleSpin();
-        sendSync({ op: "toggle_spin", enable: c.isSpinActive });
-    });
-    mk("Swing", async () => {
-        await c.toggleSwing();
-        sendSync({ op: "toggle_swing", enable: c.isSwingActive });
-    });
-    if (onPopClick) mk("Pop", onPopClick);
+    // Help overlay — shared by both modes; must be created before the mode branch
+    // so the minimal ? button can reference it
+    const helpOverlay = new HelpOverlay(container);
+
+    if (controlsMode === "minimal") {
+        // ── Minimal mode: three SVG icon buttons (panel / fullscreen / popup) ──
+        const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
+        const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+        const ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
+
+        const mkIcon = (svgInner: string, title: string, handler: () => void) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.title = title;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg>`;
+            Object.assign(btn.style, {
+                width: "28px",
+                height: "28px",
+                minWidth: "28px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0",
+                border: "none",
+                borderRadius: "6px",
+                background: "transparent",
+                color: "rgba(255,255,255,0.6)",
+                cursor: "default",
+                userSelect: "none",
+                pointerEvents: "auto",
+                boxSizing: "border-box",
+            });
+            btn.addEventListener("mouseenter", () => {
+                btn.style.background = "rgba(255,255,255,0.1)";
+                btn.style.color = "rgba(255,255,255,0.95)";
+            });
+            btn.addEventListener("mouseleave", () => {
+                btn.style.background = "transparent";
+                btn.style.color = "rgba(255,255,255,0.6)";
+            });
+            btn.addEventListener("click", handler);
+            overlay.appendChild(btn);
+            return btn;
+        };
+
+        mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c.togglePanelMode());
+        mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
+        if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
+        const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
+        const helpBtn = mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+    } else {
+        // ── Classic mode: text buttons ───────────────────────────────────────
+        const mk = (label: string, handler: () => void) => {
+            const b = makeButton(label, handler);
+            b.style.pointerEvents = "auto";
+            overlay.appendChild(b);
+        };
+
+        mk("Reset", async () => {
+            await c.resetView();
+            sendSync({ op: "reset_view" });
+        });
+        mk("Full", () => c.toggleFullscreen());
+        mk("Bg", async () => {
+            await c.toggleBackground();
+            sendSync({ op: "toggle_background", mode: c.isDarkMode ? "dark" : "light" });
+        });
+        mk("Spin", async () => {
+            await c.toggleSpin();
+            sendSync({ op: "toggle_spin", enable: c.isSpinActive });
+        });
+        mk("Swing", async () => {
+            await c.toggleSwing();
+            sendSync({ op: "toggle_swing", enable: c.isSwingActive });
+        });
+        if (onPopClick) mk("Pop", onPopClick);
+    }
 
     // Trajectory controls
     const traj = document.createElement("div");
@@ -467,6 +523,17 @@ export const buildControls = (
             disableAutohide();
         }
     });
+
+    // H key — available in both modes
+    const onHelpKey = (ev: KeyboardEvent) => {
+        if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
+        if (ev.key.toLowerCase() === "h") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            helpOverlay.toggle();
+        }
+    };
+    window.addEventListener("keydown", onHelpKey, true);
 
     return overlay;
 };

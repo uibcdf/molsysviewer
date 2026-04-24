@@ -56,17 +56,19 @@ The first slice should be intentionally narrow.
 
 ### Public operations
 
-- `add_from_active_selection(tag=...)`
-- `add(tag=..., atom_indices=..., ...)`
-- `tags()`
-- `contains(tag)`
-- `get(tag)`
-- `records()`
-- `count()`
-- `info(tag=None)`
-- `set_tag(tag, new_tag)`
-- `delete(tag)`
-- `clear(tag=None)`
+- `add(tag, *, atom_indices, items=None)` — direct-index shortcut; no MolSysMT lookup required ✓
+- `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection ✓
+- `add_from_active_selection(tag)` ✓
+- `activate(tag)` ✓
+- `tags` (property, list) ✓
+- `contains(tag)` ✓
+- `get(tag)` ✓
+- `records()` ✓
+- `count()` ✓
+- `info(tag=None)` ✓
+- `set_tag(tag, new_tag)` ✓
+- `delete(tag)` ✓
+- `clear(tag=None)` ✓
 
 ### Public per-selection wrapper
 

@@ -23,6 +23,7 @@ export type AddSphereMessage = {
         alpha?: number;
         tag?: string;
         layer_tag?: string;
+        structures_coords?: Array<[number, number, number] | null>;
     };
 };
 
@@ -88,6 +89,19 @@ export type AddNetworkLinksMessage = {
     options?: NetworkLinkOptions;
 };
 
+export type AddHbondsMessage = {
+    op: "add_hbonds";
+    options?: {
+        structures_atom_pairs: Array<[number, number][] | null>;
+        tag?: string;
+        layer_tag?: string;
+        radii?: number[];
+        colors?: number[];
+        alpha?: number;
+        radial_segments?: number;
+    };
+};
+
 export type AddDisplacementVectorsMessage = {
     op: "add_displacement_vectors";
     options?: DisplacementVectorOptions;
@@ -103,6 +117,13 @@ export type AddTriangleFacesMessage = {
     options?: TriangleFacesOptions;
 };
 
+export type LabelStyle = {
+    color?: string;
+    size_em?: number;
+    background?: boolean;
+    background_opacity?: number;
+};
+
 export type AddLabelMessage = {
     op: "add_label";
     tag?: string;
@@ -110,6 +131,8 @@ export type AddLabelMessage = {
         text?: string;
         atom_indices?: number[];
         tag?: string;
+        layer_tag?: string;
+        style?: LabelStyle;
     };
 };
 
@@ -120,6 +143,7 @@ export type UpdateLabelMessage = {
         text?: string;
         atom_indices?: number[];
         tag?: string;
+        style?: LabelStyle;
     };
 };
 
@@ -133,6 +157,8 @@ export type AddDistanceMeasurementMessage = {
         endpoint_labels?: string[];
         endpoint_atom_indices?: number[][];
         tag?: string;
+        layer_tag?: string;
+        style?: LabelStyle;
     };
 };
 
@@ -146,6 +172,8 @@ export type AddAngleMeasurementMessage = {
         endpoint_labels?: string[];
         endpoint_atom_indices?: number[][];
         tag?: string;
+        layer_tag?: string;
+        style?: LabelStyle;
     };
 };
 
@@ -159,6 +187,8 @@ export type AddDihedralMeasurementMessage = {
         endpoint_labels?: string[];
         endpoint_atom_indices?: number[][];
         tag?: string;
+        layer_tag?: string;
+        style?: LabelStyle;
     };
 };
 
@@ -575,6 +605,7 @@ export type ViewerMessage =
     AddAnisotropyEllipsoidsMessage |
     AddPharmacophoreMessage |
     AddNetworkLinksMessage |
+    AddHbondsMessage |
     AddDisplacementVectorsMessage |
     AddTetrahedraMessage |
     AddTriangleFacesMessage |

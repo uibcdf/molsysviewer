@@ -31,7 +31,7 @@ def test_active_selection_save_creates_persistent_selection():
     selection = view.active_selection.save("picked")
 
     assert selection.tag == "picked"
-    assert view.selections.tags() == ["picked"]
+    assert view.selections.tags == ["picked"]
     assert view.selections.count() == 1
     assert view.selections.info("picked") == {
         "kind": "selection",
@@ -101,13 +101,13 @@ def test_persistent_selection_rename_delete_and_clear_update_records():
 
     renamed = selection.set_tag("saved")
     assert renamed.tag == "saved"
-    assert view.selections.tags() == ["saved"]
+    assert view.selections.tags == ["saved"]
     assert view.selections.contains("picked") is False
     assert view.selections.contains("saved") is True
 
     view.selections.delete("saved")
     assert view.selections.count() == 0
-    assert view.selections.tags() == []
+    assert view.selections.tags == []
 
     _seed_group_selection(view, 2)
     view.active_selection.save("picked-2")

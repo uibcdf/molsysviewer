@@ -327,7 +327,7 @@ def test_context_action_delete_measurement_executes_python_bridge():
             "picks_atom_indices": [[0], [1]],
         }
     )
-    view.layers["layer1"].set_tag("dist-1", skip_digestion=True)
+    view.layers["measurement1"].set_tag("dist-1", skip_digestion=True)
 
     view._handle_frontend_event(  # noqa: SLF001
         {
@@ -358,7 +358,7 @@ def test_context_action_hide_measurement_executes_python_bridge():
             "picks_atom_indices": [[0], [1]],
         }
     )
-    view.layers["layer1"].set_tag("dist-1", skip_digestion=True)
+    view.layers["measurement1"].set_tag("dist-1", skip_digestion=True)
 
     view._handle_frontend_event(  # noqa: SLF001
         {
@@ -391,6 +391,7 @@ def test_context_action_hide_measurement_executes_python_bridge():
             "endpoint_policy": "centroid",
             "endpoint_labels": endpoint_labels,
             "endpoint_atom_indices": [[0], [1]],
+            "value": None,
             "visible": False,
             "active": True,
         }
@@ -442,7 +443,7 @@ def test_full_reproducible_workflow_exports_region_selection_label_and_measureme
             "picks_atom_indices": [[group_1_atoms[0]], [group_2_atoms[0]]],
         }
     )
-    measurement = view.layers["layer1"]
+    measurement = view.layers["measurement1"]
     measurement.set_tag("picked-distance", skip_digestion=True)
 
     assert region.tag == "picked-region"
@@ -487,7 +488,7 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
             "picks_atom_indices": [[group_1_atoms[0]], [group_2_atoms[0]]],
         }
     )
-    view.layers["layer1"].set_tag("picked-distance", skip_digestion=True)
+    view.layers["measurement1"].set_tag("picked-distance", skip_digestion=True)
 
     view.remove(selection="group_index==0")
 
@@ -518,6 +519,7 @@ def test_full_reproducible_workflow_remaps_region_selection_label_and_measuremen
             "endpoint_policy": "centroid",
             "endpoint_labels": endpoint_labels,
             "endpoint_atom_indices": [[remapped_group_0_atoms[0]], [remapped_group_1_atoms[0]]],
+            "value": None,
             "visible": True,
             "active": True,
         }

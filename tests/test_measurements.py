@@ -16,10 +16,10 @@ def test_interactive_measurement_is_registered_automatically():
     assert view._measurement_history == [  # noqa: SLF001
         {
             "op": "add_distance_measurement",
-            "tag": "layer1",
+            "tag": "measurement1",
             "options": {
-                "tag": "layer1",
-                "layer_tag": "layer1",
+                "tag": "measurement1",
+                "layer_tag": "measurement1",
                 "picks_atom_indices": [[0], [1]],
                 "endpoint_kinds": ["atom", "atom"],
                 "endpoint_policy": "centroid",
@@ -28,7 +28,7 @@ def test_interactive_measurement_is_registered_automatically():
             },
         }
     ]
-    assert view.get_last_measurement_created_event()["tag"] == "layer1"
+    assert view.get_last_measurement_created_event()["tag"] == "measurement1"
 
 def test_measurements_info_and_records_report_persisted_measurements():
     view = MolSysView()
@@ -44,10 +44,10 @@ def test_measurements_info_and_records_report_persisted_measurements():
     assert view.measurements.records() == [  # noqa: SLF001
         {
             "op": "add_distance_measurement",
-            "tag": "layer1",
+            "tag": "measurement1",
             "options": {
-                "tag": "layer1",
-                "layer_tag": "layer1",
+                "tag": "measurement1",
+                "layer_tag": "measurement1",
                 "picks_atom_indices": [[0], [1]],
                 "endpoint_kinds": ["atom", "atom"],
                 "endpoint_policy": "centroid",
@@ -59,14 +59,15 @@ def test_measurements_info_and_records_report_persisted_measurements():
     assert view.measurements.info() == [
         {
             "kind": "distance",
-            "tag": "layer1",
-            "layer_tag": "layer1",
+            "tag": "measurement1",
+            "layer_tag": "measurement1",
             "n_picks": 2,
             "picks_atom_indices": [[0], [1]],
             "endpoint_kinds": ["atom", "atom"],
             "endpoint_policy": "centroid",
             "endpoint_labels": ["atom", "atom"],
             "endpoint_atom_indices": [[0], [1]],
+            "value": None,
             "visible": True,
             "active": True,
         }
@@ -86,14 +87,15 @@ def test_measurements_info_reports_centroid_endpoint_policy_for_multi_atom_picks
     assert view.measurements.info() == [
         {
             "kind": "distance",
-            "tag": "layer1",
-            "layer_tag": "layer1",
+            "tag": "measurement1",
+            "layer_tag": "measurement1",
             "n_picks": 2,
             "picks_atom_indices": [[0], [1, 2, 3]],
             "endpoint_kinds": ["atom", "centroid"],
             "endpoint_policy": "centroid",
             "endpoint_labels": ["atom", "centroid"],
             "endpoint_atom_indices": [[0], []],
+            "value": None,
             "visible": True,
             "active": True,
         }
@@ -143,3 +145,21 @@ def test_measurements_manager_can_move_measurement_between_layers():
     assert view.layers["geom"].measurements == {"dist_1": layer}
     assert view.measurements.info("dist_1")[0]["layer_tag"] == "geom"
     assert view.measurements.records()[0]["options"]["layer_tag"] == "geom"
+
+
+def test_add_distance_with_measurement_style_includes_style_in_message():
+    view = MolSysView()
+    view.measurements.add_distance([0], [1], tag="d1", measurement_style={"color": "#FF0000", "size_em": 1.5})
+    records = view.measurements.records()
+    assert len(records) == 1
+    options = records[0]["options"]
+    assert options.get("style") == {"color": "#FF0000", "size_em": 1.5}
+
+
+def test_add_distance_without_measurement_style_omits_style_from_message():
+    view = MolSysView()
+    view.measurements.add_distance([0], [1], tag="d2")
+    records = view.measurements.records()
+    assert len(records) == 1
+    options = records[0]["options"]
+    assert "style" not in options
