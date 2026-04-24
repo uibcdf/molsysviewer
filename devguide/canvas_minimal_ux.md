@@ -1391,6 +1391,27 @@ than guessed too early.
 - whether the popup should expose a reduced `Workbench` subset or the full
   panel set
 
+## Transition Strategy
+
+Both dimensions of the transition have been implemented (2026-04-21) as
+parallel modes that coexist with the current defaults:
+
+- `controls_mode="minimal"` — three-icon SVG cluster (panel, fullscreen, popup)
+  + `?` help button; scene-facing actions in empty-canvas context menu;
+  keyboard shortcuts `N` / `W` / `H`
+- `panel_mode_style="floating"` — `FloatingPanelShell`: centered overlay,
+  `~72% × 68%`, rounded card, backdrop-click-to-close, zero viewport shift
+
+The `"classic"` / `"drawer"` defaults are unchanged. The full coexistence plan,
+configuration seam, prerequisites before switching defaults, and the
+`0.16.x → 0.17.x` decision horizon are documented in:
+
+- `canvas_panel_transition.md`
+
+That document is intentionally temporary.
+This file remains the authoritative design target regardless of which mode is
+currently the default.
+
 ## Documentation Rule
 
 When this UX direction evolves, update this file by preserving three separate

@@ -208,3 +208,49 @@ def test_annotation_manager_set_group_index_is_deprecated_wrapper():
         view.annotations.set_group_index("notes", 1)
 
     assert view.annotations.info("notes")["atom_indices"] == expected_atom_indices
+
+
+def test_add_annotation_with_style_stores_style_in_message():
+    view = demo["dialanine"]
+    expected_atom_indices = list(view.select(selection="group_index==0"))
+
+    view.annotations.add_annotation(
+        text="Styled",
+        selection="group_index==0",
+        tag="styled",
+        label_style={"color": "#FF0000", "size_em": 1.5, "background": True, "background_opacity": 0.7},
+    )
+
+    record = view._annotation_history[0]  # noqa: SLF001
+    assert record["options"]["style"] == {
+        "color": "#FF0000",
+        "size_em": 1.5,
+        "background": True,
+        "background_opacity": 0.7,
+    }
+    assert record["options"]["atom_indices"] == expected_atom_indices
+
+
+def test_add_annotation_without_style_omits_style_from_message():
+    view = demo["dialanine"]
+
+    view.annotations.add_annotation(text="Plain", selection="group_index==0", tag="plain")
+
+    record = view._annotation_history[0]  # noqa: SLF001
+    assert "style" not in record["options"]
+
+
+def test_add_annotation_partial_style_only_includes_provided_keys():
+    view = demo["dialanine"]
+
+    view.annotations.add_annotation(
+        text="Half",
+        selection="group_index==0",
+        tag="half",
+        label_style={"color": "#00FF00"},
+    )
+
+    record = view._annotation_history[0]  # noqa: SLF001
+    assert record["options"]["style"] == {"color": "#00FF00"}
+    assert "size_em" not in record["options"]["style"]
+    assert "background" not in record["options"]["style"]

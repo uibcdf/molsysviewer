@@ -78,7 +78,7 @@ class PlayerManager:
 
     # ── Navigation ─────────────────────────────────────────────────────────
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def go_to_structure(self, index: int, skip_digestion: bool = False) -> None:
         """Jump to a specific frame index.
@@ -101,13 +101,13 @@ class PlayerManager:
                 skip_digestion=True,
             )
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def go_to_first(self, skip_digestion: bool = False) -> None:
         """Jump to the first structure (index 0)."""
         self.go_to_structure(0, skip_digestion=True)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def go_to_last(self, skip_digestion: bool = False) -> None:
         """Jump to the last structure."""
@@ -115,7 +115,7 @@ class PlayerManager:
         if n > 0:
             self.go_to_structure(n - 1, skip_digestion=True)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def step_forward(self, n: int = 1, skip_digestion: bool = False) -> None:
         """Advance *n* frames forward (wraps at the end)."""
@@ -125,7 +125,7 @@ class PlayerManager:
         new_index = (self.index + int(n)) % total
         self.go_to_structure(new_index, skip_digestion=True)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def step_backward(self, n: int = 1, skip_digestion: bool = False) -> None:
         """Move *n* frames backward (wraps at the beginning)."""
@@ -137,7 +137,7 @@ class PlayerManager:
 
     # ── Playback ───────────────────────────────────────────────────────────
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def play(
         self,
@@ -147,7 +147,7 @@ class PlayerManager:
         step_size: int | None = None,
         skip_digestion: bool = False,
     ) -> None:
-        """Start trajectory playback.
+        """Start playback through structures.
 
         Parameters default to the stored values (``navigation.fps``,
         ``navigation.mode``, etc.).  Passing a value here also updates the
@@ -156,13 +156,13 @@ class PlayerManager:
         Parameters
         ----------
         fps
-            Frames per second.
+            Structures per second.
         mode
             ``"loop"``, ``"once"``, or ``"ping-pong"``.
         direction
             ``"forward"`` or ``"backward"``.
         step_size
-            Number of frames to advance per tick.
+            Number of structures to advance per tick.
         """
         if fps is not None:
             self._fps = int(fps)
@@ -183,16 +183,16 @@ class PlayerManager:
         })
         self._is_playing = True
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def pause(self, skip_digestion: bool = False) -> None:
-        """Pause trajectory playback."""
+        """Pause playback."""
         self._view._send({"op": "set_trajectory_playback", "action": "stop"})  # noqa: SLF001
         self._is_playing = False
 
     # ── Setters ────────────────────────────────────────────────────────────
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def set_fps(self, fps: int, skip_digestion: bool = False) -> None:
         """Update the playback frame rate.
@@ -202,7 +202,7 @@ class PlayerManager:
         self._fps = int(fps)
         self._view._send({"op": "set_trajectory_playback", "fps": self._fps})  # noqa: SLF001
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def set_step_size(self, step_size: int, skip_digestion: bool = False) -> None:
         """Update the number of frames to advance per tick.
@@ -212,13 +212,13 @@ class PlayerManager:
         """
         self._step_size = int(step_size)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def set_mode(self, mode: str, skip_digestion: bool = False) -> None:
         """Set the playback mode (``"loop"``, ``"once"``, ``"ping-pong"``)."""
         self._mode = str(mode)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def set_direction(self, direction: str, skip_digestion: bool = False) -> None:
         """Set the playback direction (``"forward"`` or ``"backward"``)."""

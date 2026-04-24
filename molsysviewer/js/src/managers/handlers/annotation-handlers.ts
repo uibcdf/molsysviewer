@@ -5,8 +5,27 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
+import { Color } from "molstar/lib/mol-util/color";
 
-import { AddLabelMessage, UpdateLabelMessage } from "../../messages/viewer-messages";
+import { AddLabelMessage, LabelStyle, UpdateLabelMessage } from "../../messages/viewer-messages";
+
+function styleToVisualParams(style?: LabelStyle): Record<string, unknown> | undefined {
+    if (!style) return undefined;
+    const params: Record<string, unknown> = {};
+    if (style.color !== undefined) {
+        const hex = style.color.trim();
+        if (hex.startsWith("#") && (hex.length === 7 || hex.length === 4)) {
+            const full = hex.length === 4
+                ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`
+                : hex;
+            params.textColor = Color(parseInt(full.slice(1), 16));
+        }
+    }
+    if (style.size_em !== undefined) params.textSize = style.size_em;
+    if (style.background !== undefined) params.background = style.background;
+    if (style.background_opacity !== undefined) params.backgroundOpacity = style.background_opacity;
+    return Object.keys(params).length > 0 ? params : undefined;
+}
 
 export interface AnnotationCallbacks {
     getStructure: () => Structure | undefined;
@@ -17,7 +36,9 @@ export interface AnnotationCallbacks {
 export class AnnotationHandlers {
     private readonly labelRefs = new Set<StateObjectRef>();
     private readonly refsByTag = new Map<string, Set<StateObjectRef>>();
-    private readonly specsByTag = new Map<string, { text: string; atom_indices: number[]; tag: string }>();
+    private readonly specsByTag = new Map<string, { text: string; atom_indices: number[]; tag: string; layer_tag?: string; style?: LabelStyle }>();
+    /** Maps layer_tag → Set of annotation tags that belong to it. */
+    private readonly layerTagIndex = new Map<string, Set<string>>();
 
     constructor(
         private readonly plugin: PluginContext,
@@ -33,8 +54,15 @@ export class AnnotationHandlers {
             ? msg.options!.atom_indices!.map(i => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter(i => Number.isFinite(i))
             : [];
         const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+        const layer_tag = msg.options?.layer_tag;
+        const style = msg.options?.style;
         if (!text.trim() || atomIndices.length === 0) return;
-        this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag });
+        this.specsByTag.set(tag, { text: text.trim(), atom_indices: [...atomIndices], tag, layer_tag, style });
+        if (layer_tag && layer_tag !== tag) {
+            const group = this.layerTagIndex.get(layer_tag) ?? new Set<string>();
+            group.add(tag);
+            this.layerTagIndex.set(layer_tag, group);
+        }
 
         // Notify UI overlay (strips)
         this.callbacks.addLabelOverlay?.(msg);
@@ -42,10 +70,14 @@ export class AnnotationHandlers {
         const loci = this.buildLociFromAtomIndices(structure, atomIndices);
         if (!loci) return;
 
+        const styleParams = styleToVisualParams(style) ?? {};
+        // tooltip: tag enables Mol*'s pickability for this label repr
+        const mergedVisualParams = { ...styleParams, tooltip: tag } as any;
         const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
             selectionTags: [tag],
             reprTags: [tag],
             labelParams: { customText: text },
+            visualParams: mergedVisualParams,
         });
         if (!added) return;
 
@@ -68,6 +100,7 @@ export class AnnotationHandlers {
     async updateLabel(msg: UpdateLabelMessage) {
         const tag = msg.tag ?? msg.options?.tag ?? "annotation";
         await this.clearLabelByTag(tag);
+        const prevSpec = this.specsByTag.get(tag);
         await this.addLabel({
             op: "add_label",
             tag,
@@ -75,6 +108,7 @@ export class AnnotationHandlers {
                 text: msg.options?.text,
                 atom_indices: msg.options?.atom_indices,
                 tag,
+                style: msg.options?.style ?? prevSpec?.style,
             },
         });
     }
@@ -110,6 +144,12 @@ export class AnnotationHandlers {
     }
 
     async setVisibility(tag: string, visible: boolean) {
+        // If the tag matches a layer_tag group, delegate to each member annotation.
+        const layerGroup = this.layerTagIndex.get(tag);
+        if (layerGroup && layerGroup.size > 0) {
+            await Promise.all(Array.from(layerGroup).map(t => this.setVisibility(t, visible)));
+            return;
+        }
         if (!visible) {
             await this.clearLabelByTag(tag);
             return;
@@ -124,8 +164,19 @@ export class AnnotationHandlers {
                 text: spec.text,
                 atom_indices: [...spec.atom_indices],
                 tag,
+                layer_tag: spec.layer_tag,
+                style: spec.style,
             },
         });
+    }
+
+    hasTag(tag: string): boolean {
+        return this.specsByTag.has(tag);
+    }
+
+    getSpec(tag: string): { text: string; atom_indices: number[] } | undefined {
+        const spec = this.specsByTag.get(tag);
+        return spec ? { text: spec.text, atom_indices: spec.atom_indices } : undefined;
     }
 
     private buildLociFromAtomIndices(structure: Structure, atomIndices: number[]) {

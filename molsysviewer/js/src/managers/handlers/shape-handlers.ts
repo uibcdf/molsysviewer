@@ -27,6 +27,7 @@ import {
     AddAnisotropyEllipsoidsMessage,
     AddChannelTubeMessage,
     AddDisplacementVectorsMessage,
+    AddHbondsMessage,
     AddNetworkLinksMessage,
     AddPharmacophoreMessage,
     AddPocketBlobMessage,
@@ -38,18 +39,110 @@ import {
 
 type RegisterRefCallback = (ref: StateObjectRef, tag?: string) => void;
 
+export interface ShapeHandlersContext {
+    clearByTag: (tag: string) => Promise<void>;
+    subscribeToTrajectoryState?: (cb: (frame: number) => void) => () => void;
+}
+
+type TrajectoryShapeEntry = {
+    op: string;
+    baseOptions: Record<string, any>;
+    framesCoords: Array<any | null>;
+};
+
 export class ShapeHandlers {
-    constructor(private plugin: PluginContext, private registerRef: RegisterRefCallback) {}
+    private readonly trajectoryShapes = new Map<string, TrajectoryShapeEntry>();
+    private trajectoryUnsub?: () => void;
+    private currentFrame = 0;
+    private frameUpdateInProgress = false;
+
+    constructor(
+        private plugin: PluginContext,
+        private registerRef: RegisterRefCallback,
+        private context?: ShapeHandlersContext,
+    ) {}
+
+    private ensureTrajectorySubscription() {
+        if (this.trajectoryUnsub || !this.context?.subscribeToTrajectoryState) return;
+        this.trajectoryUnsub = this.context.subscribeToTrajectoryState((frame) => {
+            if (frame !== this.currentFrame) {
+                this.currentFrame = frame;
+                void this.applyFrame(frame);
+            }
+        });
+    }
+
+    private storeTrajectoryShape(tag: string, op: string, baseOptions: Record<string, any>, framesCoords: Array<any | null>) {
+        this.trajectoryShapes.set(tag, { op, baseOptions, framesCoords });
+        this.ensureTrajectorySubscription();
+    }
+
+    private async applyFrame(frame: number) {
+        if (this.frameUpdateInProgress) return;
+        this.frameUpdateInProgress = true;
+        try {
+            for (const [tag, entry] of this.trajectoryShapes) {
+                const fc = entry.framesCoords[frame] ?? null;
+                await this.context!.clearByTag(tag);
+                if (fc !== null) {
+                    await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc);
+                }
+            }
+        } finally {
+            this.frameUpdateInProgress = false;
+        }
+    }
+
+    private async renderTrajectoryFrame(tag: string, op: string, baseOptions: any, frameCoords: any) {
+        if (op === "add_sphere") {
+            const ref = await addTransparentSphereFromPython(this.plugin, {
+                center: frameCoords as [number, number, number],
+                radius: baseOptions.radius ?? 10,
+                color: baseOptions.color ?? 0x00ff00,
+                alpha: baseOptions.alpha ?? 0.4,
+            });
+            this.registerRef(ref, tag);
+        } else if (op === "add_triangle_faces") {
+            const ref = await addTriangleFacesFromPython(this.plugin, { ...baseOptions, vertices: frameCoords });
+            this.registerRef(ref, tag);
+        } else if (op === "add_channel_tube") {
+            const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: frameCoords });
+            this.registerRef(ref, tag);
+        } else if (op === "add_network_links") {
+            const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: frameCoords });
+            this.registerRef(ref as any, tag);
+        } else if (op === "add_hbonds") {
+            const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, mode: "atom-indices", atom_pairs: frameCoords });
+            this.registerRef(ref as any, tag);
+        }
+    }
 
     async addSphere(msg: AddSphereMessage) {
         const options = msg.options ?? {};
+        const tag = options.tag ?? msg.tag;
+        if (options.structures_coords) {
+            const baseOptions = { ...options };
+            delete (baseOptions as any).structures_coords;
+            this.storeTrajectoryShape(tag!, "add_sphere", baseOptions, options.structures_coords);
+            const fc = options.structures_coords[this.currentFrame] ?? null;
+            if (fc !== null) {
+                const ref = await addTransparentSphereFromPython(this.plugin, {
+                    center: fc as [number, number, number],
+                    radius: options.radius ?? 10,
+                    color: options.color ?? 0x00ff00,
+                    alpha: options.alpha ?? 0.4,
+                });
+                this.registerRef(ref, tag);
+            }
+            return;
+        }
         const ref = await addTransparentSphereFromPython(this.plugin, {
             center: options.center ?? [0, 0, 0],
             radius: options.radius ?? 10,
             color: options.color ?? 0x00ff00,
             alpha: options.alpha ?? 0.4,
         });
-        this.registerRef(ref, options.tag ?? msg.tag);
+        this.registerRef(ref, tag);
     }
 
     async addAlphaSphereSet(msg: AddAlphaSphereSetMessage) {
@@ -132,6 +225,22 @@ export class ShapeHandlers {
 
     async addChannelTube(msg: AddChannelTubeMessage) {
         const options = msg.options ?? {};
+        if (options.structures_coords) {
+            const tag = options.tag;
+            const baseOptions = { ...options };
+            delete (baseOptions as any).structures_coords;
+            this.storeTrajectoryShape(tag!, "add_channel_tube", baseOptions, options.structures_coords);
+            const fc = options.structures_coords[this.currentFrame] ?? null;
+            if (fc !== null) {
+                try {
+                    const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: fc });
+                    this.registerRef(ref, tag);
+                } catch (err) {
+                    console.error("[MolSysViewer] Error creando channel tube (trajectory frame)", err);
+                }
+            }
+            return;
+        }
         if (!options.centers || !options.radii || options.centers.length < 2 || options.radii.length < 2) {
             console.warn("[MolSysViewer] add_channel_tube requires at least two centers and radii");
             return;
@@ -174,11 +283,51 @@ export class ShapeHandlers {
 
     async addNetworkLinks(msg: AddNetworkLinksMessage) {
         const options = msg.options ?? {};
+        if (options.structures_coords) {
+            const tag = options.tag;
+            const baseOptions = { ...options };
+            delete (baseOptions as any).structures_coords;
+            this.storeTrajectoryShape(tag!, "add_network_links", baseOptions, options.structures_coords);
+            const fc = options.structures_coords[this.currentFrame] ?? null;
+            if (fc !== null) {
+                try {
+                    const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: fc });
+                    this.registerRef(ref as any, tag);
+                } catch (err) {
+                    console.error("[MolSysViewer] Error creando network links (trajectory frame)", err);
+                }
+            }
+            return;
+        }
         try {
             const ref = await addNetworkLinksFromPython(this.plugin, options);
             this.registerRef(ref as any, options.tag);
         } catch (err) {
             console.error("[MolSysViewer] Error creando network links", err);
+        }
+    }
+
+    async addHbonds(msg: AddHbondsMessage) {
+        const options = msg.options;
+        if (!options?.structures_atom_pairs?.length) {
+            console.warn("[MolSysViewer] add_hbonds: missing structures_atom_pairs");
+            return;
+        }
+        const tag = options.tag;
+        const { structures_atom_pairs, ...baseOptions } = options;
+        this.storeTrajectoryShape(tag!, "add_hbonds", baseOptions, structures_atom_pairs);
+        const fc = structures_atom_pairs[this.currentFrame] ?? null;
+        if (fc !== null && fc.length > 0) {
+            try {
+                const ref = await addNetworkLinksFromPython(this.plugin, {
+                    ...baseOptions,
+                    mode: "atom-indices",
+                    atom_pairs: fc,
+                });
+                this.registerRef(ref as any, tag);
+            } catch (err) {
+                console.error("[MolSysViewer] Error creando hbonds", err);
+            }
         }
     }
 
@@ -212,6 +361,22 @@ export class ShapeHandlers {
 
     async addTriangleFaces(msg: AddTriangleFacesMessage) {
         const options = msg.options ?? {};
+        if (options.structures_coords) {
+            const tag = options.tag;
+            const baseOptions = { ...options };
+            delete (baseOptions as any).structures_coords;
+            this.storeTrajectoryShape(tag!, "add_triangle_faces", baseOptions, options.structures_coords);
+            const fc = options.structures_coords[this.currentFrame] ?? null;
+            if (fc !== null) {
+                try {
+                    const ref = await addTriangleFacesFromPython(this.plugin, { ...baseOptions, vertices: fc });
+                    this.registerRef(ref, tag);
+                } catch (err) {
+                    console.error("[MolSysViewer] Error creando triangle faces (trajectory frame)", err);
+                }
+            }
+            return;
+        }
         if (!options.vertices && !options.atom_triplets && !options.atomTriplets) {
             console.warn("[MolSysViewer] add_triangle_faces without vertices or atom_triplets");
             return;

@@ -1,6 +1,6 @@
 # Development Roadmap (Status-Aligned)
 
-Last update: 2026-04-17
+Last update: 2026-04-20
 
 This roadmap is status-aligned with the current repository state.
 It is organized by execution priority and uses three labels:
@@ -362,7 +362,7 @@ should grow over time as additional project-level principles become clear.
 
 ### Next actions
 
-- Expand protocol-focused tests for non-trivial operations (`set_global_representation`, layer retag, clear/reset interactions).
+- ~~Expand protocol-focused tests for non-trivial operations (`set_global_representation`, layer retag, clear/reset interactions).~~ Done (2026-04-21): `tests/test_protocol_contracts.py` — 12 tests covering `reset_viewer`/`clear_all`, `clear_decorations`/`clear_scene`, annotation/measurement layer retag history rewrite, and `set_global_representation` replay after rebuild.
 - Keep support-library integration aligned with sibling-library contracts, especially around bootstrap, quantity handling, and public API digestion.
 - Keep contract changes additive unless versioned.
 
@@ -381,12 +381,12 @@ should grow over time as additional project-level principles become clear.
 
 - `In progress`
   - Behavioral stabilization and broader regression coverage for remap/replay scenarios.
-  - Rebuild regressions now exist for `remove()`, `append_structures()`, `add()`, `set()`, and a consecutive-operation chain, but broader cross-feature coverage is still partial.
+  - Rebuild regressions now exist for `remove()`, `append_structures()`, `add()`, `set()`, and a consecutive-operation chain, and combined visibility semantics.
 
 ### Next actions
 
-- Extend coverage from rebuild mechanics into combined visibility semantics and replay-sensitive export behavior.
-- Validate replay consistency across additional user-facing flows that are not purely live-edit operations.
+- ~~Extend coverage from rebuild mechanics into combined visibility semantics and replay-sensitive export behavior.~~ Done (2026-04-21): `tests/test_rebuild_visibility.py` — 5 tests for hidden-region stickiness after rebuild + global show, annotation layer-tag retag survival, selection index remapping, and style replay across two successive rebuilds.
+- Validate export message ordering (replay-safe after chain) — partially covered; popup live-sync remains only lightly exercised.
 
 ### Criteria
 
@@ -413,6 +413,12 @@ should grow over time as additional project-level principles become clear.
     `zoom_to_position` op.
   - `zoom_to_position` TS op + `SceneHandlers.zoomToPosition()`: generic camera
     focus via `plugin.managers.camera.focusSphere(Sphere3D)`.
+  - Structure-aware shapes: per-structure coordinate arrays and atom-index pairs:
+    - `add_sphere(structure_centers=...)`, `add_triangle_faces(structure_vertices=...)`,
+      `add_links(structure_coordinate_pairs=...)`, `add_channel_tube(structure_centers=...)`
+    - `add_hbonds(structures=[None, [[donor,acceptor],...], ...])` — topology-only; JS resolves coords from current structure
+    - JS rebuilds affected shapes on structure change via `onTrajectoryState` subscription in `ShapeHandlers`
+    - `None` in a structure slot hides the shape for that structure
 
 - `In progress`
   - Deep coverage of TS shape handler branches and error paths.
@@ -420,7 +426,7 @@ should grow over time as additional project-level principles become clear.
 
 ### Next actions
 
-- Extend JS tests beyond region-hide to shape routing and tag-index lifecycle.
+- ~~Extend JS tests beyond region-hide to shape routing and tag-index lifecycle.~~ Done (2026-04-21): `shape-handler.test.ts` expanded to 11 tests — `structures_coords` storage for all 5 trajectory-shape families, `addHbonds` warn path, frame subscription (`clearByTag` + render on change, null-frame skip, same-frame no-op), single-subscription guarantee, and `frameUpdateInProgress` concurrent guard.
 - Keep filling `argdigest` gaps in shape methods only where the public call surface is actually used or warning-prone.
 - Close docs gaps where implemented APIs are still documented as placeholders.
 
@@ -482,6 +488,35 @@ should grow over time as additional project-level principles become clear.
 - `region.hide()` must remain sticky across global show/hide cycles.
 - Whole/global operations must not accidentally mutate region-specific hidden state.
 
+## 5.5) Canvas Minimal UX and Panel Architecture
+
+### Status
+
+- `Done` (2026-04-21)
+  - Design target fully documented in `devguide/canvas_minimal_ux.md` ✓
+  - Workspace launcher/mosaic direction implemented and aligned with spec ✓
+  - Coexistence strategy documented in `devguide/canvas_panel_transition.md` ✓
+  - `controls_mode="minimal"` implemented: three SVG icon cluster (panel, fullscreen, popup) + `?` help button ✓
+    - `HelpOverlay` (two-column cheat-sheet Mouse | Keyboard), toggled by `H` key or button ✓
+    - `N`/`W` keyboard shortcuts toggle Navigate/Workbench panels ✓
+    - Scene actions (Reset View, Toggle Background, Toggle Spin, Toggle Swing) added to empty-canvas context menu ✓
+  - `panel_mode_style="floating"` implemented: `FloatingPanelShell` centered overlay ✓
+    - `~72% × 68%` of canvas, rounded card, translucent background, backdrop-click-to-close ✓
+    - Zero viewport shift (`panelContentWidth = 0`) ✓
+    - `GroupPanel` and `WorkbenchPanel` use `FloatingPanelShell` when `floating=true` ✓
+  - Both `"classic"` / `"drawer"` remain defaults; experimental modes activated via constructor argument ✓
+
+### Next actions
+
+- Validate `controls_mode="minimal"` and `panel_mode_style="floating"` through real scientific workflows
+- Close the transition decision at `0.16.x` → `0.17.x` boundary (see `canvas_panel_transition.md`)
+
+### Criteria
+
+- Do not switch defaults until scene-facing actions have alternative surfaces
+- Do not duplicate panel content logic — only the container/shell differs
+- The decision must be closed; indefinite coexistence is not acceptable
+
 ## 6) Canvas Interaction and Picking
 
 ### Status
@@ -523,9 +558,8 @@ should grow over time as additional project-level principles become clear.
 - Keep interactive measurement in Mol* first:
   - it already owns picked loci and measurement representations,
   - Python/MolSysMT can consume emitted results later without entering the immediate click loop.
-- Advance `GroupStrip` toward the `GroupPanel` evolution — the next step is a panel-mode
-  view, not further investment in the permanently visible lower band.
-- Plan explicit visual cues for `component` and `molecule` hierarchy levels within the strip.
+- `GroupPanel` with per-chain `GroupStrip` columns is now the live runtime. ✓
+- Molecule/component hierarchy visual cues, collapse/expand, and auto-scroll are implemented. ✓
 - Do not assume middle-click is available for the panel toggle; Mol* already uses the
   middle/wheel path for camera behavior.
 - Keep strip interactions converged with canvas interactions:
@@ -543,29 +577,33 @@ should grow over time as additional project-level principles become clear.
 
 ### Status
 
-- `In progress`
-  - `annotations` now exist as a real category instead of a pure design note.
-  - The first implemented slice is narrow:
-    - `view.annotations.add_label(text=..., group_index=..., tag=...)`
-    - group-anchored persistent labels
-    - layer-aware
-    - replay/rebuild/export-safe
-    - real frontend clearing through `clear_decorations(..., labels=True)`
+- `Done`
+  - `annotations` is a mature Python API surface:
+    - `add_annotation(text, selection=..., atom_indices=..., tag=..., layer_tag=...)` — primary entry point ✓
+    - `set_anchor(tag, selection=..., atom_indices=...)` — replay-safe reanchor ✓
+    - `set_text`, `set_tag`, `set_layer_tag`, `show`, `hide`, `delete`, `clear` ✓
+    - `records()` / `info()` dual inspection layers ✓
+    - `add_label(group_index=...)` and `set_group_index` kept as deprecated aliases ✓
+    - layer-aware, replay/rebuild/export-safe, atom-index remapping on `view.remove` ✓
+    - compact "L" badge overlays on `GroupStrip` ✓
+    - `annotation` as `context_target` from strip overlays ✓
+    - first narrow `annotation` slice in `active_selection` via strip ✓
+  - **Objective A** — label visual knobs ✓
+    - `add_annotation(..., label_style={"color": "#RRGGBB", "size_em": 1.5, "background": True, "background_opacity": 0.7})`
+    - `LabelStyle` type in `viewer-messages.ts`; `styleToVisualParams` in `annotation-handlers.ts`
+    - forwarded to Mol* `addLabel` as `visualParams`; stored in `specsByTag` so it survives hide/show cycles
+  - **Objective B** — layer-level visibility ✓
+    - fixed shared `layer_tag` case: `layerTagIndex` map in `AnnotationHandlers`; `setVisibility(layerTag, ...)` fans out to all member annotation tags
+  - **Objective C** — canvas label pickability ✓
+    - `tooltip: tag` passed in `visualParams` enables `pickable: true` in Mol*'s `StructureSelectionsLabel3D`
+    - hover/click events on labels detected via `ev.current.repr.props.tooltip` → emitted as `{ kind: "annotation", tag, text, atom_indices }`
+    - `registerInteractionObservers` uses optional `notifyHover`/`notifyClick` override callbacks
+    - `resolveTooltipPayload(kind, ev, annotations, measurements)` extracted as testable pure function; same mechanism covers measurements
+  - Atom labels, free-point labels, and shape-attached labels remain deferred.
 
 ### Next actions
 
-- Keep the first slice narrow and stable.
-- Broaden annotation interaction in controlled slices:
-  - first `annotation` as `context_target` through strip overlays,
-  - `annotation` now also has a first narrow `active_selection` slice through strip overlays,
-  - `annotation` context now also has a first real action through the menu: `Focus Target`,
-  - later hover/pick behavior,
-  - canvas annotation pickability only after that path is stable.
-- Grow the current strip overlay slice:
-  - compact label marks now exist on `GroupStrip`,
-  - strip label overlays can already seed annotation context,
-  - richer annotation overlay semantics still need design and tests.
-- Revisit atom labels, free-point labels, and shape-attached labels only after the first slice is solid.
+- Keep annotation API stable; defer new annotation families (callouts, badges, point labels) until a real downstream need appears.
 
 ## 6.6) Exploration to Reproducible Artifacts
 
@@ -573,43 +611,36 @@ should grow over time as additional project-level principles become clear.
 
 - `In progress`
 - `active_selection` has a solid Python bridge into reproducible state:
-  - `new_region_from_active_selection(...)`
+  - `new_region_from_active_selection(tag=...)`
   - `view.annotations.add_label_from_active_selection(...)`
   - `view.measurements.persist_last_measurement(...)`
   - `active_selection.save(tag=...)`
 - `view.selections` is the persistent named-selection surface; saved selections can be
   restored into `active_selection` via API.
-- Context menu exposes `Save Selection` and `Add Label from Selection`
-  (with inline composer), backed by the Python-side reproducible API.
+- Context menu: complete set of selection → reproducible-state bridges ✓
+  - `Save Selection` — inline composer with tag input
+  - `Create Region from Selection` — inline composer with optional tag; creates region via Python
+  - `Add Label from Selection` — inline composer with text input (single-group guard)
+  - Region rows: focus, toggle hide/show (eye icon), delete (trash icon)
+  - `toggle_region_visibility` / `delete_region` Python handlers wired
 - Persisted measurement ops are fully implemented and replay-safe:
   - `add_distance_measurement`, `add_angle_measurement`, `add_dihedral_measurement`
   - replayed through Mol* from stored `picks_atom_indices`
-- Next context-menu broadening should prioritize `regions`, then richer `annotations`,
-  and only later carefully-scoped `shapes` actions.
 
 ### Next actions
 
-- Add the next explicit bridge only after deciding its stable replay/rebuild/export contract:
-  - richer selection → annotation flows.
-- The inline composer for `Add Label from Selection` exists and executes; the next
-  improvement is refining it or replacing it with a better integrated text-entry UX
-  without weakening the reproducibility contract.
-- Keep hardening `annotations` as a Python API surface, not only as a UI flow:
-  - explicit query/inspection methods,
-  - explicit show/hide/delete/rename/text-edit/reanchor/clear methods by tag,
-  - stable records suitable for replay-oriented debugging,
-  - compact summaries that are more useful than raw records in notebook work.
+- Richer selection → annotation flows: multi-group label support, label style from
+  context menu (color, size), richer inline composer.
+- Consider region rename from context menu (inline tag edit after creation).
+- Shapes bridge is intentionally deferred: prioritize annotations/regions first; only
+  add shape context actions after deciding the replay/rebuild contract.
 
 ### Criteria
 
 - The bridge from interaction to persisted state must remain explicit and reproducible.
 - Do not hide scientifically meaningful state creation behind frontend-only transient behavior.
-
-### Criteria
-
 - Keep persistent labels separate from hover tooltips.
 - Keep annotation taxonomy separate from shape taxonomy.
-- Keep annotation/layer semantics explicit and stable.
 
 ## 7) Export, Embedding, and Popup
 
@@ -664,7 +695,8 @@ should grow over time as additional project-level principles become clear.
 ### Next actions
 
 - Extend JS unit coverage from handler guards into deeper success-path and replay/remap semantics.
-- Add at least one additional E2E path beyond region hide.
+- E2E paths now include: region-hide and annotations+measurements interaction (`test:e2e:annotations`). ✓
+- Add further E2E paths for structure-aware shapes and export flows.
 
 ### Criteria
 
@@ -679,10 +711,10 @@ To reach a successful **1.0 release**, these three pillars must be prioritized o
 - The value of MolSysViewer lies in how it feels to interact with it.
 - **Priority:** Implement more complex E2E tests simulating real scientific workflows (e.g., "identify a binding site, select it, label it, and measure distances").
 
-### 2. GroupStrip: The 1D Navigation Pivot
-- The 1D strip view (`GroupStrip`) is a primary differentiator. It's the key tool for navigating long proteins or complex systems where the 3D scene is cluttered.
-- **Current state:** Strip is live, synchronized with the 3D canvas via `active_selection`, and regression-tested. Annotation marks, hierarchy (chain/component/molecule), and context callbacks are all implemented.
-- **Priority:** Advance from the current strip toward the `GroupPanel` evolution — a panel-mode view that can replace the permanently visible lower band. Add explicit visual cues for `component` and `molecule` hierarchy levels.
+### 2. GroupStrip / GroupPanel: The 1D Navigation Pivot
+- The 1D strip view (`GroupStrip`) inside `GroupPanel` is a primary differentiator.
+- **Current state:** `GroupPanel` is live as a lateral sliding panel with one `GroupStrip` per chain. Molecule/component hierarchy with visual cues (color borders, chevrons, captions), collapse/expand, auto-scroll to selection, and annotation badge overlays are all implemented and regression-tested (76 JS unit tests green). ✓
+- **Priority:** This pillar is materially complete. Future growth: drag-range selection within strips, region overlays, richer annotation overlay semantics.
 
 ### 3. Documentation for the "Scientific Workbench"
 - The documentation must shift from API reference to case-study-driven tutorials.

@@ -175,6 +175,7 @@ class AnnotationsManager:
         tag: str | None = None,
         layer_tag: str | None = None,
         syntax: str = "MolSysMT",
+        label_style: dict[str, Any] | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
         """Add a persistent annotation anchored to a set of atoms.
@@ -197,6 +198,10 @@ class AnnotationsManager:
             Layer group for this annotation.
         syntax
             Selection syntax (default ``"MolSysMT"``).
+        label_style
+            Optional visual style dict with keys: ``color`` (CSS hex string),
+            ``size_em`` (float), ``background`` (bool),
+            ``background_opacity`` (float 0–1).
         """
         resolved_atom_indices = self._resolve_anchor_atom_indices(
             selection, atom_indices=atom_indices
@@ -206,18 +211,16 @@ class AnnotationsManager:
         resolved_layer_tag = layer_tag if layer_tag is not None else object_tag
         layer = self._ensure_layer(object_tag, layer_tag=resolved_layer_tag)
 
-        self._view._send(  # noqa: SLF001
-            {
-                "op": "add_label",
-                "tag": object_tag,
-                "options": {
-                    "text": text,
-                    "tag": object_tag,
-                    "layer_tag": resolved_layer_tag,
-                    "atom_indices": resolved_atom_indices,
-                },
-            }
-        )
+        options: dict[str, Any] = {
+            "text": text,
+            "tag": object_tag,
+            "layer_tag": resolved_layer_tag,
+            "atom_indices": resolved_atom_indices,
+        }
+        if label_style:
+            options["style"] = dict(label_style)
+
+        self._view._send({"op": "add_label", "tag": object_tag, "options": options})  # noqa: SLF001
         return layer
 
     @signal(tags=["annotation"])

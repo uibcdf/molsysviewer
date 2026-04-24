@@ -7,6 +7,7 @@ import {
     normalizeContextInteractionEvent,
     normalizeInteractionEvent,
     registerInteractionObservers,
+    resolveTooltipPayload,
     suppressCanvasContextMenu,
 } from "../../src/managers/viewer-controller";
 import { PluginBehaviors } from "molstar/lib/mol-plugin/behavior";
@@ -201,4 +202,157 @@ test("createMolSysViewerPluginSpec disables primary focus bindings", () => {
     );
 
     assert.strictEqual(focusBehaviors.length, 0);
+});
+
+test("registerInteractionObservers notifyHover overrides default hover notification", () => {
+    const defaultNotifications: any[] = [];
+    const customNotifications: any[] = [];
+    const subscriptions: Record<string, (ev: any) => void> = {};
+    const plugin: any = {
+        behaviors: {
+            interaction: {
+                hover: {
+                    subscribe(cb: (ev: any) => void) {
+                        subscriptions.hover = cb;
+                    },
+                },
+                click: {
+                    subscribe(cb: (ev: any) => void) {
+                        subscriptions.click = cb;
+                    },
+                },
+            },
+        },
+    };
+
+    registerInteractionObservers(
+        plugin,
+        (msg: any) => defaultNotifications.push(msg),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        (ev: any) => {
+            // custom notifyHover: emit annotation kind when tooltip is set
+            const tag = ev?.current?.repr?.props?.tooltip;
+            if (tag) {
+                customNotifications.push({ event: "interaction_hover", kind: "annotation", tag });
+            } else {
+                customNotifications.push({ event: "interaction_hover", kind: "fallback" });
+            }
+        },
+    );
+
+    // Hover over annotation repr (tooltip set)
+    subscriptions.hover({ current: { repr: { props: { tooltip: "ann-1" } }, loci: null } });
+    // Hover over non-annotation
+    subscriptions.hover({ current: { repr: null, loci: null } });
+
+    // Default notify should NOT have been called (notifyHover overrides it)
+    assert.strictEqual(defaultNotifications.length, 0);
+    assert.deepStrictEqual(customNotifications, [
+        { event: "interaction_hover", kind: "annotation", tag: "ann-1" },
+        { event: "interaction_hover", kind: "fallback" },
+    ]);
+});
+
+test("registerInteractionObservers notifyClick overrides default primary click notification", () => {
+    const defaultNotifications: any[] = [];
+    const customNotifications: any[] = [];
+    const subscriptions: Record<string, (ev: any) => void> = {};
+    const plugin: any = {
+        behaviors: {
+            interaction: {
+                hover: {
+                    subscribe(cb: (ev: any) => void) {
+                        subscriptions.hover = cb;
+                    },
+                },
+                click: {
+                    subscribe(cb: (ev: any) => void) {
+                        subscriptions.click = cb;
+                    },
+                },
+            },
+        },
+    };
+
+    registerInteractionObservers(
+        plugin,
+        (msg: any) => defaultNotifications.push(msg),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        (ev: any) => {
+            // custom notifyClick: emit annotation kind when tooltip is set
+            const tag = ev?.current?.repr?.props?.tooltip;
+            if (tag) {
+                customNotifications.push({ event: "interaction_click", kind: "annotation", tag });
+            } else {
+                customNotifications.push({ event: "interaction_click", kind: "fallback" });
+            }
+        },
+    );
+
+    // Primary click on annotation repr
+    subscriptions.click({ current: { repr: { props: { tooltip: "ann-2" } }, loci: null } });
+    // Primary click on non-annotation
+    subscriptions.click({ current: { repr: null, loci: null } });
+
+    // Default notify should NOT have been called for primary clicks (notifyClick overrides it)
+    // But secondary-click notifications still go through default notify — no secondary clicks here
+    assert.strictEqual(defaultNotifications.length, 0);
+    assert.deepStrictEqual(customNotifications, [
+        { event: "interaction_click", kind: "annotation", tag: "ann-2" },
+        { event: "interaction_click", kind: "fallback" },
+    ]);
+});
+
+// ── resolveTooltipPayload ─────────────────────────────────────────────────────
+
+const mockAnnotations = {
+    hasTag: (t: string) => t === "ann-label",
+    getSpec: (t: string) => t === "ann-label" ? { text: "Catalytic Asp", atom_indices: [3, 7] } : undefined,
+};
+const mockMeasurements = {
+    hasTag: (t: string) => t === "dist-1",
+    getSpec: (t: string) => t === "dist-1" ? { kind: "distance", atom_indices: [0, 5] } : undefined,
+};
+
+test("resolveTooltipPayload returns annotation payload when tooltip matches annotation tag", () => {
+    const ev = { current: { repr: { props: { tooltip: "ann-label" } } } };
+    assert.deepStrictEqual(resolveTooltipPayload("hover", ev, mockAnnotations, mockMeasurements), {
+        event: "interaction_hover",
+        kind: "annotation",
+        tag: "ann-label",
+        text: "Catalytic Asp",
+        atom_indices: [3, 7],
+    });
+});
+
+test("resolveTooltipPayload returns measurement payload when tooltip matches measurement tag", () => {
+    const ev = { current: { repr: { props: { tooltip: "dist-1" } } } };
+    assert.deepStrictEqual(resolveTooltipPayload("click", ev, mockAnnotations, mockMeasurements), {
+        event: "interaction_click",
+        kind: "measurement",
+        tag: "dist-1",
+        measurement_name: "distance",
+        atom_indices: [0, 5],
+    });
+});
+
+test("resolveTooltipPayload returns null when tooltip is absent", () => {
+    const ev = { current: { repr: { props: {} } } };
+    assert.strictEqual(resolveTooltipPayload("hover", ev, mockAnnotations, mockMeasurements), null);
+});
+
+test("resolveTooltipPayload returns null when tooltip tag matches nothing", () => {
+    const ev = { current: { repr: { props: { tooltip: "unknown-tag" } } } };
+    assert.strictEqual(resolveTooltipPayload("hover", ev, mockAnnotations, mockMeasurements), null);
+});
+
+test("resolveTooltipPayload returns null when ev is null", () => {
+    assert.strictEqual(resolveTooltipPayload("click", null, mockAnnotations, mockMeasurements), null);
 });

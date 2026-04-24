@@ -125,10 +125,11 @@ Current scope clarification for `Style`:
   - current canvas context-menu slice also supports destructive
     `Remove Selected Atoms`, bridged through `view.remove(...)`
 - `view.selections`
-  - `add(...)`
-  - `add_from_active_selection(...)`
-  - `activate(...)`
-  - `tags()`
+  - `add(tag, *, atom_indices, items=None)` — direct-index shortcut, no MolSysMT lookup
+  - `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection
+  - `add_from_active_selection(tag)`
+  - `activate(tag)`
+  - `tags` (property)
   - `count()`
   - `contains(tag)`
   - `get(tag)`
@@ -149,6 +150,17 @@ Current scope clarification for `Style`:
     - `endpoint_policy`
     - `endpoint_labels`
 
+Shape methods that accept per-structure arrays are also public:
+
+- `view.shapes.add_sphere(..., structure_centers=[array_per_structure, ...])`
+- `view.shapes.add_triangle_faces(..., structure_vertices=[array_per_structure, ...])`
+- `view.shapes.add_links(..., structure_coordinate_pairs=[array_per_structure, ...])`
+- `view.shapes.add_channel_tube(..., structure_centers=[array_per_structure, ...])`
+- `view.shapes.add_hbonds(structures=[None | [[donor, acceptor], ...], ...])`
+  - per-structure atom-index pairs; JS resolves coordinates from the current loaded structure
+  - `None` in a slot hides the shape for that structure
+  - arrays are in Angstroms (raw); `add_hbonds` uses atom indices (topology-only)
+
 Related object wrappers are also part of the intended public surface:
 
 - `view.whole.focus(...)`
@@ -161,9 +173,19 @@ Related object wrappers are also part of the intended public surface:
 - `view.selections[tag].add_label(...)`
 - `view.selections[tag].set_tag(...)`
 - `view.selections[tag].delete()`
-- `view.annotations.add_label(...)`
-  - current first slice: persistent label on exactly one `group`
-- `view.annotations.tags()`
+- `view.annotations.add_annotation(text, selection=..., atom_indices=..., tag=..., layer_tag=..., label_style=...)`
+  - primary entry point for persistent labels anchored to atom selections
+  - anchor resolves via MolSysMT selection string or explicit `atom_indices`
+  - `label_style` accepts a dict with optional keys: `color` (CSS hex string), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
+  - `add_label(group_index=...)` is a deprecated alias; use `add_annotation` instead
+- `view.annotations.add_label_from_active_selection(text, tag=...)`
+- `view.annotations.set_anchor(tag, selection=..., atom_indices=...)`
+  - reanchor an existing label to a different atom set
+  - `set_group_index(tag, group_index)` is a deprecated alias; use `set_anchor` instead
+- `view.annotations.set_text(tag, text)`
+- `view.annotations.set_tag(tag, new_tag)`
+- `view.annotations.set_layer_tag(tag, new_layer_tag)`
+- `view.annotations.tags`
 - `view.annotations.count()`
 - `view.annotations.contains(tag)`
 - `view.annotations.get(tag)`
@@ -172,14 +194,38 @@ Related object wrappers are also part of the intended public surface:
 - `view.annotations.show(tag)`
 - `view.annotations.hide(tag)`
 - `view.annotations.delete(tag)`
-- `view.annotations.set_tag(tag, new_tag)`
-- `view.annotations.set_text(tag, text)`
-- `view.annotations.set_group_index(tag, group_index)`
 - `view.annotations.clear(tag=None)`
-- `view.measurements.add_distance(...)`
-- `view.measurements.add_angle(...)`
-- `view.measurements.add_dihedral(...)`
+- `view.measurements.add_distance(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
+- `view.measurements.add_angle(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
+- `view.measurements.add_dihedral(atom_indices, tag=..., layer_tag=..., measurement_style=...)`
+  - `measurement_style` accepts a dict with optional keys: `color` (CSS hex), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
+- `view.measurements.tags` (property)
+- `view.measurements.contains(tag)`
+- `view.measurements.get(tag)`
+- `view.measurements.show(tag)`
+- `view.measurements.hide(tag)`
+- `view.measurements.delete(tag)`
+- `view.measurements.clear(tag=None)`
+- `view.measurements.set_tag(tag, new_tag)`
+- `view.measurements.set_layer_tag(tag, new_layer_tag)`
 - `view.selections.add_from_active_selection(...)`
+- `view.on_hover(callback)` / `view.off_hover(callback)`
+- `view.on_click(callback)` / `view.off_click(callback)`
+- `view.on_context(callback)` / `view.off_context(callback)`
+  - reactive (non-polling) Python callbacks for interaction events
+  - callbacks receive the same payload dict as `get_last_hover_event()` etc.
+  - multiple callbacks per event type are supported; `off_*` removes a specific one
+- `view.export_state()` → JSON-serializable dict
+  - captures current annotations, measurements, selections, and regions (with atom_indices)
+- `view.import_state(state, *, clear_first=True)`
+  - replays a state dict onto a viewer with compatible structure
+  - `clear_first=True` wipes existing annotations/measurements/selections/regions before replay
+- `view.set_structure(index)`
+- `view.play(fps=..., step=...)`
+- `view.pause()`
+- `view.set_play_speed(fps)`
+- `view.current_structure_id` (property)
+  - structure/trajectory navigation controls; `@signal(tags=["structures"])`
 - `add(...)`
   - lower-level structural merge into `_molsys`
   - updates additive-load block bookkeeping

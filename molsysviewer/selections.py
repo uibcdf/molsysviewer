@@ -381,6 +381,32 @@ class SelectionsManager:
 
     @signal(tags=["selection"])
     @digest()
+    def add(
+        self,
+        tag: str,
+        *,
+        atom_indices: list[int],
+        items: list[dict[str, Any]] | None = None,
+        skip_digestion: bool = False,
+    ) -> "Selection":
+        """Store a persistent selection directly from explicit atom indices.
+
+        Parameters
+        ----------
+        tag
+            Unique identifier for this persistent selection.
+        atom_indices
+            Explicit list of atom indices (integers).
+        items
+            Optional list of item descriptors stored alongside the selection.
+        """
+        resolved = [int(i) for i in atom_indices]
+        if len(resolved) == 0:
+            raise ValueError("Persistent selections require non-empty atom indices.")
+        return self._store_selection_record(tag, resolved, items=items)
+
+    @signal(tags=["selection"])
+    @digest()
     def add_selection(
         self,
         tag: str,

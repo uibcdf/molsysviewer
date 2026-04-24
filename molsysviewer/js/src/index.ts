@@ -109,7 +109,8 @@ export async function bootDocsView(opts: {
     hostEl.appendChild(target);
 
     // Initialize Controller (no-op notify)
-    const controllerPromise = MolSysViewerController.create(target, () => {});
+    const panelModeStyle = (ui.panel_mode_style as string) || "drawer";
+    const controllerPromise = MolSysViewerController.create(target, () => {}, undefined, { panelModeStyle });
 
     // Popup manager: prefer runtime URL (docs-light), otherwise disable popout.
     const popupMgr = new PopupHostManager({
@@ -273,6 +274,7 @@ export default {
         el.appendChild(target);
 
         // 2. Initialize Controller
+        const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
         const controllerPromise = MolSysViewerController.create(target, msg => {
             model.send(msg);
             // Sync interactive measurements to popup: the host already has them (created in-place),
@@ -290,7 +292,7 @@ export default {
                 const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
                 popupMgr.send("molsysviewer-sync-op", syncOp);
             }
-        });
+        }, undefined, { panelModeStyle });
 
         // 3. Initialize Popup Manager with Payload
         // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.

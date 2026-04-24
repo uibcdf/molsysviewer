@@ -5,6 +5,7 @@ import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 import { GroupStrip } from "./group-strip";
 import { PanelShell } from "./panel-shell";
+import { FloatingPanelShell } from "./floating-panel-shell";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
 type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
@@ -29,7 +30,7 @@ export class GroupPanel {
     private readonly toggleButton: HTMLButtonElement;
     private readonly body: HTMLDivElement;
     private readonly structureSection: HTMLDivElement;
-    private readonly shell: PanelShell;
+    private readonly shell: PanelShell | FloatingPanelShell;
     private readonly strips = new Map<string, GroupStrip>();
     private readonly summarySections: Record<SummarySectionKey, SummarySectionView>;
     private structure?: Structure;
@@ -70,8 +71,11 @@ export class GroupPanel {
         private readonly onAnnotationContext: OnAnnotationContext,
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
+        options?: { floating?: boolean },
     ) {
-        this.shell = new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
+        this.shell = options?.floating
+            ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" })
+            : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
         this.body = this.shell.content;

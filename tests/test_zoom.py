@@ -8,7 +8,7 @@ def test_zoom_sends_message(monkeypatch):
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
     view._molsys = object()
 
-    monkeypatch.setattr("molsysviewer.viewer.msm.select", lambda *_args, **_kwargs: [2, 3, 4])
+    monkeypatch.setattr("molsysviewer.viewer.camera.msm.select", lambda *_args, **_kwargs: [2, 3, 4])
 
     view.zoom(selection=[2, 3, 4], duration_ms=100, extra_radius=2.5, min_radius=0.5)
 

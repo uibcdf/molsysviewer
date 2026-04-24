@@ -86,7 +86,8 @@ type InteractionPayload =
         entity_name?: string;
     }
     | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
-    | { event: "interaction_hover" | "interaction_click"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string };
+    | { event: "interaction_hover" | "interaction_click"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
+    | { event: "interaction_hover" | "interaction_click"; kind: "annotation"; atom_indices: number[]; tag: string; text?: string };
 
 type ContextInteractionPayload =
     | { event: "interaction_context_menu"; kind: "empty"; page_x?: number; page_y?: number }
@@ -284,6 +285,28 @@ export function suppressCanvasContextMenu(host: ContextMenuHost, ...targets: Con
     };
 }
 
+/** Extracts annotation or measurement payload from a Mol* interaction event carrying a tooltip tag.
+ *  Returns null when the event has no tooltip or the tag is unknown to both registries. */
+export function resolveTooltipPayload(
+    interactionKind: "hover" | "click",
+    ev: any,
+    annotations: { hasTag: (t: string) => boolean; getSpec: (t: string) => { text: string; atom_indices: number[] } | undefined },
+    measurements: { hasTag: (t: string) => boolean; getSpec: (t: string) => { kind: string; atom_indices: number[] } | undefined },
+): InteractionPayload | null {
+    const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
+    if (!tooltipTag) return null;
+    const event = interactionKind === "hover" ? "interaction_hover" : "interaction_click";
+    if (annotations.hasTag(tooltipTag)) {
+        const spec = annotations.getSpec(tooltipTag);
+        return { event, kind: "annotation", tag: tooltipTag, text: spec?.text, atom_indices: spec?.atom_indices ?? [] };
+    }
+    if (measurements.hasTag(tooltipTag)) {
+        const spec = measurements.getSpec(tooltipTag);
+        return { event, kind: "measurement", tag: tooltipTag, measurement_name: spec?.kind, atom_indices: spec?.atom_indices ?? [] };
+    }
+    return null;
+}
+
 export function registerInteractionObservers(
     plugin: any,
     notify?: (msg: any) => void,
@@ -291,13 +314,19 @@ export function registerInteractionObservers(
     onPrimaryClick?: (ev: any) => void,
     onSecondaryClick?: (ev: any) => void,
     onHover?: (ev: any) => void,
+    notifyHover?: (ev: any) => void,
+    notifyClick?: (ev: any) => void,
 ): void {
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
     if (typeof hover?.subscribe === "function") {
         hover.subscribe((ev: any) => {
             onHover?.(ev);
-            notify?.(normalizeInteractionEvent("hover", ev));
+            if (notifyHover) {
+                notifyHover(ev);
+            } else {
+                notify?.(normalizeInteractionEvent("hover", ev));
+            }
         });
     }
     if (typeof click?.subscribe === "function") {
@@ -310,7 +339,11 @@ export function registerInteractionObservers(
                 return;
             }
             onPrimaryClick?.(ev);
-            notify?.(normalizeInteractionEvent("click", ev));
+            if (notifyClick) {
+                notifyClick(ev);
+            } else {
+                notify?.(normalizeInteractionEvent("click", ev));
+            }
         });
     }
 }
@@ -395,7 +428,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -441,7 +474,7 @@ export class MolSysViewerController {
             notify?.({ event: "viewer_init_failed", reason: "webgl", message });
         }
 
-        return new MolSysViewerController(plugin, target, notify, canvasHost);
+        return new MolSysViewerController(plugin, target, notify, canvasHost, options);
     }
 
     public readonly loader: LoaderHandlers;
@@ -468,7 +501,7 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string }) {
         this.canvasHost = canvasHost ?? (() => { const d = document.createElement("div"); host.appendChild(d); return d; })();
         const emitInteractionEvent = (msg: any) => {
             if (msg?.event === "interaction_tool_state") {
@@ -537,6 +570,7 @@ export class MolSysViewerController {
                 value,
             };
         });
+        const floatingPanels = initOptions?.panelModeStyle === "floating";
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
         this.groupPanel = new GroupPanel(host, (items, additive) => {
             this.activeSelection.setItems(items, additive);
@@ -571,8 +605,8 @@ export class MolSysViewerController {
             const region = this.state.getRegionSummaries().find((item) => item.tag === tag);
             if (!region) return;
             this.focusTarget({ atom_indices: region.atom_indices });
-        });
-        this.workbenchPanel = new WorkbenchPanel(host);
+        }, floatingPanels ? { floating: true } : undefined);
+        this.workbenchPanel = new WorkbenchPanel(host, floatingPanels ? { floating: true } : undefined);
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
@@ -625,6 +659,34 @@ export class MolSysViewerController {
                 this.activeSelection.clear();
                 return;
             }
+            if (action === "reset_view") {
+                void this.resetView();
+                return;
+            }
+            if (action === "toggle_background") {
+                void this.toggleBackground();
+                return;
+            }
+            if (action === "toggle_spin") {
+                void this.toggleSpin();
+                return;
+            }
+            if (action === "toggle_swing") {
+                void this.toggleSwing();
+                return;
+            }
+            if (action === "toggle_region_visibility") {
+                const tag = typeof details?.tag === "string" ? details.tag : null;
+                if (!tag) return;
+                this.notify?.({ event: "interaction_context_action", action, tag });
+                return;
+            }
+            if (action === "delete_region") {
+                const tag = typeof details?.tag === "string" ? details.tag : null;
+                if (!tag) return;
+                this.notify?.({ event: "interaction_context_action", action, tag });
+                return;
+            }
             if (
                 action === "delete_annotation"
                 || action === "delete_shape"
@@ -657,6 +719,44 @@ export class MolSysViewerController {
             const page = ev?.page;
             const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
             const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
+            // Detect annotation/measurement context: repr embeds its tag in props.tooltip
+            const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
+            if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
+                const spec = this.annotations.getSpec(tooltipTag);
+                const annPayload: ContextInteractionPayload = {
+                    event: "interaction_context_menu",
+                    kind: "annotation",
+                    atom_indices: spec?.atom_indices ?? [],
+                    tag: tooltipTag,
+                    text: spec?.text,
+                    page_x,
+                    page_y,
+                };
+                this.lastContextPayload = annPayload;
+                this.groupPanel.updateContextTarget(annPayload);
+                this.syncWorkbenchContextFromPayload(annPayload);
+                emitInteractionEvent(annPayload);
+                this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions);
+                return;
+            }
+            if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
+                const spec = this.measurements.getSpec(tooltipTag);
+                const measPayload: ContextInteractionPayload = {
+                    event: "interaction_context_menu",
+                    kind: "measurement",
+                    atom_indices: spec?.atom_indices ?? [],
+                    tag: tooltipTag,
+                    measurement_name: spec?.kind,
+                    page_x,
+                    page_y,
+                };
+                this.lastContextPayload = measPayload;
+                this.groupPanel.updateContextTarget(measPayload);
+                this.syncWorkbenchContextFromPayload(measPayload);
+                emitInteractionEvent(measPayload);
+                this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions);
+                return;
+            }
             let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
             payload = this.normalizeManagedContextPayload(payload);
             if (typeof page_x === "number" && typeof page_y === "number") {
@@ -702,6 +802,16 @@ export class MolSysViewerController {
                         page_x: payload.page_x,
                         page_y: payload.page_y,
                     };
+                } else if (this.lastHoverPayload.kind === "annotation") {
+                    payload = {
+                        event: "interaction_context_menu",
+                        kind: "annotation",
+                        atom_indices: this.lastHoverPayload.atom_indices,
+                        tag: this.lastHoverPayload.tag,
+                        text: this.lastHoverPayload.text,
+                        page_x: payload.page_x,
+                        page_y: payload.page_y,
+                    };
                 }
             }
             const pageX = payload.page_x ?? 0;
@@ -722,7 +832,42 @@ export class MolSysViewerController {
             );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
-            this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+            const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
+            if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
+                const spec = this.annotations.getSpec(tooltipTag);
+                this.lastHoverPayload = {
+                    event: "interaction_hover",
+                    kind: "annotation",
+                    atom_indices: spec?.atom_indices ?? [],
+                    tag: tooltipTag,
+                    text: spec?.text,
+                };
+            } else if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
+                const spec = this.measurements.getSpec(tooltipTag);
+                this.lastHoverPayload = {
+                    event: "interaction_hover",
+                    kind: "measurement",
+                    atom_indices: spec?.atom_indices ?? [],
+                    tag: tooltipTag,
+                    measurement_name: spec?.kind,
+                };
+            } else {
+                this.lastHoverPayload = this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+            }
+        }, (ev) => {
+            const resolved = resolveTooltipPayload("hover", ev, this.annotations, this.measurements);
+            if (resolved) {
+                emitInteractionEvent(resolved);
+            } else {
+                emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev)));
+            }
+        }, (ev) => {
+            const resolved = resolveTooltipPayload("click", ev, this.annotations, this.measurements);
+            if (resolved) {
+                emitInteractionEvent(resolved);
+            } else {
+                emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("click", ev)));
+            }
         });
 
         // Initialize handlers with necessary context callbacks
@@ -746,7 +891,18 @@ export class MolSysViewerController {
             }
         });
 
-        this.shapes = new ShapeHandlers(plugin, (ref, tag) => this.state.registerShapeRef(ref, tag));
+        this.shapes = new ShapeHandlers(
+            plugin,
+            (ref, tag) => this.state.registerShapeRef(ref, tag),
+            {
+                clearByTag: (tag) => this.state.clearShapesByTag(tag),
+                subscribeToTrajectoryState: (cb) =>
+                    this.trajectory.onTrajectoryState(
+                        (state) => cb(state.currentFrame),
+                        { immediate: false },
+                    ),
+            },
+        );
         this.annotations = new AnnotationHandlers(plugin, {
             getStructure: () => this.getStructureData(),
             registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
@@ -809,24 +965,59 @@ export class MolSysViewerController {
 
     private installGlobalEscapeHandler(): () => void {
         const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key !== "Escape") return;
-            if (this.measurementTools.isActive()) return;
-            if (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded()) {
-                event.preventDefault();
-                event.stopPropagation();
-                this.collapsePanels();
-                this.contextMenu.close();
+            if ((event.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
+
+            if (event.key === "Escape") {
+                if (this.measurementTools.isActive()) return;
+                if (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.collapsePanels();
+                    this.contextMenu.close();
+                    return;
+                }
+                if (this.currentActiveSelection?.source_kind !== "empty") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.activeSelection.clear();
+                    this.contextMenu.close();
+                }
                 return;
             }
-            if (this.currentActiveSelection?.source_kind !== "empty") {
+
+            if (event.key === "n" || event.key === "N") {
                 event.preventDefault();
                 event.stopPropagation();
-                this.activeSelection.clear();
-                this.contextMenu.close();
+                if (this.groupPanel.isVisible()) {
+                    const open = this.groupPanel.isExpanded();
+                    this.collapsePanels();
+                    if (!open) this.setPanelMode("navigate", true);
+                }
+                return;
+            }
+
+            if (event.key === "w" || event.key === "W") {
+                event.preventDefault();
+                event.stopPropagation();
+                if (this.workbenchPanel.isVisible()) {
+                    const open = this.workbenchPanel.isExpanded();
+                    this.collapsePanels();
+                    if (!open) this.setPanelMode("workbench", true);
+                }
+                return;
             }
         };
         window.addEventListener("keydown", onKeyDown, true);
         return () => window.removeEventListener("keydown", onKeyDown, true);
+    }
+
+    public togglePanelMode(): void {
+        const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
+        if (anyExpanded) {
+            this.collapsePanels();
+        } else {
+            this.setPanelMode(undefined, true);
+        }
     }
 
     private collapsePanels(): void {
@@ -1277,6 +1468,7 @@ export class MolSysViewerController {
                 case "add_anisotropy_ellipsoids": await this.shapes.addAnisotropyEllipsoids(msg); break;
                 case "add_pharmacophore_features": await this.shapes.addPharmacophore(msg); break;
                 case "add_network_links": await this.shapes.addNetworkLinks(msg); break;
+                case "add_hbonds": await this.shapes.addHbonds(msg); break;
                 case "add_displacement_vectors": await this.shapes.addDisplacementVectors(msg); break;
                 case "add_tetrahedra": await this.shapes.addTetrahedra(msg); break;
                 case "add_triangle_faces": await this.shapes.addTriangleFaces(msg); break;
@@ -1514,7 +1706,7 @@ export class MolSysViewerController {
             this.currentStructure = last.cell.transform.ref as any;
             this.groupPanel.setStructure(structure);
             this.refreshNavigatePanel();
-            this.workbenchPanel.setVisible(Boolean(structure));
+            this.workbenchPanel.setVisible(true);
             if (structure) {
                 this.activeSelection.setAllAvailableItems(buildGroupItemsFromStructure(structure));
             }
@@ -1525,7 +1717,6 @@ export class MolSysViewerController {
             this.currentStructure = undefined;
             this.groupPanel.setStructure(undefined);
             this.refreshNavigatePanel();
-            this.workbenchPanel.setVisible(false);
             this.activeSelection.setAllAvailableItems([]);
         }
     }

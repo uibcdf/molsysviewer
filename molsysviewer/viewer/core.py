@@ -179,6 +179,9 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         self._last_click_event: dict | None = None
         self._last_context_event: dict | None = None
         self._last_context_action_event: dict | None = None
+        self._hover_callbacks: list = []
+        self._click_callbacks: list = []
+        self._context_callbacks: list = []
         self._last_active_selection_event: dict | None = None
         self._last_tool_state_event: dict | None = None
         self._last_measurement_created_event: dict | None = None
@@ -264,6 +267,18 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         except Exception:
             self.widget.controls_position_fullscreen = ["bottom", "right"]
 
+        try:
+            mode = str(config.controls_mode)
+            self.widget.controls_mode = mode if mode in ("classic", "minimal") else "classic"
+        except Exception:
+            self.widget.controls_mode = "classic"
+
+        try:
+            style = str(config.panel_mode_style)
+            self.widget.panel_mode_style = style if style in ("drawer", "floating") else "drawer"
+        except Exception:
+            self.widget.panel_mode_style = "drawer"
+
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
         if event == "ready":
@@ -317,10 +332,16 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
             self._last_image_export_event = dict(content)
         elif event == "interaction_hover":
             self._last_hover_event = dict(content)
+            for cb in list(self._hover_callbacks):
+                cb(self._last_hover_event)
         elif event == "interaction_click":
             self._last_click_event = dict(content)
+            for cb in list(self._click_callbacks):
+                cb(self._last_click_event)
         elif event == "interaction_context_menu":
             self._last_context_event = dict(content)
+            for cb in list(self._context_callbacks):
+                cb(self._last_context_event)
         elif event == "interaction_context_action":
             self._last_context_action_event = dict(content)
             action = content.get("action")
@@ -340,7 +361,28 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
                 self._sync_addons_runtime()
                 return
             if action == "create_region_from_selection":
-                self.new_region_from_active_selection(skip_digestion=True)
+                raw_tag = content.get("tag")
+                region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+                self.new_region_from_active_selection(tag=region_tag, skip_digestion=True)
+            elif action == "toggle_region_visibility":
+                tag = content.get("tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("toggle_region_visibility requires non-empty tag.")
+                region = self._regions.get(tag.strip())
+                if region is None:
+                    raise ValueError(f"No region found with tag {tag!r}.")
+                if region.hidden:
+                    region.show(skip_digestion=True)
+                else:
+                    region.hide(skip_digestion=True)
+            elif action == "delete_region":
+                tag = content.get("tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("delete_region requires non-empty tag.")
+                region = self._regions.get(tag.strip())
+                if region is None:
+                    raise ValueError(f"No region found with tag {tag!r}.")
+                region.delete(skip_digestion=True)
             elif action == "create_section_from_selection":
                 atom_indices = list(self.active_selection.atom_indices)
                 if len(atom_indices) == 0:
@@ -2049,7 +2091,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
             pass
         return None
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def set_structure(self, index: int, skip_digestion: bool = False) -> None:
         """Jump to a specific structure (frame) index.
@@ -2058,7 +2100,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         """
         self.player.go_to_structure(int(index), skip_digestion=True)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def play(
         self,
@@ -2068,7 +2110,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         step: int | None = None,
         skip_digestion: bool = False,
     ) -> None:
-        """Start trajectory playback.
+        """Start playback through structures.
 
         Delegate to ``view.player.play()``.
         """
@@ -2080,16 +2122,16 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
             skip_digestion=True,
         )
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def pause(self, skip_digestion: bool = False) -> None:
-        """Pause trajectory playback.
+        """Pause playback.
 
         Delegate to ``view.player.pause()``.
         """
         self.player.pause(skip_digestion=True)
 
-    @signal(tags=["trajectory"])
+    @signal(tags=["structures"])
     @digest()
     def set_play_speed(self, fps: int, skip_digestion: bool = False) -> None:
         """Update the playback frame rate.
@@ -2225,7 +2267,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
             }
         )
 
-    @signal(tags=["camera"], extra_factory=lambda args, kwargs: {"pretty": _signal_value(args, kwargs, 1, "pretty")})
+    @signal(tags=["camera"], extra_factory=_camera_snapshot_extra)
     @digest()
     def get_camera_snapshot(self, *, pretty: bool = False, skip_digestion: bool = False) -> dict | str | None:
         """Return the last camera snapshot. Delegate to ``view.camera.get_snapshot()``."""
@@ -2272,6 +2314,159 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         if self._last_measurement_created_event is None:
             return None
         return dict(self._last_measurement_created_event)
+
+    def on_hover(self, callback) -> None:
+        """Register a callback invoked on every ``interaction_hover`` event.
+
+        The callback receives the event dict as its only argument.  The dict
+        always contains ``event`` and ``kind`` keys; when ``kind`` is
+        ``"structure"``, ``"annotation"``, or ``"measurement"`` it also
+        contains ``atom_indices`` and, for the latter two, ``tag``.
+
+        Call :meth:`off_hover` with the same callable to unregister.
+        """
+        if callback not in self._hover_callbacks:
+            self._hover_callbacks.append(callback)
+
+    def off_hover(self, callback) -> None:
+        """Remove a previously registered hover callback."""
+        try:
+            self._hover_callbacks.remove(callback)
+        except ValueError:
+            pass
+
+    def on_click(self, callback) -> None:
+        """Register a callback invoked on every ``interaction_click`` event.
+
+        The callback receives the event dict as its only argument.
+
+        Call :meth:`off_click` with the same callable to unregister.
+        """
+        if callback not in self._click_callbacks:
+            self._click_callbacks.append(callback)
+
+    def off_click(self, callback) -> None:
+        """Remove a previously registered click callback."""
+        try:
+            self._click_callbacks.remove(callback)
+        except ValueError:
+            pass
+
+    def on_context(self, callback) -> None:
+        """Register a callback invoked on every ``interaction_context_menu`` event.
+
+        The callback receives the event dict as its only argument.
+
+        Call :meth:`off_context` with the same callable to unregister.
+        """
+        if callback not in self._context_callbacks:
+            self._context_callbacks.append(callback)
+
+    def off_context(self, callback) -> None:
+        """Remove a previously registered context-menu callback."""
+        try:
+            self._context_callbacks.remove(callback)
+        except ValueError:
+            pass
+
+    def export_state(self) -> dict:
+        """Serialize the current viewer overlay state to a JSON-compatible dict.
+
+        The returned dict captures annotations, measurements, saved selections,
+        and regions (with resolved ``atom_indices``).  The loaded structure is
+        **not** included.  Pass the dict to :meth:`import_state` to restore it
+        on any viewer that has the same (or a compatible) structure loaded.
+
+        Returns
+        -------
+        dict
+            Keys: ``version``, ``annotations``, ``measurements``,
+            ``selections``, ``regions``.
+        """
+        def _to_python(obj: Any) -> Any:
+            if isinstance(obj, dict):
+                return {k: _to_python(v) for k, v in obj.items()}
+            if isinstance(obj, (list, tuple)):
+                return [_to_python(v) for v in obj]
+            try:
+                import numpy as np
+                if isinstance(obj, (np.integer,)):
+                    return int(obj)
+                if isinstance(obj, (np.floating,)):
+                    return float(obj)
+            except ImportError:
+                pass
+            return obj
+
+        regions = []
+        for tag, region in self._regions.items():
+            if region.atom_indices is not None:
+                regions.append({"tag": tag, "atom_indices": list(region.atom_indices)})
+
+        return _to_python({
+            "version": 1,
+            "annotations": self.annotations.records(),
+            "measurements": self.measurements.records(),
+            "selections": self.selections.records(),
+            "regions": regions,
+        })
+
+    def import_state(self, state: dict, *, clear_first: bool = True) -> None:
+        """Restore viewer overlay state from a dict produced by :meth:`export_state`.
+
+        The structure must already be loaded (or at least compatible with the
+        ``atom_indices`` in the stored state) before calling this method.
+
+        Parameters
+        ----------
+        state
+            Dict produced by :meth:`export_state`.
+        clear_first
+            If ``True`` (default), clears all existing annotations,
+            measurements, saved selections, and regions before importing.
+            Set to ``False`` to merge into existing state.
+        """
+        if not isinstance(state, dict):
+            raise TypeError(f"state must be a dict, got {type(state).__name__}.")
+        version = state.get("version", 1)
+        if version != 1:
+            raise ValueError(f"Unsupported state version: {version!r}.")
+
+        if clear_first:
+            self.clear_decorations(labels=True, shapes=False, styles=False, skip_digestion=True)
+            self.measurements.clear(skip_digestion=True)
+            self.selections.clear(skip_digestion=True)
+            for tag in list(self._regions):
+                try:
+                    self._regions[tag].delete(skip_digestion=True)
+                except Exception:
+                    pass
+
+        for msg in state.get("annotations", []):
+            if isinstance(msg, dict) and msg.get("op") == "add_label":
+                self._send(msg)
+
+        for msg in state.get("measurements", []):
+            if isinstance(msg, dict) and msg.get("op") in (
+                "add_distance_measurement", "add_angle_measurement", "add_dihedral_measurement"
+            ):
+                self._send(msg)
+
+        for msg in state.get("selections", []):
+            if isinstance(msg, dict) and msg.get("op") == "save_selection":
+                tag = msg.get("tag")
+                if tag and not self.selections.contains(tag, skip_digestion=True):
+                    self._send(msg)
+
+        if self._molsys is not None:
+            for region_data in state.get("regions", []):
+                tag = region_data.get("tag")
+                atom_indices = region_data.get("atom_indices")
+                if tag and isinstance(atom_indices, list) and len(atom_indices) > 0:
+                    try:
+                        self.new_region(atom_indices=atom_indices, tag=tag, skip_digestion=True)
+                    except Exception:
+                        pass
 
     @signal(tags=["viewer", "query"], extra_factory=_panel_mode_state_query_extra)
     def get_panel_mode_state(self, *, pretty: bool = False) -> dict | str | None:
@@ -3647,6 +3842,8 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
             "autohide_controls": bool(getattr(self.widget, "autohide_controls", False)),
             "controls_position": list(getattr(self.widget, "controls_position", ["top", "right"])),
             "controls_position_fullscreen": list(getattr(self.widget, "controls_position_fullscreen", ["bottom", "right"])),
+            "controls_mode": str(getattr(self.widget, "controls_mode", "classic")),
+            "panel_mode_style": str(getattr(self.widget, "panel_mode_style", "drawer")),
             "enable_popout": bool(include_popout),
             "debug_js": bool(getattr(self.widget, "debug_js", False)),
         }

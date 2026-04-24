@@ -28,6 +28,16 @@ class ChannelTubes:
         return normalized
 
     @staticmethod
+    def _normalize_centers_raw(centers: Iterable) -> list[list[float]]:
+        """Like _normalize_centers but skips puw conversion — for raw Angstrom data."""
+        normalized: list[list[float]] = []
+        for idx, center in enumerate(centers):
+            if len(center) != 3:
+                raise ValueError(f"centers[{idx}] must have 3 coordinates (x, y, z)")
+            normalized.append([float(center[0]), float(center[1]), float(center[2])])
+        return normalized
+
+    @staticmethod
     def _normalize_sequence(values, n: int, cast):
         if values is None:
             return None
@@ -50,6 +60,7 @@ class ChannelTubes:
         *,
         centers: Iterable[Sequence[float]],
         radii: Iterable[float],
+        structure_centers: Iterable | None = None,
         color_by: str | None = None,
         palette=None,
         color_mode: str | None = None,
@@ -109,6 +120,11 @@ class ChannelTubes:
         options["layer_tag"] = layer.layer_tag
         if name is not None:
             options["name"] = name
+        if structure_centers is not None:
+            options["structures_coords"] = [
+                self._normalize_centers_raw(fc) if fc is not None else None
+                for fc in structure_centers
+            ]
 
         self._view._send({"op": "add_channel_tube", "options": options})
         return layer

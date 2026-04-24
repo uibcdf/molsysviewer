@@ -47,6 +47,7 @@ class SphereShapes:
         alpha: float = 0.4,
         tag: str | list | None = None,
         layer_tag: str | None = None,
+        structure_centers=None,
         skip_digestion: bool = False,
         **kwargs,
     ):
@@ -113,19 +114,21 @@ class SphereShapes:
             meta={"shape_kind": "sphere", "shape_name": "Sphere"},
         )
         center_val = arr.tolist() if arr is not None else [float(v) for v in puw.get_value(center, to_unit="angstroms")]
-        self._view._send(  # noqa: SLF001
-            {
-                "op": "add_sphere",
-                "options": {
-                    "center": center_val,
-                    "radius": float(puw.get_value(radius, to_unit="angstroms")),
-                    "color": normalize_color(color),
-                    "alpha": float(alpha),
-                    "tag": layer.tag,
-                    "layer_tag": layer.layer_tag,
-                },
-            }
-        )
+        options: dict = {
+            "center": center_val,
+            "radius": float(puw.get_value(radius, to_unit="angstroms")),
+            "color": normalize_color(color),
+            "alpha": float(alpha),
+            "tag": layer.tag,
+            "layer_tag": layer.layer_tag,
+        }
+        if structure_centers is not None:
+            fc_arr = np.asarray(puw.get_value(structure_centers, to_unit="angstroms"), dtype=float)
+            options["structures_coords"] = [
+                fc_arr[i].tolist() if fc_arr[i] is not None else None
+                for i in range(len(fc_arr))
+            ]
+        self._view._send({"op": "add_sphere", "options": options})  # noqa: SLF001
         return layer
 
     def _add_sphere_batch(

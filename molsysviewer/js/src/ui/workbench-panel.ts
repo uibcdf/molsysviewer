@@ -1,4 +1,5 @@
 import { PanelShell } from "./panel-shell";
+import { FloatingPanelShell } from "./floating-panel-shell";
 
 type WorkbenchItem = {
     key?: string;
@@ -82,7 +83,7 @@ type SectionView = {
 };
 
 export class WorkbenchPanel {
-    private readonly shell: PanelShell;
+    private readonly shell: PanelShell | FloatingPanelShell;
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
@@ -107,9 +108,14 @@ export class WorkbenchPanel {
     private expanded = false;
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToNavigate?: () => void;
+    private readonly floating: boolean;
 
-    constructor(private readonly host: HTMLElement) {
-        this.shell = new PanelShell(host, { title: "Workbench", width: 360, toggleWidth: 26, navButtonLabel: "Navigate" });
+    constructor(private readonly host: HTMLElement, options?: { floating?: boolean }) {
+        const floating = !!options?.floating;
+        this.floating = floating;
+        this.shell = floating
+            ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" })
+            : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
         this.root = this.shell.root;
         this.body = this.shell.content;
         this.toggleButton = this.shell.toggleButton;
@@ -118,22 +124,24 @@ export class WorkbenchPanel {
         this.shell.titleElement.setAttribute("data-molsysviewer-workbench-panel-title", "true");
         this.body.setAttribute("data-molsysviewer-workbench-panel-body", "true");
 
-        Object.assign(this.root.style, {
-            left: "unset",
-            right: "0",
-            transform: `translateX(${this.shell.width}px)`,
-        });
-        Object.assign(this.shell.panel.style, {
-            borderLeft: "1px solid rgba(255,255,255,0.14)",
-            borderRight: "0",
-            borderRadius: "14px 0 0 14px",
-        });
-        Object.assign(this.toggleButton.style, {
-            order: "-1",
-            borderLeft: "1px solid rgba(255,255,255,0.14)",
-            borderRight: "0",
-            borderRadius: "10px 0 0 10px",
-        });
+        if (!floating) {
+            Object.assign(this.root.style, {
+                left: "unset",
+                right: "0",
+                transform: `translateX(${(this.shell as PanelShell).width}px)`,
+            });
+            Object.assign((this.shell as PanelShell).panel.style, {
+                borderLeft: "1px solid rgba(255,255,255,0.14)",
+                borderRight: "0",
+                borderRadius: "14px 0 0 14px",
+            });
+            Object.assign(this.toggleButton.style, {
+                order: "-1",
+                borderLeft: "1px solid rgba(255,255,255,0.14)",
+                borderRight: "0",
+                borderRadius: "10px 0 0 10px",
+            });
+        }
 
         this.toggleButton.addEventListener("click", (event) => {
             event.preventDefault();
@@ -250,7 +258,9 @@ export class WorkbenchPanel {
         this.createSection("addons", "Add-ons", "No add-ons active.");
 
         this.applyExpandedState();
-        this.setVisible(false);
+        // Drawer mode: always show the collapse tab at the right edge so it is reachable
+        // even before a structure loads. Floating mode starts hidden until a structure loads.
+        this.setVisible(!floating);
     }
 
     setVisible(visible: boolean): void {
@@ -913,8 +923,12 @@ export class WorkbenchPanel {
     }
 
     private applyExpandedState(): void {
-        this.toggleButton.textContent = this.expanded ? ">" : "<";
-        this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(${this.shell.width}px)`;
+        if (this.floating) {
+            this.shell.setExpanded(this.expanded);
+        } else {
+            this.toggleButton.textContent = this.expanded ? ">" : "<";
+            this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(${this.shell.width}px)`;
+        }
         this.onExpandedChange?.(this.expanded);
     }
 

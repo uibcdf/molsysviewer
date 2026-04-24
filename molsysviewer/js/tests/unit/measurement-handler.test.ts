@@ -120,6 +120,127 @@ test("MeasurementHandlers can rename and drop measurement tags", async () => {
     assert.strictEqual(handlers.hasTag("m2"), false);
 });
 
+test("MeasurementHandlers.addDistance forwards style as visualParams with tooltip tag", async () => {
+    const calls: any[] = [];
+    const fakeMeasurement = {
+        async addDistance(_a: any, _b: any, opts: any) {
+            calls.push(opts);
+            return { selection: { ref: "sel-ref" }, representation: { ref: "repr-ref" } };
+        },
+    };
+    const plugin = { managers: { structure: { measurement: fakeMeasurement } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+    (handlers as any).buildLociFromAtomIndices = (_s: any, ai: number[]) => ({ ai });
+
+    await handlers.addDistance({
+        op: "add_distance_measurement",
+        tag: "d1",
+        options: { tag: "d1", picks_atom_indices: [[0], [1]], style: { color: "#00FF00", size_em: 1.2 } },
+    });
+
+    assert.strictEqual(calls.length, 1);
+    const vp = calls[0].visualParams;
+    assert.ok(vp !== undefined, "visualParams must be set");
+    assert.strictEqual(vp.tooltip, "d1");
+    assert.strictEqual(typeof vp.textColor, "number");
+    assert.strictEqual(vp.textSize, 1.2);
+});
+
+test("MeasurementHandlers.addDistance without style still passes tooltip in visualParams", async () => {
+    const calls: any[] = [];
+    const fakeMeasurement = {
+        async addDistance(_a: any, _b: any, opts: any) {
+            calls.push(opts);
+            return { selection: { ref: "sel-ref" }, representation: { ref: "repr-ref" } };
+        },
+    };
+    const plugin = { managers: { structure: { measurement: fakeMeasurement } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+    (handlers as any).buildLociFromAtomIndices = (_s: any, ai: number[]) => ({ ai });
+
+    await handlers.addDistance({
+        op: "add_distance_measurement",
+        tag: "d2",
+        options: { tag: "d2", picks_atom_indices: [[0], [1]] },
+    });
+
+    assert.strictEqual(calls.length, 1);
+    const vp = calls[0].visualParams;
+    assert.ok(vp !== undefined, "visualParams must be set for pickability");
+    assert.strictEqual(vp.tooltip, "d2");
+    assert.strictEqual(vp.textColor, undefined);
+});
+
+test("MeasurementHandlers.setVisibility hides all measurements sharing a layer_tag", async () => {
+    const addCalls: string[] = [];
+    const removeCalls: string[] = [];
+    const fakeMeasurement = {
+        async addDistance(_a: any, _b: any, _opts: any) {
+            const ref = `sel-${addCalls.length}`;
+            addCalls.push(ref);
+            return { selection: { ref }, representation: { ref: `repr-${addCalls.length - 1}` } };
+        },
+    };
+    const plugin = { managers: { structure: { measurement: fakeMeasurement } }, state: { data: {} } } as any;
+    const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
+    const originalRemove = PluginCommands.State.RemoveObject;
+    (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
+        removeCalls.push(params.ref);
+    };
+
+    try {
+        const handlers = new MeasurementHandlers(plugin, {
+            getStructure: () => ({ units: [] } as any),
+            registerRef: () => void 0,
+        });
+        (handlers as any).buildLociFromAtomIndices = (_s: any, ai: number[]) => ({ ai });
+
+        await handlers.addDistance({ op: "add_distance_measurement", tag: "d-a", options: { tag: "d-a", picks_atom_indices: [[0], [1]], layer_tag: "bond_lengths" } });
+        await handlers.addDistance({ op: "add_distance_measurement", tag: "d-b", options: { tag: "d-b", picks_atom_indices: [[2], [3]], layer_tag: "bond_lengths" } });
+
+        await handlers.setVisibility("bond_lengths", false);
+        assert.strictEqual(removeCalls.length, 4, "sel + repr for both measurements should be removed");
+
+        const addCountBefore = addCalls.length;
+        await handlers.setVisibility("bond_lengths", true);
+        assert.strictEqual(addCalls.length - addCountBefore, 2, "both measurements should be rebuilt");
+    } finally {
+        (PluginCommands.State as any).RemoveObject = originalRemove;
+    }
+});
+
+test("MeasurementHandlers.getSpec returns kind and flattened atom indices", async () => {
+    const fakeMeasurement = {
+        async addDistance(_a: any, _b: any, _opts: any) {
+            return { selection: { ref: "sel-ref" }, representation: { ref: "repr-ref" } };
+        },
+    };
+    const plugin = { managers: { structure: { measurement: fakeMeasurement } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+    (handlers as any).buildLociFromAtomIndices = (_s: any, ai: number[]) => ({ ai });
+
+    await handlers.addDistance({
+        op: "add_distance_measurement",
+        tag: "d3",
+        options: { tag: "d3", picks_atom_indices: [[5], [9]], endpoint_atom_indices: [[5], [9]] },
+    });
+
+    const spec = handlers.getSpec("d3");
+    assert.ok(spec !== undefined);
+    assert.strictEqual(spec!.kind, "distance");
+    assert.deepStrictEqual(spec!.atom_indices, [5, 9]);
+    assert.strictEqual(handlers.getSpec("nonexistent"), undefined);
+});
+
 test("MeasurementHandlers resolves representative atoms from molsys_group_type metadata", () => {
     const plugin = { managers: { structure: { measurement: {} } }, state: { data: {} } } as any;
     const handlers = new MeasurementHandlers(plugin, {

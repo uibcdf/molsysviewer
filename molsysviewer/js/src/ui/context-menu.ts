@@ -21,6 +21,8 @@ export type ContextMenuAction =
     | "dihedral"
     | "focus_target"
     | "focus_region"
+    | "toggle_region_visibility"
+    | "delete_region"
     | "hide_measurement"
     | "delete_annotation"
     | "delete_shape"
@@ -33,7 +35,11 @@ export type ContextMenuAction =
     | "create_region_from_selection"
     | "create_section_from_selection"
     | "add_label_from_selection"
-    | "addon_context_action";
+    | "addon_context_action"
+    | "reset_view"
+    | "toggle_background"
+    | "toggle_spin"
+    | "toggle_swing";
 
 export type ContextActionDetails = {
     endpoint_policy?: "atom" | "centroid" | "representative_atom";
@@ -198,13 +204,11 @@ export class ViewerContextMenu {
                 this.root.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
             }
         } else {
-            const note = document.createElement("div");
-            note.textContent = "No target under cursor";
-            Object.assign(note.style, {
-                padding: "8px",
-                opacity: "0.8",
-            });
-            this.root.appendChild(note);
+            // Empty canvas — scene-level actions
+            this.root.appendChild(this.makeActionButton("Reset View", "reset_view"));
+            this.root.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
+            this.root.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
+            this.root.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
         }
 
         if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
@@ -375,6 +379,10 @@ export class ViewerContextMenu {
                 this.renderSelectionComposer();
                 return;
             }
+            if (action === "create_region_from_selection") {
+                this.renderRegionComposer();
+                return;
+            }
             if (action === "activate_selection") {
                 return;
             }
@@ -431,44 +439,195 @@ export class ViewerContextMenu {
         return button;
     }
 
-    private makeRegionButton(region: RegionSummary): HTMLButtonElement {
-        const suffix = region.hidden ? " · hidden" : "";
-        const label = `${region.tag} · ${region.atom_count} atom${region.atom_count === 1 ? "" : "s"}${suffix}`;
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = label;
-        button.setAttribute("data-molsysviewer-region", region.tag);
-        Object.assign(button.style, {
-            display: "block",
-            width: "100%",
+    private makeRegionButton(region: RegionSummary): HTMLDivElement {
+        const row = document.createElement("div");
+        Object.assign(row.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            borderRadius: "8px",
+        });
+
+        const label = document.createElement("button");
+        label.type = "button";
+        const atomLabel = `${region.atom_count} atom${region.atom_count === 1 ? "" : "s"}`;
+        const hiddenSuffix = region.hidden ? " · hidden" : "";
+        label.textContent = `${region.tag} · ${atomLabel}${hiddenSuffix}`;
+        label.setAttribute("data-molsysviewer-region", region.tag);
+        Object.assign(label.style, {
+            flex: "1 1 auto",
             padding: "8px 10px",
             margin: "0",
             border: "0",
             borderRadius: "8px",
             background: "transparent",
-            color: region.hidden ? "rgba(244,244,245,0.72)" : "inherit",
+            color: region.hidden ? "rgba(244,244,245,0.55)" : "inherit",
+            textDecoration: region.hidden ? "line-through" : "none",
             textAlign: "left",
             cursor: "pointer",
+            fontSize: "inherit",
         });
-        button.addEventListener("pointerenter", () => {
-            button.style.background = "rgba(255,255,255,0.10)";
-        });
-        button.addEventListener("pointerleave", () => {
-            button.style.background = "transparent";
-        });
-        button.addEventListener("click", () => {
+        label.addEventListener("pointerenter", () => { label.style.background = "rgba(255,255,255,0.10)"; });
+        label.addEventListener("pointerleave", () => { label.style.background = "transparent"; });
+        label.addEventListener("click", () => {
             if (!this.currentTarget) return;
             const details = { tag: region.tag };
             this.onAction?.("focus_region", this.currentTarget, details);
+            this.notify?.({ event: "interaction_context_action", action: "focus_region", context: this.currentTarget, ...details });
+            this.close();
+        });
+
+        const mkIconBtn = (svgPath: string, title: string, onClick: () => void): HTMLButtonElement => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.title = title;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>`;
+            Object.assign(btn.style, {
+                flexShrink: "0",
+                padding: "5px",
+                border: "0",
+                borderRadius: "6px",
+                background: "transparent",
+                color: "rgba(244,244,245,0.55)",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+            });
+            btn.addEventListener("pointerenter", () => { btn.style.background = "rgba(255,255,255,0.10)"; btn.style.color = "#f4f4f5"; });
+            btn.addEventListener("pointerleave", () => { btn.style.background = "transparent"; btn.style.color = "rgba(244,244,245,0.55)"; });
+            btn.addEventListener("click", (ev) => { ev.stopPropagation(); onClick(); });
+            return btn;
+        };
+
+        const EYE_ON  = `<path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/>`;
+        const EYE_OFF = `<path d="M1 8s2.5-5 7-5 5.5 3 5.5 3M14.5 11.5S12 13 8 13c-4.5 0-7-5-7-5"/><line x1="2" y1="2" x2="14" y2="14"/>`;
+        const TRASH   = `<polyline points="3,6 13,6"/><path d="M5,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/><rect x="4" y="6" width="8" height="8" rx="1"/>`;
+
+        const toggleBtn = mkIconBtn(region.hidden ? EYE_OFF : EYE_ON, region.hidden ? "Show region" : "Hide region", () => {
+            if (!this.currentTarget) return;
+            const details = { tag: region.tag };
+            this.onAction?.("toggle_region_visibility", this.currentTarget, details);
+            this.notify?.({ event: "interaction_context_action", action: "toggle_region_visibility", context: this.currentTarget, ...details });
+            this.close();
+        });
+
+        const deleteBtn = mkIconBtn(TRASH, "Delete region", () => {
+            if (!this.currentTarget) return;
+            const details = { tag: region.tag };
+            this.onAction?.("delete_region", this.currentTarget, details);
+            this.notify?.({ event: "interaction_context_action", action: "delete_region", context: this.currentTarget, ...details });
+            this.close();
+        });
+
+        row.appendChild(label);
+        row.appendChild(toggleBtn);
+        row.appendChild(deleteBtn);
+        return row;
+    }
+
+    private renderRegionComposer(): void {
+        if (!this.currentTarget) return;
+        this.root.replaceChildren();
+
+        const title = document.createElement("div");
+        title.textContent = "New Region from Selection";
+        Object.assign(title.style, {
+            padding: "6px 8px 8px 8px",
+            fontWeight: "600",
+            borderBottom: "1px solid rgba(255,255,255,0.10)",
+            marginBottom: "6px",
+        });
+        this.root.appendChild(title);
+
+        const subtitle = document.createElement("div");
+        subtitle.textContent = selectionSummary(this.currentSelection);
+        Object.assign(subtitle.style, {
+            padding: "0 8px 8px 8px",
+            opacity: "0.82",
+            fontSize: "12px",
+        });
+        this.root.appendChild(subtitle);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = "";
+        input.placeholder = "Region tag (optional)";
+        Object.assign(input.style, {
+            display: "block",
+            width: "100%",
+            boxSizing: "border-box",
+            margin: "0 0 8px 0",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "1px solid rgba(255,255,255,0.18)",
+            background: "rgba(255,255,255,0.06)",
+            color: "#f4f4f5",
+            outline: "none",
+        });
+        this.root.appendChild(input);
+
+        const actions = document.createElement("div");
+        Object.assign(actions.style, { display: "flex", gap: "8px" });
+
+        const save = document.createElement("button");
+        save.type = "button";
+        save.textContent = "Create Region";
+        Object.assign(save.style, {
+            flex: "1 1 auto",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "0",
+            background: "rgba(167, 243, 208, 0.18)",
+            color: "#d1fae5",
+            cursor: "pointer",
+        });
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.textContent = "Back";
+        Object.assign(cancel.style, {
+            flex: "0 0 auto",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "0",
+            background: "rgba(255,255,255,0.08)",
+            color: "#f4f4f5",
+            cursor: "pointer",
+        });
+
+        const submit = () => {
+            if (!this.currentTarget) return;
+            const tag = String(input.value ?? "").trim();
+            const details = tag.length > 0 ? { tag } : {};
+            this.onAction?.("create_region_from_selection", this.currentTarget, details);
             this.notify?.({
                 event: "interaction_context_action",
-                action: "focus_region",
+                action: "create_region_from_selection",
                 context: this.currentTarget,
                 ...details,
             });
             this.close();
+        };
+
+        save.addEventListener("click", submit);
+        cancel.addEventListener("click", () => {
+            if (!this.currentTarget) return;
+            this.open(this.currentTarget, this.currentPageX, this.currentPageY, this.currentSelection, this.currentLastMeasurement);
         });
-        return button;
+        input.addEventListener("keydown", (event: any) => {
+            if (event?.key === "Enter") { event.preventDefault?.(); submit(); }
+            else if (event?.key === "Escape") {
+                event.preventDefault?.();
+                if (!this.currentTarget) return;
+                this.open(this.currentTarget, this.currentPageX, this.currentPageY, this.currentSelection, this.currentLastMeasurement);
+            }
+        });
+
+        actions.appendChild(save);
+        actions.appendChild(cancel);
+        this.root.appendChild(actions);
+        input.focus?.();
     }
 
     private resolveActionDetails(action: ContextMenuAction): ContextActionDetails | null {

@@ -50,6 +50,142 @@ test("AnnotationHandlers.addLabel creates a Mol* label from atom indices and reg
     ]);
 });
 
+test("AnnotationHandlers.addLabel forwards style as visualParams to Mol*", async () => {
+    const calls: any[] = [];
+    const plugin: any = {
+        managers: {
+            structure: {
+                measurement: {
+                    async addLabel(loci: any, options: any) {
+                        calls.push({ loci, options });
+                        return { selection: { ref: "sel-1" }, representation: { ref: "repr-1" } };
+                    },
+                },
+            },
+        },
+        state: { data: {} },
+    };
+
+    const handler = new AnnotationHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        registerRef: () => void 0,
+    });
+    (handler as any).buildLociFromAtomIndices = () => ({ structure: {}, elements: [] });
+
+    await handler.addLabel({
+        op: "add_label",
+        tag: "styled",
+        options: {
+            text: "Label",
+            atom_indices: [0],
+            tag: "styled",
+            style: { color: "#FF0000", size_em: 1.5, background: true, background_opacity: 0.7 },
+        },
+    });
+
+    assert.strictEqual(calls.length, 1);
+    const vp = calls[0].options.visualParams;
+    assert.ok(vp !== undefined, "visualParams should be set");
+    assert.strictEqual(vp.tooltip, "styled");
+    assert.strictEqual(typeof vp.textColor, "number");
+    assert.strictEqual(vp.textSize, 1.5);
+    assert.strictEqual(vp.background, true);
+    assert.strictEqual(vp.backgroundOpacity, 0.7);
+});
+
+test("AnnotationHandlers.addLabel without style passes only tooltip in visualParams", async () => {
+    const calls: any[] = [];
+    const plugin: any = {
+        managers: {
+            structure: {
+                measurement: {
+                    async addLabel(loci: any, options: any) {
+                        calls.push({ loci, options });
+                        return { selection: { ref: "sel-1" }, representation: { ref: "repr-1" } };
+                    },
+                },
+            },
+        },
+        state: { data: {} },
+    };
+
+    const handler = new AnnotationHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        registerRef: () => void 0,
+    });
+    (handler as any).buildLociFromAtomIndices = () => ({ structure: {}, elements: [] });
+
+    await handler.addLabel({
+        op: "add_label",
+        tag: "plain",
+        options: { text: "Label", atom_indices: [0], tag: "plain" },
+    });
+
+    assert.strictEqual(calls.length, 1);
+    const vp = calls[0].options.visualParams;
+    assert.ok(vp !== undefined, "visualParams should be set (tooltip required for pickability)");
+    assert.strictEqual(vp.tooltip, "plain");
+    assert.strictEqual(vp.textColor, undefined);
+    assert.strictEqual(vp.textSize, undefined);
+});
+
+test("AnnotationHandlers.setVisibility hides all annotations sharing a layer_tag", async () => {
+    const addCalls: string[] = [];
+    const removeCalls: string[] = [];
+    const plugin: any = {
+        managers: {
+            structure: {
+                measurement: {
+                    async addLabel(_loci: any, _options: any) {
+                        const ref = `sel-${addCalls.length}`;
+                        addCalls.push(ref);
+                        return { selection: { ref }, representation: { ref: `repr-${addCalls.length - 1}` } };
+                    },
+                },
+            },
+        },
+        state: { data: {} },
+    };
+    const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
+    const originalRemove = PluginCommands.State.RemoveObject;
+    (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
+        removeCalls.push(params.ref);
+    };
+
+    try {
+        const handler = new AnnotationHandlers(plugin, {
+            getStructure: () => ({}) as any,
+            registerRef: () => void 0,
+        });
+        (handler as any).buildLociFromAtomIndices = () => ({
+            structure: {},
+            elements: [{ unit: { elements: [0] }, indices: [0] }],
+        });
+
+        await handler.addLabel({
+            op: "add_label",
+            tag: "ann-a",
+            options: { text: "A", atom_indices: [0], tag: "ann-a", layer_tag: "analysis" },
+        });
+        await handler.addLabel({
+            op: "add_label",
+            tag: "ann-b",
+            options: { text: "B", atom_indices: [0], tag: "ann-b", layer_tag: "analysis" },
+        });
+
+        // Hiding the shared layer should hide both annotations.
+        await handler.setVisibility("analysis", false);
+        assert.strictEqual(removeCalls.length, 4, "both sel + repr refs for ann-a and ann-b should be removed");
+
+        // Showing the shared layer should re-add both annotations.
+        const addCountBefore = addCalls.length;
+        await handler.setVisibility("analysis", true);
+        assert.strictEqual(addCalls.length - addCountBefore, 2, "both annotations should be rebuilt");
+    } finally {
+        (PluginCommands.State as any).RemoveObject = originalRemove;
+    }
+});
+
 test("AnnotationHandlers.setVisibility rebuilds labels from stored spec", async () => {
     const addCalls: any[] = [];
     const removeCalls: any[] = [];

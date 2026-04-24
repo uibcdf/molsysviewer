@@ -48,6 +48,30 @@ class TriangleFaces:
         return normalized
 
     @staticmethod
+    def _normalize_vertices_raw(vertices: Iterable | None) -> list[list[list[float]]]:
+        """Like _normalize_vertices but skips puw conversion — for raw Angstrom data."""
+        if vertices is None:
+            return []
+        normalized: list[list[list[float]]] = []
+        for tri in vertices:
+            tri_list = list(tri)
+            if len(tri_list) == 3 and all(hasattr(v, "__len__") and len(v) == 3 for v in tri_list):
+                normalized.append([
+                    [float(tri_list[0][0]), float(tri_list[0][1]), float(tri_list[0][2])],
+                    [float(tri_list[1][0]), float(tri_list[1][1]), float(tri_list[1][2])],
+                    [float(tri_list[2][0]), float(tri_list[2][1]), float(tri_list[2][2])],
+                ])
+            elif len(tri_list) == 9:
+                normalized.append([
+                    [float(tri_list[0]), float(tri_list[1]), float(tri_list[2])],
+                    [float(tri_list[3]), float(tri_list[4]), float(tri_list[5])],
+                    [float(tri_list[6]), float(tri_list[7]), float(tri_list[8])],
+                ])
+            else:
+                raise ValueError("Each triangle must be [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3]] or a list of 9 numbers")
+        return normalized
+
+    @staticmethod
     def _normalize_triplets(atom_triplets: Iterable[Sequence[int]] | None) -> list[list[int]]:
         if atom_triplets is None:
             return []
@@ -81,6 +105,7 @@ class TriangleFaces:
         self,
         *,
         vertices: Iterable[Sequence[float]] | None = None,
+        structure_vertices: Iterable | None = None,
         atom_triplets: Iterable[Sequence[int]] | None = None,
         colors: int | Sequence[int] = 0xCCCCCC,
         alpha: float = 1.0,
@@ -104,6 +129,16 @@ class TriangleFaces:
 
         vertices_list = self._normalize_vertices(vertices)
         atom_triplets_list = self._normalize_triplets(atom_triplets)
+
+        if structure_vertices is not None and not atom_triplets_list:
+            structures_list = [
+                self._normalize_vertices_raw(fv) if fv is not None else None
+                for fv in structure_vertices
+            ]
+            if not vertices_list and structures_list and structures_list[0] is not None:
+                vertices_list = structures_list[0]
+        else:
+            structures_list = None
 
         if not vertices_list and not atom_triplets_list:
             raise ValueError("You must provide vertices or atom_triplets")
@@ -144,6 +179,8 @@ class TriangleFaces:
         )
         options["tag"] = layer.tag
         options["layer_tag"] = layer.layer_tag
+        if structures_list is not None:
+            options["structures_coords"] = structures_list
 
         self._view._send({"op": "add_triangle_faces", "options": options})
         return layer

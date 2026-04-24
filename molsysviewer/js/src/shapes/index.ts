@@ -647,6 +647,7 @@ export interface ChannelTubeOptions {
     tag?: string;
     layer_tag?: string;
     name?: string;
+    structures_coords?: Array<Array<[number, number, number]> | null>;
 }
 
 interface ChannelSegment {
@@ -1652,6 +1653,7 @@ export interface NetworkLinkOptions {
     radial_segments?: number;
     tag?: string;
     layer_tag?: string;
+    structures_coords?: Array<CoordinatePair[] | null>;
 }
 
 function normalizeCoordinatePair(entry: CoordinatePair): { start: [number, number, number]; end: [number, number, number] } | null {
@@ -2120,6 +2122,7 @@ export interface TriangleFacesOptions {
     normal_color?: number;
     tag?: string;
     layer_tag?: string;
+    structures_coords?: Array<TriangleVerticesInput[] | null>;
 }
 
 function normalizeTriangle(entry: TriangleVerticesInput): TriangleFaceSpec["vertices"] | null {

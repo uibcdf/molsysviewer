@@ -17,3 +17,5 @@ class MolSysViewerWidget(anywidget.AnyWidget):
     debug_js = T.Bool(default_value=False).tag(sync=True)
     controls_position = T.List(T.Unicode(), default_value=["top", "right"]).tag(sync=True)
     controls_position_fullscreen = T.List(T.Unicode(), default_value=["bottom", "right"]).tag(sync=True)
+    controls_mode = T.Unicode(default_value="classic").tag(sync=True)
+    panel_mode_style = T.Unicode(default_value="drawer").tag(sync=True)
