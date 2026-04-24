@@ -20,8 +20,10 @@
     "build:harness": "npx esbuild tests/e2e/harness.ts --bundle --format=iife --global-name=Harness --outfile=tests/e2e/harness.bundle.js",
     "build:e2e": "npx esbuild tests/e2e/region-hide.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/region-hide.e2e.js --external:playwright --external:chromium-bidi/*",
     "build:e2e:annotations": "npx esbuild tests/e2e/annotations-interaction.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/annotations-interaction.e2e.js --external:playwright --external:chromium-bidi/*",
+    "build:e2e:shapes": "npx esbuild tests/e2e/shape-trajectory.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/shape-trajectory.e2e.js --external:playwright --external:chromium-bidi/*",
     "test:e2e": "npm run build:harness && npm run build:e2e && node tests/e2e/region-hide.e2e.js",
-    "test:e2e:annotations": "npm run build:harness && npm run build:e2e:annotations && node tests/e2e/annotations-interaction.e2e.js"
+    "test:e2e:annotations": "npm run build:harness && npm run build:e2e:annotations && node tests/e2e/annotations-interaction.e2e.js",
+    "test:e2e:shapes": "npm run build:harness && npm run build:e2e:shapes && node tests/e2e/shape-trajectory.e2e.js"
   },
   "dependencies": {
     "molstar": "^5.4.1"

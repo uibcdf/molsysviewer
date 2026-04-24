@@ -696,7 +696,8 @@ should grow over time as additional project-level principles become clear.
 
 - Extend JS unit coverage from handler guards into deeper success-path and replay/remap semantics.
 - E2E paths now include: region-hide and annotations+measurements interaction (`test:e2e:annotations`). ✓
-- Add further E2E paths for structure-aware shapes and export flows.
+- ~~Add further E2E paths for structure-aware shapes~~. Done (2026-04-24): `shape-trajectory.e2e.ts` (`test:e2e:shapes`) — 5 scenarios: trajectory sphere storage, all 5 trajectory-shape families registered via handleMessage, frame navigation updates ShapeHandlers currentFrame, clear_shapes_by_tag persistence, clear_all + reload lifecycle.
+- Add further E2E paths for export flows.
 
 ### Criteria
 
