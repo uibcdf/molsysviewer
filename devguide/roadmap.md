@@ -697,7 +697,7 @@ should grow over time as additional project-level principles become clear.
 - Extend JS unit coverage from handler guards into deeper success-path and replay/remap semantics.
 - E2E paths now include: region-hide and annotations+measurements interaction (`test:e2e:annotations`). ✓
 - ~~Add further E2E paths for structure-aware shapes~~. Done (2026-04-24): `shape-trajectory.e2e.ts` (`test:e2e:shapes`) — 5 scenarios: trajectory sphere storage, all 5 trajectory-shape families registered via handleMessage, frame navigation updates ShapeHandlers currentFrame, clear_shapes_by_tag persistence, clear_all + reload lifecycle.
-- Add further E2E paths for export flows.
+- ~~Add further E2E paths for export flows~~. Done (2026-04-24): `export-replay.e2e.ts` (`test:e2e:export`) — 4 scenarios: replay export sequence (structure+region+label+camera), replay order preserved (no null-dereference errors), standalone-like fresh replay after clear_all, update_visibility graceful handling. Also added 2 popup-logic unit tests: `molsysviewer-sync-op` live mirror, `molsysviewer-sync-autohide` listener lifecycle. JS suite: 103 tests.
 
 ### Criteria
 
