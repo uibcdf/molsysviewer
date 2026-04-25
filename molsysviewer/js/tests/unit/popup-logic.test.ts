@@ -327,3 +327,124 @@ test("bootPopup gates camera sync by interaction in both directions", async () =
         (globalThis as any).clearTimeout = previousClearTimeout;
     }
 });
+
+test("bootPopup dispatches molsysviewer-sync-op to controller (live mirror)", async () => {
+    const previousWindow = (globalThis as any).window;
+    const previousDocument = (globalThis as any).document;
+    const previousSetTimeout = (globalThis as any).setTimeout;
+    const previousClearTimeout = (globalThis as any).clearTimeout;
+    const env = makePopupTestEnv();
+    const handled: any[] = [];
+
+    const ctrl: any = {
+        plugin: { canvas3d: { didDraw: { subscribe(_fn: any) {} } } },
+        trajectory: { getTrajectoryState() { return { hasTrajectory: false, frameCount: 0, currentFrame: 0, isPlaying: false }; } },
+        async handleMessage(msg: any) { handled.push(msg); },
+        setCameraSnapshot(_s: any, _d: number) {},
+        async toggleSpin(_e?: boolean) {},
+        async toggleSwing(_e?: boolean) {},
+        async toggleBackground(_m?: string) {},
+        getCameraSnapshot() { return {}; },
+        onTrajectoryState(_cb: any, _opts: any) {},
+        async resetView() {},
+        toggleFullscreen() {},
+        stepTrajectory(_by: number) {},
+        stopTrajectoryPlayback() {},
+        playTrajectory(_opts: any) {},
+        setTrajectoryFrame(_i: number) {},
+        isSpinActive: false,
+        isSwingActive: false,
+        isDarkMode: false,
+    };
+
+    (globalThis as any).window = env.windowObj;
+    (globalThis as any).document = env.document;
+    (globalThis as any).setTimeout = (fn: () => void, _ms?: number) => { fn(); return 1; };
+    (globalThis as any).clearTimeout = (_id: number) => {};
+
+    try {
+        await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
+        await flushAsync();
+
+        env.windowObj.dispatch("message", {
+            data: { type: "molsysviewer-sync-op", data: { op: "hide_region", tag: "r1" } },
+        });
+        await flushAsync();
+
+        env.windowObj.dispatch("message", {
+            data: { type: "molsysviewer-sync-op", data: { op: "show_global", target: "global" } },
+        });
+        await flushAsync();
+
+        assert.deepStrictEqual(handled, [
+            { op: "hide_region", tag: "r1" },
+            { op: "show_global", target: "global" },
+        ]);
+    } finally {
+        (globalThis as any).window = previousWindow;
+        (globalThis as any).document = previousDocument;
+        (globalThis as any).setTimeout = previousSetTimeout;
+        (globalThis as any).clearTimeout = previousClearTimeout;
+    }
+});
+
+test("bootPopup molsysviewer-sync-autohide disables and re-enables autohide listeners", async () => {
+    const previousWindow = (globalThis as any).window;
+    const previousDocument = (globalThis as any).document;
+    const previousSetTimeout = (globalThis as any).setTimeout;
+    const previousClearTimeout = (globalThis as any).clearTimeout;
+    const env = makePopupTestEnv();
+
+    const ctrl: any = {
+        plugin: { canvas3d: { didDraw: { subscribe(_fn: any) {} } } },
+        trajectory: { getTrajectoryState() { return { hasTrajectory: false, frameCount: 0, currentFrame: 0, isPlaying: false }; } },
+        async handleMessage(_msg: any) {},
+        setCameraSnapshot(_s: any, _d: number) {},
+        async toggleSpin(_e?: boolean) {},
+        async toggleSwing(_e?: boolean) {},
+        async toggleBackground(_m?: string) {},
+        getCameraSnapshot() { return {}; },
+        onTrajectoryState(_cb: any, _opts: any) {},
+        async resetView() {},
+        toggleFullscreen() {},
+        stepTrajectory(_by: number) {},
+        stopTrajectoryPlayback() {},
+        playTrajectory(_opts: any) {},
+        setTrajectoryFrame(_i: number) {},
+        isSpinActive: false,
+        isSwingActive: false,
+        isDarkMode: false,
+    };
+
+    (globalThis as any).window = env.windowObj;
+    (globalThis as any).document = env.document;
+    (globalThis as any).setTimeout = (fn: () => void, _ms?: number) => { fn(); return 1; };
+    (globalThis as any).clearTimeout = (_id: number) => {};
+
+    try {
+        await bootPopup({ MolSysViewerController: { create: async () => ctrl } });
+        await flushAsync();
+
+        // No listeners yet (autohide starts false)
+        assert.strictEqual(env.container.listenerCount("pointerenter"), 0);
+
+        // Enable autohide
+        env.windowObj.dispatch("message", {
+            data: { type: "molsysviewer-sync-autohide", data: { enabled: true } },
+        });
+        await flushAsync();
+        assert.ok(env.container.listenerCount("pointerenter") > 0, "pointerenter listener added on autohide enable");
+
+        // Disable autohide — listeners removed
+        env.windowObj.dispatch("message", {
+            data: { type: "molsysviewer-sync-autohide", data: { enabled: false } },
+        });
+        await flushAsync();
+        assert.strictEqual(env.container.listenerCount("pointerenter"), 0, "pointerenter listener removed on autohide disable");
+    } finally {
+        (globalThis as any).window = previousWindow;
+        (globalThis as any).document = previousDocument;
+        (globalThis as any).setTimeout = previousSetTimeout;
+        (globalThis as any).clearTimeout = previousClearTimeout;
+    }
+});
