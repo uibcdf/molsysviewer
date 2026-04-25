@@ -159,3 +159,4 @@ notebook-only convenience.
 - {doc}`camera_and_controls`
 - {doc}`../cookbook/addon_workspace_workbench`
 - {doc}`../cookbook/figure_export_workbench`
+- {doc}`../cookbook/workbench_scientific_workflow`
