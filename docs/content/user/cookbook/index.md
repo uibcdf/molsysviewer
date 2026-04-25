@@ -15,6 +15,7 @@ Current high-value runtime recipes:
 - {doc}`figure_export_workbench`
 - {doc}`addon_workspace_workbench`
 - {doc}`panel_mode_notebook`
+- {doc}`workbench_scientific_workflow`
 
 ```{toctree}
 :maxdepth: 2
@@ -31,4 +32,5 @@ panel_mode_notebook
 html_export
 sphinx_html_embedding
 addon_development
+workbench_scientific_workflow
 ```
