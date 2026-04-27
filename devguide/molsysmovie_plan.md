@@ -1,6 +1,7 @@
 # MolSysMovie — Implementation Plan (Pre-1.0)
 
-> **Status:** Pre-1.0. This document supersedes the strategic vision in
+> **Status:** Pre-1.0. Phases 1–4 complete; Phase 5 (docs) pending.
+> This document supersedes the strategic vision in
 > `molsysmovie_vision.md` with a concrete architecture and phased plan.
 
 ## Decision Record

@@ -17,6 +17,48 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
+### `view.movie` (MolSysMovie): current state
+
+Three of five planned phases are complete.
+
+**Phases done:**
+
+- **Phase 1 — Python data model** (`molsysviewer/viewer/movie.py`):
+  `MovieManager` with `add_keyframe`, `add_visibility_transition`,
+  `add_camera_orbit`, `add_structure_sweep`, `clear`, `info`, `duration_ms`,
+  `to_dict`/`from_dict`, `save`/`load`. 37 unit tests; all pass.
+  Wired as `view.movie` in `viewer/core.py`.
+
+- **Phase 2 — JS animation engine** (`movie-handlers.ts`):
+  `MovieHandlers.play()` drives `requestAnimationFrame` loop with
+  camera lerp, normalized-up, structure-index step, layer-visibility
+  accumulation, loop-restart tracking, and `movie_playback_done` event.
+  `play_movie` / `stop_movie` message types; Python `play()`/`stop()`
+  use `_send_runtime_only` (not in message history).
+
+- **Phase 3 — Export pipeline** (`movie-handlers.ts`, `movie.py`, `core.py`):
+  JS `exportFrames()` iterates tick-by-tick (no wall clock), awaits each
+  state update, captures via `getImageDataUri`, emits `movie_frame` events.
+  Python `export()` polls for `movie_export_done`, decodes base64 PNGs,
+  stitches with `imageio.mimwrite()`. Optional dep: `imageio[ffmpeg]`.
+  43 Python tests (42 pass, 1 skipped when imageio present).
+
+- **Phase 4 — Convenience builders**: already done inside Phase 1
+  (`add_camera_orbit`, `add_structure_sweep` with full test coverage).
+
+**Phase remaining:**
+
+- **Phase 5 — Docs**: user-facing docs (`docs/content/user/movie/index.md`),
+  cookbook with orbit + sweep + storyboard examples, `roadmap.md` update.
+  Not yet started; low risk, no blockers.
+
+**Key constraints:**
+- Movie ops (`play_movie`, `stop_movie`) use `_send_runtime_only` → not
+  replayed in HTML export or popup sync.
+- `imageio[ffmpeg]` checked at call time, not import time.
+- JS export mode must use `getImageDataUri` (same path as `export.image()`),
+  never raw `canvas.toDataURL()`.
+
 ### Pending proposals and bugs: current state
 
 `devguide/pending_proposals/` has 2 files:
