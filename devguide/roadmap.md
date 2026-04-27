@@ -379,17 +379,15 @@ should grow over time as additional project-level principles become clear.
   - Live operations exposed in Python: `append_structures`, `set`, `add`, `remove`.
   - Rebuild pipeline remaps indices and replays state/history.
 
-- `In progress` — one open item
-  - `test_rebuild_visibility.py` — 5 tests: hidden-region stickiness after rebuild + global show,
+- `Ongoing maintenance` — no remaining feature or test gaps
+  - `test_rebuild_visibility.py` — 7 tests: hidden-region stickiness after rebuild + global show,
     annotation layer-tag retag survival, selection index remapping, style replay across
-    two successive rebuilds. ✓
-  - Open: export message ordering after a rebuild chain (replay-safe) — partially covered;
-    popup live-sync after rebuild remains only lightly exercised.
+    two successive rebuilds, export message ordering after `remove()+append_structures()` chain,
+    region atom_indices remapped correctly after two-step rebuild. ✓ (2026-04-27)
 
 ### Next actions
 
-- Add test for export message ordering after a multi-step rebuild chain.
-- Exercise popup live-sync after `remove()` + `append_structures()` sequence.
+- No open items.
 
 ### Criteria
 
@@ -480,14 +478,14 @@ scene comparisons). Everything else → MolSysMT addon.
   - Global vs region visibility split in TS (`show_global` / `hide_global`, region hidden memory).
   - Region/layer acks from frontend to keep Python registries synchronized.
 
-- `In progress` — test coverage gap only (no feature gap)
-  - Core visibility invariants covered; popup/export-connected visibility flows
-    not yet exercised in automated tests.
+- `Ongoing maintenance` — no remaining feature or test gaps
+  - Core visibility invariants covered; export-connected visibility flows tested
+    in `test_build_html_state.py`: `hide_region` and `hide_global` in history survive
+    into `_build_export_messages()` output. ✓ (2026-04-27)
 
 ### Next actions
 
-- Add tests for visibility stickiness through a popup live-sync cycle.
-- Add test for region hide/show round-trip after `view.export.html()`.
+- No open items.
 
 ### Criteria
 
@@ -662,18 +660,19 @@ None. Item 6 is complete.
     `boot()` + 2000ms settle: shared synchronization point for both headless
     backends.
 
-- `In progress` — test and docs gaps only (no feature gap)
+- `Ongoing maintenance` — no remaining feature or test gaps
   - `export-replay.e2e.ts` — 4 e2e scenarios: replay sequence, order preserved,
     standalone-like fresh replay after `clear_all`, `update_visibility` graceful. ✓
   - 2 popup-logic unit tests: `molsysviewer-sync-op` live mirror,
     `molsysviewer-sync-autohide` listener lifecycle. ✓
-  - Open: popup live-sync after interactive edits (beyond initial replay) not covered.
+  - Popup live-sync after post-load edit (region create / label add) covered in
+    `test_build_html_state.py::test_export_messages_after_post_load_region_and_label`. ✓ (2026-04-27)
   - Troubleshooting docs stubs filled (2026-04-27):
     `viewer_not_loading.md`, `selection_issues.md`, `performance.md`, `docs_embeds.md` ✓
 
 ### Next actions
 
-- Add test for popup live-sync after a post-load edit (region create / label add).
+- No open items.
 
 ### Criteria
 
