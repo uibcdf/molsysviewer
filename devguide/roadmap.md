@@ -353,18 +353,18 @@ should grow over time as additional project-level principles become clear.
   - Workspace switch toast notification in TS (`ViewerController.showToast`):
     shown when `selectWorkspace` changes the active workspace.
 
-- `In progress`
-  - Contract hardening by test breadth across all ops and edge paths.
-  - Cross-check consistency between docs snapshots and runtime behavior.
-  - Support-library integration hardening (`argdigest`, `depdigest`, `pyunitwizard`, `smonitor`) is active because it affects runtime behavior directly.
-  - `argdigest` now covers the main noisy public wrappers, but broader shape/detail coverage is still partial.
-  - `smonitor` now has regression-backed wrapper coverage beyond config/catalog smoke tests, and the package-wide public signal map is largely enforced structurally.
+- `Ongoing maintenance` (no feature gaps)
+  - `argdigest` covers main public wrappers; broader shape/detail coverage partial.
+  - `smonitor` has regression-backed coverage for the core signal map.
+  - `test_protocol_contracts.py` — 12 tests covering `reset_viewer`/`clear_all`,
+    `clear_decorations`/`clear_scene`, annotation/measurement layer retag history rewrite,
+    and `set_global_representation` replay after rebuild. ✓
 
 ### Next actions
 
-- ~~Expand protocol-focused tests for non-trivial operations (`set_global_representation`, layer retag, clear/reset interactions).~~ Done (2026-04-21): `tests/test_protocol_contracts.py` — 12 tests covering `reset_viewer`/`clear_all`, `clear_decorations`/`clear_scene`, annotation/measurement layer retag history rewrite, and `set_global_representation` replay after rebuild.
-- Keep support-library integration aligned with sibling-library contracts, especially around bootstrap, quantity handling, and public API digestion.
+- Keep support-library integration aligned with sibling-library contracts.
 - Keep contract changes additive unless versioned.
+- Expand `argdigest` / `smonitor` coverage only when new public wrappers are added.
 
 ### Criteria
 
@@ -379,14 +379,17 @@ should grow over time as additional project-level principles become clear.
   - Live operations exposed in Python: `append_structures`, `set`, `add`, `remove`.
   - Rebuild pipeline remaps indices and replays state/history.
 
-- `In progress`
-  - Behavioral stabilization and broader regression coverage for remap/replay scenarios.
-  - Rebuild regressions now exist for `remove()`, `append_structures()`, `add()`, `set()`, and a consecutive-operation chain, and combined visibility semantics.
+- `In progress` — one open item
+  - `test_rebuild_visibility.py` — 5 tests: hidden-region stickiness after rebuild + global show,
+    annotation layer-tag retag survival, selection index remapping, style replay across
+    two successive rebuilds. ✓
+  - Open: export message ordering after a rebuild chain (replay-safe) — partially covered;
+    popup live-sync after rebuild remains only lightly exercised.
 
 ### Next actions
 
-- ~~Extend coverage from rebuild mechanics into combined visibility semantics and replay-sensitive export behavior.~~ Done (2026-04-21): `tests/test_rebuild_visibility.py` — 5 tests for hidden-region stickiness after rebuild + global show, annotation layer-tag retag survival, selection index remapping, and style replay across two successive rebuilds.
-- Validate export message ordering (replay-safe after chain) — partially covered; popup live-sync remains only lightly exercised.
+- Add test for export message ordering after a multi-step rebuild chain.
+- Exercise popup live-sync after `remove()` + `append_structures()` sequence.
 
 ### Criteria
 
@@ -420,15 +423,19 @@ should grow over time as additional project-level principles become clear.
     - JS rebuilds affected shapes on structure change via `onTrajectoryState` subscription in `ShapeHandlers`
     - `None` in a structure slot hides the shape for that structure
 
-- `In progress`
-  - Deep coverage of TS shape handler branches and error paths.
-  - Docs parity for all implemented overlays.
+- `In progress` — docs placeholder gap only
+  - `shape-handler.test.ts` — 11 tests: `structures_coords` storage for all 5
+    trajectory-shape families, `addHbonds` warn path, frame subscription,
+    single-subscription guarantee, `frameUpdateInProgress` guard. ✓
+  - Open: three user docs pages are still stubs (code exists, docs missing):
+    - `docs/content/user/overlays/shapes/vectors.md` — `add_displacement_vectors`
+    - `docs/content/user/overlays/shapes/links.md` — `add_links`
+    - `docs/content/user/overlays/shapes/meshes.md` — `add_triangle_faces`, `add_tetrahedra`
 
 ### Next actions
 
-- ~~Extend JS tests beyond region-hide to shape routing and tag-index lifecycle.~~ Done (2026-04-21): `shape-handler.test.ts` expanded to 11 tests — `structures_coords` storage for all 5 trajectory-shape families, `addHbonds` warn path, frame subscription (`clearByTag` + render on change, null-frame skip, same-frame no-op), single-subscription guarantee, and `frameUpdateInProgress` concurrent guard.
-- Keep filling `argdigest` gaps in shape methods only where the public call surface is actually used or warning-prone.
-- Close docs gaps where implemented APIs are still documented as placeholders.
+- Fill the three placeholder shape docs pages (minimal example + key options each).
+- Keep filling `argdigest` gaps only where new public wrappers are added.
 
 ### Criteria
 
@@ -475,14 +482,14 @@ scene comparisons). Everything else → MolSysMT addon.
   - Global vs region visibility split in TS (`show_global` / `hide_global`, region hidden memory).
   - Region/layer acks from frontend to keep Python registries synchronized.
 
-- `In progress`
-  - Complex interaction tests are broader than before, but popup/export-connected visibility flows still need more coverage.
-  - Support diagnostics are now strong enough that new visibility work should use `smonitor` context/contracts instead of ad hoc debugging.
+- `In progress` — test coverage gap only (no feature gap)
+  - Core visibility invariants covered; popup/export-connected visibility flows
+    not yet exercised in automated tests.
 
 ### Next actions
 
-- Extend coverage from core visibility invariants into popup/export-connected flows.
-- Document edge semantics with executable examples in devguide checkpoints as needed.
+- Add tests for visibility stickiness through a popup live-sync cycle.
+- Add test for region hide/show round-trip after `view.export.html()`.
 
 ### Criteria
 
@@ -657,16 +664,19 @@ None. Item 6 is complete.
     `boot()` + 2000ms settle: shared synchronization point for both headless
     backends.
 
-- `In progress`
-  - Robustness tests for popup sync flows and camera sync edge cases.
-  - Documentation parity for embed/export troubleshooting.
-  - Baseline export ordering and popup host bootstrap contracts are now covered, but live mirror behavior remains only partially exercised.
-  - Popup live-sync baseline is now regression-covered for initial replay and camera fight avoidance, though broader interactive breadth is still limited.
+- `In progress` — test and docs gaps only (no feature gap)
+  - `export-replay.e2e.ts` — 4 e2e scenarios: replay sequence, order preserved,
+    standalone-like fresh replay after `clear_all`, `update_visibility` graceful. ✓
+  - 2 popup-logic unit tests: `molsysviewer-sync-op` live mirror,
+    `molsysviewer-sync-autohide` listener lifecycle. ✓
+  - Open: popup live-sync after interactive edits (beyond initial replay) not covered.
+  - Open: several troubleshooting docs pages are stubs
+    (`docs_embeds.md`, `selection_issues.md`, `performance.md`, `viewer_not_loading.md`).
 
 ### Next actions
 
-- Add tests around export message cleaning and replay ordering.
-- Add explicit checklist for popup host/popout behavior verification.
+- Add test for popup live-sync after a post-load edit (region create / label add).
+- Fill troubleshooting docs stubs with actual diagnostic steps.
 
 ### Criteria
 
@@ -727,17 +737,22 @@ None. Item 6 is complete.
   - JS unit/e2e scaffolding exists with runnable scripts.
   - `pytest` and `python -m pytest` now resolve the same in-repo package during test collection.
 
-- `In progress`
-  - JS coverage is still narrower than the runtime surface, but handler-level breadth is improving.
-  - E2E matrix is minimal.
-  - Public API digestion coverage now has explicit regression tests for core wrapper methods and selected shape helpers.
+- `In progress` — JS coverage gap (no Python gaps)
+  - Python suite: all passing (see latest run).
+  - JS unit suite: 103 tests passing (as of 2026-04-24). ✓
+  - E2E suite: 8 scenario files covering region-hide, annotations+measurements,
+    shape-trajectory, export-replay, group-panel, hierarchy, measurements,
+    range-selection. ✓
+  - Open: JS unit coverage is handler-breadth level; deeper success-path
+    coverage for remap/replay semantics is still partial.
 
 ### Next actions
 
-- Extend JS unit coverage from handler guards into deeper success-path and replay/remap semantics.
-- E2E paths now include: region-hide and annotations+measurements interaction (`test:e2e:annotations`). ✓
-- ~~Add further E2E paths for structure-aware shapes~~. Done (2026-04-24): `shape-trajectory.e2e.ts` (`test:e2e:shapes`) — 5 scenarios: trajectory sphere storage, all 5 trajectory-shape families registered via handleMessage, frame navigation updates ShapeHandlers currentFrame, clear_shapes_by_tag persistence, clear_all + reload lifecycle.
-- ~~Add further E2E paths for export flows~~. Done (2026-04-24): `export-replay.e2e.ts` (`test:e2e:export`) — 4 scenarios: replay export sequence (structure+region+label+camera), replay order preserved (no null-dereference errors), standalone-like fresh replay after clear_all, update_visibility graceful handling. Also added 2 popup-logic unit tests: `molsysviewer-sync-op` live mirror, `molsysviewer-sync-autohide` listener lifecycle. JS suite: 103 tests.
+- Extend JS unit tests into deeper success-path scenarios for:
+  - measurement-handlers (endpoint resolution, centroid vs atom paths)
+  - annotation-handler (replay after rebuild, tag retag)
+  - state-handler (region visibility state after remap)
+- Add E2E scenario: full workflow (select → label → measure → export HTML → verify replay).
 
 ### Criteria
 
