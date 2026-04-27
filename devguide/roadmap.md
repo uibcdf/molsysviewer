@@ -678,6 +678,51 @@ should grow over time as additional project-level principles become clear.
 - Export output must be reproducible from message history.
 - Runtime source should remain decoupled from generated-artifact manual edits.
 
+## 7.5) Movie and Video Export (`view.movie`)
+
+### Status
+
+- `Done` (2026-04-27)
+  - **Phase 1 — Python data model**: `MovieManager` as `view.movie`. Full
+    keyframe timeline API: `add_keyframe`, `add_visibility_transition`,
+    `add_camera_orbit`, `add_structure_sweep`, `clear`, `info`,
+    `duration_ms`, `to_dict`/`from_dict`, `save`/`load`. 40 Python unit
+    tests; all pass.
+  - **Phase 2 — JS animation engine**: `movie-handlers.ts` with
+    `requestAnimationFrame`-driven `play()`. Camera lerp + normalize-up,
+    structure index round-lerp, layer-visibility accumulation,
+    loop-restart tracking, `movie_playback_done` event back to Python.
+    `play_movie` / `stop_movie` ops. Python `play()`/`stop()` use
+    `_send_runtime_only` (not in message history).
+  - **Phase 3 — Export pipeline**: JS `exportFrames()` (tick-by-tick,
+    `getImageDataUri`, `movie_frame` / `movie_export_done` events).
+    Python `export()` polls for completion, decodes PNG frames,
+    stitches with `imageio.mimwrite()`. Optional dep: `imageio[ffmpeg]`.
+    42 Python tests pass, 1 skipped (imageio guard).
+  - **Phase 4 — Convenience builders**: `add_camera_orbit` and
+    `add_structure_sweep` (done inside Phase 1).
+  - **Phase 5 — Docs**: `docs/content/user/movie/` (index, timeline,
+    playback, export) + cookbook `movie_recipes.md` (orbit, sweep,
+    storyboard, combined, GIF). Sphinx build: no new warnings.
+
+### Next actions
+
+- Validate `play()` and `export()` through a real scientific session
+  (smoke test with a demo system in Jupyter).
+- Consider adding `start_time_ms` offset to `play()` for mid-timeline
+  preview (deferred open question from the plan).
+- Headless export path (standalone/playwright): movie export currently
+  requires a live Jupyter canvas; document this limitation clearly.
+
+### Criteria
+
+- `play_movie` / `stop_movie` must not appear in message history or HTML
+  export replay.
+- `export()` must raise a clear `ImportError` if `imageio[ffmpeg]` is
+  absent; never silently fail.
+- The timeline serialization format is versioned (`molsysmovie_version: 1`);
+  any breaking change must increment the version and add migration logic.
+
 ## 8) Testing and Quality Gates
 
 ### Status
