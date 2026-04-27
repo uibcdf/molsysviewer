@@ -120,7 +120,7 @@ Current scope clarification for `Style`:
   - `clear()`
   - `focus(...)`
   - `new_region(...)`
-  - `add_label(...)`
+  - `add_label(...)` — deprecated alias for `annotations.add_label_from_active_selection(...)`
   - `save(...)`
   - current canvas context-menu slice also supports destructive
     `Remove Selected Atoms`, bridged through `view.remove(...)`
@@ -166,6 +166,9 @@ Related object wrappers are also part of the intended public surface:
 - `view.whole.focus(...)`
 - `view.regions[tag].focus(...)`
 - `view.regions[tag].show_only(...)`
+- `view.regions[tag].rename(new_tag)`
+  - renames the region in Python state and sends `rename_region` to JS
+  - `_build_export_messages()` rewrites prior region ops to use the new tag, so the export replay uses the final name directly
 - `view.selections[tag].info()`
 - `view.selections[tag].activate()`
 - `view.selections[tag].focus(...)`
@@ -178,7 +181,9 @@ Related object wrappers are also part of the intended public surface:
   - anchor resolves via MolSysMT selection string or explicit `atom_indices`
   - `label_style` accepts a dict with optional keys: `color` (CSS hex string), `size_em` (float), `background` (bool), `background_opacity` (float 0–1)
   - `add_label(group_index=...)` is a deprecated alias; use `add_annotation` instead
-- `view.annotations.add_label_from_active_selection(text, tag=...)`
+- `view.annotations.add_label_from_active_selection(text, tag=..., label_style=...)`
+  - anchors to all atom indices in the last active canvas selection (multi-group supported)
+  - `label_style` accepts the same dict as `add_annotation` (`color`, `size_em`)
 - `view.annotations.set_anchor(tag, selection=..., atom_indices=...)`
   - reanchor an existing label to a different atom set
   - `set_group_index(tag, group_index)` is a deprecated alias; use `set_anchor` instead
@@ -372,6 +377,25 @@ If you change:
 - or popup synchronization,
 
 you must validate the docs-lite output.
+
+## Canvas UX modes
+
+`MolSysView` accepts two experimental constructor arguments:
+
+```python
+view = MolSysView(controls_mode="minimal", panel_mode_style="floating")
+```
+
+- `controls_mode="classic"` (default): six text buttons (Reset, Full, Bg, Spin, Swing, Pop).
+- `controls_mode="minimal"`: three SVG icon cluster (panel / fullscreen / popup) plus a `?` help
+  button. Scene actions (reset view, toggle background, toggle spin/swing) move to the empty-canvas
+  context menu. Keyboard shortcuts: `H` toggles the help overlay, `N`/`W` open Navigate/Workbench.
+
+- `panel_mode_style="drawer"` (default): Navigate panel 560 px left, Workbench 240 px right.
+- `panel_mode_style="floating"`: centered overlay card (~72 % × 68 % of canvas), backdrop-click-to-close, zero viewport shift.
+
+Both `"classic"` / `"drawer"` remain the defaults until at least one scientific workflow
+has been validated with the new design (`0.16.x → 0.17.x` horizon).
 
 ## Panel Mode
 
