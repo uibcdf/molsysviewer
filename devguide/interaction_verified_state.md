@@ -125,22 +125,49 @@ interaction behavior.
   - the first action is intentionally narrow:
     - `Focus Region`
 
+## Python Interaction Callbacks
+
+### Implemented (not yet smoke-tested in a live session)
+
+- `view.on_hover(callback)` — registers a callback fired on every
+  `interaction_hover` event; deregisters on second call with same callable
+- `view.on_click(callback)` — same pattern for `interaction_click`
+- `view.on_context_menu(callback)` — same pattern for `interaction_context_menu`
+- Callbacks receive the raw event dict (same payload stored in
+  `view.get_last_hover_event()` / `view.get_last_click_event()`)
+- Implementation: `_hover_callbacks`, `_click_callbacks`, `_context_callbacks`
+  lists in `core.py`; fired inside the `_handle_frontend_event` dispatcher
+
 ## Interactive Measurements
 
 ### Verified
 
 - the measurement tool modes feel clear in live smoke
 - measurements appear in the scene where expected
+- full state machine in `measurement-tools.ts` (`MeasurementToolController`):
+  - states: started → progress → completed / cancelled
+  - `Escape` key cancels via `window keydown` listener (capture phase)
+  - `ToolStatusOverlay` (top-left of canvas) shows pick count and "Esc cancels" hint
 - `view.get_last_measurement_created_event()` reports a coherent replay-safe
   payload:
   - `action`
   - `picked_count`
   - `picks_atom_indices`
+  - `endpoint_kinds`, `endpoint_policy`, `endpoint_labels`, `endpoint_atom_indices`
+  - `tag`, `value`
+- `view.get_last_tool_state_event()` reports current tool progress:
+  - `action`, `status`, `required_picks`, `picked_count`, `remaining_picks`
 - `Persist Last Measurement` is part of the implemented reproducibility bridge
 - `view.measurements` now exposes minimum inspection helpers:
   - `count()`
   - `records()`
   - `info()`
+
+## Known Open Points (item 6)
+
+- `region_tags` enrichment pending: `kind: "structure"` payloads do not yet
+  include which regions the picked atom belongs to. Will be added as an optional
+  `region_tags: string[]` field enriched Python-side after the event is received.
 
 ## Reproducibility Bridges
 

@@ -522,57 +522,52 @@ scene comparisons). Everything else → MolSysMT addon.
 
 ### Status
 
-- `In progress`
-  - JS → Python interaction transport exists for Mol* `hover` and `click`.
-  - Right-click context transport exists as a viewer-owned slice:
-    - host context menu suppression inside the canvas,
-    - separate context-target event,
-    - viewer context menu with seed actions.
-  - Event contract covers four event types:
-    - `interaction_hover`
-    - `interaction_click`
-    - `interaction_context_menu`
-    - `interaction_context_action`
-  - Supported target families: `kind: "structure"` (atom_indices), `kind: "shape"`,
-    `kind: "annotation"`, `kind: "empty"`.
-  - Python stores the last hover/click/context-menu-target/context-menu-action payloads
-    on `MolSysView`.
-  - `active_selection` is a mature bidirectional state object: element (group-centric),
-    shape, annotation, and element+annotation mixed paths all have real slices.
-    Payload includes atom/group/shape/annotation counts and target-level metadata.
-    Context menu exposes `Focus Selection`, `Clear Selection`, and `Save Selection`.
-  - `GroupStrip` is the live 1D navigation band: rich callback integration
-    (onSelect, onFocus, onHover, onContext, onAnnotationContext), annotation mark support,
-    molecule/component/chain hierarchy, synchronized with canvas active_selection.
-    Regression-tested.
+- `In progress` — one item pending; everything else is implemented and verified.
+
+**Implemented and verified (do not re-propose):**
+
+- JS → Python transport for `hover`, `click`, `context_menu`, `context_action` ✓
+- Four event types: `interaction_hover`, `interaction_click`,
+  `interaction_context_menu`, `interaction_context_action` ✓
+- Four target families: `kind: "structure"`, `kind: "shape"`,
+  `kind: "annotation"`, `kind: "empty"` ✓
+- Python stores last events; `view.hover_target`, `view.context_target` wrappers ✓
+- Python callbacks fully wired: `view.on_hover(cb)`, `view.on_click(cb)`,
+  `view.on_context_menu(cb)` — `_hover_callbacks`, `_click_callbacks`,
+  `_context_callbacks` in `core.py` ✓
+- `active_selection` mature bidirectional state; context menu bridges
+  (Save Selection, Create Region, Add Label) ✓
+- **Interactive measurement tool** fully implemented (`measurement-tools.ts`):
+  - full state machine: started → progress → completed / cancelled
+  - `Escape` key cancels via `window keydown` listener
+  - `ToolStatusOverlay` shows pick count and hint in the canvas corner
+  - `MeasurementToolController` wired into `viewer-controller.ts`
+  - `interaction_tool_state` and `interaction_measurement_created` events
+    received and stored in Python:
+    `view.get_last_tool_state_event()`, `view.get_last_measurement_created_event()` ✓
+- `GroupPanel` with per-chain `GroupStrip` columns, molecule/component
+  hierarchy, collapse/expand, auto-scroll ✓
+- Strip interactions converged with canvas (same event families) ✓
+
+**Pending — the only remaining item:**
+
+- `region_tags` enrichment: when a picked atom belongs to one or more
+  named regions, the `kind: "structure"` payload does not currently include
+  which regions that atom belongs to. Decision taken: add an optional
+  `region_tags: string[]` field to the existing payload (no new `kind`
+  variant needed). Lookup is Python-side: `atom_indices` vs region index sets.
 
 ### Next actions
 
-- Use the interaction pages in `devguide/` as the implementation contract for the next slices.
-- Add Python-side callback registration only after the transport contract settles.
-- Decide whether region-aware picks belong in a richer payload variant or in the existing
-  `kind: "structure"` family.
-- Add pointer semantics and shared highlight/selection only after event ownership is clear.
-- Formalize tool-mode state machines for `distance` / `angle` / `dihedral` measurements:
-  menu seeds the action but explicit mode transitions, visual feedback, and cancellation
-  UX are not yet implemented.
-- Keep interactive measurement in Mol* first:
-  - it already owns picked loci and measurement representations,
-  - Python/MolSysMT can consume emitted results later without entering the immediate click loop.
-- `GroupPanel` with per-chain `GroupStrip` columns is now the live runtime. ✓
-- Molecule/component hierarchy visual cues, collapse/expand, and auto-scroll are implemented. ✓
-- Do not assume middle-click is available for the panel toggle; Mol* already uses the
-  middle/wheel path for camera behavior.
-- Keep strip interactions converged with canvas interactions:
-  - hover and context menu should use the same event families instead of becoming a
-    separate UX island.
-- The next priority is not broader interaction for its own sake, but turning interaction
-  into reproducible artifacts.
+- Add `region_tags: string[]` to the `kind: "structure"` payload for
+  `interaction_hover`, `interaction_click`, and `interaction_context_menu`.
+  Python enriches the payload after receiving it (it owns the region index).
 
 ### Criteria
 
-- Keep the first interaction contract additive and easy to replay/debug.
-- Do not overfit the payload before real picking workflows exist.
+- Do not add a new `kind: "region"` variant — `kind` describes the Mol*
+  object type, not a Python-side category.
+- Region tag enrichment must not break existing consumers of the payload.
 
 ## 6.5) Annotations and Persistent Labels
 
