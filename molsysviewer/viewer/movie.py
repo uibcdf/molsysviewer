@@ -410,24 +410,29 @@ class MovieManager:
     # ── Playback / export (Phase 2 / Phase 3) ─────────────────────────────
 
     def play(self, loop: bool = False) -> None:
-        """Preview the movie in the browser.
+        """Preview the movie in the browser (Phase 2 — JS animation engine).
 
-        .. note::
-            Not yet implemented (Phase 2 — JS animation engine).
+        Sends the current timeline to the frontend and starts
+        ``requestAnimationFrame``-driven playback. The ``movie_playback_done``
+        event is emitted when a non-looping animation finishes.
+
+        Parameters
+        ----------
+        loop
+            If ``True``, the animation repeats indefinitely.
         """
-        raise NotImplementedError(
-            "Browser playback is not yet implemented (Phase 2)."
+        self._validate_ready()
+        self._view._send(  # noqa: SLF001
+            {
+                "op": "play_movie",
+                "keyframes": list(self._keyframes),
+                "loop": bool(loop),
+            }
         )
 
     def stop(self) -> None:
-        """Stop browser playback.
-
-        .. note::
-            Not yet implemented (Phase 2 — JS animation engine).
-        """
-        raise NotImplementedError(
-            "Browser playback is not yet implemented (Phase 2)."
-        )
+        """Stop browser playback."""
+        self._view._send({"op": "stop_movie"})  # noqa: SLF001
 
     def export(
         self,
