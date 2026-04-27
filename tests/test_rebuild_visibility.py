@@ -150,3 +150,65 @@ def test_set_global_representation_replayed_across_two_rebuilds():
     ]
     assert len(repr_after_second) >= 1
     assert repr_after_second[0]["representation"] == "cartoon"
+
+
+# ---------------------------------------------------------------------------
+# Export message ordering after a multi-step rebuild chain (item 2)
+# ---------------------------------------------------------------------------
+
+def test_export_messages_ordered_after_remove_then_append():
+    """After remove() + append_structures(), export messages keep load → region → label → camera."""
+    view = demo["pentalanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    atom_indices = list(view.select(selection="group_index==2"))
+    view.new_region(atom_indices=atom_indices, tag="site", skip_digestion=True)
+    view.annotations.add_annotation(
+        text="Site label",
+        selection="group_index==2",
+        tag="lbl",
+        skip_digestion=True,
+    )
+    view._last_camera_snapshot = {"target": [1.0, 0.0, 0.0], "position": [0.0, 0.0, 10.0], "up": [0.0, 1.0, 0.0]}  # noqa: SLF001
+
+    # First rebuild: remove some atoms
+    view.remove(selection="atom_index < 3", skip_digestion=True)
+
+    # Second rebuild: append back the original structures
+    view.append_structures(view.molsys, skip_digestion=True)
+
+    messages = view._build_export_messages()  # noqa: SLF001
+    ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
+
+    assert "load_molsys_payload" in ops
+    assert "create_region" in ops
+    assert "add_label" in ops
+    assert ops.index("load_molsys_payload") < ops.index("create_region"), \
+        "load must precede create_region"
+    assert ops.index("create_region") < ops.index("add_label"), \
+        "create_region must precede add_label"
+    assert ops[-1] == "set_camera_snapshot", \
+        "camera snapshot must be last"
+
+
+def test_export_messages_region_atom_indices_remapped_after_rebuild_chain():
+    """Region atom indices in export messages are correctly remapped after remove() + append_structures()."""
+    view = demo["pentalanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    # Use atoms well above index 3 so the remap is predictable
+    atom_indices_before = list(view.select(selection="group_index==3"))
+    view.new_region(atom_indices=atom_indices_before, tag="stable", skip_digestion=True)
+
+    # Remove atoms 0..2 — indices shift by -3
+    view.remove(selection="atom_index < 3", skip_digestion=True)
+
+    # Second rebuild: append structures
+    view.append_structures(view.molsys, skip_digestion=True)
+
+    messages = view._build_export_messages()  # noqa: SLF001
+    region_msg = next(m for m in messages if m.get("op") == "create_region" and m.get("tag") == "stable")
+
+    # The region must exist in export and have a non-empty atom_indices list
+    assert isinstance(region_msg.get("atom_indices"), list)
+    assert len(region_msg["atom_indices"]) > 0
