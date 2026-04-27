@@ -163,11 +163,18 @@ interaction behavior.
   - `records()`
   - `info()`
 
-## Known Open Points (item 6)
+## Region-Aware Picks
 
-- `region_tags` enrichment pending: `kind: "structure"` payloads do not yet
-  include which regions the picked atom belongs to. Will be added as an optional
-  `region_tags: string[]` field enriched Python-side after the event is received.
+### Implemented (2026-04-27)
+
+- `kind: "structure"` payloads for `interaction_hover`, `interaction_click`, and
+  `interaction_context_menu` now include `region_tags: list[str]`
+- The list contains the tags of all named regions (`view._regions`) whose
+  `atom_indices` intersect the `atom_indices` in the pick payload
+- Empty list when no regions are defined or none overlap the pick
+- Enrichment is Python-side in `_enrich_interaction_payload()` (core.py); no JS changes
+- Covered by: `test_region_tags_added_to_structure_payload`,
+  `test_region_tags_empty_when_no_regions_defined`
 
 ## Reproducibility Bridges
 
