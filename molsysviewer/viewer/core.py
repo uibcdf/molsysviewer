@@ -38,6 +38,7 @@ from ..colors import colors as global_colors
 from .. import config
 from .history import HistoryMixin
 from .camera import CameraManager
+from .movie import MovieManager
 from .export import ExportMixin
 from .scene_registry import SceneRegistryMixin
 from .representations import normalize_representation_type
@@ -250,6 +251,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         self.scene = SceneManager(self)
         self.player = PlayerManager(self)
         self.camera = CameraManager(self)
+        self.movie = MovieManager(self)
         try:
             self.widget.autohide_controls = bool(config.autohide_controls)
         except Exception:
