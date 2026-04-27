@@ -1,6 +1,6 @@
 # MolSysMovie — Implementation Plan (Pre-1.0)
 
-> **Status:** Pre-1.0. Phases 1–4 complete; Phase 5 (docs) pending.
+> **Status:** Pre-1.0. All phases complete (2026-04-27).
 > This document supersedes the strategic vision in
 > `molsysmovie_vision.md` with a concrete architecture and phased plan.
 
@@ -395,13 +395,16 @@ plane defined by `radial` and `right`. The final keyframe closes the loop
 - `add_structure_sweep()` — populates keyframes for structure_index range
 - Unit tests for each builder's generated keyframe sequences
 
-### Phase 5 — Docs and devguide closure
+### Phase 5 — Docs and devguide closure ✓
 
-- User-facing docs: `docs/content/user/movie/index.md`
-- Cookbook recipe: orbit + trajectory sweep + storyboard
-- Update `molsysmovie_vision.md` header to point here
-- Update `roadmap.md` to mark `view.movie` as planned/in-progress
-- Update `checkpoints.md`
+- `docs/content/user/movie/index.md` — section overview + toctree
+- `docs/content/user/movie/timeline.md` — keyframe fields, builders, inspection, serialization
+- `docs/content/user/movie/playback.md` — play/stop, interpolation rules, non-blocking note
+- `docs/content/user/movie/export.md` — dependency, params, formats, how export works
+- `docs/content/user/cookbook/movie_recipes.md` — 4 recipes + GIF variant
+- `molsysmovie_vision.md` header updated to point here
+- `roadmap.md` updated (item 7.5, Done 2026-04-27)
+- `checkpoints.md` updated
 
 ---
 
