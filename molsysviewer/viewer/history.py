@@ -13,9 +13,32 @@ class HistoryMixin:
                 return opt_tag
         return None
 
+    _REGION_OPS = frozenset({
+        "create_region", "set_region_representation",
+        "show_region", "hide_region", "delete_region",
+    })
+
     def _record_shape_message(self, msg: dict) -> None:
         op = msg.get("op")
         if not isinstance(op, str):
+            return
+
+        if op == "rename_region":
+            old_tag = msg.get("tag")
+            new_tag = msg.get("new_tag")
+            if not isinstance(old_tag, str) or not isinstance(new_tag, str) or old_tag == new_tag:
+                self._message_history.pop()
+                return
+            def _rewrite_region(item: dict) -> dict:
+                if self._tag_from_message(item) != old_tag:
+                    return item
+                if item.get("op") not in self._REGION_OPS:
+                    return item
+                updated = dict(item)
+                updated["tag"] = new_tag
+                return updated
+            # Rewrite all previous entries; drop the rename_region msg itself (last entry).
+            self._message_history = [_rewrite_region(m) for m in self._message_history[:-1]]
             return
 
         if op == "delete_layer":
