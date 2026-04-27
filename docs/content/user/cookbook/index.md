@@ -16,6 +16,7 @@ Current high-value runtime recipes:
 - {doc}`addon_workspace_workbench`
 - {doc}`panel_mode_notebook`
 - {doc}`workbench_scientific_workflow`
+- {doc}`movie_recipes`
 
 ```{toctree}
 :maxdepth: 2
@@ -33,4 +34,5 @@ html_export
 sphinx_html_embedding
 addon_development
 workbench_scientific_workflow
+movie_recipes
 ```

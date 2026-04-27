@@ -16,6 +16,7 @@ scene_management/index.md
 representations/index.md
 overlays/index.md
 export/index.md
+movie/index.md
 demo_systems/index.md
 troubleshooting/index.md
 cookbook/index.md
