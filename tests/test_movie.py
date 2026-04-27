@@ -35,6 +35,10 @@ class DummyView:
     def __init__(self, n_structures=10, camera_snapshot=None):
         self.camera = DummyCamera(camera_snapshot)
         self.player = DummyPlayer(n_structures)
+        self.sent_messages: list[dict] = []
+
+    def _send(self, msg: dict) -> None:
+        self.sent_messages.append(msg)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -394,13 +398,46 @@ def test_add_structure_sweep_neither_duration_nor_end_raises():
         m.add_structure_sweep(from_index=0, to_index=4)
 
 
-# ── play / export stubs ────────────────────────────────────────────────────────
+# ── play / stop ────────────────────────────────────────────────────────────────
 
-def test_play_raises_not_implemented():
+def test_play_sends_message():
     m = make_movie()
-    with pytest.raises(NotImplementedError):
+    m.add_keyframe(0.0, camera=SNAP_A)
+    m.add_keyframe(3000.0, camera=SNAP_B)
+    m.play()
+    msgs = m._view.sent_messages
+    assert len(msgs) == 1
+    assert msgs[0]["op"] == "play_movie"
+    assert len(msgs[0]["keyframes"]) == 2
+    assert msgs[0]["loop"] is False
+
+
+def test_play_loop_flag():
+    m = make_movie()
+    m.add_keyframe(0.0)
+    m.add_keyframe(1000.0)
+    m.play(loop=True)
+    assert m._view.sent_messages[-1]["loop"] is True
+
+
+def test_play_requires_two_keyframes():
+    m = make_movie()
+    with pytest.raises(ValueError):
+        m.play()
+    m.add_keyframe(0.0)
+    with pytest.raises(ValueError):
         m.play()
 
+
+def test_stop_sends_message():
+    m = make_movie()
+    m.stop()
+    msgs = m._view.sent_messages
+    assert len(msgs) == 1
+    assert msgs[0]["op"] == "stop_movie"
+
+
+# ── export stub ────────────────────────────────────────────────────────────────
 
 def test_export_raises_not_implemented():
     m = make_movie()

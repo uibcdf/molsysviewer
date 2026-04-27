@@ -21,6 +21,7 @@ import { ShapeHandlers } from "./handlers/shape-handlers";
 import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
+import { MovieHandlers } from "./handlers/movie-handlers";
 import { LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
@@ -484,6 +485,7 @@ export class MolSysViewerController {
     public readonly scene: SceneHandlers;
     public readonly state: StateHandlers;
     public readonly trajectory: TrajectoryHandlers;
+    public readonly movie: MovieHandlers;
 
     private currentStructure?: StateObjectRef; // Ref to structure root
     private loadedStructure?: LoadedStructure; // Loaded structure bundle
@@ -949,6 +951,14 @@ export class MolSysViewerController {
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState(),
             onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
+        });
+        this.movie = new MovieHandlers({
+            setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
+            setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
+            getCameraSnapshot: () => this.getCameraSnapshot(),
+            showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
+            hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
+            notify: (msg) => this.notify?.(msg),
         });
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
@@ -1587,6 +1597,10 @@ export class MolSysViewerController {
                 case "step_trajectory": await this.trajectory.stepTrajectory(msg); break;
                 case "set_trajectory_frame": await this.trajectory.setTrajectoryFrame(msg); break;
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
+
+                // Movie Ops
+                case "play_movie": this.movie.play((msg as any).keyframes ?? [], !!(msg as any).loop); break;
+                case "stop_movie": this.movie.stop(); break;
                 case "set_addon_runtime_summary": {
                     const prevWorkspaceIds = this.addonRuntimeInitialized
                         ? new Set(this.getWorkspaceOptions().map((item) => item.id))

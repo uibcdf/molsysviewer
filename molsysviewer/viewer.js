@@ -145235,6 +145235,139 @@ var TrajectoryHandlers = class {
   }
 };
 
+// src/managers/handlers/movie-handlers.ts
+function applyEasing(t5, easing) {
+  switch (easing) {
+    case "ease-in":
+      return t5 * t5;
+    case "ease-out":
+      return 1 - (1 - t5) * (1 - t5);
+    case "ease-in-out":
+      return t5 < 0.5 ? 2 * t5 * t5 : 1 - 2 * (1 - t5) * (1 - t5);
+    default:
+      return t5;
+  }
+}
+function lerp3(a8, b8, t5) {
+  return [
+    a8[0] + (b8[0] - a8[0]) * t5,
+    a8[1] + (b8[1] - a8[1]) * t5,
+    a8[2] + (b8[2] - a8[2]) * t5
+  ];
+}
+function normalize3(v4) {
+  const len = Math.sqrt(v4[0] * v4[0] + v4[1] * v4[1] + v4[2] * v4[2]);
+  if (len < 1e-9) return [0, 1, 0];
+  return [v4[0] / len, v4[1] / len, v4[2] / len];
+}
+function computeVisibilityAt(keyframes, time_ms) {
+  const vis = {};
+  for (const kf of keyframes) {
+    if (kf.time_ms > time_ms) break;
+    if (kf.layer_visibility) {
+      Object.assign(vis, kf.layer_visibility);
+    }
+  }
+  return vis;
+}
+var MovieHandlers = class {
+  constructor(context2) {
+    this.context = context2;
+    this.lastMovieTime = 0;
+    this.lastVisibility = {};
+  }
+  play(keyframes, loop = false) {
+    this.stop();
+    if (keyframes.length < 2) {
+      console.warn("[MolSysViewer] play_movie: need at least 2 keyframes");
+      return;
+    }
+    const totalDuration = keyframes[keyframes.length - 1].time_ms;
+    if (totalDuration <= 0) {
+      console.warn("[MolSysViewer] play_movie: total duration must be > 0");
+      return;
+    }
+    const baseSnapshot = this.context.getCameraSnapshot();
+    this.lastStructureIndex = void 0;
+    this.lastMovieTime = 0;
+    this.lastVisibility = {};
+    const startRealTime = performance.now();
+    const tick = (now2) => {
+      const elapsed = now2 - startRealTime;
+      if (!loop && elapsed >= totalDuration) {
+        this.applyState(keyframes, totalDuration, baseSnapshot);
+        this.rafId = void 0;
+        this.context.notify?.({ event: "movie_playback_done" });
+        return;
+      }
+      const movieTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
+      if (loop && movieTime < this.lastMovieTime) {
+        this.lastVisibility = {};
+        this.lastStructureIndex = void 0;
+      }
+      this.lastMovieTime = movieTime;
+      this.applyState(keyframes, movieTime, baseSnapshot);
+      this.rafId = requestAnimationFrame(tick);
+    };
+    this.rafId = requestAnimationFrame(tick);
+  }
+  stop() {
+    if (this.rafId !== void 0) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = void 0;
+    }
+  }
+  applyState(keyframes, time_ms, baseSnapshot) {
+    const n = keyframes.length;
+    let segEnd = n - 1;
+    for (let i = 1; i < n; i++) {
+      if (keyframes[i].time_ms >= time_ms) {
+        segEnd = i;
+        break;
+      }
+    }
+    const segStart = Math.max(0, segEnd - 1);
+    const kfA = keyframes[segStart];
+    const kfB = keyframes[segEnd];
+    const segDuration = kfB.time_ms - kfA.time_ms;
+    const rawT = segDuration > 0 ? (time_ms - kfA.time_ms) / segDuration : 1;
+    const t5 = applyEasing(Math.max(0, Math.min(1, rawT)), kfA.easing);
+    const camA = kfA.camera;
+    const camB = kfB.camera;
+    if (camA && camB) {
+      const pos = lerp3(camA.position, camB.position, t5);
+      const tgt = lerp3(camA.target, camB.target, t5);
+      const upRaw = lerp3(camA.up, camB.up, t5);
+      const up3 = normalize3(upRaw);
+      const snap = baseSnapshot ? { ...baseSnapshot, position: pos, target: tgt, up: up3 } : { position: pos, target: tgt, up: up3 };
+      void this.context.setCameraSnapshot(snap, 0);
+    } else if (camA) {
+      const snap = baseSnapshot ? { ...baseSnapshot, position: camA.position, target: camA.target, up: camA.up } : { position: camA.position, target: camA.target, up: camA.up };
+      void this.context.setCameraSnapshot(snap, 0);
+    }
+    const idxA = kfA.structure_index;
+    const idxB = kfB.structure_index;
+    if (idxA !== void 0 && idxB !== void 0) {
+      const idx = Math.round(idxA + (idxB - idxA) * t5);
+      if (idx !== this.lastStructureIndex) {
+        this.lastStructureIndex = idx;
+        void this.context.setTrajectoryFrame(idx);
+      }
+    }
+    const targetVis = computeVisibilityAt(keyframes, time_ms);
+    for (const [tag, visible] of Object.entries(targetVis)) {
+      if (this.lastVisibility[tag] !== visible) {
+        this.lastVisibility[tag] = visible;
+        if (visible) {
+          void this.context.showLayer(tag);
+        } else {
+          void this.context.hideLayer(tag);
+        }
+      }
+    }
+  }
+};
+
 // src/ui/context-menu.ts
 function targetTitle(target) {
   if (target.kind === "empty") return "Canvas";
@@ -150121,6 +150254,14 @@ var MolSysViewerController = class _MolSysViewerController {
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
       onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame })
     });
+    this.movie = new MovieHandlers({
+      setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
+      setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
+      getCameraSnapshot: () => this.getCameraSnapshot(),
+      showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
+      hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
+      notify: (msg) => this.notify?.(msg)
+    });
     this.refreshNavigatePanel();
     this.refreshWorkbenchPanel();
   }
@@ -150869,6 +151010,13 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_trajectory_playback":
           await this.trajectory.setTrajectoryPlayback(msg);
+          break;
+        // Movie Ops
+        case "play_movie":
+          this.movie.play(msg.keyframes ?? [], !!msg.loop);
+          break;
+        case "stop_movie":
+          this.movie.stop();
           break;
         case "set_addon_runtime_summary": {
           const prevWorkspaceIds = this.addonRuntimeInitialized ? new Set(this.getWorkspaceOptions().map((item2) => item2.id)) : null;

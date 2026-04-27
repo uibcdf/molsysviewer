@@ -598,6 +598,24 @@ export type ClearAtomColorsMessage = {
     op: "clear_atom_colors";
 };
 
+export type MovieKeyframe = {
+    time_ms: number;
+    camera?: { position: [number, number, number]; target: [number, number, number]; up: [number, number, number] };
+    structure_index?: number;
+    layer_visibility?: Record<string, boolean>;
+    easing?: string;
+};
+
+export type PlayMovieMessage = {
+    op: "play_movie";
+    keyframes: MovieKeyframe[];
+    loop?: boolean;
+};
+
+export type StopMovieMessage = {
+    op: "stop_movie";
+};
+
 export type ViewerMessage =
     SetAtomColorsMessage |
     ClearAtomColorsMessage |
@@ -667,4 +685,6 @@ export type ViewerMessage =
     SetSelectionTagMessage |
     DeleteSelectionMessage |
     ClearSelectionsMessage |
+    PlayMovieMessage |
+    StopMovieMessage |
     Record<string, unknown>;
