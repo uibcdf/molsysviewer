@@ -1,6 +1,9 @@
 # VISION: `MolSysMovie` - Cinematic and VR Molecular Animation
 
-> **Roadmap Status:** This document represents a long-term strategic vision for the library. Implementation is planned for the **Post-1.0** phase of development.
+> **Roadmap Status:** The core implementation has been promoted to **Pre-1.0**.
+> See [`molsysmovie_plan.md`](molsysmovie_plan.md) for the concrete architecture
+> and phased plan. The VR/360° export direction (Phase 4 of the original vision)
+> remains Post-1.0.
 
 ## Problem Statement
 `MolSysView` is excellently designed for interactive exploration, structural analysis, and static scene composition. However, creating complex animations—such as panning the camera, fading regions in and out, dynamically changing lighting, or animating measurements over time—requires a fundamentally different mental model. Forcing a timeline and keyframe logic into the interactive `MolSysView` would bloat the API and confuse the user experience.
