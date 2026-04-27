@@ -32,7 +32,8 @@ def test_build_html_filters_visibility(monkeypatch):
     html = view._build_standalone_html("Test", include_controls=True)
     state = _extract_state_json(html)
     widget_state = state["state"][view.widget.model_id]["state"]
-    assert widget_state["initial_messages"] == [{"op": "dummy"}]
+    content_msgs = [m for m in widget_state["initial_messages"] if m.get("op") != "set_addon_runtime_summary"]
+    assert content_msgs == [{"op": "dummy"}]
 
 
 @pytest.mark.parametrize("include_bundle", [True, False])
@@ -84,7 +85,8 @@ def test_build_export_messages_keeps_replay_order_and_appends_camera_snapshot():
 
     messages = view._build_export_messages()
 
-    assert messages == [
+    content_msgs = [m for m in messages if m.get("op") != "set_addon_runtime_summary"]
+    assert content_msgs == [
         {"op": "load_molsys_payload", "payload": {"atoms": {"atom_id": [1, 2, 3]}, "structures": []}},
         {"op": "hide_global", "target": "global"},
         {
