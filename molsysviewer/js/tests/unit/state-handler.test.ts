@@ -479,3 +479,54 @@ test("state handler gives curated structural color and size schemes priority ove
     assert.strictEqual(applied[0].params.colorTheme.name, "secondary-structure");
     assert.strictEqual(applied[0].params.sizeTheme.name, "physical");
 });
+
+test("state handler renameRegion preserves hidden state in the renamed entry", async () => {
+    const plugin: any = { state: { data: {} } };
+    const notifications: any[] = [];
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (msg: any) => notifications.push(msg),
+    });
+
+    // Inject a hidden region entry directly
+    const regionIndex = (handler as any).regionIndex as Map<string, any>;
+    regionIndex.set("pocket", {
+        component: "comp-ref",
+        representations: ["repr-ref"],
+        atomIndices: [0, 1, 2],
+        selection: undefined,
+        hidden: true,
+    });
+
+    await handler.renameRegion({ op: "rename_region", tag: "pocket", new_tag: "binding-site" });
+
+    assert.strictEqual(regionIndex.has("pocket"), false, "old tag must be removed");
+    const renamed = regionIndex.get("binding-site");
+    assert.ok(renamed !== undefined, "new tag must exist");
+    assert.strictEqual(renamed.hidden, true, "hidden flag must be preserved after rename");
+    assert.deepStrictEqual(notifications, [
+        { event: "region_renamed", tag: "pocket", new_tag: "binding-site" },
+    ]);
+});
+
+test("state handler createRegion without loaded structure queues to pendingRegions", async () => {
+    const plugin: any = { state: { data: {} } };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    const msg = { op: "create_region" as const, tag: "site", atom_indices: [0, 1] };
+    await handler.createRegion(msg);
+
+    const pending = (handler as any).pendingRegions as any[];
+    assert.strictEqual(pending.length, 1);
+    assert.strictEqual(pending[0].tag, "site");
+    assert.deepStrictEqual(pending[0].atom_indices, [0, 1]);
+});

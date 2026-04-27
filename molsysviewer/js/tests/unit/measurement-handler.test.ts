@@ -276,3 +276,62 @@ test("MeasurementHandlers resolves representative atoms from molsys_group_type m
     assert.deepStrictEqual(lipid.endpoint_labels, ["P"]);
     assert.deepStrictEqual(lipid.endpoint_atom_indices, [[21]]);
 });
+
+test("MeasurementHandlers.buildMeasurementOptions with centroid policy resolves multi-atom pick to centroid kind", () => {
+    const plugin = { managers: { structure: { measurement: {} } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+
+    // Multi-atom pick under centroid policy → endpoint_kind "centroid", empty atom_indices
+    const result = handlers.buildMeasurementOptions([[0, 1, 2], [3]], "centroid");
+    assert.deepStrictEqual(result.endpoint_kinds, ["centroid", "atom"]);
+    assert.deepStrictEqual(result.endpoint_atom_indices, [[], [3]]);
+    assert.deepStrictEqual(result.endpoint_labels, ["centroid", "atom"]);
+
+    // Single-atom pick is always "atom" regardless of policy
+    const single = handlers.buildMeasurementOptions([[5]], "centroid");
+    assert.deepStrictEqual(single.endpoint_kinds, ["atom"]);
+    assert.deepStrictEqual(single.endpoint_atom_indices, [[5]]);
+});
+
+test("MeasurementHandlers.setSettings switches centroid vs representative_atom for multi-atom picks", () => {
+    const plugin = { managers: { structure: { measurement: {} } }, state: { data: {} } } as any;
+    const handlers = new MeasurementHandlers(plugin, {
+        getStructure: () => ({ units: [] } as any),
+        registerRef: () => void 0,
+    });
+    (handlers as any).modelForAtomIndex = (_structure: any, atomIndex: number) => ({
+        atomicHierarchy: {
+            atoms: {
+                label_atom_id: {
+                    value: (i: number) => ({ 10: "N", 11: "CA", 12: "CB" }[i] ?? ""),
+                },
+                molsys_group_type: { value: () => "amino acid" },
+            },
+        },
+    });
+
+    // Default policy is centroid; multi-atom pick → centroid
+    const defaultResult = handlers.buildMeasurementOptions([[10, 11, 12]]);
+    assert.deepStrictEqual(defaultResult.endpoint_kinds, ["centroid"]);
+    assert.deepStrictEqual(defaultResult.endpoint_atom_indices, [[]]);
+
+    // Switch to representative_atom; multi-atom pick → representative_atom (CA for protein)
+    handlers.setSettings({ endpoint_policy_default: "representative_atom" });
+    const reprResult = handlers.buildMeasurementOptions([[10, 11, 12]]);
+    assert.deepStrictEqual(reprResult.endpoint_kinds, ["representative_atom"]);
+    assert.deepStrictEqual(reprResult.endpoint_atom_indices, [[11]]); // CA
+
+    // Custom representative_atoms: override protein CA → CB
+    handlers.setSettings({ representative_atoms: { protein: "CB" } });
+    const custom = handlers.buildMeasurementOptions([[10, 11, 12]]);
+    assert.deepStrictEqual(custom.endpoint_atom_indices, [[12]]); // CB
+    assert.deepStrictEqual(custom.endpoint_labels, ["CB"]);
+
+    // Switch back to centroid; custom rep_atoms no longer used for multi-atom
+    handlers.setSettings({ endpoint_policy_default: "centroid" });
+    const backToCentroid = handlers.buildMeasurementOptions([[10, 11, 12]]);
+    assert.deepStrictEqual(backToCentroid.endpoint_kinds, ["centroid"]);
+});

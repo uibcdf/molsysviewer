@@ -235,3 +235,96 @@ test("AnnotationHandlers.setVisibility rebuilds labels from stored spec", async 
         (PluginCommands.State as any).RemoveObject = originalRemove;
     }
 });
+
+test("AnnotationHandlers.updateLabel updates spec so subsequent setVisibility rebuilds with new text", async () => {
+    const addCalls: Array<{ text: string }> = [];
+    const removeCalls: string[] = [];
+    let callCount = 0;
+    const plugin: any = {
+        managers: {
+            structure: {
+                measurement: {
+                    async addLabel(_loci: any, options: any) {
+                        addCalls.push({ text: options.labelParams?.customText ?? "" });
+                        const ref = `sel-${callCount}`;
+                        callCount++;
+                        return { selection: { ref }, representation: { ref: `repr-${callCount - 1}` } };
+                    },
+                },
+            },
+        },
+        state: { data: {} },
+    };
+    const { PluginCommands } = await import("molstar/lib/mol-plugin/commands");
+    const originalRemove = PluginCommands.State.RemoveObject;
+    (PluginCommands.State as any).RemoveObject = async (_plugin: any, params: any) => {
+        removeCalls.push(params.ref);
+    };
+
+    try {
+        const handler = new AnnotationHandlers(plugin, {
+            getStructure: () => ({}) as any,
+            registerRef: () => void 0,
+        });
+        (handler as any).buildLociFromAtomIndices = () => ({
+            structure: {},
+            elements: [{ unit: { elements: [0] }, indices: [0] }],
+        });
+
+        await handler.addLabel({
+            op: "add_label",
+            tag: "ann",
+            options: { text: "Original text", atom_indices: [0], tag: "ann" },
+        });
+        assert.strictEqual(addCalls[0].text, "Original text");
+
+        await handler.updateLabel({
+            op: "update_label",
+            tag: "ann",
+            options: { text: "Updated text", atom_indices: [1] },
+        });
+        // updateLabel clears the old refs and re-adds; second addLabel call has new text
+        assert.strictEqual(addCalls[1].text, "Updated text");
+
+        // Spec should reflect the new text; hide + show rebuilds with new text
+        await handler.setVisibility("ann", false);
+        await handler.setVisibility("ann", true);
+        assert.strictEqual(addCalls[2].text, "Updated text");
+    } finally {
+        (PluginCommands.State as any).RemoveObject = originalRemove;
+    }
+});
+
+test("AnnotationHandlers.getSpec returns stored text and atom_indices, undefined for unknown tags", async () => {
+    const plugin: any = {
+        managers: {
+            structure: {
+                measurement: {
+                    async addLabel(_loci: any, _options: any) {
+                        return { selection: { ref: "sel-1" }, representation: { ref: "repr-1" } };
+                    },
+                },
+            },
+        },
+        state: { data: {} },
+    };
+
+    const handler = new AnnotationHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        registerRef: () => void 0,
+    });
+    (handler as any).buildLociFromAtomIndices = () => ({ structure: {}, elements: [] });
+
+    assert.strictEqual(handler.getSpec("nonexistent"), undefined);
+
+    await handler.addLabel({
+        op: "add_label",
+        tag: "lbl",
+        options: { text: "Pocket", atom_indices: [4, 5, 6], tag: "lbl" },
+    });
+
+    const spec = handler.getSpec("lbl");
+    assert.ok(spec !== undefined, "getSpec must return spec after addLabel");
+    assert.strictEqual(spec!.text, "Pocket");
+    assert.deepStrictEqual(spec!.atom_indices, [4, 5, 6]);
+});
