@@ -733,22 +733,21 @@ None. Item 6 is complete.
   - JS unit/e2e scaffolding exists with runnable scripts.
   - `pytest` and `python -m pytest` now resolve the same in-repo package during test collection.
 
-- `In progress` — JS coverage gap (no Python gaps)
-  - Python suite: all passing (see latest run).
-  - JS unit suite: 103 tests passing (as of 2026-04-24). ✓
-  - E2E suite: 8 scenario files covering region-hide, annotations+measurements,
-    shape-trajectory, export-replay, group-panel, hierarchy, measurements,
-    range-selection. ✓
-  - Open: JS unit coverage is handler-breadth level; deeper success-path
-    coverage for remap/replay semantics is still partial.
+- `Ongoing maintenance` — no remaining coverage gaps
+  - Python suite: all passing. ✓
+  - JS unit suite: 109 tests passing (2026-04-27). ✓
+    - measurement-handler: centroid endpoint path, `setSettings` policy and representative-atom overrides
+    - annotation-handler: `updateLabel` updates spec for future rebuilds, `getSpec` contract
+    - state-handler: `renameRegion` preserves hidden flag, `createRegion` queues without structure
+  - E2E suite: 9 scenario files (added `workflow-integration.e2e.ts` 2026-04-27):
+    region-hide, annotations+measurements, shape-trajectory, export-replay,
+    group-panel, hierarchy, measurements, range-selection, **workflow-integration** ✓
+  - `workflow-integration.e2e.ts`: load → label → distance measurement → clear_all + replay;
+    verifies the programmatic replay-safe API path end to end. ✓
 
 ### Next actions
 
-- Extend JS unit tests into deeper success-path scenarios for:
-  - measurement-handlers (endpoint resolution, centroid vs atom paths)
-  - annotation-handler (replay after rebuild, tag retag)
-  - state-handler (region visibility state after remap)
-- Add E2E scenario: full workflow (select → label → measure → export HTML → verify replay).
+- No open items.
 
 ### Criteria
 
