@@ -17,6 +17,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_add_pocket_blob_message():
     view = DummyView()
@@ -40,8 +44,8 @@ def test_add_pocket_blob_message():
         {
             "op": "add_pocket_blob",
             "options": {
-                "centers": [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
-                "radii": [1.0, 1.5],
+                "centers": [[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]],
+                "radii": [10.0, 15.0],
                 "radius_scale": 1.1,
                 "resolution": 0.5,
                 "iso_level": 0.2,

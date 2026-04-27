@@ -18,6 +18,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_add_interaction_sites():
     view = DummyView()
@@ -38,9 +42,9 @@ def test_add_interaction_sites():
         {
             "op": "add_pharmacophore_features",
             "options": {
-                "centers": [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
+                "centers": [[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]],
                 "kinds": ["donor", "acceptor"],
-                "radii": [0.5, 0.6],
+                "radii": [5.0, 6.0],
                 "alphas": [0.4, 0.5],
                 "colors": [0x3b82f6, 0xef4444],
                 "directions": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],

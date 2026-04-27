@@ -17,6 +17,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_add_anisotropy_ellipsoids_message():
     view = DummyView()
@@ -40,7 +44,7 @@ def test_add_anisotropy_ellipsoids_message():
 
     assert view.messages[0]["op"] == "add_anisotropy_ellipsoids"
     options = view.messages[0]["options"]
-    assert options["centers"] == [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+    assert options["centers"] == [[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]]
     assert options["eigenvalues"] == [[1.0, 0.5, 0.2], [0.8, 0.4, 0.1]]
     assert options["eigenvectors"] == [
         [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
