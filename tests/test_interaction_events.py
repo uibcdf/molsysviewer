@@ -1,4 +1,5 @@
 from molsysviewer import MolSysView
+from molsysviewer.regions import Region
 
 
 def test_frontend_interaction_events_are_stored_on_view():
@@ -29,9 +30,10 @@ def test_frontend_interaction_events_are_stored_on_view():
     view._handle_frontend_event(tool_state)  # noqa: SLF001
     view._handle_frontend_event(measurement)  # noqa: SLF001
 
-    assert view.get_last_hover_event() == hover
+    # kind="structure" payloads are enriched with region_tags (empty when no regions defined)
+    assert view.get_last_hover_event() == {**hover, "region_tags": []}
     assert view.get_last_click_event() == click
-    assert view.get_last_context_event() == context
+    assert view.get_last_context_event() == {**context, "region_tags": []}
     assert view.get_last_context_action_event() == action
     assert view.get_last_active_selection_event() == active_selection
     assert view.get_last_tool_state_event() == tool_state
@@ -60,7 +62,7 @@ def test_hover_and_context_targets_expose_lightweight_public_wrappers():
 
     assert view.hover_target.kind == "structure"
     assert view.hover_target.atom_indices == [1, 2, 3]
-    assert view.hover_target.info() == hover
+    assert view.hover_target.info() == {**hover, "region_tags": []}
 
     assert view.context_target.kind == "annotation"
     assert view.context_target.atom_indices == [4]
@@ -144,7 +146,8 @@ def test_on_hover_callback_is_called_with_event_dict():
     view._handle_frontend_event(hover1)  # noqa: SLF001
     view._handle_frontend_event(hover2)  # noqa: SLF001
 
-    assert received == [hover1, hover2]
+    # hover1 is kind="structure" so region_tags=[] is injected; hover2 is annotation, unchanged
+    assert received == [{**hover1, "region_tags": []}, hover2]
 
 
 def test_on_click_callback_is_called_with_event_dict():
@@ -199,3 +202,38 @@ def test_on_hover_ignores_duplicate_registration():
     view._handle_frontend_event({"event": "interaction_hover", "kind": "empty"})  # noqa: SLF001
 
     assert count[0] == 1
+
+
+def test_region_tags_added_to_structure_payload():
+    view = MolSysView()
+
+    # Inject two regions directly into the internal registry
+    view._regions["active-site"] = Region(view, "active-site", "all", atom_indices=[10, 11, 12])  # noqa: SLF001
+    view._regions["loop-1"] = Region(view, "loop-1", "all", atom_indices=[20, 21])  # noqa: SLF001
+
+    # Pick that overlaps active-site only
+    hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [11, 12]}
+    view._handle_frontend_event(hover)  # noqa: SLF001
+    assert view.get_last_hover_event()["region_tags"] == ["active-site"]
+
+    # Pick that overlaps both regions
+    click = {"event": "interaction_click", "kind": "structure", "atom_indices": [12, 20]}
+    view._handle_frontend_event(click)  # noqa: SLF001
+    assert set(view.get_last_click_event()["region_tags"]) == {"active-site", "loop-1"}
+
+    # Pick with no region overlap
+    ctx = {"event": "interaction_context_menu", "kind": "structure", "atom_indices": [99]}
+    view._handle_frontend_event(ctx)  # noqa: SLF001
+    assert view.get_last_context_event()["region_tags"] == []
+
+    # Non-structure events are not enriched
+    hover_empty = {"event": "interaction_hover", "kind": "empty"}
+    view._handle_frontend_event(hover_empty)  # noqa: SLF001
+    assert "region_tags" not in view.get_last_hover_event()
+
+
+def test_region_tags_empty_when_no_regions_defined():
+    view = MolSysView()
+    hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [5, 6]}
+    view._handle_frontend_event(hover)  # noqa: SLF001
+    assert view.get_last_hover_event()["region_tags"] == []
