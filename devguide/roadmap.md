@@ -522,7 +522,7 @@ scene comparisons). Everything else → MolSysMT addon.
 
 ### Status
 
-- `In progress` — one item pending; everything else is implemented and verified.
+- `Done` (2026-04-27)
 
 **Implemented and verified (do not re-propose):**
 
@@ -549,25 +549,21 @@ scene comparisons). Everything else → MolSysMT addon.
   hierarchy, collapse/expand, auto-scroll ✓
 - Strip interactions converged with canvas (same event families) ✓
 
-**Pending — the only remaining item:**
-
-- `region_tags` enrichment: when a picked atom belongs to one or more
-  named regions, the `kind: "structure"` payload does not currently include
-  which regions that atom belongs to. Decision taken: add an optional
-  `region_tags: string[]` field to the existing payload (no new `kind`
-  variant needed). Lookup is Python-side: `atom_indices` vs region index sets.
+- `region_tags` enrichment implemented (2026-04-27): `kind: "structure"` payloads
+  now include `region_tags: list[str]` — the tags of all regions whose
+  `atom_indices` overlap the picked atoms. Python-side lookup, no JS changes.
+  Covered by `test_region_tags_added_to_structure_payload` and
+  `test_region_tags_empty_when_no_regions_defined`.
 
 ### Next actions
 
-- Add `region_tags: string[]` to the `kind: "structure"` payload for
-  `interaction_hover`, `interaction_click`, and `interaction_context_menu`.
-  Python enriches the payload after receiving it (it owns the region index).
+None. Item 6 is complete.
 
 ### Criteria
 
-- Do not add a new `kind: "region"` variant — `kind` describes the Mol*
-  object type, not a Python-side category.
-- Region tag enrichment must not break existing consumers of the payload.
+- `kind` describes the Mol* object type, not a Python-side category — no
+  `kind: "region"` variant was introduced.
+- Region tag enrichment is additive and does not break existing consumers.
 
 ## 6.5) Annotations and Persistent Labels
 
