@@ -36,8 +36,13 @@ class DummyView:
         self.camera = DummyCamera(camera_snapshot)
         self.player = DummyPlayer(n_structures)
         self.sent_messages: list[dict] = []
+        self._movie_export_frames: list | None = None
+        self._movie_export_done: bool = False
 
     def _send(self, msg: dict) -> None:
+        self.sent_messages.append(msg)
+
+    def _send_runtime_only(self, msg: dict) -> None:
         self.sent_messages.append(msg)
 
 
@@ -437,9 +442,91 @@ def test_stop_sends_message():
     assert msgs[0]["op"] == "stop_movie"
 
 
-# ── export stub ────────────────────────────────────────────────────────────────
+# ── export ────────────────────────────────────────────────────────────────────
 
-def test_export_raises_not_implemented():
+def test_export_requires_imageio():
+    """export() raises ImportError if imageio is absent (hard to mock; skip if present)."""
+    import importlib
+    if importlib.util.find_spec("imageio"):
+        pytest.skip("imageio is installed; cannot test ImportError path")
     m = make_movie()
-    with pytest.raises(NotImplementedError):
+    m.add_keyframe(0.0)
+    m.add_keyframe(1000.0)
+    with pytest.raises(ImportError, match="imageio"):
         m.export("out.mp4")
+
+
+def test_export_requires_two_keyframes():
+    imageio = pytest.importorskip("imageio")
+    m = make_movie()
+    with pytest.raises(ValueError):
+        m.export("out.mp4")
+    m.add_keyframe(0.0)
+    with pytest.raises(ValueError):
+        m.export("out.mp4")
+
+
+def test_export_sends_correct_message(tmp_path):
+    """export() sends play_movie with mode=export and correct total_frames."""
+    import threading, base64
+    imageio = pytest.importorskip("imageio")
+    import numpy as np
+
+    m = make_movie()
+    m.add_keyframe(0.0, camera=SNAP_A)
+    m.add_keyframe(1000.0, camera=SNAP_B)
+
+    # 1 000 ms at 4 fps → floor(1000/1000*4)+1 = 5 frames
+    fps = 4
+    total_frames = 5
+
+    # Build a tiny 1×1 PNG encoded as a data URI
+    fake_png = imageio.imwrite("<bytes>", np.zeros((1, 1, 3), dtype="uint8"), format="png")
+    data_uri = "data:image/png;base64," + base64.b64encode(fake_png).decode()
+
+    result = {}
+
+    def simulate_js():
+        """Wait until the play_movie message is sent, then feed frames."""
+        import time
+        deadline = time.monotonic() + 5.0
+        while not m._view.sent_messages:
+            if time.monotonic() > deadline:
+                return
+            time.sleep(0.01)
+        m._view._movie_export_frames = [
+            {"data_uri": data_uri, "frame_index": i, "total_frames": total_frames}
+            for i in range(total_frames)
+        ]
+        m._view._movie_export_done = True
+
+    t = threading.Thread(target=simulate_js, daemon=True)
+    t.start()
+    out = m.export(tmp_path / "out.gif", fps=fps)
+    t.join(timeout=5)
+
+    # Verify the message
+    msg = m._view.sent_messages[0]
+    assert msg["op"] == "play_movie"
+    assert msg["mode"] == "export"
+    assert msg["fps"] == fps
+    assert msg["total_frames"] == total_frames
+
+    # Verify the output file was written
+    assert out.exists()
+
+
+def test_export_decode_frame_helper():
+    """_decode_frame round-trips a tiny PNG correctly."""
+    import base64
+    imageio = pytest.importorskip("imageio")
+    import numpy as np
+    from molsysviewer.viewer.movie import _decode_frame
+
+    arr = np.zeros((2, 2, 3), dtype="uint8")
+    arr[0, 0] = [255, 0, 0]
+    png_bytes = imageio.imwrite("<bytes>", arr, format="png")
+    uri = "data:image/png;base64," + base64.b64encode(png_bytes).decode()
+    result = _decode_frame(uri)
+    assert result.shape[:2] == (2, 2)
+    assert result[0, 0, 0] == 255

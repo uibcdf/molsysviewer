@@ -145270,12 +145270,29 @@ function computeVisibilityAt(keyframes, time_ms) {
   }
   return vis;
 }
+function findSegment(keyframes, time_ms) {
+  const n = keyframes.length;
+  let segEnd = n - 1;
+  for (let i = 1; i < n; i++) {
+    if (keyframes[i].time_ms >= time_ms) {
+      segEnd = i;
+      break;
+    }
+  }
+  return [Math.max(0, segEnd - 1), segEnd];
+}
+function computeT(kfA, kfB, time_ms) {
+  const segDuration = kfB.time_ms - kfA.time_ms;
+  const rawT = segDuration > 0 ? (time_ms - kfA.time_ms) / segDuration : 1;
+  return applyEasing(Math.max(0, Math.min(1, rawT)), kfA.easing);
+}
 var MovieHandlers = class {
   constructor(context2) {
     this.context = context2;
     this.lastMovieTime = 0;
     this.lastVisibility = {};
   }
+  // ── Browser playback ──────────────────────────────────────────────────
   play(keyframes, loop = false) {
     this.stop();
     if (keyframes.length < 2) {
@@ -145317,36 +145334,43 @@ var MovieHandlers = class {
       this.rafId = void 0;
     }
   }
-  applyState(keyframes, time_ms, baseSnapshot) {
-    const n = keyframes.length;
-    let segEnd = n - 1;
-    for (let i = 1; i < n; i++) {
-      if (keyframes[i].time_ms >= time_ms) {
-        segEnd = i;
-        break;
-      }
+  // ── Frame export ──────────────────────────────────────────────────────
+  async exportFrames(keyframes, fps, totalFrames, widthPx, heightPx) {
+    if (keyframes.length < 2 || totalFrames < 1) {
+      console.warn("[MolSysViewer] exportFrames: need \u2265 2 keyframes and \u2265 1 frame");
+      return;
     }
-    const segStart = Math.max(0, segEnd - 1);
+    const baseSnapshot = this.context.getCameraSnapshot();
+    const exportVis = {};
+    let exportStructureIndex;
+    for (let i = 0; i < totalFrames; i++) {
+      const time_ms = Math.min(i / fps * 1e3, keyframes[keyframes.length - 1].time_ms);
+      await this.applyStateForExport(keyframes, time_ms, baseSnapshot, exportVis, exportStructureIndex);
+      const dataUri = await this.context.getImageDataUri({ width: widthPx, height: heightPx });
+      this.context.notify?.({
+        event: "movie_frame",
+        frame_index: i,
+        total_frames: totalFrames,
+        data_uri: dataUri ?? ""
+      });
+    }
+    this.context.notify?.({ event: "movie_export_done", total_frames: totalFrames });
+  }
+  // ── Internal ──────────────────────────────────────────────────────────
+  applyState(keyframes, time_ms, baseSnapshot) {
+    const [segStart, segEnd] = findSegment(keyframes, time_ms);
     const kfA = keyframes[segStart];
     const kfB = keyframes[segEnd];
-    const segDuration = kfB.time_ms - kfA.time_ms;
-    const rawT = segDuration > 0 ? (time_ms - kfA.time_ms) / segDuration : 1;
-    const t5 = applyEasing(Math.max(0, Math.min(1, rawT)), kfA.easing);
-    const camA = kfA.camera;
-    const camB = kfB.camera;
+    const t5 = computeT(kfA, kfB, time_ms);
+    const camA = kfA.camera, camB = kfB.camera;
     if (camA && camB) {
-      const pos = lerp3(camA.position, camB.position, t5);
-      const tgt = lerp3(camA.target, camB.target, t5);
-      const upRaw = lerp3(camA.up, camB.up, t5);
-      const up3 = normalize3(upRaw);
-      const snap = baseSnapshot ? { ...baseSnapshot, position: pos, target: tgt, up: up3 } : { position: pos, target: tgt, up: up3 };
+      const snap = baseSnapshot ? { ...baseSnapshot, position: lerp3(camA.position, camB.position, t5), target: lerp3(camA.target, camB.target, t5), up: normalize3(lerp3(camA.up, camB.up, t5)) } : { position: lerp3(camA.position, camB.position, t5), target: lerp3(camA.target, camB.target, t5), up: normalize3(lerp3(camA.up, camB.up, t5)) };
       void this.context.setCameraSnapshot(snap, 0);
     } else if (camA) {
       const snap = baseSnapshot ? { ...baseSnapshot, position: camA.position, target: camA.target, up: camA.up } : { position: camA.position, target: camA.target, up: camA.up };
       void this.context.setCameraSnapshot(snap, 0);
     }
-    const idxA = kfA.structure_index;
-    const idxB = kfB.structure_index;
+    const idxA = kfA.structure_index, idxB = kfB.structure_index;
     if (idxA !== void 0 && idxB !== void 0) {
       const idx = Math.round(idxA + (idxB - idxA) * t5);
       if (idx !== this.lastStructureIndex) {
@@ -145358,11 +145382,35 @@ var MovieHandlers = class {
     for (const [tag, visible] of Object.entries(targetVis)) {
       if (this.lastVisibility[tag] !== visible) {
         this.lastVisibility[tag] = visible;
-        if (visible) {
-          void this.context.showLayer(tag);
-        } else {
-          void this.context.hideLayer(tag);
-        }
+        if (visible) void this.context.showLayer(tag);
+        else void this.context.hideLayer(tag);
+      }
+    }
+  }
+  async applyStateForExport(keyframes, time_ms, baseSnapshot, exportVis, _lastStructureIndex) {
+    const [segStart, segEnd] = findSegment(keyframes, time_ms);
+    const kfA = keyframes[segStart];
+    const kfB = keyframes[segEnd];
+    const t5 = computeT(kfA, kfB, time_ms);
+    const camA = kfA.camera, camB = kfB.camera;
+    if (camA && camB) {
+      const snap = baseSnapshot ? { ...baseSnapshot, position: lerp3(camA.position, camB.position, t5), target: lerp3(camA.target, camB.target, t5), up: normalize3(lerp3(camA.up, camB.up, t5)) } : { position: lerp3(camA.position, camB.position, t5), target: lerp3(camA.target, camB.target, t5), up: normalize3(lerp3(camA.up, camB.up, t5)) };
+      await this.context.setCameraSnapshot(snap, 0);
+    } else if (camA) {
+      const snap = baseSnapshot ? { ...baseSnapshot, position: camA.position, target: camA.target, up: camA.up } : { position: camA.position, target: camA.target, up: camA.up };
+      await this.context.setCameraSnapshot(snap, 0);
+    }
+    const idxA = kfA.structure_index, idxB = kfB.structure_index;
+    if (idxA !== void 0 && idxB !== void 0) {
+      const idx = Math.round(idxA + (idxB - idxA) * t5);
+      await this.context.setTrajectoryFrame(idx);
+    }
+    const targetVis = computeVisibilityAt(keyframes, time_ms);
+    for (const [tag, visible] of Object.entries(targetVis)) {
+      if (exportVis[tag] !== visible) {
+        exportVis[tag] = visible;
+        if (visible) await this.context.showLayer(tag);
+        else await this.context.hideLayer(tag);
       }
     }
   }
@@ -150258,6 +150306,7 @@ var MolSysViewerController = class _MolSysViewerController {
       setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
       setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
       getCameraSnapshot: () => this.getCameraSnapshot(),
+      getImageDataUri: (options) => this.getImageDataUri(options),
       showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
       hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
       notify: (msg) => this.notify?.(msg)
@@ -151012,9 +151061,21 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.trajectory.setTrajectoryPlayback(msg);
           break;
         // Movie Ops
-        case "play_movie":
-          this.movie.play(msg.keyframes ?? [], !!msg.loop);
+        case "play_movie": {
+          const mode = msg.mode ?? "play";
+          if (mode === "export") {
+            void this.movie.exportFrames(
+              msg.keyframes ?? [],
+              Number(msg.fps ?? 25),
+              Number(msg.total_frames ?? 0),
+              typeof msg.width_px === "number" ? msg.width_px : void 0,
+              typeof msg.height_px === "number" ? msg.height_px : void 0
+            );
+          } else {
+            this.movie.play(msg.keyframes ?? [], !!msg.loop);
+          }
           break;
+        }
         case "stop_movie":
           this.movie.stop();
           break;

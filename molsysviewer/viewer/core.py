@@ -176,6 +176,8 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         self._last_camera_snapshot: dict | None = None
         self._current_figure_spec: dict | None = None
         self._last_image_export_event: dict | None = None
+        self._movie_export_frames: list | None = None
+        self._movie_export_done: bool = False
         self._last_hover_event: dict | None = None
         self._last_click_event: dict | None = None
         self._last_context_event: dict | None = None
@@ -332,6 +334,11 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
                 self._last_camera_snapshot = snapshot
         elif event == "image_export":
             self._last_image_export_event = dict(content)
+        elif event == "movie_frame":
+            if self._movie_export_frames is not None:
+                self._movie_export_frames.append(dict(content))
+        elif event == "movie_export_done":
+            self._movie_export_done = True
         elif event == "interaction_hover":
             self._last_hover_event = dict(content)
             for cb in list(self._hover_callbacks):
