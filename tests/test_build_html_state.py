@@ -97,6 +97,71 @@ def test_build_export_messages_keeps_replay_order_and_appends_camera_snapshot():
     ]
 
 
+def test_export_messages_include_hide_region_for_hidden_region():
+    """A region hidden before export must have hide_region in export messages (item 5)."""
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore
+
+    # Inject a minimal history simulating load + region + hide_region
+    view._message_history = [  # noqa: SLF001
+        {"op": "load_molsys_payload", "payload": {}},
+        {"op": "create_region", "tag": "pocket", "atom_indices": [0, 1, 2]},
+        {"op": "hide_region", "tag": "pocket"},
+    ]
+
+    messages = view._build_export_messages()  # noqa: SLF001
+    ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
+
+    assert "hide_region" in ops
+    assert ops.index("create_region") < ops.index("hide_region"), \
+        "create_region must precede hide_region in export"
+
+
+def test_export_messages_include_hide_global_when_view_is_hidden():
+    """hide_global in history must survive into export messages (item 5)."""
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore
+
+    view._message_history = [  # noqa: SLF001
+        {"op": "load_molsys_payload", "payload": {}},
+        {"op": "hide_global", "target": "global"},
+    ]
+
+    messages = view._build_export_messages()  # noqa: SLF001
+    ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
+
+    assert "hide_global" in ops
+    assert "show_global" not in ops
+
+
+def test_export_messages_after_post_load_region_and_label():
+    """Popup live-sync: region + label added after load appear in export in correct order (item 7)."""
+    import pytest
+    pytest.importorskip("molsysmt")
+    from molsysviewer.demo import demo
+
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    atom_indices = list(view.select(selection="group_index==0"))
+    view.new_region(atom_indices=atom_indices, tag="r0", skip_digestion=True)
+    view.annotations.add_annotation(
+        text="Anchor",
+        selection="group_index==0",
+        tag="anchor",
+        skip_digestion=True,
+    )
+
+    messages = view._build_export_messages()  # noqa: SLF001
+    ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
+
+    assert "load_molsys_payload" in ops
+    assert "create_region" in ops
+    assert "add_label" in ops
+    assert ops.index("load_molsys_payload") < ops.index("create_region")
+    assert ops.index("create_region") < ops.index("add_label")
+
+
 def test_build_html_respects_popout_flag_in_export_state(monkeypatch):
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
