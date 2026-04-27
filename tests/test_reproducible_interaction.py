@@ -424,6 +424,166 @@ def test_add_label_from_active_selection_supports_multi_group():
     assert any(r.get("options", {}).get("text") == "Multi-group label" for r in records)
 
 
+def _seed_multi_group_selection(view, group_indices):
+    """Seed an active-selection event spanning multiple residue groups."""
+    atom_indices = []
+    for gi in group_indices:
+        atom_indices.extend(list(view.select(selection=f"group_index=={gi}")))
+    event = {
+        "event": "interaction_active_selection_changed",
+        "source_kind": "element",
+        "element_level": "group",
+        "target_level": "none",
+        "items": [],
+        "atom_indices": atom_indices,
+        "group_indices": list(group_indices),
+        "component_indices": [],
+        "chain_indices": [0],
+        "molecule_indices": [],
+        "entity_indices": [0],
+        "count_atoms": len(atom_indices),
+        "count_groups": len(group_indices),
+        "count_shapes": 0,
+        "count_annotations": 0,
+    }
+    view._handle_frontend_event(event)  # noqa: SLF001
+    return atom_indices
+
+
+def test_context_action_rename_region_executes_python_bridge():
+    view = demo["dialanine"]
+    _seed_group_selection(view, 0)
+    view.new_region_from_active_selection(tag="old-name", representation="ball_and_stick")
+
+    assert "old-name" in view.regions
+    assert "new-name" not in view.regions
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "rename_region",
+            "tag": "old-name",
+            "new_tag": "new-name",
+            "context": {"event": "interaction_context_menu", "kind": "region", "tag": "old-name"},
+        }
+    )
+
+    assert "old-name" not in view.regions
+    assert "new-name" in view.regions
+    assert view.regions["new-name"].tag == "new-name"
+
+    messages = view._build_export_messages()  # noqa: SLF001
+    region_msg = next(msg for msg in messages if msg.get("op") == "create_region")
+    assert region_msg["tag"] == "new-name"
+
+
+def test_context_action_add_label_from_selection_with_style_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = _seed_group_selection(view, 0)
+    label_style = {"color": "#ff4444", "size_em": 1.5}
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "add_label_from_selection",
+            "text": "Active site",
+            "label_style": label_style,
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
+        }
+    )
+
+    assert view.annotations.count() == 1
+    record = view._annotation_history[0]  # noqa: SLF001
+    assert record["op"] == "add_label"
+    assert record["options"]["text"] == "Active site"
+    assert record["options"].get("style") == label_style
+
+
+def test_context_action_add_label_from_multi_group_selection_executes_python_bridge():
+    view = demo["dialanine"]
+    atom_indices = _seed_multi_group_selection(view, [0, 1, 2])
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "add_label_from_selection",
+            "text": "N-terminus backbone",
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": atom_indices},
+        }
+    )
+
+    assert view.annotations.count() == 1
+    record = view._annotation_history[0]  # noqa: SLF001
+    assert record["options"]["text"] == "N-terminus backbone"
+    assert record["options"]["atom_indices"] == atom_indices
+
+
+def test_scientific_workflow_region_rename_styled_label_measurement_export():
+    """Full scientific workflow: create region → rename → multi-group styled label → distance → export."""
+    view = demo["dialanine"]
+
+    # Step 1: select group 0, create region, rename it
+    group_0_atoms = _seed_group_selection(view, 0)
+    view.new_region_from_active_selection(tag="backbone-raw", representation="ball_and_stick")
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "rename_region",
+            "tag": "backbone-raw",
+            "new_tag": "n-term",
+            "context": {"event": "interaction_context_menu", "kind": "region", "tag": "backbone-raw"},
+        }
+    )
+    assert "n-term" in view.regions
+    assert "backbone-raw" not in view.regions
+
+    # Step 2: multi-group selection → styled label
+    label_style = {"color": "#40c0e0", "size_em": 1.2}
+    multi_atoms = _seed_multi_group_selection(view, [0, 1])
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "add_label_from_selection",
+            "text": "N-Cα backbone",
+            "label_style": label_style,
+            "context": {"event": "interaction_context_menu", "kind": "structure", "atom_indices": multi_atoms},
+        }
+    )
+    assert view.annotations.count() == 1
+
+    # Step 3: distance measurement between group 0 atom 0 and group 2 atom 0
+    group_2_atoms = list(view.select(selection="group_index==2"))
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_measurement_created",
+            "action": "distance",
+            "picked_count": 2,
+            "picks_atom_indices": [[group_0_atoms[0]], [group_2_atoms[0]]],
+        }
+    )
+    view.layers["measurement1"].set_tag("n-ca-dist", skip_digestion=True)
+
+    # Step 4: verify full export
+    messages = view._build_export_messages()  # noqa: SLF001
+    ops = [msg["op"] for msg in messages]
+    assert "create_region" in ops
+    assert "set_region_representation" in ops
+    assert "add_label" in ops
+    assert "add_distance_measurement" in ops
+
+    region_msg = next(msg for msg in messages if msg.get("op") == "create_region")
+    assert region_msg["tag"] == "n-term"
+
+    label_msg = next(msg for msg in messages if msg.get("op") == "add_label")
+    assert label_msg["options"]["text"] == "N-Cα backbone"
+    assert label_msg["options"]["atom_indices"] == multi_atoms
+    assert label_msg["options"].get("style") == label_style
+
+    dist_msg = next(msg for msg in messages if msg.get("op") == "add_distance_measurement")
+    assert dist_msg["tag"] == "n-ca-dist"
+    assert dist_msg["options"]["picks_atom_indices"] == [[group_0_atoms[0]], [group_2_atoms[0]]]
+
+
 def test_full_reproducible_workflow_exports_region_selection_label_and_measurement():
     view = demo["dialanine"]
     group_1_atoms = _seed_group_selection(view, 1)
