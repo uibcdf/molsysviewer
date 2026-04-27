@@ -153,6 +153,32 @@ Panel mode is one of the most important bridges between:
 That is why the project treats it as a shared runtime concept, not as a
 notebook-only convenience.
 
+## Experimental layout modes
+
+Two constructor arguments let you try alternative canvas layouts:
+
+```python
+view = mv.MolSysView(
+    controls_mode="minimal",
+    panel_mode_style="floating",
+)
+```
+
+`controls_mode`:
+
+- `"classic"` (default) — six text buttons at the bottom of the canvas.
+- `"minimal"` — three SVG icons (panel / fullscreen / popup) plus a `?` help button.
+  Scene actions (reset view, background, spin, swing) move to the empty-canvas context menu.
+  Keyboard shortcuts: `H` help overlay, `N` Navigate, `W` Workbench.
+
+`panel_mode_style`:
+
+- `"drawer"` (default) — Navigate slides in from the left, Workbench from the right.
+- `"floating"` — a centered overlay card that closes on backdrop click, with zero viewport shift.
+
+Both defaults remain `"classic"` / `"drawer"` until the new design is validated
+with real scientific workflows.
+
 ## See also
 
 - {doc}`ui`
