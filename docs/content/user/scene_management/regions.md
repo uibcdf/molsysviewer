@@ -38,6 +38,16 @@ ligand.show()
 ligand.delete()
 ```
 
+## Rename a region
+
+```python
+protein.rename("main-chain")
+# view.regions["main-chain"] now resolves to the same region
+```
+
+Renaming updates Python state and JS state simultaneously, and the new name
+is used in export/replay messages.
+
 ## Complementary regions
 
 If you want “everything except X”, create a new region from the complement:
