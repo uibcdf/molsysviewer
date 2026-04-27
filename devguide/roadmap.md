@@ -601,36 +601,39 @@ None. Item 6 is complete.
 
 ### Status
 
-- `In progress`
-- `active_selection` has a solid Python bridge into reproducible state:
+- `Done` (2026-04-27 — verified against codebase)
+
+**Implemented (do not re-propose):**
+
+- `active_selection` Python bridge into reproducible state:
   - `new_region_from_active_selection(tag=...)`
   - `view.annotations.add_label_from_active_selection(...)`
   - `view.measurements.persist_last_measurement(...)`
   - `active_selection.save(tag=...)`
-- `view.selections` is the persistent named-selection surface; saved selections can be
-  restored into `active_selection` via API.
-- Context menu: complete set of selection → reproducible-state bridges ✓
+- `view.selections` — persistent named-selection surface; selections can be
+  restored into `active_selection` via API
+- Context menu — full set of selection → reproducible-state bridges:
   - `Save Selection` — inline composer with tag input
-  - `Create Region from Selection` — inline composer with optional tag; creates region via Python
-  - `Add Label from Selection` — inline composer with text input (single-group guard)
-  - Region rows: focus, toggle hide/show (eye icon), delete (trash icon)
-  - `toggle_region_visibility` / `delete_region` Python handlers wired
-- Persisted measurement ops are fully implemented and replay-safe:
+  - `Create Region from Selection` — inline composer with optional tag
+  - `Add Label from Selection` — inline composer with text + `label_style`
+    (color picker + size slider); multi-group labels supported (no single-group guard)
+  - Region rows: focus, toggle hide/show (eye icon), delete (trash icon),
+    **rename** (pencil icon → inline composer → `rename_region` Python handler)
+  - `toggle_region_visibility` / `delete_region` / `rename_region` Python handlers wired
+- Persisted measurement ops fully implemented and replay-safe:
   - `add_distance_measurement`, `add_angle_measurement`, `add_dihedral_measurement`
-  - replayed through Mol* from stored `picks_atom_indices`
+  - replayed from stored `picks_atom_indices`
+- `label_style` (color, size_em) available from Python API and from context menu
+- User docs: `labels.md`, `regions.md` cover all the above
 
 ### Next actions
 
-- Richer selection → annotation flows: multi-group label support, label style from
-  context menu (color, size), richer inline composer.
-- Consider region rename from context menu (inline tag edit after creation).
-- Shapes bridge is intentionally deferred: prioritize annotations/regions first; only
-  add shape context actions after deciding the replay/rebuild contract.
+- Shapes bridge: intentionally deferred; add shape context actions only after
+  deciding the replay/rebuild contract.
 
 ### Criteria
 
 - The bridge from interaction to persisted state must remain explicit and reproducible.
-- Do not hide scientifically meaningful state creation behind frontend-only transient behavior.
 - Keep persistent labels separate from hover tooltips.
 - Keep annotation taxonomy separate from shape taxonomy.
 
