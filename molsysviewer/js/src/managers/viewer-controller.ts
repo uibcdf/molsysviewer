@@ -956,6 +956,7 @@ export class MolSysViewerController {
             setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
             setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
             getCameraSnapshot: () => this.getCameraSnapshot(),
+            getImageDataUri: (options) => this.getImageDataUri(options),
             showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
             hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
             notify: (msg) => this.notify?.(msg),
@@ -1599,7 +1600,21 @@ export class MolSysViewerController {
                 case "set_trajectory_playback": await this.trajectory.setTrajectoryPlayback(msg); break;
 
                 // Movie Ops
-                case "play_movie": this.movie.play((msg as any).keyframes ?? [], !!(msg as any).loop); break;
+                case "play_movie": {
+                    const mode = (msg as any).mode ?? "play";
+                    if (mode === "export") {
+                        void this.movie.exportFrames(
+                            (msg as any).keyframes ?? [],
+                            Number((msg as any).fps ?? 25),
+                            Number((msg as any).total_frames ?? 0),
+                            typeof (msg as any).width_px === "number" ? (msg as any).width_px : undefined,
+                            typeof (msg as any).height_px === "number" ? (msg as any).height_px : undefined,
+                        );
+                    } else {
+                        this.movie.play((msg as any).keyframes ?? [], !!(msg as any).loop);
+                    }
+                    break;
+                }
                 case "stop_movie": this.movie.stop(); break;
                 case "set_addon_runtime_summary": {
                     const prevWorkspaceIds = this.addonRuntimeInitialized

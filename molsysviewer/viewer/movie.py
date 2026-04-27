@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import base64
+import io
 import json
 import math
+import time
 from pathlib import Path
 from typing import Any
 
@@ -410,7 +413,7 @@ class MovieManager:
     # ── Playback / export (Phase 2 / Phase 3) ─────────────────────────────
 
     def play(self, loop: bool = False) -> None:
-        """Preview the movie in the browser (Phase 2 — JS animation engine).
+        """Preview the movie in the browser.
 
         Sends the current timeline to the frontend and starts
         ``requestAnimationFrame``-driven playback. The ``movie_playback_done``
@@ -422,7 +425,7 @@ class MovieManager:
             If ``True``, the animation repeats indefinitely.
         """
         self._validate_ready()
-        self._view._send(  # noqa: SLF001
+        self._view._send_runtime_only(  # noqa: SLF001
             {
                 "op": "play_movie",
                 "keyframes": list(self._keyframes),
@@ -432,7 +435,7 @@ class MovieManager:
 
     def stop(self) -> None:
         """Stop browser playback."""
-        self._view._send({"op": "stop_movie"})  # noqa: SLF001
+        self._view._send_runtime_only({"op": "stop_movie"})  # noqa: SLF001
 
     def export(
         self,
@@ -442,15 +445,83 @@ class MovieManager:
         width_px: int | None = None,
         height_px: int | None = None,
         format: str | None = None,
-    ) -> None:
+        timeout_s: float | None = None,
+    ) -> Path:
         """Export the movie to a video file.
 
-        .. note::
-            Not yet implemented (Phase 3 — export pipeline).
+        Renders each frame in the browser (tick-by-tick, no wall clock) and
+        stitches the PNG frames into a video with ``imageio[ffmpeg]``.
+
+        Parameters
+        ----------
+        path
+            Output file path.  Format is inferred from the extension
+            (``.mp4``, ``.gif``, ``.webm``).  ``format`` overrides this.
+        fps
+            Frames per second.
+        width_px, height_px
+            Output resolution.  Defaults to the current canvas size.
+        format
+            Explicit format string (``"mp4"``, ``"gif"``, ``"webm"``).
+        timeout_s
+            Maximum seconds to wait for all frames.  Defaults to
+            ``max(60, duration_ms/1000 × 10 + 30)``.
+
+        Returns
+        -------
+        Path
+            Absolute path to the written file.
         """
-        raise NotImplementedError(
-            "Video export is not yet implemented (Phase 3)."
-        )
+        try:
+            import imageio  # type: ignore[import]
+        except ImportError as exc:
+            raise ImportError(
+                "imageio is required for movie export. "
+                "Install with: pip install imageio[ffmpeg]"
+            ) from exc
+
+        self._validate_ready()
+        fps = int(fps)
+        path = Path(path).resolve()
+
+        total_frames = int(self.duration_ms / 1000.0 * fps) + 1
+        if timeout_s is None:
+            timeout_s = max(60.0, self.duration_ms / 1000.0 * 10 + 30.0)
+
+        view = self._view  # noqa: SLF001
+        view._movie_export_frames = []  # type: ignore[attr-defined]
+        view._movie_export_done = False  # type: ignore[attr-defined]
+
+        payload: dict = {
+            "op": "play_movie",
+            "mode": "export",
+            "keyframes": list(self._keyframes),
+            "fps": fps,
+            "total_frames": total_frames,
+        }
+        if width_px is not None:
+            payload["width_px"] = int(width_px)
+        if height_px is not None:
+            payload["height_px"] = int(height_px)
+        view._send_runtime_only(payload)  # type: ignore[attr-defined]
+
+        deadline = time.monotonic() + timeout_s
+        while not view._movie_export_done:  # type: ignore[attr-defined]
+            if time.monotonic() > deadline:
+                view._movie_export_frames = None  # type: ignore[attr-defined]
+                raise TimeoutError(
+                    f"Movie export timed out after {timeout_s:.0f}s "
+                    f"(received {len(view._movie_export_frames or [])} of {total_frames} frames)."
+                )
+            time.sleep(0.05)
+
+        frames_data = view._movie_export_frames  # type: ignore[attr-defined]
+        view._movie_export_frames = None  # type: ignore[attr-defined]
+        view._movie_export_done = False  # type: ignore[attr-defined]
+
+        imgs = [_decode_frame(f["data_uri"]) for f in frames_data]
+        imageio.mimwrite(str(path), imgs, fps=fps)
+        return path
 
     # ── Internal ──────────────────────────────────────────────────────────
 
@@ -462,6 +533,13 @@ class MovieManager:
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _decode_frame(data_uri: str):
+    """Decode a ``data:image/png;base64,...`` string to a numpy array via imageio."""
+    import imageio  # type: ignore[import]
+    _, encoded = data_uri.split(",", 1)
+    return imageio.imread(io.BytesIO(base64.b64decode(encoded)))
+
 
 def _cross(a: list[float], b: list[float]) -> list[float]:
     return [

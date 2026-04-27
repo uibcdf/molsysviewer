@@ -610,6 +610,11 @@ export type PlayMovieMessage = {
     op: "play_movie";
     keyframes: MovieKeyframe[];
     loop?: boolean;
+    mode?: "play" | "export";
+    fps?: number;
+    total_frames?: number;
+    width_px?: number;
+    height_px?: number;
 };
 
 export type StopMovieMessage = {
