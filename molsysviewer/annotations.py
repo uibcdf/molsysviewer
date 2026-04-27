@@ -267,34 +267,28 @@ class AnnotationsManager:
         *,
         tag: str | None = None,
         layer_tag: str | None = None,
+        label_style: dict | None = None,
         skip_digestion: bool = False,
     ) -> Layer:
         """Add a persistent label from the last active selection.
 
-        Current first slice:
-
-        - requires a stored active selection event,
-        - requires exactly one resolved group index,
-        - delegates to :meth:`add_label`.
+        Supports single- and multi-group selections.  The label is anchored
+        to the union of all selected atom indices.
         """
         event = self._view.get_last_active_selection_event()
         if event is None:
             raise ValueError("No active selection stored. Select an element before adding a label.")
 
-        group_indices = event.get("group_indices") or []
-        if len(group_indices) != 1:
-            raise ValueError(
-                "add_label_from_active_selection() currently requires an active selection resolving to exactly one group."
-            )
+        atom_indices = event.get("atom_indices") or []
+        if len(atom_indices) == 0:
+            raise ValueError("Active selection is empty. Select at least one atom before adding a label.")
 
-        resolved_atom_indices = self._resolve_anchor_atom_indices(
-            selection=f"group_index=={int(group_indices[0])}"
-        )
         return self.add_annotation(
             text=text,
-            atom_indices=resolved_atom_indices,
+            atom_indices=[int(i) for i in atom_indices],
             tag=tag,
             layer_tag=layer_tag,
+            label_style=label_style,
             skip_digestion=True,
         )
 

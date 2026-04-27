@@ -638,7 +638,7 @@ test("ViewerContextMenu opens inline label composer before add-label action", ()
             {
                 action: "add_label_from_selection",
                 target: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
-                details: { text: "Catalytic group" },
+                details: { text: "Catalytic group", label_style: { color: "#4080e0", size_em: 1 } },
             },
         ]);
         assert.deepStrictEqual(notifications, [
@@ -647,6 +647,7 @@ test("ViewerContextMenu opens inline label composer before add-label action", ()
                 action: "add_label_from_selection",
                 context: { event: "interaction_context_menu", kind: "structure", atom_indices: [0, 1, 2] },
                 text: "Catalytic group",
+                label_style: { color: "#4080e0", size_em: 1 },
             },
         ]);
 
@@ -849,7 +850,7 @@ test("ViewerContextMenu exposes reproducible-selection actions with the right gu
 
         root = (menu as any).root as FakeElement;
         assert.ok(collectTexts(root).includes("Create Region from Selection"));
-        assert.ok(!collectTexts(root).includes("Add Label from Selection"));
+        assert.ok(collectTexts(root).includes("Add Label from Selection"));
 
         assert.deepStrictEqual(actions, [
             {

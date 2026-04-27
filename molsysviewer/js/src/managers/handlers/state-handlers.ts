@@ -21,6 +21,7 @@ import {
     CreateRegionMessage,
     DeleteLayerMessage,
     DeleteRegionMessage,
+    RenameRegionMessage,
     HideGlobalMessage,
     HideLayerMessage,
     HideRegionMessage,
@@ -451,6 +452,17 @@ export class StateHandlers {
         await Promise.all(refs.map(ref => this.removeStateObject(ref)));
         this.regionIndex.delete(tag);
         this.callbacks.notify({ event: "region_deleted", tag });
+    }
+
+    async renameRegion(msg: RenameRegionMessage) {
+        const oldTag = msg.tag ?? "region";
+        const newTag = msg.new_tag;
+        if (!newTag || oldTag === newTag) return;
+        const entry = this.regionIndex.get(oldTag);
+        if (!entry) return;
+        this.regionIndex.delete(oldTag);
+        this.regionIndex.set(newTag, entry);
+        this.callbacks.notify({ event: "region_renamed", tag: oldTag, new_tag: newTag });
     }
 
     async createLayer(msg: CreateLayerMessage) {

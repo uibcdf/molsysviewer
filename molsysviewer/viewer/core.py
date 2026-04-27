@@ -383,6 +383,17 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
                 if region is None:
                     raise ValueError(f"No region found with tag {tag!r}.")
                 region.delete(skip_digestion=True)
+            elif action == "rename_region":
+                tag = content.get("tag")
+                new_tag = content.get("new_tag")
+                if not isinstance(tag, str) or tag.strip() == "":
+                    raise ValueError("rename_region requires non-empty tag.")
+                if not isinstance(new_tag, str) or new_tag.strip() == "":
+                    raise ValueError("rename_region requires non-empty new_tag.")
+                region = self._regions.get(tag.strip())
+                if region is None:
+                    raise ValueError(f"No region found with tag {tag!r}.")
+                region.rename(new_tag.strip(), skip_digestion=True)
             elif action == "create_section_from_selection":
                 atom_indices = list(self.active_selection.atom_indices)
                 if len(atom_indices) == 0:
@@ -426,7 +437,11 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
                 text = content.get("text")
                 if not isinstance(text, str) or text.strip() == "":
                     raise ValueError("add_label_from_selection requires non-empty text.")
-                self.annotations.add_label_from_active_selection(text=text.strip(), skip_digestion=True)
+                raw_style = content.get("label_style")
+                label_style = dict(raw_style) if isinstance(raw_style, dict) else None
+                self.annotations.add_label_from_active_selection(
+                    text=text.strip(), label_style=label_style, skip_digestion=True
+                )
             elif action == "delete_annotation":
                 tag = content.get("tag")
                 if not isinstance(tag, str) or tag.strip() == "":

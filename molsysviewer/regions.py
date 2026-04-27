@@ -522,6 +522,18 @@ class Region:
         self._send("delete_region")
         self._view._unregister_region(self.tag)  # noqa: SLF001
 
+    @signal(tags=["region"])
+    @digest()
+    def rename(self, new_tag: str, skip_digestion: bool = False) -> None:
+        """Rename this region to *new_tag* on both the Python and JS sides."""
+        if not self._active:
+            return
+        old_tag = self.tag
+        self._send("rename_region", new_tag=new_tag)
+        self.tag = new_tag
+        self._view._regions[new_tag] = self  # noqa: SLF001
+        self._view._regions.pop(old_tag, None)  # noqa: SLF001
+
     # --- Scalar colour mapping ---
 
     @signal(tags=["color", "region"])

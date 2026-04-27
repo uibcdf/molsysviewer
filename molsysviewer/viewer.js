@@ -32,9 +32,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// molsysviewer/js/node_modules/mutative/dist/mutative.cjs.development.js
+// node_modules/mutative/dist/mutative.cjs.development.js
 var require_mutative_cjs_development = __commonJS({
-  "molsysviewer/js/node_modules/mutative/dist/mutative.cjs.development.js"(exports) {
+  "node_modules/mutative/dist/mutative.cjs.development.js"(exports) {
     "use strict";
     var Operation = {
       Remove: "remove",
@@ -1466,9 +1466,9 @@ var require_mutative_cjs_development = __commonJS({
   }
 });
 
-// molsysviewer/js/node_modules/mutative/dist/index.js
+// node_modules/mutative/dist/index.js
 var require_dist = __commonJS({
-  "molsysviewer/js/node_modules/mutative/dist/index.js"(exports, module) {
+  "node_modules/mutative/dist/index.js"(exports, module) {
     "use strict";
     if (false) {
       module.exports = null;
@@ -1478,7 +1478,7 @@ var require_dist = __commonJS({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/produce.js
+// node_modules/molstar/lib/mol-util/produce.js
 var import_dist = __toESM(require_dist());
 function produce(base, recipe) {
   if (typeof base === "object" && !("prototype" in base)) {
@@ -1487,7 +1487,7 @@ function produce(base, recipe) {
   return (0, import_dist.create)(base, recipe);
 }
 
-// molsysviewer/js/node_modules/immutable/dist/immutable.es.js
+// node_modules/immutable/dist/immutable.es.js
 var IS_INDEXED_SYMBOL = "@@__IMMUTABLE_INDEXED__@@";
 function isIndexed(maybeIndexed) {
   return Boolean(maybeIndexed && // @ts-expect-error: maybeIndexed is typed as `{}`, need to change in 6.0 to `maybeIndexed && typeof maybeIndexed === 'object' && IS_INDEXED_SYMBOL in maybeIndexed`
@@ -6116,7 +6116,7 @@ function setProp(prototype, name) {
   }
 }
 
-// molsysviewer/js/node_modules/tslib/tslib.es6.mjs
+// node_modules/tslib/tslib.es6.mjs
 var extendStatics = function(d5, b8) {
   extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d6, b9) {
     d6.__proto__ = b9;
@@ -6331,12 +6331,12 @@ function __asyncValues(o) {
   }
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isFunction.js
+// node_modules/rxjs/dist/esm5/internal/util/isFunction.js
 function isFunction(value) {
   return typeof value === "function";
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/createErrorClass.js
+// node_modules/rxjs/dist/esm5/internal/util/createErrorClass.js
 function createErrorClass(createImpl) {
   var _super = function(instance) {
     Error.call(instance);
@@ -6348,7 +6348,7 @@ function createErrorClass(createImpl) {
   return ctorFunc;
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/UnsubscriptionError.js
+// node_modules/rxjs/dist/esm5/internal/util/UnsubscriptionError.js
 var UnsubscriptionError = createErrorClass(function(_super) {
   return function UnsubscriptionErrorImpl(errors) {
     _super(this);
@@ -6360,7 +6360,7 @@ var UnsubscriptionError = createErrorClass(function(_super) {
   };
 });
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/arrRemove.js
+// node_modules/rxjs/dist/esm5/internal/util/arrRemove.js
 function arrRemove(arr, item2) {
   if (arr) {
     var index = arr.indexOf(item2);
@@ -6368,7 +6368,7 @@ function arrRemove(arr, item2) {
   }
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/Subscription.js
+// node_modules/rxjs/dist/esm5/internal/Subscription.js
 var Subscription = (function() {
   function Subscription2(initialTeardown) {
     this.initialTeardown = initialTeardown;
@@ -6501,7 +6501,7 @@ function execFinalizer(finalizer) {
   }
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/config.js
+// node_modules/rxjs/dist/esm5/internal/config.js
 var config = {
   onUnhandledError: null,
   onStoppedNotification: null,
@@ -6510,7 +6510,7 @@ var config = {
   useDeprecatedNextContext: false
 };
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/timeoutProvider.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/timeoutProvider.js
 var timeoutProvider = {
   setTimeout: function(handler, timeout) {
     var args = [];
@@ -6530,7 +6530,7 @@ var timeoutProvider = {
   delegate: void 0
 };
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/reportUnhandledError.js
+// node_modules/rxjs/dist/esm5/internal/util/reportUnhandledError.js
 function reportUnhandledError(err) {
   timeoutProvider.setTimeout(function() {
     var onUnhandledError = config.onUnhandledError;
@@ -6542,11 +6542,11 @@ function reportUnhandledError(err) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/noop.js
+// node_modules/rxjs/dist/esm5/internal/util/noop.js
 function noop() {
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/NotificationFactories.js
+// node_modules/rxjs/dist/esm5/internal/NotificationFactories.js
 var COMPLETE_NOTIFICATION = (function() {
   return createNotification("C", void 0, void 0);
 })();
@@ -6564,7 +6564,7 @@ function createNotification(kind, value, error2) {
   };
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/errorContext.js
+// node_modules/rxjs/dist/esm5/internal/util/errorContext.js
 var context = null;
 function errorContext(cb2) {
   if (config.useDeprecatedSynchronousErrorHandling) {
@@ -6591,7 +6591,7 @@ function captureError(err) {
   }
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/Subscriber.js
+// node_modules/rxjs/dist/esm5/internal/Subscriber.js
 var Subscriber = (function(_super) {
   __extends(Subscriber2, _super);
   function Subscriber2(destination) {
@@ -6756,17 +6756,17 @@ var EMPTY_OBSERVER = {
   complete: noop
 };
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/symbol/observable.js
+// node_modules/rxjs/dist/esm5/internal/symbol/observable.js
 var observable = (function() {
   return typeof Symbol === "function" && Symbol.observable || "@@observable";
 })();
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/identity.js
+// node_modules/rxjs/dist/esm5/internal/util/identity.js
 function identity(x) {
   return x;
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/pipe.js
+// node_modules/rxjs/dist/esm5/internal/util/pipe.js
 function pipeFromArray(fns) {
   if (fns.length === 0) {
     return identity;
@@ -6781,7 +6781,7 @@ function pipeFromArray(fns) {
   };
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/Observable.js
+// node_modules/rxjs/dist/esm5/internal/Observable.js
 var Observable = (function() {
   function Observable2(subscribe) {
     if (subscribe) {
@@ -6873,7 +6873,7 @@ function isSubscriber(value) {
   return value && value instanceof Subscriber || isObserver(value) && isSubscription(value);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/lift.js
+// node_modules/rxjs/dist/esm5/internal/util/lift.js
 function hasLift(source) {
   return isFunction(source === null || source === void 0 ? void 0 : source.lift);
 }
@@ -6892,7 +6892,7 @@ function operate(init) {
   };
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/OperatorSubscriber.js
+// node_modules/rxjs/dist/esm5/internal/operators/OperatorSubscriber.js
 function createOperatorSubscriber(destination, onNext, onComplete, onError, onFinalize) {
   return new OperatorSubscriber(destination, onNext, onComplete, onError, onFinalize);
 }
@@ -6940,7 +6940,7 @@ var OperatorSubscriber = (function(_super) {
   return OperatorSubscriber2;
 })(Subscriber);
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/ObjectUnsubscribedError.js
+// node_modules/rxjs/dist/esm5/internal/util/ObjectUnsubscribedError.js
 var ObjectUnsubscribedError = createErrorClass(function(_super) {
   return function ObjectUnsubscribedErrorImpl() {
     _super(this);
@@ -6949,7 +6949,7 @@ var ObjectUnsubscribedError = createErrorClass(function(_super) {
   };
 });
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/Subject.js
+// node_modules/rxjs/dist/esm5/internal/Subject.js
 var Subject = (function(_super) {
   __extends(Subject2, _super);
   function Subject2() {
@@ -7104,7 +7104,7 @@ var AnonymousSubject = (function(_super) {
   return AnonymousSubject2;
 })(Subject);
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/BehaviorSubject.js
+// node_modules/rxjs/dist/esm5/internal/BehaviorSubject.js
 var BehaviorSubject = (function(_super) {
   __extends(BehaviorSubject2, _super);
   function BehaviorSubject2(_value) {
@@ -7138,7 +7138,7 @@ var BehaviorSubject = (function(_super) {
   return BehaviorSubject2;
 })(Subject);
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/dateTimestampProvider.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/dateTimestampProvider.js
 var dateTimestampProvider = {
   now: function() {
     return (dateTimestampProvider.delegate || Date).now();
@@ -7146,7 +7146,7 @@ var dateTimestampProvider = {
   delegate: void 0
 };
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/Action.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/Action.js
 var Action = (function(_super) {
   __extends(Action2, _super);
   function Action2(scheduler, work) {
@@ -7161,7 +7161,7 @@ var Action = (function(_super) {
   return Action2;
 })(Subscription);
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/intervalProvider.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/intervalProvider.js
 var intervalProvider = {
   setInterval: function(handler, timeout) {
     var args = [];
@@ -7181,7 +7181,7 @@ var intervalProvider = {
   delegate: void 0
 };
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/AsyncAction.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/AsyncAction.js
 var AsyncAction = (function(_super) {
   __extends(AsyncAction2, _super);
   function AsyncAction2(scheduler, work) {
@@ -7271,7 +7271,7 @@ var AsyncAction = (function(_super) {
   return AsyncAction2;
 })(Action);
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/Scheduler.js
+// node_modules/rxjs/dist/esm5/internal/Scheduler.js
 var Scheduler = (function() {
   function Scheduler3(schedulerActionCtor, now2) {
     if (now2 === void 0) {
@@ -7290,7 +7290,7 @@ var Scheduler = (function() {
   return Scheduler3;
 })();
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/AsyncScheduler.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/AsyncScheduler.js
 var AsyncScheduler = (function(_super) {
   __extends(AsyncScheduler2, _super);
   function AsyncScheduler2(SchedulerAction, now2) {
@@ -7326,21 +7326,21 @@ var AsyncScheduler = (function(_super) {
   return AsyncScheduler2;
 })(Scheduler);
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduler/async.js
+// node_modules/rxjs/dist/esm5/internal/scheduler/async.js
 var asyncScheduler = new AsyncScheduler(AsyncAction);
 var async = asyncScheduler;
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/observable/empty.js
+// node_modules/rxjs/dist/esm5/internal/observable/empty.js
 var EMPTY = new Observable(function(subscriber) {
   return subscriber.complete();
 });
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isScheduler.js
+// node_modules/rxjs/dist/esm5/internal/util/isScheduler.js
 function isScheduler(value) {
   return value && isFunction(value.schedule);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/args.js
+// node_modules/rxjs/dist/esm5/internal/util/args.js
 function last3(arr) {
   return arr[arr.length - 1];
 }
@@ -7351,32 +7351,32 @@ function popNumber(args, defaultValue) {
   return typeof last3(args) === "number" ? args.pop() : defaultValue;
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isArrayLike.js
+// node_modules/rxjs/dist/esm5/internal/util/isArrayLike.js
 var isArrayLike2 = (function(x) {
   return x && typeof x.length === "number" && typeof x !== "function";
 });
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isPromise.js
+// node_modules/rxjs/dist/esm5/internal/util/isPromise.js
 function isPromise(value) {
   return isFunction(value === null || value === void 0 ? void 0 : value.then);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isInteropObservable.js
+// node_modules/rxjs/dist/esm5/internal/util/isInteropObservable.js
 function isInteropObservable(input) {
   return isFunction(input[observable]);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isAsyncIterable.js
+// node_modules/rxjs/dist/esm5/internal/util/isAsyncIterable.js
 function isAsyncIterable(obj) {
   return Symbol.asyncIterator && isFunction(obj === null || obj === void 0 ? void 0 : obj[Symbol.asyncIterator]);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/throwUnobservableError.js
+// node_modules/rxjs/dist/esm5/internal/util/throwUnobservableError.js
 function createInvalidObservableTypeError(input) {
   return new TypeError("You provided " + (input !== null && typeof input === "object" ? "an invalid object" : "'" + input + "'") + " where a stream was expected. You can provide an Observable, Promise, ReadableStream, Array, AsyncIterable, or Iterable.");
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/symbol/iterator.js
+// node_modules/rxjs/dist/esm5/internal/symbol/iterator.js
 function getSymbolIterator() {
   if (typeof Symbol !== "function" || !Symbol.iterator) {
     return "@@iterator";
@@ -7385,12 +7385,12 @@ function getSymbolIterator() {
 }
 var iterator = getSymbolIterator();
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isIterable.js
+// node_modules/rxjs/dist/esm5/internal/util/isIterable.js
 function isIterable(input) {
   return isFunction(input === null || input === void 0 ? void 0 : input[iterator]);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isReadableStreamLike.js
+// node_modules/rxjs/dist/esm5/internal/util/isReadableStreamLike.js
 function readableStreamLikeToAsyncGenerator(readableStream) {
   return __asyncGenerator(this, arguments, function readableStreamLikeToAsyncGenerator_1() {
     var reader, _a, value, done;
@@ -7433,7 +7433,7 @@ function isReadableStreamLike(obj) {
   return isFunction(obj === null || obj === void 0 ? void 0 : obj.getReader);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/observable/innerFrom.js
+// node_modules/rxjs/dist/esm5/internal/observable/innerFrom.js
 function innerFrom(input) {
   if (input instanceof Observable) {
     return input;
@@ -7573,7 +7573,7 @@ function process2(asyncIterable, subscriber) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/executeSchedule.js
+// node_modules/rxjs/dist/esm5/internal/util/executeSchedule.js
 function executeSchedule(parentSubscription, scheduler, work, delay, repeat) {
   if (delay === void 0) {
     delay = 0;
@@ -7595,7 +7595,7 @@ function executeSchedule(parentSubscription, scheduler, work, delay, repeat) {
   }
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/observeOn.js
+// node_modules/rxjs/dist/esm5/internal/operators/observeOn.js
 function observeOn(scheduler, delay) {
   if (delay === void 0) {
     delay = 0;
@@ -7617,7 +7617,7 @@ function observeOn(scheduler, delay) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/subscribeOn.js
+// node_modules/rxjs/dist/esm5/internal/operators/subscribeOn.js
 function subscribeOn(scheduler, delay) {
   if (delay === void 0) {
     delay = 0;
@@ -7629,17 +7629,17 @@ function subscribeOn(scheduler, delay) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/scheduleObservable.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/scheduleObservable.js
 function scheduleObservable(input, scheduler) {
   return innerFrom(input).pipe(subscribeOn(scheduler), observeOn(scheduler));
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/schedulePromise.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/schedulePromise.js
 function schedulePromise(input, scheduler) {
   return innerFrom(input).pipe(subscribeOn(scheduler), observeOn(scheduler));
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/scheduleArray.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/scheduleArray.js
 function scheduleArray(input, scheduler) {
   return new Observable(function(subscriber) {
     var i = 0;
@@ -7656,7 +7656,7 @@ function scheduleArray(input, scheduler) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/scheduleIterable.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/scheduleIterable.js
 function scheduleIterable(input, scheduler) {
   return new Observable(function(subscriber) {
     var iterator2;
@@ -7685,7 +7685,7 @@ function scheduleIterable(input, scheduler) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/scheduleAsyncIterable.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/scheduleAsyncIterable.js
 function scheduleAsyncIterable(input, scheduler) {
   if (!input) {
     throw new Error("Iterable cannot be null");
@@ -7706,12 +7706,12 @@ function scheduleAsyncIterable(input, scheduler) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/scheduleReadableStreamLike.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/scheduleReadableStreamLike.js
 function scheduleReadableStreamLike(input, scheduler) {
   return scheduleAsyncIterable(readableStreamLikeToAsyncGenerator(input), scheduler);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/scheduled/scheduled.js
+// node_modules/rxjs/dist/esm5/internal/scheduled/scheduled.js
 function scheduled(input, scheduler) {
   if (input != null) {
     if (isInteropObservable(input)) {
@@ -7736,17 +7736,17 @@ function scheduled(input, scheduler) {
   throw createInvalidObservableTypeError(input);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/observable/from.js
+// node_modules/rxjs/dist/esm5/internal/observable/from.js
 function from(input, scheduler) {
   return scheduler ? scheduled(input, scheduler) : innerFrom(input);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/util/isDate.js
+// node_modules/rxjs/dist/esm5/internal/util/isDate.js
 function isValidDate(value) {
   return value instanceof Date && !isNaN(value);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/map.js
+// node_modules/rxjs/dist/esm5/internal/operators/map.js
 function map2(project, thisArg) {
   return operate(function(source, subscriber) {
     var index = 0;
@@ -7756,7 +7756,7 @@ function map2(project, thisArg) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/mergeInternals.js
+// node_modules/rxjs/dist/esm5/internal/operators/mergeInternals.js
 function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, expand, innerSubScheduler, additionalFinalizer) {
   var buffer = [];
   var active = 0;
@@ -7816,7 +7816,7 @@ function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, e
   };
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/mergeMap.js
+// node_modules/rxjs/dist/esm5/internal/operators/mergeMap.js
 function mergeMap(project, resultSelector, concurrent) {
   if (concurrent === void 0) {
     concurrent = Infinity;
@@ -7835,7 +7835,7 @@ function mergeMap(project, resultSelector, concurrent) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/mergeAll.js
+// node_modules/rxjs/dist/esm5/internal/operators/mergeAll.js
 function mergeAll(concurrent) {
   if (concurrent === void 0) {
     concurrent = Infinity;
@@ -7843,7 +7843,7 @@ function mergeAll(concurrent) {
   return mergeMap(identity, concurrent);
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/observable/timer.js
+// node_modules/rxjs/dist/esm5/internal/observable/timer.js
 function timer(dueTime, intervalOrScheduler, scheduler) {
   if (dueTime === void 0) {
     dueTime = 0;
@@ -7878,7 +7878,7 @@ function timer(dueTime, intervalOrScheduler, scheduler) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/observable/merge.js
+// node_modules/rxjs/dist/esm5/internal/observable/merge.js
 function merge() {
   var args = [];
   for (var _i = 0; _i < arguments.length; _i++) {
@@ -7890,7 +7890,7 @@ function merge() {
   return !sources.length ? EMPTY : sources.length === 1 ? innerFrom(sources[0]) : mergeAll(concurrent)(from(sources, scheduler));
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/filter.js
+// node_modules/rxjs/dist/esm5/internal/operators/filter.js
 function filter3(predicate, thisArg) {
   return operate(function(source, subscriber) {
     var index = 0;
@@ -7900,7 +7900,7 @@ function filter3(predicate, thisArg) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/debounceTime.js
+// node_modules/rxjs/dist/esm5/internal/operators/debounceTime.js
 function debounceTime(dueTime, scheduler) {
   if (scheduler === void 0) {
     scheduler = asyncScheduler;
@@ -7944,7 +7944,7 @@ function debounceTime(dueTime, scheduler) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/take.js
+// node_modules/rxjs/dist/esm5/internal/operators/take.js
 function take2(count3) {
   return count3 <= 0 ? function() {
     return EMPTY;
@@ -7961,7 +7961,7 @@ function take2(count3) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/distinctUntilChanged.js
+// node_modules/rxjs/dist/esm5/internal/operators/distinctUntilChanged.js
 function distinctUntilChanged(comparator, keySelector) {
   if (keySelector === void 0) {
     keySelector = identity;
@@ -7984,7 +7984,7 @@ function defaultCompare(a8, b8) {
   return a8 === b8;
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/throttle.js
+// node_modules/rxjs/dist/esm5/internal/operators/throttle.js
 function throttle(durationSelector, config2) {
   return operate(function(source, subscriber) {
     var _a = config2 !== null && config2 !== void 0 ? config2 : {}, _b = _a.leading, leading = _b === void 0 ? true : _b, _c = _a.trailing, trailing = _c === void 0 ? false : _c;
@@ -8027,7 +8027,7 @@ function throttle(durationSelector, config2) {
   });
 }
 
-// molsysviewer/js/node_modules/rxjs/dist/esm5/internal/operators/throttleTime.js
+// node_modules/rxjs/dist/esm5/internal/operators/throttleTime.js
 function throttleTime(duration, scheduler, config2) {
   if (scheduler === void 0) {
     scheduler = asyncScheduler;
@@ -8038,7 +8038,7 @@ function throttleTime(duration, scheduler, config2) {
   }, config2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/now.js
+// node_modules/molstar/lib/mol-util/now.js
 var now = (function() {
   if (typeof window !== "undefined" && window.performance) {
     const perf = window.performance;
@@ -8072,13 +8072,13 @@ function formatTimespan(t5, includeMsZeroes = true) {
   return `${t5.toFixed(0)}ms`;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/common.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/common.js
 var EPSILON = 1e-6;
 function equalEps(a8, b8, eps) {
   return Math.abs(a8 - b8) <= eps;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/interpolate.js
+// node_modules/molstar/lib/mol-math/interpolate.js
 function normalize(value, min5, max5) {
   return (value - min5) / (max5 - min5);
 }
@@ -8107,7 +8107,7 @@ function smoothstep(min5, max5, x) {
   return x * x * (3 - 2 * x);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/vec3.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/vec3.js
 var _isFinite = isFinite;
 function Vec3() {
   return Vec3.zero();
@@ -8669,7 +8669,7 @@ function Vec3() {
   Vec32.negUnitZ = create3(0, 0, -1);
 })(Vec3 || (Vec3 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/mat3.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/mat3.js
 function Mat3() {
   return Mat3.zero();
 }
@@ -9106,7 +9106,7 @@ function Mat3() {
   Mat32.adjointFromMat4 = adjointFromMat4;
 })(Mat3 || (Mat3 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/type-helpers.js
+// node_modules/molstar/lib/mol-util/type-helpers.js
 function ObjectKeys(o) {
   return Object.keys(o);
 }
@@ -9117,7 +9117,7 @@ function isPromiseLike(x) {
   return typeof (x === null || x === void 0 ? void 0 : x.then) === "function";
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/quat.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/quat.js
 function Quat() {
   return Quat.zero();
 }
@@ -9549,7 +9549,7 @@ function Quat() {
   Quat2.Identity = identity2();
 })(Quat || (Quat = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/misc.js
+// node_modules/molstar/lib/mol-math/misc.js
 var halfPI = Math.PI / 2;
 var PiDiv180 = Math.PI / 180;
 function degToRad(deg) {
@@ -9601,7 +9601,7 @@ function spiral2d(radius) {
   return out;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/mat4.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/mat4.js
 function Mat4() {
   return Mat4.zero();
 }
@@ -10695,7 +10695,7 @@ function Mat4() {
   Mat42.id = identity2();
 })(Mat4 || (Mat4 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/vec2.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/vec2.js
 function Vec2() {
   return Vec2.zero();
 }
@@ -10855,7 +10855,7 @@ function Vec2() {
   Vec22.toString = toString8;
 })(Vec2 || (Vec2 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/vec4.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/vec4.js
 function Vec4() {
   return Vec4.zero();
 }
@@ -11043,7 +11043,7 @@ function Vec4() {
   Vec42.toString = toString8;
 })(Vec4 || (Vec4 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/tensor.js
+// node_modules/molstar/lib/mol-math/linear-algebra/tensor.js
 var Tensor;
 (function(Tensor2) {
   function Layout(dimensions, axisOrderSlowToFast, ctor) {
@@ -11343,7 +11343,7 @@ var Tensor;
   Tensor2.convertToCanonicalAxisIndicesSlowToFast = convertToCanonicalAxisIndicesSlowToFast;
 })(Tensor || (Tensor = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/camera/util.js
+// node_modules/molstar/lib/mol-canvas3d/camera/util.js
 function Viewport() {
   return Viewport.zero();
 }
@@ -11413,7 +11413,7 @@ function cameraUnproject(out, point, viewport, inverseProjectionView) {
   return Vec3.transformMat4(out, out, inverseProjectionView);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/bit-flags.js
+// node_modules/molstar/lib/mol-util/bit-flags.js
 var BitFlags;
 (function(BitFlags2) {
   function create3(flags2) {
@@ -11430,7 +11430,7 @@ var BitFlags;
   BitFlags2.hasAll = hasAll;
 })(BitFlags || (BitFlags = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/string-builder.js
+// node_modules/molstar/lib/mol-util/string-builder.js
 var StringBuilder;
 (function(StringBuilder2) {
   function create3(chunkCapacity = 512) {
@@ -11579,7 +11579,7 @@ var StringBuilder;
   StringBuilder2.writeFloatPadRight = writeFloatPadRight;
 })(StringBuilder || (StringBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/uuid.js
+// node_modules/molstar/lib/mol-util/uuid.js
 var UUID;
 (function(UUID2) {
   const _btoa = typeof btoa !== "undefined" ? btoa : (s) => Buffer.from(s).toString("base64");
@@ -11609,7 +11609,7 @@ var UUID;
   UUID2.is = is4;
 })(UUID || (UUID = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/mask.js
+// node_modules/molstar/lib/mol-util/mask.js
 function _ascSort(a8, b8) {
   return a8 - b8;
 }
@@ -11792,7 +11792,7 @@ var Mask;
   Mask2.complement = complement2;
 })(Mask || (Mask = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/id-factory.js
+// node_modules/molstar/lib/mol-util/id-factory.js
 function idFactory(firstId = 0, maxId = Number.MAX_SAFE_INTEGER) {
   let _nextId = firstId;
   return () => {
@@ -11802,7 +11802,7 @@ function idFactory(firstId = 0, maxId = Number.MAX_SAFE_INTEGER) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/value-cell.js
+// node_modules/molstar/lib/mol-util/value-cell.js
 var ValueRef;
 (function(ValueRef2) {
   function create3(ref) {
@@ -11847,7 +11847,7 @@ var ValueCell;
   ValueCell2.updateIfChanged = updateIfChanged;
 })(ValueCell || (ValueCell = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/index.js
+// node_modules/molstar/lib/mol-util/index.js
 var noop2 = function() {
 };
 function arrayEqual(arr1, arr2) {
@@ -11951,7 +11951,7 @@ function defaults(value, defaultValue) {
   return value !== void 0 ? value : defaultValue;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/input/input-observer.js
+// node_modules/molstar/lib/mol-util/input/input-observer.js
 function getButtons(event) {
   if (typeof event === "object") {
     if ("buttons" in event) {
@@ -12938,7 +12938,7 @@ function normalizeWheel(event) {
   return { spinX, spinY, dx, dy, dz };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/spaces/lab.js
+// node_modules/molstar/lib/mol-util/color/spaces/lab.js
 function Lab() {
   return Lab.zero();
 }
@@ -13071,7 +13071,7 @@ function Lab() {
   }
 })(Lab || (Lab = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/spaces/hcl.js
+// node_modules/molstar/lib/mol-util/color/spaces/hcl.js
 function Hcl() {
   return Hcl.zero();
 }
@@ -13157,7 +13157,7 @@ function Hcl() {
   const Kn = 18;
 })(Hcl || (Hcl = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/spaces/rgb.js
+// node_modules/molstar/lib/mol-util/color/spaces/rgb.js
 function Rgb() {
   return Rgb.zero();
 }
@@ -13181,7 +13181,7 @@ function Rgb() {
   Rgb2.toColor = toColor;
 })(Rgb || (Rgb = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/spaces/hsl.js
+// node_modules/molstar/lib/mol-util/color/spaces/hsl.js
 function Hsl() {
   return Hsl.zero();
 }
@@ -13306,7 +13306,7 @@ function Hsl() {
   Hsl2.interpolate = interpolate2;
 })(Hsl || (Hsl = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/color.js
+// node_modules/molstar/lib/mol-util/color/color.js
 function Color(hex) {
   return hex;
 }
@@ -13494,7 +13494,7 @@ function getAdjustedColorMap(map4, saturation, lightness) {
   return adjustedMap;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/string.js
+// node_modules/molstar/lib/mol-util/string.js
 function splitCamelCase(str11, separator = " ") {
   return str11.replace(/([a-z\xE0-\xFF])([A-Z\xC0\xDF])/g, `$1${separator}$2`);
 }
@@ -13541,7 +13541,7 @@ function escapeRegExp(str11) {
   return str11.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/lists.js
+// node_modules/molstar/lib/mol-util/color/lists.js
 var ColorLists = {
   // Brewer Color Lists
   // Copyright (c) 2002 Cynthia Brewer, Mark Harrower, and The Pennsylvania State University.
@@ -13674,7 +13674,7 @@ function getColorListFromName(name) {
   return ColorLists["red-yellow-blue"];
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/legend.js
+// node_modules/molstar/lib/mol-util/legend.js
 function TableLegend(table) {
   return { kind: "table-legend", table };
 }
@@ -13682,7 +13682,7 @@ function ScaleLegend(minLabel, maxLabel, colors) {
   return { kind: "scale-legend", minLabel, maxLabel, colors };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/chunked-array.js
+// node_modules/molstar/lib/mol-data/util/chunked-array.js
 var ChunkedArray;
 (function(ChunkedArray2) {
   function is4(x) {
@@ -13840,7 +13840,7 @@ var ChunkedArray;
   ChunkedArray2.create = create3;
 })(ChunkedArray || (ChunkedArray = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/sort.js
+// node_modules/molstar/lib/mol-data/util/sort.js
 function arrayLess(arr, i, j) {
   return arr[i] - arr[j];
 }
@@ -13981,7 +13981,7 @@ function sort2(data, start4, end4, cmp, swap2) {
   return data;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/buckets.js
+// node_modules/molstar/lib/mol-data/util/buckets.js
 function sortAsc2(bs, i, j) {
   return bs[i].key < bs[j].key ? -1 : 1;
 }
@@ -14050,7 +14050,7 @@ function makeBuckets(indices2, getKey2, options) {
   return _makeBuckets(indices2, getKey2, !!(options && options.sort), s, e);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/equivalence-classes.js
+// node_modules/molstar/lib/mol-data/util/equivalence-classes.js
 var EquivalenceClassesImpl = class {
   createGroup(key2, value) {
     const id = this.id++;
@@ -14091,7 +14091,7 @@ function EquivalenceClasses(getHash, areEqual4) {
   return new EquivalenceClassesImpl(getHash, areEqual4);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/hash-functions.js
+// node_modules/molstar/lib/mol-data/util/hash-functions.js
 function hash1(i) {
   let a8 = i ^ i >> 4;
   a8 = (a8 ^ 3735928559) + (a8 << 5);
@@ -14464,7 +14464,7 @@ function murmurHash3_128(key2, seed) {
   return (h1 >>> 0).toString(16).padStart(8, "0") + (h2 >>> 0).toString(16).padStart(8, "0") + (h3 >>> 0).toString(16).padStart(8, "0") + (h4 >>> 0).toString(16).padStart(8, "0");
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/db/column-helpers.js
+// node_modules/molstar/lib/mol-data/db/column-helpers.js
 var column_helpers_exports = {};
 __export(column_helpers_exports, {
   createAndFillArray: () => createAndFillArray,
@@ -14504,7 +14504,7 @@ function typedArrayWindow(data, params) {
   return new constructor(buffer, byteOffset + BYTES_PER_ELEMENT * start4, Math.min(length, end4 - start4));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/common/text/number-parser.js
+// node_modules/molstar/lib/mol-io/reader/common/text/number-parser.js
 function parseIntSkipLeadingWhitespace(str11, start4, end4) {
   while (start4 < end4 && str11.charCodeAt(start4) === 32)
     start4++;
@@ -14587,7 +14587,7 @@ var NumberType = {
   NaN: NumberTypes.NaN
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/db/column.js
+// node_modules/molstar/lib/mol-data/db/column.js
 var Column;
 (function(Column2) {
   let Schema9;
@@ -15017,7 +15017,7 @@ function columnIndicesOf(c8, test) {
   return ret;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/db/table.js
+// node_modules/molstar/lib/mol-data/db/table.js
 var Table;
 (function(Table2) {
   function is4(t5) {
@@ -15282,7 +15282,7 @@ var Table;
   Table2.formatToString = formatToString;
 })(Table || (Table = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/db/database.js
+// node_modules/molstar/lib/mol-data/db/database.js
 var Database;
 (function(Database2) {
   function ofTables(name, schema, tables) {
@@ -15311,7 +15311,7 @@ var Database;
   Database2.getTablesAsRows = getTablesAsRows;
 })(Database || (Database = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/array.js
+// node_modules/molstar/lib/mol-data/util/array.js
 function arrayFind(array2, f) {
   for (let i = 0, _i = array2.length; i < _i; i++) {
     if (f(array2[i]))
@@ -15353,7 +15353,7 @@ function arrayGetCtor(data) {
   return ret;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/tuple.js
+// node_modules/molstar/lib/mol-data/int/tuple.js
 var IntTuple;
 (function(IntTuple2) {
   IntTuple2.Zero = 0;
@@ -15428,7 +15428,7 @@ var IntTuple;
   IntTuple2.toString = toString8;
 })(IntTuple || (IntTuple = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/impl/interval.js
+// node_modules/molstar/lib/mol-data/int/impl/interval.js
 var Empty = IntTuple.Zero;
 function ofRange(min5, max5) {
   return max5 < min5 ? IntTuple.create(min5, min5) : IntTuple.create(min5, max5 + 1);
@@ -15507,7 +15507,7 @@ function offset(int9, offset3) {
   return IntTuple.create(start(int9) + offset3, end(int9) + offset3);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/interval.js
+// node_modules/molstar/lib/mol-data/int/interval.js
 var Interval;
 (function(Interval2) {
   Interval2.Empty = Empty;
@@ -15537,7 +15537,7 @@ var Interval;
   Interval2.offset = offset;
 })(Interval || (Interval = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/impl/sorted-array.js
+// node_modules/molstar/lib/mol-data/int/impl/sorted-array.js
 var Empty2 = [];
 function ofSingleton(v4) {
   return [v4];
@@ -15933,7 +15933,7 @@ function getSuitableIntersectionRange(a8, b8) {
   return _maxIntRangeRet;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/sorted-array.js
+// node_modules/molstar/lib/mol-data/int/sorted-array.js
 var SortedArray;
 (function(SortedArray2) {
   SortedArray2.Empty = Empty2;
@@ -15969,7 +15969,7 @@ var SortedArray;
   SortedArray2.indicesOf = indicesOf;
 })(SortedArray || (SortedArray = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/impl/ordered-set.js
+// node_modules/molstar/lib/mol-data/int/impl/ordered-set.js
 var Empty3 = Interval.Empty;
 var ofSingleton2 = Interval.ofSingleton;
 var ofRange3 = Interval.ofRange;
@@ -16355,7 +16355,7 @@ function indexedIntersect(idxA, a8, b8) {
   return ofSortedArray2(indices2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/ordered-set.js
+// node_modules/molstar/lib/mol-data/int/ordered-set.js
 var OrderedSet2;
 (function(OrderedSet3) {
   OrderedSet3.Empty = Empty3;
@@ -16412,7 +16412,7 @@ var OrderedSet2;
   OrderedSet3.toString = toString8;
 })(OrderedSet2 || (OrderedSet2 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/impl/segmentation.js
+// node_modules/molstar/lib/mol-data/int/impl/segmentation.js
 function create2(values2) {
   const offsets = SortedArray.ofSortedArray(values2);
   const max5 = SortedArray.max(offsets);
@@ -16497,7 +16497,7 @@ function segments(segs, set4, segment) {
   return new SegmentIterator(segs.offsets, segs.index, set4, int9);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/segmentation.js
+// node_modules/molstar/lib/mol-data/int/segmentation.js
 var Segmentation;
 (function(Segmentation2) {
   Segmentation2.create = create2;
@@ -16508,7 +16508,7 @@ var Segmentation;
   Segmentation2.transientSegments = segments;
 })(Segmentation || (Segmentation = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/linked-index.js
+// node_modules/molstar/lib/mol-data/int/linked-index.js
 function LinkedIndex(size4) {
   return new LinkedIndexImpl(size4);
 }
@@ -16547,7 +16547,7 @@ var LinkedIndexImpl = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/map.js
+// node_modules/molstar/lib/mol-data/int/map.js
 var IntMap;
 (function(IntMap2) {
   IntMap2.Empty = /* @__PURE__ */ new Map();
@@ -16588,7 +16588,7 @@ var IntMap;
   IntMap2.addFrom = addFrom;
 })(IntMap || (IntMap = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/iterator.js
+// node_modules/molstar/lib/mol-data/iterator.js
 var ArrayIteratorImpl = class {
   move() {
     ++this.index;
@@ -16699,7 +16699,7 @@ var Iterator4;
   Iterator5.forEach = forEach3;
 })(Iterator4 || (Iterator4 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/scale.js
+// node_modules/molstar/lib/mol-util/color/scale.js
 var DefaultColorScaleProps = {
   domain: [0, 1],
   reverse: false,
@@ -16817,7 +16817,7 @@ var ColorScale;
   }
 })(ColorScale || (ColorScale = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/object.js
+// node_modules/molstar/lib/mol-util/object.js
 var hasOwnProperty3 = Object.prototype.hasOwnProperty;
 function assignIfUndefined(to, full) {
   for (const k of Object.keys(full)) {
@@ -16903,7 +16903,7 @@ function objectForEach(o, f) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/string-like.js
+// node_modules/molstar/lib/mol-io/common/string-like.js
 var StringLike = {
   /** Return true if `obj` is instance of `StringLike` */
   is(obj) {
@@ -17078,7 +17078,7 @@ var ChunkedBigString = class _ChunkedBigString {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/utf8.js
+// node_modules/molstar/lib/mol-io/common/utf8.js
 function utf8Write(data, offset3, str11) {
   for (let i = 0, l = str11.length; i < l; i++) {
     const codePoint = str11.charCodeAt(i);
@@ -17186,7 +17186,7 @@ function utf8ByteCount(str11) {
   return count3;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/util/scheduler.js
+// node_modules/molstar/lib/mol-task/util/scheduler.js
 function createImmediateActions() {
   const thisGlobal = (function() {
     const _window = typeof window !== "undefined" && window;
@@ -17342,7 +17342,7 @@ var Scheduler2 = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/debug.js
+// node_modules/molstar/lib/mol-util/debug.js
 var isProductionMode = (function() {
   try {
     return false;
@@ -17370,7 +17370,7 @@ function removeConsoleStatsProvider(p6) {
     consoleStatsProviders.splice(idx, 1);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/util/user-timing.js
+// node_modules/molstar/lib/mol-task/util/user-timing.js
 var hasPerformance = typeof performance !== "undefined" && !!performance.mark && performance.measure;
 var timingEnabled = hasPerformance && isTimingMode;
 var UserTiming;
@@ -17398,7 +17398,7 @@ var UserTiming;
   UserTiming2.measure = measure;
 })(UserTiming || (UserTiming = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/execution/observable.js
+// node_modules/molstar/lib/mol-task/execution/observable.js
 function ExecuteObservable(task, observer, updateRateMs = 250) {
   const info = ProgressInfo(task, observer, updateRateMs);
   const ctx = new ObservableRuntimeContext(info, info.root);
@@ -17578,7 +17578,7 @@ var ObservableRuntimeContext = class _ObservableRuntimeContext {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/execution/synchronous.js
+// node_modules/molstar/lib/mol-task/execution/synchronous.js
 var SynchronousRuntimeContext = class {
   constructor() {
     this.shouldUpdate = false;
@@ -17589,7 +17589,7 @@ var SynchronousRuntimeContext = class {
 };
 var SyncRuntimeContext = new SynchronousRuntimeContext();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/task.js
+// node_modules/molstar/lib/mol-task/task.js
 var Task;
 (function(Task2) {
   class Impl {
@@ -17658,13 +17658,13 @@ var Task;
   const getNextId3 = idFactory(0, 1073741823);
 })(Task || (Task = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/execution/runtime-context.js
+// node_modules/molstar/lib/mol-task/execution/runtime-context.js
 var RuntimeContext;
 (function(RuntimeContext3) {
   RuntimeContext3.Synchronous = SyncRuntimeContext;
 })(RuntimeContext || (RuntimeContext = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/execution/progress.js
+// node_modules/molstar/lib/mol-task/execution/progress.js
 var Progress;
 (function(Progress2) {
   function _format(root, prefix2 = "") {
@@ -17688,7 +17688,7 @@ ${subTree.join("\n")}`;
   Progress2.format = format;
 })(Progress || (Progress = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-task/util/chunked.js
+// node_modules/molstar/lib/mol-task/util/chunked.js
 async function chunkedSubtask(ctx, initialChunk, state, f, update10) {
   let chunkSize = Math.max(initialChunk, 0);
   let globalProcessed = 0, globalTime = 0;
@@ -17716,7 +17716,7 @@ async function chunkedSubtask(ctx, initialChunk, state, f, update10) {
   return state;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/nodejs-shims.js
+// node_modules/molstar/lib/mol-util/nodejs-shims.js
 var RUNNING_IN_NODEJS = typeof process !== "undefined" && process.versions != null && process.versions.node != null;
 var File_ = getFile();
 function getFile() {
@@ -17753,7 +17753,7 @@ function getFile() {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/bin.js
+// node_modules/molstar/lib/mol-util/zip/bin.js
 function toInt32(x) {
   return x >> 0;
 }
@@ -17841,7 +17841,7 @@ function sizeUTF8(str11) {
   return i;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/checksum.js
+// node_modules/molstar/lib/mol-util/zip/checksum.js
 var CrcTable = (function() {
   const tab = new Uint32Array(256);
   for (let n = 0; n < 256; n++) {
@@ -17866,7 +17866,7 @@ function crc(b8, o, l) {
   return _crc(4294967295, b8, o, l) ^ 4294967295;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/util.js
+// node_modules/molstar/lib/mol-util/zip/util.js
 var hasCompressionStreamSupport = {
   deflate: void 0,
   "deflate-raw": void 0,
@@ -17998,7 +17998,7 @@ function revCodes(tree, MAX_BITS) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/inflate.js
+// node_modules/molstar/lib/mol-util/zip/inflate.js
 function InflateContext(data, buf) {
   const noBuf = buf === void 0;
   if (buf === void 0)
@@ -18224,7 +18224,7 @@ function _get17(dt, pos) {
   return (dt[pos >>> 3] | dt[(pos >>> 3) + 1] << 8 | dt[(pos >>> 3) + 2] << 16) >>> (pos & 7);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/huffman.js
+// node_modules/molstar/lib/mol-util/zip/huffman.js
 function _hufTree(hst, tree, MAXL) {
   const list3 = [];
   const hl = hst.length, tl = tree.length;
@@ -18325,7 +18325,7 @@ function restrictDepth(dps, MD, maxl) {
     console.log("debt left");
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/deflate.js
+// node_modules/molstar/lib/mol-util/zip/deflate.js
 function DeflateContext(data, out, opos, lvl) {
   const { lits, strt, prev } = U;
   return {
@@ -18708,7 +18708,7 @@ function _putsF(dt, pos, val) {
   dt[o + 2] |= val >>> 16;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/zip/zip.js
+// node_modules/molstar/lib/mol-util/zip/zip.js
 async function unzip(runtime, buf, onlyNames = false) {
   const out = /* @__PURE__ */ Object.create(null);
   const data = new Uint8Array(buf);
@@ -18919,7 +18919,7 @@ function _writeHeader(data, o, p6, obj, t5, roff = 0) {
   return o;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/data-source.js
+// node_modules/molstar/lib/mol-util/data-source.js
 var DataCompressionMethod;
 (function(DataCompressionMethod2) {
   DataCompressionMethod2[DataCompressionMethod2["None"] = 0] = "None";
@@ -19242,7 +19242,7 @@ async function wrapPromise(index, id, p6) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/assets.js
+// node_modules/molstar/lib/mol-util/assets.js
 var Asset;
 (function(Asset2) {
   function Url(url, options) {
@@ -19381,7 +19381,7 @@ var AssetManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/param-definition.js
+// node_modules/molstar/lib/mol-util/param-definition.js
 var ParamDefinition;
 (function(ParamDefinition2) {
   ParamDefinition2.Essential = { isEssential: true };
@@ -19934,7 +19934,7 @@ var ParamDefinition;
   ParamDefinition2.withDefaults = withDefaults;
 })(ParamDefinition || (ParamDefinition = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/array.js
+// node_modules/molstar/lib/mol-util/array.js
 function arrayMax(array2) {
   let max5 = -Infinity;
   for (let i = 0, il = array2.length; i < il; ++i) {
@@ -20073,7 +20073,7 @@ function range(start4, end4) {
   return result2;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/primitives/plane3d.js
+// node_modules/molstar/lib/mol-math/geometry/primitives/plane3d.js
 function Plane3D() {
   return Plane3D.create(Vec3.create(1, 0, 0), 0);
 }
@@ -20163,7 +20163,7 @@ function Plane3D() {
   Plane3D2.intersectRay3D = intersectRay3D;
 })(Plane3D || (Plane3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/primitives/frustum3d.js
+// node_modules/molstar/lib/mol-math/geometry/primitives/frustum3d.js
 function Frustum3D() {
   return Frustum3D.create(Plane3D(), Plane3D(), Plane3D(), Plane3D(), Plane3D(), Plane3D());
 }
@@ -20242,7 +20242,7 @@ function Frustum3D() {
   Frustum3D2.containsPoint = containsPoint;
 })(Frustum3D || (Frustum3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/primitives/axes3d.js
+// node_modules/molstar/lib/mol-math/geometry/primitives/axes3d.js
 function Axes3D() {
   return Axes3D.empty();
 }
@@ -20304,7 +20304,7 @@ function Axes3D() {
   Axes3D2.scale = scale;
 })(Axes3D || (Axes3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/matrix/matrix.js
+// node_modules/molstar/lib/mol-math/linear-algebra/matrix/matrix.js
 var Matrix;
 (function(Matrix4) {
   function create3(cols, rows, ctor = Float32Array) {
@@ -20399,7 +20399,7 @@ var Matrix;
   Matrix4.subRows = subRows;
 })(Matrix || (Matrix = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/matrix/svd.js
+// node_modules/molstar/lib/mol-math/linear-algebra/matrix/svd.js
 function swap(A, i0, i1, t5) {
   t5 = A[i0];
   A[i0] = A[i1];
@@ -20661,7 +20661,7 @@ function svd(A, W, U2, V) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/matrix/principal-axes.js
+// node_modules/molstar/lib/mol-math/linear-algebra/matrix/principal-axes.js
 var PrincipalAxes;
 (function(PrincipalAxes2) {
   function ofPositions(positions) {
@@ -20782,7 +20782,7 @@ var PrincipalAxes;
   PrincipalAxes2.calculateBoxAxes = calculateBoxAxes;
 })(PrincipalAxes || (PrincipalAxes = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/primitives/sphere3d.js
+// node_modules/molstar/lib/mol-math/geometry/primitives/sphere3d.js
 function Sphere3D() {
   return Sphere3D.zero();
 }
@@ -21048,7 +21048,7 @@ function Sphere3D() {
   Sphere3D2.distanceToVec = distanceToVec;
 })(Sphere3D || (Sphere3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/primitives/box3d.js
+// node_modules/molstar/lib/mol-math/geometry/primitives/box3d.js
 function Box3D() {
   return Box3D.zero();
 }
@@ -21221,7 +21221,7 @@ function Box3D() {
   Box3D2.equals = equals3;
 })(Box3D || (Box3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/common.js
+// node_modules/molstar/lib/mol-math/geometry/common.js
 function fillGridDim(length, start4, step) {
   const a8 = new Float32Array(length);
   for (let i = 0; i < a8.length; i++) {
@@ -21230,7 +21230,7 @@ function fillGridDim(length, start4, step) {
   return a8;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/symmetry-operator.js
+// node_modules/molstar/lib/mol-math/geometry/symmetry-operator.js
 var SymmetryOperator;
 (function(SymmetryOperator2) {
   SymmetryOperator2.DefaultName = "1_555";
@@ -21463,7 +21463,7 @@ function isW1(m) {
   return m[3] === 0 && m[7] === 0 && m[11] === 0 && m[15] === 1;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/spacegroup/tables.js
+// node_modules/molstar/lib/mol-math/geometry/spacegroup/tables.js
 var TransformData = [
   [1, 0, 0, 0],
   [0, 1, 0, 0],
@@ -23046,7 +23046,7 @@ function getSpacegroupIndex(nameOrNumber) {
   return index;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/spacegroup/construction.js
+// node_modules/molstar/lib/mol-math/geometry/spacegroup/construction.js
 var SpacegroupCell;
 (function(SpacegroupCell2) {
   SpacegroupCell2.Zero = create3("P 1", Vec3.create(1, 1, 1), Vec3.create(Math.PI / 2, Math.PI / 2, Math.PI / 2));
@@ -23200,7 +23200,7 @@ var Spacegroup;
   }
 })(Spacegroup || (Spacegroup = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/lookup3d/common.js
+// node_modules/molstar/lib/mol-math/geometry/lookup3d/common.js
 var Result;
 (function(Result2) {
   function add(result2, index, distSq) {
@@ -23227,7 +23227,7 @@ var Result;
   Result2.copy = copy;
 })(Result || (Result = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/fibonacci-heap.js
+// node_modules/molstar/lib/mol-util/fibonacci-heap.js
 var Node = class {
   constructor(key2, value) {
     this.parent = null;
@@ -23563,7 +23563,7 @@ var FibonacciHeap = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/memoize.js
+// node_modules/molstar/lib/mol-util/memoize.js
 function memoizeLatest(f) {
   let lastArgs = void 0, value = void 0;
   return (...args) => {
@@ -23593,7 +23593,7 @@ function memoize1(f) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/primitives/ray3d.js
+// node_modules/molstar/lib/mol-math/geometry/primitives/ray3d.js
 function Ray3D() {
   return Ray3D.create(Vec3.create(0, 0, 0), Vec3.create(1, 0, 0));
 }
@@ -23714,7 +23714,7 @@ function Ray3D() {
   Ray3D2.isIntersectingBox3D = isIntersectingBox3D;
 })(Ray3D || (Ray3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/lookup3d/grid.js
+// node_modules/molstar/lib/mol-math/geometry/lookup3d/grid.js
 function GridLookup3D(data, boundary, cellSizeOrCount) {
   return new GridLookup3DImpl(data, boundary, cellSizeOrCount);
 }
@@ -24133,7 +24133,7 @@ function queryNearest(ctx, result2) {
   return result2.count > 0;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderer.js
+// node_modules/molstar/lib/mol-gl/renderer.js
 var PickType;
 (function(PickType2) {
   PickType2[PickType2["None"] = 0] = "None";
@@ -24919,7 +24919,7 @@ var Renderer;
   Renderer2.create = create3;
 })(Renderer || (Renderer = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/binding.js
+// node_modules/molstar/lib/mol-util/binding.js
 function Binding(triggers, action = "", description = "") {
   return Binding.create(triggers, action, description);
 }
@@ -25038,7 +25038,7 @@ function formatCode(code) {
   return code && camelCaseToWords(code).toLowerCase();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/controls/trackball.js
+// node_modules/molstar/lib/mol-canvas3d/controls/trackball.js
 var B2 = ButtonsType;
 var M = ModifiersKeys;
 var Trigger = Binding.Trigger;
@@ -25827,7 +25827,7 @@ var TrackballControls;
   TrackballControls2.create = create3;
 })(TrackballControls || (TrackballControls = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/apply-fog.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/apply-fog.glsl.js
 var apply_fog = `
 float preFogAlpha = gl_FragColor.a;
 if (uFog) {
@@ -25866,7 +25866,7 @@ if (uFog) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/apply-interior-color.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/apply-interior-color.glsl.js
 var apply_interior_color = `
 if (interior) {
     if (uInteriorColorFlag) {
@@ -25881,7 +25881,7 @@ if (interior) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/apply-light-color.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/apply-light-color.glsl.js
 var apply_light_color = `
 #if defined(dIgnoreLight)
     #ifdef bumpEnabled
@@ -25987,7 +25987,7 @@ var apply_light_color = `
 gl_FragColor.rgb *= uExposure;
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/apply-marker-color.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/apply-marker-color.glsl.js
 var apply_marker_color = `
 
 #if defined(dColorMarker)
@@ -26006,7 +26006,7 @@ var apply_marker_color = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-clipping-varying.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-clipping-varying.glsl.js
 var assign_clipping_varying = `
 #if dClipObjectCount != 0 && defined(dClipping)
     #if defined(dClippingType_instance)
@@ -26017,7 +26017,7 @@ var assign_clipping_varying = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-color-varying.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-color-varying.glsl.js
 var assign_color_varying = `
 #if defined(dRenderVariant_color) || defined(dRenderVariant_tracing)
     #if defined(dColorType_attribute)
@@ -26160,7 +26160,7 @@ var assign_color_varying = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-group.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-group.glsl.js
 var assign_group = `
 #ifdef dGeometryType_textureMesh
     float group = unpackRGBToInt(readFromTexture(tGroup, vertexId, uGeoTexDim).rgb);
@@ -26169,7 +26169,7 @@ var assign_group = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-marker-varying.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-marker-varying.glsl.js
 var assign_marker_varying = `
 #if defined(dNeedsMarker)
     #if defined(dMarkerType_instance)
@@ -26180,7 +26180,7 @@ var assign_marker_varying = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-material-color.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-material-color.glsl.js
 var assign_material_color = `
 #if defined(dNeedsMarker)
     float marker = uMarker;
@@ -26310,7 +26310,7 @@ var assign_material_color = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-position.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-position.glsl.js
 var assign_position = `
 mat4 model = uModel * aTransform;
 mat4 modelView = uView * model;
@@ -26327,7 +26327,7 @@ vViewPosition = mvPosition.xyz;
 gl_Position = uProjection * mvPosition;
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/assign-size.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/assign-size.glsl.js
 var assign_size = `
 #if defined(dSizeType_uniform)
     float size = uSize;
@@ -26348,7 +26348,7 @@ var assign_size = `
 size *= uSizeFactor;
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/check-picking-alpha.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/check-picking-alpha.glsl.js
 var check_picking_alpha = `
 float viewZ = depthToViewZ(uIsOrtho, fragmentDepth, uNear, uFar);
 float fogFactor = smoothstep(uFogNear, uFogFar, abs(viewZ));
@@ -26368,7 +26368,7 @@ if (alpha < uPickingAlphaThreshold || fogAlpha < 0.1) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/check-transparency.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/check-transparency.glsl.js
 var check_transparency = `
 #if defined(dRenderVariant_color) || defined(dRenderVariant_tracing)
     #if defined(dTransparentBackfaces_off)
@@ -26393,7 +26393,7 @@ var check_transparency = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/clip-instance.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/clip-instance.glsl.js
 var clip_instance = `
 #if defined(dClipVariant_instance) && dClipObjectCount != 0
     vec3 mCenter = (uModel * aTransform * vec4(uInvariantBoundingSphere.xyz, 1.0)).xyz;
@@ -26404,7 +26404,7 @@ var clip_instance = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/clip-pixel.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/clip-pixel.glsl.js
 var clip_pixel = `
 #if defined(dClipVariant_pixel) && dClipObjectCount != 0
     if (clipTest(vModelPosition / uModelScale))
@@ -26412,7 +26412,7 @@ var clip_pixel = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/color-frag-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/color-frag-params.glsl.js
 var color_frag_params = `
 uniform float uMetalness;
 uniform float uRoughness;
@@ -26478,7 +26478,7 @@ uniform float uDensity;
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/color-vert-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/color-vert-params.glsl.js
 var color_vert_params = `
 uniform float uMetalness;
 uniform float uRoughness;
@@ -26603,7 +26603,7 @@ uniform float uBumpiness;
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/common-clip.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/common-clip.glsl.js
 var common_clip = `
 vec3 quaternionTransform(const in vec4 q, const in vec3 v) {
     vec3 t = 2.0 * cross(q.xyz, v);
@@ -26710,7 +26710,7 @@ float getSignedDistance(const in vec3 center, const in int type, const in vec3 p
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/common-frag-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/common-frag-params.glsl.js
 var common_frag_params = `
 uniform int uObjectId;
 uniform int uInstanceCount;
@@ -26877,7 +26877,7 @@ float fbm(in vec3 p) {
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/common-vert-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/common-vert-params.glsl.js
 var common_vert_params = `
 uniform mat4 uProjection, uModel, uView;
 uniform vec3 uCameraPosition;
@@ -26944,7 +26944,7 @@ uniform float uModelScale;
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/common.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/common.glsl.js
 var common = `
 // TODO find a better place for these convenience defines
 
@@ -27228,7 +27228,7 @@ mat3 adjoint(const in mat4 m) {
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/fade-lod.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/fade-lod.glsl.js
 var fade_lod = `
 if (uLod.w == 0.0 && (uLod.x != 0.0 || uLod.y != 0.0)) {
     float d = (dot(uCameraPlane.xyz, vModelPosition) + uCameraPlane.w) / uModelScale;
@@ -27273,7 +27273,7 @@ if (uLod.w == 0.0 && (uLod.x != 0.0 || uLod.y != 0.0)) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/float-to-rgba.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/float-to-rgba.glsl.js
 var float_to_rgba = `
     // floatToRgba adapted from https://github.com/equinor/glsl-float-to-rgba
     // MIT License, Copyright (c) 2020 Equinor
@@ -27315,7 +27315,7 @@ var float_to_rgba = `
     }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/light-frag-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/light-frag-params.glsl.js
 var light_frag_params = `
 #if dLightCount != 0
     uniform vec3 uLightDirection[dLightCount];
@@ -27445,12 +27445,12 @@ void RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 irradia
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/normal-frag-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/normal-frag-params.glsl.js
 var normal_frag_params = `
 varying vec3 vNormal;
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/read-from-texture.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/read-from-texture.glsl.js
 var read_from_texture = `
 vec4 readFromTexture(const in sampler2D tex, const in float i, const in vec2 dim) {
     float x = intMod(i, dim.x);
@@ -27467,7 +27467,7 @@ vec4 readFromTexture(const in sampler2D tex, const in int i, const in vec2 dim) 
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/rgba-to-float.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/rgba-to-float.glsl.js
 var rgba_to_float = `
     // rgbaToFloat adapted from https://github.com/ihmeuw/glsl-rgba-to-float
     // BSD 3-Clause License
@@ -27554,7 +27554,7 @@ var rgba_to_float = `
     }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/size-vert-params.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/size-vert-params.glsl.js
 var size_vert_params = `
 #if defined(dSizeType_uniform)
     uniform float uSize;
@@ -27568,7 +27568,7 @@ var size_vert_params = `
 uniform float uSizeFactor;
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/texture3d-from-1d-trilinear.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/texture3d-from-1d-trilinear.glsl.js
 var texture3d_from_1d_trilinear = `
 vec4 texture3dFrom1dTrilinear(const in sampler2D tex, const in vec3 pos, const in vec3 gridDim, const in vec2 texDim, const in float offset) {
     float gdYZ = gridDim.z * gridDim.y;
@@ -27594,7 +27594,7 @@ vec4 texture3dFrom1dTrilinear(const in sampler2D tex, const in vec3 pos, const i
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/texture3d-from-2d-linear.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/texture3d-from-2d-linear.glsl.js
 var texture3d_from_2d_linear = `
 vec4 texture3dFrom2dLinear(sampler2D tex, vec3 pos, vec3 gridDim, vec2 texDim) {
     float zSlice0 = floor(pos.z * gridDim.z);
@@ -27614,7 +27614,7 @@ vec4 texture3dFrom2dLinear(sampler2D tex, vec3 pos, vec3 gridDim, vec2 texDim) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/texture3d-from-2d-nearest.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/texture3d-from-2d-nearest.glsl.js
 var texture3d_from_2d_nearest = `
 vec4 texture3dFrom2dNearest(sampler2D tex, vec3 pos, vec3 gridDim, vec2 texDim) {
     float zSlice = floor(pos.z * gridDim.z + 0.5); // round to nearest z-slice
@@ -27625,7 +27625,7 @@ vec4 texture3dFrom2dNearest(sampler2D tex, vec3 pos, vec3 gridDim, vec2 texDim) 
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/wboit-write.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/wboit-write.glsl.js
 var wboit_write = `
 #if defined(dRenderVariant_colorWboit)
     if (uRenderMask == MaskOpaque) {
@@ -27653,7 +27653,7 @@ var wboit_write = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/chunks/dpoit-write.glsl.js
+// node_modules/molstar/lib/mol-gl/shader/chunks/dpoit-write.glsl.js
 var dpoit_write = `
 #if defined(dRenderVariant_colorDpoit)
     if (uRenderMask == MaskOpaque) {
@@ -27718,7 +27718,7 @@ var dpoit_write = `
 #endif
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/points.vert.js
+// node_modules/molstar/lib/mol-gl/shader/points.vert.js
 var points_vert = `
 precision highp float;
 precision highp int;
@@ -27761,7 +27761,7 @@ void main(){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/points.frag.js
+// node_modules/molstar/lib/mol-gl/shader/points.frag.js
 var points_frag = `
 precision highp float;
 precision highp int;
@@ -27828,7 +27828,7 @@ void main(){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/spheres.vert.js
+// node_modules/molstar/lib/mol-gl/shader/spheres.vert.js
 var spheres_vert = `
 precision highp float;
 precision highp int;
@@ -28017,7 +28017,7 @@ void main(void){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/spheres.frag.js
+// node_modules/molstar/lib/mol-gl/shader/spheres.frag.js
 var spheres_frag = `
 precision highp float;
 precision highp int;
@@ -28177,7 +28177,7 @@ void main(void){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/cylinders.vert.js
+// node_modules/molstar/lib/mol-gl/shader/cylinders.vert.js
 var cylinders_vert = `
 precision highp float;
 precision highp int;
@@ -28271,7 +28271,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/cylinders.frag.js
+// node_modules/molstar/lib/mol-gl/shader/cylinders.frag.js
 var cylinders_frag = `
 precision highp float;
 precision highp int;
@@ -28557,7 +28557,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/text.vert.js
+// node_modules/molstar/lib/mol-gl/shader/text.vert.js
 var text_vert = `
 precision highp float;
 precision highp int;
@@ -28665,7 +28665,7 @@ void main(void){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/text.frag.js
+// node_modules/molstar/lib/mol-gl/shader/text.frag.js
 var text_frag = `
 precision highp float;
 precision highp int;
@@ -28744,7 +28744,7 @@ void main(){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/lines.vert.js
+// node_modules/molstar/lib/mol-gl/shader/lines.vert.js
 var lines_vert = `
 precision highp float;
 precision highp int;
@@ -28865,7 +28865,7 @@ void main(){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/lines.frag.js
+// node_modules/molstar/lib/mol-gl/shader/lines.frag.js
 var lines_frag = `
 precision highp float;
 precision highp int;
@@ -28915,7 +28915,7 @@ void main(){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/mesh.vert.js
+// node_modules/molstar/lib/mol-gl/shader/mesh.vert.js
 var mesh_vert = `
 precision highp float;
 precision highp int;
@@ -28969,7 +28969,7 @@ void main(){
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/mesh.frag.js
+// node_modules/molstar/lib/mol-gl/shader/mesh.frag.js
 var mesh_frag = `
 precision highp float;
 precision highp int;
@@ -29042,7 +29042,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/direct-volume.vert.js
+// node_modules/molstar/lib/mol-gl/shader/direct-volume.vert.js
 var directVolume_vert = `
 precision highp float;
 
@@ -29088,7 +29088,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/direct-volume.frag.js
+// node_modules/molstar/lib/mol-gl/shader/direct-volume.frag.js
 var directVolume_frag = `
 precision highp float;
 precision highp int;
@@ -29461,7 +29461,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/image.vert.js
+// node_modules/molstar/lib/mol-gl/shader/image.vert.js
 var image_vert = `
 precision highp float;
 precision highp int;
@@ -29487,7 +29487,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/image.frag.js
+// node_modules/molstar/lib/mol-gl/shader/image.frag.js
 var image_frag = `
 precision highp float;
 precision highp int;
@@ -29796,7 +29796,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader-code.js
+// node_modules/molstar/lib/mol-gl/shader-code.js
 var shaderCodeId = idFactory();
 var ShaderChunks = {
   apply_fog,
@@ -30099,7 +30099,7 @@ function addShaderDefines(gl, extensions, parameters, defines, shaders) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/uniform.js
+// node_modules/molstar/lib/mol-gl/webgl/uniform.js
 function getUniformType(gl, kind) {
   switch (kind) {
     case "b":
@@ -30244,7 +30244,7 @@ function cloneUniformValues(uniformValues) {
   return clonedValues;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/texture.js
+// node_modules/molstar/lib/mol-gl/webgl/texture.js
 var getNextTextureId = idFactory();
 function getTarget(gl, kind) {
   switch (kind) {
@@ -30833,7 +30833,7 @@ function createNullTexture(gl) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/buffer.js
+// node_modules/molstar/lib/mol-gl/webgl/buffer.js
 var getNextBufferId = idFactory();
 function getUsageHint(gl, usageHint) {
   switch (usageHint) {
@@ -31052,7 +31052,7 @@ function createPixelPackBuffer(gl, extensions, format, type3) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/program.js
+// node_modules/molstar/lib/mol-gl/webgl/program.js
 var getNextProgramId = idFactory();
 function getLocations(gl, program, schema) {
   const locations = {};
@@ -31293,7 +31293,7 @@ function createProgram(gl, state, extensions, parameters, getShader2, props) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/shader.js
+// node_modules/molstar/lib/mol-gl/webgl/shader.js
 var getNextShaderId = idFactory();
 function addLineNumbers(source) {
   const lines = source.split("\n");
@@ -31333,7 +31333,7 @@ function createShader(gl, props) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/compat.js
+// node_modules/molstar/lib/mol-gl/webgl/compat.js
 function isWebGL2(gl) {
   return typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext;
 }
@@ -31891,7 +31891,7 @@ function testColorBuffer(gl, type3) {
   return true;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/framebuffer.js
+// node_modules/molstar/lib/mol-gl/webgl/framebuffer.js
 var getNextFramebufferId = idFactory();
 function getFramebufferStatusDescription(gl, status) {
   switch (status) {
@@ -31959,7 +31959,7 @@ function createNullFramebuffer() {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/extensions.js
+// node_modules/molstar/lib/mol-gl/webgl/extensions.js
 function createExtensions(gl) {
   const instancedArrays = getInstancedArrays(gl);
   if (instancedArrays === null) {
@@ -32146,7 +32146,7 @@ function resetExtensions(gl, extensions) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/state.js
+// node_modules/molstar/lib/mol-gl/webgl/state.js
 function createState(gl, e) {
   let enabledCapabilities = {};
   let currentFrontFace = gl.getParameter(gl.FRONT_FACE);
@@ -32475,7 +32475,7 @@ function createState(gl, e) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/reference-cache.js
+// node_modules/molstar/lib/mol-util/reference-cache.js
 function createReference(value, usageCount = 0) {
   return { value, usageCount };
 }
@@ -32526,7 +32526,7 @@ function createReferenceCache(hashFn, ctor, deleteFn) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/renderbuffer.js
+// node_modules/molstar/lib/mol-gl/webgl/renderbuffer.js
 var getNextRenderbufferId = idFactory();
 function getFormat2(gl, format) {
   switch (format) {
@@ -32646,7 +32646,7 @@ function createRenderbuffer(gl, format, attachment, _width, _height) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/vertex-array.js
+// node_modules/molstar/lib/mol-gl/webgl/vertex-array.js
 var getNextVertexArrayId = idFactory();
 function getVertexArray(extensions) {
   const { vertexArrayObject } = extensions;
@@ -32706,7 +32706,7 @@ function createVertexArray(gl, extensions, program, attributeBuffers, elementsBu
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/resources.js
+// node_modules/molstar/lib/mol-gl/webgl/resources.js
 function defineValueHash(v4) {
   return typeof v4 === "boolean" ? v4 ? 1 : 0 : typeof v4 === "number" ? v4 * 1e4 : hashString2(v4);
 }
@@ -32903,7 +32903,7 @@ function createResources(gl, state, stats, extensions, parameters) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/render-target.js
+// node_modules/molstar/lib/mol-gl/webgl/render-target.js
 var getNextRenderTargetId = idFactory();
 function createRenderTarget(gl, resources, _width, _height, depth = true, type3 = "uint8", filter5 = "nearest", format = "rgba") {
   if (format === "alpha" && !isWebGL2(gl)) {
@@ -32956,7 +32956,7 @@ function createRenderTarget(gl, resources, _width, _height, depth = true, type3 
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/timer.js
+// node_modules/molstar/lib/mol-gl/webgl/timer.js
 function movingAverage(avg, sample, count3) {
   avg -= avg / count3;
   avg += sample / count3;
@@ -33218,7 +33218,7 @@ function printTimerResults(results) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/context.js
+// node_modules/molstar/lib/mol-gl/webgl/context.js
 function getGLContext(canvas, attribs) {
   function get11(id) {
     try {
@@ -33633,7 +33633,7 @@ function createContext2(gl, props = {}) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/coordinates/coordinates.js
+// node_modules/molstar/lib/mol-model/structure/coordinates/coordinates.js
 function Time(value, unit2) {
   return { value, unit: unit2 };
 }
@@ -33734,7 +33734,7 @@ var Coordinates;
   }
 })(Coordinates || (Coordinates = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/topology/topology.js
+// node_modules/molstar/lib/mol-model/structure/topology/topology.js
 var Topology;
 (function(Topology2) {
   function create3(label2, basic, bonds, format) {
@@ -33749,7 +33749,7 @@ var Topology;
   Topology2.create = create3;
 })(Topology || (Topology = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/mmcif.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/mmcif.js
 var Schema = Column.Schema;
 var str = Schema.str;
 var int = Schema.int;
@@ -39035,7 +39035,7 @@ var mmCIF_Schema = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/atomic/hierarchy.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/atomic/hierarchy.js
 var AtomsSchema = {
   /**
    * The chemical element of this atom site.
@@ -39147,7 +39147,7 @@ var AtomicHierarchy;
   AtomicHierarchy2.residueChainIndex = residueChainIndex;
 })(AtomicHierarchy || (AtomicHierarchy = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/atomic/measures.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/atomic/measures.js
 var AtomicNumbers = {
   "H": 1,
   "D": 1,
@@ -39499,7 +39499,7 @@ function AtomNumber(element) {
   return i === void 0 ? DefaultAtomNumber : i;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/custom-property.js
+// node_modules/molstar/lib/mol-model/custom-property.js
 function CustomPropertyDescriptor(desc) {
   return desc;
 }
@@ -39560,7 +39560,7 @@ var CustomProperties = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/util.js
+// node_modules/molstar/lib/mol-model/structure/model/util.js
 function calcModelCenter(atomicConformation, coarseConformation) {
   const rangesX = [];
   const rangesY = [];
@@ -39600,7 +39600,7 @@ function getAsymIdCount(model) {
   return { auth: auth.size, label: label2.size };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/graph/int-adjacency-graph.js
+// node_modules/molstar/lib/mol-math/graph/int-adjacency-graph.js
 var IntAdjacencyGraph;
 (function(IntAdjacencyGraph2) {
   function areEqual4(a8, b8) {
@@ -39947,7 +39947,7 @@ function areVertexSetsConnectedImpl(graph, frontier, target, distance, visited) 
   return distance > 1 ? areVertexSetsConnectedImpl(graph, newFrontier, target, distance - 1, visited) : false;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/common/property.js
+// node_modules/molstar/lib/mol-model-formats/structure/common/property.js
 var FormatRegistry = class {
   constructor() {
     this.map = /* @__PURE__ */ new Map();
@@ -40015,10 +40015,10 @@ var FormatPropertyProvider;
   FormatPropertyProvider2.create = create3;
 })(FormatPropertyProvider || (FormatPropertyProvider = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/types/saccharides.js
+// node_modules/molstar/lib/mol-model/structure/model/types/saccharides.js
 var SaccharideNames = /* @__PURE__ */ new Set(["145", "147", "149", "289", "291", "293", "445", "475", "491", "510", "604", "045", "05L", "07E", "07Y", "08U", "09X", "0AT", "0BD", "0H0", "0HX", "0LP", "0MK", "0NZ", "0TS", "0UB", "0V4", "0WK", "0XY", "0YT", "10M", "12E", "14T", "15L", "16F", "16G", "16O", "17T", "18D", "18O", "18T", "1AR", "1BW", "1CF", "1FT", "1GL", "1GN", "1JB", "1LL", "1NA", "1S3", "1S4", "1SD", "1X4", "20S", "20X", "22O", "22S", "23V", "24S", "25E", "26M", "26O", "26Q", "26R", "26V", "26W", "26Y", "27C", "2DG", "2DR", "2F8", "2FG", "2FL", "2FP", "2GL", "2GS", "2H5", "2HA", "2M4", "2M5", "2M8", "2OS", "2SI", "2WP", "2WS", "32O", "34V", "38J", "3BU", "3CM", "3DO", "3DY", "3FM", "3GR", "3HD", "3J3", "3J4", "3LJ", "3LR", "3MF", "3MG", "3MK", "3R3", "3S6", "3SA", "3YW", "40J", "42D", "44S", "46D", "46M", "46Z", "48Z", "49A", "49S", "49T", "49V", "4AM", "4CQ", "4GC", "4GL", "4GP", "4JA", "4N2", "4NN", "4QY", "4R1", "4RS", "4SG", "4U0", "4U1", "4U2", "4UZ", "4V5", "50A", "51N", "56N", "57S", "5DI", "5GF", "5GO", "5II", "5KQ", "5KS", "5KT", "5KV", "5L2", "5L3", "5LS", "5LT", "5MM", "5N6", "5QP", "5RP", "5SA", "5SP", "5TH", "5TJ", "5TK", "5TM", "61J", "62I", "64K", "66O", "6BG", "6C2", "6DM", "6GB", "6GP", "6GR", "6K3", "6KH", "6KL", "6KS", "6KU", "6KW", "6LA", "6LS", "6LW", "6MJ", "6MN", "6PG", "6PY", "6PZ", "6S2", "6SA", "6UD", "6Y6", "6YR", "6ZC", "73E", "79J", "7CV", "7D1", "7GP", "7JZ", "7K2", "7K3", "7NU", "7SA", "83Y", "89Y", "8B7", "8B9", "8EX", "8GA", "8GG", "8GP", "8I4", "8LM", "8LR", "8OQ", "8PK", "8S0", "8YV", "95Z", "96O", "98U", "9AM", "9C1", "9CD", "9GP", "9KJ", "9MR", "9OK", "9PG", "9QG", "9QZ", "9RN", "9S7", "9SG", "9SJ", "9SM", "9SP", "9T1", "9T7", "9VP", "9WJ", "9WN", "9WZ", "9YW", "A0K", "A1AIO", "A1APB", "A1APC", "A1APD", "A1CCV", "A1CCW", "A1EAX", "A1EFW", "A1EGT", "A1EGV", "A1EGW", "A1EGX", "A1EGY", "A1EJ0", "A1EJ2", "A1EKO", "A1EN6", "A1H03", "A1H0P", "A1H0Z", "A1H10", "A1H1B", "A1H1F", "A1H1V", "A1I9U", "A1ID6", "A1IH4", "A1IZL", "A1JAQ", "A1L1P", "A1Q", "A2G", "A5C", "A6P", "AAL", "AAO", "ABC", "ABD", "ABE", "ABF", "ABL", "AC1", "ACG", "ACR", "ACX", "ADA", "ADG", "ADR", "AF1", "AFD", "AFL", "AFO", "AFP", "AFR", "AGC", "AGH", "AGL", "AGR", "AH2", "AH8", "AHG", "AHM", "AHR", "AIG", "ALL", "ALX", "AMG", "AMN", "AMU", "AMV", "ANA", "AOG", "AOS", "AQA", "ARA", "ARB", "ARE", "ARI", "ARW", "ASC", "ASG", "ASO", "AXP", "AXR", "AY9", "AZC", "B0D", "B16", "B1H", "B1N", "B2G", "B4G", "B6D", "B7G", "B8D", "B9D", "BBK", "BBV", "BCD", "BCW", "BDF", "BDG", "BDP", "BDR", "BDZ", "BEM", "BFN", "BFP", "BG6", "BG8", "BGC", "BGL", "BGN", "BGP", "BGS", "BHG", "BM3", "BM7", "BMA", "BMX", "BND", "BNG", "BNX", "BO1", "BOG", "BQY", "BRI", "BS7", "BTG", "BTU", "BW3", "BWG", "BXF", "BXP", "BXX", "BXY", "BZD", "C3B", "C3G", "C3X", "C4B", "C4W", "C4X", "C5X", "CAP", "CBF", "CBI", "CBK", "CDR", "CE5", "CE6", "CE8", "CEG", "CEX", "CEY", "CEZ", "CGF", "CJB", "CKB", "CKP", "CNP", "CR1", "CR6", "CRA", "CT3", "CTO", "CTR", "CTT", "D0N", "D1M", "D5E", "D6G", "DAF", "DAG", "DAN", "DDA", "DDB", "DDL", "DEG", "DEL", "DFR", "DFX", "DG0", "DGC", "DGD", "DGM", "DGO", "DGS", "DGU", "DIG", "DJB", "DJE", "DK4", "DKX", "DKZ", "DL6", "DLD", "DLF", "DLG", "DMU", "DNO", "DO8", "DOM", "DP5", "DPC", "DQQ", "DQR", "DR2", "DR3", "DR4", "DR5", "DRI", "DSR", "DT6", "DVC", "DYM", "E3M", "E4P", "E5G", "EAG", "EBG", "EBQ", "ED6", "EEN", "EEQ", "EGA", "EJT", "EMP", "EMZ", "EPG", "EQP", "EQV", "ERE", "ERI", "ETT", "EUS", "F1P", "F1X", "F55", "F58", "F6P", "F8X", "FBP", "FCA", "FCB", "FCT", "FDP", "FDQ", "FFC", "FFX", "FIF", "FIX", "FK9", "FKD", "FMF", "FMO", "FNG", "FNY", "FRU", "FSA", "FSI", "FSM", "FSR", "FSW", "FU4", "FUB", "FUC", "FUD", "FUF", "FUL", "FUY", "FVQ", "FX1", "FYJ", "G0S", "G16", "G1P", "G20", "G28", "G2F", "G3F", "G3I", "G4D", "G4S", "G6D", "G6P", "G6S", "G7P", "G8Z", "GAA", "GAC", "GAD", "GAF", "GAL", "GAT", "GBH", "GC1", "GC4", "GC9", "GCB", "GCD", "GCN", "GCO", "GCS", "GCT", "GCU", "GCV", "GCW", "GDA", "GDL", "GE1", "GE3", "GFP", "GIV", "GL0", "GL1", "GL2", "GL4", "GL5", "GL6", "GL7", "GL9", "GLA", "GLB", "GLC", "GLD", "GLF", "GLG", "GLO", "GLP", "GLS", "GLT", "GLW", "GM0", "GMB", "GMH", "GMT", "GMZ", "GN1", "GN4", "GNS", "GNX", "GP0", "GP1", "GP4", "GPH", "GPK", "GPM", "GPO", "GPQ", "GPU", "GPV", "GPW", "GQ1", "GRF", "GRX", "GS1", "GS4", "GS9", "GSA", "GSD", "GTE", "GTH", "GTK", "GTM", "GTR", "GU0", "GU1", "GU2", "GU3", "GU4", "GU5", "GU6", "GU8", "GU9", "GUF", "GUL", "GUP", "GUZ", "GXL", "GXV", "GYE", "GYG", "GYP", "GYU", "GYV", "GZL", "H1M", "H1S", "H2P", "H3S", "H53", "H6Q", "H6Z", "HBZ", "HD4", "HDL", "HLA", "HMS", "HNV", "HNW", "HSG", "HSH", "HSJ", "HSQ", "HSR", "HSU", "HSX", "HSY", "HSZ", "HTG", "HTM", "HVC", "I57", "IAB", "IDC", "IDF", "IDG", "IDR", "IDS", "IDT", "IDU", "IDX", "IDY", "IEM", "IN1", "IPT", "ISD", "ISL", "ISX", "IVG", "IXD", "J5B", "JFZ", "JHM", "JLT", "JRV", "JS2", "JSV", "JV4", "JVA", "JVS", "JZR", "K5B", "K99", "KBA", "KBG", "KD5", "KDA", "KDB", "KDD", "KDE", "KDF", "KDM", "KDN", "KDO", "KDR", "KFN", "KG1", "KGM", "KHP", "KME", "KO1", "KO2", "KOT", "KQC", "KTU", "L1L", "L6N", "L6S", "L6T", "LAG", "LAH", "LAI", "LAK", "LAO", "LAT", "LB2", "LBS", "LBT", "LCN", "LDY", "LEC", "LER", "LFC", "LFR", "LGC", "LGU", "LKA", "LKS", "LM2", "LMO", "LMT", "LMU", "LNV", "LOG", "LOX", "LPK", "LRH", "LSM", "LTG", "LTM", "LVO", "LVZ", "LXB", "LXC", "LXZ", "LZ0", "M1F", "M1P", "M2F", "M3M", "M3N", "M55", "M6D", "M6P", "M7B", "M7P", "M8C", "MA1", "MA2", "MA3", "MA8", "MAB", "MAF", "MAG", "MAL", "MAN", "MAT", "MAV", "MAW", "MBE", "MBF", "MBG", "MCU", "MDA", "MDP", "MFA", "MFB", "MFU", "MG5", "MGA", "MGC", "MGL", "MGS", "MJJ", "MLB", "MLR", "MMA", "MMN", "MN0", "MNA", "MQG", "MQT", "MRH", "MRP", "MSX", "MTT", "MUB", "MUG", "MUR", "MVP", "MXY", "MXZ", "MYG", "N1L", "N3U", "N9S", "NA1", "NAA", "NAG", "NBG", "NBX", "NBY", "NDG", "NED", "NFG", "NG1", "NG6", "NGA", "NGB", "NGC", "NGE", "NGF", "NGK", "NGL", "NGR", "NGS", "NGY", "NGZ", "NHF", "NLC", "NM6", "NM9", "NNG", "NOJ", "NPF", "NSQ", "NT1", "NTF", "NTO", "NTP", "NXD", "NYT", "O1G", "OAK", "OEL", "OI7", "OPM", "ORP", "OSU", "OTG", "OTN", "OTU", "OX2", "P53", "P6P", "P8E", "PA1", "PA5", "PAV", "PDX", "PH5", "PKM", "PNA", "PNG", "PNJ", "PNW", "PPC", "PRP", "PSG", "PSJ", "PSV", "PTQ", "PUF", "PZU", "QDK", "QIF", "QKH", "QPS", "QV4", "R1P", "R1X", "R2B", "R2G", "R5P", "RAA", "RAE", "RAF", "RAM", "RAO", "RAT", "RB5", "RBL", "RCD", "RDP", "REL", "RER", "RF5", "RG1", "RGG", "RHA", "RHC", "RI2", "RIB", "RIP", "RM4", "RNS", "RNT", "ROB", "ROR", "RP3", "RP5", "RP6", "RPA", "RR7", "RRJ", "RRY", "RST", "RTG", "RTV", "RUB", "RUG", "RUU", "RV7", "RVG", "RVM", "RWI", "RY7", "RZM", "S6P", "S7P", "S81", "SA0", "SCG", "SCR", "SDD", "SDY", "SEJ", "SF6", "SF9", "SFJ", "SFU", "SG4", "SG5", "SG6", "SG7", "SGA", "SGC", "SGD", "SGN", "SGS", "SHB", "SHD", "SHG", "SI3", "SIA", "SID", "SIO", "SIZ", "SLB", "SLM", "SLT", "SMD", "SN5", "SNG", "SOE", "SOG", "SOL", "SOR", "SR1", "SSG", "SSH", "STW", "STZ", "SUC", "SUP", "SUS", "SWE", "SZZ", "T68", "T6D", "T6P", "T6T", "TA6", "TAG", "TCB", "TCG", "TDG", "TEU", "TF0", "TFU", "TGA", "TGK", "TGR", "TGY", "TH1", "TM5", "TM6", "TM9", "TMR", "TMX", "TNX", "TOA", "TOC", "TQY", "TRE", "TRV", "TS8", "TT7", "TTV", "TTZ", "TU4", "TUG", "TUJ", "TUP", "TUR", "TVD", "TVG", "TVM", "TVS", "TVV", "TVY", "TW7", "TWA", "TWD", "TWG", "TWJ", "TWY", "TXB", "TY6", "TYV", "U1Y", "U2A", "U2D", "U63", "U8V", "U97", "U9A", "U9D", "U9G", "U9J", "U9M", "UAP", "UBH", "UBO", "UCD", "UDC", "UEA", "V3M", "V3P", "V71", "VDF", "VG1", "VJ1", "VJ4", "VKN", "VTB", "W9T", "WIA", "WKO", "WKT", "WOO", "WT8", "WUN", "WZ1", "WZ2", "WZ4", "X0X", "X1P", "X1X", "X2F", "X2Y", "X34", "X4S", "X5S", "X6N", "X6X", "X6Y", "X6Z", "XBP", "XDP", "XDX", "XGP", "XIL", "XIQ", "XKJ", "XLF", "XLS", "XMM", "XS2", "XUL", "XXM", "XXR", "XXX", "XY6", "XY9", "XYB", "XYF", "XYL", "XYP", "XYS", "XYT", "XYZ", "YDR", "YIO", "YJM", "YKR", "YO5", "YX0", "YX1", "YYB", "YYD", "YYH", "YYJ", "YYK", "YYM", "YYQ", "YYR", "YZ0", "YZT", "Z0F", "Z15", "Z16", "Z2D", "Z2T", "Z3K", "Z3L", "Z3Q", "Z3U", "Z4K", "Z4R", "Z4S", "Z4U", "Z4V", "Z4W", "Z4Y", "Z57", "Z5J", "Z5L", "Z61", "Z6G", "Z6H", "Z6J", "Z6W", "Z8H", "Z8T", "Z9D", "Z9E", "Z9H", "Z9K", "Z9L", "Z9M", "Z9N", "Z9W", "ZB0", "ZB1", "ZB2", "ZB3", "ZCD", "ZCZ", "ZD0", "ZDC", "ZDM", "ZDO", "ZEE", "ZEL", "ZGE", "ZMR", "UMQ", "SQD"]);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/carbohydrates/constants.js
+// node_modules/molstar/lib/mol-model/structure/structure/carbohydrates/constants.js
 var SaccharideShape;
 (function(SaccharideShape2) {
   SaccharideShape2[SaccharideShape2["FilledSphere"] = 0] = "FilledSphere";
@@ -40447,7 +40447,7 @@ function setSaccharideCompIdMapType(type3) {
 }
 var SaccharideCompIdMap = DefaultSaccharideCompIdMap;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/set.js
+// node_modules/molstar/lib/mol-util/set.js
 var SetUtils;
 (function(SetUtils2) {
   function toArray2(set4) {
@@ -40575,13 +40575,13 @@ var SetUtils;
   SetUtils2.areEqual = areEqual4;
 })(SetUtils || (SetUtils = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/types/lipids.js
+// node_modules/molstar/lib/mol-model/structure/model/types/lipids.js
 var LipidNames = /* @__PURE__ */ new Set(["DAPC", "DBPC", "DFPC", "DGPC", "DIPC", "DLPC", "DNPC", "DOPC", "DPPC", "DRPC", "DTPC", "DVPC", "DXPC", "DYPC", "LPPC", "PAPC", "PEPC", "PGPC", "PIPC", "POPC", "PRPC", "PUPC", "DAPE", "DBPE", "DFPE", "DGPE", "DIPE", "DLPE", "DNPE", "DOPE", "DPPE", "DRPE", "DTPE", "DUPE", "DVPE", "DXPE", "DYPE", "LPPE", "PAPE", "PGPE", "PIPE", "POPE", "PQPE", "PRPE", "PUPE", "DAPS", "DBPS", "DFPS", "DGPS", "DIPS", "DLPS", "DNPS", "DOPS", "DPPS", "DRPS", "DTPS", "DUPS", "DVPS", "DXPS", "DYPS", "LPPS", "PAPS", "PGPS", "PIPS", "POPS", "PQPS", "PRPS", "PUPS", "DAPA", "DBPA", "DFPA", "DGPA", "DIPA", "DLPA", "DNPA", "DOPA", "DPPA", "DRPA", "DTPA", "DVPA", "DXPA", "DYPA", "LPPA", "PAPA", "PGPA", "PIPA", "POPA", "PRPA", "PUPA", "DAPG", "DBPG", "DFPG", "DGPG", "DIPG", "DLPG", "DNPG", "DOPG", "DPPG", "DRPG", "DTPG", "DVPG", "DXPG", "DYPG", "LPPG", "PAPG", "PGPG", "PIPG", "POPG", "PRPG", "DMPC", "DPP", "DPPI", "PAPI", "PIPI", "POP", "POPI", "PUPI", "PVP", "PVPI", "PADG", "PIDG", "PODG", "PUDG", "PVDG", "APC", "CPC", "IPC", "LPC", "OPC", "PPC", "TPC", "UPC", "VPC", "BNSM", "DBSM", "DPSM", "DXSM", "PGSM", "PNSM", "POSM", "PVSM", "XNSM", "DPCE", "DXCE", "PNCE", "XNCE"]);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/types/ions.js
+// node_modules/molstar/lib/mol-model/structure/model/types/ions.js
 var IonNames = /* @__PURE__ */ new Set(["118", "119", "543", "1AL", "1CU", "2FK", "2HP", "2OF", "3CO", "3MT", "3NI", "3OF", "3P8", "4MO", "4PU", "4TI", "6MO", "ACT", "AG", "AL", "ALF", "AM", "ATH", "AU", "AU3", "AUC", "AZI", "BA", "BCT", "BEF", "BF4", "BO4", "BR", "BS3", "BSY", "CA", "CAC", "CD", "CD1", "CD3", "CD5", "CE", "CF", "CHT", "CL", "CO", "CO3", "CO5", "CON", "CR", "CS", "CSB", "CU", "CU1", "CU3", "CUA", "CUZ", "CYN", "DME", "DMI", "DSC", "DTI", "DY", "E4N", "EDR", "EMC", "ER3", "EU", "EU3", "F", "FE", "FE2", "FPO", "GA", "GD3", "GEP", "HAI", "HG", "HGC", "IN", "IOD", "IR", "IR3", "IRI", "IUM", "K", "KO4", "LA", "LCO", "LCP", "LI", "LU", "MAC", "MG", "MH2", "MH3", "MLI", "MMC", "MN", "MN3", "MN5", "MN6", "MO1", "MO2", "MO3", "MO4", "MO5", "MO6", "MOO", "MOS", "MOW", "MW1", "MW2", "MW3", "NA", "NA2", "NA5", "NA6", "NAO", "NAW", "ND", "NET", "NH4", "NI", "NI1", "NI2", "NI3", "NO2", "NO3", "NRU", "NT3", "O4M", "OAA", "OC1", "OC2", "OC3", "OC4", "OC5", "OC6", "OC7", "OC8", "OCL", "OCM", "OCN", "OCO", "OF1", "OF2", "OF3", "OH", "OS", "OS4", "OXL", "PB", "PBM", "PD", "PDV", "PER", "PI", "PO3", "PO4", "PR", "PT", "PT4", "PTN", "RB", "RH3", "RHD", "RHF", "RU", "SB", "SCN", "SE4", "SEK", "SM", "SMO", "SO3", "SO4", "SR", "T1A", "TB", "TBA", "TCN", "TEA", "TH", "THE", "TL", "TMA", "TRA", "UNX", "V", "VN3", "VO4", "W", "WO5", "Y1", "YB", "YB2", "YH", "YT3", "ZCM", "ZN", "ZN2", "ZN3", "ZNO", "ZO3", "ZR", "ZTM", "NCO", "OHX"]);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/types.js
+// node_modules/molstar/lib/mol-model/structure/model/types.js
 var _esCache = (function() {
   const cache = /* @__PURE__ */ Object.create(null);
   const letters = [];
@@ -41390,7 +41390,7 @@ var ResidueHydrophobicity = {
   "HIP": [0.96, 2.33, 1.37]
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/bonds/index-pair.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/bonds/index-pair.js
 function getGraph(indexA, indexB, props, count3) {
   const builder = new IntAdjacencyGraph.EdgeBuilder(count3, indexA, indexB);
   const key2 = new Int32Array(builder.slotCount);
@@ -41495,7 +41495,7 @@ var IndexPairBonds;
   IndexPairBonds2.getEdgeIndexForOperators = getEdgeIndexForOperators;
 })(IndexPairBonds || (IndexPairBonds = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/common/text/column/token.js
+// node_modules/molstar/lib/mol-io/reader/common/text/column/token.js
 function TokenColumnProvider(tokens) {
   return function(type3) {
     return TokenColumn(tokens, type3);
@@ -41540,7 +41540,7 @@ function areTokensEmpty(tokens) {
   return true;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/data-model.js
+// node_modules/molstar/lib/mol-io/reader/cif/data-model.js
 function CifFile(blocks, name) {
   return { name, blocks };
 }
@@ -41817,7 +41817,7 @@ function getTensor(category, space, row, getName) {
   return ret;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema.js
 var FieldPath;
 (function(FieldPath2) {
   function canonical(path) {
@@ -42010,7 +42010,7 @@ function createTable(key2, schema, frame, aliases) {
   return new CategoryTable(cat || CifCategory.empty(key2), schema, !!cat);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/element.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/element.js
 var element_exports = {};
 __export(element_exports, {
   Bundle: () => Bundle,
@@ -42026,7 +42026,7 @@ __export(element_exports, {
   residueIndex: () => residueIndex
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/location.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/location.js
 var Location;
 (function(Location2) {
   function create3(structure, unit2, element) {
@@ -42087,7 +42087,7 @@ var Location;
   Location2.chainIndex = chainIndex2;
 })(Location || (Location = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/generic/hash-set.js
+// node_modules/molstar/lib/mol-data/generic/hash-set.js
 var HashSetImpl = class {
   add(a8) {
     const hash5 = this.getHash(a8);
@@ -42128,7 +42128,7 @@ function HashSet(getHash, areEqual4) {
   return new HashSetImpl(getHash, areEqual4);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/generic/linked-list.js
+// node_modules/molstar/lib/mol-data/generic/linked-list.js
 function LinkedList() {
   return new LinkedListImpl();
 }
@@ -42218,7 +42218,7 @@ var LinkedListImpl = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/generic/unique-array.js
+// node_modules/molstar/lib/mol-data/generic/unique-array.js
 var UniqueArray;
 (function(UniqueArray2) {
   function create3() {
@@ -42239,7 +42239,7 @@ var UniqueArray;
   UniqueArray2.has = has8;
 })(UniqueArray || (UniqueArray = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/type.js
+// node_modules/molstar/lib/mol-script/language/type.js
 var Type;
 (function(Type2) {
   function Variable(name, type3, isConstraint) {
@@ -42276,7 +42276,7 @@ var Type;
   Type2.oneOfValues = oneOfValues;
 })(Type || (Type = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/expression.js
+// node_modules/molstar/lib/mol-script/language/expression.js
 var Expression;
 (function(Expression2) {
   function Symbol2(name) {
@@ -42309,7 +42309,7 @@ var Expression;
   Expression2.isSymbol = isSymbol2;
 })(Expression || (Expression = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/symbol.js
+// node_modules/molstar/lib/mol-script/language/symbol.js
 function Argument(type3, params) {
   const { description = void 0, isOptional = false, isRest = false, defaultValue = void 0 } = params || {};
   return { type: type3, isOptional, isRest, defaultValue, description };
@@ -42352,7 +42352,7 @@ function isSymbol(x) {
   return typeof s === "function" && !!s.info && !!s.args && typeof s.info.namespace === "string" && !!s.type;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/helpers.js
+// node_modules/molstar/lib/mol-script/language/helpers.js
 function symbol(args, type3, description) {
   return MSymbol("", args, type3, description);
 }
@@ -42395,7 +42395,7 @@ function _symbolList(obj, list3) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/symbol-table/core.js
+// node_modules/molstar/lib/mol-script/language/symbol-table/core.js
 var Types;
 (function(Types3) {
   Types3.AnyVar = Type.Variable("a", Type.Any);
@@ -42554,7 +42554,7 @@ var SymbolMap = (function() {
   return map4;
 })();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/symbol-table/structure-query.js
+// node_modules/molstar/lib/mol-script/language/symbol-table/structure-query.js
 var Types2;
 (function(Types3) {
   Types3.ElementSymbol = Type.Value("Structure", "ElementSymbol");
@@ -42831,7 +42831,7 @@ var structureQuery = {
   bondProperty
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/symbol-table/internal.js
+// node_modules/molstar/lib/mol-script/language/symbol-table/internal.js
 var generator2 = {
   "@header": "Generators",
   bundleElement: symbol(Arguments.Dictionary({
@@ -42857,7 +42857,7 @@ var internal = {
   generator: generator2
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/symbol-table.js
+// node_modules/molstar/lib/mol-script/language/symbol-table.js
 var MolScriptSymbolTable = { core, structureQuery, internal };
 normalizeTable(MolScriptSymbolTable);
 var SymbolList2 = symbolList(MolScriptSymbolTable);
@@ -42868,7 +42868,7 @@ var SymbolMap2 = (function() {
   return map4;
 })();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/builder.js
+// node_modules/molstar/lib/mol-script/language/builder.js
 var MolScriptBuilder;
 (function(MolScriptBuilder2) {
   MolScriptBuilder2.core = MolScriptSymbolTable.core;
@@ -42936,7 +42936,7 @@ var MolScriptBuilder;
   ;
 })(MolScriptBuilder || (MolScriptBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/centroid-helper.js
+// node_modules/molstar/lib/mol-math/geometry/centroid-helper.js
 var v3add = Vec3.add;
 var v3squaredDistance = Vec3.squaredDistance;
 var v3distance = Vec3.distance;
@@ -43039,7 +43039,7 @@ var CentroidHelper = class {
   CentroidHelper2.fromPairProvider = fromPairProvider;
 })(CentroidHelper || (CentroidHelper = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/graph/inter-unit-graph.js
+// node_modules/molstar/lib/mol-math/graph/inter-unit-graph.js
 var InterUnitGraph = class _InterUnitGraph {
   /** Get an array of unit-pair-edges that are connected to the given unit */
   getConnectedUnits(unit2) {
@@ -43178,7 +43178,7 @@ var InterUnitGraph = class _InterUnitGraph {
 })(InterUnitGraph || (InterUnitGraph = {}));
 var emptyArray = [];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/data.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/data.js
 var IntraUnitBonds;
 (function(IntraUnitBonds2) {
   IntraUnitBonds2.Empty = IntAdjacencyGraph.create([], [], [], 0, { flags: [], order: [], key: [] });
@@ -43199,7 +43199,7 @@ var InterUnitBonds = class extends InterUnitGraph {
   InterUnitBonds2.UnitPairBonds = UnitPairBonds;
 })(InterUnitBonds || (InterUnitBonds = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/common.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/common.js
 var DefaultBondMaxRadius = 4;
 var DefaultBondComputationProps = {
   forceCompute: false,
@@ -43255,7 +43255,7 @@ function isHydrogen(i) {
   return i === H_ID;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/atomic/bonds.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/atomic/bonds.js
 var IntraBondOrderTable = /* @__PURE__ */ new Map([
   ["HIS|CD2|CG", 2],
   ["HIS|CE1|ND1", 2],
@@ -43323,7 +43323,7 @@ function getInterBondOrderFromTable(compId1, atomId1, compId22, atomId2) {
   return InterBondOrderTable.get(`${compId1}|${atomId1}|${compId22}|${atomId2}`) || 1;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/binary-cif/encoding.js
+// node_modules/molstar/lib/mol-io/common/binary-cif/encoding.js
 var VERSION = "0.3.0";
 var Encoding;
 (function(Encoding2) {
@@ -43376,7 +43376,7 @@ var Encoding;
   Encoding2.isSignedIntegerDataType = isSignedIntegerDataType;
 })(Encoding || (Encoding = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/binary.js
+// node_modules/molstar/lib/mol-io/common/binary.js
 var IsNativeEndianLittle = new Uint16Array(new Uint8Array([18, 52]).buffer)[0] === 13330;
 function flipByteOrder(data, bytes) {
   const buffer = new ArrayBuffer(data.length);
@@ -43401,7 +43401,7 @@ function uint8ToString(array2) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/binary-cif/decoder.js
+// node_modules/molstar/lib/mol-io/common/binary-cif/decoder.js
 function decode(data) {
   let current2 = data.data;
   for (let i = data.encoding.length - 1; i >= 0; i--) {
@@ -43606,7 +43606,7 @@ function stringArray(data, encoding) {
   return result2;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/number.js
+// node_modules/molstar/lib/mol-util/number.js
 function getMantissaMultiplier(v4, maxDigits, delta2) {
   let m = 1, i;
   for (i = 0; i < maxDigits; i++) {
@@ -43666,7 +43666,7 @@ function toFixed(v4, fractionDigits) {
   return parseFloat(v4.toFixed(fractionDigits));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/binary-cif/classifier.js
+// node_modules/molstar/lib/mol-io/common/binary-cif/classifier.js
 function classifyIntArray(xs) {
   return IntClassifier.classify(xs);
 }
@@ -43827,7 +43827,7 @@ var FloatClassifier;
   }
 })(FloatClassifier || (FloatClassifier = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/binary-cif/array-encoder.js
+// node_modules/molstar/lib/mol-io/common/binary-cif/array-encoder.js
 var ArrayEncoderImpl = class _ArrayEncoderImpl {
   and(f) {
     return new _ArrayEncoderImpl(this.providers.concat([f]));
@@ -44206,7 +44206,7 @@ var ArrayEncoding;
   ArrayEncoding2.stringArray = stringArray2;
 })(ArrayEncoding || (ArrayEncoding = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/writer/cif/encoder.js
+// node_modules/molstar/lib/mol-io/writer/cif/encoder.js
 var Field;
 (function(Field3) {
   let Type2;
@@ -44444,7 +44444,7 @@ function cifFieldsFromTableSchema(schema) {
   return fields;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/writer/cif/encoder/util.js
+// node_modules/molstar/lib/mol-io/writer/cif/encoder/util.js
 function getFieldDigitCount(field) {
   if (field.defaultFormat && typeof field.defaultFormat.digitCount !== "undefined")
     return Math.max(0, Math.min(field.defaultFormat.digitCount, 16));
@@ -44467,7 +44467,7 @@ function getCategoryInstanceData(category, ctx) {
   return { instance, rowCount, source };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/writer/cif/encoder/text.js
+// node_modules/molstar/lib/mol-io/writer/cif/encoder/text.js
 var TextEncoder = class {
   constructor() {
     this.builder = StringBuilder.create();
@@ -44701,7 +44701,7 @@ function writeMultiline(builder, val) {
   StringBuilder.writeSafe(builder, "\n;\n");
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/msgpack/encode.js
+// node_modules/molstar/lib/mol-io/common/msgpack/encode.js
 function encodeMsgPack(value) {
   const buffer = new ArrayBuffer(encodedSize(value));
   const view2 = new DataView(buffer);
@@ -44940,7 +44940,7 @@ function encodeInternal(value, view2, bytes, offset3) {
   throw new Error("Unknown type " + type3);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/writer/cif/encoder/binary.js
+// node_modules/molstar/lib/mol-io/writer/cif/encoder/binary.js
 var BinaryEncoder = class {
   setFilter(filter5) {
     this.filter = filter5 || Category.DefaultFilter;
@@ -45112,7 +45112,7 @@ function getFieldData(field, arrayCtor, totalCount, data) {
   return { array: array2, allPresent, mask };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/writer/cif.js
+// node_modules/molstar/lib/mol-io/writer/cif.js
 var CifWriter;
 (function(CifWriter2) {
   CifWriter2.Encoder = Encoder;
@@ -45196,7 +45196,7 @@ var CifWriter;
   }
 })(CifWriter || (CifWriter = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/bonds/chem_comp.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/bonds/chem_comp.js
 var ComponentBond;
 (function(ComponentBond2) {
   ComponentBond2.Descriptor = {
@@ -45299,7 +45299,7 @@ var ComponentBond;
   ComponentBond2.Entry = Entry;
 })(ComponentBond || (ComponentBond = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/bonds/struct_conn.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/bonds/struct_conn.js
 var StructConn;
 (function(StructConn2) {
   StructConn2.Descriptor = {
@@ -45449,7 +45449,7 @@ var StructConn;
   StructConn2.getEntriesFromStructConn = getEntriesFromStructConn;
 })(StructConn || (StructConn = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/intra-compute.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/intra-compute.js
 var v3distance2 = Vec3.distance;
 var CoarseGrainedBondMaxRadius = 6;
 var CoarseGrainedIntraResidueBondMaxDistance = 5.5;
@@ -45738,7 +45738,7 @@ function computeIntraUnitBonds(unit2, props) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/inter-compute.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/inter-compute.js
 var v3distance3 = Vec3.distance;
 var v3set = Vec3.set;
 var v3squaredDistance2 = Vec3.squaredDistance;
@@ -46055,7 +46055,7 @@ function hasCommonStructConnRecord(unitA, unitB) {
   return false;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/bonds.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/bonds.js
 var Bond;
 (function(Bond2) {
   function Location2(aStructure, aUnit, aIndex, bStructure, bUnit, bIndex) {
@@ -46254,7 +46254,7 @@ var Bond;
   Bond2.getBoundingSphere = getBoundingSphere3;
 })(Bond || (Bond = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/rings/compute.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/rings/compute.js
 function computeRings(unit2) {
   const size4 = largestResidue(unit2);
   const state = State(unit2, size4);
@@ -46595,7 +46595,7 @@ function createIndex(rings2, aromaticRings) {
   return { elementRingIndices, elementAromaticRingIndices, ringComponentIndex, ringComponents };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/atomic/types.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/atomic/types.js
 var Elements;
 (function(Elements2) {
   Elements2["H"] = "H";
@@ -46751,7 +46751,7 @@ function isMetal(element) {
   return isAlkaliMetal(element) || isAlkalineEarthMetal(element) || isLanthanide(element) || isActinide(element) || isTransitionMetal(element) || isPostTransitionMetal(element);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/util.js
+// node_modules/molstar/lib/mol-model/structure/util.js
 function getCoarseBegCompId(unit2, element) {
   const entityKey = unit2.coarseElements.entityKey[element];
   const seq = unit2.model.sequence.byEntityKey[entityKey].sequence;
@@ -46793,7 +46793,7 @@ function getPositions(unit2, indices2) {
   return positions;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/rings.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/rings.js
 var UnitRings = class {
   get index() {
     if (this._index)
@@ -46973,7 +46973,7 @@ function getAromaticRings(unit2, rings2) {
   return aromaticRings;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/int/sorted-ranges.js
+// node_modules/molstar/lib/mol-data/int/sorted-ranges.js
 var SortedRanges;
 (function(SortedRanges2) {
   function ofSortedRanges(array2) {
@@ -47098,7 +47098,7 @@ var SortedRanges;
   SortedRanges2.Iterator = Iterator5;
 })(SortedRanges || (SortedRanges = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/polymer.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/polymer.js
 function getAtomicPolymerElements(unit2) {
   const indices2 = [];
   const { elements, model } = unit2;
@@ -47202,7 +47202,7 @@ function getProteinElements(unit2) {
   return SortedArray.ofSortedArray(indices2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/principal-axes.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/principal-axes.js
 var tempPos = Vec3();
 function toPositionsArray(unit2) {
   const { elements, conformation } = unit2;
@@ -47218,7 +47218,7 @@ function getPrincipalAxes(unit2) {
   return PrincipalAxes.ofPositions(positions);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/boundary-helper.js
+// node_modules/molstar/lib/mol-math/geometry/boundary-helper.js
 var v3dot = Vec3.dot;
 var v3copy = Vec3.copy;
 var v3scaleAndSub = Vec3.scaleAndSub;
@@ -47395,7 +47395,7 @@ var Type122 = [
   [2, -1, -2]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/boundary.js
+// node_modules/molstar/lib/mol-math/geometry/boundary.js
 var v3set2 = Vec3.set;
 var boundaryHelperCoarse = new BoundaryHelper("14");
 var boundaryHelperFine = new BoundaryHelper("98");
@@ -47438,7 +47438,7 @@ function getBoundary(data) {
   return { box: boundaryHelper5.getBox(), sphere };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/element-set-intra-bond-cache.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/bonds/element-set-intra-bond-cache.js
 var ElementSetIntraBondCache = class _ElementSetIntraBondCache {
   constructor() {
     this.data = /* @__PURE__ */ new Map();
@@ -47475,7 +47475,7 @@ var ElementSetIntraBondCache = class _ElementSetIntraBondCache {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/symmetry.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/symmetry.js
 var Assembly = class {
   get operatorGroups() {
     if (this._operators)
@@ -47522,7 +47522,7 @@ var Symmetry;
   Symmetry2.getUnitcellLabel = getUnitcellLabel;
 })(Symmetry || (Symmetry = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/assembly.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/assembly.js
 function createAssemblies(pdbx_struct_assembly, pdbx_struct_assembly_gen, pdbx_struct_oper_list) {
   if (!pdbx_struct_assembly._rowCount)
     return [];
@@ -47636,7 +47636,7 @@ function parseOperatorList(value) {
   return ret;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/symmetry.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/symmetry.js
 var ModelSymmetry;
 (function(ModelSymmetry2) {
   ModelSymmetry2.Descriptor = {
@@ -47707,7 +47707,7 @@ function getNcsOperators(struct_ncs_oper) {
   return opers;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit/resonance.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit/resonance.js
 var EmptyUnitResonance = {
   delocalizedTriplets: {
     getThirdElement: () => void 0,
@@ -47771,7 +47771,7 @@ function getDelocalizedTriplets(unit2) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/unit.js
+// node_modules/molstar/lib/mol-model/structure/structure/unit.js
 var Unit;
 (function(Unit2) {
   let Kind;
@@ -48227,7 +48227,7 @@ var Unit;
   Unit2.getHierarchy = getHierarchy;
 })(Unit || (Unit = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/lookup3d.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/lookup3d.js
 var StructureResult;
 (function(StructureResult2) {
   function add(result2, unit2, index, distSq) {
@@ -48485,7 +48485,7 @@ var StructureLookup3D = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/utils/structure-set.js
+// node_modules/molstar/lib/mol-model/structure/query/utils/structure-set.js
 function structureUnion(source, structures) {
   if (structures.length === 0)
     return Structure.Empty;
@@ -48604,7 +48604,7 @@ function structureSubtract(a8, b8) {
   return Structure.create(units, { parent: a8.parent || b8.parent });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/selection.js
+// node_modules/molstar/lib/mol-model/structure/query/selection.js
 var StructureSelection;
 (function(StructureSelection2) {
   function Singletons(source, structure) {
@@ -48759,7 +48759,7 @@ var StructureSelection;
   StructureSelection2.withInputStructure = withInputStructure;
 })(StructureSelection || (StructureSelection = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/internal.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/internal.js
 var internal_exports = {};
 __export(internal_exports, {
   atomicHet: () => atomicHet,
@@ -48771,7 +48771,7 @@ __export(internal_exports, {
   water: () => water
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/schema.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/schema.js
 function isItems(schema) {
   return !!schema.items;
 }
@@ -48896,7 +48896,7 @@ var Schema2 = {
   toBundle
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/bundle.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/bundle.js
 var Bundle;
 (function(Bundle2) {
   Bundle2.Empty = { hash: -1, elements: [] };
@@ -49116,7 +49116,7 @@ var Bundle;
   Bundle2.areEqual = areEqual4;
 })(Bundle || (Bundle = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/internal.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/internal.js
 function defaultBondTest(ctx) {
   return BondType.isCovalent(ctx.atomicBond.type);
 }
@@ -49221,7 +49221,7 @@ function bundleGenerator(elements) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/context.js
+// node_modules/molstar/lib/mol-model/structure/query/context.js
 var QueryContext = class {
   pushCurrentElement() {
     this.currentElementStack[this.currentElementStack.length] = this.element;
@@ -49333,7 +49333,7 @@ var QueryContextBondInfo = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/query.js
+// node_modules/molstar/lib/mol-model/structure/query/query.js
 var StructureQuery;
 (function(StructureQuery2) {
   function run(query2, structure, options) {
@@ -49347,7 +49347,7 @@ var StructureQuery;
   StructureQuery2.loci = loci;
 })(StructureQuery || (StructureQuery = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/generators.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/generators.js
 var generators_exports = {};
 __export(generators_exports, {
   all: () => all,
@@ -49360,7 +49360,7 @@ __export(generators_exports, {
   rings: () => rings
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/utils/builders.js
+// node_modules/molstar/lib/mol-model/structure/query/utils/builders.js
 var UniqueStructuresBuilder = class {
   add(s) {
     if (!s.elementCount)
@@ -49431,7 +49431,7 @@ var LinearGroupingBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/generators.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/generators.js
 var none = (ctx) => StructureSelection.Sequence(ctx.inputStructure, []);
 var all = (ctx) => StructureSelection.Singletons(ctx.inputStructure, ctx.inputStructure);
 function residues(params) {
@@ -49732,7 +49732,7 @@ function bondedAtomicPairs(bondTest) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/modifiers.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/modifiers.js
 var modifiers_exports = {};
 __export(modifiers_exports, {
   exceptBy: () => exceptBy,
@@ -49746,7 +49746,7 @@ __export(modifiers_exports, {
   wholeResidues: () => wholeResidues
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/unique-subset-builder.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/unique-subset-builder.js
 var StructureUniqueSubsetBuilder = class {
   addToUnit(parentId, e) {
     const unit2 = this.unitMap.get(parentId);
@@ -49825,12 +49825,12 @@ var StructureUniqueSubsetBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/secondary-structure.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/secondary-structure.js
 function SecondaryStructure(type3, key2, elements, getIndex) {
   return { type: type3, key: key2, elements, getIndex };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/common.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/common.js
 var DSSPType;
 (function(DSSPType2) {
   DSSPType2.is = BitFlags.has;
@@ -49866,7 +49866,7 @@ var Bridge = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/bends.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/bends.js
 function assignBends(ctx) {
   const { unit: unit2, flags: flags2, proteinInfo } = ctx;
   const c8 = unit2.conformation;
@@ -49908,7 +49908,7 @@ function assignBends(ctx) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/backbone-hbonds.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/backbone-hbonds.js
 var caMaxDist = 9;
 var Q = -27.888;
 var hbondEnergyCutoff = -0.5;
@@ -50000,7 +50000,7 @@ function buildHbondGraph(residueCount, oAtomResidues, nAtomResidues, energies) {
   return builder.createGraph({ energies });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/turns.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/turns.js
 function assignTurns(ctx) {
   const { proteinInfo, hbonds, flags: flags2 } = ctx;
   const turnFlag = [DSSPType.Flag.T3S, DSSPType.Flag.T4S, DSSPType.Flag.T5S, DSSPType.Flag.T3, DSSPType.Flag.T4, DSSPType.Flag.T5];
@@ -50022,7 +50022,7 @@ function assignTurns(ctx) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/helices.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/helices.js
 function assignHelices(ctx) {
   const { proteinInfo, flags: flags2 } = ctx;
   const residueCount = proteinInfo.residueIndices.length;
@@ -50062,7 +50062,7 @@ function assignHelices(ctx) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/ladders.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/ladders.js
 function shouldExtendLadder(ladder, bridge) {
   if (bridge.type !== ladder.type)
     return false;
@@ -50132,7 +50132,7 @@ function assignLadders(ctx) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/bridges.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/bridges.js
 function assignBridges(ctx) {
   const { proteinInfo, hbonds, flags: flags2, bridges } = ctx;
   const { offset: offset3, b: b8 } = hbonds;
@@ -50175,7 +50175,7 @@ function assignBridges(ctx) {
   bridges.sort((a8, b9) => a8.partner1 > b9.partner1 ? 1 : a8.partner1 < b9.partner1 ? -1 : 0);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/sheets.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/sheets.js
 function isHelixType(f) {
   return DSSPType.is(f, DSSPType.Flag.G) || DSSPType.is(f, DSSPType.Flag.H) || DSSPType.is(f, DSSPType.Flag.I);
 }
@@ -50216,7 +50216,7 @@ function assignSheets(ctx) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/dihedral-angles.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/dihedral-angles.js
 function calculateUnitDihedralAngles(unit2, proteinInfo) {
   const { cIndices, nIndices, residueIndices } = proteinInfo;
   const c8 = unit2.conformation;
@@ -50254,7 +50254,7 @@ function calculateUnitDihedralAngles(unit2, proteinInfo) {
   return { phi, psi };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/trace-lookup.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/trace-lookup.js
 function calcUnitProteinTraceLookup3D(unit2, unitProteinResidues) {
   const { x, y, z } = unit2.model.atomicConformation;
   const { traceElementIndex } = unit2.model.atomicHierarchy.derived.residue;
@@ -50266,7 +50266,7 @@ function calcUnitProteinTraceLookup3D(unit2, unitProteinResidues) {
   return GridLookup3D(position, getBoundary(position));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/protein-info.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/protein-info.js
 function getUnitProteinInfo(unit2) {
   const { index } = unit2.model.atomicHierarchy;
   const { proteinElements, residueIndex: residueIndex2 } = unit2;
@@ -50293,7 +50293,7 @@ function getUnitProteinInfo(unit2) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp.js
 var DSSPComputationParams = {
   oldDefinition: ParamDefinition.Boolean(true, { description: "Whether to use the old DSSP convention for the annotation of turns and helices, causes them to be two residues shorter" }),
   oldOrdering: ParamDefinition.Boolean(true, { description: "Alpha-helices are preferred over 3-10 helices" })
@@ -50457,7 +50457,7 @@ function getDSSPAssignment(flags2, getResidueFlag) {
   return type3;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/common/custom-structure-property.js
+// node_modules/molstar/lib/mol-model-props/common/custom-structure-property.js
 var CustomStructureProperty;
 (function(CustomStructureProperty2) {
   function createProvider(builder) {
@@ -50539,7 +50539,7 @@ var CustomStructureProperty;
   CustomStructureProperty2.createSimple = createSimple;
 })(CustomStructureProperty || (CustomStructureProperty = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/secondary-structure.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/secondary-structure.js
 var ModelSecondaryStructure;
 (function(ModelSecondaryStructure2) {
   ModelSecondaryStructure2.Descriptor = {
@@ -50704,7 +50704,7 @@ function assignSecondaryStructureRanges(hierarchy, coordinates, map4, data) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure/zhang-skolnik.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure/zhang-skolnik.js
 var HelixDistances = [5.45, 5.18, 6.37];
 var HelixDelta = 2.1;
 var SheetDistances = [6.1, 10.4, 13];
@@ -50790,7 +50790,7 @@ function getFlag(element) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/secondary-structure.js
+// node_modules/molstar/lib/mol-model-props/computed/secondary-structure.js
 function getSecondaryStructureParams(_data) {
   return {
     type: ParamDefinition.MappedStatic("auto", {
@@ -50880,7 +50880,7 @@ async function computeModel(structure) {
   return map4;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/properties.js
+// node_modules/molstar/lib/mol-model/structure/structure/properties.js
 function p2(p6) {
   return p6;
 }
@@ -51054,7 +51054,7 @@ var StructureProperties = {
   coarse
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/residue-set.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/residue-set.js
 var ResidueSet = class {
   add(entry) {
     let root = this.index.get(entry.label_asym_id);
@@ -51139,7 +51139,7 @@ var ResidueSet = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/modifiers.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/modifiers.js
 function getWholeResidues(ctx, source, structure) {
   const builder = source.subsetBuilder(true);
   for (const unit2 of structure.units) {
@@ -51686,7 +51686,7 @@ var StructConnGraph = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/filters.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/filters.js
 var filters_exports = {};
 __export(filters_exports, {
   areIntersectedBy: () => areIntersectedBy,
@@ -51698,7 +51698,7 @@ __export(filters_exports, {
   within: () => within
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/utils/structure-distance.js
+// node_modules/molstar/lib/mol-model/structure/query/utils/structure-distance.js
 function checkStructureMinMaxDistance(ctx, a8, b8, minDist, maxDist, elementRadius) {
   if (a8.elementCount === 0 || b8.elementCount === 0)
     return true;
@@ -51818,7 +51818,7 @@ var MaxRadiusDist;
   MaxRadiusDist2.check = check;
 })(MaxRadiusDist || (MaxRadiusDist = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/filters.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/filters.js
 function pick(query2, pred) {
   return (ctx) => {
     const sel = query2(ctx);
@@ -52091,7 +52091,7 @@ function isConnectedTo({ query: query2, target, disjunct, invert, bondTest }) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/combinators.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/combinators.js
 var combinators_exports = {};
 __export(combinators_exports, {
   intersect: () => intersect4,
@@ -52150,7 +52150,7 @@ function intersect4(queries) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/queries/atom-set.js
+// node_modules/molstar/lib/mol-model/structure/query/queries/atom-set.js
 var atom_set_exports = {};
 __export(atom_set_exports, {
   atomCount: () => atomCount,
@@ -52173,7 +52173,7 @@ function propertySet(prop) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query/predicates.js
+// node_modules/molstar/lib/mol-model/structure/query/predicates.js
 var Predicates;
 (function(Predicates2) {
   function isSetLike(x) {
@@ -52296,7 +52296,7 @@ var Predicates;
   Predicates2.or = or;
 })(Predicates || (Predicates = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/query.js
+// node_modules/molstar/lib/mol-model/structure/query.js
 var Queries = {
   generators: generators_exports,
   filters: filters_exports,
@@ -52307,7 +52307,7 @@ var Queries = {
   atomset: atom_set_exports
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/symmetry.js
+// node_modules/molstar/lib/mol-model/structure/structure/symmetry.js
 var StructureSymmetry;
 (function(StructureSymmetry2) {
   function buildAssembly(structure, asmName) {
@@ -52564,7 +52564,7 @@ async function findMatesRadius(ctx, structure, radius) {
   return assembler.getStructure();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/subset-builder.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/subset-builder.js
 var StructureSubsetBuilder = class {
   addToUnit(parentId, e) {
     const unit2 = this.unitMap.get(parentId);
@@ -52660,7 +52660,7 @@ var StructureSubsetBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-data/util/combination.js
+// node_modules/molstar/lib/mol-data/util/combination.js
 function P(m, n) {
   let p6 = 1;
   while (n--)
@@ -52709,7 +52709,7 @@ function combinations(array2, count3) {
   return out;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/carbohydrates/data.js
+// node_modules/molstar/lib/mol-model/structure/structure/carbohydrates/data.js
 var EmptyArray = [];
 var EmptyCarbohydrates = {
   links: EmptyArray,
@@ -52721,7 +52721,7 @@ var EmptyCarbohydrates = {
   getTerminalLinkIndices: () => EmptyArray
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/carbohydrates/compute.js
+// node_modules/molstar/lib/mol-model/structure/structure/carbohydrates/compute.js
 var C2 = ElementSymbol("C");
 var O = ElementSymbol("O");
 var SugarRingFps = [
@@ -53052,7 +53052,7 @@ function buildLookups(elements, links, terminalLinks) {
   return { getElementIndices, getLinkIndices, getTerminalLinkIndices };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/boundary.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/boundary.js
 var tmpSphere = Sphere3D();
 var boundaryHelperCoarse2 = new BoundaryHelper("14");
 var boundaryHelperFine2 = new BoundaryHelper("98");
@@ -53089,7 +53089,7 @@ function computeStructureBoundary(s) {
   return { box: boundaryHelper5.getBox(), sphere: boundaryHelper5.getSphere() };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/mapping.js
+// node_modules/molstar/lib/mol-model/structure/structure/mapping.js
 function getSerialMapping(structure) {
   const { units, elementCount, unitIndexMap } = structure;
   const cumulativeUnitElementCount = new Uint32Array(units.length);
@@ -53145,7 +53145,7 @@ function getIntraUnitBondMapping(structure) {
   return { bondCount: bondCount2, unitIndex, unitEdgeIndex, unitGroupIndex, unitGroupOffset };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/structure.js
+// node_modules/molstar/lib/mol-model/structure/structure/structure.js
 var Structure = class _Structure {
   subsetBuilder(isSorted) {
     return new StructureSubsetBuilder(this, isSorted);
@@ -54213,7 +54213,7 @@ function getAtomicResidueCount(structure) {
   Structure6.getPrincipalAxes = getPrincipalAxes2;
 })(Structure || (Structure = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/runtime/query/base.js
+// node_modules/molstar/lib/mol-script/runtime/query/base.js
 var QueryRuntimeTable = class {
   constructor() {
     this.map = /* @__PURE__ */ new Map();
@@ -54368,7 +54368,7 @@ function compile(expression) {
   return _compile(ctx, expression).fn;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/loci.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/loci.js
 var itDiff = IntTuple.diff;
 function Loci(structure, elements) {
   return { kind: "element-loci", structure, elements };
@@ -55047,7 +55047,7 @@ function Loci(structure, elements) {
   }
 })(Loci || (Loci = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/stats.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/stats.js
 var Stats;
 (function(Stats2) {
   function create3() {
@@ -55353,7 +55353,7 @@ var Stats;
   Stats2.add = add;
 })(Stats || (Stats = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/element/util.js
+// node_modules/molstar/lib/mol-model/structure/structure/element/util.js
 function property(p6) {
   return p6;
 }
@@ -55384,7 +55384,7 @@ function entityIndex(l) {
   return StructureProperties.entity.key(l);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/common/text/tokenizer.js
+// node_modules/molstar/lib/mol-io/reader/common/text/tokenizer.js
 function Tokenizer(data) {
   return {
     data,
@@ -55655,7 +55655,7 @@ var TokenBuilder;
   TokenBuilder2.create = create3;
 })(TokenBuilder || (TokenBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/result.js
+// node_modules/molstar/lib/mol-io/reader/result.js
 var ReaderResult;
 (function(ReaderResult2) {
   function error2(message, line = -1) {
@@ -55690,7 +55690,7 @@ var ReaderResult;
   ReaderResult2.Success = Success;
 })(ReaderResult || (ReaderResult = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/text/parser.js
+// node_modules/molstar/lib/mol-io/reader/cif/text/parser.js
 var CifTokenType;
 (function(CifTokenType2) {
   CifTokenType2[CifTokenType2["Data"] = 0] = "Data";
@@ -56253,7 +56253,7 @@ function parseCifText(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/binary/field.js
+// node_modules/molstar/lib/mol-io/reader/cif/binary/field.js
 function Field2(column) {
   const mask = column.mask ? decode(column.mask) : void 0;
   const data = decode(column.data);
@@ -56285,7 +56285,7 @@ function Field2(column) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/msgpack/decode.js
+// node_modules/molstar/lib/mol-io/common/msgpack/decode.js
 function decodeMsgPack(buffer) {
   return parse({ buffer, offset: 0, dataView: new DataView(buffer.buffer) });
 }
@@ -56451,7 +56451,7 @@ function parse(state) {
   throw new Error("Unknown type 0x" + type3.toString(16));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/binary/parser.js
+// node_modules/molstar/lib/mol-io/reader/cif/binary/parser.js
 function checkVersions(min5, current2) {
   for (let i = 0; i < 2; i++) {
     if (min5[i] > current2[i])
@@ -56500,7 +56500,7 @@ function parseCifBinary(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/ccd.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/ccd.js
 var Schema3 = Column.Schema;
 var str4 = Schema3.str;
 var float2 = Schema3.float;
@@ -56888,7 +56888,7 @@ var CCD_Schema = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/bird.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/bird.js
 var Schema4 = Column.Schema;
 var str5 = Schema4.str;
 var float3 = Schema4.float;
@@ -57375,7 +57375,7 @@ var BIRD_Schema = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/dic.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/dic.js
 var Schema5 = Column.Schema;
 var str6 = Schema5.str;
 var float4 = Schema5.float;
@@ -57429,7 +57429,7 @@ var dic_Schema = {
   item_units_conversion
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/density-server.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/density-server.js
 var Schema6 = Column.Schema;
 var str7 = Schema6.str;
 var int4 = Schema6.int;
@@ -57481,7 +57481,7 @@ var DensityServer_Data_Schema = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/cif-core.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/cif-core.js
 var Schema7 = Column.Schema;
 var float6 = Schema7.float;
 var str8 = Schema7.str;
@@ -58281,7 +58281,7 @@ var CifCore_Aliases = {
   ]
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/segmentation.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/segmentation.js
 var Schema8 = Column.Schema;
 var int6 = Schema8.int;
 var Segmentation_Data_Schema = {
@@ -58295,7 +58295,7 @@ var Segmentation_Data_Schema = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif.js
+// node_modules/molstar/lib/mol-io/reader/cif.js
 var CIF = {
   parse: (data) => StringLike.is(data) ? parseCifText(data) : parseCifBinary(data),
   parseText: parseCifText,
@@ -58313,7 +58313,7 @@ var CIF = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/anisotropic.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/anisotropic.js
 var Anisotrop = {
   U: mmCIF_Schema.atom_site_anisotrop.U,
   U_esd: mmCIF_Schema.atom_site_anisotrop.U_esd
@@ -58372,7 +58372,7 @@ var AtomSiteAnisotrop;
   AtomSiteAnisotrop2.getElementToAnsiotropFromLabel = getElementToAnsiotropFromLabel;
 })(AtomSiteAnisotrop || (AtomSiteAnisotrop = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/global-transform.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/global-transform.js
 var GlobalModelTransformInfo;
 (function(GlobalModelTransformInfo2) {
   const CategoryName = "molstar_global_model_transform_info";
@@ -58440,7 +58440,7 @@ var GlobalModelTransformInfo;
   GlobalModelTransformInfo2.writeMmCif = writeMmCif;
 })(GlobalModelTransformInfo || (GlobalModelTransformInfo = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cif/schema/mmcif-extras.js
+// node_modules/molstar/lib/mol-io/reader/cif/schema/mmcif-extras.js
 var mmCIF_residueId_schema = {
   label_comp_id: mmCIF_Schema.atom_site.label_comp_id,
   label_seq_id: mmCIF_Schema.atom_site.label_seq_id,
@@ -58461,7 +58461,7 @@ var mmCIF_chemComp_schema = {
   type: Column.Schema.Aliased(Column.Schema.str)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/util.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/util.js
 function getModelGroupName(model_id, data) {
   const { ihm_model_group, ihm_model_group_link } = data;
   const link = Table.pickRow(ihm_model_group_link, (i) => ihm_model_group_link.model_id.value(i) === model_id);
@@ -58495,7 +58495,7 @@ function getNormalizedAtomSite(atom_site) {
   return normalized2;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/schema.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/schema.js
 var BasicSchema = {
   entry: mmCIF_Schema.entry,
   struct: mmCIF_Schema.struct,
@@ -58530,7 +58530,7 @@ function createBasic(data, normalize2 = false) {
   return basic;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/common/entity.js
+// node_modules/molstar/lib/mol-model-formats/structure/common/entity.js
 var EntityBuilder = class {
   constructor() {
     this.count = 0;
@@ -58594,7 +58594,7 @@ var EntityBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/common/component.js
+// node_modules/molstar/lib/mol-model-formats/structure/common/component.js
 var ProteinAtomIdsList = [
   /* @__PURE__ */ new Set(["CA"]),
   /* @__PURE__ */ new Set(["C"]),
@@ -58774,7 +58774,7 @@ var ComponentBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/molstar_bond_site.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/molstar_bond_site.js
 var MolstarBondSiteSchema = {
   molstar_bond_site: {
     atom_id_1: Column.Schema.int,
@@ -58795,7 +58795,7 @@ var Fields = CifWriter.fields().int("atom_id_1", (i, xs) => xs[i].atom_id_1).int
   valueKind: (i, xs) => xs[i].type_id === void 0 ? Column.ValueKinds.NotPresent : Column.ValueKinds.Present
 }).getFields();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/mmcif.js
+// node_modules/molstar/lib/mol-model-formats/structure/mmcif.js
 function modelSymmetryFromMmcif(model) {
   if (!MmcifFormat.is(model.sourceData))
     return;
@@ -59051,7 +59051,7 @@ async function createCcdModel(data, format, props, ctx) {
   return models.representative;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/common/custom-model-property.js
+// node_modules/molstar/lib/mol-model-props/common/custom-model-property.js
 var CustomModelProperty;
 (function(CustomModelProperty2) {
   function createProvider(builder) {
@@ -59131,7 +59131,7 @@ var CustomModelProperty;
   CustomModelProperty2.createSimple = createSimple;
 })(CustomModelProperty || (CustomModelProperty = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/sequence/sifts-mapping.js
+// node_modules/molstar/lib/mol-model-props/sequence/sifts-mapping.js
 var SIFTSMapping;
 (function(SIFTSMapping3) {
   SIFTSMapping3.Provider = CustomModelProperty.createProvider({
@@ -59205,14 +59205,14 @@ var SIFTSMapping;
   }
 })(SIFTSMapping || (SIFTSMapping = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/atom_site.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/atom_site.js
 var CifField2 = CifWriter.Field;
 var E = CifWriter.Encodings;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/secondary-structure.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/secondary-structure.js
 var CifField3 = CifWriter.Field;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/utils.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/utils.js
 function getModelMmCifCategory(model, name) {
   if (!MmcifFormat.is(model.sourceData))
     return;
@@ -59239,10 +59239,10 @@ function getUniqueEntityIndicesFromStructures(structures) {
   return ret.array;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/misc.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/misc.js
 var CifCategory2 = CifWriter.Category;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/sequence.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/sequence.js
 var CifCategory3 = CifWriter.Category;
 var _struct_asym = createCategory("struct_asym");
 var _entity_poly = createCategory("entity_poly");
@@ -59265,7 +59265,7 @@ function getCategoryInstance(structures, categoryName, cache) {
   return CifCategory3.ofTable(category, indices2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/mmcif.js
+// node_modules/molstar/lib/mol-model/structure/export/mmcif.js
 var CifCategory4 = CifWriter.Category;
 var CifExportContext;
 (function(CifExportContext2) {
@@ -59284,7 +59284,7 @@ var _Filters;
   _Filters2.AtomSitePositionsFieldNames = /* @__PURE__ */ new Set(["id", "Cartn_x", "Cartn_y", "Cartn_z"]);
 })(_Filters || (_Filters = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/export/categories/atom_site_operator_mapping.js
+// node_modules/molstar/lib/mol-model/structure/export/categories/atom_site_operator_mapping.js
 var AtomSiteOperatorMappingSchema = {
   molstar_atom_site_operator_mapping: {
     label_asym_id: Column.Schema.Str(),
@@ -59311,7 +59311,7 @@ var Fields2 = CifWriter.fields().str("label_asym_id", (i, xs) => xs[i].label_asy
   return ((_a = xs[i].operator.assembly) === null || _a === void 0 ? void 0 : _a.operId) || 0;
 }, { valueKind: asmValueKind }).int("symmetry_operator_index", (i, xs) => xs[i].operator.spgrOp, { valueKind: symmetryValueKind }).vec("symmetry_hkl", [(i, xs) => xs[i].operator.hkl[0], (i, xs) => xs[i].operator.hkl[1], (i, xs) => xs[i].operator.hkl[2]], { valueKind: symmetryValueKind }).int("ncs_id", (i, xs) => xs[i].operator.ncsId, { valueKind: symmetryValueKind }).getFields();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/atomic-derived.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/atomic-derived.js
 function getAtomicDerivedData(data, segments2, index, chemicalComponentMap) {
   const { label_comp_id, type_symbol, _rowCount: atomCount2 } = data.atoms;
   const { _rowCount: residueCount } = data.residues;
@@ -59380,7 +59380,7 @@ function getAtomicDerivedData(data, segments2, index, chemicalComponentMap) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/atomic-index.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/atomic-index.js
 function getResidueId(seq_id, ins_code) {
   if (!ins_code)
     return seq_id;
@@ -59602,7 +59602,7 @@ function getAtomicIndex(data, entities, segments2) {
   return new Index(map4);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/atomic.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/atomic.js
 function findHierarchyOffsets(atom_site) {
   if (atom_site._rowCount === 0)
     return { residues: [], chains: [] };
@@ -59752,7 +59752,7 @@ function getAtomicHierarchyAndConformation(atom_site, sourceIndex, entities, che
   return { sameAsPrevious, hierarchy, conformation, chainOperatorMapping };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-index.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-index.js
 function getCoarseIndex(data) {
   return new Index2(data);
 }
@@ -59843,7 +59843,7 @@ function buildMapping({ count: count3, entity_id, asym_id, seq_id_begin, seq_id_
   return ret;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/coarse/hierarchy.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/coarse/hierarchy.js
 var EmptyCoarseElements = {
   chainKey: [],
   entityKey: [],
@@ -59869,7 +59869,7 @@ var CoarseHierarchy;
   };
 })(CoarseHierarchy || (CoarseHierarchy = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-keys.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-keys.js
 function getElementKey(map4, key2, counter) {
   if (map4.has(key2))
     return map4.get(key2);
@@ -59954,7 +59954,7 @@ function getCoarseKeys(data, entities) {
   return { chainKey, entityKey, findSequenceKey, findChainKey, getEntityFromChain };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-ranges.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-ranges.js
 function getCoarseRanges(data, chemicalComponentMap) {
   const polymerRanges = [];
   const gapRanges = [];
@@ -59988,7 +59988,7 @@ function getCoarseRanges(data, chemicalComponentMap) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/coarse.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/coarse.js
 var EmptyCoarse = { hierarchy: CoarseHierarchy.Empty, conformation: void 0 };
 function getCoarse(data, chemicalComponentMap) {
   const { ihm_sphere_obj_site, ihm_gaussian_obj_site } = data;
@@ -60056,7 +60056,7 @@ function getData(data) {
   return { count: entity_id.rowCount, entity_id, asym_id, seq_id_begin, seq_id_end, ...getSegments(asym_id, seq_id_begin, seq_id_end) };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/sequence/constants.js
+// node_modules/molstar/lib/mol-model/sequence/constants.js
 var ProteinOneLetterCodes = {
   "HIS": "H",
   "ARG": "R",
@@ -60124,7 +60124,7 @@ function getDnaOneLetterCode(residueName) {
   return code || "X";
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/sequence/sequence.js
+// node_modules/molstar/lib/mol-model/sequence/sequence.js
 var Sequence;
 (function(Sequence2) {
   let Kind;
@@ -60277,7 +60277,7 @@ var Sequence;
   }
 })(Sequence || (Sequence = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/sequence.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/sequence.js
 var StructureSequence;
 (function(StructureSequence2) {
   const Empty4 = { byEntityKey: {}, sequences: [] };
@@ -60372,7 +60372,7 @@ var StructureSequence;
   StructureSequence2.fromCoarseElements = fromCoarseElements;
 })(StructureSequence || (StructureSequence = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/sequence.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/sequence.js
 function getSequence(data, entities, atomicHierarchy, coarseHierarchy) {
   if (!data.entity_poly_seq || !data.entity_poly_seq._rowCount) {
     return StructureSequence.fromHierarchy(entities, atomicHierarchy, coarseHierarchy);
@@ -60400,7 +60400,7 @@ function getSequence(data, entities, atomicHierarchy, coarseHierarchy) {
   return { byEntityKey, sequences };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/sort.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/sort.js
 async function sortAtomSite(ctx, atom_site, start4, end4) {
   const indices2 = createRangeArray(start4, end4 - 1);
   const { label_entity_id, label_asym_id, label_seq_id } = atom_site;
@@ -60429,7 +60429,7 @@ async function sortAtomSite(ctx, atom_site, start4, end4) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/utils/atomic-ranges.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/utils/atomic-ranges.js
 function areBackboneConnected(riStart, riEnd, conformation, index, derived) {
   const { polymerType, traceElementIndex, directionFromElementIndex, directionToElementIndex } = derived.residue;
   const ptStart = polymerType[riStart];
@@ -60524,7 +60524,7 @@ function getAtomicRanges(hierarchy, entities, conformation, sequence) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/properties.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/properties.js
 function getMissingResidues(data) {
   const map4 = /* @__PURE__ */ new Map();
   const getKey2 = (model_num, asym_id, seq_id) => {
@@ -60630,10 +60630,10 @@ function getStructAsymMap(atomic, data) {
   return map4;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/common.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/common.js
 var EntitySubtype = Column.Schema.Aliased(Column.Schema.Str());
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/entities.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/entities.js
 function getEntityData(data) {
   let entityData;
   if (!data.entity.id.isDefined) {
@@ -60752,7 +60752,7 @@ function getEntitiesWithPRD(data, entities, structAsymMap) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/trajectory.js
+// node_modules/molstar/lib/mol-model/structure/trajectory.js
 var ArrayTrajectory = class {
   getFrameAtIndex(i) {
     return this.frames[i];
@@ -60765,7 +60765,7 @@ var ArrayTrajectory = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/basic/parser.js
+// node_modules/molstar/lib/mol-model-formats/structure/basic/parser.js
 async function createModels(data, format, ctx) {
   const properties4 = getCommonProperties(data, format);
   const models = data.ihm_model_list._rowCount > 0 ? await readIntegrative(ctx, data, properties4, format) : await readStandard(ctx, data, properties4, format);
@@ -60948,7 +60948,7 @@ async function readIntegrative(ctx, data, properties4, format) {
   return models;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/model.js
+// node_modules/molstar/lib/mol-model/structure/model/model.js
 {
 }
 var Model;
@@ -61329,7 +61329,7 @@ var Model;
   Model2.probablyHasDensityMap = probablyHasDensityMap;
 })(Model || (Model = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/model/properties/custom/indexed.js
+// node_modules/molstar/lib/mol-model/structure/model/properties/custom/indexed.js
 var IndexedCustomProperty;
 (function(IndexedCustomProperty2) {
   function getCifDataSource(structure, prop, cache) {
@@ -61516,7 +61516,7 @@ var EntityMappedCustomProperty = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/categories.js
+// node_modules/molstar/lib/mol-theme/color/categories.js
 var ColorThemeCategory = {
   Atom: "Atom Property",
   Chain: "Chain Property",
@@ -61526,7 +61526,7 @@ var ColorThemeCategory = {
   Misc: "Miscellaneous"
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/carbohydrate-symbol.js
+// node_modules/molstar/lib/mol-theme/color/carbohydrate-symbol.js
 var DefaultColor = Color(13421772);
 var Description = "Assigns colors according to the Symbol Nomenclature for Glycans (SNFG).";
 var CarbohydrateSymbolColorThemeParams = {};
@@ -61579,7 +61579,7 @@ var CarbohydrateSymbolColorThemeProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/uniform.js
+// node_modules/molstar/lib/mol-theme/color/uniform.js
 var DefaultColor2 = Color(13421772);
 var Description2 = "Gives everything the same, uniform color.";
 var UniformColorThemeParams = {
@@ -61613,7 +61613,7 @@ var UniformColorThemeProvider = {
   isApplicable: (ctx) => true
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/names.js
+// node_modules/molstar/lib/mol-util/color/names.js
 var ColorNames = ColorMap({
   aliceblue: 15792383,
   antiquewhite: 16444375,
@@ -61779,7 +61779,7 @@ var ColorNamesValueMap = (function() {
   return map4;
 })();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/distinct.js
+// node_modules/molstar/lib/mol-util/color/distinct.js
 var DistinctColorsParams = {
   hue: ParamDefinition.Interval([1, 360], { min: 0, max: 360, step: 1 }),
   chroma: ParamDefinition.Interval([40, 70], { min: 0, max: 100, step: 1 }),
@@ -61901,7 +61901,7 @@ function distinctColors(count3, props = {}) {
   return sorted.map((c8) => Lab.toColor(c8));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/palette.js
+// node_modules/molstar/lib/mol-util/color/palette.js
 var DefaultGetPaletteProps = {
   type: "generate",
   colorList: "red-yellow-blue"
@@ -61972,7 +61972,7 @@ function getPalette(count3, props, labelOptions = {}) {
   return { color, legend };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/chain-id.js
+// node_modules/molstar/lib/mol-theme/color/chain-id.js
 var DefaultList = "many-distinct";
 var DefaultColor3 = Color(16448250);
 var Description3 = "Gives every chain a color based on its `asym_id` value.";
@@ -62066,7 +62066,7 @@ var ChainIdColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/element-index.js
+// node_modules/molstar/lib/mol-theme/color/element-index.js
 var DefaultColor4 = Color(13421772);
 var Description4 = "Gives every element (atom or coarse sphere/gaussian) a unique color based on the position (index) of the element in the list of elements in the structure.";
 var ElementIndexColorThemeParams = {
@@ -62126,7 +62126,7 @@ var ElementIndexColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/color/params.js
+// node_modules/molstar/lib/mol-util/color/params.js
 function getColorMapParams(map4) {
   const colors = {};
   objectForEach(map4, (_, k) => {
@@ -62135,7 +62135,7 @@ function getColorMapParams(map4) {
   return colors;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/operator-name.js
+// node_modules/molstar/lib/mol-theme/color/operator-name.js
 var DefaultList2 = "many-distinct";
 var DefaultColor5 = Color(13421772);
 var Description5 = `Assigns a color based on the operator name of a transformed chain.`;
@@ -62197,7 +62197,7 @@ var OperatorNameColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/entity-id.js
+// node_modules/molstar/lib/mol-theme/color/entity-id.js
 var DefaultList3 = "many-distinct";
 var DefaultColor6 = Color(16448250);
 var DefaultWaterColor = Color(16715021);
@@ -62319,7 +62319,7 @@ var EntityIdColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/entity-source.js
+// node_modules/molstar/lib/mol-theme/color/entity-source.js
 var DefaultList4 = "dark-2";
 var DefaultColor7 = Color(16448250);
 var Description7 = "Gives ranges of a polymer chain a color based on the entity source it originates from (e.g. gene, plasmid, organism).";
@@ -62454,7 +62454,7 @@ var EntitySourceColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/model-index.js
+// node_modules/molstar/lib/mol-theme/color/model-index.js
 var DefaultColor8 = Color(13421772);
 var Description8 = "Gives every model a unique color based on its index.";
 var ModelIndexColorThemeParams = {
@@ -62504,7 +62504,7 @@ var ModelIndexColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.elementCount > 0
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/structure-index.js
+// node_modules/molstar/lib/mol-theme/color/structure-index.js
 var DefaultColor9 = Color(13421772);
 var Description9 = "Gives every structure a unique color based on its index.";
 var StructureIndexColorThemeParams = {
@@ -62554,7 +62554,7 @@ var StructureIndexColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.elementCount > 0
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/unit-index.js
+// node_modules/molstar/lib/mol-theme/color/unit-index.js
 var DefaultList5 = "dark-2";
 var DefaultColor10 = Color(13421772);
 var Description10 = "Gives every chain instance (single chain or collection of single elements) a unique color based on the position (index) of the chain in the list of chains in the structure.";
@@ -62615,7 +62615,7 @@ var UnitIndexColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/trajectory-index.js
+// node_modules/molstar/lib/mol-theme/color/trajectory-index.js
 var DefaultColor11 = Color(13421772);
 var Description11 = "Gives every model (frame) a unique color based on the index in its trajectory.";
 var TrajectoryIndexColorThemeParams = {
@@ -62675,7 +62675,7 @@ var TrajectoryIndexColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.elementCount > 0 && Model.TrajectoryInfo.get(ctx.structure.models[0]).size > 1
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/element-symbol.js
+// node_modules/molstar/lib/mol-theme/color/element-symbol.js
 var ElementSymbolColors = ColorMap({
   "H": 16777215,
   "D": 16777152,
@@ -62900,7 +62900,7 @@ var ElementSymbolColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/molecule-type.js
+// node_modules/molstar/lib/mol-theme/color/molecule-type.js
 var MoleculeTypeColors = ColorMap({
   water: 3697840,
   ion: 15729279,
@@ -62974,7 +62974,7 @@ var MoleculeTypeColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/polymer-id.js
+// node_modules/molstar/lib/mol-theme/color/polymer-id.js
 var DefaultList6 = "dark-2";
 var DefaultColor12 = Color(16448250);
 var Description14 = "Gives every polymer chain a color based on its `asym_id` value.";
@@ -63084,7 +63084,7 @@ var PolymerIdColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/polymer-index.js
+// node_modules/molstar/lib/mol-theme/color/polymer-index.js
 var DefaultList7 = "dark-2";
 var DefaultColor13 = Color(13421772);
 var Description15 = "Gives every polymer chain instance a unique color based on the position (index) of the polymer in the list of polymers in the structure.";
@@ -63158,7 +63158,7 @@ var PolymerIndexColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/residue-name.js
+// node_modules/molstar/lib/mol-theme/color/residue-name.js
 var ResidueNameColors = ColorMap({
   // standard amino acids
   "ALA": 9240460,
@@ -63282,7 +63282,7 @@ var ResidueNameColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/secondary-structure.js
+// node_modules/molstar/lib/mol-theme/color/secondary-structure.js
 var SecondaryStructureColors = ColorMap({
   "alphaHelix": 16711808,
   "threeTenHelix": 10485888,
@@ -63382,7 +63382,7 @@ var SecondaryStructureColorThemeProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/sequence-id.js
+// node_modules/molstar/lib/mol-theme/color/sequence-id.js
 var DefaultColor14 = Color(13421772);
 var Description18 = "Gives every polymer residue a color based on its `seq_id` value.";
 var SequenceIdColorThemeParams = {
@@ -63478,7 +63478,7 @@ var SequenceIdColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/util.js
+// node_modules/molstar/lib/mol-geo/util.js
 function normalizeVec3Array(a8, count3) {
   for (let i = 0, il = count3 * 3; i < il; i += 3) {
     const x = a8[i];
@@ -63565,7 +63565,7 @@ function createGroupMapping(groups, dataCount, step = 1) {
   return { indices: indices2, offsets };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/util.js
+// node_modules/molstar/lib/mol-gl/renderable/util.js
 var v3fromArray = Vec3.fromArray;
 var v3transformMat4Offset = Vec3.transformMat4Offset;
 function calculateTextureInfo(n, itemSize) {
@@ -63648,7 +63648,7 @@ function calculateTransformBoundingSphere(invariantBoundingSphere, transform, tr
   return boundaryHelper5.getSphere();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/marker-data.js
+// node_modules/molstar/lib/mol-geo/geometry/marker-data.js
 var MarkerCountLut = new Uint8Array(771 + 1);
 MarkerCountLut[1] = 1;
 MarkerCountLut[2] = 1;
@@ -63712,13 +63712,13 @@ function createMarkers(count3, type3, markerData) {
 }
 var emptyMarkerTexture = { array: new Uint8Array(1), width: 1, height: 1 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/location.js
+// node_modules/molstar/lib/mol-model/location.js
 var NullLocation = { kind: "null-location" };
 function DataLocation(tag, data, element) {
   return { kind: "data-location", tag, data, element };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/util/location-iterator.js
+// node_modules/molstar/lib/mol-geo/util/location-iterator.js
 function LocationIterator(groupCount, instanceCount, stride, getLocation, nonInstanceable = false, isSecondary = () => false, getLocation2) {
   if (groupCount % stride !== 0) {
     throw new Error("incompatible groupCount and stride");
@@ -63838,7 +63838,7 @@ function isPositionLocation(x) {
   return !!x && x.kind === "position-location";
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/color-data.js
+// node_modules/molstar/lib/mol-geo/geometry/color-data.js
 function createColors(locationIt, positionIt, colorTheme, colorData) {
   var _a;
   const data = _createColors(locationIt, positionIt, colorTheme, colorData);
@@ -64065,7 +64065,7 @@ function createDirectColor(colorData) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/instance-grid.js
+// node_modules/molstar/lib/mol-math/geometry/instance-grid.js
 var v3transformMat4Offset2 = Vec3.transformMat4Offset;
 var v3fromArray2 = Vec3.fromArray;
 var b3add = Box3D.add;
@@ -64265,7 +64265,7 @@ function calcTopGrid(bottomGrid, batchSize) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/transform-data.js
+// node_modules/molstar/lib/mol-geo/geometry/transform-data.js
 var _m3 = Mat3();
 var _m4 = Mat4();
 function checkReflection(transformArray, instanceCount) {
@@ -64348,7 +64348,7 @@ function updateTransformData(transformData, invariantBoundingSphere, cellSize, b
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/size/uniform.js
+// node_modules/molstar/lib/mol-theme/size/uniform.js
 var Description19 = "Gives everything the same, uniform size.";
 var UniformSizeThemeParams = {
   value: ParamDefinition.Numeric(1, { min: 0, max: 20, step: 0.1 })
@@ -64376,7 +64376,7 @@ var UniformSizeThemeProvider = {
   isApplicable: (ctx) => true
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/material.js
+// node_modules/molstar/lib/mol-util/material.js
 function Material(values2) {
   return { ...Material.Zero, ...values2 };
 }
@@ -64411,7 +64411,7 @@ function Material(values2) {
   Material2.getParam = getParam;
 })(Material || (Material = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/clip.js
+// node_modules/molstar/lib/mol-util/clip.js
 function Clip() {
 }
 (function(Clip2) {
@@ -64506,7 +64506,7 @@ function Clip() {
   Clip2.areEqual = areEqual4;
 })(Clip || (Clip = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/base.js
+// node_modules/molstar/lib/mol-geo/geometry/base.js
 var VisualQualityInfo = {
   "custom": {},
   "auto": {},
@@ -64647,7 +64647,7 @@ var BaseGeometry;
   BaseGeometry2.updateRenderableState = updateRenderableState;
 })(BaseGeometry || (BaseGeometry = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/overpaint-data.js
+// node_modules/molstar/lib/mol-geo/geometry/overpaint-data.js
 function applyOverpaintColor(array2, start4, end4, color) {
   for (let i = start4; i < end4; ++i) {
     Color.toArray(color, array2, i * 4);
@@ -64700,7 +64700,7 @@ function createEmptyOverpaint(overpaintData) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/transparency-data.js
+// node_modules/molstar/lib/mol-geo/geometry/transparency-data.js
 function applyTransparencyValue(array2, start4, end4, value) {
   for (let i = start4; i < end4; ++i) {
     array2[i] = value * 255;
@@ -64776,7 +64776,7 @@ function createEmptyTransparency(transparencyData) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/clipping-data.js
+// node_modules/molstar/lib/mol-geo/geometry/clipping-data.js
 function applyClippingGroups(array2, start4, end4, groups) {
   array2.fill(groups, start4, end4);
   return true;
@@ -64818,7 +64818,7 @@ function createEmptyClipping(clippingData) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/substance-data.js
+// node_modules/molstar/lib/mol-geo/geometry/substance-data.js
 function applySubstanceMaterial(array2, start4, end4, material) {
   for (let i = start4; i < end4; ++i) {
     Material.toArray(material, array2, i * 4);
@@ -64871,7 +64871,7 @@ function createEmptySubstance(substanceData) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/emissive-data.js
+// node_modules/molstar/lib/mol-geo/geometry/emissive-data.js
 function applyEmissiveValue(array2, start4, end4, value) {
   for (let i = start4; i < end4; ++i) {
     array2[i] = value * 255;
@@ -64934,7 +64934,7 @@ function createEmptyEmissive(emissiveData) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/mesh.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/mesh.js
 var Mesh;
 (function(Mesh2) {
   function create3(vertices2, indices2, normals, groups, vertexCount, triangleCount, mesh) {
@@ -65557,7 +65557,7 @@ var Mesh;
   }
 })(Mesh || (Mesh = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/number-packing.js
+// node_modules/molstar/lib/mol-util/number-packing.js
 function packIntToRGBArray(value, array2, offset3) {
   value = clamp(Math.round(value), 0, 16777216 - 1) + 1;
   array2[offset3 + 2] = value % 256;
@@ -65588,7 +65588,7 @@ function arrayMaxPackedIntToRGB(array2, stride) {
   return max5;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/size-data.js
+// node_modules/molstar/lib/mol-geo/geometry/size-data.js
 function createSizes(locationIt, sizeTheme, sizeData) {
   switch (Geometry.getGranularity(locationIt, sizeTheme.granularity)) {
     case "uniform":
@@ -65693,7 +65693,7 @@ function createGroupInstanceSize(locationIt, sizeFn, sizeData) {
   return createTextureSize(sizes, "groupInstance", sizeData);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/points/points.js
+// node_modules/molstar/lib/mol-geo/geometry/points/points.js
 var Points;
 (function(Points2) {
   function create3(centers, groups, pointCount, points3) {
@@ -65868,7 +65868,7 @@ var Points;
   }
 })(Points || (Points = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/distance-transform.js
+// node_modules/molstar/lib/mol-math/geometry/distance-transform.js
 function edt(data, width, height, f, d5, v4, z) {
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
@@ -65911,7 +65911,7 @@ function edt1d(f, d5, v4, z, n) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/text/font-atlas.js
+// node_modules/molstar/lib/mol-geo/geometry/text/font-atlas.js
 var TextAtlasCache = {};
 function getFontAtlas(props) {
   const hash5 = JSON.stringify(props);
@@ -66030,7 +66030,7 @@ function createCanvasContext(width, height, options) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/text/text.js
+// node_modules/molstar/lib/mol-geo/geometry/text/text.js
 var Text;
 (function(Text2) {
   function create3(fontTexture, centers, mappings, depths, indices2, groups, tcoords, charCount, text) {
@@ -66280,7 +66280,7 @@ function getPadding(mappings, depths, charCount, scale) {
   return Math.max(maxDepth, scale * maxOffset);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/lines/lines-builder.js
+// node_modules/molstar/lib/mol-geo/geometry/lines/lines-builder.js
 var tmpVecA = Vec3();
 var tmpVecB = Vec3();
 var tmpDir2 = Vec3();
@@ -66381,7 +66381,7 @@ function fillMappingAndIndices(n, mb, ib) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/lines/lines.js
+// node_modules/molstar/lib/mol-geo/geometry/lines/lines.js
 var Lines;
 (function(Lines2) {
   function create3(mappings, indices2, groups, starts, ends, lineCount, lines) {
@@ -66579,7 +66579,7 @@ var Lines;
   }
 })(Lines || (Lines = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/primitive.js
+// node_modules/molstar/lib/mol-geo/primitive/primitive.js
 var a2 = Vec3();
 var b2 = Vec3();
 var c2 = Vec3();
@@ -66652,7 +66652,7 @@ function transformPrimitive(primitive, t5) {
   return primitive;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/polygon.js
+// node_modules/molstar/lib/mol-geo/primitive/polygon.js
 function polygon(sideCount, shift2, radius = -1) {
   const points3 = new Float32Array(sideCount * 3);
   const r = radius === -1 ? sideCount <= 4 ? Math.sqrt(2) / 2 : 0.6 : radius;
@@ -66666,7 +66666,7 @@ function polygon(sideCount, shift2, radius = -1) {
   return points3;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/cage.js
+// node_modules/molstar/lib/mol-geo/primitive/cage.js
 function createCage(vertices2, edges) {
   return { vertices: vertices2, edges };
 }
@@ -66686,7 +66686,7 @@ function transformCage(cage, t5) {
   return cage;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/box.js
+// node_modules/molstar/lib/mol-geo/primitive/box.js
 var a3 = Vec3();
 var b3 = Vec3();
 var c3 = Vec3();
@@ -66803,7 +66803,7 @@ function BoxCage() {
   return boxCage;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/direct-volume/transfer-function.js
+// node_modules/molstar/lib/mol-geo/geometry/direct-volume/transfer-function.js
 function getControlPointsFromVec2Array(array2) {
   return array2.map((v4) => ({ x: v4[0], alpha: v4[1] }));
 }
@@ -66844,7 +66844,7 @@ function createTransferFunctionTexture(controlPoints, texture) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/histogram.js
+// node_modules/molstar/lib/mol-math/histogram.js
 function calculateHistogram(data, binCount, options) {
   if (!options) {
     const [min5, max5] = arrayMinMax(data);
@@ -66869,7 +66869,7 @@ function _calcHistogram(data, binCount, min5, max5) {
   return { min: min5, max: max5, binWidth, counts };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/volume/grid.js
+// node_modules/molstar/lib/mol-model/volume/grid.js
 var Grid;
 (function(Grid2) {
   Grid2.One = {
@@ -66962,7 +66962,7 @@ var Grid;
   Grid2.makeGetTrilinearlyInterpolated = makeGetTrilinearlyInterpolated;
 })(Grid || (Grid = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/cube.js
+// node_modules/molstar/lib/mol-model-formats/volume/cube.js
 function volumeFromCube(source, params) {
   return Task.create("Create Volume", async () => {
     const { header: header2, values: sourceValues } = source;
@@ -67020,7 +67020,7 @@ var CubeFormat;
   CubeFormat3.create = create3;
 })(CubeFormat || (CubeFormat = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/density-server.js
+// node_modules/molstar/lib/mol-model-formats/volume/density-server.js
 function volumeFromDensityServerData(source, params) {
   return Task.create("Create Volume", async (ctx) => {
     const { volume_data_3d_info: info, volume_data_3d: values2 } = source;
@@ -67065,7 +67065,7 @@ var DscifFormat;
   DscifFormat2.create = create3;
 })(DscifFormat || (DscifFormat = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/volume/volume.js
+// node_modules/molstar/lib/mol-model/volume/volume.js
 var Volume;
 (function(Volume2) {
   function is4(x) {
@@ -67442,7 +67442,7 @@ var Volume;
   };
 })(Volume || (Volume = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/direct-volume/direct-volume.js
+// node_modules/molstar/lib/mol-geo/geometry/direct-volume/direct-volume.js
 var VolumeBox = Box();
 var DirectVolume;
 (function(DirectVolume2) {
@@ -67694,7 +67694,7 @@ function getBoundingSphere(gridDimension, gridTransform) {
   return Sphere3D.fromDimensionsAndTransform(Sphere3D(), gridDimension, gridTransform);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/spheres/spheres.js
+// node_modules/molstar/lib/mol-geo/geometry/spheres/spheres.js
 var Spheres;
 (function(Spheres2) {
   function create3(centers, groups, sphereCount, spheres2) {
@@ -68017,7 +68017,7 @@ var Spheres;
   }
 })(Spheres || (Spheres = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/texture-mesh/texture-mesh.js
+// node_modules/molstar/lib/mol-geo/geometry/texture-mesh/texture-mesh.js
 var TextureMesh;
 (function(TextureMesh2) {
   class DoubleBuffer {
@@ -68234,7 +68234,7 @@ var TextureMesh;
   }
 })(TextureMesh || (TextureMesh = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/schema.js
+// node_modules/molstar/lib/mol-gl/renderable/schema.js
 function splitValues(schema, values2) {
   const attributeValues = {};
   const defineValues = {};
@@ -68499,7 +68499,7 @@ var BaseSchema = {
   instanceGrid: ValueSpec("instanceGrid")
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/copy.frag.js
+// node_modules/molstar/lib/mol-gl/shader/copy.frag.js
 var copy_frag = `
 precision highp float;
 precision highp sampler2D;
@@ -68513,7 +68513,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/quad.vert.js
+// node_modules/molstar/lib/mol-gl/shader/quad.vert.js
 var quad_vert = `
 precision highp float;
 
@@ -68526,7 +68526,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/webgl/render-item.js
+// node_modules/molstar/lib/mol-gl/webgl/render-item.js
 var MaxDrawCount = 3e7;
 var getNextRenderItemId = idFactory();
 function getDrawMode(ctx, drawMode) {
@@ -68915,7 +68915,7 @@ function createRenderItem(ctx, drawMode, shaderCode, schema, values2, materialId
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable.js
+// node_modules/molstar/lib/mol-gl/renderable.js
 var p3distanceToPoint = Plane3D.distanceToPoint;
 var f3intersectsSphere3D = Frustum3D.intersectsSphere3D;
 var s3fromArray = Sphere3D.fromArray;
@@ -69201,7 +69201,7 @@ function createComputeRenderable(renderItem, values2) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/util.js
+// node_modules/molstar/lib/mol-gl/compute/util.js
 var QuadPositions = new Float32Array([
   1,
   1,
@@ -69247,7 +69247,7 @@ function createCopyRenderable(ctx, texture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/image/image.js
+// node_modules/molstar/lib/mol-geo/geometry/image/image.js
 var QuadIndices = new Uint32Array([
   0,
   1,
@@ -69460,7 +69460,7 @@ function getBoundingSphere2(corners) {
   return sphere;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/cylinders/cylinders.js
+// node_modules/molstar/lib/mol-geo/geometry/cylinders/cylinders.js
 var Cylinders;
 (function(Cylinders2) {
   function create3(mappings, indices2, groups, starts, ends, scales, caps, colorModes, cylinderCount, cylinders) {
@@ -69691,7 +69691,7 @@ var Cylinders;
   }
 })(Cylinders || (Cylinders = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/geometry.js
+// node_modules/molstar/lib/mol-geo/geometry/geometry.js
 var Geometry;
 (function(Geometry2) {
   function getDrawCount(geometry) {
@@ -69788,7 +69788,7 @@ var Geometry;
   Geometry2.getGranularity = getGranularity;
 })(Geometry || (Geometry = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/size/shape-group.js
+// node_modules/molstar/lib/mol-theme/size/shape-group.js
 var DefaultSize = 1;
 var Description20 = "Assigns sizes as defined by the shape object.";
 var ShapeGroupSizeThemeParams = {};
@@ -69819,7 +69819,7 @@ var ShapeGroupSizeThemeProvider = {
   isApplicable: (ctx) => !!ctx.shape
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/direct-volume.js
+// node_modules/molstar/lib/mol-gl/renderable/direct-volume.js
 var DirectVolumeSchema = {
   ...BaseSchema,
   aPosition: AttributeSpec("float32", 3, 0),
@@ -69865,7 +69865,7 @@ function DirectVolumeRenderable(ctx, id, values2, state, materialId, transparenc
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/mesh.js
+// node_modules/molstar/lib/mol-gl/renderable/mesh.js
 var MeshSchema = {
   ...BaseSchema,
   aGroup: AttributeSpec("float32", 1, 0),
@@ -69897,7 +69897,7 @@ function MeshRenderable(ctx, id, values2, state, materialId, transparency, globa
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/points.js
+// node_modules/molstar/lib/mol-gl/renderable/points.js
 var PointsSchema = {
   ...BaseSchema,
   ...SizeSchema,
@@ -69919,7 +69919,7 @@ function PointsRenderable(ctx, id, values2, state, materialId, transparency, glo
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/lines.js
+// node_modules/molstar/lib/mol-gl/renderable/lines.js
 var LinesSchema = {
   ...BaseSchema,
   ...SizeSchema,
@@ -69945,7 +69945,7 @@ function LinesRenderable(ctx, id, values2, state, materialId, transparency, glob
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/spheres.js
+// node_modules/molstar/lib/mol-gl/renderable/spheres.js
 var SpheresSchema = {
   ...BaseSchema,
   ...SizeSchema,
@@ -69980,7 +69980,7 @@ function SpheresRenderable(ctx, id, values2, state, materialId, transparency, gl
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/text.js
+// node_modules/molstar/lib/mol-gl/renderable/text.js
 var TextSchema = {
   ...BaseSchema,
   ...SizeSchema,
@@ -70013,7 +70013,7 @@ function TextRenderable(ctx, id, values2, state, materialId, transparency, globa
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/texture-mesh.js
+// node_modules/molstar/lib/mol-gl/renderable/texture-mesh.js
 var TextureMeshSchema = {
   ...BaseSchema,
   uGeoTexDim: UniformSpec("v2", "buffered"),
@@ -70045,7 +70045,7 @@ function TextureMeshRenderable(ctx, id, values2, state, materialId, transparency
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/image.js
+// node_modules/molstar/lib/mol-gl/renderable/image.js
 var ImageSchema = {
   ...BaseSchema,
   aGroup: AttributeSpec("float32", 1, 0),
@@ -70077,7 +70077,7 @@ function ImageRenderable(ctx, id, values2, state, materialId, transparency, glob
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/renderable/cylinders.js
+// node_modules/molstar/lib/mol-gl/renderable/cylinders.js
 var CylindersSchema = {
   ...BaseSchema,
   ...SizeSchema,
@@ -70113,7 +70113,7 @@ function CylindersRenderable(ctx, id, values2, state, materialId, transparency, 
   return createRenderable(renderItem, renderValues, state);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/render-object.js
+// node_modules/molstar/lib/mol-gl/render-object.js
 var getNextId2 = idFactory(0, 2147483647);
 var getNextMaterialId = idFactory(0, 2147483647);
 function createRenderObject(type3, values2, state, materialId) {
@@ -70143,7 +70143,7 @@ function createRenderable2(ctx, o, transparency, globals) {
   assertUnreachable(o.type);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/shape/shape.js
+// node_modules/molstar/lib/mol-model/shape/shape.js
 var Shape;
 (function(Shape2) {
   function create3(name, sourceData, geometry, getColor2, getSize, getLabel, transforms, groupCount) {
@@ -70330,7 +70330,7 @@ var ShapeGroup;
   ShapeGroup2.getBoundingSphere = getBoundingSphere3;
 })(ShapeGroup || (ShapeGroup = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/shape-group.js
+// node_modules/molstar/lib/mol-theme/color/shape-group.js
 var DefaultColor15 = Color(13421772);
 var Description21 = "Assigns colors as defined by the shape object.";
 var ShapeGroupColorThemeParams = {};
@@ -70361,7 +70361,7 @@ var ShapeGroupColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.shape
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/uncertainty.js
+// node_modules/molstar/lib/mol-theme/color/uncertainty.js
 var DefaultUncertaintyColor = Color(16777113);
 var Description22 = `Assigns a color based on the uncertainty or disorder of an element's position, e.g. B-factor or RMSF, depending on the data availability and experimental technique.`;
 var UncertaintyColorThemeParams = {
@@ -70423,7 +70423,7 @@ var UncertaintyColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.models.some((m) => m.atomicConformation.B_iso_or_equiv.isDefined || m.coarseHierarchy.isDefined)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/illustrative.js
+// node_modules/molstar/lib/mol-theme/color/illustrative.js
 var DefaultIllustrativeColor = Color(15658734);
 var Description23 = `Assigns an illustrative color that gives every chain a color based on the chosen style but with lighter carbons (inspired by David Goodsell's Molecule of the Month style).`;
 var IllustrativeColorThemeParams = {
@@ -70503,7 +70503,7 @@ var IllustrativeColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/hydrophobicity.js
+// node_modules/molstar/lib/mol-theme/color/hydrophobicity.js
 var Description24 = 'Assigns a color to every amino acid according to the "Experimentally determined hydrophobicity scale for proteins at membrane interfaces" by Wimely and White (doi:10.1038/nsb1096-842).';
 var HydrophobicityColorThemeParams = {
   list: ParamDefinition.ColorList("red-yellow-green", { presetKind: "scale" }),
@@ -70581,7 +70581,7 @@ var HydrophobicityColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/occupancy.js
+// node_modules/molstar/lib/mol-theme/color/occupancy.js
 var DefaultOccupancyColor = Color(13421772);
 var Description25 = `Assigns a color based on the occupancy of an atom.`;
 var OccupancyColorThemeParams = {
@@ -70632,7 +70632,7 @@ var OccupancyColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.models.some((m) => m.atomicConformation.occupancy.isDefined)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/operator-hkl.js
+// node_modules/molstar/lib/mol-theme/color/operator-hkl.js
 var DefaultList8 = "dark-2";
 var DefaultColor16 = Color(13421772);
 var Description26 = `Assigns a color based on the operator HKL value of a transformed chain.`;
@@ -70733,7 +70733,7 @@ var OperatorHklColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/property/partial-charge.js
+// node_modules/molstar/lib/mol-model-formats/structure/property/partial-charge.js
 var AtomPartialCharge;
 (function(AtomPartialCharge2) {
   AtomPartialCharge2.Descriptor = {
@@ -70742,7 +70742,7 @@ var AtomPartialCharge;
   AtomPartialCharge2.Provider = FormatPropertyProvider.create(AtomPartialCharge2.Descriptor);
 })(AtomPartialCharge || (AtomPartialCharge = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/partial-charge.js
+// node_modules/molstar/lib/mol-theme/color/partial-charge.js
 var DefaultPartialChargeColor = Color(16777113);
 var Description27 = `Assigns a color based on the partial charge of an atom.`;
 var PartialChargeColorThemeParams = {
@@ -70791,7 +70791,7 @@ var PartialChargeColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.models.some((m) => AtomPartialCharge.Provider.get(m) !== void 0)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/atom-id.js
+// node_modules/molstar/lib/mol-theme/color/atom-id.js
 var DefaultList9 = "many-distinct";
 var DefaultColor17 = Color(16448250);
 var Description28 = "Gives every atom a color based on its `label_atom_id` value.";
@@ -70860,7 +70860,7 @@ var AtomIdColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/volume-value.js
+// node_modules/molstar/lib/mol-theme/color/volume-value.js
 var Description29 = "Assign color based on the given value of a volume cell.";
 var VolumeValueColorThemeParams = {
   colorList: ParamDefinition.ColorList({
@@ -70955,7 +70955,7 @@ var VolumeValueColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.volume && !Volume.Segmentation.get(ctx.volume)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/volume-segment.js
+// node_modules/molstar/lib/mol-theme/color/volume-segment.js
 var DefaultColor18 = Color(13421772);
 var Description30 = "Gives every volume segment a unique color.";
 var VolumeSegmentColorThemeParams = {
@@ -71001,7 +71001,7 @@ var VolumeSegmentColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.volume && !!Volume.Segmentation.get(ctx.volume)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/external-volume.js
+// node_modules/molstar/lib/mol-theme/color/external-volume.js
 var Description31 = `Assigns a color based on volume value at a given vertex.`;
 var ExternalVolumeColorThemeParams = {
   volume: ParamDefinition.ValueRef((ctx) => {
@@ -71110,7 +71110,7 @@ var ExternalVolumeColorThemeProvider = {
   isApplicable: (ctx) => true
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/cartoon.js
+// node_modules/molstar/lib/mol-theme/color/cartoon.js
 var Description32 = "Uses separate themes for coloring mainchain and sidechain visuals.";
 var CartoonColorThemeParams = {
   mainchain: ParamDefinition.MappedStatic("molecule-type", {
@@ -71221,7 +71221,7 @@ var CartoonColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/formal-charge.js
+// node_modules/molstar/lib/mol-theme/color/formal-charge.js
 var DefaultFormalChargeColor = Color(16777113);
 var Description33 = `Assigns a color based on the formal charge of an atom.`;
 var FormalChargeColorThemeParams = {
@@ -71273,7 +71273,7 @@ var FormalChargeColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.models.some((m) => m.atomicHierarchy.atoms.pdbx_formal_charge.isDefined)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/action.js
+// node_modules/molstar/lib/mol-state/action.js
 var StateAction;
 (function(StateAction2) {
   function create3(definition) {
@@ -71320,7 +71320,7 @@ var StateAction;
   StateAction2.build = Builder.build;
 })(StateAction || (StateAction = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/transformer.js
+// node_modules/molstar/lib/mol-state/transformer.js
 var Transformer;
 (function(Transformer2) {
   function getParamDefinition(t5, a8, globalCtx) {
@@ -71434,7 +71434,7 @@ var Transformer;
   });
 })(Transformer || (Transformer = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/transform.js
+// node_modules/molstar/lib/mol-state/transform.js
 var Transform;
 (function(Transform2) {
   Transform2.RootRef = "-=root=-";
@@ -71633,7 +71633,7 @@ var Transform;
   Transform2.fromJSON = fromJSON;
 })(Transform || (Transform = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/tree/transient.js
+// node_modules/molstar/lib/mol-state/tree/transient.js
 var TransientTree = class {
   get childMutations() {
     if (this._childMutations)
@@ -71908,7 +71908,7 @@ function ensurePresent(nodes, ref) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/tree/immutable.js
+// node_modules/molstar/lib/mol-state/tree/immutable.js
 var StateTree;
 (function(StateTree2) {
   class Impl {
@@ -72077,7 +72077,7 @@ var StateTree;
   StateTree2.reuseTransformParams = reuseTransformParams;
 })(StateTree || (StateTree = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/state/selection.js
+// node_modules/molstar/lib/mol-state/state/selection.js
 var StateSelection;
 (function(StateSelection2) {
   function select(s, state) {
@@ -72447,7 +72447,7 @@ var StateSelection;
   StateSelection2.getDecorated = getDecorated;
 })(StateSelection || (StateSelection = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/object.js
+// node_modules/molstar/lib/mol-state/object.js
 var StateObject;
 (function(StateObject2) {
   function factory2() {
@@ -72579,7 +72579,7 @@ var StateObjectRef;
   StateObjectRef4.resolveAndCheck = resolveAndCheck;
 })(StateObjectRef || (StateObjectRef = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/rx-event-helper.js
+// node_modules/molstar/lib/mol-util/rx-event-helper.js
 var RxEventHelper;
 (function(RxEventHelper2) {
   function create3() {
@@ -72615,7 +72615,7 @@ var _RxEventHelper = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/state/builder.js
+// node_modules/molstar/lib/mol-state/state/builder.js
 var StateBuilder;
 (function(StateBuilder2) {
   function getAffectedRefs(state) {
@@ -72917,7 +72917,7 @@ function stringArrayUnion(...arrays) {
   return ret;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/action/manager.js
+// node_modules/molstar/lib/mol-state/action/manager.js
 var StateActionManager = class {
   constructor() {
     this.ev = RxEventHelper.create();
@@ -72993,7 +72993,7 @@ var StateActionManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/log-entry.js
+// node_modules/molstar/lib/mol-util/log-entry.js
 var LogEntry;
 (function(LogEntry2) {
   function message(msg) {
@@ -73014,7 +73014,7 @@ var LogEntry;
   LogEntry2.info = info;
 })(LogEntry || (LogEntry = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/tree/spine.js
+// node_modules/molstar/lib/mol-state/tree/spine.js
 var StateTreeSpine;
 (function(StateTreeSpine2) {
   class Impl {
@@ -73090,7 +73090,7 @@ var StateTreeSpine;
   StateTreeSpine2.getRootOfType = getRootOfType;
 })(StateTreeSpine || (StateTreeSpine = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/async-queue.js
+// node_modules/molstar/lib/mol-util/async-queue.js
 var AsyncQueue = class {
   constructor() {
     this.queue = [];
@@ -73129,7 +73129,7 @@ var AsyncQueue = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-state/state.js
+// node_modules/molstar/lib/mol-state/state.js
 var State2 = class {
   get tree() {
     return this._tree;
@@ -73913,7 +73913,7 @@ async function updateObject(ctx, cell, transformer, a8, b8, oldParams, newParams
   return runTask(transformer.definition.update({ a: a8, oldParams, b: b8, newParams, cache: cell.cache, spine: ctx.spine, dependencies: resolveDependencies(cell) }, ctx.parent.globalContext), ctx.taskCtx);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/objects.js
+// node_modules/molstar/lib/mol-plugin-state/objects.js
 var PluginStateObject;
 (function(PluginStateObject2) {
   PluginStateObject2.Create = StateObject.factory();
@@ -74044,7 +74044,7 @@ var PluginStateTransform;
   PluginStateTransform2.BuiltIn = Transformer.builderFactory("ms-plugin");
 })(PluginStateTransform || (PluginStateTransform = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/runtime/query/table.js
+// node_modules/molstar/lib/mol-script/runtime/query/table.js
 var C3 = QuerySymbolRuntime.Const;
 var D = QuerySymbolRuntime.Dynamic;
 var symbols = [
@@ -74531,7 +74531,7 @@ function getArray(ctx, xs) {
   }
 })();
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/data.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/data.js
 var data_exports = {};
 __export(data_exports, {
   DeflateData: () => DeflateData,
@@ -74555,7 +74555,7 @@ __export(data_exports, {
   ReadFile: () => ReadFile
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/simple-buffer.js
+// node_modules/molstar/lib/mol-io/common/simple-buffer.js
 var SimpleBuffer;
 (function(SimpleBuffer2) {
   function fromUint8Array(array2) {
@@ -74634,7 +74634,7 @@ var SimpleBuffer;
   SimpleBuffer2.ensureLittleEndian = ensureLittleEndian;
 })(SimpleBuffer || (SimpleBuffer = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/file-handle.js
+// node_modules/molstar/lib/mol-io/common/file-handle.js
 var FileHandle;
 (function(FileHandle2) {
   function fromBuffer(buffer, name) {
@@ -74678,7 +74678,7 @@ var FileHandle;
   FileHandle2.fromBuffer = fromBuffer;
 })(FileHandle || (FileHandle = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/typed-array.js
+// node_modules/molstar/lib/mol-io/common/typed-array.js
 var TypedArrayValueType;
 (function(TypedArrayValueType2) {
   TypedArrayValueType2.Float32 = "float32";
@@ -74725,7 +74725,7 @@ async function readTypedArray(ctx, file, position, byteCount, valueByteOffset, l
   return ctx.values;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/ccp4/parser.js
+// node_modules/molstar/lib/mol-io/reader/ccp4/parser.js
 async function readCcp4Header(file) {
   const headerSize = 1024;
   const { buffer } = await file.readBuffer(0, headerSize);
@@ -74861,7 +74861,7 @@ function parse2(buffer, name) {
   return parseFile(FileHandle.fromBuffer(SimpleBuffer.fromUint8Array(buffer), name), buffer.length);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/dsn6/parser.js
+// node_modules/molstar/lib/mol-io/reader/dsn6/parser.js
 var dsn6HeaderSize = 512;
 function parseBrixHeader(str11) {
   return {
@@ -74987,7 +74987,7 @@ function parse3(buffer, name) {
   return parseFile2(FileHandle.fromBuffer(SimpleBuffer.fromUint8Array(buffer), name), buffer.length);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/ply/schema.js
+// node_modules/molstar/lib/mol-io/reader/ply/schema.js
 var PlyTypeByteLength = {
   "char": 1,
   "uchar": 1,
@@ -75026,7 +75026,7 @@ function PlyFile(elements, elementNames, comments) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/ply/parser.js
+// node_modules/molstar/lib/mol-io/reader/ply/parser.js
 function State3(data, runtimeCtx) {
   const tokenizer = Tokenizer(data);
   return {
@@ -75242,7 +75242,7 @@ function parsePly(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/psf/parser.js
+// node_modules/molstar/lib/mol-io/reader/psf/parser.js
 var { readLine, skipWhitespace: skipWhitespace2, eatValue: eatValue2, eatLine, markStart } = Tokenizer;
 var reWhitespace = /\s+/;
 var reTitle = /(^\*|REMARK)*/;
@@ -75438,7 +75438,7 @@ function parsePsf(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/cube/parser.js
+// node_modules/molstar/lib/mol-io/reader/cube/parser.js
 var bohrToAngstromFactor = 0.529177210859;
 function readHeader(tokenizer) {
   const headerLines = Tokenizer.readLines(tokenizer, 6);
@@ -75523,7 +75523,7 @@ function parseCube(data, name) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/dx/parser.js
+// node_modules/molstar/lib/mol-io/reader/dx/parser.js
 function readHeader2(tokenizer) {
   const header2 = { h: Vec3() };
   let headerByteCount = 0;
@@ -75603,7 +75603,7 @@ function parseDx(data, name) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/prmtop/parser.js
+// node_modules/molstar/lib/mol-io/reader/prmtop/parser.js
 var Pointers = {
   "NATOM": "",
   "NTYPES": "",
@@ -75761,7 +75761,7 @@ function parsePrmtop(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/top/parser.js
+// node_modules/molstar/lib/mol-io/reader/top/parser.js
 var AtomsSchema2 = {
   nr: Column.Schema.Int(),
   type: Column.Schema.Str(),
@@ -76023,7 +76023,7 @@ function parseTop(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/data.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/data.js
 var Download = PluginStateTransform.BuiltIn({
   name: "download",
   display: { name: "Download", description: "Download string or binary data from the specified URL" },
@@ -76494,7 +76494,7 @@ var LazyVolume = PluginStateTransform.BuiltIn({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/misc.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/misc.js
 var misc_exports = {};
 __export(misc_exports, {
   CreateGroup: () => CreateGroup
@@ -76521,7 +76521,7 @@ var CreateGroup = PluginStateTransform.BuiltIn({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/model.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/model.js
 var model_exports = {};
 __export(model_exports, {
   CoordinatesFromDcd: () => CoordinatesFromDcd,
@@ -76565,7 +76565,7 @@ __export(model_exports, {
   getTrajectory: () => getTrajectory
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/dcd/parser.js
+// node_modules/molstar/lib/mol-io/reader/dcd/parser.js
 function _parseDcd(data) {
   const dv = new DataView(data.buffer);
   const header2 = /* @__PURE__ */ Object.create(null);
@@ -76685,7 +76685,7 @@ function parseDcd(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/common/text/column/fixed.js
+// node_modules/molstar/lib/mol-io/reader/common/text/column/fixed.js
 function FixedColumnProvider(lines) {
   return function(offset3, width, type3) {
     return FixedColumn(lines, offset3, width, type3);
@@ -76725,7 +76725,7 @@ function FixedColumn(lines, offset3, width, schema) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/gro/parser.js
+// node_modules/molstar/lib/mol-io/reader/gro/parser.js
 function createEmptyHeader() {
   return {
     title: "",
@@ -76822,7 +76822,7 @@ function parseGRO(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/pdb/parser.js
+// node_modules/molstar/lib/mol-io/reader/pdb/parser.js
 function parsePDB(data, id, isPdbqt = false) {
   return Task.create("Parse PDB", async (ctx) => ReaderResult.success({
     lines: await Tokenizer.readAllLinesAsync(data, ctx),
@@ -76831,7 +76831,7 @@ function parsePDB(data, id, isPdbqt = false) {
   }));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/polyhedron.js
+// node_modules/molstar/lib/mol-geo/primitive/polyhedron.js
 var DefaultPolyhedronProps = {
   radius: 1,
   detail: 0
@@ -76915,7 +76915,7 @@ function createBuilder() {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/icosahedron.js
+// node_modules/molstar/lib/mol-geo/primitive/icosahedron.js
 var t = (1 + Math.sqrt(5)) / 2;
 var icosahedronVertices = [
   -1,
@@ -77087,7 +77087,7 @@ function Icosahedron() {
 }
 var icosahedronCage = createCage(icosahedronVertices, icosahedronEdges);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/sphere.js
+// node_modules/molstar/lib/mol-geo/primitive/sphere.js
 var { vertices, indices } = Icosahedron();
 function sphereVertexCount(detail) {
   return 10 * Math.pow(Math.pow(2, detail), 2) + 2;
@@ -77096,7 +77096,7 @@ function Sphere(detail) {
   return Polyhedron(vertices, indices, { detail, radius: 1 });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/sphere.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/sphere.js
 var sphereMap = /* @__PURE__ */ new Map();
 var tmpSphereMat = Mat4.identity();
 function setSphereMat(m, center2, radius) {
@@ -77114,7 +77114,7 @@ function addSphere(state, center2, radius, detail) {
   MeshBuilder.addPrimitive(state, setSphereMat(tmpSphereMat, center2, radius), getSphere(detail));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/cylinder.js
+// node_modules/molstar/lib/mol-geo/primitive/cylinder.js
 var DefaultCylinderProps = {
   radiusTop: 1,
   radiusBottom: 1,
@@ -77205,7 +77205,7 @@ function Cylinder(props) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/prism.js
+// node_modules/molstar/lib/mol-geo/primitive/prism.js
 var on = Vec3();
 var op = Vec3();
 var a4 = Vec3();
@@ -77323,7 +77323,7 @@ function HeptagonalPrism() {
   return heptagonalPrism;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/cylinder.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/cylinder.js
 var cylinderMap = /* @__PURE__ */ new Map();
 var up = Vec3.create(0, 1, 0);
 var tmpCylinderDir = Vec3();
@@ -77419,7 +77419,7 @@ function addFixedCountDashedCylinder(state, start4, end4, lengthScale, segmentCo
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/mesh-builder.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/mesh-builder.js
 var tmpV4 = Vec3();
 var tmpMat32 = Mat3();
 var tmpVecA2 = Vec3();
@@ -77572,7 +77572,7 @@ var MeshBuilder;
   MeshBuilder2.getMesh = getMesh2;
 })(MeshBuilder || (MeshBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/shape/ply.js
+// node_modules/molstar/lib/mol-model-formats/shape/ply.js
 function createPlyShapeParams(plyFile) {
   const vertex = plyFile && plyFile.getElement("vertex");
   const material = plyFile && plyFile.getElement("material");
@@ -77812,7 +77812,7 @@ function shapeFromPly(source, params) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/spacegroup/cell.js
+// node_modules/molstar/lib/mol-math/geometry/spacegroup/cell.js
 function Cell() {
   return Cell.empty();
 }
@@ -77841,7 +77841,7 @@ function Cell() {
   Cell2.fromBasis = fromBasis;
 })(Cell || (Cell = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/dcd.js
+// node_modules/molstar/lib/mol-model-formats/structure/dcd.js
 var charmmTimeUnitFactor = 20.45482949774598;
 function coordinatesFromDcd(dcdFile) {
   return Task.create("Parse DCD", async (ctx) => {
@@ -77880,7 +77880,7 @@ function coordinatesFromDcd(dcdFile) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/util.js
+// node_modules/molstar/lib/mol-model-formats/structure/util.js
 function guessElementSymbolTokens(tokens, str11, start4, end4) {
   let s = start4, e = end4 - 1;
   let c8 = str11.charCodeAt(s);
@@ -77943,7 +77943,7 @@ function guessElementSymbolString(atomId2, compId3) {
   return "";
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/common/util.js
+// node_modules/molstar/lib/mol-model-formats/structure/common/util.js
 var ChainIdAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 function _getChainId(index) {
   const n = ChainIdAlphabet.length;
@@ -77962,7 +77962,7 @@ function _getChainId(index) {
 }
 var getChainId = memoize1(_getChainId);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/gro.js
+// node_modules/molstar/lib/mol-model-formats/structure/gro.js
 function getBasic(atoms2, modelNum) {
   const auth_atom_id = atoms2.atomName;
   const auth_comp_id = atoms2.residueName;
@@ -78052,7 +78052,7 @@ function trajectoryFromGRO(gro) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/assembly.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/assembly.js
 function parseCryst1(id, record2) {
   const get11 = (s, l) => (record2.substr(s, l) || "").trim();
   const cell = {
@@ -78244,7 +78244,7 @@ function parseMtrix(lines, lineStart, lineEnd) {
   return [CifCategory.ofFields("struct_ncs_oper", struct_ncs_oper)];
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/secondary-structure.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/secondary-structure.js
 var HelixTypes = {
   // CLASS NUMBER
   // TYPE OF  HELIX                     (COLUMNS 39 - 40)
@@ -78382,7 +78382,7 @@ function parseSheet(lines, lineStart, lineEnd) {
   return CifCategory.ofFields("struct_sheet_range", struct_sheet_range);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/entity.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/entity.js
 var Spec = {
   "MOL_ID": "",
   "MOLECULE": "",
@@ -78453,7 +78453,7 @@ function parseHetnam(lines, lineStart, lineEnd) {
   return hetnams;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/atom-site.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/atom-site.js
 function getAtomSiteTemplate(data, count3) {
   const str11 = () => [];
   const ts = () => TokenBuilder.create(data, 2 * count3);
@@ -78665,7 +78665,7 @@ function addAtom(sites, model, data, s, e, isPdbqt) {
   sites.index++;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/anisotropic.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/anisotropic.js
 function getAnisotropicTemplate(data, count3) {
   const str11 = () => [];
   const float7 = () => new Float32Array(count3);
@@ -78758,7 +78758,7 @@ function addAnisotropic(sites, model, data, s, e) {
   sites.index++;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/conect.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/conect.js
 function parseConect(lines, lineStart, lineEnd, sites) {
   const idMap = {};
   for (let i = 0, il = sites.id.rowCount; i < il; ++i) {
@@ -78850,7 +78850,7 @@ function parseConect(lines, lineStart, lineEnd, sites) {
   return CifCategory.ofFields("struct_conn", struct_conn);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/header.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/header.js
 function addHeader(data, s, e, header2) {
   const line = data.substring(s, e);
   header2.id_code = line.substring(62, 66).trim() || void 0;
@@ -78858,7 +78858,7 @@ function addHeader(data, s, e, header2) {
   header2.classification = line.substring(10, 50).trim() || void 0;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb/to-cif.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb/to-cif.js
 async function pdbToMmCif(pdb) {
   const { lines } = pdb;
   const { data, indices: indices2 } = lines;
@@ -79080,7 +79080,7 @@ async function pdbToMmCif(pdb) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/pdb.js
+// node_modules/molstar/lib/mol-model-formats/structure/pdb.js
 var PdbFormat;
 (function(PdbFormat2) {
   function is4(x) {
@@ -79120,7 +79120,7 @@ function trajectoryFromPDB(pdb) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/psf.js
+// node_modules/molstar/lib/mol-model-formats/structure/psf.js
 function getBasic2(atoms2) {
   const entityIds = new Array(atoms2.count);
   const asymIds = new Array(atoms2.count);
@@ -79221,7 +79221,7 @@ function topologyFromPsf(psf) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/script/mol-script/script-macro.js
+// node_modules/molstar/lib/mol-script/script/mol-script/script-macro.js
 function getPositionalArgs(args) {
   return Object.keys(args).filter((k) => !isNaN(k)).map((k) => +k).sort((a8, b8) => a8 - b8).map((k) => args[k]);
 }
@@ -79229,7 +79229,7 @@ function tryGetArg(args, name, defaultValue) {
   return args && args[name] !== void 0 ? args[name] : defaultValue;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/script/mol-script/symbols.js
+// node_modules/molstar/lib/mol-script/script/mol-script/symbols.js
 function Alias(symbol2, ...aliases) {
   return { kind: "alias", aliases, symbol: symbol2 };
 }
@@ -79572,7 +79572,7 @@ function transpileMolScript(expr) {
   return substSymbols(expr);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/monadic-parser.js
+// node_modules/molstar/lib/mol-util/monadic-parser.js
 var MonadicParser = class _MonadicParser {
   constructor(_) {
     this._ = _;
@@ -80035,7 +80035,7 @@ function assertFunction(x) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/language/parser.js
+// node_modules/molstar/lib/mol-script/language/parser.js
 function parseMolScript(input) {
   return Language.parse(input);
 }
@@ -80209,7 +80209,7 @@ var Language;
   Language2.parse = parse5;
 })(Language || (Language = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/helper.js
+// node_modules/molstar/lib/mol-script/transpilers/helper.js
 var B3 = MolScriptBuilder;
 function prefix(opParser, nextParser, mapFn) {
   const parser = MonadicParser.lazy(() => {
@@ -80480,7 +80480,7 @@ function resnameExpr(resnameList) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/jmol/properties.js
+// node_modules/molstar/lib/mol-script/transpilers/jmol/properties.js
 var B4 = MolScriptBuilder;
 var reFloat = /[-+]?[0-9]*\.?[0-9]+/;
 var rePosInt = /[0-9]+/;
@@ -81245,7 +81245,7 @@ var properties = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/jmol/operators.js
+// node_modules/molstar/lib/mol-script/transpilers/jmol/operators.js
 var B5 = MolScriptBuilder;
 var operators = [
   {
@@ -81274,7 +81274,7 @@ var operators = [
   }
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/jmol/keywords.js
+// node_modules/molstar/lib/mol-script/transpilers/jmol/keywords.js
 var B6 = MolScriptBuilder;
 var ResDict = {
   acidic: ["ASP", "GLU"],
@@ -81839,7 +81839,7 @@ var keywords = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/jmol/parser.js
+// node_modules/molstar/lib/mol-script/transpilers/jmol/parser.js
 var B7 = MolScriptBuilder;
 var valueOperators = [
   {
@@ -82015,7 +82015,7 @@ var lang = MonadicParser.createLanguage({
 });
 var transpiler = (str11) => lang.Query.tryParse(str11);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/pymol/properties.js
+// node_modules/molstar/lib/mol-script/transpilers/pymol/properties.js
 var B8 = MolScriptBuilder;
 var reFloat2 = /[-+]?[0-9]*\.?[0-9]+/;
 function atomNameListMap(x) {
@@ -82261,7 +82261,7 @@ var properties2 = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/pymol/operators.js
+// node_modules/molstar/lib/mol-script/transpilers/pymol/operators.js
 var B9 = MolScriptBuilder;
 var operators2 = [
   {
@@ -82588,7 +82588,7 @@ var operators2 = [
   }
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/pymol/keywords.js
+// node_modules/molstar/lib/mol-script/transpilers/pymol/keywords.js
 var B10 = MolScriptBuilder;
 var ResDict2 = {
   nucleic: ["A", "C", "T", "G", "U", "DA", "DC", "DT", "DG", "DU"],
@@ -82866,7 +82866,7 @@ var keywords2 = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/pymol/parser.js
+// node_modules/molstar/lib/mol-script/transpilers/pymol/parser.js
 var B11 = MolScriptBuilder;
 var propertiesDict = getPropertyRules(properties2);
 var slash = MonadicParser.string("/");
@@ -82953,7 +82953,7 @@ var lang2 = MonadicParser.createLanguage({
 });
 var transpiler2 = (str11) => lang2.Query.tryParse(str11);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/vmd/properties.js
+// node_modules/molstar/lib/mol-script/transpilers/vmd/properties.js
 var B12 = MolScriptBuilder;
 var reFloat3 = /[-+]?[0-9]*\.?[0-9]+/;
 var rePosInt2 = /[+]?[0-9]+/;
@@ -83270,7 +83270,7 @@ var properties3 = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/vmd/operators.js
+// node_modules/molstar/lib/mol-script/transpilers/vmd/operators.js
 var B13 = MolScriptBuilder;
 var propNames = Object.keys(properties3).sort(strLenSortFn).filter((name) => !properties3[name].isUnsupported).join("|");
 var operators3 = [
@@ -83337,7 +83337,7 @@ var operators3 = [
   }
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/vmd/keywords.js
+// node_modules/molstar/lib/mol-script/transpilers/vmd/keywords.js
 var B14 = MolScriptBuilder;
 function proteinExpr2() {
   return B14.struct.filter.pick({
@@ -83621,7 +83621,7 @@ var keywords3 = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/vmd/functions.js
+// node_modules/molstar/lib/mol-script/transpilers/vmd/functions.js
 var B15 = MolScriptBuilder;
 var functions = {
   "sqr": {
@@ -83711,7 +83711,7 @@ var functions = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/vmd/parser.js
+// node_modules/molstar/lib/mol-script/transpilers/vmd/parser.js
 var B16 = MolScriptBuilder;
 var valueOperators2 = [
   {
@@ -83901,14 +83901,14 @@ var lang3 = MonadicParser.createLanguage({
 });
 var transpiler3 = (str11) => lang3.Query.tryParse(str11);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpilers/all.js
+// node_modules/molstar/lib/mol-script/transpilers/all.js
 var _transpiler = {
   pymol: transpiler2,
   vmd: transpiler3,
   jmol: transpiler
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/transpile.js
+// node_modules/molstar/lib/mol-script/transpile.js
 var transpiler4 = _transpiler;
 function parse4(lang4, str11) {
   try {
@@ -83920,7 +83920,7 @@ function parse4(lang4, str11) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-script/script.js
+// node_modules/molstar/lib/mol-script/script.js
 function Script(expression, language) {
   return { expression, language };
 }
@@ -83974,7 +83974,7 @@ function Script(expression, language) {
   Script2.getStructureSelection = getStructureSelection;
 })(Script || (Script = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/root-structure.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/root-structure.js
 var CommonStructureParams = {
   dynamicBonds: ParamDefinition.Optional(ParamDefinition.Boolean(false, { description: "Ensure bonds are recalculated upon model changes. Also enables calculation of inter-unit bonds in water molecules and ions." }))
 };
@@ -84127,7 +84127,7 @@ var RootStructureDefinition;
   RootStructureDefinition2.create = create3;
 })(RootStructureDefinition || (RootStructureDefinition = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-query.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-query.js
 var StructureQueryHelper;
 (function(StructureQueryHelper2) {
   function isUnchanged(entry, query2, structure) {
@@ -84169,7 +84169,7 @@ var StructureQueryHelper;
   StructureQueryHelper2.updateStructureObject = updateStructureObject;
 })(StructureQueryHelper || (StructureQueryHelper = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-component.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-component.js
 var StructureComponentParams = () => ({
   type: ParamDefinition.MappedStatic("static", {
     static: ParamDefinition.Text("polymer"),
@@ -84322,7 +84322,7 @@ function updateStructureComponent(a8, b8, oldParams, newParams, cache) {
   return updated ? Transformer.UpdateResult.Updated : Transformer.UpdateResult.Unchanged;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/mol/parser.js
+// node_modules/molstar/lib/mol-io/reader/mol/parser.js
 function formalChargeMapper(key2) {
   switch (key2) {
     case 7:
@@ -84476,7 +84476,7 @@ function parseMol(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/mol.js
+// node_modules/molstar/lib/mol-model-formats/structure/mol.js
 async function getMolModels(mol, format, ctx) {
   const { atoms: atoms2, bonds, formalCharges } = mol;
   const MOL = Column.ofConst("MOL", mol.atoms.count, Column.Schema.str);
@@ -84548,7 +84548,7 @@ function trajectoryFromMol(mol) {
   return Task.create("Parse MOL", (ctx) => getMolModels(mol, void 0, ctx));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/cif-core.js
+// node_modules/molstar/lib/mol-model-formats/structure/cif-core.js
 function getSpacegroupNameOrNumber2(space_group) {
   const groupNumber = space_group.it_number.value(0);
   const groupName = space_group["name_h-m_full"].value(0).replace("-", " ");
@@ -84752,7 +84752,7 @@ function trajectoryFromCifCore(frame) {
   return Task.create("Parse CIF Core", (ctx) => getModels2(format.data.db, format, ctx));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/cube.js
+// node_modules/molstar/lib/mol-model-formats/structure/cube.js
 async function getModels3(cube, ctx) {
   const { atoms: atoms2 } = cube;
   const MOL = Column.ofConst("MOL", cube.atoms.count, Column.Schema.str);
@@ -84805,7 +84805,7 @@ function trajectoryFromCube(cube) {
   return Task.create("Parse Cube", (ctx) => getModels3(cube, ctx));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/mol2/parser.js
+// node_modules/molstar/lib/mol-io/reader/mol2/parser.js
 var { skipWhitespace: skipWhitespace4, eatValue: eatValue4, markLine: markLine3, getTokenString: getTokenString2, skipStrictWhitespace } = Tokenizer;
 function createEmptyMolecule() {
   return {
@@ -85096,7 +85096,7 @@ function parseMol2(data, name) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/mol2.js
+// node_modules/molstar/lib/mol-model-formats/structure/mol2.js
 async function getModels4(mol2, ctx) {
   const models = [];
   for (let i = 0, il = mol2.structures.length; i < il; ++i) {
@@ -85272,7 +85272,7 @@ function trajectoryFromMol2(mol2) {
   return Task.create("Parse MOL2", (ctx) => getModels4(mol2, ctx));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/xtc/parser.js
+// node_modules/molstar/lib/mol-io/reader/xtc/parser.js
 var MagicInts = new Uint32Array([
   0,
   0,
@@ -85658,7 +85658,7 @@ function parseXtc(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/xtc.js
+// node_modules/molstar/lib/mol-model-formats/structure/xtc.js
 function coordinatesFromXtc(file) {
   return Task.create("Parse XTC", async (ctx) => {
     await ctx.update("Converting to coordinates");
@@ -85684,7 +85684,7 @@ function coordinatesFromXtc(file) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/xyz/parser.js
+// node_modules/molstar/lib/mol-io/reader/xyz/parser.js
 function handleMolecule2(tokenizer) {
   let count3 = tokenizer.position >= tokenizer.data.length - 1 ? 0 : +Tokenizer.readLine(tokenizer);
   if (isNaN(count3))
@@ -85729,7 +85729,7 @@ function parseXyz(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/xyz.js
+// node_modules/molstar/lib/mol-model-formats/structure/xyz.js
 function getModels5(mol, ctx) {
   const { molecules } = mol;
   let count3 = 0;
@@ -85804,7 +85804,7 @@ function trajectoryFromXyz(mol) {
   return Task.create("Parse XYZ", (ctx) => getModels5(mol, ctx));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/lammps/schema.js
+// node_modules/molstar/lib/mol-io/reader/lammps/schema.js
 var lammpsUnitStyles = {
   lj: {
     mass: "unitless",
@@ -85946,7 +85946,7 @@ var lammpsUnitStyles = {
 };
 var UnitStyles = ["real", "metal", "si", "cgs", "electron", "micro", "nano", "lj"];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/lammps/data/parser.js
+// node_modules/molstar/lib/mol-io/reader/lammps/data/parser.js
 var { readLine: readLine4, skipWhitespace: skipWhitespace5, eatValue: eatValue5, eatLine: eatLine3, markStart: markStart3 } = Tokenizer;
 var reWhitespace4 = /\s+/;
 function State9(tokenizer, runtimeCtx) {
@@ -86101,7 +86101,7 @@ function parseLammpsData(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/lammps-data.js
+// node_modules/molstar/lib/mol-model-formats/structure/lammps-data.js
 async function getModels6(mol, ctx, unitsStyle = "real") {
   const { atoms: atoms2, bonds } = mol;
   const models = [];
@@ -86197,7 +86197,7 @@ function trajectoryFromLammpsData(mol, unitsStyle) {
   return Task.create("Parse Lammps Data", (ctx) => getModels6(mol, ctx, unitsStyle));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/lammps/traj/parser.js
+// node_modules/molstar/lib/mol-io/reader/lammps/traj/parser.js
 var { readLine: readLine5, skipWhitespace: skipWhitespace6, eatValue: eatValue6, eatLine: eatLine4, markStart: markStart4 } = Tokenizer;
 function State10(tokenizer, runtimeCtx) {
   return {
@@ -86327,7 +86327,7 @@ function parseLammpsTrajectory(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/lammps-trajectory.js
+// node_modules/molstar/lib/mol-model-formats/structure/lammps-trajectory.js
 function coordinatesFromLammpsTrajectory(file, unitsStyle = "real") {
   return Task.create("Parse Lammps Trajectory", async (ctx) => {
     await ctx.update("Converting to coordinates");
@@ -86463,7 +86463,7 @@ function trajectoryFromLammpsTrajectory(mol, unitsStyle) {
   return Task.create("Parse Lammps Traj Data", (ctx) => getModels7(mol, ctx, unitsStyle));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/sdf/parser-v3-util.js
+// node_modules/molstar/lib/mol-io/reader/sdf/parser-v3-util.js
 function isV3(versionLine) {
   return versionLine.trim().endsWith("V3000");
 }
@@ -86548,7 +86548,7 @@ function addSingleValue(tokenizer, tokens) {
   TokenBuilder.addUnchecked(tokens, tokenizer.tokenStart, tokenizer.tokenEnd);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/sdf/parser.js
+// node_modules/molstar/lib/mol-io/reader/sdf/parser.js
 var delimiter = "$$$$";
 function handleDataItems(tokenizer) {
   const dataHeader = TokenBuilder.create(tokenizer.data, 32);
@@ -86634,7 +86634,7 @@ function parseSdf(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/sdf.js
+// node_modules/molstar/lib/mol-model-formats/structure/sdf.js
 var SdfFormat;
 (function(SdfFormat2) {
   function is4(x) {
@@ -86650,7 +86650,7 @@ function trajectoryFromSdf(mol) {
   return Task.create("Parse SDF", (ctx) => getMolModels(mol.molFile, SdfFormat.create(mol), ctx));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/trr/parser.js
+// node_modules/molstar/lib/mol-io/reader/trr/parser.js
 async function parseInternal16(data) {
   const dv = new DataView(data.buffer);
   const f = {
@@ -86754,7 +86754,7 @@ function parseTrr(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/trr.js
+// node_modules/molstar/lib/mol-model-formats/structure/trr.js
 function coordinatesFromTrr(file) {
   return Task.create("Parse TRR", async (ctx) => {
     await ctx.update("Converting to coordinates");
@@ -86780,7 +86780,7 @@ function coordinatesFromTrr(file) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/io-buffer.js
+// node_modules/molstar/lib/mol-io/common/io-buffer.js
 var defaultByteLength = 1024 * 8;
 var charArray = [];
 var IOBuffer = class {
@@ -87168,7 +87168,7 @@ var IOBuffer = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/common/netcdf/reader.js
+// node_modules/molstar/lib/mol-io/common/netcdf/reader.js
 function notNetcdf(statement, reason) {
   if (statement) {
     throw new TypeError("Not a valid NetCDF v3.x file: " + reason);
@@ -87487,7 +87487,7 @@ var NetcdfReader = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-io/reader/nctraj/parser.js
+// node_modules/molstar/lib/mol-io/reader/nctraj/parser.js
 async function parseInternal17(data) {
   const nc = new NetcdfReader(data.buffer);
   const f = {
@@ -87550,7 +87550,7 @@ function parseNctraj(data) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/nctraj.js
+// node_modules/molstar/lib/mol-model-formats/structure/nctraj.js
 function coordinatesFromNctraj(file) {
   return Task.create("Parse NCTRAJ", async (ctx) => {
     await ctx.update("Converting to coordinates");
@@ -87589,7 +87589,7 @@ function coordinatesFromNctraj(file) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/prmtop.js
+// node_modules/molstar/lib/mol-model-formats/structure/prmtop.js
 function getBasic3(prmtop) {
   const { pointers, residuePointer, residueLabel, atomName } = prmtop;
   const atomCount2 = pointers.NATOM;
@@ -87707,7 +87707,7 @@ function topologyFromPrmtop(prmtop) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/structure/top.js
+// node_modules/molstar/lib/mol-model-formats/structure/top.js
 function getBasic4(top) {
   const { molecules, compounds } = top;
   const singleResidue = {};
@@ -87869,7 +87869,7 @@ function topologyFromTop(top) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/helpers.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/helpers.js
 function getDistanceDataFromStructureSelections(s) {
   const lociA = s[0].loci;
   const lociB = s[1].loci;
@@ -87954,7 +87954,7 @@ var TransformParam = ParamDefinition.MappedStatic("matrix", {
   }, { isFlat: true })
 }, { label: "Kind" });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/model.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/model.js
 var CoordinatesFromDcd = PluginStateTransform.BuiltIn({
   name: "coordinates-from-dcd",
   display: { name: "Parse DCD", description: "Parse DCD binary data." },
@@ -89099,7 +89099,7 @@ var ShapeFromPly = PluginStateTransform.BuiltIn({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/volume.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/volume.js
 var volume_exports = {};
 __export(volume_exports, {
   AssignColorVolume: () => AssignColorVolume,
@@ -89113,7 +89113,7 @@ __export(volume_exports, {
   VolumeTransform: () => VolumeTransform
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/ccp4.js
+// node_modules/molstar/lib/mol-model-formats/volume/ccp4.js
 function getCcp4Origin(header2) {
   if (header2.originX === 0 && header2.originY === 0 && header2.originZ === 0) {
     return Vec3.create(header2.NCSTART, header2.NRSTART, header2.NSSTART);
@@ -89191,7 +89191,7 @@ var Ccp4Format;
   Ccp4Format2.create = create3;
 })(Ccp4Format || (Ccp4Format = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/dsn6.js
+// node_modules/molstar/lib/mol-model-formats/volume/dsn6.js
 function volumeFromDsn6(source, params) {
   return Task.create("Create Volume", async (ctx) => {
     const { header: header2, values: values2 } = source;
@@ -89240,7 +89240,7 @@ var Dsn6Format;
   Dsn6Format2.create = create3;
 })(Dsn6Format || (Dsn6Format = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/dx.js
+// node_modules/molstar/lib/mol-model-formats/volume/dx.js
 function volumeFromDx(source, params) {
   return Task.create("Create Volume", async () => {
     const { header: header2, values: values2 } = source;
@@ -89281,7 +89281,7 @@ var DxFormat;
   DxFormat2.create = create3;
 })(DxFormat || (DxFormat = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/segmentation.js
+// node_modules/molstar/lib/mol-model-formats/volume/segmentation.js
 function volumeFromSegmentationData(source, params) {
   return Task.create("Create Segmentation Volume", async (ctx) => {
     var _a;
@@ -89403,7 +89403,7 @@ var SegcifFormat;
   SegcifFormat2.create = create3;
 })(SegcifFormat || (SegcifFormat = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/volume.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/volume.js
 var VolumeFromCcp4 = PluginStateTransform.BuiltIn({
   name: "volume-from-ccp4",
   display: { name: "Volume from CCP4/MRC/MAP", description: "Create Volume from CCP4/MRC/MAP data" },
@@ -89660,7 +89660,7 @@ var VolumeInstances = PluginStateTransform.BuiltIn({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/representation.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/representation.js
 var representation_exports = {};
 __export(representation_exports, {
   ClippingStructureRepresentation3DFromBundle: () => ClippingStructureRepresentation3DFromBundle,
@@ -89691,7 +89691,7 @@ __export(representation_exports, {
   VolumeRepresentation3DHelpers: () => VolumeRepresentation3DHelpers
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/util.js
+// node_modules/molstar/lib/mol-repr/util.js
 var VisualUpdateState;
 (function(VisualUpdateState2) {
   function create3() {
@@ -89858,7 +89858,7 @@ function getQualityProps(props, data) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/marker-action.js
+// node_modules/molstar/lib/mol-util/marker-action.js
 var MarkerAction;
 (function(MarkerAction2) {
   MarkerAction2[MarkerAction2["None"] = 0] = "None";
@@ -90099,7 +90099,7 @@ function getPartialMarkerAverage(action, currentStatus) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/loci.js
+// node_modules/molstar/lib/mol-model/loci.js
 var EveryLoci = { kind: "every-loci" };
 function isEveryLoci(x) {
   return !!x && x.kind === "every-loci";
@@ -90354,7 +90354,7 @@ var Loci2;
   Loci3.normalize = normalize2;
 })(Loci2 || (Loci2 = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/picking.js
+// node_modules/molstar/lib/mol-geo/geometry/picking.js
 var PickingId;
 (function(PickingId2) {
   PickingId2.Null = 16777214;
@@ -90364,7 +90364,7 @@ var PickingId;
   PickingId2.areSame = areSame;
 })(PickingId || (PickingId = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/number-conversion.js
+// node_modules/molstar/lib/mol-util/number-conversion.js
 var Tables = generateTables();
 function generateTables() {
   const buffer = new ArrayBuffer(4);
@@ -90450,7 +90450,7 @@ function toHalfFloat(val) {
   return Tables.baseTable[e] + ((f & 8388607) >> Tables.shiftTable[e]);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/util.js
+// node_modules/molstar/lib/mol-repr/volume/util.js
 var v3set3 = Vec3.set;
 var v3normalize = Vec3.normalize;
 var v3sub = Vec3.sub;
@@ -90774,7 +90774,7 @@ function createWrappedVolume(volume) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/color-smoothing.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/color-smoothing.js
 function calcMeshColorSmoothing(input, resolution, stride, webgl, texture) {
   const { colorType, vertexCount, groupCount, positionBuffer, instanceBuffer, transformBuffer, groupBuffer, itemSize } = input;
   const isInstanceType = colorType.endsWith("Instance");
@@ -91101,7 +91101,7 @@ function applyMeshSubstanceSmoothing(values2, resolution, stride, webgl, colorTe
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/compute/color-smoothing/normalize.frag.js
+// node_modules/molstar/lib/mol-gl/shader/compute/color-smoothing/normalize.frag.js
 var normalize_frag = `
 precision highp float;
 precision highp sampler2D;
@@ -91119,7 +91119,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/compute/color-smoothing/accumulate.frag.js
+// node_modules/molstar/lib/mol-gl/shader/compute/color-smoothing/accumulate.frag.js
 var accumulate_frag = `
 precision highp float;
 
@@ -91145,7 +91145,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/compute/color-smoothing/accumulate.vert.js
+// node_modules/molstar/lib/mol-gl/shader/compute/color-smoothing/accumulate.vert.js
 var accumulate_vert = `
 precision highp float;
 
@@ -91191,7 +91191,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/texture-mesh/color-smoothing.js
+// node_modules/molstar/lib/mol-geo/geometry/texture-mesh/color-smoothing.js
 var ColorAccumulateSchema = {
   drawCount: ValueSpec("number"),
   instanceCount: ValueSpec("number"),
@@ -91617,7 +91617,7 @@ function applyTextureMeshSubstanceSmoothing(values2, resolution, stride, webgl, 
   ValueCell.update(values2.uSubstanceGridTransform, smoothingData.gridTransform);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/visual.js
+// node_modules/molstar/lib/mol-repr/visual.js
 var Visual;
 (function(Visual2) {
   function setVisibility(renderObject, visible) {
@@ -91945,7 +91945,7 @@ var Visual;
   Visual2.setTransform = setTransform;
 })(Visual || (Visual = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/representation.js
+// node_modules/molstar/lib/mol-repr/shape/representation.js
 function ShapeRepresentation(getShape, geometryUtils, builder = {}) {
   let version = 0;
   const updated = new Subject();
@@ -92209,7 +92209,7 @@ function eachShapeGroup(loci, shape, apply) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model/structure/structure/util/unit-transforms.js
+// node_modules/molstar/lib/mol-model/structure/structure/util/unit-transforms.js
 var tmpMat = Mat4();
 var StructureUnitTransforms = class {
   constructor(structure) {
@@ -92265,7 +92265,7 @@ var StructureUnitTransforms = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/helpers.js
+// node_modules/molstar/lib/mol-plugin-state/animation/helpers.js
 var _unwindMatrix = Mat4();
 function unwindStructureAssembly(structure, unitTransforms, t5) {
   for (let i = 0, _i = structure.units.length; i < _i; i++) {
@@ -92336,7 +92336,7 @@ function spinStructure(structure, unitTransforms, t5, axis, origin) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/overpaint.js
+// node_modules/molstar/lib/mol-theme/overpaint.js
 function Overpaint(kind, layers) {
   return { kind, layers };
 }
@@ -92463,7 +92463,7 @@ function Overpaint(kind, layers) {
   Overpaint2.toBundle = toBundle2;
 })(Overpaint || (Overpaint = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/transparency.js
+// node_modules/molstar/lib/mol-theme/transparency.js
 function Transparency(kind, layers) {
   return { kind, layers };
 }
@@ -92584,7 +92584,7 @@ function Transparency(kind, layers) {
   Transparency2.toBundle = toBundle2;
 })(Transparency || (Transparency = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/model/unitcell.js
+// node_modules/molstar/lib/mol-repr/shape/model/unitcell.js
 var translate05 = Mat4.fromTranslation(Mat4(), Vec3.create(0.5, 0.5, 0.5));
 var unitCage = transformCage(cloneCage(BoxCage()), translate05);
 var tmpRef = Vec3();
@@ -92649,7 +92649,7 @@ function UnitcellRepresentation(ctx, getParams) {
   return Representation.createMulti("Unit Cell", ctx, getParams, Representation.StateBuilder, UnitcellVisuals);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/text/text-builder.js
+// node_modules/molstar/lib/mol-geo/geometry/text/text-builder.js
 var quadIndices = new Uint16Array([
   0,
   1,
@@ -92912,7 +92912,7 @@ var TextBuilder;
   TextBuilder2.create = create3;
 })(TextBuilder || (TextBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/label.js
+// node_modules/molstar/lib/mol-theme/label.js
 var DefaultLabelOptions2 = {
   granularity: "element",
   condensed: false,
@@ -93233,7 +93233,7 @@ function dihedralLabel(quad, options = {}) {
   return o.condensed ? `${dihedral} | ${label2}` : `Dihedral ${dihedral}</br>${label2}`;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/common.js
+// node_modules/molstar/lib/mol-repr/shape/loci/common.js
 var MeasurementRepresentationCommonTextParams = {
   customText: ParamDefinition.Text("", { label: "Text", description: "Override the label with custom value.", isEssential: true }),
   textColor: ParamDefinition.Color(ColorNames.black, { isEssential: true }),
@@ -93245,7 +93245,7 @@ var LociLabelTextParams = {
   borderWidth: ParamDefinition.Numeric(0.2, { min: 0, max: 0.5, step: 0.01 })
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/distance.js
+// node_modules/molstar/lib/mol-repr/shape/loci/distance.js
 var SharedParams = {
   unitLabel: ParamDefinition.Text("\u212B", { isEssential: true })
 };
@@ -93328,7 +93328,7 @@ function DistanceRepresentation(ctx, getParams) {
   return Representation.createMulti("Distance", ctx, getParams, Representation.StateBuilder, DistanceVisuals);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/label.js
+// node_modules/molstar/lib/mol-repr/shape/loci/label.js
 var TextParams2 = {
   ...LociLabelTextParams
 };
@@ -93383,7 +93383,7 @@ function LabelRepresentation(ctx, getParams) {
   return Representation.createMulti("Label", ctx, getParams, Representation.StateBuilder, LabelVisuals);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/axes.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/axes.js
 var tmpVec = Vec3();
 var tmpMatrix = Mat4.identity();
 var tmpVertices = new Float32Array(6 * 3);
@@ -93403,7 +93403,7 @@ function addAxes(state, axes, radiusScale, detail, radialSegments) {
   MeshBuilder.addCage(state, tmpMatrix, cage, radius, detail, radialSegments);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/box.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/box.js
 var tmpStart = Vec3.zero();
 var tmpEnd = Vec3.zero();
 var tmpBoxVecCorner = Vec3();
@@ -93466,7 +93466,7 @@ function addOrientedBox(state, axes, radiusScale, detail, radialSegments) {
   MeshBuilder.addCage(state, tmpMatrix2, cage, radius, detail, radialSegments);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/ellipsoid.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/ellipsoid.js
 var tmpEllipsoidMat = Mat4.identity();
 var tmpVec2 = Vec3();
 function setEllipsoidMat(m, center2, dirMajor, dirMinor, radiusScale) {
@@ -93479,7 +93479,7 @@ function addEllipsoid(state, center2, dirMajor, dirMinor, radiusScale, detail) {
   MeshBuilder.addPrimitive(state, setEllipsoidMat(tmpEllipsoidMat, center2, dirMajor, dirMinor, radiusScale), getSphere(detail));
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/orientation.js
+// node_modules/molstar/lib/mol-repr/shape/loci/orientation.js
 var SharedParams2 = {
   color: ParamDefinition.Color(ColorNames.orange),
   scaleFactor: ParamDefinition.Numeric(1, { min: 0.1, max: 10, step: 0.1 }),
@@ -93569,7 +93569,7 @@ function OrientationRepresentation(ctx, getParams) {
   return repr;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/circle.js
+// node_modules/molstar/lib/mol-geo/primitive/circle.js
 var DefaultCircleProps = {
   radius: 1,
   segments: 36,
@@ -93625,7 +93625,7 @@ function Circle(props) {
   return { vertices: vertices2, normals, indices: indices2 };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/angle.js
+// node_modules/molstar/lib/mol-repr/shape/loci/angle.js
 var SharedParams3 = {
   color: ParamDefinition.Color(ColorNames.lightgreen),
   arcScale: ParamDefinition.Numeric(0.7, { min: 0.01, max: 1, step: 0.01 })
@@ -93788,7 +93788,7 @@ function AngleRepresentation(ctx, getParams) {
   return Representation.createMulti("Angle", ctx, getParams, Representation.StateBuilder, AngleVisuals);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/dihedral.js
+// node_modules/molstar/lib/mol-repr/shape/loci/dihedral.js
 var SharedParams4 = {
   color: ParamDefinition.Color(ColorNames.lightgreen),
   arcScale: ParamDefinition.Numeric(0.7, { min: 0.01, max: 1, step: 0.01 })
@@ -94034,7 +94034,7 @@ function DihedralRepresentation(ctx, getParams) {
   return Representation.createMulti("Dihedral", ctx, getParams, Representation.StateBuilder, DihedralVisuals);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/clipping.js
+// node_modules/molstar/lib/mol-theme/clipping.js
 function Clipping(kind, layers) {
   return { kind, layers };
 }
@@ -94226,7 +94226,7 @@ function Clipping(kind, layers) {
   Clipping2.toBundle = toBundle2;
 })(Clipping || (Clipping = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/shape.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/shape.js
 var shape_exports = {};
 __export(shape_exports, {
   BoxShape3D: () => BoxShape3D,
@@ -94278,7 +94278,7 @@ function getBoxMesh(box4, radius, oldMesh) {
   return mesh;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/plane.js
+// node_modules/molstar/lib/mol-geo/primitive/plane.js
 var plane = {
   vertices: new Float32Array([
     -0.5,
@@ -94325,7 +94325,7 @@ function Plane() {
   return plane;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/shape/loci/plane.js
+// node_modules/molstar/lib/mol-repr/shape/loci/plane.js
 var _PlaneParams = {
   ...Mesh.Params,
   color: ParamDefinition.Color(ColorNames.orange),
@@ -94370,7 +94370,7 @@ function PlaneRepresentation(ctx, getParams) {
   return repr;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/substance.js
+// node_modules/molstar/lib/mol-theme/substance.js
 function Substance(kind, layers) {
   return { kind, layers };
 }
@@ -94502,7 +94502,7 @@ function Substance(kind, layers) {
   Substance2.toBundle = toBundle2;
 })(Substance || (Substance = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/emissive.js
+// node_modules/molstar/lib/mol-theme/emissive.js
 function Emissive(kind, layers) {
   return { kind, layers };
 }
@@ -94624,7 +94624,7 @@ function Emissive(kind, layers) {
   Emissive2.toBundle = toBundle2;
 })(Emissive || (Emissive = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms/representation.js
+// node_modules/molstar/lib/mol-plugin-state/transforms/representation.js
 var StructureRepresentation3D = PluginStateTransform.BuiltIn({
   name: "structure-representation-3d",
   display: "3D Representation",
@@ -95799,7 +95799,7 @@ var StructureSelectionsPlane3D = PluginStateTransform.BuiltIn({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/transforms.js
+// node_modules/molstar/lib/mol-plugin-state/transforms.js
 var StateTransforms = {
   Data: data_exports,
   Misc: misc_exports,
@@ -95809,7 +95809,7 @@ var StateTransforms = {
   Shape: shape_exports
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-selection-query.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-selection-query.js
 var StructureSelectionCategory;
 (function(StructureSelectionCategory2) {
   StructureSelectionCategory2["Type"] = "Type";
@@ -96410,7 +96410,7 @@ var StructureSelectionQueryRegistry = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/external-structure.js
+// node_modules/molstar/lib/mol-theme/color/external-structure.js
 var Description34 = `Assigns a color based on structure property at a given vertex.`;
 var ExternalStructureColorThemeParams = {
   structure: ParamDefinition.ValueRef((ctx) => {
@@ -96535,7 +96535,7 @@ var ExternalStructureColorThemeProvider = {
   isApplicable: (ctx) => true
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color/volume-instance.js
+// node_modules/molstar/lib/mol-theme/color/volume-instance.js
 var DefaultList10 = "dark-2";
 var DefaultColor19 = Color(13421772);
 var Description35 = "Gives every volume instance a unique color based on the position (index) of the instance in the list of instances of the volume.";
@@ -96590,7 +96590,7 @@ var VolumeInstanceColorThemeProvider = {
   isApplicable: (ctx) => !!ctx.volume
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/color.js
+// node_modules/molstar/lib/mol-theme/color.js
 var ColorTheme;
 (function(ColorTheme2) {
   ColorTheme2.Category = ColorThemeCategory;
@@ -96693,7 +96693,7 @@ var ColorTheme;
   };
 })(ColorTheme || (ColorTheme = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/size/physical.js
+// node_modules/molstar/lib/mol-theme/size/physical.js
 var DefaultSize2 = 1;
 var Description36 = "Assigns a physical size, i.e. vdW radius for atoms or given radius for coarse spheres.";
 var PhysicalSizeThemeParams = {
@@ -96742,7 +96742,7 @@ var PhysicalSizeThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/size/uncertainty.js
+// node_modules/molstar/lib/mol-theme/size/uncertainty.js
 var Description37 = `Assigns a size reflecting the uncertainty or disorder of an element's position, e.g. B-factor or RMSF, depending on the data availability and experimental technique.`;
 var UncertaintySizeThemeParams = {
   bfactorFactor: ParamDefinition.Numeric(0.1, { min: 0, max: 1, step: 0.01 }),
@@ -96789,7 +96789,7 @@ var UncertaintySizeThemeProvider = {
   isApplicable: (ctx) => !!ctx.structure && ctx.structure.models.some((m) => m.atomicConformation.B_iso_or_equiv.isDefined || m.coarseHierarchy.isDefined)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/size/volume-value.js
+// node_modules/molstar/lib/mol-theme/size/volume-value.js
 var Description38 = "Assign size based on the given value of a volume cell. Negative values are made positive.";
 var VolumeValueSizeThemeParams = {
   scale: ParamDefinition.Numeric(1, { min: 0.1, max: 5, step: 0.1 })
@@ -96835,7 +96835,7 @@ var VolumeValueSizeThemeProvider = {
   isApplicable: (ctx) => !!ctx.volume && !Volume.Segmentation.get(ctx.volume)
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/size.js
+// node_modules/molstar/lib/mol-theme/size.js
 var SizeTheme;
 (function(SizeTheme2) {
   SizeTheme2.EmptyFactory = () => SizeTheme2.Empty;
@@ -96858,7 +96858,7 @@ var SizeTheme;
   };
 })(SizeTheme || (SizeTheme = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-theme/theme.js
+// node_modules/molstar/lib/mol-theme/theme.js
 var Theme;
 (function(Theme2) {
   function create3(ctx, data, props, theme) {
@@ -96965,7 +96965,7 @@ var ThemeRegistry = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/representation.js
+// node_modules/molstar/lib/mol-repr/representation.js
 var RepresentationProvider;
 (function(RepresentationProvider2) {
   function getDefaultParams(r, ctx, data) {
@@ -97375,7 +97375,7 @@ Object.defineProperty(Representation, "Empty", {
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/object3d.js
+// node_modules/molstar/lib/mol-gl/object3d.js
 var Object3D;
 (function(Object3D2) {
   function create3() {
@@ -97389,7 +97389,7 @@ var Object3D;
   Object3D2.create = create3;
 })(Object3D || (Object3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/commit-queue.js
+// node_modules/molstar/lib/mol-gl/commit-queue.js
 var CommitQueue = class {
   constructor() {
     this.removeList = LinkedList();
@@ -97439,7 +97439,7 @@ var CommitQueue = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/scene.js
+// node_modules/molstar/lib/mol-gl/scene.js
 var boundaryHelper = new BoundaryHelper("98");
 function calculateBoundingSphere(renderables, boundingSphere, onlyVisible) {
   boundaryHelper.reset();
@@ -97804,7 +97804,7 @@ var Scene;
   Scene2.create = create3;
 })(Scene || (Scene = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/camera/transition.js
+// node_modules/molstar/lib/mol-canvas3d/camera/transition.js
 var CameraTransitionManager = class _CameraTransitionManager {
   get source() {
     return this._source;
@@ -97899,7 +97899,7 @@ var CameraTransitionManager = class _CameraTransitionManager {
   CameraTransitionManager2.defaultTransition = defaultTransition;
 })(CameraTransitionManager || (CameraTransitionManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/camera.js
+// node_modules/molstar/lib/mol-canvas3d/camera.js
 var tmpClip = Vec4();
 var Camera = class _Camera {
   get position() {
@@ -98266,7 +98266,7 @@ function updateClip(camera) {
   camera.fogFar = fogFar;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/bounding-sphere-helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/bounding-sphere-helper.js
 var DebugHelperParams = {
   sceneBoundingSpheres: ParamDefinition.Boolean(false, { description: "Show full scene bounding spheres." }),
   visibleSceneBoundingSpheres: ParamDefinition.Boolean(false, { description: "Show visible scene bounding spheres." }),
@@ -98390,7 +98390,7 @@ function createBoundingSphereRenderObject(mesh, color, materialId, transform) {
   return createRenderObject("mesh", values2, { disposed: false, visible: true, alphaFactor: 1, pickable: false, colorOnly: false, opaque: false, writeDepth: false }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/interaction-events.js
+// node_modules/molstar/lib/mol-canvas3d/helper/interaction-events.js
 var tmpPosA = Vec3();
 var tmpPos = Vec3();
 var tmpNorm = Vec3();
@@ -98586,7 +98586,7 @@ var Canvas3dInteractionHelper = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/postprocessing.frag.js
+// node_modules/molstar/lib/mol-gl/shader/postprocessing.frag.js
 var postprocessing_frag = `
 precision highp float;
 precision highp int;
@@ -98803,7 +98803,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/fxaa.frag.js
+// node_modules/molstar/lib/mol-gl/shader/fxaa.frag.js
 var fxaa_frag = `
 precision highp float;
 precision highp int;
@@ -99034,7 +99034,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/fxaa.js
+// node_modules/molstar/lib/mol-canvas3d/passes/fxaa.js
 var FxaaParams = {
   edgeThresholdMin: ParamDefinition.Numeric(0.0312, { min: 0.0312, max: 0.0833, step: 1e-4 }, { description: "Trims the algorithm from processing darks." }),
   edgeThresholdMax: ParamDefinition.Numeric(0.063, { min: 0.063, max: 0.333, step: 1e-3 }, { description: "The minimum amount of local contrast required to apply algorithm." }),
@@ -99126,7 +99126,7 @@ function getFxaaRenderable(ctx, colorTexture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/smaa/blend.vert.js
+// node_modules/molstar/lib/mol-gl/shader/smaa/blend.vert.js
 var blend_vert = `
 precision highp float;
 
@@ -99154,7 +99154,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/smaa/blend.frag.js
+// node_modules/molstar/lib/mol-gl/shader/smaa/blend.frag.js
 var blend_frag = `
 precision highp float;
 precision highp int;
@@ -99213,7 +99213,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/smaa/weights.vert.js
+// node_modules/molstar/lib/mol-gl/shader/smaa/weights.vert.js
 var weights_vert = `
 precision highp float;
 
@@ -99248,7 +99248,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/smaa/weights.frag.js
+// node_modules/molstar/lib/mol-gl/shader/smaa/weights.frag.js
 var weights_frag = `
 precision highp float;
 precision highp int;
@@ -99457,7 +99457,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/smaa/edges.vert.js
+// node_modules/molstar/lib/mol-gl/shader/smaa/edges.vert.js
 var edges_vert = `
 precision highp float;
 
@@ -99486,7 +99486,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/smaa/edges.frag.js
+// node_modules/molstar/lib/mol-gl/shader/smaa/edges.frag.js
 var edges_frag = `
 precision highp float;
 precision highp int;
@@ -99555,7 +99555,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/smaa.js
+// node_modules/molstar/lib/mol-canvas3d/passes/smaa.js
 var SmaaParams = {
   edgeThreshold: ParamDefinition.Numeric(0.1, { min: 0.05, max: 0.15, step: 0.01 }),
   maxSearchSteps: ParamDefinition.Numeric(16, { min: 0, max: 32, step: 1 })
@@ -99735,7 +99735,7 @@ function getSearchTexture() {
   return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAAAhCAAAAABIXyLAAAAAOElEQVRIx2NgGAWjYBSMglEwEICREYRgFBZBqDCSLA2MGPUIVQETE9iNUAqLR5gIeoQKRgwXjwAAGn4AtaFeYLEAAAAASUVORK5CYII=";
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/background.frag.js
+// node_modules/molstar/lib/mol-gl/shader/background.frag.js
 var background_frag = `
 precision mediump float;
 precision mediump samplerCube;
@@ -99833,7 +99833,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/background.vert.js
+// node_modules/molstar/lib/mol-gl/shader/background.vert.js
 var background_vert = `
 precision mediump float;
 
@@ -99847,7 +99847,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/linear-algebra/3d/euler.js
+// node_modules/molstar/lib/mol-math/linear-algebra/3d/euler.js
 function Euler() {
   return Euler.zero();
 }
@@ -99989,7 +99989,7 @@ function Euler() {
   Euler2.toArray = toArray2;
 })(Euler || (Euler = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/background.js
+// node_modules/molstar/lib/mol-canvas3d/passes/background.js
 var SharedParams5 = {
   opacity: ParamDefinition.Numeric(1, { min: 0, max: 1, step: 0.01 }),
   saturation: ParamDefinition.Numeric(0, { min: -1, max: 1, step: 0.01 }),
@@ -100411,7 +100411,7 @@ function getBackgroundRenderable(ctx, width, height) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/cas.frag.js
+// node_modules/molstar/lib/mol-gl/shader/cas.frag.js
 var cas_frag = `
 precision mediump float;
 precision mediump sampler2D;
@@ -100558,7 +100558,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/cas.js
+// node_modules/molstar/lib/mol-canvas3d/passes/cas.js
 var CasParams = {
   sharpness: ParamDefinition.Numeric(0.5, { min: 0, max: 1, step: 0.05 }),
   denoise: ParamDefinition.Boolean(true)
@@ -100636,7 +100636,7 @@ function getCasRenderable(ctx, colorTexture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/dof.frag.js
+// node_modules/molstar/lib/mol-gl/shader/dof.frag.js
 var dof_frag = `
 precision highp float;
 precision highp int;
@@ -100751,7 +100751,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/dof.js
+// node_modules/molstar/lib/mol-canvas3d/passes/dof.js
 var DofParams = {
   blurSize: ParamDefinition.Numeric(9, { min: 1, max: 32, step: 1 }),
   blurSpread: ParamDefinition.Numeric(1, { min: 0, max: 10, step: 0.1 }),
@@ -100899,7 +100899,7 @@ function getDofRenderable(ctx, colorTexture, depthTextureOpaque, depthTextureTra
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/bloom/composite.frag.js
+// node_modules/molstar/lib/mol-gl/shader/bloom/composite.frag.js
 var composite_frag = `
 precision highp float;
 precision highp int;
@@ -100935,7 +100935,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/bloom/luminosity.frag.js
+// node_modules/molstar/lib/mol-gl/shader/bloom/luminosity.frag.js
 var luminosity_frag = `
 precision highp float;
 precision highp int;
@@ -100990,7 +100990,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/bloom/blur.frag.js
+// node_modules/molstar/lib/mol-gl/shader/bloom/blur.frag.js
 var blur_frag = `
 precision highp float;
 precision highp int;
@@ -101021,7 +101021,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/bloom.js
+// node_modules/molstar/lib/mol-canvas3d/passes/bloom.js
 var MipCount = 5;
 var BloomParams = {
   strength: ParamDefinition.Numeric(1, { min: 0, max: 3, step: 0.1 }),
@@ -101259,7 +101259,7 @@ function getCompositeRenderable(ctx, width, height, blurTexture1, blurTexture2, 
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/outlines.frag.js
+// node_modules/molstar/lib/mol-gl/shader/outlines.frag.js
 var outlines_frag = `
 precision highp float;
 precision highp int;
@@ -101382,7 +101382,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/outline.js
+// node_modules/molstar/lib/mol-canvas3d/passes/outline.js
 var OutlineParams = {
   scale: ParamDefinition.Numeric(1, { min: 1, max: 5, step: 1 }),
   threshold: ParamDefinition.Numeric(0.33, { min: 0.01, max: 1, step: 0.01 }),
@@ -101484,7 +101484,7 @@ function getOutlinesRenderable(ctx, depthTextureOpaque, depthTextureTransparent,
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/shadows.frag.js
+// node_modules/molstar/lib/mol-gl/shader/shadows.frag.js
 var shadows_frag = `
 precision highp float;
 precision highp int;
@@ -101625,7 +101625,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/shadow.js
+// node_modules/molstar/lib/mol-canvas3d/passes/shadow.js
 var ShadowParams = {
   steps: ParamDefinition.Numeric(1, { min: 1, max: 64, step: 1 }),
   maxDistance: ParamDefinition.Numeric(3, { min: 0, max: 256, step: 1 }),
@@ -101743,7 +101743,7 @@ function getShadowsRenderable(ctx, depthTexture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/ssao.frag.js
+// node_modules/molstar/lib/mol-gl/shader/ssao.frag.js
 var ssao_frag = `
 precision highp float;
 precision highp int;
@@ -102029,7 +102029,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/ssao-blur.frag.js
+// node_modules/molstar/lib/mol-gl/shader/ssao-blur.frag.js
 var ssaoBlur_frag = `
 precision highp float;
 precision highp int;
@@ -102133,7 +102133,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/ssao.js
+// node_modules/molstar/lib/mol-canvas3d/passes/ssao.js
 var SsaoParams = {
   samples: ParamDefinition.Numeric(32, { min: 1, max: 256, step: 1 }),
   multiScale: ParamDefinition.MappedStatic("off", {
@@ -102630,7 +102630,7 @@ function getSamples2(nSamples) {
   return samples;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/postprocessing.js
+// node_modules/molstar/lib/mol-canvas3d/passes/postprocessing.js
 var PostprocessingSchema = {
   ...QuadSchema,
   tSsaoDepth: TextureSpec("texture", "rgba", "ubyte", "nearest"),
@@ -102959,7 +102959,7 @@ var AntialiasingPass = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/compose.frag.js
+// node_modules/molstar/lib/mol-gl/shader/compose.frag.js
 var compose_frag = `
 precision highp float;
 precision highp sampler2D;
@@ -102974,7 +102974,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/multi-sample.js
+// node_modules/molstar/lib/mol-canvas3d/passes/multi-sample.js
 var ComposeSchema = {
   ...QuadSchema,
   tColor: TextureSpec("texture", "rgba", "ubyte", "nearest"),
@@ -103285,7 +103285,7 @@ var MultiSampleHelper = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/pick.js
+// node_modules/molstar/lib/mol-canvas3d/passes/pick.js
 var DefaultPickOptions = {
   pickPadding: 1,
   maxAsyncReadLag: 5
@@ -103654,7 +103654,7 @@ var PickBuffers = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/camera/stereo.js
+// node_modules/molstar/lib/mol-canvas3d/camera/stereo.js
 var StereoCameraParams = {
   eyeSeparation: ParamDefinition.Numeric(0.062, { min: 0.02, max: 0.1, step: 1e-3 }, { description: "Distance between left and right camera." }),
   focus: ParamDefinition.Numeric(10, { min: 1, max: 20, step: 0.1 }, { description: "Apparent object distance." })
@@ -103787,7 +103787,7 @@ function _xrUpdate(camera, eye, view2, layer) {
   eye.disabled = false;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/pick-helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/pick-helper.js
 var PickHelper = class {
   setViewport(x, y, width, height) {
     Viewport.set(this.viewport, x, y, width, height);
@@ -103944,7 +103944,7 @@ var PickHelper = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/evaluate-wboit.frag.js
+// node_modules/molstar/lib/mol-gl/shader/evaluate-wboit.frag.js
 var evaluateWboit_frag = `
 precision highp float;
 
@@ -103964,7 +103964,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/wboit.js
+// node_modules/molstar/lib/mol-canvas3d/passes/wboit.js
 var EvaluateWboitSchema = {
   ...QuadSchema,
   tWboitA: TextureSpec("texture", "rgba", "float", "nearest"),
@@ -104074,7 +104074,7 @@ var WboitPass = class _WboitPass {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/evaluate-dpoit.frag.js
+// node_modules/molstar/lib/mol-gl/shader/evaluate-dpoit.frag.js
 var evaluateDpoit_frag = `
 precision highp float;
 
@@ -104087,7 +104087,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/blend-back-dpoit.frag.js
+// node_modules/molstar/lib/mol-gl/shader/blend-back-dpoit.frag.js
 var blendBackDpoit_frag = `
     precision highp float;
 
@@ -104103,7 +104103,7 @@ var blendBackDpoit_frag = `
     }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/dpoit.js
+// node_modules/molstar/lib/mol-canvas3d/passes/dpoit.js
 var BlendBackDpoitSchema = {
   ...QuadSchema,
   tDpoitBackColor: TextureSpec("texture", "rgba", "float", "nearest"),
@@ -104330,7 +104330,7 @@ var DpoitPass = class _DpoitPass {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/marking/overlay.frag.js
+// node_modules/molstar/lib/mol-gl/shader/marking/overlay.frag.js
 var overlay_frag = `
 precision highp float;
 precision highp sampler2D;
@@ -104359,7 +104359,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/marking/edge.frag.js
+// node_modules/molstar/lib/mol-gl/shader/marking/edge.frag.js
 var edge_frag = `
 precision highp float;
 precision highp sampler2D;
@@ -104390,7 +104390,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/marking.js
+// node_modules/molstar/lib/mol-canvas3d/passes/marking.js
 var MarkingParams = {
   enabled: ParamDefinition.Boolean(true),
   highlightEdgeColor: ParamDefinition.Color(Color.darken(Color.fromNormalizedRgb(1, 0.4, 0.6), 1)),
@@ -104533,7 +104533,7 @@ function getOverlayRenderable(ctx, edgeTexture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/draw.js
+// node_modules/molstar/lib/mol-canvas3d/passes/draw.js
 var DrawPass = class {
   setTransparency(transparency) {
     if (transparency === "wboit") {
@@ -104918,7 +104918,7 @@ var DrawPass = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/image.js
+// node_modules/molstar/lib/mol-util/image.js
 var PixelData;
 (function(PixelData2) {
   function create3(array2, width, height) {
@@ -104955,7 +104955,7 @@ var PixelData;
   PixelData2.divideByAlpha = divideByAlpha;
 })(PixelData || (PixelData = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/camera-helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/camera-helper.js
 var AxesParams2 = {
   alpha: ParamDefinition.Numeric(0.51, { min: 0, max: 1, step: 0.01 }, { isEssential: true, label: "Opacity" }),
   colorX: ParamDefinition.Color(ColorNames.red, { isEssential: true }),
@@ -105280,7 +105280,7 @@ function createTextRenderObject(props) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/illumination/compose.frag.js
+// node_modules/molstar/lib/mol-gl/shader/illumination/compose.frag.js
 var compose_frag2 = `
 precision highp float;
 precision highp sampler2D;
@@ -105574,7 +105574,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/illumination/trace.frag.js
+// node_modules/molstar/lib/mol-gl/shader/illumination/trace.frag.js
 var trace_frag = `
 precision highp int;
 precision highp float;
@@ -105943,7 +105943,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/illumination/accumulate.frag.js
+// node_modules/molstar/lib/mol-gl/shader/illumination/accumulate.frag.js
 var accumulate_frag2 = `
 precision highp float;
 precision highp sampler2D;
@@ -105958,7 +105958,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/tracing.js
+// node_modules/molstar/lib/mol-canvas3d/passes/tracing.js
 var TracingParams = {
   rendersPerFrame: ParamDefinition.Interval([1, 16], { min: 1, max: 64, step: 1 }, { description: "Number of rays per pixel each frame. May be adjusted to reach targetFps but will stay within given interval." }),
   targetFps: ParamDefinition.Numeric(30, { min: 0, max: 120, step: 0.1 }, { description: "Target FPS per frame. If observed FPS is lower or higher, some parameters may get adjusted." }),
@@ -106352,7 +106352,7 @@ function getAccumulateRenderable2(ctx, colorTexture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/illumination.js
+// node_modules/molstar/lib/mol-canvas3d/passes/illumination.js
 var IlluminationWarningShown = false;
 function checkIlluminationSupport(webgl) {
   const { drawBuffers, textureFloat, colorBufferFloat, depthTexture } = webgl.extensions;
@@ -106872,7 +106872,7 @@ function getMultiSampleComposeRenderable(ctx, colorTexture) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/shader-manager.js
+// node_modules/molstar/lib/mol-canvas3d/helper/shader-manager.js
 var ShaderManager = class _ShaderManager {
   static ensureRequired(webgl, scene, p6) {
     const sm = new _ShaderManager(webgl, scene);
@@ -106909,7 +106909,7 @@ var ShaderManager = class _ShaderManager {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/image.js
+// node_modules/molstar/lib/mol-canvas3d/passes/image.js
 var ImageParams2 = {
   transparentBackground: ParamDefinition.Boolean(false),
   dpoitIterations: ParamDefinition.Numeric(2, { min: 1, max: 10, step: 1 }),
@@ -107041,7 +107041,7 @@ var ImagePass = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/handle-helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/handle-helper.js
 var HandleParams = {
   ...Mesh.Params,
   alpha: { ...Mesh.Params.alpha, defaultValue: 1 },
@@ -107209,7 +107209,7 @@ function createHandleRenderObject(props) {
   return Shape.createRenderObject(shape, props);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/pointer-helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/pointer-helper.js
 var PointerHelperParams = {
   ...Mesh.Params,
   enabled: ParamDefinition.Select("off", ParamDefinition.arrayToOptions(["on", "off"]), { isEssential: true }),
@@ -107346,7 +107346,7 @@ function createMeshRenderObject2(shape, props) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/helper.js
 var HelperParams = {
   debug: ParamDefinition.Group(DebugHelperParams),
   camera: ParamDefinition.Group({
@@ -107366,7 +107366,7 @@ var Helper = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/passes.js
+// node_modules/molstar/lib/mol-canvas3d/passes/passes.js
 var Passes = class {
   constructor(webgl, assetManager, attribs = {}) {
     this.webgl = webgl;
@@ -107396,7 +107396,7 @@ var Passes = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/hi-z.frag.js
+// node_modules/molstar/lib/mol-gl/shader/hi-z.frag.js
 var hiZ_frag = `
 precision highp float;
 precision highp sampler2D;
@@ -107417,7 +107417,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/hi-z.js
+// node_modules/molstar/lib/mol-gl/compute/hi-z.js
 var HiZSchema = {
   ...QuadSchema,
   tPreviousLevel: TextureSpec("texture", "alpha", "float", "nearest"),
@@ -107437,7 +107437,7 @@ function createHiZRenderable(ctx, previousLevel) {
   return createComputeRenderable(renderItem, values2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/approx.js
+// node_modules/molstar/lib/mol-math/approx.js
 var _a_fastPow2 = new ArrayBuffer(4);
 var _i_fastPow2 = new Int32Array(_a_fastPow2);
 var _f_fastPow2 = new Float32Array(_a_fastPow2);
@@ -107481,7 +107481,7 @@ var _i_fasterHalfCos = new Int32Array(_a_fasterHalfCos);
 var _f_fasterHalfCos = new Float32Array(_a_fasterHalfCos);
 var piOverFour = Math.PI / 4;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/passes/hi-z.js
+// node_modules/molstar/lib/mol-canvas3d/passes/hi-z.js
 var v3transformMat43 = Vec3.transformMat4;
 var v4set = Vec4.set;
 var fasterLog22 = fasterLog2;
@@ -107895,7 +107895,7 @@ var HiZPass = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/browser.js
+// node_modules/molstar/lib/mol-util/browser.js
 function isMobileBrowser() {
   if (typeof navigator === "undefined" || typeof window === "undefined")
     return false;
@@ -107915,7 +107915,7 @@ function is_iOS() {
   return !window.MSStream && (isIOS || isAppleDevice && isTouchScreen);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/xr-manager.js
+// node_modules/molstar/lib/mol-canvas3d/helper/xr-manager.js
 var B17 = ButtonsType;
 var Trigger2 = Binding.Trigger;
 var Key2 = Binding.TriggerKey;
@@ -108191,7 +108191,7 @@ var XRManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/helper/ray-helper.js
+// node_modules/molstar/lib/mol-canvas3d/helper/ray-helper.js
 var RayHelper = class {
   setPickPadding(pickPadding) {
     if (this.pickPadding !== pickPadding) {
@@ -108343,7 +108343,7 @@ function updateOrthoRayCamera(camera, ray, up3) {
   Mat4.lookAt(camera.view, eye, target, up3);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/canvas3d.js
+// node_modules/molstar/lib/mol-canvas3d/canvas3d.js
 var CameraFogParams = {
   intensity: ParamDefinition.Numeric(15, { min: 1, max: 100, step: 1 })
 };
@@ -109513,7 +109513,7 @@ var Canvas3D;
   Canvas3D2.create = create3;
 })(Canvas3D || (Canvas3D = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-canvas3d/util.js
+// node_modules/molstar/lib/mol-canvas3d/util.js
 function setCanvasSize(canvas, width, height, scale = 1) {
   canvas.width = Math.round(window.devicePixelRatio * scale * width);
   canvas.height = Math.round(window.devicePixelRatio * scale * height);
@@ -109559,7 +109559,7 @@ async function canvasToBlob(canvas, type3, quality) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/common/custom-property.js
+// node_modules/molstar/lib/mol-model-props/common/custom-property.js
 var CustomProperty;
 (function(CustomProperty2) {
   class Registry {
@@ -109619,7 +109619,7 @@ var CustomProperty;
   CustomProperty2.Registry = Registry;
 })(CustomProperty || (CustomProperty = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/file-info.js
+// node_modules/molstar/lib/mol-util/file-info.js
 var COMPRESSED_EXT_LIST = ["gz", "zip"];
 function getFileNameInfo(fileName) {
   let path = fileName;
@@ -109646,7 +109646,7 @@ function getFileNameInfo(fileName) {
   return { path, name, ext, base, dir, protocol, query: query2 };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/builder/data.js
+// node_modules/molstar/lib/mol-plugin-state/builder/data.js
 var DataBuilder = class {
   get dataState() {
     return this.plugin.state.data;
@@ -109674,7 +109674,7 @@ var DataBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params.js
 function createStructureRepresentationParams(ctx, structure, props = {}) {
   const p6 = props;
   if (typeof p6.type === "string" || typeof p6.color === "string" || typeof p6.size === "string")
@@ -109735,7 +109735,7 @@ function createParamsProvider(ctx, structure, props = {}) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/features.js
+// node_modules/molstar/lib/mol-plugin/features.js
 var PluginFeatureDetection = {
   get defaultTransparency() {
     return is_iOS() ? "blended" : "wboit";
@@ -109755,7 +109755,7 @@ var PluginFeatureDetection = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/config.js
+// node_modules/molstar/lib/mol-plugin/config.js
 var PluginConfigItem = class {
   toString() {
     return this.key;
@@ -109847,7 +109847,7 @@ var PluginConfigManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/complex-representation.js
+// node_modules/molstar/lib/mol-repr/structure/complex-representation.js
 function ComplexRepresentation(label2, ctx, getParams, visualCtor) {
   let version = 0;
   const { webgl } = ctx;
@@ -110001,7 +110001,7 @@ function ComplexRepresentation(label2, ctx, getParams, visualCtor) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/chemistry/util.js
+// node_modules/molstar/lib/mol-model-props/computed/chemistry/util.js
 function typeSymbol(unit2, index) {
   return unit2.model.atomicHierarchy.atoms.type_symbol.value(unit2.elements[index]);
 }
@@ -110084,7 +110084,7 @@ function eachBondedAtom(structure, unit2, index, cb2) {
   eachIntraBondedAtom(unit2, index, cb2);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/chemistry/functional-group.js
+// node_modules/molstar/lib/mol-model-props/computed/chemistry/functional-group.js
 function isSulfonicAcid(structure, unit2, index) {
   return typeSymbol(unit2, index) === Elements.S && bondToElementCount(structure, unit2, index, Elements.O) === 3;
 }
@@ -110140,7 +110140,7 @@ function hasPolarNeighbour(structure, unit2, index) {
   return flag;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/common.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/common.js
 var m4toArray = Mat4.toArray;
 var SphereImpostorWarningShown = false;
 function checkSphereImpostorSupport(webgl) {
@@ -110457,7 +110457,7 @@ function isTrace(unit2, element) {
   return false;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/params.js
+// node_modules/molstar/lib/mol-repr/structure/params.js
 function getUnitKindsParam(defaultValue) {
   return ParamDefinition.MultiSelect(defaultValue, UnitKindOptions, { description: "For which kinds of units/chains to show the representation visuals." });
 }
@@ -110475,7 +110475,7 @@ var StructureDirectVolumeParams = { ...DirectVolume.Params };
 var StructureTextureMeshParams = { ...TextureMesh.Params };
 var StructureImageParams = { ...Image2.Params };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/complex-visual.js
+// node_modules/molstar/lib/mol-repr/structure/complex-visual.js
 function createComplexRenderObject(structure, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
   const transform = createIdentityTransform();
@@ -110858,7 +110858,7 @@ function ComplexImageVisual(builder, materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/units-representation.js
+// node_modules/molstar/lib/mol-repr/structure/units-representation.js
 function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
   let version = 0;
   const { webgl } = ctx;
@@ -111159,7 +111159,7 @@ function UnitsRepresentation(label2, ctx, getParams, visualCtor) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/units-visual.js
+// node_modules/molstar/lib/mol-repr/structure/units-visual.js
 function createUnitsRenderObject(structureGroup, geometry, locationIt, theme, props, materialId) {
   const { createValues, createRenderableState } = Geometry.getUtils(geometry);
   const transform = createUnitsTransform(structureGroup, props.includeParent, geometry.boundingSphere, props.cellSize, props.batchSize);
@@ -111559,7 +111559,7 @@ function UnitsTextureMeshVisual(builder, materialId) {
 }
 var UnitsImageParams = { ...StructureImageParams, ...StructureParams };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation.js
+// node_modules/molstar/lib/mol-repr/structure/representation.js
 var StructureRepresentationStateBuilder = {
   create: () => {
     return {
@@ -111578,7 +111578,7 @@ function StructureRepresentationProvider(p6) {
   return p6;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/chemistry/geometry.js
+// node_modules/molstar/lib/mol-model-props/computed/chemistry/geometry.js
 var AtomGeometry;
 (function(AtomGeometry2) {
   AtomGeometry2[AtomGeometry2["Spherical"] = 0] = "Spherical";
@@ -111714,7 +111714,7 @@ function closestHydrogenIndex(structure, unitA, indexA, unitB, indexB) {
   return hIndex;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/chemistry/valence-model.js
+// node_modules/molstar/lib/mol-model-props/computed/chemistry/valence-model.js
 var tmpConjBondItA = new Bond.ElementBondIterator();
 var tmpConjBondItB = new Bond.ElementBondIterator();
 function isConjugated(structure, unit2, index) {
@@ -111970,7 +111970,7 @@ async function calcValenceModel(ctx, structure, props) {
   return map4;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/valence-model.js
+// node_modules/molstar/lib/mol-model-props/computed/valence-model.js
 var ValenceModelParams2 = {
   ...ValenceModelParams
 };
@@ -111990,7 +111990,7 @@ var ValenceModelProvider = CustomStructureProperty.createProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/features.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/features.js
 var Features;
 (function(Features2) {
   function setPosition(out, unit2, index, features) {
@@ -112170,7 +112170,7 @@ var FeaturesBuilder;
   FeaturesBuilder2.create = create3;
 })(FeaturesBuilder || (FeaturesBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/common.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/common.js
 var InteractionsIntraContacts;
 (function(InteractionsIntraContacts2) {
   function createElementsIndex(contacts, features, elementsCount) {
@@ -112390,7 +112390,7 @@ function featureGroupLabel(group) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/contacts-builder.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/contacts-builder.js
 var IntraContactsBuilder;
 (function(IntraContactsBuilder2) {
   function create3(features, elementsCount) {
@@ -112446,7 +112446,7 @@ var InterContactsBuilder;
   InterContactsBuilder2.create = create3;
 })(InterContactsBuilder || (InterContactsBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/contacts.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/contacts.js
 var ContactsParams = {
   lineOfSightDistFactor: ParamDefinition.Numeric(1, { min: 0, max: 3, step: 0.1 })
 };
@@ -112592,7 +112592,7 @@ function addStructureContacts(structure, unitA, featuresA, unitB, featuresB, bui
   builder.finishUnitPair();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/halogen-bonds.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/halogen-bonds.js
 var HalogenBondsParams = {
   distanceMax: ParamDefinition.Numeric(4, { min: 1, max: 5, step: 0.1 }),
   angleMax: ParamDefinition.Numeric(30, { min: 0, max: 60, step: 1 })
@@ -112673,7 +112673,7 @@ var HalogenBondsProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/hydrogen-bonds.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/hydrogen-bonds.js
 var GeometryParams = {
   distanceMax: ParamDefinition.Numeric(3.5, { min: 1, max: 5, step: 0.1 }),
   backbone: ParamDefinition.Boolean(true, { description: "Include backbone-to-backbone hydrogen bonds" }),
@@ -112902,7 +112902,7 @@ var WeakHydrogenBondsProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/charged.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/charged.js
 var IonicParams = {
   distanceMax: ParamDefinition.Numeric(5, { min: 0, max: 8, step: 0.1 })
 };
@@ -113196,7 +113196,7 @@ var CationPiProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/hydrophobic.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/hydrophobic.js
 var HydrophobicParams = {
   distanceMax: ParamDefinition.Numeric(4, { min: 1, max: 5, step: 0.1 })
 };
@@ -113248,7 +113248,7 @@ var HydrophobicProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/metal.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/metal.js
 var MetalCoordinationParams = {
   distanceMax: ParamDefinition.Numeric(3, { min: 1, max: 5, step: 0.1 })
 };
@@ -113380,7 +113380,7 @@ var MetalCoordinationProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/refine.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/refine.js
 function refineInteractions(structure, interactions) {
   const { contacts, unitsContacts, unitsFeatures } = interactions;
   const contactRefiners = [
@@ -113587,7 +113587,7 @@ function metalCoordinationRefiner(structure, interactions) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions/interactions.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions/interactions.js
 var Interactions;
 (function(Interactions3) {
   function Location2(interactions, structure, unitA, indexA, unitB, indexB) {
@@ -113781,7 +113781,7 @@ function findInterUnitContacts(structure, unitsFeatures, contactTesters, props, 
   return builder.getContacts(unitsFeatures);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/interactions.js
+// node_modules/molstar/lib/mol-model-props/computed/interactions.js
 var InteractionsParams2 = {
   ...InteractionsParams
 };
@@ -113801,7 +113801,7 @@ var InteractionsProvider = CustomStructureProperty.createProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/cylinders/cylinders-builder.js
+// node_modules/molstar/lib/mol-geo/geometry/cylinders/cylinders-builder.js
 var tmpVecA5 = Vec3();
 var tmpVecB5 = Vec3();
 var tmpDir3 = Vec3();
@@ -113915,7 +113915,7 @@ function fillMappingAndIndices2(n, mb, ib) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/link.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/link.js
 var LinkCylinderParams = {
   linkScale: ParamDefinition.Numeric(0.45, { min: 0, max: 1, step: 0.01 }),
   linkSpacing: ParamDefinition.Numeric(1, { min: 0, max: 2, step: 0.01 }),
@@ -114307,7 +114307,7 @@ function createLinkLines(ctx, linkBuilder, props, lines) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/representations/shared.js
+// node_modules/molstar/lib/mol-model-props/computed/representations/shared.js
 var InteractionsSharedParams = {
   sizeFactor: ParamDefinition.Numeric(0.3, { min: 0, max: 10, step: 0.01 }),
   dashCount: ParamDefinition.Numeric(6, { min: 1, max: 10, step: 1 }),
@@ -114318,7 +114318,7 @@ var InteractionsSharedParams = {
   parentDisplay: ParamDefinition.Select("stub", ParamDefinition.arrayToOptions(["stub", "full", "between"]), { description: 'Only has an effect when "includeParent" is enabled. "Stub" shows just the child side of interactions to the parent. "Full" shows both sides of interactions to the parent. "Between" shows only interactions to the parent.' })
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/representations/interactions-intra-unit-cylinder.js
+// node_modules/molstar/lib/mol-model-props/computed/representations/interactions-intra-unit-cylinder.js
 async function createIntraUnitInteractionsCylinderMesh(ctx, unit2, structure, theme, props, mesh) {
   if (!Unit.isAtomic(unit2))
     return Mesh.createEmpty(mesh);
@@ -114563,7 +114563,7 @@ function createInteractionsIterator(structureGroup) {
   return LocationIterator(groupCount, instanceCount, 1, getLocation);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/representations/interactions-inter-unit-cylinder.js
+// node_modules/molstar/lib/mol-model-props/computed/representations/interactions-inter-unit-cylinder.js
 function createInterUnitInteractionCylinderMesh(ctx, structure, theme, props, mesh) {
   if (!structure.hasAtomic)
     return Mesh.createEmpty(mesh);
@@ -114824,7 +114824,7 @@ function createInteractionsIterator2(structure) {
   return LocationIterator(groupCount, instanceCount, 1, getLocation, true);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/representations/interactions.js
+// node_modules/molstar/lib/mol-model-props/computed/representations/interactions.js
 var InteractionsVisuals = {
   "intra-unit": (ctx, getParams) => UnitsRepresentation("Intra-unit interactions cylinder", ctx, getParams, InteractionsIntraUnitVisual),
   "inter-unit": (ctx, getParams) => ComplexRepresentation("Inter-unit interactions cylinder", ctx, getParams, InteractionsInterUnitVisual)
@@ -114864,7 +114864,7 @@ var InteractionsRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/themes/interaction-type.js
+// node_modules/molstar/lib/mol-model-props/computed/themes/interaction-type.js
 var DefaultColor20 = Color(13421772);
 var Description39 = "Assigns colors according the interaction type of a link.";
 var InteractionTypeColors = ColorMap({
@@ -114960,7 +114960,7 @@ var InteractionTypeColorThemeProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/behavior.js
+// node_modules/molstar/lib/mol-plugin/behavior/behavior.js
 var PluginBehavior;
 (function(PluginBehavior2) {
   class Root extends PluginStateObject.Create({ name: "Root", typeClass: "Root" }) {
@@ -115099,7 +115099,7 @@ var PluginBehavior;
   PluginBehavior2.WithSubscribers = WithSubscribers;
 })(PluginBehavior || (PluginBehavior = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/static/state.js
+// node_modules/molstar/lib/mol-plugin/behavior/static/state.js
 var state_exports = {};
 __export(state_exports, {
   ApplyAction: () => ApplyAction,
@@ -115116,7 +115116,7 @@ __export(state_exports, {
   setSubtreeVisibility: () => setSubtreeVisibility
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/component.js
+// node_modules/molstar/lib/mol-plugin-state/component.js
 var PluginComponent = class {
   constructor() {
     this.subs = void 0;
@@ -115170,7 +115170,7 @@ var StatefulPluginComponent = class extends PluginComponent {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/command.js
+// node_modules/molstar/lib/mol-plugin/command.js
 function PluginCommand() {
   const ret = ((ctx, params) => ctx.commands.dispatch(ret, params || {}));
   ret.subscribe = (ctx, action) => ctx.commands.subscribe(ret, action);
@@ -115239,7 +115239,7 @@ var PluginCommandManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/commands.js
+// node_modules/molstar/lib/mol-plugin/commands.js
 var PluginCommands = {
   State: {
     SetCurrentObject: PluginCommand(),
@@ -115293,7 +115293,7 @@ var PluginCommands = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/model.js
+// node_modules/molstar/lib/mol-plugin-state/animation/model.js
 var PluginStateAnimation;
 (function(PluginStateAnimation2) {
   function create3(params) {
@@ -115311,7 +115311,7 @@ var PluginStateAnimation;
   PluginStateAnimation2.getDuration = getDuration;
 })(PluginStateAnimation || (PluginStateAnimation = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/state-snapshots.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/state-snapshots.js
 async function setPartialSnapshot(plugin, entry, first4 = false) {
   var _a, _b, _c, _d, _e, _f, _g;
   if (entry.data) {
@@ -115500,7 +115500,7 @@ var AnimateStateSnapshotTransition = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/state.js
+// node_modules/molstar/lib/mol-plugin/state.js
 var PluginState = class _PluginState extends PluginComponent {
   get animation() {
     return this.plugin.managers.animation;
@@ -115754,11 +115754,11 @@ var PluginState = class _PluginState extends PluginComponent {
   PluginState2.getStateTransitionFrameIndex = getStateTransitionFrameIndex;
 })(PluginState || (PluginState = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/version.js
+// node_modules/molstar/lib/mol-plugin/version.js
 var PLUGIN_VERSION = "5.4.1";
 var PLUGIN_VERSION_DATE = /* @__PURE__ */ new Date(1763317086652);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/single-task-queue.js
+// node_modules/molstar/lib/mol-util/single-task-queue.js
 var SingleTaskQueue = class {
   constructor() {
     this.queue = [];
@@ -115787,7 +115787,7 @@ var SingleTaskQueue = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/snapshots.js
+// node_modules/molstar/lib/mol-plugin-state/manager/snapshots.js
 var PluginStateSnapshotManager = class _PluginStateSnapshotManager extends StatefulPluginComponent {
   updateState(state) {
     if ("current" in state && !("currentAnimationTimeMs" in state)) {
@@ -116191,7 +116191,7 @@ PluginStateSnapshotManager.DefaultNextSnapshotDelayInMs = 1500;
   PluginStateSnapshotManager2.getCanvasImageAsset = getCanvasImageAsset;
 })(PluginStateSnapshotManager || (PluginStateSnapshotManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/date.js
+// node_modules/molstar/lib/mol-util/date.js
 function getFormattedTime() {
   const today = /* @__PURE__ */ new Date();
   const y = today.getFullYear();
@@ -116203,7 +116203,7 @@ function getFormattedTime() {
   return y + "-" + m + "-" + d5 + "-" + h + "-" + mi + "-" + s;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/download.js
+// node_modules/molstar/lib/mol-util/download.js
 function openUrl(url) {
   const opened = window.open(url, "_blank");
   if (!opened) {
@@ -116259,12 +116259,12 @@ function download(data, downloadName = "download") {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/url.js
+// node_modules/molstar/lib/mol-util/url.js
 function urlCombine(base, query2) {
   return `${base}${base[base.length - 1] === "/" || query2[0] === "/" ? "" : "/"}${query2}`;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/static/state.js
+// node_modules/molstar/lib/mol-plugin/behavior/static/state.js
 function registerDefault(ctx) {
   SyncBehaviors(ctx);
   SetCurrentObject(ctx);
@@ -116435,7 +116435,7 @@ function Snapshots(ctx) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/static/representation.js
+// node_modules/molstar/lib/mol-plugin/behavior/static/representation.js
 var representation_exports2 = {};
 __export(representation_exports2, {
   SyncRepresentationToCanvas: () => SyncRepresentationToCanvas,
@@ -116528,7 +116528,7 @@ function updateVisibility(cell, r) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/static/camera.js
+// node_modules/molstar/lib/mol-plugin/behavior/static/camera.js
 var camera_exports = {};
 __export(camera_exports, {
   Focus: () => Focus,
@@ -116579,7 +116579,7 @@ function ResetAxes(ctx) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/static/misc.js
+// node_modules/molstar/lib/mol-plugin/behavior/static/misc.js
 var misc_exports2 = {};
 __export(misc_exports2, {
   Canvas3DSetSettings: () => Canvas3DSetSettings,
@@ -116603,7 +116603,7 @@ function Canvas3DSetSettings(ctx) {
   });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/representation.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/representation.js
 var representation_exports3 = {};
 __export(representation_exports3, {
   DefaultFocusLociBindings: () => DefaultFocusLociBindings,
@@ -116884,7 +116884,7 @@ var FocusLoci = PluginBehavior.create({
   display: { name: "Representation Focus Loci on Canvas" }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/camera.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/camera.js
 var camera_exports2 = {};
 __export(camera_exports2, {
   CameraAxisHelper: () => CameraAxisHelper,
@@ -117113,7 +117113,7 @@ var CameraControls = PluginBehavior.create({
   display: { name: "Camera Controls on Canvas" }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/state.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/state.js
 var state_exports2 = {};
 __export(state_exports2, {
   SnapshotControls: () => SnapshotControls
@@ -117174,7 +117174,7 @@ var SnapshotControls = PluginBehavior.create({
   display: { name: "Snapshot Controls" }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props.js
 var custom_props_exports = {};
 __export(custom_props_exports, {
   AccessibleSurfaceArea: () => AccessibleSurfaceArea2,
@@ -117186,7 +117186,7 @@ __export(custom_props_exports, {
   ValenceModel: () => ValenceModel
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/structure-info.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/structure-info.js
 var StructureInfo = PluginBehavior.create({
   name: "structure-info-prop",
   category: "custom-props",
@@ -117317,7 +117317,7 @@ var StructureInfo = PluginBehavior.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/common.js
+// node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/common.js
 var VdWLookup = [
   -1,
   // 0: missing
@@ -117364,7 +117364,7 @@ var MaxAsa = {
 };
 var DefaultMaxAsa = 121;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/radii.js
+// node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/radii.js
 function assignRadiusForHeavyAtoms(ctx) {
   const { key: key2 } = StructureProperties.residue;
   const { type_symbol, label_atom_id, label_comp_id } = StructureProperties.atom;
@@ -117491,7 +117491,7 @@ function handleNonStandardCase(element) {
   return index;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/area.js
+// node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/area.js
 var updateChunk = 5e3;
 async function computeArea(runtime, ctx) {
   const { atomRadiusType: atomRadius } = ctx;
@@ -117555,7 +117555,7 @@ function computeRange(ctx, begin, end4) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley.js
+// node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley.js
 var ShrakeRupleyComputationParams = {
   numberOfSpherePoints: ParamDefinition.Numeric(92, { min: 12, max: 360, step: 1 }, { description: "Number of sphere points to sample per atom: 92 (original paper), 960 (BioJava), 3000 (EPPIC) - see Shrake A, Rupley JA: Environment and exposure to solvent of protein atoms. Lysozyme and insulin. J Mol Biol 1973." }),
   probeSize: ParamDefinition.Numeric(1.4, { min: 0.1, max: 4, step: 0.01 }, { description: "Corresponds to the size of a water molecule: 1.4 (original paper), 1.5 (occassionally used)" }),
@@ -117644,7 +117644,7 @@ var AccessibleSurfaceArea;
   AccessibleSurfaceArea3.getFlag = getFlag2;
 })(AccessibleSurfaceArea || (AccessibleSurfaceArea = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area.js
+// node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area.js
 var AccessibleSurfaceAreaParams = {
   ...ShrakeRupleyComputationParams
 };
@@ -117683,7 +117683,7 @@ var AccessibleSurfaceAreaProvider = CustomStructureProperty.createProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/themes/accessible-surface-area.js
+// node_modules/molstar/lib/mol-model-props/computed/themes/accessible-surface-area.js
 var DefaultColor21 = Color(16448250);
 var Description40 = "Assigns a color based on the relative accessible surface area of a residue.";
 var AccessibleSurfaceAreaColorThemeParams = {
@@ -117747,7 +117747,7 @@ var AccessibleSurfaceAreaColorThemeProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/accessible-surface-area.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/accessible-surface-area.js
 var AccessibleSurfaceArea2 = PluginBehavior.create({
   name: "computed-accessible-surface-area-prop",
   category: "custom-props",
@@ -117858,7 +117858,7 @@ var isAccessible = StructureSelectionQuery("Accessible Protein Residues", MolScr
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/interactions.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/interactions.js
 var Interactions2 = PluginBehavior.create({
   name: "computed-interactions-prop",
   category: "custom-props",
@@ -117957,7 +117957,7 @@ var Interactions2 = PluginBehavior.create({
   })
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/secondary-structure.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/secondary-structure.js
 var SecondaryStructure2 = PluginBehavior.create({
   name: "computed-secondary-structure-prop",
   category: "custom-props",
@@ -117985,7 +117985,7 @@ var SecondaryStructure2 = PluginBehavior.create({
   })
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/valence-model.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/computed/valence-model.js
 var ValenceModel = PluginBehavior.create({
   name: "computed-valence-model-prop",
   category: "custom-props",
@@ -118066,7 +118066,7 @@ var ValenceModel = PluginBehavior.create({
   })
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/sequence/themes/sifts-mapping.js
+// node_modules/molstar/lib/mol-model-props/sequence/themes/sifts-mapping.js
 var DefaultColor22 = Color(16448250);
 var Description41 = "Assigns a color based on SIFTS mapping.";
 var globalAccessionMap = /* @__PURE__ */ new Map();
@@ -118153,7 +118153,7 @@ var SIFTSMappingColorThemeProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/sequence/sifts-mapping.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/sequence/sifts-mapping.js
 var SIFTSMapping2 = PluginBehavior.create({
   name: "sifts-mapping-prop",
   category: "custom-props",
@@ -118204,7 +118204,7 @@ function bestDatabaseSequenceMappingLabel(loci) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/format.js
+// node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/format.js
 var ModelCrossLinkRestraint;
 (function(ModelCrossLinkRestraint2) {
   ModelCrossLinkRestraint2.Descriptor = {
@@ -118286,7 +118286,7 @@ var ModelCrossLinkRestraint;
   ModelCrossLinkRestraint2.fromTable = fromTable;
 })(ModelCrossLinkRestraint || (ModelCrossLinkRestraint = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/integrative/pair-restraints.js
+// node_modules/molstar/lib/mol-model-props/integrative/pair-restraints.js
 var emptyArray2 = [];
 function getPairKey(indexA, unitA, indexB, unitB) {
   return `${indexA}|${unitA.id}|${indexB}|${unitB.id}`;
@@ -118317,7 +118317,7 @@ var PairRestraints = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/property.js
+// node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/property.js
 var CrossLinkRestraintProvider = CustomStructureProperty.createProvider({
   label: "Cross Link Restraint",
   descriptor: CustomPropertyDescriptor({
@@ -118484,7 +118484,7 @@ function extractCrossLinkRestraints(structure) {
   return new PairRestraints(pairs);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/representation.js
+// node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/representation.js
 function createCrossLinkRestraintCylinderMesh(ctx, structure, theme, props, mesh) {
   const crossLinks = CrossLinkRestraintProvider.get(structure).value;
   if (!crossLinks.count)
@@ -118598,7 +118598,7 @@ var CrossLinkRestraintRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/color.js
+// node_modules/molstar/lib/mol-model-props/integrative/cross-link-restraint/color.js
 var DefaultColor23 = Color(13421772);
 var Description42 = "Colors cross-links by the deviation of the observed distance versus the modeled distance (e.g. modeled / `ihm_cross_link_restraint.distance_threshold`).";
 var CrossLinkColorThemeParams = {
@@ -118653,7 +118653,7 @@ var CrossLinkColorThemeProvider = {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/integrative/cross-link-restraint.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/custom-props/integrative/cross-link-restraint.js
 var CrossLinkRestraint2 = PluginBehavior.create({
   name: "integrative-cross-link-restraint",
   category: "custom-props",
@@ -118684,7 +118684,7 @@ function crossLinkRestraintFromMmcif(model) {
   return ModelCrossLinkRestraint.fromTable(ihm_cross_link_restraint, model);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior.js
+// node_modules/molstar/lib/mol-plugin/behavior.js
 var BuiltInPluginBehaviors = {
   State: state_exports,
   Representation: representation_exports2,
@@ -118698,7 +118698,7 @@ var PluginBehaviors = {
   CustomProps: custom_props_exports
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/selection/structure-focus-representation.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/selection/structure-focus-representation.js
 var StructureFocusRepresentationParams = (plugin) => {
   const reprParams = StateTransforms.Representation.StructureRepresentation3D.definition.params(void 0, plugin);
   return {
@@ -118889,7 +118889,7 @@ var StructureFocusRepresentation = PluginBehavior.create({
   params: (_, plugin) => StructureFocusRepresentationParams(plugin)
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/builder/structure/representation-preset.js
+// node_modules/molstar/lib/mol-plugin-state/builder/structure/representation-preset.js
 function StructureRepresentationPresetProvider(repr) {
   return repr;
 }
@@ -119316,7 +119316,7 @@ var PresetStructureRepresentations = {
   "auto-lod": autoLod
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/builder/structure/representation.js
+// node_modules/molstar/lib/mol-plugin-state/builder/structure/representation.js
 var StructureRepresentationBuilder = class {
   get dataState() {
     return this.plugin.state.data;
@@ -119425,7 +119425,7 @@ var StructureRepresentationBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset.js
+// node_modules/molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset.js
 function TrajectoryHierarchyPresetProvider(preset) {
   return preset;
 }
@@ -119614,7 +119614,7 @@ var PresetTrajectoryHierarchy = {
   crystalContacts
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/builder/structure/hierarchy.js
+// node_modules/molstar/lib/mol-plugin-state/builder/structure/hierarchy.js
 var TrajectoryHierarchyBuilder = class {
   resolveProvider(ref) {
     var _a;
@@ -119698,7 +119698,7 @@ var TrajectoryHierarchyBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/builder/structure.js
+// node_modules/molstar/lib/mol-plugin-state/builder/structure.js
 var StructureBuilder = class {
   get dataState() {
     return this.plugin.state.data;
@@ -119833,7 +119833,7 @@ var StructureBuilder = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/provider.js
+// node_modules/molstar/lib/mol-plugin-state/formats/provider.js
 function DataFormatProvider(provider) {
   return provider;
 }
@@ -119884,7 +119884,7 @@ function bcifHasCategory(file, categoryName) {
   return false;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/trajectory.js
+// node_modules/molstar/lib/mol-plugin-state/formats/trajectory.js
 var TrajectoryFormatCategory = "Trajectory";
 function defaultVisuals(plugin, data) {
   return plugin.builders.structure.hierarchy.applyPreset(data.trajectory, "default");
@@ -120030,7 +120030,7 @@ var BuiltInTrajectoryFormats = [
   ["mol2", Mol2Provider]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/volume-representation-params.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/volume-representation-params.js
 function createVolumeRepresentationParams(ctx, volume, props = {}) {
   const p6 = props;
   if (typeof p6.type === "string" || typeof p6.color === "string" || typeof p6.size === "string")
@@ -120073,7 +120073,7 @@ function createParamsProvider2(ctx, volume, props = {}) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-formats/volume/property.js
+// node_modules/molstar/lib/mol-model-formats/volume/property.js
 var PropertyProvider;
 (function(PropertyProvider2) {
   function create3(descriptor) {
@@ -120099,7 +120099,7 @@ var RecommendedIsoValue;
   RecommendedIsoValue2.Provider = PropertyProvider.create(RecommendedIsoValue2.Descriptor);
 })(RecommendedIsoValue || (RecommendedIsoValue = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/util.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/util.js
 function getStreamingMethod(s, defaultKind = "x-ray") {
   if (!s)
     return defaultKind;
@@ -120205,7 +120205,7 @@ async function getEmdbIds(plugin, taskCtx, pdbId) {
   return emdbIds;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/volume.js
+// node_modules/molstar/lib/mol-plugin-state/formats/volume.js
 var VolumeFormatCategory = "Volume";
 async function tryObtainRecommendedIsoValue(plugin, volume) {
   if (!volume)
@@ -120435,7 +120435,7 @@ var BuiltInVolumeFormats = [
   ["segcif", SegcifProvider]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/shape.js
+// node_modules/molstar/lib/mol-plugin-state/formats/shape.js
 var ShapeFormatCategory = "Shape";
 var PlyProvider = DataFormatProvider({
   label: "PLY",
@@ -120457,7 +120457,7 @@ var BuiltInShapeFormats = [
   ["ply", PlyProvider]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/topology.js
+// node_modules/molstar/lib/mol-plugin-state/formats/topology.js
 var TopologyFormatCategory = "Topology";
 var PsfProvider = DataFormatProvider({
   label: "PSF",
@@ -120501,7 +120501,7 @@ var BuiltInTopologyFormats = [
   ["top", TopProvider]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/coordinates.js
+// node_modules/molstar/lib/mol-plugin-state/formats/coordinates.js
 var CoordinatesFormatCategory = "Coordinates";
 var DcdProvider = DataFormatProvider({
   label: "DCD",
@@ -120561,7 +120561,7 @@ var BuiltInCoordinatesFormats = [
   ["lammpstrj", LammpsTrajectoryProvider]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/formats/registry.js
+// node_modules/molstar/lib/mol-plugin-state/formats/registry.js
 var DataFormatRegistry = class {
   get types() {
     return this._list.map((e) => [e.name, e.provider.label]);
@@ -120655,7 +120655,7 @@ var DataFormatRegistry = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/animation.js
+// node_modules/molstar/lib/mol-plugin-state/manager/animation.js
 var PluginAnimationManager = class extends StatefulPluginComponent {
   get isEmpty() {
     return this._animations.length === 0;
@@ -120853,7 +120853,7 @@ var PluginAnimationManager = class extends StatefulPluginComponent {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/focus-camera/focus-first-residue.js
+// node_modules/molstar/lib/mol-plugin-state/manager/focus-camera/focus-first-residue.js
 function calculateDisplacement(position, origin, normalDir) {
   const A = normalDir[0];
   const B20 = normalDir[1];
@@ -120899,7 +120899,7 @@ function pcaFocus(plugin, radius, options) {
   return plugin.canvas3d.camera.getFocus(origin, radius, up3, dir, Camera.createDefaultSnapshot());
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/focus-camera/focus-object.js
+// node_modules/molstar/lib/mol-plugin-state/manager/focus-camera/focus-object.js
 function getFocusSnapshot(plugin, options) {
   var _a, _b;
   if (!plugin.canvas3d)
@@ -121000,7 +121000,7 @@ function boundingSphereOfSpheres(spheres2) {
   return boundaryHelper2.getSphere();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/focus-camera/orient-axes.js
+// node_modules/molstar/lib/mol-plugin-state/manager/focus-camera/orient-axes.js
 var MIN_ATOMS_FOR_PCA = 3;
 var ROTATION_MATRICES = {
   // The order of elements in the matrices in column-wise (F-style)
@@ -121145,7 +121145,7 @@ function changeCameraRotation(old, rotation) {
   return { ...old, position: newPosition, up: newUp };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/camera.js
+// node_modules/molstar/lib/mol-plugin-state/manager/camera.js
 var DefaultCameraFocusOptions = {
   minRadius: 1,
   extraRadius: 4,
@@ -121292,7 +121292,7 @@ var CameraManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/interactivity.js
+// node_modules/molstar/lib/mol-plugin-state/manager/interactivity.js
 var InteractivityManager = class _InteractivityManager extends StatefulPluginComponent {
   get props() {
     return { ...this.state.props };
@@ -121506,7 +121506,7 @@ var InteractivityManager = class _InteractivityManager extends StatefulPluginCom
   InteractivityManager2.LociSelectManager = LociSelectManager;
 })(InteractivityManager || (InteractivityManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/loci-label.js
+// node_modules/molstar/lib/mol-plugin-state/manager/loci-label.js
 var LociLabelManager = class {
   clearProviders() {
     this.providers = [];
@@ -121583,7 +121583,7 @@ var LociLabelManager = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-overpaint.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-overpaint.js
 var OverpaintManagerTag = "overpaint-controls";
 async function setStructureOverpaint(plugin, components, color, lociGetter, types2) {
   await eachRepr(plugin, components, async (update10, repr, overpaintCell) => {
@@ -121625,7 +121625,7 @@ function getFilteredBundle(layers, structure) {
   return Overpaint.filter(merged, structure);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-clipping.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-clipping.js
 var ClippingManagerTag = "clipping-controls";
 async function setStructureClipping(plugin, components, groups, lociGetter, types2) {
   await eachRepr2(plugin, components, async (update10, repr, clippingCell) => {
@@ -121666,7 +121666,7 @@ function getFilteredBundle2(layers, structure) {
   return Clipping.filter(merged, structure);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-transparency.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-transparency.js
 var TransparencyManagerTag = "transparency-controls";
 async function setStructureTransparency(plugin, components, value, lociGetter, types2) {
   await eachRepr3(plugin, components, async (update10, repr, transparencyCell) => {
@@ -121716,7 +121716,7 @@ function getFilteredBundle3(layers, structure) {
   return Transparency.filter(merged, structure);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-substance.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-substance.js
 var SubstanceManagerTag = "substance-controls";
 async function setStructureSubstance(plugin, components, material, lociGetter, types2) {
   await eachRepr4(plugin, components, async (update10, repr, substanceCell) => {
@@ -121758,7 +121758,7 @@ function getFilteredBundle4(layers, structure) {
   return Substance.filter(merged, structure);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/helpers/structure-emissive.js
+// node_modules/molstar/lib/mol-plugin-state/helpers/structure-emissive.js
 var EmissiveManagerTag = "emissive-controls";
 async function setStructureEmissive(plugin, components, value, lociGetter, types2) {
   await eachRepr5(plugin, components, async (update10, repr, emissiveCell) => {
@@ -121799,7 +121799,7 @@ function getFilteredBundle5(layers, structure) {
   return Emissive.filter(merged, structure);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/structure/component.js
+// node_modules/molstar/lib/mol-plugin-state/manager/structure/component.js
 var StructureComponentManager = class _StructureComponentManager extends StatefulPluginComponent {
   get currentStructures() {
     return this.plugin.managers.structure.hierarchy.selection.structures;
@@ -122246,7 +122246,7 @@ var StructureComponentManager = class _StructureComponentManager extends Statefu
   }
 })(StructureComponentManager || (StructureComponentManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/structure/selection.js
+// node_modules/molstar/lib/mol-plugin-state/manager/structure/selection.js
 var boundaryHelper3 = new BoundaryHelper("98");
 var HISTORY_CAPACITY = 24;
 var StructureSelectionManager = class extends StatefulPluginComponent {
@@ -122733,7 +122733,7 @@ function getElementRange(structure, ref, ext) {
   }]);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/structure/focus.js
+// node_modules/molstar/lib/mol-plugin-state/manager/structure/focus.js
 var HISTORY_CAPACITY2 = 8;
 var StructureFocusManager = class extends StatefulPluginComponent {
   get current() {
@@ -122901,7 +122901,7 @@ function toggleLoci(currentLoci, newLoci) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/lru-cache.js
+// node_modules/molstar/lib/mol-util/lru-cache.js
 var LRUCache;
 (function(LRUCache2) {
   function entry(key2, data) {
@@ -122947,7 +122947,7 @@ var LRUCache;
   LRUCache2.remove = remove3;
 })(LRUCache || (LRUCache = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/single-async-queue.js
+// node_modules/molstar/lib/mol-util/single-async-queue.js
 var SingleAsyncQueue = class {
   constructor(log = false) {
     this.isRunning = false;
@@ -122982,7 +122982,7 @@ var SingleAsyncQueue = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/behavior.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/behavior.js
 var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Volume Streaming" }) {
 };
 (function(VolumeStreaming2) {
@@ -123400,7 +123400,7 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
   VolumeStreaming2.Behavior = Behavior;
 })(VolumeStreaming || (VolumeStreaming = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/structure/hierarchy-state.js
+// node_modules/molstar/lib/mol-plugin-state/manager/structure/hierarchy-state.js
 function buildStructureHierarchy(state, previous) {
   const build2 = BuildState(state, previous || StructureHierarchy());
   doPreOrder(state.tree, build2);
@@ -123629,7 +123629,7 @@ function doPreOrder(tree, state) {
   return ctx.state;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/structure/hierarchy.js
+// node_modules/molstar/lib/mol-plugin-state/manager/structure/hierarchy.js
 var StructureHierarchyManager = class _StructureHierarchyManager extends PluginComponent {
   get dataState() {
     return this.plugin.state.data;
@@ -123886,7 +123886,7 @@ var StructureHierarchyManager = class _StructureHierarchyManager extends PluginC
   StructureHierarchyManager2.getSelectedStructuresDescription = getSelectedStructuresDescription;
 })(StructureHierarchyManager || (StructureHierarchyManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/structure/measurement.js
+// node_modules/molstar/lib/mol-plugin-state/manager/structure/measurement.js
 var MeasurementGroupTag = "measurement-group";
 var MeasurementOrderLabelTag = "measurement-order-label";
 var StructureMeasurementParams = {
@@ -124174,7 +124174,7 @@ var StructureMeasurementManager = class extends StatefulPluginComponent {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/volume/hierarchy-state.js
+// node_modules/molstar/lib/mol-plugin-state/manager/volume/hierarchy-state.js
 function buildVolumeHierarchy(state, previous) {
   const build2 = BuildState2(state, previous || VolumeHierarchy());
   doPreOrder2(state.tree, build2);
@@ -124282,7 +124282,7 @@ function doPreOrder2(tree, state) {
   return ctx.state;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/volume/hierarchy.js
+// node_modules/molstar/lib/mol-plugin-state/manager/volume/hierarchy.js
 var VolumeHierarchyManager = class extends PluginComponent {
   get dataState() {
     return this.plugin.state.data;
@@ -124387,7 +124387,7 @@ var VolumeHierarchyManager = class extends PluginComponent {
   VolumeHierarchyManager2.getRepresentationTypes = getRepresentationTypes;
 })(VolumeHierarchyManager || (VolumeHierarchyManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/markdown-extensions.js
+// node_modules/molstar/lib/mol-plugin-state/manager/markdown-extensions.js
 var BuiltInMarkdownExtension = [
   {
     name: "center-camera",
@@ -124814,7 +124814,7 @@ function defaultParseMarkdownCommandArgs(input) {
   return Object.fromEntries(entries3);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/layout.js
+// node_modules/molstar/lib/mol-plugin/layout.js
 var regionStateOptions = [
   ["full", "Full"],
   ["collapsed", "Collapsed"],
@@ -125019,7 +125019,7 @@ var PluginLayout = class extends StatefulPluginComponent {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/bond.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/bond.js
 var BondParams = {
   includeTypes: ParamDefinition.MultiSelect(ObjectKeys(BondType.Names), ParamDefinition.objectToOptions(BondType.Names)),
   excludeTypes: ParamDefinition.MultiSelect([], ParamDefinition.objectToOptions(BondType.Names)),
@@ -125415,7 +125415,7 @@ function eachStructureGroupsBond(loci, structure, apply, isMarking) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/bond-intra-unit-cylinder.js
+// node_modules/molstar/lib/mol-repr/structure/visual/bond-intra-unit-cylinder.js
 var isBondType = BondType.is;
 function getIntraUnitBondCylinderBuilderProps(unit2, structure, theme, props) {
   const elements = unit2.elements;
@@ -125788,7 +125788,7 @@ function StructureIntraUnitBondCylinderMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/bond-inter-unit-cylinder.js
+// node_modules/molstar/lib/mol-repr/structure/visual/bond-inter-unit-cylinder.js
 var tmpRefPosBondIt = new Bond.ElementBondIterator();
 function setRefPosition(pos, structure, unit2, index) {
   tmpRefPosBondIt.setElement(structure, unit2, index);
@@ -125997,7 +125997,7 @@ function InterUnitBondCylinderMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/spheres/spheres-builder.js
+// node_modules/molstar/lib/mol-geo/geometry/spheres/spheres-builder.js
 var caAdd35 = ChunkedArray.add3;
 var caAdd6 = ChunkedArray.add;
 var SpheresBuilder;
@@ -126020,7 +126020,7 @@ var SpheresBuilder;
   SpheresBuilder2.create = create3;
 })(SpheresBuilder || (SpheresBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/element.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/element.js
 var v3add3 = Vec3.add;
 function makeElementIgnoreTest(structure, unit2, props) {
   const { ignoreHydrogens, ignoreHydrogensVariant, traceOnly } = props;
@@ -126363,7 +126363,7 @@ var ElementIterator;
   ElementIterator2.fromStructure = fromStructure;
 })(ElementIterator || (ElementIterator = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/element-sphere.js
+// node_modules/molstar/lib/mol-repr/structure/visual/element-sphere.js
 var CommonElementSphereParams = {
   sizeFactor: ParamDefinition.Numeric(1, { min: 0, max: 10, step: 0.1 }),
   detail: ParamDefinition.Numeric(0, { min: 0, max: 3, step: 1 }, BaseGeometry.CustomQualityParamInfo),
@@ -126450,7 +126450,7 @@ function StructureElementSphereMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/ball-and-stick.js
+// node_modules/molstar/lib/mol-repr/structure/representation/ball-and-stick.js
 var BallAndStickVisuals = {
   "element-sphere": (ctx, getParams) => UnitsRepresentation("Element sphere", ctx, getParams, ElementSphereVisual),
   "intra-bond": (ctx, getParams) => UnitsRepresentation("Intra-unit bond cylinder", ctx, getParams, IntraUnitBondCylinderVisual),
@@ -126505,7 +126505,7 @@ var BallAndStickRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/carbohydrate-link-cylinder.js
+// node_modules/molstar/lib/mol-repr/structure/visual/carbohydrate-link-cylinder.js
 function createCarbohydrateLinkCylinderMesh(ctx, structure, theme, props, mesh) {
   const { links, elements } = structure.carbohydrates;
   const { linkSizeFactor } = props;
@@ -126608,7 +126608,7 @@ function eachCarbohydrateLink(loci, structure, apply) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/pyramid.js
+// node_modules/molstar/lib/mol-geo/primitive/pyramid.js
 var on2 = Vec3.create(0, 0, -0.5);
 var op2 = Vec3.create(0, 0, 0.5);
 var a5 = Vec3();
@@ -126701,7 +126701,7 @@ function PerforatedOctagonalPyramid() {
   return perforatedOctagonalPyramid;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/star.js
+// node_modules/molstar/lib/mol-geo/primitive/star.js
 var DefaultStarProps = {
   pointCount: 5,
   outerRadius: 1,
@@ -126742,7 +126742,7 @@ function Star(props) {
   return builder.getPrimitive();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/octahedron.js
+// node_modules/molstar/lib/mol-geo/primitive/octahedron.js
 var octahedronVertices = [
   0.5,
   0,
@@ -126845,7 +126845,7 @@ function PerforatedOctahedron() {
 }
 var octahedronCage = createCage(octahedronVertices, octahedronEdges);
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/carbohydrate-symbol-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/carbohydrate-symbol-mesh.js
 var t2 = Mat4.identity();
 var sVec = Vec3();
 var pd = Vec3();
@@ -127039,7 +127039,7 @@ function eachCarbohydrate(loci, structure, apply) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/carbohydrate-terminal-link-cylinder.js
+// node_modules/molstar/lib/mol-repr/structure/visual/carbohydrate-terminal-link-cylinder.js
 function createCarbohydrateTerminalLinkCylinderMesh(ctx, structure, theme, props, mesh) {
   const { terminalLinks, elements } = structure.carbohydrates;
   const { terminalLinkSizeFactor } = props;
@@ -127162,7 +127162,7 @@ function eachTerminalLink(loci, structure, apply) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/carbohydrate.js
+// node_modules/molstar/lib/mol-repr/structure/representation/carbohydrate.js
 var CarbohydrateVisuals = {
   "carbohydrate-symbol": (ctx, getParams) => ComplexRepresentation("Carbohydrate symbol mesh", ctx, getParams, CarbohydrateSymbolVisual),
   "carbohydrate-link": (ctx, getParams) => ComplexRepresentation("Carbohydrate link cylinder", ctx, getParams, CarbohydrateLinkVisual),
@@ -127196,7 +127196,7 @@ var CarbohydrateRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/backbone.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/backbone.js
 function eachPolymerBackboneLink(unit2, callback) {
   switch (unit2.kind) {
     case Unit.Kind.Atomic:
@@ -127307,7 +127307,7 @@ function eachCoarsePolymerBackboneElement(unit2, callback) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/gap-iterator.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/gap-iterator.js
 function PolymerGapIterator(structure, unit2) {
   switch (unit2.kind) {
     case Unit.Kind.Atomic:
@@ -127358,7 +127358,7 @@ var CoarsePolymerGapIterator = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/helix-orientation/helix-orientation.js
+// node_modules/molstar/lib/mol-model-props/computed/helix-orientation/helix-orientation.js
 function calcHelixOrientation(model) {
   const { x, y, z } = model.atomicConformation;
   const { polymerType, traceElementIndex } = model.atomicHierarchy.derived.residue;
@@ -127451,7 +127451,7 @@ function calcHelixOrientation(model) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-model-props/computed/helix-orientation.js
+// node_modules/molstar/lib/mol-model-props/computed/helix-orientation.js
 var HelixOrientationProvider = CustomModelProperty.createProvider({
   label: "Helix Orientation",
   descriptor: CustomPropertyDescriptor({
@@ -127466,7 +127466,7 @@ var HelixOrientationProvider = CustomModelProperty.createProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/trace-iterator.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/trace-iterator.js
 function isHelixSS(ss) {
   return SecondaryStructureType.is(ss, SecondaryStructureType.Flag.Helix);
 }
@@ -127887,7 +127887,7 @@ var CoarsePolymerTraceIterator = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/curve-segment.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/polymer/curve-segment.js
 var v3fromArray4 = Vec3.fromArray;
 var v3toArray2 = Vec3.toArray;
 var v3normalize2 = Vec3.normalize;
@@ -128001,7 +128001,7 @@ function interpolateSizes(state, w0, w1, w2, h0, h1, h2, shift2) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/polymer.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/polymer.js
 var StandardTension = 0.5;
 var HelixTension = 0.9;
 var StandardShift = 0.5;
@@ -128254,7 +128254,7 @@ function eachPolymerGapElement(loci, structureGroup, apply) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/nucleotide.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/nucleotide.js
 var NucleotideLocationIterator;
 (function(NucleotideLocationIterator2) {
   function fromGroup(structureGroup) {
@@ -128413,7 +128413,7 @@ function hasSugarIndices(idx) {
   return idx.trace !== -1 && idx.C1_1 !== -1 && idx.C2_1 !== -1 && idx.C3_1 !== -1 && idx.C4_1 !== -1 && idx.O4_1 !== -1;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-block-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-block-mesh.js
 var p1 = Vec3();
 var p22 = Vec3();
 var p3 = Vec3();
@@ -128524,7 +128524,7 @@ function NucleotideBlockVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-ring-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-ring-mesh.js
 var pTrace = Vec3();
 var pN1 = Vec3();
 var pC2 = Vec3();
@@ -128659,7 +128659,7 @@ function NucleotideRingVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-atomic-ring-fill.js
+// node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-atomic-ring-fill.js
 var pN12 = Vec3();
 var pC22 = Vec3();
 var pN32 = Vec3();
@@ -128810,7 +128810,7 @@ function NucleotideAtomicRingFillVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-atomic-bond.js
+// node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-atomic-bond.js
 var pTrace2 = Vec3();
 var pN13 = Vec3();
 var pC23 = Vec3();
@@ -129077,7 +129077,7 @@ function NucleotideAtomicBondMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-atomic-element.js
+// node_modules/molstar/lib/mol-repr/structure/visual/nucleotide-atomic-element.js
 var pTrace3 = Vec3();
 var pN14 = Vec3();
 var pC24 = Vec3();
@@ -129306,7 +129306,7 @@ function NucleotideAtomicElementMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/primitive/wedge.js
+// node_modules/molstar/lib/mol-geo/primitive/wedge.js
 var a7 = Vec3.zero();
 var b7 = Vec3.zero();
 var c7 = Vec3.zero();
@@ -129340,7 +129340,7 @@ function Wedge() {
   return wedge;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/polymer-direction-wedge.js
+// node_modules/molstar/lib/mol-repr/structure/visual/polymer-direction-wedge.js
 var t4 = Mat4.identity();
 var sVec3 = Vec3.zero();
 var n0 = Vec3.zero();
@@ -129413,7 +129413,7 @@ function PolymerDirectionVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/polymer-gap-cylinder.js
+// node_modules/molstar/lib/mol-repr/structure/visual/polymer-gap-cylinder.js
 var segmentCount = 10;
 var PolymerGapCylinderParams = {
   sizeFactor: ParamDefinition.Numeric(0.2, { min: 0, max: 10, step: 0.01 }),
@@ -129475,7 +129475,7 @@ function PolymerGapVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/sheet.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/sheet.js
 var tA = Vec3();
 var tB = Vec3();
 var tV = Vec3();
@@ -129658,7 +129658,7 @@ function addSheet(state, controlPoints, normalVectors, binormalVectors, linearSe
     caAdd7(groups, currentGroup);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/tube.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/tube.js
 var normalVector2 = Vec3();
 var capNormalSmoothingVector = Vec3();
 var surfacePoint = Vec3();
@@ -129855,7 +129855,7 @@ function addTube(state, controlPoints, normalVectors, binormalVectors, linearSeg
   ChunkedArray.addRepeat(groups, addedVertexCount, currentGroup);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/mesh/builder/ribbon.js
+// node_modules/molstar/lib/mol-geo/geometry/mesh/builder/ribbon.js
 var v3fromArray7 = Vec3.fromArray;
 var v3magnitude2 = Vec3.magnitude;
 var v3sub5 = Vec3.sub;
@@ -129927,7 +129927,7 @@ function addRibbon(state, controlPoints, normalVectors, binormalVectors, linearS
     caAdd8(groups, currentGroup);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/polymer-trace-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/polymer-trace-mesh.js
 var PolymerTraceMeshParams = {
   sizeFactor: ParamDefinition.Numeric(0.2, { min: 0, max: 10, step: 0.01 }),
   aspectRatio: ParamDefinition.Numeric(5, { min: 0.1, max: 10, step: 0.1 }),
@@ -130086,7 +130086,7 @@ function PolymerTraceVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/cartoon.js
+// node_modules/molstar/lib/mol-repr/structure/representation/cartoon.js
 var CartoonVisuals = {
   "polymer-trace": (ctx, getParams) => UnitsRepresentation("Polymer trace mesh", ctx, getParams, PolymerTraceVisual),
   "polymer-gap": (ctx, getParams) => UnitsRepresentation("Polymer gap cylinder", ctx, getParams, PolymerGapVisual),
@@ -130158,7 +130158,7 @@ var CartoonRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/ellipsoid-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/ellipsoid-mesh.js
 var v3add7 = Vec3.add;
 function createEllipsoidMesh(ctx, unit2, structure, theme, props, mesh) {
   const { child } = structure;
@@ -130339,7 +130339,7 @@ function StructureEllipsoidMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/ellipsoid.js
+// node_modules/molstar/lib/mol-repr/structure/representation/ellipsoid.js
 var EllipsoidVisuals = {
   "ellipsoid-mesh": (ctx, getParams) => UnitsRepresentation("Ellipsoid Mesh", ctx, getParams, EllipsoidMeshVisual),
   "intra-bond": (ctx, getParams) => UnitsRepresentation("Intra-unit bond cylinder", ctx, getParams, IntraUnitBondCylinderVisual),
@@ -130394,7 +130394,7 @@ var EllipsoidRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/gaussian-density.vert.js
+// node_modules/molstar/lib/mol-gl/shader/gaussian-density.vert.js
 var gaussianDensity_vert = `
 precision highp float;
 
@@ -130424,7 +130424,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/gaussian-density.frag.js
+// node_modules/molstar/lib/mol-gl/shader/gaussian-density.frag.js
 var gaussianDensity_frag = `
 precision highp float;
 
@@ -130476,7 +130476,7 @@ void main() {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/gaussian-density/gpu.js
+// node_modules/molstar/lib/mol-math/geometry/gaussian-density/gpu.js
 var GaussianDensitySchema = {
   drawCount: ValueSpec("number"),
   instanceCount: ValueSpec("number"),
@@ -130778,7 +130778,7 @@ function getTexture2dSize2(gridDim) {
   return { texDimX, texDimY, texRows, texCols, powerOfTwoSize: texDimY < powerOfTwoSize ? powerOfTwoSize : powerOfTwoSize * 2 };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/gaussian-density/cpu.js
+// node_modules/molstar/lib/mol-math/geometry/gaussian-density/cpu.js
 async function GaussianDensityCPU(ctx, position, box4, radius, props) {
   const { resolution, radiusOffset, smoothness } = props;
   const scaleFactor = 1 / resolution;
@@ -130870,7 +130870,7 @@ async function GaussianDensityCPU(ctx, position, box4, radius, props) {
   return { field, idField, transform, radiusFactor: 1, resolution, maxRadius };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/gaussian.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/gaussian.js
 var GaussianDensityParams = {
   resolution: ParamDefinition.Numeric(1, { min: 0.1, max: 20, step: 0.1 }, { description: "Grid resolution/cell spacing.", ...BaseGeometry.CustomQualityParamInfo }),
   radiusOffset: ParamDefinition.Numeric(0, { min: 0, max: 10, step: 0.1 }, { description: "Extra/offset radius added to the atoms/coarse elements for gaussian calculation. Useful to create coarse, low resolution surfaces." }),
@@ -130918,7 +130918,7 @@ function computeStructureGaussianDensityTexture2d(structure, sizeTheme, powerOfT
   return GaussianDensityTexture2d(webgl, position, box4, radius, powerOfTwo, p6, texture);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/util/marching-cubes/tables.js
+// node_modules/molstar/lib/mol-geo/util/marching-cubes/tables.js
 function Index3(i, j, k) {
   return { i, j, k };
 }
@@ -131510,7 +131510,7 @@ var AllowedContours = [
   [0, 0, 8, 1, 0, 0, 8, 1, 1, 0, 8, 0]
 ];
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/util/marching-cubes/builder.js
+// node_modules/molstar/lib/mol-geo/util/marching-cubes/builder.js
 function MarchingCubesMeshBuilder(vertexChunkSize, mesh) {
   const triangleChunkSize = Math.min(1 << 16, vertexChunkSize * 4);
   const vertices2 = ChunkedArray.create(Float32Array, 3, vertexChunkSize, mesh && mesh.vertexBuffer.ref.value);
@@ -131590,7 +131590,7 @@ function MarchingCubesLinesBuilder(vertexChunkSize, lines) {
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/util/marching-cubes/algorithm.js
+// node_modules/molstar/lib/mol-geo/util/marching-cubes/algorithm.js
 function getInputParams(params) {
   return {
     ...params,
@@ -131808,7 +131808,7 @@ var MarchingCubesState = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/histogram-pyramid/sum.frag.js
+// node_modules/molstar/lib/mol-gl/shader/histogram-pyramid/sum.frag.js
 var sum_frag = `
 precision highp float;
 precision highp int;
@@ -131830,7 +131830,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/histogram-pyramid/sum.js
+// node_modules/molstar/lib/mol-gl/compute/histogram-pyramid/sum.js
 var HistopyramidSumSchema = {
   ...QuadSchema,
   tTexture: TextureSpec("texture", "rgba", "float", "nearest")
@@ -131895,7 +131895,7 @@ function getHistopyramidSum(ctx, pyramidTopTexture) {
   return isWebGL2(gl) ? sumInts[0] : unpackRGBToInt(sumBytes[0], sumBytes[1], sumBytes[2]);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/histogram-pyramid/reduction.frag.js
+// node_modules/molstar/lib/mol-gl/shader/histogram-pyramid/reduction.frag.js
 var reduction_frag = `
 precision highp float;
 precision highp int;
@@ -131956,7 +131956,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/histogram-pyramid/reduction.js
+// node_modules/molstar/lib/mol-gl/compute/histogram-pyramid/reduction.js
 var HistopyramidReductionSchema = {
   ...QuadSchema,
   tInputLevel: TextureSpec("texture", "rgba", "float", "nearest"),
@@ -132096,7 +132096,7 @@ function createHistogramPyramid(ctx, inputTexture, scale, gridTexDim) {
   return { pyramidTex, count: count3, height, levels, scale };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/marching-cubes/tables.js
+// node_modules/molstar/lib/mol-gl/compute/marching-cubes/tables.js
 var TriCount;
 function getTriCount() {
   if (TriCount !== void 0)
@@ -132126,7 +132126,7 @@ function getTriIndices() {
   return TriIndices;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/marching-cubes/isosurface.frag.js
+// node_modules/molstar/lib/mol-gl/shader/marching-cubes/isosurface.frag.js
 var isosurface_frag = `
 precision highp float;
 precision highp int;
@@ -132451,7 +132451,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/shader/marching-cubes/active-voxels.frag.js
+// node_modules/molstar/lib/mol-gl/shader/marching-cubes/active-voxels.frag.js
 var activeVoxels_frag = `
 precision highp float;
 precision highp int;
@@ -132529,7 +132529,7 @@ void main(void) {
 }
 `;
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/marching-cubes/active-voxels.js
+// node_modules/molstar/lib/mol-gl/compute/marching-cubes/active-voxels.js
 var ActiveVoxelsSchema = {
   ...QuadSchema,
   tTriCount: TextureSpec("image-uint8", "alpha", "ubyte", "nearest"),
@@ -132618,7 +132618,7 @@ function calcActiveVoxels(ctx, volumeData, gridDim, gridTexDim, isoValue, gridSc
   return activeVoxelsTex;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-gl/compute/marching-cubes/isosurface.js
+// node_modules/molstar/lib/mol-gl/compute/marching-cubes/isosurface.js
 var IsosurfaceSchema = {
   ...QuadSchema,
   tTriIndices: TextureSpec("image-uint8", "alpha", "ubyte", "nearest"),
@@ -132778,7 +132778,7 @@ function extractIsosurface(ctx, volumeData, gridDim, gridTexDim, gridDataDim, gr
   return gv;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/gaussian-surface-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/gaussian-surface-mesh.js
 var SharedParams6 = {
   ...GaussianDensityParams,
   ...ColorSmoothingParams,
@@ -133123,7 +133123,7 @@ function StructureGaussianSurfaceTextureMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/gaussian-surface-wireframe.js
+// node_modules/molstar/lib/mol-repr/structure/visual/gaussian-surface-wireframe.js
 async function createGaussianWireframe(ctx, unit2, structure, theme, props, lines) {
   const { smoothness } = props;
   const { transform, field, idField, maxRadius } = await computeUnitGaussianDensity(structure, unit2, theme.size, props).runInContext(ctx.runtime);
@@ -133173,7 +133173,7 @@ function GaussianWireframeVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/gaussian-surface.js
+// node_modules/molstar/lib/mol-repr/structure/representation/gaussian-surface.js
 var GaussianSurfaceVisuals = {
   "gaussian-surface-mesh": (ctx, getParams) => UnitsRepresentation("Gaussian surface mesh", ctx, getParams, GaussianSurfaceVisual),
   "structure-gaussian-surface-mesh": (ctx, getParams) => ComplexRepresentation("Structure-Gaussian surface mesh", ctx, getParams, StructureGaussianSurfaceVisual),
@@ -133204,7 +133204,7 @@ var GaussianSurfaceRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/label-text.js
+// node_modules/molstar/lib/mol-repr/structure/visual/label-text.js
 var LabelTextParams = {
   ...ComplexTextParams,
   background: ParamDefinition.Boolean(false),
@@ -133338,7 +133338,7 @@ function createElementText(ctx, structure, theme, props, text) {
   return builder.getText();
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/label.js
+// node_modules/molstar/lib/mol-repr/structure/representation/label.js
 var LabelVisuals2 = {
   "label-text": (ctx, getParams) => ComplexRepresentation("Label text", ctx, getParams, LabelTextVisual)
 };
@@ -133366,7 +133366,7 @@ var LabelRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-math/geometry/molecular-surface.js
+// node_modules/molstar/lib/mol-math/geometry/molecular-surface.js
 function normalToLine(out, p6) {
   out[0] = out[1] = out[2] = 1;
   if (p6[0] !== 0) {
@@ -133605,7 +133605,7 @@ async function calcMolecularSurface(ctx, position, boundary, maxRadius, box4, pr
   return { field, idField, transform, resolution, maxRadius };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/util/molecular-surface.js
+// node_modules/molstar/lib/mol-repr/structure/visual/util/molecular-surface.js
 function getUnitPositionDataAndMaxRadius(structure, unit2, sizeTheme, props) {
   const { probeRadius } = props;
   const { position, boundary, radius } = getUnitConformationAndRadius(structure, unit2, sizeTheme, props);
@@ -133656,7 +133656,7 @@ async function MolecularSurface(ctx, position, boundary, maxRadius, box4, props)
   return calcMolecularSurface(ctx, position, boundary, maxRadius, box4, props);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/molecular-surface-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/molecular-surface-mesh.js
 var MolecularSurfaceMeshParams = {
   ...UnitsMeshParams,
   ...MolecularSurfaceCalculationParams,
@@ -133802,7 +133802,7 @@ function StructureMolecularSurfaceMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/molecular-surface-wireframe.js
+// node_modules/molstar/lib/mol-repr/structure/visual/molecular-surface-wireframe.js
 var MolecularSurfaceWireframeParams = {
   ...UnitsLinesParams,
   ...MolecularSurfaceCalculationParams,
@@ -133846,7 +133846,7 @@ function MolecularSurfaceWireframeVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/molecular-surface.js
+// node_modules/molstar/lib/mol-repr/structure/representation/molecular-surface.js
 var MolecularSurfaceVisuals = {
   "molecular-surface-mesh": (ctx, getParams) => UnitsRepresentation("Molecular surface mesh", ctx, getParams, MolecularSurfaceMeshVisual),
   "structure-molecular-surface-mesh": (ctx, getParams) => ComplexRepresentation("Structure Molecular surface mesh", ctx, getParams, StructureMolecularSurfaceMeshVisual),
@@ -133877,7 +133877,7 @@ var MolecularSurfaceRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/orientation-ellipsoid-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/orientation-ellipsoid-mesh.js
 var OrientationEllipsoidMeshParams = {
   ...UnitsMeshParams,
   sizeFactor: ParamDefinition.Numeric(1, { min: 0, max: 2, step: 0.1 }),
@@ -133974,7 +133974,7 @@ function eachUnit(loci, structureGroup, apply) {
   return changed;
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/orientation.js
+// node_modules/molstar/lib/mol-repr/structure/representation/orientation.js
 var OrientationVisuals2 = {
   "orientation-ellipsoid-mesh": (ctx, getParams) => UnitsRepresentation("Orientation ellipsoid mesh", ctx, getParams, OrientationEllipsoidMeshVisual)
 };
@@ -134001,7 +134001,7 @@ var OrientationRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-geo/geometry/points/points-builder.js
+// node_modules/molstar/lib/mol-geo/geometry/points/points-builder.js
 var caAdd39 = ChunkedArray.add3;
 var caAdd9 = ChunkedArray.add;
 var PointsBuilder;
@@ -134024,7 +134024,7 @@ var PointsBuilder;
   PointsBuilder2.create = create3;
 })(PointsBuilder || (PointsBuilder = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/element-point.js
+// node_modules/molstar/lib/mol-repr/structure/visual/element-point.js
 var v3add8 = Vec3.add;
 var ElementPointParams = {
   ...UnitsPointsParams,
@@ -134166,7 +134166,7 @@ function StructureElementPointVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/point.js
+// node_modules/molstar/lib/mol-repr/structure/representation/point.js
 var PointVisuals = {
   "element-point": (ctx, getParams) => UnitsRepresentation("Element points", ctx, getParams, ElementPointVisual),
   "structure-element-point": (ctx, getParams) => ComplexRepresentation("Structure element points", ctx, getParams, StructureElementPointVisual)
@@ -134199,7 +134199,7 @@ var PointRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/polymer-tube-mesh.js
+// node_modules/molstar/lib/mol-repr/structure/visual/polymer-tube-mesh.js
 var PolymerTubeMeshParams = {
   sizeFactor: ParamDefinition.Numeric(0.2, { min: 0, max: 10, step: 0.01 }),
   detail: ParamDefinition.Numeric(0, { min: 0, max: 3, step: 1 }, BaseGeometry.CustomQualityParamInfo),
@@ -134284,7 +134284,7 @@ function PolymerTubeVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/putty.js
+// node_modules/molstar/lib/mol-repr/structure/representation/putty.js
 var PuttyVisuals = {
   "polymer-tube": (ctx, getParams) => UnitsRepresentation("Polymer tube mesh", ctx, getParams, PolymerTubeVisual),
   "polymer-gap": (ctx, getParams) => UnitsRepresentation("Polymer gap cylinder", ctx, getParams, PolymerGapVisual)
@@ -134327,7 +134327,7 @@ var PuttyRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.polymerResidueCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/spacefill.js
+// node_modules/molstar/lib/mol-repr/structure/representation/spacefill.js
 var SpacefillVisuals = {
   "element-sphere": (ctx, getParams) => UnitsRepresentation("Sphere mesh/impostor", ctx, getParams, ElementSphereVisual),
   "structure-element-sphere": (ctx, getParams) => ComplexRepresentation("Structure sphere mesh/impostor", ctx, getParams, StructureElementSphereVisual)
@@ -134369,7 +134369,7 @@ var SpacefillRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/bond-intra-unit-line.js
+// node_modules/molstar/lib/mol-repr/structure/visual/bond-intra-unit-line.js
 var isBondType2 = BondType.is;
 function getIntraUnitBondLineBuilderProps(unit2, structure, theme, props) {
   const location2 = element_exports.Location.create(structure, unit2);
@@ -134593,7 +134593,7 @@ function StructureIntraUnitBondLineVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/bond-inter-unit-line.js
+// node_modules/molstar/lib/mol-repr/structure/visual/bond-inter-unit-line.js
 var tmpRefPosBondIt2 = new Bond.ElementBondIterator();
 function setRefPosition2(pos, structure, unit2, index) {
   tmpRefPosBondIt2.setElement(structure, unit2, index);
@@ -134708,7 +134708,7 @@ function InterUnitBondLineVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/element-cross.js
+// node_modules/molstar/lib/mol-repr/structure/visual/element-cross.js
 var v3add9 = Vec3.add;
 var v3scaleAndAdd3 = Vec3.scaleAndAdd;
 var v3unitX2 = Vec3.unitX;
@@ -134858,7 +134858,7 @@ function StructureElementCrossVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/line.js
+// node_modules/molstar/lib/mol-repr/structure/representation/line.js
 var LineVisuals = {
   "intra-bond": (ctx, getParams) => UnitsRepresentation("Intra-unit bond line", ctx, getParams, IntraUnitBondLineVisual),
   "inter-bond": (ctx, getParams) => ComplexRepresentation("Inter-unit bond line", ctx, getParams, InterUnitBondLineVisual),
@@ -134914,7 +134914,7 @@ var LineRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/gaussian-density-volume.js
+// node_modules/molstar/lib/mol-repr/structure/visual/gaussian-density-volume.js
 function createGaussianDensityVolume(ctx, structure, theme, props, directVolume) {
   const { webgl } = ctx;
   if (!webgl) {
@@ -135034,7 +135034,7 @@ function UnitsGaussianDensityVolumeVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/gaussian-volume.js
+// node_modules/molstar/lib/mol-repr/structure/representation/gaussian-volume.js
 var GaussianVolumeVisuals = {
   "gaussian-volume": (ctx, getParams) => ComplexRepresentation("Gaussian volume", ctx, getParams, GaussianDensityVolumeVisual),
   "units-gaussian-volume": (ctx, getParams) => UnitsRepresentation("Units-Gaussian volume", ctx, getParams, UnitsGaussianDensityVolumeVisual)
@@ -135062,7 +135062,7 @@ var GaussianVolumeRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.elementCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/polymer-backbone-cylinder.js
+// node_modules/molstar/lib/mol-repr/structure/visual/polymer-backbone-cylinder.js
 var v3scale6 = Vec3.scale;
 var v3add10 = Vec3.add;
 var v3sub6 = Vec3.sub;
@@ -135164,7 +135164,7 @@ function PolymerBackboneCylinderMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/polymer-backbone-sphere.js
+// node_modules/molstar/lib/mol-repr/structure/visual/polymer-backbone-sphere.js
 var PolymerBackboneSphereParams = {
   ...UnitsMeshParams,
   ...UnitsSpheresParams,
@@ -135244,7 +135244,7 @@ function PolymerBackboneSphereMeshVisual(materialId) {
   }, materialId);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/backbone.js
+// node_modules/molstar/lib/mol-repr/structure/representation/backbone.js
 var BackboneVisuals = {
   "polymer-backbone-cylinder": (ctx, getParams) => UnitsRepresentation("Polymer backbone cylinder", ctx, getParams, PolymerBackboneCylinderVisual),
   "polymer-backbone-sphere": (ctx, getParams) => UnitsRepresentation("Polymer backbone sphere", ctx, getParams, PolymerBackboneSphereVisual),
@@ -135287,7 +135287,7 @@ var BackboneRepresentationProvider = StructureRepresentationProvider({
   isApplicable: (structure) => structure.polymerResidueCount > 0
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/visual/plane-image.js
+// node_modules/molstar/lib/mol-repr/structure/visual/plane-image.js
 var v3set5 = Vec3.set;
 var v3transformMat44 = Vec3.transformMat4;
 var v3squaredDistance3 = Vec3.squaredDistance;
@@ -135580,7 +135580,7 @@ function createPlaneImage(ctx, structure, theme, props, image) {
   return Image2.create(imageTexture, corners, groupTexture, valueTexture, trim2, -1, image);
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/representation/plane.js
+// node_modules/molstar/lib/mol-repr/structure/representation/plane.js
 var PlaneVisuals2 = {
   "plane-image": (ctx, getParams) => ComplexRepresentation("Plane image", ctx, getParams, PlaneImageVisual)
 };
@@ -135612,7 +135612,7 @@ var PlaneRepresentationProvider = StructureRepresentationProvider({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/structure/registry.js
+// node_modules/molstar/lib/mol-repr/structure/registry.js
 var StructureRepresentationRegistry = class _StructureRepresentationRegistry extends RepresentationRegistry {
   constructor() {
     super();
@@ -135643,7 +135643,7 @@ var StructureRepresentationRegistry = class _StructureRepresentationRegistry ext
   };
 })(StructureRepresentationRegistry || (StructureRepresentationRegistry = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/representation.js
+// node_modules/molstar/lib/mol-repr/volume/representation.js
 function createVolumeInstancesTransform(volume, invariantBoundingSphere, cellSize, batchSize, transformData) {
   const instanceCount = volume.instances.length;
   const transformArray = new Float32Array(instanceCount * 16);
@@ -136107,7 +136107,7 @@ function VolumeRepresentation(label2, ctx, getParams, visualCtor, getLoci6, getK
   };
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/isosurface.js
+// node_modules/molstar/lib/mol-repr/volume/isosurface.js
 var VolumeIsosurfaceParams = {
   isoValue: Volume.IsoValueParam,
   wrap: ParamDefinition.Select("auto", ParamDefinition.arrayToOptions(["off", "on", "auto"]))
@@ -136372,7 +136372,7 @@ var IsosurfaceRepresentationProvider = VolumeRepresentationProvider({
   isApplicable: (volume) => !Volume.isEmpty(volume) && !Volume.Segmentation.get(volume)
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/slice.js
+// node_modules/molstar/lib/mol-repr/volume/slice.js
 var SliceParams = {
   ...Image2.Params,
   quality: { ...Image2.Params.quality, isEssential: false },
@@ -136790,7 +136790,7 @@ var SliceRepresentationProvider = VolumeRepresentationProvider({
   isApplicable: (volume) => !Volume.isEmpty(volume) && !Volume.Segmentation.get(volume)
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/direct-volume.js
+// node_modules/molstar/lib/mol-repr/volume/direct-volume.js
 function getBoundingBox(gridDimension, transform) {
   const bbox = Box3D();
   Box3D.add(bbox, gridDimension);
@@ -136916,7 +136916,7 @@ var DirectVolumeRepresentationProvider = VolumeRepresentationProvider({
   isApplicable: (volume) => !Volume.isEmpty(volume) && !Volume.Segmentation.get(volume)
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/segment.js
+// node_modules/molstar/lib/mol-repr/volume/segment.js
 var VolumeSegmentParams = {
   segments: ParamDefinition.Converted((v4) => v4.map((x) => `${x}`), (v4) => v4.map((x) => parseInt(x)), ParamDefinition.MultiSelect(["0"], ParamDefinition.arrayToOptions(["0"]), {
     isEssential: true
@@ -137168,7 +137168,7 @@ var SegmentRepresentationProvider = VolumeRepresentationProvider({
   isApplicable: (volume) => !Volume.isEmpty(volume) && !!Volume.Segmentation.get(volume)
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/dot.js
+// node_modules/molstar/lib/mol-repr/volume/dot.js
 var VolumeDotParams = {
   isoValue: Volume.IsoValueParam,
   perturbPositions: ParamDefinition.Boolean(false)
@@ -137410,7 +137410,7 @@ var DotRepresentationProvider = VolumeRepresentationProvider({
   isApplicable: (volume) => !Volume.isEmpty(volume) && !Volume.Segmentation.get(volume)
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-repr/volume/registry.js
+// node_modules/molstar/lib/mol-repr/volume/registry.js
 var VolumeRepresentationRegistry = class _VolumeRepresentationRegistry extends RepresentationRegistry {
   constructor() {
     super();
@@ -137431,7 +137431,7 @@ var VolumeRepresentationRegistry = class _VolumeRepresentationRegistry extends R
   };
 })(VolumeRepresentationRegistry || (VolumeRepresentationRegistry = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/animation-loop.js
+// node_modules/molstar/lib/mol-plugin/animation-loop.js
 var MaxProperFrameDelta = 1e3 / 30;
 var PluginAnimationLoop = class {
   get isAnimating() {
@@ -137497,7 +137497,7 @@ var PluginAnimationLoop = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/util/substructure-parent-helper.js
+// node_modules/molstar/lib/mol-plugin/util/substructure-parent-helper.js
 var SubstructureParentHelper = class {
   getDecorator(root) {
     const tree = this.plugin.state.data.tree;
@@ -137584,7 +137584,7 @@ var SubstructureParentHelper = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/util/task-manager.js
+// node_modules/molstar/lib/mol-plugin/util/task-manager.js
 var TaskManager = class {
   constructor() {
     this.ev = RxEventHelper.create();
@@ -137679,7 +137679,7 @@ var TaskManager = class {
   TaskManager2.testTask = testTask;
 })(TaskManager || (TaskManager = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/util/toast.js
+// node_modules/molstar/lib/mol-plugin/util/toast.js
 var PluginToastManager = class extends StatefulPluginComponent {
   findByKey(key2) {
     return this.state.entries.find((e) => !!e && e.key === key2);
@@ -137744,7 +137744,7 @@ var PluginToastManager = class extends StatefulPluginComponent {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/util/viewport-screenshot.js
+// node_modules/molstar/lib/mol-plugin/util/viewport-screenshot.js
 function checkWebPSupport() {
   const elem = document.createElement("canvas");
   if (!!(elem.getContext && elem.getContext("2d"))) {
@@ -138138,7 +138138,7 @@ var ViewportScreenshotHelper = class extends PluginComponent {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/actions/file.js
+// node_modules/molstar/lib/mol-plugin-state/actions/file.js
 var file_exports = {};
 __export(file_exports, {
   DownloadFile: () => DownloadFile,
@@ -138253,7 +138253,7 @@ var DownloadFile = StateAction.build({
   }).runInContext(taskCtx);
 }));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/manager/drag-and-drop.js
+// node_modules/molstar/lib/mol-plugin-state/manager/drag-and-drop.js
 var DragAndDropManager = class {
   addHandler(name, handler) {
     const index = this.handlers.findIndex((h) => h[0] === name);
@@ -138300,7 +138300,7 @@ function defaultDragAndDropHandler(plugin, files) {
   }
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-util/error-context.js
+// node_modules/molstar/lib/mol-util/error-context.js
 var ErrorContext = class {
   constructor() {
     this.errors = /* @__PURE__ */ Object.create(null);
@@ -138321,7 +138321,7 @@ var ErrorContext = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/container.js
+// node_modules/molstar/lib/mol-plugin/container.js
 var PluginContainer = class {
   mount(target) {
     var _a;
@@ -138366,7 +138366,7 @@ var PluginContainer = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/context.js
+// node_modules/molstar/lib/mol-plugin/context.js
 var PluginContext = class {
   get isInitialized() {
     return this._isInitialized;
@@ -138785,7 +138785,7 @@ var PluginContext = class {
   }
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/assembly-unwind.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/assembly-unwind.js
 var AnimateAssemblyUnwind = PluginStateAnimation.create({
   name: "built-in.animate-assembly-unwind",
   display: { name: "Unwind Assembly" },
@@ -138868,7 +138868,7 @@ var AnimateAssemblyUnwind = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/camera-spin.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/camera-spin.js
 var _dir = Vec3();
 var _axis = Vec3();
 var _rot = Quat();
@@ -138914,7 +138914,7 @@ var AnimateCameraSpin = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/model-index.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/model-index.js
 var AnimateModelIndex = PluginStateAnimation.create({
   name: "built-in.animate-model-index",
   display: { name: "Animate Trajectory" },
@@ -139049,7 +139049,7 @@ var AnimateModelIndex = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/actions/structure.js
+// node_modules/molstar/lib/mol-plugin-state/actions/structure.js
 var structure_exports = {};
 __export(structure_exports, {
   AddTrajectory: () => AddTrajectory,
@@ -139424,7 +139424,7 @@ var LoadTrajectory = StateAction.build({
   }).runInContext(taskCtx);
 }));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/actions/volume.js
+// node_modules/molstar/lib/mol-plugin-state/actions/volume.js
 var volume_exports2 = {};
 __export(volume_exports2, {
   AssignColorVolume: () => AssignColorVolume2,
@@ -139559,14 +139559,14 @@ var AssignColorVolume2 = StateAction.build({
   return plugin.build().to(ref).apply(StateTransforms.Volume.AssignColorVolume, { ref: params.ref }, { dependsOn: [params.ref] }).commit();
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/actions.js
+// node_modules/molstar/lib/mol-plugin-state/actions.js
 var StateActions = {
   Structure: structure_exports,
   Volume: volume_exports2,
   DataFormat: file_exports
 };
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/model.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/model.js
 var VolumeServerInfo = class extends PluginStateObject.Create({ name: "Volume Streaming", typeClass: "Object" }) {
 };
 var VolumeServerHeader;
@@ -139578,7 +139578,7 @@ var VolumeServerHeader;
   })(ValueType = VolumeServerHeader2.ValueType || (VolumeServerHeader2.ValueType = {}));
 })(VolumeServerHeader || (VolumeServerHeader = {}));
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/transformers.js
+// node_modules/molstar/lib/mol-plugin/behavior/dynamic/volume-streaming/transformers.js
 function addEntry(entries3, method, dataId, emDefaultContourLevel) {
   entries3.push({
     source: method === "em" ? { name: "em", params: { isoValue: Volume.IsoValue.absolute(emDefaultContourLevel || 0) } } : { name: "x-ray", params: {} },
@@ -139815,7 +139815,7 @@ function createVolumeProps(streaming, channelName) {
   return VolumeRepresentation3DHelpers.getDefaultParamsStatic(streaming.plugin, "isosurface", { isoValue: channel.isoValue, alpha: channel.opacity, visuals: channel.wireframe ? ["wireframe"] : ["solid"] }, "uniform", { value: channel.color });
 }
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/state-interpolation.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/state-interpolation.js
 var AnimateStateInterpolation = PluginStateAnimation.create({
   name: "built-in.animate-state-interpolation",
   display: { name: "Animate State (experimental)" },
@@ -139868,7 +139868,7 @@ var AnimateStateInterpolation = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/spin-structure.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/spin-structure.js
 var AnimateStructureSpin = PluginStateAnimation.create({
   name: "built-in.animate-structure-spin",
   display: { name: "Spin Structure" },
@@ -139922,7 +139922,7 @@ var AnimateStructureSpin = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin-state/animation/built-in/camera-rock.js
+// node_modules/molstar/lib/mol-plugin-state/animation/built-in/camera-rock.js
 var _dir2 = Vec3();
 var _axis2 = Vec3();
 var _rot2 = Quat();
@@ -139965,7 +139965,7 @@ var AnimateCameraRock = PluginStateAnimation.create({
   }
 });
 
-// molsysviewer/js/node_modules/molstar/lib/mol-plugin/spec.js
+// node_modules/molstar/lib/mol-plugin/spec.js
 var PluginSpec;
 (function(PluginSpec2) {
   function Action2(action, params) {
@@ -140058,7 +140058,7 @@ var DefaultPluginSpec = () => ({
   ]
 });
 
-// molsysviewer/js/src/plugin/structure.ts
+// src/plugin/structure.ts
 async function recyclePreviousNode(plugin, previous) {
   if (!previous) return;
   const builder = plugin.build();
@@ -140317,7 +140317,7 @@ function createBondColumns(bonds) {
   };
 }
 
-// molsysviewer/js/src/managers/handlers/loader-handlers.ts
+// src/managers/handlers/loader-handlers.ts
 var LoaderHandlers = class {
   constructor(plugin, callbacks) {
     this.plugin = plugin;
@@ -140392,7 +140392,7 @@ var LoaderHandlers = class {
   }
 };
 
-// molsysviewer/js/src/managers/handlers/annotation-handlers.ts
+// src/managers/handlers/annotation-handlers.ts
 function styleToVisualParams(style) {
   if (!style) return void 0;
   const params = {};
@@ -140562,7 +140562,7 @@ var AnnotationHandlers = class {
   }
 };
 
-// molsysviewer/js/src/managers/handlers/measurement-handlers.ts
+// src/managers/handlers/measurement-handlers.ts
 function styleToVisualParams2(style) {
   if (!style) return void 0;
   const params = {};
@@ -140952,7 +140952,7 @@ var MeasurementHandlers = class {
   }
 };
 
-// molsysviewer/js/src/shapes/index.ts
+// src/shapes/index.ts
 var MSVTransform = Transformer.builderFactory("molsysviewer");
 var TransparentSphereParams = {
   ...Mesh.Params
@@ -143075,7 +143075,7 @@ async function addDisplacementVectorsFromPython(plugin, options) {
   return node.ref;
 }
 
-// molsysviewer/js/src/shapes/pocket-surface.ts
+// src/shapes/pocket-surface.ts
 var MSVTransform2 = Transformer.builderFactory("molsysviewer");
 var PocketSurfaceParams = {
   ...Mesh.Params
@@ -143337,7 +143337,7 @@ function PocketSurfaceRepresentation(ctx, getParams) {
   );
 }
 
-// molsysviewer/js/src/managers/handlers/shape-handlers.ts
+// src/managers/handlers/shape-handlers.ts
 var ShapeHandlers = class {
   constructor(plugin, registerRef, context2) {
     this.plugin = plugin;
@@ -143656,7 +143656,7 @@ var ShapeHandlers = class {
   }
 };
 
-// molsysviewer/js/src/managers/handlers/scene-handlers.ts
+// src/managers/handlers/scene-handlers.ts
 var SceneHandlers = class {
   constructor(plugin, host, callbacks) {
     this.plugin = plugin;
@@ -144263,7 +144263,7 @@ var SceneHandlers = class {
   }
 };
 
-// molsysviewer/js/src/themes/per-atom-color.ts
+// src/themes/per-atom-color.ts
 var _perAtomColorMap = /* @__PURE__ */ new Map();
 var DEFAULT_COLOR = Color(11184810);
 var MsvPerAtomColorThemeName = "msv-per-atom";
@@ -144300,7 +144300,7 @@ function clearPerAtomColors() {
   _perAtomColorMap.clear();
 }
 
-// molsysviewer/js/src/managers/handlers/state-handlers.ts
+// src/managers/handlers/state-handlers.ts
 var StateHandlers = class {
   constructor(plugin, callbacks) {
     this.plugin = plugin;
@@ -144621,6 +144621,16 @@ var StateHandlers = class {
     await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
     this.regionIndex.delete(tag);
     this.callbacks.notify({ event: "region_deleted", tag });
+  }
+  async renameRegion(msg) {
+    const oldTag = msg.tag ?? "region";
+    const newTag = msg.new_tag;
+    if (!newTag || oldTag === newTag) return;
+    const entry = this.regionIndex.get(oldTag);
+    if (!entry) return;
+    this.regionIndex.delete(oldTag);
+    this.regionIndex.set(newTag, entry);
+    this.callbacks.notify({ event: "region_renamed", tag: oldTag, new_tag: newTag });
   }
   async createLayer(msg) {
     const tag = msg.tag ?? "layer";
@@ -145093,7 +145103,7 @@ var StateHandlers = class {
   }
 };
 
-// molsysviewer/js/src/managers/handlers/trajectory-handlers.ts
+// src/managers/handlers/trajectory-handlers.ts
 var TrajectoryHandlers = class {
   constructor(plugin, context2) {
     this.plugin = plugin;
@@ -145225,7 +145235,7 @@ var TrajectoryHandlers = class {
   }
 };
 
-// molsysviewer/js/src/ui/context-menu.ts
+// src/ui/context-menu.ts
 function targetTitle(target) {
   if (target.kind === "empty") return "Canvas";
   if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
@@ -145359,9 +145369,7 @@ var ViewerContextMenu = class {
       section.appendChild(this.makeActionButton("Save Selection", "save_selection"));
       section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
       section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
-      if (this.currentSelection.count_groups === 1) {
-        section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
-      }
+      section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
       if (this.currentSelection.count_atoms > 0) {
         section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
       }
@@ -145625,12 +145633,16 @@ var ViewerContextMenu = class {
     const EYE_ON = `<path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2.5"/>`;
     const EYE_OFF = `<path d="M1 8s2.5-5 7-5 5.5 3 5.5 3M14.5 11.5S12 13 8 13c-4.5 0-7-5-7-5"/><line x1="2" y1="2" x2="14" y2="14"/>`;
     const TRASH = `<polyline points="3,6 13,6"/><path d="M5,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/><rect x="4" y="6" width="8" height="8" rx="1"/>`;
+    const PENCIL = `<path d="M11 2l3 3-9 9H2v-3L11 2z"/>`;
     const toggleBtn = mkIconBtn(region.hidden ? EYE_OFF : EYE_ON, region.hidden ? "Show region" : "Hide region", () => {
       if (!this.currentTarget) return;
       const details = { tag: region.tag };
       this.onAction?.("toggle_region_visibility", this.currentTarget, details);
       this.notify?.({ event: "interaction_context_action", action: "toggle_region_visibility", context: this.currentTarget, ...details });
       this.close();
+    });
+    const renameBtn = mkIconBtn(PENCIL, "Rename region", () => {
+      this.renderRenameRegionComposer(region.tag);
     });
     const deleteBtn = mkIconBtn(TRASH, "Delete region", () => {
       if (!this.currentTarget) return;
@@ -145641,6 +145653,7 @@ var ViewerContextMenu = class {
     });
     row.appendChild(label2);
     row.appendChild(toggleBtn);
+    row.appendChild(renameBtn);
     row.appendChild(deleteBtn);
     return row;
   }
@@ -145720,19 +145733,28 @@ var ViewerContextMenu = class {
       });
       this.close();
     };
-    save.addEventListener("click", submit);
-    cancel.addEventListener("click", () => {
+    const goBack = () => {
       if (!this.currentTarget) return;
-      this.open(this.currentTarget, this.currentPageX, this.currentPageY, this.currentSelection, this.currentLastMeasurement);
-    });
+      this.open(
+        this.currentTarget,
+        this.currentPageX,
+        this.currentPageY,
+        this.currentSelection,
+        this.currentLastMeasurement,
+        this.currentSavedSelections,
+        this.currentRegions,
+        this.currentAddonActions
+      );
+    };
+    save.addEventListener("click", submit);
+    cancel.addEventListener("click", goBack);
     input.addEventListener("keydown", (event) => {
       if (event?.key === "Enter") {
         event.preventDefault?.();
         submit();
       } else if (event?.key === "Escape") {
         event.preventDefault?.();
-        if (!this.currentTarget) return;
-        this.open(this.currentTarget, this.currentPageX, this.currentPageY, this.currentSelection, this.currentLastMeasurement);
+        goBack();
       }
     });
     actions.appendChild(save);
@@ -145791,6 +145813,106 @@ var ViewerContextMenu = class {
     });
     return button;
   }
+  renderRenameRegionComposer(oldTag) {
+    if (!this.currentTarget) return;
+    this.root.replaceChildren();
+    const title = document.createElement("div");
+    title.textContent = "Rename Region";
+    Object.assign(title.style, {
+      padding: "6px 8px 8px 8px",
+      fontWeight: "600",
+      borderBottom: "1px solid rgba(255,255,255,0.10)",
+      marginBottom: "6px"
+    });
+    this.root.appendChild(title);
+    const subtitle = document.createElement("div");
+    subtitle.textContent = `Current tag: ${oldTag}`;
+    Object.assign(subtitle.style, {
+      padding: "0 8px 8px 8px",
+      opacity: "0.82",
+      fontSize: "12px"
+    });
+    this.root.appendChild(subtitle);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = oldTag;
+    input.placeholder = "New tag";
+    Object.assign(input.style, {
+      display: "block",
+      width: "100%",
+      boxSizing: "border-box",
+      margin: "0 0 8px 0",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      border: "1px solid rgba(255,255,255,0.18)",
+      background: "rgba(255,255,255,0.06)",
+      color: "#f4f4f5",
+      outline: "none"
+    });
+    this.root.appendChild(input);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", gap: "8px" });
+    const save = document.createElement("button");
+    save.type = "button";
+    save.textContent = "Rename";
+    Object.assign(save.style, {
+      flex: "1 1 auto",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      border: "0",
+      background: "rgba(167, 243, 208, 0.18)",
+      color: "#d1fae5",
+      cursor: "pointer"
+    });
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = "Back";
+    Object.assign(cancel.style, {
+      flex: "0 0 auto",
+      padding: "8px 10px",
+      borderRadius: "8px",
+      border: "0",
+      background: "rgba(255,255,255,0.08)",
+      color: "#f4f4f5",
+      cursor: "pointer"
+    });
+    const submit = () => {
+      const newTag = String(input.value ?? "").trim();
+      if (newTag.length === 0 || newTag === oldTag || !this.currentTarget) return;
+      const details = { tag: oldTag, new_tag: newTag };
+      this.onAction?.("rename_region", this.currentTarget, details);
+      this.notify?.({ event: "interaction_context_action", action: "rename_region", context: this.currentTarget, ...details });
+      this.close();
+    };
+    const goBack = () => {
+      if (!this.currentTarget) return;
+      this.open(
+        this.currentTarget,
+        this.currentPageX,
+        this.currentPageY,
+        this.currentSelection,
+        this.currentLastMeasurement,
+        this.currentSavedSelections,
+        this.currentRegions,
+        this.currentAddonActions
+      );
+    };
+    save.addEventListener("click", submit);
+    cancel.addEventListener("click", goBack);
+    input.addEventListener("keydown", (event) => {
+      if (event?.key === "Enter") {
+        event.preventDefault?.();
+        submit();
+      } else if (event?.key === "Escape") {
+        event.preventDefault?.();
+        goBack();
+      }
+    });
+    actions.appendChild(save);
+    actions.appendChild(cancel);
+    this.root.appendChild(actions);
+    input.select?.();
+  }
   renderLabelComposer() {
     if (!this.currentTarget) return;
     this.root.replaceChildren();
@@ -145820,6 +145942,42 @@ var ViewerContextMenu = class {
       outline: "none"
     });
     this.root.appendChild(input);
+    const styleRow = document.createElement("div");
+    Object.assign(styleRow.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      margin: "0 0 8px 0"
+    });
+    const colorInput = document.createElement("input");
+    colorInput.type = "color";
+    colorInput.value = "#4080e0";
+    colorInput.title = "Label color";
+    Object.assign(colorInput.style, {
+      width: "28px",
+      height: "28px",
+      padding: "0",
+      border: "0",
+      borderRadius: "6px",
+      background: "transparent",
+      cursor: "pointer",
+      flexShrink: "0"
+    });
+    const sizeLabel = document.createElement("span");
+    sizeLabel.textContent = "Size";
+    Object.assign(sizeLabel.style, { fontSize: "12px", opacity: "0.75", flexShrink: "0" });
+    const sizeInput = document.createElement("input");
+    sizeInput.type = "range";
+    sizeInput.min = "0.6";
+    sizeInput.max = "2.0";
+    sizeInput.step = "0.1";
+    sizeInput.value = "1.0";
+    sizeInput.title = "Label size (em)";
+    Object.assign(sizeInput.style, { flex: "1 1 auto", cursor: "pointer" });
+    styleRow.appendChild(colorInput);
+    styleRow.appendChild(sizeLabel);
+    styleRow.appendChild(sizeInput);
+    this.root.appendChild(styleRow);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -145852,7 +146010,11 @@ var ViewerContextMenu = class {
     const submit = () => {
       const text = String(input.value ?? "").trim();
       if (text.length === 0 || !this.currentTarget) return;
-      const details = { text };
+      const label_style = {
+        color: colorInput.value,
+        size_em: parseFloat(sizeInput.value)
+      };
+      const details = { text, label_style };
       this.onAction?.("add_label_from_selection", this.currentTarget, details);
       this.notify?.({
         event: "interaction_context_action",
@@ -145862,31 +146024,28 @@ var ViewerContextMenu = class {
       });
       this.close();
     };
-    save.addEventListener("click", submit);
-    cancel.addEventListener("click", () => {
+    const goBack = () => {
       if (!this.currentTarget) return;
       this.open(
         this.currentTarget,
         this.currentPageX,
         this.currentPageY,
         this.currentSelection,
-        this.currentLastMeasurement
+        this.currentLastMeasurement,
+        this.currentSavedSelections,
+        this.currentRegions,
+        this.currentAddonActions
       );
-    });
+    };
+    save.addEventListener("click", submit);
+    cancel.addEventListener("click", goBack);
     input.addEventListener("keydown", (event) => {
       if (event?.key === "Enter") {
         event.preventDefault?.();
         submit();
       } else if (event?.key === "Escape") {
         event.preventDefault?.();
-        if (!this.currentTarget) return;
-        this.open(
-          this.currentTarget,
-          this.currentPageX,
-          this.currentPageY,
-          this.currentSelection,
-          this.currentLastMeasurement
-        );
+        goBack();
       }
     });
     actions.appendChild(save);
@@ -145973,31 +146132,28 @@ var ViewerContextMenu = class {
       });
       this.close();
     };
-    save.addEventListener("click", submit);
-    cancel.addEventListener("click", () => {
+    const goBack = () => {
       if (!this.currentTarget) return;
       this.open(
         this.currentTarget,
         this.currentPageX,
         this.currentPageY,
         this.currentSelection,
-        this.currentLastMeasurement
+        this.currentLastMeasurement,
+        this.currentSavedSelections,
+        this.currentRegions,
+        this.currentAddonActions
       );
-    });
+    };
+    save.addEventListener("click", submit);
+    cancel.addEventListener("click", goBack);
     input.addEventListener("keydown", (event) => {
       if (event?.key === "Enter") {
         event.preventDefault?.();
         submit();
       } else if (event?.key === "Escape") {
         event.preventDefault?.();
-        if (!this.currentTarget) return;
-        this.open(
-          this.currentTarget,
-          this.currentPageX,
-          this.currentPageY,
-          this.currentSelection,
-          this.currentLastMeasurement
-        );
+        goBack();
       }
     });
     actions.appendChild(save);
@@ -146012,7 +146168,7 @@ var ViewerContextMenu = class {
   }
 };
 
-// molsysviewer/js/src/managers/measurement-tools.ts
+// src/managers/measurement-tools.ts
 function lociToAtomIndices(loci) {
   const atomIndices = [];
   const seen = /* @__PURE__ */ new Set();
@@ -146184,7 +146340,7 @@ var MeasurementToolController = class {
   }
 };
 
-// molsysviewer/js/src/ui/tool-status.ts
+// src/ui/tool-status.ts
 function actionLabel(action) {
   switch (action) {
     case "distance":
@@ -146250,7 +146406,7 @@ var ToolStatusOverlay = class {
   }
 };
 
-// molsysviewer/js/src/managers/active-selection.ts
+// src/managers/active-selection.ts
 function buildGroupItemsFromStructure(structure) {
   const firstAtomicUnit = structure.units.find((unit2) => unit2.kind === 0);
   if (!firstAtomicUnit) return [];
@@ -146632,7 +146788,7 @@ var ActiveSelectionController = class {
   }
 };
 
-// molsysviewer/js/src/ui/group-strip.ts
+// src/ui/group-strip.ts
 function selectionKey(item2) {
   const molPart = item2.molecule_indices?.join(",") ?? "0";
   const compPart = item2.component_indices?.join(",") ?? "0";
@@ -147121,7 +147277,7 @@ var GroupStrip = class {
   }
 };
 
-// molsysviewer/js/src/ui/panel-shell.ts
+// src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
     this.visible = false;
@@ -147560,7 +147716,7 @@ var PanelShell = class {
   }
 };
 
-// molsysviewer/js/src/ui/floating-panel-shell.ts
+// src/ui/floating-panel-shell.ts
 var FloatingPanelShell = class {
   constructor(host, options) {
     // No viewport shift for floating panels
@@ -148006,7 +148162,7 @@ var FloatingPanelShell = class {
   }
 };
 
-// molsysviewer/js/src/ui/group-panel.ts
+// src/ui/group-panel.ts
 var GroupPanel = class {
   constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, options) {
     this.host = host;
@@ -148377,7 +148533,7 @@ var GroupPanel = class {
   }
 };
 
-// molsysviewer/js/src/ui/workbench-panel.ts
+// src/ui/workbench-panel.ts
 var WorkbenchPanel = class {
   constructor(host, options) {
     this.host = host;
@@ -149286,7 +149442,7 @@ var WorkbenchPanel = class {
   }
 };
 
-// molsysviewer/js/src/managers/viewer-controller.ts
+// src/managers/viewer-controller.ts
 function normalizeToElementLoci3(loci) {
   if (element_exports.Loci.is(loci)) return loci;
   try {
@@ -149713,6 +149869,13 @@ var MolSysViewerController = class _MolSysViewerController {
         const tag = typeof details?.tag === "string" ? details.tag : null;
         if (!tag) return;
         this.notify?.({ event: "interaction_context_action", action, tag });
+        return;
+      }
+      if (action === "rename_region") {
+        const tag = typeof details?.tag === "string" ? details.tag : null;
+        const new_tag = typeof details?.new_tag === "string" ? details.new_tag : null;
+        if (!tag || !new_tag) return;
+        this.notify?.({ event: "interaction_context_action", action, tag, new_tag });
         return;
       }
       if (action === "delete_annotation" || action === "delete_shape" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection") {
@@ -150627,6 +150790,9 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "delete_region":
           await this.state.deleteRegion(msg);
+          break;
+        case "rename_region":
+          await this.state.renameRegion(msg);
           break;
         case "create_layer":
           await this.state.createLayer(msg);
@@ -151616,7 +151782,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
 };
 
-// molsysviewer/js/src/popup/popup-logic.ts
+// src/popup/popup-logic.ts
 var bootPopup = async (loadedModule) => {
   const openerWin = window.opener;
   if (!openerWin) {
@@ -152043,7 +152209,7 @@ var bootPopup = async (loadedModule) => {
   sendToHost("molsysviewer-pop-ready", null);
 };
 
-// molsysviewer/js/src/managers/popup-host.ts
+// src/managers/popup-host.ts
 var PopupHostManager = class {
   constructor(viewer) {
     this.popoutWin = null;
@@ -152187,7 +152353,7 @@ var PopupHostManager = class {
   }
 };
 
-// molsysviewer/js/src/ui/help-overlay.ts
+// src/ui/help-overlay.ts
 function makeSection(heading, rows) {
   const section = document.createElement("div");
   const h = document.createElement("div");
@@ -152360,7 +152526,7 @@ var HelpOverlay = class {
   }
 };
 
-// molsysviewer/js/src/ui/controls.ts
+// src/ui/controls.ts
 var makeButton = (label2, onClick) => {
   const btn = document.createElement("button");
   btn.type = "button";
@@ -152837,7 +153003,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
   return overlay;
 };
 
-// molsysviewer/js/src/utils/logger.ts
+// src/utils/logger.ts
 var formatArg = (v4) => {
   if (v4 instanceof Error) return v4.stack || v4.message || String(v4);
   if (typeof v4 === "object") {
@@ -152878,7 +153044,7 @@ var createLogger = (model, debug) => {
   return sendLog;
 };
 
-// molsysviewer/js/src/index.ts
+// src/index.ts
 function buildMeasurementOpFromInteractionEvent(event) {
   if (!event || event.event !== "interaction_measurement_created") return null;
   const action = event.action;

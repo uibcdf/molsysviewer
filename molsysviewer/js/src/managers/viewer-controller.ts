@@ -687,6 +687,13 @@ export class MolSysViewerController {
                 this.notify?.({ event: "interaction_context_action", action, tag });
                 return;
             }
+            if (action === "rename_region") {
+                const tag = typeof details?.tag === "string" ? details.tag : null;
+                const new_tag = typeof details?.new_tag === "string" ? details.new_tag : null;
+                if (!tag || !new_tag) return;
+                this.notify?.({ event: "interaction_context_action", action, tag, new_tag });
+                return;
+            }
             if (
                 action === "delete_annotation"
                 || action === "delete_shape"
@@ -1526,6 +1533,7 @@ export class MolSysViewerController {
                 case "show_region": await this.state.showRegion(msg); break;
                 case "hide_region": await this.state.hideRegion(msg); break;
                 case "delete_region": await this.state.deleteRegion(msg); break;
+                case "rename_region": await this.state.renameRegion(msg); break;
                 case "create_layer": await this.state.createLayer(msg); break;
                 case "show_layer": await this.state.showLayer(msg); break;
                 case "hide_layer": await this.state.hideLayer(msg); break;

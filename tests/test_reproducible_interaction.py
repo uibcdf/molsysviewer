@@ -398,7 +398,7 @@ def test_context_action_hide_measurement_executes_python_bridge():
     ]
 
 
-def test_add_label_from_active_selection_requires_exactly_one_group():
+def test_add_label_from_active_selection_supports_multi_group():
     view = demo["dialanine"]
     event = {
         "event": "interaction_active_selection_changed",
@@ -406,25 +406,22 @@ def test_add_label_from_active_selection_requires_exactly_one_group():
         "element_level": "group",
         "target_level": "none",
         "items": [],
-        "atom_indices": [0, 1],
+        "atom_indices": [0, 1, 2, 3],
         "group_indices": [0, 1],
         "component_indices": [],
         "chain_indices": [0],
         "molecule_indices": [],
         "entity_indices": [0],
-        "count_atoms": 2,
+        "count_atoms": 4,
         "count_groups": 2,
         "count_shapes": 0,
         "count_annotations": 0,
     }
     view._handle_frontend_event(event)  # noqa: SLF001
-
-    try:
-        view.annotations.add_label_from_active_selection(text="bad")
-    except ValueError as exc:
-        assert "exactly one group" in str(exc)
-    else:
-        raise AssertionError("Expected ValueError for multi-group active selection")
+    layer = view.annotations.add_label_from_active_selection(text="Multi-group label")
+    assert layer is not None
+    records = view.annotations.records()
+    assert any(r.get("options", {}).get("text") == "Multi-group label" for r in records)
 
 
 def test_full_reproducible_workflow_exports_region_selection_label_and_measurement():
