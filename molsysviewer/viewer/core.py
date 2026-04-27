@@ -340,15 +340,15 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         elif event == "movie_export_done":
             self._movie_export_done = True
         elif event == "interaction_hover":
-            self._last_hover_event = dict(content)
+            self._last_hover_event = self._enrich_interaction_payload(dict(content))
             for cb in list(self._hover_callbacks):
                 cb(self._last_hover_event)
         elif event == "interaction_click":
-            self._last_click_event = dict(content)
+            self._last_click_event = self._enrich_interaction_payload(dict(content))
             for cb in list(self._click_callbacks):
                 cb(self._last_click_event)
         elif event == "interaction_context_menu":
-            self._last_context_event = dict(content)
+            self._last_context_event = self._enrich_interaction_payload(dict(content))
             for cb in list(self._context_callbacks):
                 cb(self._last_context_event)
         elif event == "interaction_context_action":
@@ -583,6 +583,21 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
           system, modify your data and call `load(...)` again.
         """
         return self._molsys
+
+    def _enrich_interaction_payload(self, payload: dict) -> dict:
+        if payload.get("kind") != "structure":
+            return payload
+        raw = payload.get("atom_indices")
+        if not raw:
+            return payload
+        pick_set = set(raw)
+        tags = [
+            tag
+            for tag, region in self._regions.items()
+            if region.atom_indices is not None and pick_set.isdisjoint(region.atom_indices) is False
+        ]
+        payload["region_tags"] = tags
+        return payload
 
     def _next_region_tag(self) -> str:
         self._region_counter += 1
