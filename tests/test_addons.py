@@ -314,7 +314,9 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
             panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel"),),
         )
 
+    from importlib.machinery import ModuleSpec
     module.get_addon = _get_addon
+    module.__spec__ = ModuleSpec(module.__name__, None)
     sys.modules[module.__name__] = module
     monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt", "molsysviewer_missing"))
     try:

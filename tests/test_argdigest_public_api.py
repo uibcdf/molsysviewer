@@ -152,12 +152,12 @@ def test_shape_helpers_do_not_emit_missing_digester_warnings():
             alpha=0.3,
             tag="sphere-1",
         )
-        view.shapes.add_spheres(
-            centers=puw.quantity([(0.0, 0.0, 0.0), (1.0, 1.0, 1.0)], "nm"),
-            radii=puw.quantity([1.0, 1.5], "nm"),
-            colors=[0x00FF00, 0x0000FF],
-            alphas=[0.2, 0.4],
-            tags=["s1", "s2"],
+        view.shapes.add_sphere(
+            center=puw.quantity([(0.0, 0.0, 0.0), (1.0, 1.0, 1.0)], "nm"),
+            radius=puw.quantity([1.0, 1.5], "nm"),
+            color=[0x00FF00, 0x0000FF],
+            alpha=[0.2, 0.4],
+            tag=["s1", "s2"],
         )
         view.shapes.add_links(
             coordinate_pairs=puw.quantity([

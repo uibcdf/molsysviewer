@@ -29,6 +29,9 @@ def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
                 return 1
             raise AssertionError("Unexpected get request")
 
+        def get_n_atoms(self):
+            return 1
+
         def to_form(self, target):
             if target == "molsysmt.ViewerJSON":
                 return self.payload
@@ -101,6 +104,9 @@ def test_load_from_molsysmt_creates_view_when_missing(monkeypatch):
             if element == "atom" and n_atoms:
                 return 1
             raise AssertionError("Unexpected get request")
+
+        def get_n_atoms(self):
+            return 1
 
         def to_form(self, target):
             if target == "molsysmt.ViewerJSON":

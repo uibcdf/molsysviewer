@@ -17,6 +17,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_add_channel_tube_message():
     view = DummyView()
@@ -37,8 +41,8 @@ def test_add_channel_tube_message():
 
     assert view.messages[0]["op"] == "add_channel_tube"
     options = view.messages[0]["options"]
-    assert options["centers"] == [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 1.0, 0.0]]
-    assert options["radii"] == [1.0, 1.1, 1.2]
+    assert options["centers"] == [[0.0, 0.0, 0.0], [10.0, 10.0, 10.0], [20.0, 10.0, 0.0]]
+    assert options["radii"] == [10.0, 11.0, 12.0]
     assert options["color_mode"] == "solvent"
     assert options["color_by"] == "solvent"
     assert options["solvent_distances"] == [0.2, 0.4, 0.6]

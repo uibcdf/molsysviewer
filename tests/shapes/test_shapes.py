@@ -19,6 +19,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_shapes_exports_and_delegation(monkeypatch):
     view = DummyView()
@@ -33,8 +37,8 @@ def test_shapes_exports_and_delegation(monkeypatch):
     monkeypatch.setattr(manager.spheres, "add_sphere", fake_add_sphere)
 
     manager.add_sphere(center=(1, 2, 3), radius=5)
-    assert called["kwargs"]["center"] == (1, 2, 3)
-    assert called["kwargs"]["radius"] == 5
+    assert called["args"][0] == (1, 2, 3)
+    assert called["args"][1] == 5
 
 
 def test_add_sphere_sends_message():
@@ -528,16 +532,16 @@ def test_pocket_surface_shape_supports_alpha_mutator_and_replay_state():
     assert view._shape_history[0]["options"]["layer_tag"] == "pockets"  # noqa: SLF001
 
 
-def test_add_spheres_broadcasts_and_validates():
+def test_add_sphere_batch_broadcasts_and_validates():
     view = DummyView()
     shapes = SphereShapes(view)
 
     centers = puw.quantity([(0, 0, 0), (1, 1, 1)], "nm")
-    shapes.add_spheres(centers, radii=puw.quantity([1.0, 2.0], "nm"), colors=0x00FF00, alphas=[0.1, 0.2])
+    shapes.add_sphere(centers, radius=puw.quantity([1.0, 2.0], "nm"), color=0x00FF00, alpha=[0.1, 0.2], skip_digestion=True)
 
     assert len(view.messages) == 2
-    assert view.messages[0]["options"]["radius"] == 1.0
-    assert view.messages[1]["options"]["radius"] == 2.0
+    assert view.messages[0]["options"]["radius"] == 10.0  # 1 nm = 10 Å
+    assert view.messages[1]["options"]["radius"] == 20.0  # 2 nm = 20 Å
 
     with pytest.raises(ValueError):
-        shapes.add_spheres(centers, radii=puw.quantity([1.0], "nm"), colors=[0xFFFFFF, 0x000000], alphas=0.5)
+        shapes.add_sphere(centers, radius=puw.quantity([1.0, 1.5, 2.0], "nm"), color=0x00FF00, alpha=0.5, skip_digestion=True)

@@ -17,6 +17,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_add_set_alpha_spheres_message():
     view = DummyView()
@@ -43,14 +47,14 @@ def test_add_set_alpha_spheres_message():
             "op": "add_alpha_sphere_set",
             "options": {
                 "alpha_spheres": {
-                    "centers": [[0, 0, 0], [1, 1, 1]],
-                    "radii": [1.0, 1.5],
+                    "centers": [[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]],
+                    "radii": [10.0, 15.0],
                     "color": 0x111111,
                     "alpha": 0.2,
                 },
                 "atom_spheres": {
-                    "centers": [[2, 2, 2]],
-                    "radius": 0.8,
+                    "centers": [[20.0, 20.0, 20.0]],
+                    "radius": 8.0,
                     "color": 0x222222,
                     "alpha": 0.6,
                 },

@@ -16,6 +16,10 @@ class DummyView:
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
 
+    def _next_shape_tag(self):
+        self._layer_counter += 1
+        return f"shape-{self._layer_counter}"
+
 
 def test_add_pocket_surface_basic_message():
     view = DummyView()
