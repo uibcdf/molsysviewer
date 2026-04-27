@@ -423,19 +423,17 @@ should grow over time as additional project-level principles become clear.
     - JS rebuilds affected shapes on structure change via `onTrajectoryState` subscription in `ShapeHandlers`
     - `None` in a structure slot hides the shape for that structure
 
-- `In progress` — docs placeholder gap only
-  - `shape-handler.test.ts` — 11 tests: `structures_coords` storage for all 5
-    trajectory-shape families, `addHbonds` warn path, frame subscription,
-    single-subscription guarantee, `frameUpdateInProgress` guard. ✓
-  - Open: three user docs pages are still stubs (code exists, docs missing):
-    - `docs/content/user/overlays/shapes/vectors.md` — `add_displacement_vectors`
-    - `docs/content/user/overlays/shapes/links.md` — `add_links`
-    - `docs/content/user/overlays/shapes/meshes.md` — `add_triangle_faces`, `add_tetrahedra`
+- `Done` (2026-04-27)
+  - `shape-handler.test.ts` — 11 tests covering all trajectory-shape families,
+    frame subscription, and concurrent-guard. ✓
+  - All three shape docs stubs filled (2026-04-27):
+    - `vectors.md` — `add_displacement_vectors`: origins, atom_indices, color_by, palette ✓
+    - `links.md` — `add_links`: atom_pairs, coordinate_pairs, per-link color/radius ✓
+    - `meshes.md` — `add_triangle_faces` + `add_tetrahedra`: vertices, atom triplets/quads ✓
 
 ### Next actions
 
-- Fill the three placeholder shape docs pages (minimal example + key options each).
-- Keep filling `argdigest` gaps only where new public wrappers are added.
+- Keep filling `argdigest` gaps only when new public wrappers are added.
 
 ### Criteria
 
@@ -670,13 +668,12 @@ None. Item 6 is complete.
   - 2 popup-logic unit tests: `molsysviewer-sync-op` live mirror,
     `molsysviewer-sync-autohide` listener lifecycle. ✓
   - Open: popup live-sync after interactive edits (beyond initial replay) not covered.
-  - Open: several troubleshooting docs pages are stubs
-    (`docs_embeds.md`, `selection_issues.md`, `performance.md`, `viewer_not_loading.md`).
+  - Troubleshooting docs stubs filled (2026-04-27):
+    `viewer_not_loading.md`, `selection_issues.md`, `performance.md`, `docs_embeds.md` ✓
 
 ### Next actions
 
 - Add test for popup live-sync after a post-load edit (region create / label add).
-- Fill troubleshooting docs stubs with actual diagnostic steps.
 
 ### Criteria
 
