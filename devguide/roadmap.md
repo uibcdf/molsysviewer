@@ -439,31 +439,32 @@ should grow over time as additional project-level principles become clear.
 
 ### Status
 
-- `In progress`
-  - `molsysviewer.tools` now exists as the intended home for advanced operations that should not inflate `MolSysView`.
-  - `molsysviewer.tools.basic.concatenate_structures(...)` exists as the first pure composition primitive.
-  - `molsysviewer.tools.basic.merge(...)` now exists as the first view-centric composition primitive.
-  - `molsysviewer.tools.basic` now also provides functional wrappers so users can operate on `MolSysView` in a MolSysMT-like style.
-  - `molsysviewer.tools.basic.copy(...)` and `compare(...)` now extend that workbench surface.
-  - The object-side inspection API is now the preferred home for scene-centric helpers such as focus and region partitioning.
-  - User docs now include a dedicated `tools/` section with module/function pages for `tools.basic`.
+- `Done` (scope intentionally frozen, 2026-04-27)
+  - `molsysviewer.tools.basic` provides the viewer-centric composition surface:
+    `concatenate_structures`, `merge`, `copy`, `compare`, `make_regions_by`.
+  - Focus helpers live on the object side (`Whole.focus`, `Region.focus`, etc.).
+  - User docs include a dedicated `tools/` section with module/function pages.
+
+### Decision
+
+`tools` is intentionally kept at its current scope. Molecular analysis (topology,
+hbonds, ANM, etc.) belongs in the **MolSysMT addon** — an optional add-on that
+connects MolSysMT with the viewer — not here. Expanding `tools` into that territory
+would duplicate MolSysMT's surface without benefit and blur the dependency boundary.
+
+The only functions that belong in `tools` are operations that take `MolSysView`
+objects as their primary input and produce viewer-centric outputs (new views,
+scene comparisons). Everything else → MolSysMT addon.
 
 ### Next actions
 
-- Add the next `tools.basic` operation only when its behavior and ownership are clear beyond `merge(...)`.
-- Decide module boundaries intentionally (`basic`, `structure`, `topology`, `hbonds`, `build`) instead of copying MolSysMT mechanically.
-- Keep `tools` operations explicit about whether they are pure (return a new view) or live (mutate an existing one).
-- Keep user docs organized under `user/tools/<module>/<function>.md` or notebook equivalents so the tools surface can grow without scattering tutorials.
-- Prioritize `tools` functions that make MolSysViewer more useful as an inspection/workbench tool for molecular systems.
-- Keep focus helpers (`focus_selection`, `focus_region`, `Whole.focus`, `Region.focus`) on the object side.
-- Keep region-building helpers on `MolSysView` when they create live scene objects rather than pure return values.
-- Prefer one parameterized region-building entrypoint (`make_regions_by(element=...)`) over multiple near-duplicate `split_by_*` methods.
-- Keep `make_regions_by(...)` intentionally limited to useful inspection levels (`chain`, `molecule`, `entity`) unless a stronger product need appears.
+- No planned additions to `tools.basic`.
+- MolSysMT integration → see addon direction in `molsyssuite_addon_direction.md`.
 
 ### Criteria
 
-- `tools` should grow product capability without turning `MolSysView` into a grab bag.
-- Operations that compose multiple systems/views should use real demo regressions and preserve viewer-safe semantics.
+- Do not add analysis primitives that replicate MolSysMT functionality.
+- New `tools` entries only if they are unambiguously viewer-centric with no MolSysMT equivalent.
 
 ## 5) Visibility, Regions/Layers, and Global Semantics
 
