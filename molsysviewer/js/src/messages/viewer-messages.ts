@@ -387,6 +387,12 @@ export type DeleteRegionMessage = {
     tag?: string;
 };
 
+export type RenameRegionMessage = {
+    op: "rename_region";
+    tag?: string;
+    new_tag?: string;
+};
+
 export type CreateLayerMessage = {
     op: "create_layer";
     tag?: string;
@@ -637,6 +643,7 @@ export type ViewerMessage =
     ShowRegionMessage |
     HideRegionMessage |
     DeleteRegionMessage |
+    RenameRegionMessage |
     CreateLayerMessage |
     ShowLayerMessage |
     HideLayerMessage |
