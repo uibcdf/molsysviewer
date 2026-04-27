@@ -99,12 +99,15 @@ That principle should guide prioritization throughout the repository.
 32. [**Course Structure**](course_structure.md)
    - Proposed 23-module curriculum for an "Introduction to MolSysViewer" course, from basic loading to advanced cinematic production.
 33. [**MolSysMovie Vision**](molsysmovie_vision.md)
-   - Long-term strategic vision for a `MolSysMovie` cinematic/VR animation layer (post-1.0).
-34. [**Load Modes and Append Structures Status**](load_modes_and_append_structures_status.md)
+   - Original strategic vision for cinematic/VR animation. VR direction remains post-1.0.
+34. [**MolSysMovie Plan**](molsysmovie_plan.md)
+   - Concrete pre-1.0 architecture and phased plan for `view.movie`: JS animation engine,
+     keyframe timeline, serializable recipes, and export pipeline.
+35. [**Load Modes and Append Structures Status**](load_modes_and_append_structures_status.md)
    - Reference status document for `load()` mode variants and the structure-append workflow.
-35. [**Render Quality Vision**](render_quality_vision.md)
+36. [**Render Quality Vision**](render_quality_vision.md)
    - Strategic vision for high-fidelity rendering and Blender integration (post-1.0).
-36. [**Mol\* Color Strings**](molstar_color_strings.md)
+37. [**Mol\* Color Strings**](molstar_color_strings.md)
    - Baseline record of named color strings that MolSysViewer treats as valid Mol\* color names.
 
 ## Workbench Tutorials (Planned)
