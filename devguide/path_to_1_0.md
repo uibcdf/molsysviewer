@@ -13,10 +13,10 @@ Work done against the current tag (0.18.0).
 
 | # | Task | Owner | Status |
 |---|---|---|---|
-| 1 | Rewrite README (current features, real API, no "prototype") | Claude | — |
-| 2 | Fix `pyproject.toml`: classifiers, keywords, description | Claude | — |
-| 3 | Fill `changes_notes.md`: entries post-2026-04-26 (region_tags, movie, JS test suite) | Claude | — |
-| 4 | Fill 3 placeholder doc pages (`demo_systems/catalog`, `demo_systems/index`, `scene_management/visibility`) | Claude | — |
+| 1 | Rewrite README (current features, real API, no "prototype") | Claude | ✅ 2026-04-28 |
+| 2 | Fix `pyproject.toml`: classifiers, keywords, description | Claude | ✅ 2026-04-28 |
+| 3 | Fill `changes_notes.md`: entries post-2026-04-26 (region_tags, movie, JS test suite) | Claude | ✅ 2026-04-28 |
+| 4 | Fill 3 placeholder doc pages (`demo_systems/catalog`, `demo_systems/index`, `scene_management/visibility`) | Claude | ✅ 2026-04-28 |
 | 5 | Manual smoke test — 14-step flow in `devguide/smoke_test.md` | Diego (display) | — |
 | 6 | Visual smoke of `controls_mode="minimal"` + `panel_mode_style="floating"` in a real notebook | Diego (display) | — |
 | 7 | Publish conda + npm packages for `0.18.0` | Diego (credentials) | — |
