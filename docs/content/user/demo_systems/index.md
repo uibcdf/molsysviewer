@@ -1,14 +1,24 @@
 # Demo systems
 
-MolSysViewer ships with a few small demo molecular systems you can use to build reproducible examples.
+MolSysViewer ships with a small set of built-in molecular systems useful for
+examples, tests, and quick experiments.  They are available through the
+`molsysviewer.demo` dictionary — each access returns a fresh `MolSysView`
+already loaded with the system.
 
-This section is a placeholder.
+```python
+import molsysviewer as msv
 
-It will include:
+view = msv.demo["dialanine"]
+view.show()
+```
 
-- what each demo contains (single structure vs trajectory),
-- how to load it from `molsysviewer.demo`,
-- and which demos are best for pockets, channels, and pharmacophore workflows.
+The same systems are also accessible as raw file paths via `molsysviewer.systems`
+when you need to load them yourself:
+
+```python
+path = msv.systems["dialanine"]          # pathlib.Path to the .h5msm file
+view = msv.new_view(path)
+```
 
 ```{toctree}
 :hidden:
