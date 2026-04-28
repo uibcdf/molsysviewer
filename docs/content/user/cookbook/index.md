@@ -10,7 +10,15 @@ Recipes for common tasks (to be filled with concrete examples):
 
 Each recipe will include: minimal code, expected visuals (static HTML via `view.export.html(..., mode="lite")`), and option tweaks.
 
-Current high-value runtime recipes:
+Scientific tutorials (provisional):
+
+- {doc}`tutorial_molsysmt_protein_inspection` — inspect counts, colour by physchem property, H-bond overlay
+- {doc}`tutorial_elasnetmt_anm_modes` — GNM/ANM model, mode vectors, contact network
+- {doc}`tutorial_trajectory_analysis` — RMSF colouring, region annotation, movie export
+- {doc}`tutorial_topomt_pocket` — pocket detection and visualisation with TopoMT
+- {doc}`tutorial_pharmacophoremt_overlay` — structure-based pharmacophore inside a pocket
+
+High-value runtime recipes:
 
 - {doc}`figure_export_workbench`
 - {doc}`addon_workspace_workbench`
@@ -22,6 +30,11 @@ Current high-value runtime recipes:
 :maxdepth: 2
 :hidden:
 
+tutorial_molsysmt_protein_inspection
+tutorial_elasnetmt_anm_modes
+tutorial_trajectory_analysis
+tutorial_topomt_pocket
+tutorial_pharmacophoremt_overlay
 pocket_surface
 pocket_blob
 channel_tube
