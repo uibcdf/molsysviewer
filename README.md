@@ -2,244 +2,186 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18072956.svg)](https://doi.org/10.5281/zenodo.18072956)
-[![](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/) 
+[![](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/downloads/)
 [![Documentation](https://github.com/uibcdf/molsysviewer/actions/workflows/sphinx_docs_to_gh_pages.yaml/badge.svg)](https://github.com/uibcdf/molsysviewer/actions/workflows/sphinx_docs_to_gh_pages.yaml)
 [![CI](https://github.com/uibcdf/molsysviewer/actions/workflows/CI.yaml/badge.svg)](https://github.com/uibcdf/molsysviewer/actions/workflows/CI.yaml)
 [![codecov](https://codecov.io/github/uibcdf/molsysviewer/graph/badge.svg?token=9ZMA4YZLOR)](https://codecov.io/github/uibcdf/molsysviewer)
 [![Install with conda](https://img.shields.io/badge/Install%20with-conda-brightgreen.svg)](https://conda.anaconda.org/uibcdf/molsysviewer)
-[![Installation on ubuntu-latest](https://github.com/uibcdf/molsysviewer/actions/workflows/install_ubuntu_latest.yaml/badge.svg)](https://github.com/uibcdf/molsysviewer/actions/workflows/install_ubuntu_latest.yaml)
-[![Installation on macos-latest](https://github.com/uibcdf/molsysviewer/actions/workflows/install_macos_latest.yaml/badge.svg)](https://github.com/uibcdf/molsysviewer/actions/workflows/install_macos_latest.yaml)
 
-*A Mol\*-powered interactive viewer for molecular systems and trajectories,
-designed for general use and for seamless integration with the MolSys
-ecosystem.*
+*A Mol\*-powered interactive molecular viewer for Jupyter, built around the idea that
+exploratory science should become reproducible science.*
 
-MolSysViewer is a modern molecular visualization tool built on top of the
+MolSysViewer is a modern 3D molecular visualisation tool built on the
 [Mol\*](https://molstar.org) engine and exposed through a clean Python API.
-It provides high-quality, interactive 3D rendering of molecular structures,
-custom shapes, trajectories, and scientific overlays — directly inside Jupyter
-notebooks and JupyterLab.
+It renders structures, trajectories, and scientific overlays directly inside
+Jupyter notebooks and JupyterLab — and it is designed so that every meaningful
+thing you do interactively can be captured as replayable, exportable Python state.
 
-## Guiding Idea
-
-Science has an interactive and exploratory phase, and molecular viewers are
-essential there. But science must also be reproducible.
-
-MolSysViewer is built around that tension:
-
-- interactive exploration should be easy and scientifically useful,
-- but the meaningful outcome of that exploration should be capturable as
-  reproducible viewer state.
-
-In practice, this means that selections, regions, labels, measurements, layers,
-camera state, and other scientifically relevant scene decisions should tend
-toward Python-driven, replayable, exportable, and rebuild-safe representations
-instead of remaining only ephemeral UI interactions.
-
-For users and developers, see the web documentation:
-https://www.uibcdf.org/molsysviewer
-
-The viewer is implemented as a lightweight anywidget extension with a
-TypeScript/Mol* core, giving it excellent performance, portability, and
-extensibility while keeping the Python-facing API simple and intuitive.
-
-MolSysViewer is developed as an independent library, and at the same time it
-serves as the visualization engine for the **UIBCDF** ecosystem, integrating
-naturally with tools such as:
-
-- **MolSysMT** (molecular systems)
-- **TopoMT** (cavity and topography analysis)
-- **PharmacophoreMT** (pharmacophore modelling)
-- **ElasNetMT** (elastic network models)
-- and future modules of the MolSys family.
+Documentation: https://www.uibcdf.org/molsysviewer
 
 ---
 
-## ✨ Features
+## Features
 
-### ✔ Interactive molecular visualization
-- Load PDB and mmCIF strings directly (“in-memory structures”)
-- Load native MolSysMT systems without intermediate PDB conversion
-- Load structures from remote URLs
-- High-quality Mol\* rendering with cartoon, surface, and atomic styles
-- Smooth camera, lighting, and interactivity
+### Interactive 3D visualisation
+- Load PDB/mmCIF strings, remote PDB IDs, URLs, or native MolSysMT systems
+- High-quality Mol\* rendering: cartoon, surface, ball-and-stick, spacefill, and more
+- Built-in representation styles and publication-ready presets
+- Multi-structure trajectory playback with configurable frame rate
 
-### ✔ Python → Mol* shape API
-Scientific overlays can be rendered using a small and extensible Python API:
+### Python-driven scene management
+- **Regions** — named atom subsets with independent visibility, colour, and representation
+- **Layers** — non-structural visual groups (shapes, overlays) with tag-based lifecycle
+- **Styles** — reusable scene recipes applied globally or per region
+- `view.whole`, `view.regions`, `view.layers` as first-class Python objects
 
-- `add_sphere(center, radius, color, alpha)`
-- `add_spheres(centers, radius, ...)` (vectorized)
-- Fully customizable transparency and visual parameters
+### Scientific overlays (shapes)
+- Displacement vectors, link shapes, H-bond overlays, anisotropy ellipsoids
+- Pocket blobs, pocket surfaces, channel tubes
+- Pharmacophore glyphs (donors, acceptors, hydrophobic patches, aromatic rings)
+- Sphere and triangle-face primitives
+- All shapes are structure-aware: they follow atoms across trajectory frames
 
-Additional primitives (arrows, cylinders, billboards, meshes, labels) are part
-of the active roadmap.
+### Annotations and measurements
+- Persistent labels anchored to atom selections (`view.annotations`)
+- Interactive distance, angle, and dihedral measurements (`view.measurements`)
+- Canvas pickability: hover and click events on labels and measurements
+- All artifacts survive export/replay/rebuild cycles
 
-### ✔ Clean, modern architecture
-- Built entirely on **anywidget** (no JupyterLab extension required)
-- TypeScript + esbuild bundling
-- The widget runtime ships locally; docs-lite exports may use a CDN
-- Viewer initializes reliably through a robust JS → Python handshake
-- Fully self-contained for conda and pip packaging
+### Canvas interaction and callbacks
+- Click, hover, and context-menu events forwarded to Python
+- `region_tags` enrichment on every interaction payload
+- `view.on_hover(fn)` / `view.on_click(fn)` reactive callbacks
+- Active selection bridge: canvas selection → named region/selection/label
 
-### ✔ Designed for scientific workflows
-In addition to being a general-purpose molecular viewer, MolSysViewer is
-designed to support:
+### Export and embedding
+- `view.export.html(...)` — self-contained interactive HTML (standalone or CDN-lite)
+- `view.export.figure(...)` — publication-quality PNG/SVG snapshots
+- `view.export.figure_publication_set(...)` — full light/dark/transparent bundle
+- `view.movie.export(...)` — animated GIF or MP4 from trajectory frames
+- State serialisation: `view.export_state()` / `view.import_state()`
 
-- cavity and pocket visualizations (TopoMT)
-- pharmacophoric elements (PharmacophoreMT)
-- trajectory inspection (MolSysMT)
-- structure + annotation blends (ML predictions, scoring fields, etc.)
-- region/layer scene management and a popout mirror view
+### Addon system
+MolSysViewer has a first-class addon API that lets external packages add
+workspaces, panels, context actions, and shape providers without modifying the core:
 
-It is therefore not intended to be only an interactive viewer or a publication
-image generator. Its core value is helping exploratory scientific work become
-reproducible scientific state.
+| Addon package | Ecosystem tool | What it adds |
+|---|---|---|
+| `molsysviewer-molsysmt` | MolSysMT | 10-panel workspace: inspect, select, colour, H-bonds, topology, PBC, mechanics, build |
+| `molsysviewer-elasnetmt` | ElasNetMT | GNM/ANM elastic network modes and contact network overlays |
+| `molsysviewer-topomt` | TopoMT | Pocket detection and topography visualisation |
+| `molsysviewer-pharmacophoremt` | PharmacophoresMT | Structure-based pharmacophore glyph overlays |
 
-### ✔ SMonitor integration
-MolSysViewer emits structured warnings and errors through **SMonitor**. This
-keeps user-facing messages consistent and gives developers a unified way to
-trace diagnostics across the MolSys ecosystem.
+### Canvas UX modes
+- `controls_mode="minimal"` — 3-icon cluster + keyboard shortcuts (N/W/H)
+- `panel_mode_style="floating"` — centred overlay panel, no viewport shift
 
 ---
 
-## 🚀 Example
+## Quick start
 
 ```python
-import molsysviewer as mv
+import molsysviewer as msv
 
-pdb_text = """ATOM      1  N   MET A   1      11.104  13.207   8.551  1.00 20.00           N
-ATOM      2  CA  MET A   1      12.560  13.329   8.276  1.00 20.00           C
-ATOM      3  C   MET A   1      13.189  11.956   8.001  1.00 20.00           C
-ATOM      4  O   MET A   1      12.589  10.935   8.353  1.00 20.00           O
-END
-"""
-
-v = mv.MolSysView()
-v.show()
-v.load(pdb_text)
-
-# Add a transparent sphere overlay
-v.add_sphere(center=(12.0, 12.0, 8.0), radius=3.0, color=0x00ff00, alpha=0.4)
+# Load a structure directly from the PDB
+view = msv.new_view("pdb_id:1tcd")
+view.show()
 ```
 
-`new_view(...)` also accepts `load_mode`:
+```python
+# Create named regions and control visibility independently
+backbone = msv.new_view("pdb_id:1tcd")
+backbone.make_regions_by(element="chain")
+backbone.regions["chain-A"].hide()
+backbone.regions["chain-B"].show()
+```
 
-- `load_mode="selection"` (default): the selection subsets the loaded system.
-- `load_mode="all"`: the full system loads, the global view is hidden, and a
-  region tagged `"selection"` is created for the selection.
+```python
+# Add a displacement-vector overlay (e.g. ANM mode)
+import numpy as np
+view.shapes.add_displacement_vectors(
+    vectors=np.random.randn(n_atoms, 3) * 0.5,
+    atom_indices=list(range(n_atoms)),
+    tag="anm-mode-0",
+)
+```
+
+```python
+# Export an interactive HTML snapshot
+view.export.html("my_scene.html", title="TIM — chain A")
+```
+
+```python
+# Use the addon system
+import molsysviewer as msv
+from molsysviewer_molsysmt import get_addon, lifecycle, on_enable
+from molsysviewer_molsysmt.runtime import ensure_runtime
+
+msv.addons.register(get_addon(), lifecycle=lifecycle)
+
+view = msv.MolSysView()
+view.load(ms)                       # ms is a molsysmt.MolSys object
+ensure_runtime(view).molecular_system = ms
+on_enable(view)
+view.show()
+```
 
 ---
 
-## 📦 Installation
+## Installation
 
-MolSysViewer is available via **conda** (recommended):
+Conda (recommended):
 
 ```bash
 conda install molsysviewer -c uibcdf
 ```
 
-Or via **pip**:
+Pip:
 
 ```bash
 pip install molsysviewer
 ```
 
-To use the viewer inside Jupyter, make sure you have:
-
-```bash
-pip install anywidget
-```
-
-or the equivalent conda package.
-
 ---
 
-## 🔧 Development
+## Development
 
-MolSysViewer uses:
-
-- **Python** for the API and widget interface  
-- **TypeScript + Mol\*** for rendering  
-- **esbuild** for bundling the widget
-- **anywidget** as the Jupyter integration layer
-
-**MolSysMT payload schema (Python → TS)**  
-- Top-level `structures` list.  
-- Each structure includes `coordinates` (Å), optional `box` as three vectors (Å), and optional `time`.  
-- Legacy names (`positions`, `frames`) are not used in the viewer pipeline.
-
-Developer Guide
-
-- Start here: https://www.uibcdf.org/molsysviewer/content/developer/
-
-The JS bundle (`viewer.js`) is generated automatically during packaging and is
-tracked in the repository (it carries the `@generated` banner) so that users of
-the published wheels/conda packages never need a Node.js toolchain. The bundle
-should not be edited by hand; rebuild it from the TypeScript sources under
-`js/src/` instead.
-
-Build the JS bundle manually for development:
+MolSysViewer uses Python for the API and widget layer, TypeScript + Mol\* for
+rendering, and esbuild for bundling.  The JS bundle (`viewer.js`) is tracked in
+the repository and ships inside the wheel/conda package so that users never need
+a Node.js toolchain.
 
 ```bash
-cd js
-npm install
-npm run build  # only when you need to test TS changes locally
-```
-
-Then install the Python package:
-
-```bash
+# Install in editable mode
 pip install -e .
+
+# Rebuild the JS bundle (only needed when editing TypeScript sources)
+cd molsysviewer/js
+npm install
+npm run build
+
+# Run the test suites
+pytest tests/                              # Python
+npm --prefix molsysviewer/js run test:js   # JS unit (109 tests)
 ```
 
----
-
-## 🛠 Project Status
-
-MolSysViewer has reached a stable architectural foundation:
-
-- robust Mol\* initialization  
-- reliable Python ↔ JS message handling  
-- stable sphere API  
-- clean separation of Python/TS codebases  
-- reproducible conda packaging with automatic JS build  
-
-The library is now ready for rapid expansion toward advanced scientific
-visualizations.
+Developer guide: https://www.uibcdf.org/molsysviewer/content/developer/
 
 ---
 
-## 📍 Roadmap (short version)
+## Ecosystem
 
-- Additional geometric primitives (arrows, cylinders, labels, billboards)
-- Tag-based scene management (`viewer.clear(tag=...)`)
-- Camera helper utilities
-- Alpha-sphere and pocket rendering (TopoMΤ)
-- Pharmacophoric features
-- Trajectory visualization (MolSysMT)
-- Event callbacks (click, hover)
-- Scene export
+MolSysViewer is the visualisation engine for the **UIBCDF MolSys ecosystem**:
 
-For the complete roadmap, see `docs/content/developer/roadmap.md`.
+- **MolSysMT** — molecular systems and trajectories
+- **TopoMT** — cavity and topography analysis
+- **PharmacophoresMT** — pharmacophore modelling
+- **ElasNetMT** — elastic network models
 
 ---
 
-## 🤝 Contributing
+## License
 
-Contributions are welcome! Whether you're interested in TypeScript/Mol\* 
-development, Python API design, scientific visualization, or improving 
-documentation, feel free to open an issue or pull request.
+MIT License.
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
----
-
-## 🧬 Acknowledgements
-
-MolSysViewer uses the Mol\* engine developed by the Mol\* team and RCSB PDB.  
-It is part of the **UIBCDF MolSys ecosystem** for molecular modeling, drug
-design, structural analysis, and scientific computing.
+MolSysViewer uses the [Mol\*](https://molstar.org) engine developed by the Mol\* team and RCSB PDB.

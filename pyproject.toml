@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "molsysviewer"
 dynamic = ["version"]
-description = "MolSysViewer with Mol* prototype"
+description = "Mol*-powered interactive molecular viewer for Jupyter with reproducible scene state"
 authors = [{name = "UIBCDF"}]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,8 +14,35 @@ dependencies = [
   "smonitor",
   "traitlets>=5",
 ]
-license = { text = "MIT" }  # adjust if needed
-urls = { "Homepage" = "https://github.com/uibcdf/molsysviewer", "Documentation" = "https://www.uibcdf.org/molsysviewer", "Issues" = "https://github.com/uibcdf/molsysviewer/issues" }
+license = { text = "MIT" }
+keywords = [
+  "molecular visualization",
+  "molecular viewer",
+  "Jupyter",
+  "Mol*",
+  "structural biology",
+  "cheminformatics",
+  "MolSysMT",
+  "anywidget",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Chemistry",
+  "Topic :: Scientific/Engineering :: Visualization",
+]
+
+[project.urls]
+Homepage = "https://github.com/uibcdf/molsysviewer"
+Documentation = "https://www.uibcdf.org/molsysviewer"
+Issues = "https://github.com/uibcdf/molsysviewer/issues"
 
 [project.optional-dependencies]
 dev = [
