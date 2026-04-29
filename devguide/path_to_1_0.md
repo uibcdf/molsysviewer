@@ -31,7 +31,7 @@ Work done against the current tag (0.18.0).
 | 9 | Scientific dogfooding in the lab — collect friction and real bugs | Diego | |
 | 10 | Fix bugs and UX roughness from dogfooding | Claude | |
 | 11 | Fill remaining incomplete docs | Claude | |
-| 12 | **Focus Styles**: cumulative data-driven styles (`+ Hydrophobicity`, `+ H-Bonds` over existing scene) | Claude | Design in `devguide/v1_vision_and_styles.md` |
+| 12 | **Focus Styles**: cumulative data-driven styles (`+ Hydrophobicity`, `+ H-Bonds` over existing scene) | Claude | ✅ 2026-04-28 — `styles.focus()`, `BUILTIN_FOCUS_STYLES`, `clear_focus()`; 16 new tests |
 | 13 | **Box merging logic**: deterministic box display when merging systems with different unit cells | Claude | Waiting on MolSysMT API |
 | 14 | **Orientation plane API**: orientation axes and best-fit plane via Mol* built-ins | Claude | Low priority — `devguide/pending_proposals/PROPOSAL_orientation_plane_api.md` |
 
