@@ -30,10 +30,10 @@ Work done against the current tag (0.18.0).
 | 8 | Run the 5 tutorial notebooks in a real environment; fix discrepancies | Diego + Claude | |
 | 9 | Scientific dogfooding in the lab — collect friction and real bugs | Diego | |
 | 10 | Fix bugs and UX roughness from dogfooding | Claude | |
-| 11 | Fill remaining incomplete docs | Claude | |
+| 11 | Fill remaining incomplete docs | Claude | ✅ 2026-04-28 — styles (Focus Styles section), user_presets schema, 4 shape pages, 2 export pages |
 | 12 | **Focus Styles**: cumulative data-driven styles (`+ Hydrophobicity`, `+ H-Bonds` over existing scene) | Claude | ✅ 2026-04-28 — `styles.focus()`, `BUILTIN_FOCUS_STYLES`, `clear_focus()`; 16 new tests |
 | 13 | **Box merging logic**: deterministic box display when merging systems with different unit cells | Claude | Waiting on MolSysMT API |
-| 14 | **Orientation plane API**: orientation axes and best-fit plane via Mol* built-ins | Claude | Low priority — `devguide/pending_proposals/PROPOSAL_orientation_plane_api.md` |
+| 14 | **Orientation plane API**: orientation axes and best-fit plane via Mol* built-ins | Claude | ✅ 2026-04-28 — `view.show_orientation_axes()`, `view.show_best_fit_plane()`; 14 tests |
 
 ---
 

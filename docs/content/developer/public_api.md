@@ -140,6 +140,8 @@ Current scope clarification for `Style`:
   - `clear(tag=None)`
 - `get_last_measurement_created_event()`
 - `new_region_from_active_selection(...)`
+- `show_orientation_axes(selection="all", *, atom_indices=None, tag=None, alpha=None)` — overlay Mol* orientation-ellipsoid axes; returns Region
+- `show_best_fit_plane(selection="all", *, atom_indices=None, tag=None, alpha=None)` — overlay Mol* best-fit plane; returns Region
 - `view.annotations.add_label_from_active_selection(...)`
 - `view.measurements.count()`
 - `view.measurements.records()`
