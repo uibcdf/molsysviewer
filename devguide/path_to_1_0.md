@@ -32,8 +32,37 @@ Work done against the current tag (0.18.0).
 | 10 | Fix bugs and UX roughness from dogfooding | Claude | |
 | 11 | Fill remaining incomplete docs | Claude | ✅ 2026-04-28 — styles (Focus Styles section), user_presets schema, 4 shape pages, 2 export pages |
 | 12 | **Focus Styles**: cumulative data-driven styles (`+ Hydrophobicity`, `+ H-Bonds` over existing scene) | Claude | ✅ 2026-04-28 — `styles.focus()`, `BUILTIN_FOCUS_STYLES`, `clear_focus()`; 16 new tests |
-| 13 | **Box merging logic**: deterministic box display when merging systems with different unit cells | Claude | Waiting on MolSysMT API |
+| 13 | **Box merging logic**: deterministic box display when merging systems with different unit cells | Claude | 🔍 Audited 2026-04-28 — see note below |
 | 14 | **Orientation plane API**: orientation axes and best-fit plane via Mol* built-ins | Claude | ✅ 2026-04-28 — `view.show_orientation_axes()`, `view.show_best_fit_plane()`; 14 tests |
+
+---
+
+### Item 13 — Box merging audit (2026-04-28)
+
+**Where the bug lives: MolSysMT, not MolSysViewer.**
+
+MolSysViewer's loader already passes per-frame box vectors correctly to Mol* —
+box handling in `molsysviewer/loaders/load_molsysmt.py` is per-structure and
+correct for the viewer side.
+
+The issue is in `molsysmt.form.molsysmt_Structures.merge` (line 37-44 of
+`merge.py`): the output box is taken from the **first system only**. Boxes from
+subsequent systems are silently discarded regardless of whether they are
+compatible.
+
+**Proposed fix for MolSysMT's `merge`:**
+
+```python
+# In molsysmt/form/molsysmt_Structures/merge.py
+# After collecting all items, decide the output box:
+# - all have None → output.box = None
+# - all identical → output.box = first box
+# - otherwise (mixed or incompatible) → output.box = None
+#   (no unit cell displayed; safer than silently using a wrong cell)
+```
+
+This is a MolSysMT change — Diego should file/track it there.
+MolSysViewer requires no code change once MolSysMT produces the correct box.
 
 ---
 
