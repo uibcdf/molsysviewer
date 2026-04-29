@@ -211,18 +211,101 @@ When you apply a tag, MolSysViewer resolves it in this order:
 So a notebook or project can intentionally override a built-in tag with a more
 specific local meaning.
 
-## Scope of the current feature
+## Focus Styles
 
-At the moment, styles are:
+Focus styles are additive overlays that layer information on top of the existing
+scene without resetting it.
 
-- scene styles
-- not focus styles
-- not canvas-authored styles
-- not a replacement for all region-specific representation work
+Where a scene style says *"replace everything with this recipe"*, a focus style
+says *"also show this property, here"*.
 
-That narrower scope is deliberate.
+### Built-in focus styles
 
-It keeps styles reproducible and easy to reason about.
+| Tag | Representation | What it highlights |
+|---|---|---|
+| `"hydrophobicity"` | molecular-surface | hydrophobicity coloring |
+| `"secondary-structure"` | cartoon | secondary-structure classes |
+| `"chain-id"` | cartoon | chain identifiers |
+| `"element-cpk"` | ball-and-stick | element (CPK palette) |
+
+Discover them in code:
+
+```python
+view.styles.builtin_focus_tags()
+view.styles.builtin_focus_records()
+```
+
+### Apply a built-in focus style
+
+```python
+from molsysviewer import demo
+
+view = demo["1TCD"]
+view.styles.apply(tag="polymer-cartoon")          # set scene baseline first
+view.styles.focus("hydrophobicity")               # add surface overlay on top
+view
+```
+
+By default `focus()` covers the full system. Restrict it with `selection=`:
+
+```python
+view.styles.focus("hydrophobicity", tag="pocket-surface",
+                  selection='chain_name == "A"')
+```
+
+The `tag` you provide (or the builtin name used as default) becomes both the
+region tag and the focus-registry key.
+
+### Apply a focus style with a custom representation
+
+```python
+view.styles.focus(representation="spacefill", tag="vdw-view",
+                  color_scheme="element_cpk")
+```
+
+### Apply an explicit Style object
+
+```python
+from molsysviewer import Style
+
+focus_style = Style(
+    representation="cartoon",
+    kind="focus",
+    name="Chain Overview",
+    params={"color_scheme": "chain_default"},
+)
+
+view.styles.focus(style_or_tag=focus_style, tag="chain-overlay")
+```
+
+Note that `kind="focus"` is required, and `preset`/`user_preset` are not
+accepted — focus styles work only through `representation`.
+
+### Manage active focus overlays
+
+```python
+view.styles.focus_tags()            # list active overlays
+view.styles.clear_focus("pocket-surface")   # remove one
+view.styles.clear_focus()           # remove all
+```
+
+Clearing a focus overlay removes its underlying region from the scene and
+from `view.regions`.
+
+### Focus styles do not disturb the scene baseline
+
+Applying a focus style does not call `view.whole.set_representation(...)`.
+It creates an independent region. The scene style you set with
+`view.styles.apply(...)` is untouched.
+
+---
+
+## Scope summary
+
+| Kind | Effect | Entry-point |
+|---|---|---|
+| **scene** | resets the whole baseline | `view.styles.apply(...)` |
+| **focus** | additive overlay via region | `view.styles.focus(...)` |
 
 ## Next related pages
 
