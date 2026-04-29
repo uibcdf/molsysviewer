@@ -29,16 +29,22 @@ class Style:
     params: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.params, dict):
+            raise ValueError("Style params must be provided as a dictionary.")
+        if self.kind == "focus":
+            if self.preset is not None or self.user_preset is not None:
+                raise ValueError("Focus styles only support representation (not preset or user_preset).")
+            if self.representation is None:
+                raise ValueError("Focus styles require a representation.")
+            return
+        if self.kind != "scene":
+            raise ValueError("Style kind must be 'scene' or 'focus'.")
         defined = sum(
             value is not None
             for value in (self.representation, self.preset, self.user_preset)
         )
-        if self.kind != "scene":
-            raise ValueError("The first Style slice only supports kind='scene'.")
         if defined != 1:
             raise ValueError("Style requires exactly one of representation, preset, or user_preset.")
-        if not isinstance(self.params, dict):
-            raise ValueError("Style params must be provided as a dictionary.")
 
     def info(self) -> dict[str, Any]:
         """Return a JSON-friendly summary of the style object."""
@@ -79,6 +85,34 @@ BUILTIN_SCENE_STYLES: dict[str, Style] = {
         params={"color_scheme": "element_cpk"},
     ),
     "empty": Style(preset="empty", name="Empty"),
+}
+
+
+BUILTIN_FOCUS_STYLES: dict[str, Style] = {
+    "hydrophobicity": Style(
+        representation="molecular-surface",
+        name="Hydrophobicity Surface",
+        kind="focus",
+        params={"molstar_color_theme": {"name": "hydrophobicity", "params": {}}},
+    ),
+    "secondary-structure": Style(
+        representation="cartoon",
+        name="Secondary Structure",
+        kind="focus",
+        params={"color_scheme": "secondary_structure_default"},
+    ),
+    "chain-id": Style(
+        representation="cartoon",
+        name="Chain ID",
+        kind="focus",
+        params={"color_scheme": "chain_default"},
+    ),
+    "element-cpk": Style(
+        representation="ball-and-stick",
+        name="Element CPK",
+        kind="focus",
+        params={"color_scheme": "element_cpk"},
+    ),
 }
 
 
@@ -183,6 +217,8 @@ class StylesManager:
         self._view = view
         self._last_applied_name: str | None = None
         self._registry: dict[str, dict[str, Any]] = {}
+        self._focus_registry: dict[str, dict[str, Any]] = {}
+        self._focus_counter: int = 0
 
     def _resolve_named_style(self, tag: str) -> Style | None:
         record = self._registry.get(tag)
@@ -540,10 +576,126 @@ class StylesManager:
             return None
         return current.info()
 
+    def _next_focus_tag(self) -> str:
+        self._focus_counter += 1
+        return f"focus{self._focus_counter}"
+
+    @signal(tags=["style", "focus"])
+    @digest()
+    def focus(
+        self,
+        style_or_tag: "Style | str | None" = None,
+        *,
+        tag: str | None = None,
+        selection: "str | Any" = "all",
+        atom_indices: "list[int] | None" = None,
+        representation: "str | None" = None,
+        skip_digestion: bool = False,
+        **params: Any,
+    ) -> str:
+        """Apply a focus style as a cumulative overlay on a selection.
+
+        Parameters
+        ----------
+        style_or_tag
+            A ``Style`` object with ``kind='focus'``, or a builtin focus-style tag string.
+        tag
+            Tag to assign to both the focus entry and the region. Auto-generated if omitted.
+        selection
+            MolSysMT selection string. Defaults to ``"all"``.
+        atom_indices
+            Explicit atom indices (bypasses selection).
+        representation
+            Inline representation (alternative to providing a full ``Style``).
+        **params
+            Additional representation parameters forwarded when using inline ``representation``.
+        """
+        if isinstance(style_or_tag, str):
+            builtin = BUILTIN_FOCUS_STYLES.get(style_or_tag)
+            if builtin is None:
+                raise ValueError(f"No builtin focus style found for {style_or_tag!r}.")
+            resolved = builtin
+            resolved_tag = tag or style_or_tag
+        elif isinstance(style_or_tag, Style):
+            if style_or_tag.kind != "focus":
+                raise ValueError("styles.focus() requires a Style with kind='focus'.")
+            resolved = style_or_tag
+            resolved_tag = tag or self._next_focus_tag()
+        elif style_or_tag is None and representation is not None:
+            resolved = Style(representation=representation, kind="focus", params=dict(params))
+            resolved_tag = tag or self._next_focus_tag()
+        else:
+            raise ValueError(
+                "styles.focus() requires a style object, a builtin tag string, or representation=."
+            )
+
+        region = self._view.new_region(
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=resolved_tag,
+            representation=resolved.representation,
+            skip_digestion=True,
+            **resolved.params,
+        )
+        self._focus_registry[resolved_tag] = {"style": resolved, "region_tag": region.tag}
+        return resolved_tag
+
+    @signal(tags=["style", "focus"])
+    @digest()
+    def clear_focus(self, tag: "str | None" = None, skip_digestion: bool = False) -> None:
+        """Remove one focus overlay or all active focus overlays."""
+        if tag is not None:
+            entry = self._focus_registry.pop(tag, None)
+            if entry is None:
+                return
+            region = self._view.regions.get(entry["region_tag"])
+            if region is not None:
+                region.delete(skip_digestion=True)
+        else:
+            for entry in list(self._focus_registry.values()):
+                region = self._view.regions.get(entry["region_tag"])
+                if region is not None:
+                    region.delete(skip_digestion=True)
+            self._focus_registry.clear()
+
+    @signal(tags=["style", "query"])
+    @digest()
+    def focus_tags(self, skip_digestion: bool = False) -> list[str]:
+        """Return active focus overlay tags."""
+        return sorted(self._focus_registry.keys())
+
+    @signal(tags=["style", "query"])
+    @digest()
+    def builtin_focus_tags(self, skip_digestion: bool = False) -> list[str]:
+        """Return canonical built-in focus-style tags."""
+        return sorted(BUILTIN_FOCUS_STYLES.keys())
+
+    @signal(tags=["style", "query"])
+    @digest()
+    def get_builtin_focus(self, tag: str, skip_digestion: bool = False) -> "Style | None":
+        """Return one canonical built-in focus style, if present."""
+        return BUILTIN_FOCUS_STYLES.get(tag)
+
+    @signal(tags=["style", "query"])
+    @digest()
+    def builtin_focus_records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        """Return JSON-friendly records for the canonical built-in focus styles."""
+        records: list[dict[str, Any]] = []
+        for ftag in self.builtin_focus_tags(skip_digestion=True):
+            style = BUILTIN_FOCUS_STYLES[ftag]
+            records.append({
+                "tag": ftag,
+                "description": None,
+                "source": "builtin",
+                "style": style.info(),
+            })
+        return records
+
 __all__ = [
     "Style",
     "StylesManager",
     "BUILTIN_SCENE_STYLES",
+    "BUILTIN_FOCUS_STYLES",
     "STRUCTURAL_COLOR_SCHEMES",
     "STRUCTURAL_SIZE_SCHEMES",
     "ADVANCED_MOLSTAR_COLOR_THEMES",

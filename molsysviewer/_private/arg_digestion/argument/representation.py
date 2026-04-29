@@ -37,6 +37,8 @@ def digest_representation(representation, caller=None):
         'molsysviewer.styles.apply',
         'molsysviewer.styles.StylesManager.representation_param_schema',
         'molsysviewer.styles.representation_param_schema',
+        'molsysviewer.styles.StylesManager.focus',
+        'molsysviewer.styles.focus',
     }:
         if representation is None:
             return representation
