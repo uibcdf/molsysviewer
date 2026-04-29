@@ -1,5 +1,6 @@
 from molsysviewer import MolSysView, Style, demo
 from molsysviewer.config.user_presets import user_presets
+from molsysviewer.styles import BUILTIN_FOCUS_STYLES
 
 
 def test_style_requires_exactly_one_source():
@@ -263,3 +264,175 @@ def test_styles_registry_overrides_builtin_with_same_tag():
 
     assert applied == override
     assert view._message_history[-1]["representation"] == "cartoon"  # noqa: SLF001
+
+
+# ---------------------------------------------------------------------------
+# Focus Styles
+# ---------------------------------------------------------------------------
+
+
+def test_focus_style_rejects_preset_and_user_preset():
+    try:
+        Style(representation="cartoon", preset="auto", kind="focus")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError for focus style with preset.")
+
+    try:
+        Style(preset="auto", kind="focus")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError for focus style without representation.")
+
+
+def test_focus_style_requires_representation():
+    try:
+        Style(kind="focus")
+    except ValueError as exc:
+        assert "representation" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError when focus style has no representation.")
+
+
+def test_focus_style_kind_validates_unknown_kind():
+    try:
+        Style(representation="cartoon", kind="unknown")
+    except ValueError as exc:
+        assert "kind" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError for unknown style kind.")
+
+
+def test_focus_style_info_includes_kind_focus():
+    style = Style(representation="cartoon", kind="focus", name="Chain Focus")
+    info = style.info()
+    assert info["kind"] == "focus"
+    assert info["representation"] == "cartoon"
+    assert info["preset"] is None
+
+
+def test_builtin_focus_catalog_exposes_canonical_tags():
+    view = MolSysView()
+    tags = view.styles.builtin_focus_tags()
+    assert tags == ["chain-id", "element-cpk", "hydrophobicity", "secondary-structure"]
+    for tag in tags:
+        style = view.styles.get_builtin_focus(tag)
+        assert style is not None
+        assert style.kind == "focus"
+        assert style.representation is not None
+    records = view.styles.builtin_focus_records()
+    assert len(records) == 4
+    assert all(r["source"] == "builtin" for r in records)
+    assert all(r["style"]["kind"] == "focus" for r in records)
+
+
+def test_styles_focus_builtin_tag_creates_region():
+    view = demo["dialanine"]
+
+    focus_tag = view.styles.focus("chain-id")
+
+    assert focus_tag == "chain-id"
+    assert focus_tag in view.regions
+    assert focus_tag in view.styles.focus_tags()
+    # region should have a representation message
+    region_ops = [m["op"] for m in view._message_history if m.get("op") == "set_region_representation"]  # noqa: SLF001
+    assert len(region_ops) >= 1
+
+
+def test_styles_focus_builtin_with_custom_tag():
+    view = demo["dialanine"]
+
+    focus_tag = view.styles.focus("hydrophobicity", tag="pocket-surface")
+
+    assert focus_tag == "pocket-surface"
+    assert "pocket-surface" in view.regions
+    assert "pocket-surface" in view.styles.focus_tags()
+
+
+def test_styles_focus_inline_representation_creates_focus_region():
+    view = demo["dialanine"]
+
+    focus_tag = view.styles.focus(representation="spacefill", tag="vdw-view")
+
+    assert focus_tag == "vdw-view"
+    assert "vdw-view" in view.regions
+    assert "vdw-view" in view.styles.focus_tags()
+
+
+def test_styles_focus_explicit_style_object():
+    view = demo["dialanine"]
+    style = Style(representation="cartoon", kind="focus", params={"color_scheme": "chain_default"})
+
+    focus_tag = view.styles.focus(style_or_tag=style, tag="chain-cartoon")
+
+    assert focus_tag == "chain-cartoon"
+    assert "chain-cartoon" in view.regions
+    assert "chain-cartoon" in view.styles.focus_tags()
+
+
+def test_styles_focus_rejects_scene_style_object():
+    view = demo["dialanine"]
+    scene_style = Style(preset="polymer-cartoon")
+    try:
+        view.styles.focus(style_or_tag=scene_style)
+    except ValueError as exc:
+        assert "kind='focus'" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError when passing scene style to focus().")
+
+
+def test_styles_focus_auto_generates_tag():
+    view = demo["dialanine"]
+
+    tag1 = view.styles.focus("chain-id")
+    tag2 = view.styles.focus("element-cpk")
+
+    # Both should be registered
+    assert tag1 in view.styles.focus_tags()
+    assert tag2 in view.styles.focus_tags()
+    assert tag1 != tag2
+
+
+def test_styles_clear_focus_removes_single_overlay():
+    view = demo["dialanine"]
+    view.styles.focus("chain-id", tag="my-chain")
+    view.styles.focus("element-cpk", tag="my-cpk")
+
+    view.styles.clear_focus("my-chain")
+
+    assert "my-chain" not in view.styles.focus_tags()
+    assert "my-chain" not in view.regions
+    assert "my-cpk" in view.styles.focus_tags()
+    assert "my-cpk" in view.regions
+
+
+def test_styles_clear_focus_removes_all_overlays():
+    view = demo["dialanine"]
+    view.styles.focus("chain-id", tag="f1")
+    view.styles.focus("element-cpk", tag="f2")
+
+    view.styles.clear_focus()
+
+    assert view.styles.focus_tags() == []
+    assert "f1" not in view.regions
+    assert "f2" not in view.regions
+
+
+def test_styles_focus_does_not_modify_scene_style():
+    view = demo["dialanine"]
+    view.styles.apply(representation="cartoon")
+    before = view.styles.current()
+
+    view.styles.focus("chain-id", tag="chain-overlay")
+
+    after = view.styles.current()
+    assert before is not None
+    assert after is not None
+    assert after.representation == before.representation
+
+
+def test_styles_focus_tags_initially_empty():
+    view = MolSysView()
+    assert view.styles.focus_tags() == []

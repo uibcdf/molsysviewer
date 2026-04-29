@@ -66,6 +66,7 @@ AI agents must never write directly to these generated outputs.
     - Unit tests in `molsysviewer/js/tests/unit` (run with `npm run test:js`, coverage with `npm run coverage:js`).
     - E2E in `molsysviewer/js/tests/e2e` (headless Playwright: load structure, create region, hide). By default it uses Playwright Chromium; you can force a local Chrome/Chromium with `PW_CHROMIUM_BIN=/path/to/chrome npm run test:e2e`. If launch is blocked by crashpad/sandbox/missing WebGL, the test is skipped with a warning. These are run manually (not in CI) in an environment with a browser and WebGL; do not use xvfb/mesa for E2E.
 11. The `sandbox/` directory is a scratch area for developer experiments. Changes there may be committed without review, and should not drive architectural decisions or test expectations.
+12. **Test-run discipline**: Run tests only when the implementation is believed to be correct — not speculatively. Before re-running after a failure, read the full traceback, form a diagnosis, and fix the root cause. One run per fix attempt: no blind iteration. Sequence: (a) run the specific test file first (`pytest tests/test_foo.py -x -q`); (b) after it's green, run the full suite once (`pytest tests/ --tb=no -q`) to check for regressions. Never run the full suite more than once per implementation task.
 
 ## Developer documentation (where to look first)
 
