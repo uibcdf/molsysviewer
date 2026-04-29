@@ -2,7 +2,10 @@
 
 ## Status
 
-Pending — low priority. No known user demand yet.
+✅ Implemented 2026-04-28 — `view.show_orientation_axes()` and `view.show_best_fit_plane()`.
+Both create a named region and send `set_region_representation` with the Mol* type directly,
+bypassing `ALLOWED_REPRESENTATIONS` (which intentionally keeps these types private).
+14 tests in `tests/test_geometry_helpers.py`.
 
 ## Context
 

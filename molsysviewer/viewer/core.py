@@ -1023,6 +1023,90 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
             **repr_params,
         )
 
+    @signal(tags=["region", "geometry"])
+    @digest()
+    def show_orientation_axes(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: "list[int] | None" = None,
+        tag: "str | None" = None,
+        alpha: "float | None" = None,
+        skip_digestion: bool = False,
+    ) -> Region:
+        """Overlay Mol* orientation-ellipsoid axes on a selection.
+
+        Creates a named region from the selection and applies the Mol*
+        ``"orientation"`` representation (principal-axes ellipsoid mesh).
+        Returns the Region so callers can hide/show/delete it later.
+
+        This representation is a structural helper and intentionally not
+        exposed through :meth:`set_representation` or
+        :meth:`styles.focus` — use this dedicated method instead.
+        """
+        region_tag = tag or f"orientation-{self._next_region_tag()}"
+        region = self.new_region(
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=region_tag,
+            skip_digestion=True,
+        )
+        params: dict[str, Any] = {}
+        if alpha is not None:
+            params["alpha"] = float(alpha)
+        region._send(  # noqa: SLF001
+            "set_region_representation",
+            representation="orientation",
+            preset=None,
+            user_preset=None,
+            params=params,
+        )
+        region.representation = "orientation"
+        region.repr_params = params
+        return region
+
+    @signal(tags=["region", "geometry"])
+    @digest()
+    def show_best_fit_plane(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: "list[int] | None" = None,
+        tag: "str | None" = None,
+        alpha: "float | None" = None,
+        skip_digestion: bool = False,
+    ) -> Region:
+        """Overlay Mol* best-fit plane on a selection.
+
+        Creates a named region from the selection and applies the Mol*
+        ``"plane"`` representation (best-fit plane mesh).
+        Returns the Region so callers can hide/show/delete it later.
+
+        This representation is a structural helper and intentionally not
+        exposed through :meth:`set_representation` or
+        :meth:`styles.focus` — use this dedicated method instead.
+        """
+        region_tag = tag or f"plane-{self._next_region_tag()}"
+        region = self.new_region(
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=region_tag,
+            skip_digestion=True,
+        )
+        params: dict[str, Any] = {}
+        if alpha is not None:
+            params["alpha"] = float(alpha)
+        region._send(  # noqa: SLF001
+            "set_region_representation",
+            representation="plane",
+            preset=None,
+            user_preset=None,
+            params=params,
+        )
+        region.representation = "plane"
+        region.repr_params = params
+        return region
+
     @signal(tags=["layer"])
     @digest()
     def new_layer(
