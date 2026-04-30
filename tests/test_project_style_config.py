@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from molsysviewer import MolSysView
+from molsysviewer import MolSysView, addons
 from molsysviewer.config import load_project_config
 
 
@@ -61,6 +61,42 @@ def test_styles_load_project_config_can_apply_default_explicitly(tmp_path):
     current = view.styles.current()
     assert current is not None
     assert current.preset == "polymer-cartoon"
+
+
+def test_view_load_project_config_bridge_registers_styles_and_returns_addon_summary(tmp_path):
+    config_path = tmp_path / "_molsysviewer.py"
+    config_path.write_text(
+        "\n".join([
+            "from molsysviewer import Style",
+            'DEFAULT_SCENE_STYLE = Style(preset="polymer-cartoon", name="Default")',
+            "STYLES = {",
+            '    "publication": Style(preset="polymer-cartoon", name="Publication"),',
+            "}",
+            'ADDONS_ENABLED = ["fake-addon-a"]',
+            'ADDONS_DISABLED = ["fake-addon-b"]',
+        ]),
+        encoding="utf-8",
+    )
+    view = MolSysView()
+
+    result = view.load_project_config(str(config_path))
+
+    assert "publication" in view.styles.tags()
+    assert result["style_tags"] == ["publication"]
+    assert result["applied_default"] is False
+    assert result["addons_enabled"] == ["fake-addon-a"]
+    assert result["addons_disabled"] == ["fake-addon-b"]
+
+
+def test_view_load_project_config_bridge_apply_default(tmp_path):
+    config_path = tmp_path / "_molsysviewer.py"
+    _write_project_config(config_path)
+    view = MolSysView()
+
+    result = view.load_project_config(str(config_path), apply_default=True)
+
+    assert result["applied_default"] is True
+    assert view.styles.current() is not None
 
 
 def test_explicit_style_application_still_wins_after_loading_project_config(tmp_path):

@@ -54,8 +54,12 @@ automatically.
 
 Current supported top-level names:
 
-- `DEFAULT_SCENE_STYLE`
-- `STYLES`
+| Name | Type | Description |
+|---|---|---|
+| `DEFAULT_SCENE_STYLE` | `Style` | Scene style applied when `apply_default=True` |
+| `STYLES` | `dict[str, Style]` | Named styles available as `view.styles.apply(tag=...)` |
+| `ADDONS_ENABLED` | `list[str]` | Add-on names enabled by default when the config is loaded |
+| `ADDONS_DISABLED` | `list[str]` | Add-on names disabled by default when the config is loaded |
 
 Example:
 
@@ -77,6 +81,9 @@ STYLES = {
         name="Inspection",
     ),
 }
+
+ADDONS_ENABLED = ["topomt"]
+ADDONS_DISABLED = ["elasnetmt"]
 ```
 
 ## Load the file directly
@@ -93,32 +100,45 @@ This returns validated Python data.
 
 It does not mutate an existing viewer.
 
-## Load project styles into a viewer
+## Load project config into a viewer
 
-The usual viewer-facing entrypoint is:
+The simplest entry point loads everything at once:
 
 ```python
 from molsysviewer import demo
 
 view = demo["dialanine"]
-view.styles.load_project_config("_molsysviewer.py", apply_default=False)
+view.load_project_config("_molsysviewer.py")
 ```
 
-That does two things:
+This does three things in one call:
 
-- registers the named styles in `STYLES`
-- leaves the current scene unchanged
+- registers the named styles from `STYLES` on this viewer
+- updates the global add-on enable/disable defaults from `ADDONS_ENABLED` / `ADDONS_DISABLED`
+- leaves the current scene unchanged (the default scene style is registered but not applied)
 
 ## Apply the default style too
 
-If you want the project default scene style to be applied immediately:
+Pass `apply_default=True` if you want the project default scene style applied immediately:
 
 ```python
-view.styles.load_project_config("_molsysviewer.py", apply_default=True)
+view.load_project_config("_molsysviewer.py", apply_default=True)
 ```
 
-That explicit flag is the only time the current scene is changed during config
-loading.
+That explicit flag is the only time the current scene is changed during config loading.
+
+## Load only styles or only add-on defaults
+
+If you need finer control, call the sub-managers directly:
+
+```python
+# styles only
+view.styles.load_project_config("_molsysviewer.py", apply_default=False)
+
+# add-on defaults only (global — affects all viewers created afterwards)
+import molsysviewer as msv
+msv.addons.load_project_config("_molsysviewer.py")
+```
 
 ## Precedence rule
 

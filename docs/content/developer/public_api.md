@@ -16,6 +16,7 @@ You treat these as public:
 - `molsysviewer.config.load_project_config`
 - `molsysviewer.styles.Style`
 - `molsysviewer.styles.BUILTIN_SCENE_STYLES`
+- `molsysviewer.styles.BUILTIN_FOCUS_STYLES`
 
 If you rename, remove, or change behavior here, you update docs and add tests.
 
@@ -114,6 +115,13 @@ Current scope clarification for `Style`:
   - `molstar_size_themes()`
   - `molstar_size_theme_records()`
   - `load_project_config(path, apply_default=False)`
+  - `focus(style_or_tag=None, *, selection, atom_indices, representation, **params)` — additive overlay over the current scene
+  - `clear_focus(tag=None)` — remove one or all active focus overlays
+  - `focus_tags()` — list of currently active focus overlay tags
+  - `builtin_focus_tags()` — list of built-in focus style names
+  - `builtin_focus_records()` — list of built-in focus style info dicts
+  - `get_builtin_focus(tag)` — retrieve a built-in focus `Style` by name
+- `load_project_config(path, *, apply_default=False)` — convenience bridge: applies styles and add-on defaults from a `_molsysviewer.py` config file in one call
 - `active_selection`
   - `info()`
   - `is_empty()`
@@ -216,6 +224,20 @@ Related object wrappers are also part of the intended public surface:
 - `view.measurements.set_tag(tag, new_tag)`
 - `view.measurements.set_layer_tag(tag, new_layer_tag)`
 - `view.selections.add_from_active_selection(...)`
+- `view.movie`
+  - `add_keyframe(time_ms, *, camera, structure_index, layer_visibility, easing)`
+  - `add_visibility_transition(layer_tag, visible, *, at_time_ms)`
+  - `add_camera_orbit(duration_ms, *, n_turns, n_keyframes, easing)`
+  - `add_structure_sweep(*, from_index, to_index, duration_ms, start_time_ms, end_time_ms)`
+  - `play(loop=False)`
+  - `stop()`
+  - `clear()`
+  - `duration_ms` (property)
+  - `keyframes` (property)
+  - `info()`
+  - `to_dict()` / `from_dict(data)`
+  - `save(path)` / `load(path)`
+  - `export(path, *, fps, format)` — requires `imageio`; sends `play_movie` with `mode="export"` and collects frames from the JS runtime
 - `view.on_hover(callback)` / `view.off_hover(callback)`
 - `view.on_click(callback)` / `view.off_click(callback)`
 - `view.on_context(callback)` / `view.off_context(callback)`
