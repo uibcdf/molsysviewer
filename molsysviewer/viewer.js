@@ -145466,20 +145466,42 @@ var ViewerContextMenu = class {
       display: "none",
       minWidth: "180px",
       maxWidth: "240px",
-      padding: "6px",
       borderRadius: "10px",
       border: "1px solid rgba(255,255,255,0.15)",
       background: "rgba(26, 26, 30, 0.96)",
       color: "#f4f4f5",
       boxShadow: "0 16px 40px rgba(0,0,0,0.35)",
       zIndex: "20",
+      overflow: "hidden",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
       fontSize: "13px"
     });
     this.root.addEventListener("pointerdown", (event) => {
       event.stopPropagation();
     });
+    this.scrollEl = document.createElement("div");
+    this.scrollEl.setAttribute("data-molsysviewer-context-scroll", "true");
+    Object.assign(this.scrollEl.style, {
+      overflowY: "auto",
+      padding: "6px",
+      boxSizing: "border-box",
+      // Firefox scrollbar styling
+      scrollbarWidth: "thin",
+      scrollbarColor: "rgba(255,255,255,0.25) transparent"
+    });
+    this.root.appendChild(this.scrollEl);
     this.host.appendChild(this.root);
+    if (!document.getElementById("msv-context-menu-scrollbar-style")) {
+      const style = document.createElement("style");
+      style.id = "msv-context-menu-scrollbar-style";
+      style.textContent = [
+        "[data-molsysviewer-context-scroll]::-webkit-scrollbar { width: 5px; }",
+        "[data-molsysviewer-context-scroll]::-webkit-scrollbar-track { background: transparent; }",
+        "[data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }",
+        "[data-molsysviewer-context-scroll]::-webkit-scrollbar-corner { background: transparent; }"
+      ].join("\n");
+      document.head.appendChild(style);
+    }
   }
   open(target, pageX, pageY, activeSelection, lastMeasurement, savedSelections, regions, addonActions) {
     this.currentTarget = target;
@@ -145490,7 +145512,7 @@ var ViewerContextMenu = class {
     this.currentAddonActions = Array.isArray(addonActions) ? [...addonActions] : [];
     this.currentPageX = pageX;
     this.currentPageY = pageY;
-    this.root.replaceChildren();
+    this.scrollEl.replaceChildren();
     const header2 = document.createElement("div");
     header2.setAttribute("data-molsysviewer-context-menu-title", "true");
     header2.textContent = targetTitle(target);
@@ -145500,36 +145522,36 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "6px"
     });
-    this.root.appendChild(header2);
+    this.scrollEl.appendChild(header2);
     if (target.kind === "structure") {
-      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-      this.root.appendChild(this.makeActionButton("Distance", "distance"));
-      this.root.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
-      this.root.appendChild(this.makeActionButton("Angle", "angle"));
-      this.root.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
-      this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
-      this.root.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
+      this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+      this.scrollEl.appendChild(this.makeActionButton("Distance", "distance"));
+      this.scrollEl.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
+      this.scrollEl.appendChild(this.makeActionButton("Angle", "angle"));
+      this.scrollEl.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
+      this.scrollEl.appendChild(this.makeActionButton("Dihedral", "dihedral"));
+      this.scrollEl.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
     } else if (target.kind === "shape") {
-      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+      this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
       if (target.tag?.trim()) {
-        this.root.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+        this.scrollEl.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
       }
     } else if (target.kind === "measurement") {
-      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+      this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
       if (target.tag?.trim()) {
-        this.root.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
-        this.root.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
+        this.scrollEl.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
+        this.scrollEl.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
       }
     } else if (target.kind === "annotation") {
-      this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+      this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
       if (target.tag?.trim()) {
-        this.root.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
+        this.scrollEl.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
       }
     } else {
-      this.root.appendChild(this.makeActionButton("Reset View", "reset_view"));
-      this.root.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
-      this.root.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
-      this.root.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
+      this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
+      this.scrollEl.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
+      this.scrollEl.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
+      this.scrollEl.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
     }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
       const section = document.createElement("div");
@@ -145555,7 +145577,7 @@ var ViewerContextMenu = class {
         section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
       }
       section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
-      this.root.appendChild(section);
+      this.scrollEl.appendChild(section);
     }
     if (this.currentSavedSelections.length > 0) {
       const section = document.createElement("div");
@@ -145575,7 +145597,7 @@ var ViewerContextMenu = class {
       for (const selection of this.currentSavedSelections) {
         section.appendChild(this.makeSavedSelectionButton(selection));
       }
-      this.root.appendChild(section);
+      this.scrollEl.appendChild(section);
     }
     if (this.currentRegions.length > 0) {
       const section = document.createElement("div");
@@ -145595,7 +145617,7 @@ var ViewerContextMenu = class {
       for (const region of this.currentRegions) {
         section.appendChild(this.makeRegionButton(region));
       }
-      this.root.appendChild(section);
+      this.scrollEl.appendChild(section);
     }
     const matchingAddonActions = this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target.kind));
     if (matchingAddonActions.length > 0) {
@@ -145616,14 +145638,25 @@ var ViewerContextMenu = class {
       for (const addonAction of matchingAddonActions) {
         section.appendChild(this.makeAddonActionButton(addonAction));
       }
-      this.root.appendChild(section);
+      this.scrollEl.appendChild(section);
     }
     const rect = this.host.getBoundingClientRect();
+    this.scrollEl.style.maxHeight = "";
     this.root.style.display = "block";
     const menuWidth = this.root.offsetWidth || 180;
     const menuHeight = this.root.offsetHeight || 120;
     const left = Math.min(Math.max(0, pageX - rect.left), Math.max(0, rect.width - menuWidth));
-    const top = Math.min(Math.max(0, pageY - rect.top), Math.max(0, rect.height - menuHeight));
+    const rawTop = pageY - rect.top;
+    const top = Math.min(Math.max(0, rawTop), Math.max(0, rect.height - menuHeight));
+    const availableBelow = rect.height - top - 12;
+    if (menuHeight > availableBelow) {
+      this.scrollEl.style.maxHeight = `${Math.max(80, availableBelow)}px`;
+      this.scrollEl.style.borderBottomLeftRadius = "9px";
+      this.scrollEl.style.borderBottomRightRadius = "9px";
+    } else {
+      this.scrollEl.style.borderBottomLeftRadius = "";
+      this.scrollEl.style.borderBottomRightRadius = "";
+    }
     this.root.style.left = `${left}px`;
     this.root.style.top = `${top}px`;
     this.detachOutsidePointerHandler();
@@ -145840,7 +145873,7 @@ var ViewerContextMenu = class {
   }
   renderRegionComposer() {
     if (!this.currentTarget) return;
-    this.root.replaceChildren();
+    this.scrollEl.replaceChildren();
     const title = document.createElement("div");
     title.textContent = "New Region from Selection";
     Object.assign(title.style, {
@@ -145849,7 +145882,7 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "6px"
     });
-    this.root.appendChild(title);
+    this.scrollEl.appendChild(title);
     const subtitle = document.createElement("div");
     subtitle.textContent = selectionSummary(this.currentSelection);
     Object.assign(subtitle.style, {
@@ -145857,7 +145890,7 @@ var ViewerContextMenu = class {
       opacity: "0.82",
       fontSize: "12px"
     });
-    this.root.appendChild(subtitle);
+    this.scrollEl.appendChild(subtitle);
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -145874,7 +145907,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.root.appendChild(input);
+    this.scrollEl.appendChild(input);
     const actions = document.createElement("div");
     Object.assign(actions.style, { display: "flex", gap: "8px" });
     const save = document.createElement("button");
@@ -145940,7 +145973,7 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.root.appendChild(actions);
+    this.scrollEl.appendChild(actions);
     input.focus?.();
   }
   resolveActionDetails(action) {
@@ -145996,7 +146029,7 @@ var ViewerContextMenu = class {
   }
   renderRenameRegionComposer(oldTag) {
     if (!this.currentTarget) return;
-    this.root.replaceChildren();
+    this.scrollEl.replaceChildren();
     const title = document.createElement("div");
     title.textContent = "Rename Region";
     Object.assign(title.style, {
@@ -146005,7 +146038,7 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "6px"
     });
-    this.root.appendChild(title);
+    this.scrollEl.appendChild(title);
     const subtitle = document.createElement("div");
     subtitle.textContent = `Current tag: ${oldTag}`;
     Object.assign(subtitle.style, {
@@ -146013,7 +146046,7 @@ var ViewerContextMenu = class {
       opacity: "0.82",
       fontSize: "12px"
     });
-    this.root.appendChild(subtitle);
+    this.scrollEl.appendChild(subtitle);
     const input = document.createElement("input");
     input.type = "text";
     input.value = oldTag;
@@ -146030,7 +146063,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.root.appendChild(input);
+    this.scrollEl.appendChild(input);
     const actions = document.createElement("div");
     Object.assign(actions.style, { display: "flex", gap: "8px" });
     const save = document.createElement("button");
@@ -146091,12 +146124,12 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.root.appendChild(actions);
+    this.scrollEl.appendChild(actions);
     input.select?.();
   }
   renderLabelComposer() {
     if (!this.currentTarget) return;
-    this.root.replaceChildren();
+    this.scrollEl.replaceChildren();
     const title = document.createElement("div");
     title.textContent = "Label from selection";
     Object.assign(title.style, {
@@ -146105,7 +146138,7 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "8px"
     });
-    this.root.appendChild(title);
+    this.scrollEl.appendChild(title);
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -146122,7 +146155,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.root.appendChild(input);
+    this.scrollEl.appendChild(input);
     const styleRow = document.createElement("div");
     Object.assign(styleRow.style, {
       display: "flex",
@@ -146158,7 +146191,7 @@ var ViewerContextMenu = class {
     styleRow.appendChild(colorInput);
     styleRow.appendChild(sizeLabel);
     styleRow.appendChild(sizeInput);
-    this.root.appendChild(styleRow);
+    this.scrollEl.appendChild(styleRow);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -146231,12 +146264,12 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.root.appendChild(actions);
+    this.scrollEl.appendChild(actions);
     input.focus?.();
   }
   renderSelectionComposer() {
     if (!this.currentTarget) return;
-    this.root.replaceChildren();
+    this.scrollEl.replaceChildren();
     const title = document.createElement("div");
     title.textContent = "Save Selection";
     Object.assign(title.style, {
@@ -146245,7 +146278,7 @@ var ViewerContextMenu = class {
       borderBottom: "1px solid rgba(255,255,255,0.10)",
       marginBottom: "6px"
     });
-    this.root.appendChild(title);
+    this.scrollEl.appendChild(title);
     const subtitle = document.createElement("div");
     subtitle.textContent = selectionSummary(this.currentSelection);
     Object.assign(subtitle.style, {
@@ -146253,7 +146286,7 @@ var ViewerContextMenu = class {
       opacity: "0.82",
       fontSize: "12px"
     });
-    this.root.appendChild(subtitle);
+    this.scrollEl.appendChild(subtitle);
     const input = document.createElement("input");
     input.type = "text";
     input.value = "";
@@ -146270,7 +146303,7 @@ var ViewerContextMenu = class {
       color: "#f4f4f5",
       outline: "none"
     });
-    this.root.appendChild(input);
+    this.scrollEl.appendChild(input);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "flex",
@@ -146339,7 +146372,7 @@ var ViewerContextMenu = class {
     });
     actions.appendChild(save);
     actions.appendChild(cancel);
-    this.root.appendChild(actions);
+    this.scrollEl.appendChild(actions);
     input.focus?.();
   }
   detachOutsidePointerHandler() {
@@ -150081,8 +150114,11 @@ var MolSysViewerController = class _MolSysViewerController {
     }, (ev) => {
       this.lastContextLoci = ev?.current?.loci ?? null;
       const page = ev?.page;
-      const page_x = typeof page?.[0] === "number" ? page[0] : void 0;
-      const page_y = typeof page?.[1] === "number" ? page[1] : void 0;
+      const canvas_x = typeof page?.[0] === "number" ? page[0] : void 0;
+      const canvas_y = typeof page?.[1] === "number" ? page[1] : void 0;
+      const canvasOffset = this.canvasHost.getBoundingClientRect();
+      const page_x = canvas_x !== void 0 ? canvas_x + canvasOffset.left : void 0;
+      const page_y = canvas_y !== void 0 ? canvas_y + canvasOffset.top : void 0;
       const tooltipTag = ev?.current?.repr?.props?.tooltip?.trim();
       if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
         const spec = this.annotations.getSpec(tooltipTag);
@@ -150122,8 +150158,8 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
       payload = this.normalizeManagedContextPayload(payload);
-      if (typeof page_x === "number" && typeof page_y === "number") {
-        const pickData = this.plugin.canvas3d?.identify?.([page_x, page_y]);
+      if (canvas_x !== void 0 && canvas_y !== void 0) {
+        const pickData = this.plugin.canvas3d?.identify?.([canvas_x, canvas_y]);
         const pickedLoci = pickData ? this.plugin.canvas3d?.getLoci?.(pickData.id)?.loci : null;
         if (pickedLoci) {
           payload = normalizeContextPayloadFromLoci(pickedLoci, page_x, page_y);
@@ -150177,8 +150213,8 @@ var MolSysViewerController = class _MolSysViewerController {
           };
         }
       }
-      const pageX = payload.page_x ?? 0;
-      const pageY = payload.page_y ?? 0;
+      const pageX = page_x ?? payload.page_x ?? 0;
+      const pageY = page_y ?? payload.page_y ?? 0;
       this.lastContextPayload = payload;
       this.groupPanel.updateContextTarget(payload);
       this.syncWorkbenchContextFromPayload(payload);
@@ -151715,7 +151751,7 @@ var MolSysViewerController = class _MolSysViewerController {
     ];
     for (const workspace of this.addonWorkspaces) {
       const panelCount = this.getWorkspacePanels(workspace.id).length;
-      const workbenchSections = this.addonWorkbenchSections.filter((item2) => item2.workspaceId === workspace.id);
+      const workbenchSections = this.workbenchAddonSections.filter((item2) => item2.workspaceId === workspace.id);
       const workbenchSectionCount = workbenchSections.length;
       const workbenchSectionTitles = workbenchSections.map((item2) => item2.title);
       const contextActionCount = this.addonContextActions.filter((item2) => this.workspaceBelongsToAddon(workspace.id, item2.addon)).length;

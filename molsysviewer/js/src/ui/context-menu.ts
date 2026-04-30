@@ -112,6 +112,7 @@ function selectionSummary(selection: ActiveSelectionPayload | null): string {
 export class ViewerContextMenu {
     private readonly root: HTMLDivElement;
     private outsidePointerHandler?: (event: PointerEvent) => void;
+    private scrollEl!: HTMLDivElement;
     private currentTarget: ContextMenuTarget | null = null;
     private currentSelection: ActiveSelectionPayload | null = null;
     private currentLastMeasurement: LastMeasurementSummary | null = null;
@@ -135,20 +136,44 @@ export class ViewerContextMenu {
             display: "none",
             minWidth: "180px",
             maxWidth: "240px",
-            padding: "6px",
             borderRadius: "10px",
             border: "1px solid rgba(255,255,255,0.15)",
             background: "rgba(26, 26, 30, 0.96)",
             color: "#f4f4f5",
             boxShadow: "0 16px 40px rgba(0,0,0,0.35)",
             zIndex: "20",
+            overflow: "hidden",
             fontFamily: "\"IBM Plex Sans\", system-ui, sans-serif",
             fontSize: "13px",
         });
         this.root.addEventListener("pointerdown", (event) => {
             event.stopPropagation();
         });
+        this.scrollEl = document.createElement("div");
+        this.scrollEl.setAttribute("data-molsysviewer-context-scroll", "true");
+        Object.assign(this.scrollEl.style, {
+            overflowY: "auto",
+            padding: "6px",
+            boxSizing: "border-box",
+            // Firefox scrollbar styling
+            scrollbarWidth: "thin" as any,
+            scrollbarColor: "rgba(255,255,255,0.25) transparent" as any,
+        });
+        this.root.appendChild(this.scrollEl);
         this.host.appendChild(this.root);
+
+        // Inject webkit scrollbar styles once per document
+        if (!document.getElementById("msv-context-menu-scrollbar-style")) {
+            const style = document.createElement("style");
+            style.id = "msv-context-menu-scrollbar-style";
+            style.textContent = [
+                "[data-molsysviewer-context-scroll]::-webkit-scrollbar { width: 5px; }",
+                "[data-molsysviewer-context-scroll]::-webkit-scrollbar-track { background: transparent; }",
+                "[data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }",
+                "[data-molsysviewer-context-scroll]::-webkit-scrollbar-corner { background: transparent; }",
+            ].join("\n");
+            document.head.appendChild(style);
+        }
     }
 
     open(
@@ -169,7 +194,7 @@ export class ViewerContextMenu {
         this.currentAddonActions = Array.isArray(addonActions) ? [...addonActions] : [];
         this.currentPageX = pageX;
         this.currentPageY = pageY;
-        this.root.replaceChildren();
+        this.scrollEl.replaceChildren();
 
         const header = document.createElement("div");
         header.setAttribute("data-molsysviewer-context-menu-title", "true");
@@ -180,38 +205,38 @@ export class ViewerContextMenu {
             borderBottom: "1px solid rgba(255,255,255,0.10)",
             marginBottom: "6px",
         });
-        this.root.appendChild(header);
+        this.scrollEl.appendChild(header);
 
         if (target.kind === "structure") {
-            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-            this.root.appendChild(this.makeActionButton("Distance", "distance"));
-            this.root.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
-            this.root.appendChild(this.makeActionButton("Angle", "angle"));
-            this.root.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
-            this.root.appendChild(this.makeActionButton("Dihedral", "dihedral"));
-            this.root.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
+            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            this.scrollEl.appendChild(this.makeActionButton("Distance", "distance"));
+            this.scrollEl.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
+            this.scrollEl.appendChild(this.makeActionButton("Angle", "angle"));
+            this.scrollEl.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
+            this.scrollEl.appendChild(this.makeActionButton("Dihedral", "dihedral"));
+            this.scrollEl.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
         } else if (target.kind === "shape") {
-            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             if (target.tag?.trim()) {
-                this.root.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
+                this.scrollEl.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
             }
         } else if (target.kind === "measurement") {
-            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             if (target.tag?.trim()) {
-                this.root.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
-                this.root.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
+                this.scrollEl.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
+                this.scrollEl.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
             }
         } else if (target.kind === "annotation") {
-            this.root.appendChild(this.makeActionButton("Focus Target", "focus_target"));
+            this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
             if (target.tag?.trim()) {
-                this.root.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
+                this.scrollEl.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
             }
         } else {
             // Empty canvas — scene-level actions
-            this.root.appendChild(this.makeActionButton("Reset View", "reset_view"));
-            this.root.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
-            this.root.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
-            this.root.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
+            this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
+            this.scrollEl.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
+            this.scrollEl.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
+            this.scrollEl.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
         }
 
         if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
@@ -239,7 +264,7 @@ export class ViewerContextMenu {
                 section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
             }
             section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
-            this.root.appendChild(section);
+            this.scrollEl.appendChild(section);
         }
 
         if (this.currentSavedSelections.length > 0) {
@@ -262,7 +287,7 @@ export class ViewerContextMenu {
             for (const selection of this.currentSavedSelections) {
                 section.appendChild(this.makeSavedSelectionButton(selection));
             }
-            this.root.appendChild(section);
+            this.scrollEl.appendChild(section);
         }
 
         if (this.currentRegions.length > 0) {
@@ -285,7 +310,7 @@ export class ViewerContextMenu {
             for (const region of this.currentRegions) {
                 section.appendChild(this.makeRegionButton(region));
             }
-            this.root.appendChild(section);
+            this.scrollEl.appendChild(section);
         }
 
         const matchingAddonActions = this.currentAddonActions.filter((item) => item.target_kinds.includes(target.kind));
@@ -309,15 +334,26 @@ export class ViewerContextMenu {
             for (const addonAction of matchingAddonActions) {
                 section.appendChild(this.makeAddonActionButton(addonAction));
             }
-            this.root.appendChild(section);
+            this.scrollEl.appendChild(section);
         }
 
         const rect = this.host.getBoundingClientRect();
+        this.scrollEl.style.maxHeight = "";
         this.root.style.display = "block";
         const menuWidth = this.root.offsetWidth || 180;
         const menuHeight = this.root.offsetHeight || 120;
         const left = Math.min(Math.max(0, pageX - rect.left), Math.max(0, rect.width - menuWidth));
-        const top = Math.min(Math.max(0, pageY - rect.top), Math.max(0, rect.height - menuHeight));
+        const rawTop = pageY - rect.top;
+        const top = Math.min(Math.max(0, rawTop), Math.max(0, rect.height - menuHeight));
+        const availableBelow = rect.height - top - 12;
+        if (menuHeight > availableBelow) {
+            this.scrollEl.style.maxHeight = `${Math.max(80, availableBelow)}px`;
+            this.scrollEl.style.borderBottomLeftRadius = "9px";
+            this.scrollEl.style.borderBottomRightRadius = "9px";
+        } else {
+            this.scrollEl.style.borderBottomLeftRadius = "";
+            this.scrollEl.style.borderBottomRightRadius = "";
+        }
         this.root.style.left = `${left}px`;
         this.root.style.top = `${top}px`;
 
@@ -535,7 +571,7 @@ export class ViewerContextMenu {
 
     private renderRegionComposer(): void {
         if (!this.currentTarget) return;
-        this.root.replaceChildren();
+        this.scrollEl.replaceChildren();
 
         const title = document.createElement("div");
         title.textContent = "New Region from Selection";
@@ -545,7 +581,7 @@ export class ViewerContextMenu {
             borderBottom: "1px solid rgba(255,255,255,0.10)",
             marginBottom: "6px",
         });
-        this.root.appendChild(title);
+        this.scrollEl.appendChild(title);
 
         const subtitle = document.createElement("div");
         subtitle.textContent = selectionSummary(this.currentSelection);
@@ -554,7 +590,7 @@ export class ViewerContextMenu {
             opacity: "0.82",
             fontSize: "12px",
         });
-        this.root.appendChild(subtitle);
+        this.scrollEl.appendChild(subtitle);
 
         const input = document.createElement("input");
         input.type = "text";
@@ -572,7 +608,7 @@ export class ViewerContextMenu {
             color: "#f4f4f5",
             outline: "none",
         });
-        this.root.appendChild(input);
+        this.scrollEl.appendChild(input);
 
         const actions = document.createElement("div");
         Object.assign(actions.style, { display: "flex", gap: "8px" });
@@ -640,7 +676,7 @@ export class ViewerContextMenu {
 
         actions.appendChild(save);
         actions.appendChild(cancel);
-        this.root.appendChild(actions);
+        this.scrollEl.appendChild(actions);
         input.focus?.();
     }
 
@@ -702,7 +738,7 @@ export class ViewerContextMenu {
 
     private renderRenameRegionComposer(oldTag: string): void {
         if (!this.currentTarget) return;
-        this.root.replaceChildren();
+        this.scrollEl.replaceChildren();
 
         const title = document.createElement("div");
         title.textContent = "Rename Region";
@@ -712,7 +748,7 @@ export class ViewerContextMenu {
             borderBottom: "1px solid rgba(255,255,255,0.10)",
             marginBottom: "6px",
         });
-        this.root.appendChild(title);
+        this.scrollEl.appendChild(title);
 
         const subtitle = document.createElement("div");
         subtitle.textContent = `Current tag: ${oldTag}`;
@@ -721,7 +757,7 @@ export class ViewerContextMenu {
             opacity: "0.82",
             fontSize: "12px",
         });
-        this.root.appendChild(subtitle);
+        this.scrollEl.appendChild(subtitle);
 
         const input = document.createElement("input");
         input.type = "text";
@@ -739,7 +775,7 @@ export class ViewerContextMenu {
             color: "#f4f4f5",
             outline: "none",
         });
-        this.root.appendChild(input);
+        this.scrollEl.appendChild(input);
 
         const actions = document.createElement("div");
         Object.assign(actions.style, { display: "flex", gap: "8px" });
@@ -802,13 +838,13 @@ export class ViewerContextMenu {
 
         actions.appendChild(save);
         actions.appendChild(cancel);
-        this.root.appendChild(actions);
+        this.scrollEl.appendChild(actions);
         input.select?.();
     }
 
     private renderLabelComposer(): void {
         if (!this.currentTarget) return;
-        this.root.replaceChildren();
+        this.scrollEl.replaceChildren();
 
         const title = document.createElement("div");
         title.textContent = "Label from selection";
@@ -818,7 +854,7 @@ export class ViewerContextMenu {
             borderBottom: "1px solid rgba(255,255,255,0.10)",
             marginBottom: "8px",
         });
-        this.root.appendChild(title);
+        this.scrollEl.appendChild(title);
 
         const input = document.createElement("input");
         input.type = "text";
@@ -836,7 +872,7 @@ export class ViewerContextMenu {
             color: "#f4f4f5",
             outline: "none",
         });
-        this.root.appendChild(input);
+        this.scrollEl.appendChild(input);
 
         // Style row: color swatch + size slider
         const styleRow = document.createElement("div");
@@ -878,7 +914,7 @@ export class ViewerContextMenu {
         styleRow.appendChild(colorInput);
         styleRow.appendChild(sizeLabel);
         styleRow.appendChild(sizeInput);
-        this.root.appendChild(styleRow);
+        this.scrollEl.appendChild(styleRow);
 
         const actions = document.createElement("div");
         Object.assign(actions.style, {
@@ -958,13 +994,13 @@ export class ViewerContextMenu {
 
         actions.appendChild(save);
         actions.appendChild(cancel);
-        this.root.appendChild(actions);
+        this.scrollEl.appendChild(actions);
         input.focus?.();
     }
 
     private renderSelectionComposer(): void {
         if (!this.currentTarget) return;
-        this.root.replaceChildren();
+        this.scrollEl.replaceChildren();
 
         const title = document.createElement("div");
         title.textContent = "Save Selection";
@@ -974,7 +1010,7 @@ export class ViewerContextMenu {
             borderBottom: "1px solid rgba(255,255,255,0.10)",
             marginBottom: "6px",
         });
-        this.root.appendChild(title);
+        this.scrollEl.appendChild(title);
 
         const subtitle = document.createElement("div");
         subtitle.textContent = selectionSummary(this.currentSelection);
@@ -983,7 +1019,7 @@ export class ViewerContextMenu {
             opacity: "0.82",
             fontSize: "12px",
         });
-        this.root.appendChild(subtitle);
+        this.scrollEl.appendChild(subtitle);
 
         const input = document.createElement("input");
         input.type = "text";
@@ -1001,7 +1037,7 @@ export class ViewerContextMenu {
             color: "#f4f4f5",
             outline: "none",
         });
-        this.root.appendChild(input);
+        this.scrollEl.appendChild(input);
 
         const actions = document.createElement("div");
         Object.assign(actions.style, {
@@ -1077,7 +1113,7 @@ export class ViewerContextMenu {
 
         actions.appendChild(save);
         actions.appendChild(cancel);
-        this.root.appendChild(actions);
+        this.scrollEl.appendChild(actions);
         input.focus?.();
     }
 

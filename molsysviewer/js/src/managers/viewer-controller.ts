@@ -726,8 +726,13 @@ export class MolSysViewerController {
         }, (ev) => {
             this.lastContextLoci = ev?.current?.loci ?? null;
             const page = ev?.page;
-            const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
-            const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
+            // ev.page contains canvas-relative coordinates (clientX - canvasEl.rect.left).
+            // identify() expects canvas-relative; contextMenu.open expects viewport-relative.
+            const canvas_x = typeof page?.[0] === "number" ? page[0] : undefined;
+            const canvas_y = typeof page?.[1] === "number" ? page[1] : undefined;
+            const canvasOffset = this.canvasHost.getBoundingClientRect();
+            const page_x = canvas_x !== undefined ? canvas_x + canvasOffset.left : undefined;
+            const page_y = canvas_y !== undefined ? canvas_y + canvasOffset.top : undefined;
             // Detect annotation/measurement context: repr embeds its tag in props.tooltip
             const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
             if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
@@ -768,8 +773,8 @@ export class MolSysViewerController {
             }
             let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
             payload = this.normalizeManagedContextPayload(payload);
-            if (typeof page_x === "number" && typeof page_y === "number") {
-                const pickData = this.plugin.canvas3d?.identify?.([page_x, page_y] as any);
+            if (canvas_x !== undefined && canvas_y !== undefined) {
+                const pickData = this.plugin.canvas3d?.identify?.([canvas_x, canvas_y] as any);
                 const pickedLoci = pickData ? this.plugin.canvas3d?.getLoci?.(pickData.id)?.loci : null;
                 if (pickedLoci) {
                     payload = normalizeContextPayloadFromLoci(pickedLoci, page_x, page_y);
@@ -823,8 +828,8 @@ export class MolSysViewerController {
                     };
                 }
             }
-            const pageX = payload.page_x ?? 0;
-            const pageY = payload.page_y ?? 0;
+            const pageX = page_x ?? payload.page_x ?? 0;
+            const pageY = page_y ?? payload.page_y ?? 0;
             this.lastContextPayload = payload;
             this.groupPanel.updateContextTarget(payload);
             this.syncWorkbenchContextFromPayload(payload);
@@ -2382,7 +2387,7 @@ export class MolSysViewerController {
 
         for (const workspace of this.addonWorkspaces) {
             const panelCount = this.getWorkspacePanels(workspace.id).length;
-            const workbenchSections = this.addonWorkbenchSections.filter((item) => item.workspaceId === workspace.id);
+            const workbenchSections = this.workbenchAddonSections.filter((item) => item.workspaceId === workspace.id);
             const workbenchSectionCount = workbenchSections.length;
             const workbenchSectionTitles = workbenchSections.map((item) => item.title);
             const contextActionCount = this.addonContextActions.filter((item) => this.workspaceBelongsToAddon(workspace.id, item.addon)).length;
