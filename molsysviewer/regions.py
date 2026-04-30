@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import molsysmt as msm
 from smonitor import signal
@@ -44,9 +44,22 @@ class Region:
             return None
 
         if element == "bond":
-            raise NotImplementedError(
-                "Region scoping for element='bond' is not implemented yet."
+            per_atom = msm.get(
+                self._view._molsys,  # noqa: SLF001
+                element="atom",
+                selection=list(self.atom_indices),
+                output_type="values",
+                skip_digestion=True,
+                bond_index=True,
             )
+            scoped: list[int] = []
+            for bonds in per_atom or []:
+                for b in bonds or []:
+                    try:
+                        scoped.append(int(b))
+                    except Exception:
+                        continue
+            return sorted(set(scoped))
 
         element_to_atom_attribute = {
             "group": "group_index",
@@ -596,3 +609,28 @@ class Region:
         """Remove per-atom color overrides for the whole canvas and revert to the representation theme."""
         self._view._atom_color_map.clear()  # noqa: SLF001
         self._view._send({"op": "clear_atom_colors"})  # noqa: SLF001
+
+
+class RegionsManager(dict):
+    """Dict-like registry of :class:`Region` objects with an :meth:`info` helper."""
+
+    def info(self, tag: str | None = None) -> dict[str, Any] | List[dict[str, Any]]:
+        """Return compact metadata for one region (by *tag*) or all regions."""
+
+        def summarize(region: Region) -> dict[str, Any]:
+            atom_indices = list(region.atom_indices) if region.atom_indices is not None else []
+            return {
+                "tag": region.tag,
+                "n_atoms": len(atom_indices),
+                "atom_indices": atom_indices,
+                "representation": region.representation,
+                "visible": not region._hidden,  # noqa: SLF001
+                "active": region._active,  # noqa: SLF001
+            }
+
+        if tag is not None:
+            region = self.get(tag)
+            if region is None:
+                raise KeyError(tag)
+            return summarize(region)
+        return [summarize(r) for r in self.values()]

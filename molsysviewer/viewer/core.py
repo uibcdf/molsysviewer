@@ -31,7 +31,7 @@ from ..scene import SceneManager
 from ..selections import SelectionsManager, Selection
 from ..styles import StylesManager
 from ..shapes import ShapesManager
-from ..regions import Region
+from ..regions import Region, RegionsManager
 from ..whole import Whole
 from ..layers import Layer, SceneObject
 from ..colors import colors as global_colors
@@ -199,7 +199,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         self._load_blocks: list[dict[str, Any]] = []
         self._current_structure_index: int = 0
 
-        self._regions: Dict[str, Region] = {}
+        self._regions: RegionsManager = RegionsManager()
         self._layers: Dict[str, Layer] = {}
         self._scene_objects: Dict[str, SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
@@ -548,7 +548,7 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         return self._current_structure_index
 
     @property
-    def regions(self) -> Mapping[str, Region]:
+    def regions(self) -> RegionsManager:
         """Public registry of regions (structural selections)."""
         return self._regions
 
@@ -1106,6 +1106,38 @@ class MolSysView(SceneRegistryMixin, HistoryMixin, ExportMixin):
         region.representation = "plane"
         region.repr_params = params
         return region
+
+    @signal(tags=["config"])
+    @digest()
+    def load_project_config(
+        self,
+        path: str,
+        *,
+        apply_default: bool = False,
+        skip_digestion: bool = False,
+    ) -> dict[str, Any]:
+        """Load a ``_molsysviewer.py`` project config file into this viewer.
+
+        Applies styles (and optionally the default scene style) to this viewer
+        and updates the global add-on enable/disable defaults.
+
+        Equivalent to calling ``view.styles.load_project_config(path, ...)``
+        and ``molsysviewer.addons.load_project_config(path)`` separately.
+        """
+        styles_result = self.styles.load_project_config(
+            path, apply_default=apply_default, skip_digestion=True
+        )
+        addons_result = self.addons._host.load_project_config(  # noqa: SLF001
+            path, skip_digestion=True
+        )
+        return {
+            "path": styles_result.get("path"),
+            "default_scene_style": styles_result.get("default_scene_style"),
+            "style_tags": styles_result.get("style_tags", []),
+            "applied_default": styles_result.get("applied_default", False),
+            "addons_enabled": addons_result.get("addons_enabled", []),
+            "addons_disabled": addons_result.get("addons_disabled", []),
+        }
 
     @signal(tags=["layer"])
     @digest()

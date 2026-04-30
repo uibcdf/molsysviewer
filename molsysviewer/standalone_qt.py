@@ -587,6 +587,7 @@ def _install_menu_bar(
                 value=pdb_id,
                 loaded_label=pdb_id,
             )
+            _persist_shell_state(current_state, window=window)
             _reload_html_in_view(webview, QUrl, html_path)
             _refresh_recent_menu()
             _show_status(window, f"Loaded PDB ID: {pdb_id}")

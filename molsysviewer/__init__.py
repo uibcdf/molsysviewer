@@ -8,6 +8,7 @@ _check_dependency(__name__)
 
 from ._pyunitwizard import puw as pyunitwizard
 from ._version import __version__
+from . import config
 from .demo import demo
 from .systems import systems
 from .new_view import new_view
@@ -106,4 +107,5 @@ __all__ = [
     "AddonToolModeSpec",
     "AddonLifecycleSpec",
     "AddonPanelWidget",
+    "config",
 ]

@@ -51,6 +51,10 @@ dev = [
   "pytest",
   "pytest-cov",
 ]
+# YAML support for user presets (msv.config.load_user_presets with .yaml files)
+yaml = ["pyyaml"]
+# Movie export (view.movie.export)
+movie = ["imageio"]
 # The standalone Qt prototype requires PySide6_uibcdf with QtWebEngineWidgets.
 # This is NOT installable via pip — use the UIBCDF conda channel:
 #   conda install -c uibcdf -c conda-forge pyside6-addons-uibcdf

@@ -4,6 +4,7 @@ from importlib.resources import files
 
 import molsysmt as msm  # noqa: F401
 import molsysviewer as viewer
+from molsysviewer import demo
 
 
 def test_demo_region_hide():
@@ -20,3 +21,27 @@ def test_demo_region_hide():
 
     assert region is not None
     assert region.tag in view.regions
+
+
+def test_region_scoped_indices_bond():
+    """Region._scoped_indices_for_element('bond') returns non-empty sorted int list."""
+    view = demo["dialanine"]
+    region = view.new_region(selection="group_index == 0", tag="bond-scope-test")
+
+    bond_indices = region._scoped_indices_for_element("bond")
+
+    assert isinstance(bond_indices, list)
+    assert len(bond_indices) > 0
+    assert all(isinstance(i, int) for i in bond_indices)
+    assert bond_indices == sorted(set(bond_indices))
+
+
+def test_region_scoped_indices_bond_subset():
+    """Bond scoping on a single-atom region returns only the bonds of that atom."""
+    view = demo["dialanine"]
+    region = view.new_region(selection="atom_index == 1", tag="bond-scope-single")
+
+    bond_indices = region._scoped_indices_for_element("bond")
+
+    assert isinstance(bond_indices, list)
+    assert len(bond_indices) > 0
