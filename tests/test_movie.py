@@ -425,6 +425,33 @@ def test_play_loop_flag():
     assert m._view.sent_messages[-1]["loop"] is True
 
 
+def test_play_start_time_ms():
+    m = make_movie()
+    m.add_keyframe(0.0, camera=SNAP_A)
+    m.add_keyframe(3000.0, camera=SNAP_B)
+
+    # 1. Default value check
+    m.play()
+    assert m._view.sent_messages[-1]["start_time_ms"] == 0.0
+
+    # 2. Explicit valid value
+    m.play(start_time_ms=1500.0)
+    assert m._view.sent_messages[-1]["start_time_ms"] == 1500.0
+
+    # 3. Explicit valid boundary value
+    m.play(start_time_ms=3000.0)
+    assert m._view.sent_messages[-1]["start_time_ms"] == 3000.0
+
+    # 4. Negative value raises ValueError
+    with pytest.raises(ValueError, match="must be positive or zero"):
+        m.play(start_time_ms=-10.0)
+
+    # 5. Exceeding duration raises ValueError
+    with pytest.raises(ValueError, match="cannot be greater than movie duration"):
+        m.play(start_time_ms=3001.0)
+
+
+
 def test_play_requires_two_keyframes():
     m = make_movie()
     with pytest.raises(ValueError):

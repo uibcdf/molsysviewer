@@ -1,5 +1,5 @@
 # Modules overview (snapshot)
-_Last updated: 2025-11-21_
+_Last updated: 2026-05-22_
 
 This page is a historical snapshot of how MolSysViewer was described during the initial architecture phase.
 It is still useful as a conceptual map, but the current source of truth is always the code.
@@ -23,17 +23,27 @@ Responsibilities
 Current package split
 
 - `core.py`
-  - high-level `MolSysView` facade and frontend event handling
+  - High-level `MolSysView` facade orchestration and central class definition.
+- **Mixins** (modular core split):
+  - `regions.py`: Manages spatial regions and atom selection logic.
+  - `panel_mode.py`: Manages sidebar panel rendering and dynamic workspace contexts.
+  - `load.py`: Handles importing structures and parsing project stylesheets.
+  - `visibility.py`: Controls global, representation, and component-level visibility.
+  - `scene.py`: Manages camera, snapshots, figures, and exports.
+  - `molsysmt_interface.py`: Dedicated interface layer for MolSysMT integration.
+  - `state.py`: Handles layout state synchronization.
+  - `interaction.py`: Manages click, hover, and reproducible signal callbacks.
 - `history.py`
-  - replayable history recording and message rewriting
+  - Replayable history recording and message rewriting.
 - `export.py`
-  - export-time message assembly and HTML serialization helpers
+  - Export-time message assembly and HTML serialization helpers.
 - `scene_registry.py`
-  - non-structural scene-object and layer registries
+  - Non-structural scene-object and layer registries.
 - `representations.py`, `presets.py`
-  - normalization tables and preset resolution
+  - Normalization tables and preset resolution.
 
 In practice, `MolSysView` plays multiple “logical module” roles:
+
 
 - **basic**: info, show/hide/isolate, visibility reset.
 - **structure**: MolSysMT integration (`_molsys`, selections, payloads).

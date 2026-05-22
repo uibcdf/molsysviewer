@@ -16,7 +16,7 @@ END
 `;
 
 async function run() {
-    const envBin = process.env.PW_CHROMIUM_BIN;
+    const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
     const playwrightBin = process.env.PLAYWRIGHT_BROWSERS_PATH
         ? `${process.env.PLAYWRIGHT_BROWSERS_PATH}/chromium-1200/chrome-linux64/chrome`
         : undefined;

@@ -105,9 +105,11 @@ That principle should guide prioritization throughout the repository.
      keyframe timeline, serializable recipes, and export pipeline.
 35. [**Load Modes and Append Structures Status**](load_modes_and_append_structures_status.md)
    - Reference status document for `load()` mode variants and the structure-append workflow.
-36. [**Render Quality Vision**](render_quality_vision.md)
+36. [**Performance Benchmarks**](benchmarks/README.md)
+   - Benchmark suite specifications, execution instructions, and runtime optimization roadmaps.
+37. [**Render Quality Vision**](render_quality_vision.md)
    - Strategic vision for high-fidelity rendering and Blender integration (post-1.0).
-37. [**Mol\* Color Strings**](molstar_color_strings.md)
+38. [**Mol\* Color Strings**](molstar_color_strings.md)
    - Baseline record of named color strings that MolSysViewer treats as valid Mol\* color names.
 
 ## Workbench Tutorials (Planned)

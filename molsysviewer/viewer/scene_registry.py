@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from typing import Any
+from smonitor import signal
+from .._private.arg_digestion import digest
 from ..layers import GroupLayer, Layer, SceneObject
 
 
@@ -117,6 +120,24 @@ class SceneRegistryMixin:
         if text in self._scene_objects:
             raise ValueError(f"Scene-object tag {text!r} already exists.")
         return text
+
+    @signal(tags=["layer"])
+    @digest()
+    def new_layer(
+        self,
+        *,
+        tag: str | None = None,
+        kind: str | None = None,
+        skip_digestion: bool = False,
+        **meta: Any,
+    ) -> Layer:
+        """Create a new layer (non-structural visual group)."""
+        tag = tag or self._next_layer_tag()
+        tag = self._assert_nonstructural_tag_available(tag)
+        layer = Layer(self, tag, kind=kind, meta=meta)
+        self._layers[tag] = layer
+        layer._send_create()  # noqa: SLF001
+        return layer
 
 
 __all__ = ["SceneRegistryMixin"]

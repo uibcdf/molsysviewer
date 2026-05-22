@@ -134,12 +134,31 @@ class ShapesManager:
                 "visible": False if layer is None else not getattr(layer, "_hidden", False),
             }
 
-            if op == "add_sphere":
-                r = options.get("radius")
-                entry["radius"] = r
+            from .. import pyunitwizard as puw
+            def _to_standard_unit(val, unit="angstrom"):
+                if val is None:
+                    return None
+                return puw.standardize(puw.quantity(val, unit))
+
+            if "radius" in options:
+                entry["radius"] = _to_standard_unit(options["radius"])
+            if "center" in options:
+                entry["center"] = _to_standard_unit(options["center"])
+            if "centers" in options:
+                entry["centers"] = _to_standard_unit(options["centers"])
+            if "radii" in options:
+                entry["radii"] = _to_standard_unit(options["radii"])
+            if "vertices" in options:
+                entry["vertices"] = _to_standard_unit(options["vertices"])
+            if "origins" in options:
+                entry["origins"] = _to_standard_unit(options["origins"])
+            if "vectors" in options:
+                entry["vectors"] = _to_standard_unit(options["vectors"])
+
             if op == "add_network_links":
                 radii = options.get("radii")
-                entry["width"] = radii[0] if isinstance(radii, list) and radii else options.get("radius")
+                val = radii[0] if isinstance(radii, list) and radii else options.get("radius")
+                entry["width"] = _to_standard_unit(val)
 
             results.append(entry)
 
@@ -281,6 +300,137 @@ class ShapesManager:
             stacklevel=2,
         )
         return self.interaction_sites.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+
+    @signal(tags=["shape"])
+    def add_topomt_feature(
+        self,
+        feature: "Any",
+        tag: str | None = None,
+        layer_tag: str | None = None,
+        skip_digestion: bool = False,
+        **kwargs,
+    ):
+        """Add a TopoMT feature (Pocket, Void, Mouth, Channel, BranchedChannel) to the viewer.
+
+        This automatically handles feature dispatching, PyUnitWizard conversions,
+        and layer registration.
+        """
+        # 1. Identify the feature type.
+        f_type = getattr(feature, "feature_type", None)
+        if f_type is None:
+            raise ValueError("The provided object is not a valid TopoMT feature (missing 'feature_type').")
+
+        f_type = str(f_type).lower().strip()
+
+        # 2. Dispatch accordingly.
+        if f_type in ("pocket", "void"):
+            atom_indices = getattr(feature, "atom_indices", None)
+            if atom_indices is None:
+                raise ValueError(f"TopoMT feature {feature} has no atom_indices.")
+
+            # Fetch mouth_atom_indices from connected boundaries if available
+            mouth_atom_indices = []
+            boundaries = getattr(feature, "boundaries", None)
+            topography = getattr(feature, "_topography", None)
+            if boundaries and topography is not None and getattr(topography, "features", None) is not None:
+                for b_id in boundaries:
+                    b_feat = topography.features.get(b_id)
+                    if b_feat is not None:
+                        b_atoms = getattr(b_feat, "atom_indices", None)
+                        if b_atoms:
+                            mouth_atom_indices.append(list(b_atoms))
+
+            kwargs_passed = dict(kwargs)
+            if mouth_atom_indices:
+                kwargs_passed["mouth_atom_indices"] = mouth_atom_indices
+
+            return self.add_pocket_surface(
+                atom_indices=list(atom_indices),
+                tag=tag,
+                layer_tag=layer_tag,
+                skip_digestion=True,
+                **kwargs_passed
+            )
+
+        elif f_type in ("channel", "branched_channel"):
+            from .. import pyunitwizard as puw
+            # Extract centers and radii
+            centers = getattr(feature, "centers", None)
+            if centers is None:
+                centers = getattr(feature, "coordinates", None)
+            if centers is None and getattr(feature, "points", None) is not None:
+                pts = feature.points
+                if isinstance(pts, (list, tuple, set)):
+                    try:
+                        centers = [getattr(p, "coordinates", getattr(p, "center", p)) for p in pts]
+                    except Exception:
+                        pass
+
+            if centers is None:
+                raise ValueError(f"TopoMT feature {feature} of type {f_type} has no coordinates or centers.")
+
+            if not puw.is_quantity(centers):
+                centers = puw.quantity(centers, "nm")
+
+            radii = getattr(feature, "radii", None)
+            if radii is None:
+                radii = getattr(feature, "radius", None)
+            if radii is None and getattr(feature, "points", None) is not None:
+                pts = feature.points
+                if isinstance(pts, (list, tuple, set)):
+                    try:
+                        radii = [getattr(p, "radius", getattr(p, "radii", 1.0)) for p in pts]
+                    except Exception:
+                        pass
+
+            if radii is None:
+                radii = [1.0] * len(centers)
+
+            if not puw.is_quantity(radii):
+                radii = puw.quantity(radii, "nm")
+
+            return self.add_channel_tube(
+                centers=centers,
+                radii=radii,
+                tag=tag,
+                layer_tag=layer_tag,
+                skip_digestion=True,
+                **kwargs
+            )
+
+        elif f_type in ("mouth", "boundary"):
+            from .. import pyunitwizard as puw
+            atom_indices = getattr(feature, "atom_indices", None)
+            if atom_indices is not None and len(atom_indices) > 0:
+                centers = getattr(feature, "centers", None)
+                if centers is None:
+                    centers = getattr(feature, "coordinates", None)
+                if centers is not None:
+                    if not puw.is_quantity(centers):
+                        centers = puw.quantity(centers, "nm")
+                    radii = getattr(feature, "radii", getattr(feature, "radius", [1.0] * len(centers)))
+                    if not puw.is_quantity(radii):
+                        radii = puw.quantity(radii, "nm")
+                    return self.add_channel_tube(
+                        centers=centers,
+                        radii=radii,
+                        tag=tag,
+                        layer_tag=layer_tag,
+                        skip_digestion=True,
+                        **kwargs
+                    )
+                else:
+                    return self.add_pocket_surface(
+                        atom_indices=list(atom_indices),
+                        tag=tag,
+                        layer_tag=layer_tag,
+                        skip_digestion=True,
+                        **kwargs
+                    )
+            raise ValueError(f"TopoMT feature {feature} of type {f_type} has no atom_indices or coordinate points to render.")
+
+        else:
+            raise NotImplementedError(f"Rendering for TopoMT feature type '{f_type}' is not implemented.")
 
     @signal(tags=["shape"])
     @digest()

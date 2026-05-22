@@ -9,9 +9,24 @@ from .argument.syntax import digest_syntax
 
 def normalize_viewer_caller(caller: str | None) -> str | None:
     """Keep historical viewer caller paths stable after the viewer package split."""
-    if isinstance(caller, str) and caller.startswith("molsysviewer.viewer.core."):
+    if not isinstance(caller, str):
+        return caller
+    if caller.startswith("molsysviewer.viewer.core."):
         return caller.replace("molsysviewer.viewer.core.", "molsysviewer.viewer.", 1)
+
+    # Map any Mixin method to the historical molsysviewer.viewer namespace:
+    # e.g., molsysviewer.viewer.molsysmt_interface.get -> molsysviewer.viewer.get
+    parts = caller.split(".")
+    if len(parts) >= 4 and parts[0] == "molsysviewer" and parts[1] == "viewer":
+        mixin_names = {
+            "regions", "panel_mode", "load", "visibility", "scene",
+            "molsysmt_interface", "state", "interaction", "history", "export", "scene_registry"
+        }
+        if parts[2] in mixin_names:
+            return f"molsysviewer.viewer.{parts[-1]}"
+
     return caller
+
 
 
 def digest_selection_and_syntax(

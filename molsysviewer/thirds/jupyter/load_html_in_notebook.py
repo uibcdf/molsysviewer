@@ -3,10 +3,7 @@
 from pathlib import Path
 from IPython.display import IFrame
 
-from ..._private.arg_digestion import digest
 
-
-@digest()
 def load_html_in_notebook(
     filename: str | Path,
     *,
@@ -20,3 +17,4 @@ def load_html_in_notebook(
     MolSysViewer widget layout.
     """
     return IFrame(src=str(filename), width=width, height=height)
+

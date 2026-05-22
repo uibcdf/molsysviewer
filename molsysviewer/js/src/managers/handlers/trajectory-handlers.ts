@@ -7,6 +7,7 @@ import {
     SetTrajectoryFrameMessage,
     SetTrajectoryPlaybackMessage,
     StepTrajectoryMessage,
+    PartialCoordinatesUpdateMessage,
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
 
@@ -15,6 +16,7 @@ export interface TrajectoryContext {
     notifyTrajectoryState: () => void;
     /** Called when playback stops; receives the final frame index. */
     onPlaybackStopped?: (frame: number) => void;
+    notify?: (msg: any) => void;
 }
 
 export interface TrajectoryState {
@@ -32,6 +34,60 @@ export class TrajectoryHandlers {
     private expectedFrameCount?: number;
 
     constructor(private plugin: PluginContext, private context: TrajectoryContext) {}
+
+    async partialCoordinatesUpdate(msg: PartialCoordinatesUpdateMessage) {
+        const loaded = this.context.getLoadedStructure();
+        if (!loaded || !loaded.structure) {
+            console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: no structure loaded");
+            return;
+        }
+        const cell = this.plugin.state.data.cells.get(loaded.structure);
+        if (!cell || !cell.obj) {
+            console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure node not found");
+            return;
+        }
+        const structure = cell.obj.data;
+        if (!structure || !structure.models) {
+            console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure data not found");
+            return;
+        }
+
+        let updated = false;
+        for (const model of structure.models) {
+            const atomicConformation = model.atomicConformation;
+            if (!atomicConformation) continue;
+            const { x, y, z } = atomicConformation;
+            for (let i = 0; i < msg.atom_indices.length; i++) {
+                const atomIdx = msg.atom_indices[i];
+                const coords = msg.coordinates[i];
+                if (coords && atomIdx >= 0 && atomIdx < x.length) {
+                    x[atomIdx] = coords[0];
+                    y[atomIdx] = coords[1];
+                    z[atomIdx] = coords[2];
+                    updated = true;
+                }
+            }
+        }
+
+        if (updated) {
+            const currentId = (structure as any).conformation?.id ?? "0";
+            const newId = typeof currentId === "number" ? currentId + 1 : `${currentId}_upd`;
+            if (structure.conformation) {
+                (structure as any).conformation.id = newId;
+            }
+            
+            const update = this.plugin.state.data.build();
+            update.to(loaded.structure);
+            await this.plugin.runTask(this.plugin.state.data.updateTree(update));
+        }
+
+        if (msg.transaction_id !== undefined && this.context.notify) {
+            this.context.notify({
+                event: "trajectory_frame_rendered",
+                transaction_id: msg.transaction_id,
+            });
+        }
+    }
 
     async stepTrajectory(msg: StepTrajectoryMessage | number) {
         const by = typeof msg === 'number' ? msg : (msg.by ?? 1);

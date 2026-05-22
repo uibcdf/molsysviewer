@@ -314,6 +314,7 @@ export class GroupStrip {
 
             // Add invisible clickable area for molecule selection
             const molHandle = document.createElement("div");
+            molHandle.setAttribute("data-molsysviewer-group-strip-molecule-handle", String(molId));
             Object.assign(molHandle.style, {
                 position: "absolute",
                 left: "-10px",
@@ -393,6 +394,7 @@ export class GroupStrip {
 
                 // Add invisible clickable area for component selection
                 const compHandle = document.createElement("div");
+                compHandle.setAttribute("data-molsysviewer-group-strip-component-handle", String(compId));
                 Object.assign(compHandle.style, {
                     position: "absolute",
                     left: "-8px",

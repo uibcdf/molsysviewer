@@ -412,7 +412,7 @@ class MovieManager:
 
     # ── Playback / export (Phase 2 / Phase 3) ─────────────────────────────
 
-    def play(self, loop: bool = False) -> None:
+    def play(self, loop: bool = False, start_time_ms: float = 0.0) -> None:
         """Preview the movie in the browser.
 
         Sends the current timeline to the frontend and starts
@@ -423,13 +423,26 @@ class MovieManager:
         ----------
         loop
             If ``True``, the animation repeats indefinitely.
+        start_time_ms
+            Time offset in milliseconds to start the playback from.
+            Defaults to ``0.0``.
         """
         self._validate_ready()
+        start_time_ms = float(start_time_ms)
+        if start_time_ms < 0.0:
+            raise ValueError("start_time_ms must be positive or zero.")
+        if self._keyframes and start_time_ms > self.duration_ms:
+            raise ValueError(
+                f"start_time_ms={start_time_ms} cannot be greater than movie "
+                f"duration={self.duration_ms} ms."
+            )
+
         self._view._send_runtime_only(  # noqa: SLF001
             {
                 "op": "play_movie",
                 "keyframes": list(self._keyframes),
                 "loop": bool(loop),
+                "start_time_ms": start_time_ms,
             }
         )
 
@@ -483,6 +496,17 @@ class MovieManager:
         self._validate_ready()
         fps = int(fps)
         path = Path(path).resolve()
+
+        if not getattr(self._view, "_ready", False):
+            import os
+            if os.environ.get("MSM_VIEWS_FROM_HTML_FILES") == "True":
+                # No live frontend is connected (e.g. running headlessly via nbconvert or doc build).
+                # Write a placeholder black video/GIF to the requested path to avoid blocking.
+                path.parent.mkdir(parents=True, exist_ok=True)
+                import numpy as np
+                dummy_img = np.zeros((10, 10, 3), dtype=np.uint8)
+                imageio.mimwrite(str(path), [dummy_img], fps=fps)
+                return path
 
         total_frames = int(self.duration_ms / 1000.0 * fps) + 1
         if timeout_s is None:
