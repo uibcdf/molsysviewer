@@ -1,5 +1,5 @@
 # Repository structure
-_Last updated: 2025-11-21_
+_Last updated: 2026-05-22_
 
 Use this page as the repo map when you need to find code quickly.
 
@@ -29,14 +29,23 @@ Use this page as the repo map when you need to find code quickly.
 Key modules
 
 - `molsysviewer/viewer/`
-  - `MolSysView` lives here now as a package, not a single monolithic file.
-  - `__init__.py` preserves the public import path `molsysviewer.viewer.MolSysView`.
-  - `core.py` keeps the high-level facade/orchestration.
-  - `history.py` owns replayable message/history recording.
-  - `export.py` owns HTML/export message assembly.
-  - `scene_registry.py` owns non-structural scene objects and layer grouping.
-  - `representations.py` and `presets.py` keep normalization logic out of the facade.
+  - `MolSysView` lives here as a modular package, inheriting from 8 specialized Mixins to keep the codebase elegant and highly maintainable:
+    - `__init__.py` preserves the public import path `molsysviewer.viewer.MolSysView`.
+    - `core.py` keeps the high-level facade orchestration and central class definition.
+    - `regions.py` (Mixin) handles spatial regions and atom selection logic.
+    - `panel_mode.py` (Mixin) manages sidebar panel states and dynamic workspace controls.
+    - `load.py` (Mixin) orchestrates importing molecular systems and stylesheet configuration.
+    - `visibility.py` (Mixin) controls global, representation, and component-level visibility.
+    - `scene.py` (Mixin) manages camera, snapshots, figures, and exports.
+    - `molsysmt_interface.py` (Mixin) provides a dedicated interface layer for MolSysMT integration.
+    - `state.py` (Mixin) synchronizes layout configurations and traits.
+    - `interaction.py` (Mixin) manages click, hover, and reproducible signal callbacks.
+    - `history.py` owns replayable message/history recording.
+    - `export.py` owns HTML/export message assembly.
+    - `scene_registry.py` owns non-structural scene objects and layer grouping.
+    - `representations.py` and `presets.py` keep normalization logic out of the facade.
 - `molsysviewer/widget.py`
+
   - AnyWidget wrapper, exports `viewer.js` as `_esm` and synced traits.
 - `molsysviewer/new_view.py`
   - Convenience `new_view(...)` that creates or reuses a `MolSysView`.

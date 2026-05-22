@@ -16,6 +16,8 @@ from .basic import (
     select,
     set,
 )
+from . import benchmark
+from .benchmark import run_benchmarks
 
 __all__ = [
     "add",
@@ -34,4 +36,7 @@ __all__ = [
     "remove",
     "select",
     "set",
+    "benchmark",
+    "run_benchmarks",
 ]
+

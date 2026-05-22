@@ -68,9 +68,14 @@ class Selection:
         atom_indices = info.get("atom_indices") or []
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
             raise ValueError(f"Selection {self.tag!r} does not resolve to any atoms.")
+        
+        local_atoms = atom_indices
+        if self._view._index_mapper is not None:
+            local_atoms = self._view._index_mapper.to_local_atoms(atom_indices)
+
         self._view._send({  # noqa: SLF001
             "op": "set_active_selection",
-            "atom_indices": list(atom_indices),
+            "atom_indices": list(local_atoms),
         })
         payload = {
             "event": "interaction_active_selection_changed",
@@ -230,16 +235,29 @@ class SelectionsManager:
             chain_indices = list(record.get("chain_indices") or [])
             molecule_indices = list(record.get("molecule_indices") or [])
             entity_indices = list(record.get("entity_indices") or [])
-            if self._view._molsys is not None and len(atom_indices) > 0:  # noqa: SLF001
+
+            query_system = None
+            query_selection = atom_indices
+            if self._view.molecular_system is not None:
+                query_system = self._view.molecular_system
+                query_selection = atom_indices
+            elif self._view._molsys is not None:  # noqa: SLF001
+                query_system = self._view._molsys  # noqa: SLF001
+                if self._view._index_mapper is not None:  # noqa: SLF001
+                    query_selection = self._view._index_mapper.to_local_atoms(atom_indices)  # noqa: SLF001
+                else:
+                    query_selection = atom_indices
+
+            if query_system is not None and len(query_selection) > 0:
                 try:
                     group_indices = sorted(
                         {
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    self._view._molsys,  # noqa: SLF001
+                                    query_system,
                                     element="atom",
-                                    selection=atom_indices,
+                                    selection=query_selection,
                                     group_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -254,9 +272,9 @@ class SelectionsManager:
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    self._view._molsys,  # noqa: SLF001
+                                    query_system,
                                     element="atom",
-                                    selection=atom_indices,
+                                    selection=query_selection,
                                     component_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -271,9 +289,9 @@ class SelectionsManager:
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    self._view._molsys,  # noqa: SLF001
+                                    query_system,
                                     element="atom",
-                                    selection=atom_indices,
+                                    selection=query_selection,
                                     chain_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -288,9 +306,9 @@ class SelectionsManager:
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    self._view._molsys,  # noqa: SLF001
+                                    query_system,
                                     element="atom",
-                                    selection=atom_indices,
+                                    selection=query_selection,
                                     molecule_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -305,9 +323,9 @@ class SelectionsManager:
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    self._view._molsys,  # noqa: SLF001
+                                    query_system,
                                     element="atom",
-                                    selection=atom_indices,
+                                    selection=query_selection,
                                     entity_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -442,8 +460,7 @@ class SelectionsManager:
             raise ValueError("No molecular system loaded.")
         resolved = [
             int(i)
-            for i in msm.select(
-                self._view._molsys,  # noqa: SLF001
+            for i in self._view.select(
                 selection=selection,
                 element=element,
                 mask=mask,

@@ -237,3 +237,26 @@ def test_region_tags_empty_when_no_regions_defined():
     hover = {"event": "interaction_hover", "kind": "structure", "atom_indices": [5, 6]}
     view._handle_frontend_event(hover)  # noqa: SLF001
     assert view.get_last_hover_event()["region_tags"] == []
+
+
+def test_trajectory_frame_rendered_transaction_ack():
+    view = MolSysView()
+    
+    # Send trajectory_frame_rendered event
+    event = {"event": "trajectory_frame_rendered", "transaction_id": "tx-999"}
+    view._handle_frontend_event(event)  # noqa: SLF001
+    
+    assert "tx-999" in view._rendered_transactions_acks  # noqa: SLF001
+    assert view._last_rendered_transaction == "tx-999"  # noqa: SLF001
+    
+    # wait_for_transaction returns True immediately if transaction was acknowledged
+    success = view.wait_for_transaction("tx-999", timeout_s=0.1)
+    assert success is True
+    
+    # Transaction is cleared from the acks set once consumed
+    assert "tx-999" not in view._rendered_transactions_acks  # noqa: SLF001
+    
+    # wait_for_transaction returns False if transaction was not acknowledged within timeout
+    fail = view.wait_for_transaction("tx-nonexistent", timeout_s=0.01)
+    assert fail is False
+

@@ -84,9 +84,9 @@ async function run() {
         const countMols = await molBoxes.count();
         assert.strictEqual(countMols, 2, `Should have 2 molecule boxes, found ${countMols}`);
 
-        // 2. Click Molecule 2 Handle (the second one)
+        // 2. Click Molecule 2 Handle (the second one, which has molId = 1)
         console.log("[E2E] Clicking Molecule handle...");
-        const molHandle = molBoxes.nth(1).locator('div').first(); 
+        const molHandle = page.locator('[data-molsysviewer-group-strip-molecule-handle="1"]');
         await molHandle.click();
 
         // 3. Verify selection contains atoms from Molecule 2 (indices 2, 3)

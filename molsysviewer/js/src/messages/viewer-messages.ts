@@ -615,13 +615,22 @@ export type PlayMovieMessage = {
     total_frames?: number;
     width_px?: number;
     height_px?: number;
+    start_time_ms?: number;
 };
 
 export type StopMovieMessage = {
     op: "stop_movie";
 };
 
+export type PartialCoordinatesUpdateMessage = {
+    op: "partial_coordinates_update";
+    coordinates: number[][];
+    atom_indices: number[];
+    transaction_id?: string | number;
+};
+
 export type ViewerMessage =
+    PartialCoordinatesUpdateMessage |
     SetAtomColorsMessage |
     ClearAtomColorsMessage |
     SetSectionDragMessage |

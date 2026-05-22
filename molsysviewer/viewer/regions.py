@@ -1,0 +1,367 @@
+from __future__ import annotations
+
+__name__ = "molsysviewer.viewer.core"
+
+import re
+from typing import Any, Mapping
+
+import molsysmt as msm
+from smonitor import signal
+from depdigest import dep_digest
+
+from .._private.arg_digestion import digest
+from ..regions import Region
+from .representations import normalize_representation_type
+from .presets import normalize_representation_preset, resolve_user_preset
+
+
+class RegionsMixin:
+    def _enrich_interaction_payload(self, payload: dict) -> dict:
+        if payload.get("kind") != "structure":
+            return payload
+        raw = payload.get("atom_indices")
+        if not raw:
+            return payload
+        pick_set = set(raw)
+        tags = [
+            tag
+            for tag, region in self._regions.items()
+            if region.atom_indices is not None and pick_set.isdisjoint(region.atom_indices) is False
+        ]
+        payload["region_tags"] = tags
+        return payload
+
+    def _next_region_tag(self) -> str:
+        self._region_counter += 1
+        return f"region{self._region_counter}"
+
+    def _slugify_region_tag(self, value: str) -> str:
+        text = re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_")
+        return text or self._next_region_tag()
+
+    def _unique_region_tag(self, base: str, used_tags: set[str] | None = None) -> str:
+        used = set(self._regions.keys()) if used_tags is None else set(used_tags) | set(self._regions.keys())
+        if base not in used:
+            return base
+        counter = 2
+        candidate = f"{base}__{counter}"
+        while candidate in used:
+            counter += 1
+            candidate = f"{base}__{counter}"
+        return candidate
+
+    def _label_for_split_region(self, *, element_label: str, item_index: int) -> str | None:
+        template = "{name}"
+        element = element_label
+        if element_label not in {"chain", "molecule", "entity"}:
+            return None
+        try:
+            label = msm.get_label(
+                self._molsys,
+                element=element,
+                selection=[item_index],
+                string=template,
+                skip_digestion=True,
+            )
+        except Exception:
+            return None
+        if isinstance(label, str) and label.strip():
+            return label
+        return None
+
+    def _split_into_regions(
+        self,
+        *,
+        selection: str | Any,
+        structure_indices: str | Any,
+        syntax: str,
+        element_label: str,
+        index_attribute: str,
+        representation: str | None = None,
+    ) -> dict[str, Region]:
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before splitting into regions.")
+
+        atom_indices = self.select(
+            selection=selection,
+            structure_indices=structure_indices,
+            element="atom",
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        if not atom_indices:
+            return {}
+
+        get_kwargs: dict[str, Any] = {index_attribute: True}
+        values = msm.get(
+            self._molsys,
+            element="atom",
+            selection=atom_indices,
+            output_type="dictionary",
+            skip_digestion=True,
+            **get_kwargs,
+        )
+        raw_indices = list(values.get(index_attribute, []))
+
+        buckets: dict[int, dict[str, Any]] = {}
+        for atom_index, item_index in zip(atom_indices, raw_indices):
+            try:
+                normalized_index = int(item_index)
+            except Exception:
+                continue
+            bucket = buckets.setdefault(normalized_index, {"atom_indices": []})
+            bucket["atom_indices"].append(int(atom_index))
+
+        created: dict[str, Region] = {}
+        used_tags: set[str] = set()
+        for item_index in sorted(buckets):
+            bucket = buckets[item_index]
+            label = self._label_for_split_region(element_label=element_label, item_index=item_index)
+            if isinstance(label, str) and label.strip():
+                slug = self._slugify_region_tag(label)
+                if element_label == "chain":
+                    base_tag = slug
+                else:
+                    base_tag = f"{element_label}_{slug}"
+            else:
+                base_tag = f"{element_label}_{item_index}"
+            tag = self._unique_region_tag(base_tag, used_tags)
+            used_tags.add(tag)
+            created[tag] = self.new_region(
+                atom_indices=bucket["atom_indices"],
+                tag=tag,
+                representation=representation,
+                skip_digestion=True,
+            )
+        return created
+
+    def _normalize_representation_type(self, value: str | None) -> str | None:
+        return normalize_representation_type(value)
+
+    def _normalize_representation_preset(self, value: str | None) -> str | None:
+        return normalize_representation_preset(value)
+
+    @property
+    def representations(self) -> list[str]:
+        """Sorted list of allowed representation type identifiers."""
+        from .representations import ALLOWED_REPRESENTATIONS
+        return sorted(ALLOWED_REPRESENTATIONS)
+
+    @property
+    def presets(self) -> list[str]:
+        """Sorted list of allowed preset identifiers (built-in and user-defined)."""
+        from .presets import ALLOWED_PRESETS
+        from ..config.user_presets import user_presets
+        return sorted(ALLOWED_PRESETS | set(user_presets.keys()))
+
+    def _unregister_region(self, tag: str) -> None:
+        self._regions.pop(tag, None)
+
+    def _resolve_user_preset(self, preset: str | None):
+        return resolve_user_preset(self, preset)
+
+    @dep_digest('molsysmt')
+    @signal(tags=["region"])
+    @digest()
+    def new_region(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: list[int] | None = None,
+        tag: str | None = None,
+        representation: str | None = None,
+        complement_of_regions: str | list[str] | None = None,
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> Region:
+        """Create a new region (structural subset) with an optional representation."""
+        tag = tag or self._next_region_tag()
+        representation = self._normalize_representation_type(representation)
+
+        if atom_indices is None and complement_of_regions is not None:
+            region_tags = []
+            if isinstance(complement_of_regions, str):
+                if complement_of_regions.lower() == "all":
+                    region_tags = list(self._regions.keys())
+                else:
+                    region_tags = [complement_of_regions]
+            else:
+                region_tags = list(complement_of_regions)
+            exclude: set[int] = set()
+            for rt in region_tags:
+                r = self._regions.get(rt)
+                if r and r.atom_indices is not None:
+                    exclude.update(r.atom_indices)
+            if self._molsys is None:
+                raise ValueError("Cannot build complement: no molecular system loaded.")
+            if self._index_mapper is not None:
+                total = len(self._index_mapper.original_atoms)
+            else:
+                total = int(self._molsys._get_n_atoms())
+            atom_indices = [i for i in range(total) if i not in exclude]
+        elif atom_indices is None and self._molsys is not None:
+            local_indices = list(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
+            if self._index_mapper is not None:
+                atom_indices = self._index_mapper.to_original_atoms(local_indices)
+            else:
+                atom_indices = local_indices
+        elif atom_indices is None and self._molsys is None:
+            raise ValueError("No molecular system loaded. Load a system before creating regions.")
+
+        if atom_indices is None or len(atom_indices) == 0:
+            raise ValueError("Cannot create region: empty atom_indices for selection.")
+
+        atom_indices = [int(i) for i in atom_indices]
+
+        region = Region(
+            self,
+            tag,
+            selection,
+            atom_indices=atom_indices,
+            representation=representation,
+            repr_params=repr_params,
+        )
+        self._regions[tag] = region
+        region._send_create()
+        if representation is not None or repr_params:
+            region.set_representation(
+                representation,
+                skip_digestion=True,
+                **repr_params,
+            )
+        return region
+
+    @signal(tags=["region", "selection"])
+    @digest()
+    def new_region_from_active_selection(
+        self,
+        *,
+        tag: str | None = None,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> Region:
+        """Create a region from the last active selection event."""
+        event = self.get_last_active_selection_event()
+        if event is None:
+            raise ValueError("No active selection stored. Select an element before creating a region.")
+
+        atom_indices = event.get("atom_indices") or []
+        atom_indices = [int(ii) for ii in atom_indices]
+        if len(atom_indices) == 0:
+            raise ValueError("The current active selection does not resolve to any atoms.")
+
+        return self.new_region(
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            skip_digestion=True,
+            **repr_params,
+        )
+
+    @signal(tags=["region", "geometry"])
+    @digest()
+    def show_orientation_axes(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: list[int] | None = None,
+        tag: str | None = None,
+        alpha: float | None = None,
+        skip_digestion: bool = False,
+    ) -> Region:
+        """Overlay Mol* orientation-ellipsoid axes on a selection."""
+        region_tag = tag or f"orientation-{self._next_region_tag()}"
+        region = self.new_region(
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=region_tag,
+            skip_digestion=True,
+        )
+        params: dict[str, Any] = {}
+        if alpha is not None:
+            params["alpha"] = float(alpha)
+        region._send(
+            "set_region_representation",
+            representation="orientation",
+            preset=None,
+            user_preset=None,
+            params=params,
+        )
+        region.representation = "orientation"
+        region.repr_params = params
+        return region
+
+    @signal(tags=["region", "geometry"])
+    @digest()
+    def show_best_fit_plane(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: list[int] | None = None,
+        tag: str | None = None,
+        alpha: float | None = None,
+        skip_digestion: bool = False,
+    ) -> Region:
+        """Overlay Mol* best-fit plane on a selection."""
+        region_tag = tag or f"plane-{self._next_region_tag()}"
+        region = self.new_region(
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=region_tag,
+            skip_digestion=True,
+        )
+        params: dict[str, Any] = {}
+        if alpha is not None:
+            params["alpha"] = float(alpha)
+        region._send(
+            "set_region_representation",
+            representation="plane",
+            preset=None,
+            user_preset=None,
+            params=params,
+        )
+        region.representation = "plane"
+        region.repr_params = params
+        return region
+
+    @signal(tags=["region", "split"])
+    @digest()
+    def make_regions_by(
+        self,
+        element: str,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+    ) -> dict[str, Region]:
+        """Create one region per selected hierarchy element and return them by tag."""
+        representation = self._normalize_representation_type(representation)
+        allowed = {
+            "chain": "chain_index",
+            "molecule": "molecule_index",
+            "entity": "entity_index",
+        }
+        if element not in allowed:
+            raise ValueError(f"Unsupported element for make_regions_by: {element!r}. Allowed: {sorted(allowed)}")
+        return self._split_into_regions(
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            element_label=element,
+            index_attribute=allowed[element],
+            representation=representation,
+        )
+
+
+RegionsMixin.__module__ = "molsysviewer.viewer"
+for _name, _value in RegionsMixin.__dict__.items():
+    if callable(_value):
+        try:
+            _value.__module__ = "molsysviewer.viewer"
+        except Exception:
+            pass
+

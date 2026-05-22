@@ -56,12 +56,18 @@ class FakeElement {
 function installFakeDom() {
     const previousDocument = (globalThis as any).document;
     const previousWindow = (globalThis as any).window;
+    const fakeHead = new FakeElement();
+    fakeHead.tagName = "HEAD";
     (globalThis as any).document = {
         createElement: (tag: string) => {
             const el = new FakeElement();
             el.tagName = String(tag).toUpperCase();
             return el;
         },
+        getElementById: (_id: string) => {
+            return null;
+        },
+        head: fakeHead,
     };
     (globalThis as any).window = {
         addEventListener() {},

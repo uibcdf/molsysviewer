@@ -88,7 +88,13 @@ class PlayerManager:
         index
             Zero-based frame index to display.
         """
-        self._view._send({"op": "set_trajectory_frame", "index": int(index)})  # noqa: SLF001
+        local_index = index
+        if self._view._index_mapper is not None:
+            mapped = self._view._index_mapper.to_local_structure(index)
+            if mapped is not None:
+                local_index = mapped
+
+        self._view._send({"op": "set_trajectory_frame", "index": int(local_index)})  # noqa: SLF001
         self._view._current_structure_index = int(index)  # noqa: SLF001
         # NPT: auto-update box when box is visible
         box_record = getattr(self._view, "_box_record", None)  # noqa: SLF001
@@ -105,7 +111,12 @@ class PlayerManager:
     @digest()
     def go_to_first(self, skip_digestion: bool = False) -> None:
         """Jump to the first structure (index 0)."""
-        self.go_to_structure(0, skip_digestion=True)
+        orig_index = 0
+        if self._view._index_mapper is not None:
+            mapped = self._view._index_mapper.to_original_structure(0)
+            if mapped is not None:
+                orig_index = mapped
+        self.go_to_structure(orig_index, skip_digestion=True)
 
     @signal(tags=["structures"])
     @digest()
@@ -113,7 +124,12 @@ class PlayerManager:
         """Jump to the last structure."""
         n = self.n_structures
         if n > 0:
-            self.go_to_structure(n - 1, skip_digestion=True)
+            orig_index = n - 1
+            if self._view._index_mapper is not None:
+                mapped = self._view._index_mapper.to_original_structure(n - 1)
+                if mapped is not None:
+                    orig_index = mapped
+            self.go_to_structure(orig_index, skip_digestion=True)
 
     @signal(tags=["structures"])
     @digest()
@@ -122,8 +138,22 @@ class PlayerManager:
         total = self.n_structures
         if total == 0:
             return
-        new_index = (self.index + int(n)) % total
-        self.go_to_structure(new_index, skip_digestion=True)
+        
+        current_orig = self.index
+        current_local = current_orig
+        if self._view._index_mapper is not None:
+            mapped = self._view._index_mapper.to_local_structure(current_orig)
+            if mapped is not None:
+                current_local = mapped
+        
+        new_local = (current_local + int(n)) % total
+        new_orig = new_local
+        if self._view._index_mapper is not None:
+            mapped = self._view._index_mapper.to_original_structure(new_local)
+            if mapped is not None:
+                new_orig = mapped
+
+        self.go_to_structure(new_orig, skip_digestion=True)
 
     @signal(tags=["structures"])
     @digest()
@@ -132,8 +162,22 @@ class PlayerManager:
         total = self.n_structures
         if total == 0:
             return
-        new_index = (self.index - int(n)) % total
-        self.go_to_structure(new_index, skip_digestion=True)
+        
+        current_orig = self.index
+        current_local = current_orig
+        if self._view._index_mapper is not None:
+            mapped = self._view._index_mapper.to_local_structure(current_orig)
+            if mapped is not None:
+                current_local = mapped
+        
+        new_local = (current_local - int(n)) % total
+        new_orig = new_local
+        if self._view._index_mapper is not None:
+            mapped = self._view._index_mapper.to_original_structure(new_local)
+            if mapped is not None:
+                new_orig = mapped
+
+        self.go_to_structure(new_orig, skip_digestion=True)
 
     # ── Playback ───────────────────────────────────────────────────────────
 

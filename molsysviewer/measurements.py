@@ -445,7 +445,7 @@ class MeasurementsManager:
             if raw_value is not None:
                 v = float(raw_value)
                 unit = "angstrom" if kind == "distance" else "degrees"
-                stored_value = puw.quantity(v, unit)
+                stored_value = puw.standardize(puw.quantity(v, unit))
             else:
                 stored_value = None
             layer = self._view._scene_objects.get(layer_tag)  # noqa: SLF001

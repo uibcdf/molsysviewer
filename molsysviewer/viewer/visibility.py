@@ -1,0 +1,87 @@
+from __future__ import annotations
+
+__name__ = "molsysviewer.viewer.core"
+
+from typing import Any
+
+import molsysmt as msm
+from smonitor import signal
+from .._private.arg_digestion import digest
+from .._private.variables import is_all
+
+
+class VisibilityMixin:
+    @signal(tags=["visibility"])
+    @digest()
+    def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
+        """Hide atoms matching the given selection (MolSysMT syntax by default)."""
+        if self.atom_mask is None or self._molsys is None:
+            return
+
+        if is_all(selection):
+            # Hide everything: atoms + all reps (global + regions)
+            self.atom_mask[:] = False
+            self._update_visibility_in_frontend()
+            # Hide all representations in the frontend
+            self._send({"op": "hide_global", "target": "all"})
+        else:
+            atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
+            self.atom_mask[atom_indices] = False
+
+        self._update_visibility_in_frontend()
+
+    @signal(tags=["visibility"])
+    @digest()
+    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False):
+        """Show the widget (first call or if `force=True`) and optionally adjust visibility."""
+        # (1) Apply visibility changes if a system is loaded
+        if self._molsys is not None and self.atom_mask is not None:
+            if is_all(selection) and is_all(structure_indices):
+                # Reset visibility: show all atoms
+                self.atom_mask[:] = True
+                self._update_visibility_in_frontend()
+                # Show all representations in the frontend (global + regions)
+                self._send({"op": "show_global", "target": "all"})
+                # Re-apply the user's intent about the baseline/global view
+                self._send({"op": "hide_global" if self._global_hidden else "show_global", "target": "global"})
+            elif not (is_all(selection) and is_all(structure_indices)):
+                # Partial "show": turn on only the requested selection
+                atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
+                self.atom_mask[atom_indices] = True
+                self._update_visibility_in_frontend()
+
+        # (2) Handle first-time or forced visualisation
+        if force or not self._already_shown:
+            self._already_shown = True
+            return self.widget
+
+        # (3) Subsequent calls without force do not return the widget
+        return None
+
+    @signal(tags=["visibility"])
+    @digest()
+    def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
+        """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""
+        if self.atom_mask is None or self._molsys is None:
+            return
+
+        if is_all(selection):
+            # Isolating "all" → same as reset visibility
+            self.atom_mask[:] = True
+            self._update_visibility_in_frontend()
+            return
+
+        atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
+        self.atom_mask[:] = False
+        self.atom_mask[atom_indices] = True
+        self._update_visibility_in_frontend()
+
+
+VisibilityMixin.__module__ = "molsysviewer.viewer"
+for _name, _value in VisibilityMixin.__dict__.items():
+    if callable(_value):
+        try:
+            _value.__module__ = "molsysviewer.viewer"
+        except Exception:
+            pass
+

@@ -48,6 +48,17 @@ def load_from_molsysmt(
     view.selection = selection
     view.structure_indices = structure_indices
 
+    # Initialize IndexMapper for original <-> local mapping
+    from ..viewer.index_mapper import IndexMapper
+    view._index_mapper = IndexMapper(
+        molecular_system,
+        selection=selection,
+        structure_indices=structure_indices,
+        syntax=syntax,
+    )
+    if view._index_mapper.original_structures:
+        view._current_structure_index = view._index_mapper.original_structures[0]
+
     # Convert to MolSys and create the atom mask.
     view._molsys = msm.convert(
         molecular_system,

@@ -145110,6 +145110,55 @@ var TrajectoryHandlers = class {
     this.context = context2;
     this.trajectoryListeners = /* @__PURE__ */ new Set();
   }
+  async partialCoordinatesUpdate(msg) {
+    const loaded = this.context.getLoadedStructure();
+    if (!loaded || !loaded.structure) {
+      console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: no structure loaded");
+      return;
+    }
+    const cell = this.plugin.state.data.cells.get(loaded.structure);
+    if (!cell || !cell.obj) {
+      console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure node not found");
+      return;
+    }
+    const structure = cell.obj.data;
+    if (!structure || !structure.models) {
+      console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure data not found");
+      return;
+    }
+    let updated = false;
+    for (const model of structure.models) {
+      const atomicConformation = model.atomicConformation;
+      if (!atomicConformation) continue;
+      const { x, y, z } = atomicConformation;
+      for (let i = 0; i < msg.atom_indices.length; i++) {
+        const atomIdx = msg.atom_indices[i];
+        const coords = msg.coordinates[i];
+        if (coords && atomIdx >= 0 && atomIdx < x.length) {
+          x[atomIdx] = coords[0];
+          y[atomIdx] = coords[1];
+          z[atomIdx] = coords[2];
+          updated = true;
+        }
+      }
+    }
+    if (updated) {
+      const currentId = structure.conformation?.id ?? "0";
+      const newId = typeof currentId === "number" ? currentId + 1 : `${currentId}_upd`;
+      if (structure.conformation) {
+        structure.conformation.id = newId;
+      }
+      const update10 = this.plugin.state.data.build();
+      update10.to(loaded.structure);
+      await this.plugin.runTask(this.plugin.state.data.updateTree(update10));
+    }
+    if (msg.transaction_id !== void 0 && this.context.notify) {
+      this.context.notify({
+        event: "trajectory_frame_rendered",
+        transaction_id: msg.transaction_id
+      });
+    }
+  }
   async stepTrajectory(msg) {
     const by = typeof msg === "number" ? msg : msg.by ?? 1;
     const trajRef = this.getTrajectoryRef();
@@ -145293,7 +145342,7 @@ var MovieHandlers = class {
     this.lastVisibility = {};
   }
   // ── Browser playback ──────────────────────────────────────────────────
-  play(keyframes, loop = false) {
+  play(keyframes, loop = false, startTimeMs = 0) {
     this.stop();
     if (keyframes.length < 2) {
       console.warn("[MolSysViewer] play_movie: need at least 2 keyframes");
@@ -145304,11 +145353,12 @@ var MovieHandlers = class {
       console.warn("[MolSysViewer] play_movie: total duration must be > 0");
       return;
     }
+    const actualStart = Math.max(0, Math.min(startTimeMs, totalDuration));
     const baseSnapshot = this.context.getCameraSnapshot();
     this.lastStructureIndex = void 0;
-    this.lastMovieTime = 0;
+    this.lastMovieTime = actualStart;
     this.lastVisibility = {};
-    const startRealTime = performance.now();
+    const startRealTime = performance.now() - actualStart;
     const tick = (now2) => {
       const elapsed = now2 - startRealTime;
       if (!loop && elapsed >= totalDuration) {
@@ -147267,6 +147317,7 @@ var GroupStrip = class {
       });
       molBox.appendChild(molCaption);
       const molHandle = document.createElement("div");
+      molHandle.setAttribute("data-molsysviewer-group-strip-molecule-handle", String(molId));
       Object.assign(molHandle.style, {
         position: "absolute",
         left: "-10px",
@@ -147341,6 +147392,7 @@ var GroupStrip = class {
         });
         compBox.appendChild(compCaption);
         const compHandle = document.createElement("div");
+        compHandle.setAttribute("data-molsysviewer-group-strip-component-handle", String(compId3));
         Object.assign(compHandle.style, {
           position: "absolute",
           left: "-8px",
@@ -149901,11 +149953,13 @@ var MolSysViewerController = class _MolSysViewerController {
     this.currentActiveSelection = null;
     this.lastMeasurementSummary = null;
     this.measurementTagCounter = 0;
+    this.welcomeCard = null;
     this.canvasHost = canvasHost ?? (() => {
       const d5 = document.createElement("div");
       host.appendChild(d5);
       return d5;
     })();
+    this.injectGlobalStyles();
     const emitInteractionEvent = (msg) => {
       if (msg?.event === "interaction_tool_state") {
         if (msg?.status === "started" || msg?.status === "progress") {
@@ -150336,7 +150390,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.trajectory = new TrajectoryHandlers(plugin, {
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
-      onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame })
+      onPlaybackStopped: (frame) => this.notify?.({ event: "trajectory_frame_changed", frame }),
+      notify: (msg) => this.notify?.(msg)
     });
     this.movie = new MovieHandlers({
       setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
@@ -150349,6 +150404,7 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.refreshNavigatePanel();
     this.refreshWorkbenchPanel();
+    this.updateWelcomeState();
   }
   static showInitFailureOverlay(target, message) {
     const overlay = document.createElement("div");
@@ -150909,21 +150965,33 @@ var MolSysViewerController = class _MolSysViewerController {
         case "add_triangle_faces":
           await this.shapes.addTriangleFaces(msg);
           break;
-        case "add_label":
+        case "add_label": {
           await this.annotations.addLabel(msg);
+          const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+          this.showToast(`Label added${tag !== "annotation" ? ` ('${tag}')` : ""}`);
           break;
+        }
         case "update_label":
           await this.annotations.updateLabel(msg);
           break;
-        case "add_distance_measurement":
+        case "add_distance_measurement": {
           await this.measurements.addDistance(msg);
+          const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+          this.showToast(`Distance measurement added${tag !== "measurement" ? ` ('${tag}')` : ""}`);
           break;
-        case "add_angle_measurement":
+        }
+        case "add_angle_measurement": {
           await this.measurements.addAngle(msg);
+          const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+          this.showToast(`Angle measurement added${tag !== "measurement" ? ` ('${tag}')` : ""}`);
           break;
-        case "add_dihedral_measurement":
+        }
+        case "add_dihedral_measurement": {
           await this.measurements.addDihedral(msg);
+          const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+          this.showToast(`Dihedral measurement added${tag !== "measurement" ? ` ('${tag}')` : ""}`);
           break;
+        }
         case "set_measurement_settings":
           this.measurements.setSettings(msg.options);
           break;
@@ -151002,9 +151070,12 @@ var MolSysViewerController = class _MolSysViewerController {
         case "update_visibility":
           await this.state.updateVisibility(msg);
           break;
-        case "create_region":
+        case "create_region": {
           await this.state.createRegion(msg);
+          const tag = msg.tag || "region";
+          this.showToast(`Region '${tag}' created`);
           break;
+        }
         case "set_region_representation":
           await this.state.setRegionRepresentation(msg);
           break;
@@ -151014,9 +151085,12 @@ var MolSysViewerController = class _MolSysViewerController {
         case "hide_region":
           await this.state.hideRegion(msg);
           break;
-        case "delete_region":
+        case "delete_region": {
           await this.state.deleteRegion(msg);
+          const tag = msg.tag || "region";
+          this.showToast(`Region '${tag}' deleted`);
           break;
+        }
         case "rename_region":
           await this.state.renameRegion(msg);
           break;
@@ -151096,6 +151170,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_trajectory_playback":
           await this.trajectory.setTrajectoryPlayback(msg);
           break;
+        case "partial_coordinates_update":
+          await this.trajectory.partialCoordinatesUpdate(msg);
+          break;
         // Movie Ops
         case "play_movie": {
           const mode = msg.mode ?? "play";
@@ -151108,7 +151185,11 @@ var MolSysViewerController = class _MolSysViewerController {
               typeof msg.height_px === "number" ? msg.height_px : void 0
             );
           } else {
-            this.movie.play(msg.keyframes ?? [], !!msg.loop);
+            this.movie.play(
+              msg.keyframes ?? [],
+              !!msg.loop,
+              typeof msg.start_time_ms === "number" ? msg.start_time_ms : 0
+            );
           }
           break;
         }
@@ -151256,6 +151337,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.refreshNavigatePanel();
       this.activeSelection.setAllAvailableItems([]);
     }
+    this.updateWelcomeState();
   }
   async removeLoadedStructure() {
     if (!this.loadedStructure) return;
@@ -151278,6 +151360,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.currentStructure = void 0;
     this.groupPanel.setStructure(void 0);
     this.workbenchPanel.setVisible(false);
+    this.updateWelcomeState();
   }
   applyWorkbenchMessage(msg) {
     const op4 = msg?.op;
@@ -151857,6 +151940,179 @@ var MolSysViewerController = class _MolSysViewerController {
       toast.style.opacity = "0";
       setTimeout(() => toast.remove(), 400);
     }, durationMs);
+  }
+  injectGlobalStyles() {
+    if (document.getElementById("molsysviewer-global-styles")) return;
+    const style = document.createElement("style");
+    style.id = "molsysviewer-global-styles";
+    style.textContent = `
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 3px;
+            }
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.35);
+            }
+            @keyframes molsysviewer-fade-in-up {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -46%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%);
+                }
+            }
+        `;
+    document.head.appendChild(style);
+  }
+  updateWelcomeState() {
+    const hasStructure = !!this.currentStructure || !!this.loadedStructure;
+    if (hasStructure) {
+      this.hideWelcomeCard();
+    } else {
+      this.showWelcomeCard();
+    }
+  }
+  showWelcomeCard() {
+    if (this.welcomeCard) return;
+    const card = document.createElement("div");
+    card.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card.style, {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "360px",
+      background: "rgba(20, 20, 25, 0.75)",
+      backdropFilter: "blur(16px)",
+      webkitBackdropFilter: "blur(16px)",
+      border: "1px solid rgba(255, 255, 255, 0.08)",
+      borderRadius: "16px",
+      padding: "24px",
+      color: "#f4f4f5",
+      fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, sans-serif",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+      zIndex: "100",
+      animation: "molsysviewer-fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+      display: "flex",
+      flexDirection: "column",
+      gap: "16px",
+      pointerEvents: "auto"
+    });
+    const titleEl = document.createElement("div");
+    Object.assign(titleEl.style, {
+      fontSize: "18px",
+      fontWeight: "700",
+      background: "linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%)",
+      webkitBackgroundClip: "text",
+      webkitTextFillColor: "transparent",
+      letterSpacing: "-0.02em",
+      textAlign: "center"
+    });
+    titleEl.textContent = "Welcome to MolSysViewer";
+    card.appendChild(titleEl);
+    const descEl = document.createElement("div");
+    Object.assign(descEl.style, {
+      fontSize: "12px",
+      lineHeight: "1.5",
+      color: "rgba(244, 244, 245, 0.7)",
+      textAlign: "center",
+      marginBottom: "8px"
+    });
+    descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
+    card.appendChild(descEl);
+    const codeBox = document.createElement("div");
+    Object.assign(codeBox.style, {
+      background: "rgba(0, 0, 0, 0.25)",
+      border: "1px solid rgba(255, 255, 255, 0.05)",
+      borderRadius: "8px",
+      padding: "12px",
+      fontFamily: "monospace",
+      fontSize: "11px",
+      color: "#38bdf8",
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px"
+    });
+    const guideTitle = document.createElement("span");
+    Object.assign(guideTitle.style, {
+      color: "rgba(244, 244, 245, 0.4)",
+      fontWeight: "600",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      marginBottom: "4px",
+      fontSize: "9px"
+    });
+    guideTitle.textContent = "Jupyter Quick Start";
+    codeBox.appendChild(guideTitle);
+    const line1 = document.createElement("span");
+    line1.textContent = "import molsysviewer as msv";
+    codeBox.appendChild(line1);
+    const line2 = document.createElement("span");
+    line2.textContent = "view = msv.new_view('1CRN')";
+    line2.style.color = "#a78bfa";
+    codeBox.appendChild(line2);
+    const line3 = document.createElement("span");
+    line3.textContent = "view.show()";
+    codeBox.appendChild(line3);
+    card.appendChild(codeBox);
+    const btn = document.createElement("button");
+    Object.assign(btn.style, {
+      background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+      color: "#ffffff",
+      border: "none",
+      borderRadius: "8px",
+      padding: "10px 16px",
+      fontSize: "13px",
+      fontWeight: "600",
+      cursor: "pointer",
+      transition: "transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease",
+      textAlign: "center",
+      marginTop: "4px",
+      boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)"
+    });
+    btn.textContent = "Load Trial Structure (1CRN)";
+    btn.onmouseover = () => {
+      btn.style.transform = "scale(1.02)";
+      btn.style.boxShadow = "0 6px 16px rgba(139, 92, 246, 0.4)";
+    };
+    btn.onmouseout = () => {
+      btn.style.transform = "none";
+      btn.style.boxShadow = "0 4px 12px rgba(139, 92, 246, 0.3)";
+    };
+    btn.onclick = () => {
+      btn.style.opacity = "0.7";
+      btn.textContent = "Loading Crambin...";
+      void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
+    };
+    card.appendChild(btn);
+    if (!this.host.style.position || this.host.style.position === "static") {
+      this.host.style.position = "relative";
+    }
+    this.host.appendChild(card);
+    this.welcomeCard = card;
+  }
+  hideWelcomeCard() {
+    if (this.welcomeCard) {
+      this.welcomeCard.remove();
+      this.welcomeCard = null;
+    }
   }
   selectWorkspace(workspaceId) {
     const prevWorkspace = this.currentWorkspace;

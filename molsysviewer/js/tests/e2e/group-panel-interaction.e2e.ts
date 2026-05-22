@@ -18,9 +18,9 @@ END
 `;
 
 async function run() {
-    const envBin = process.env.PW_CHROMIUM_BIN;
+    const envBin = process.env.PW_CHROMIUM_BIN || "/usr/bin/google-chrome";
     const baseOpts = { headless: true };
-    const launchOptions = envBin ? { ...baseOpts, executablePath: envBin } : baseOpts;
+    const launchOptions = { ...baseOpts, executablePath: envBin };
 
     let browser;
     try {

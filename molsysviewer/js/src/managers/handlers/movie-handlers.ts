@@ -70,7 +70,7 @@ export class MovieHandlers {
 
     // ── Browser playback ──────────────────────────────────────────────────
 
-    play(keyframes: MovieKeyframe[], loop: boolean = false): void {
+    play(keyframes: MovieKeyframe[], loop: boolean = false, startTimeMs: number = 0.0): void {
         this.stop();
         if (keyframes.length < 2) {
             console.warn("[MolSysViewer] play_movie: need at least 2 keyframes");
@@ -81,11 +81,13 @@ export class MovieHandlers {
             console.warn("[MolSysViewer] play_movie: total duration must be > 0");
             return;
         }
+        const actualStart = Math.max(0, Math.min(startTimeMs, totalDuration));
+
         const baseSnapshot = this.context.getCameraSnapshot();
         this.lastStructureIndex = undefined;
-        this.lastMovieTime = 0;
+        this.lastMovieTime = actualStart;
         this.lastVisibility = {};
-        const startRealTime = performance.now();
+        const startRealTime = performance.now() - actualStart;
 
         const tick = (now: number) => {
             const elapsed = now - startRealTime;

@@ -83,14 +83,14 @@ workspaces, panels, context actions, and shape providers without modifying the c
 ```python
 import molsysviewer as msv
 
-# Load a structure directly from the PDB
-view = msv.new_view("pdb_id:1tcd")
+# Load a structure directly from the Protein Data Bank
+view = msv.new_view("1TRS")
 view.show()
 ```
 
 ```python
 # Create named regions and control visibility independently
-backbone = msv.new_view("pdb_id:1tcd")
+backbone = msv.new_view("1TRS")
 backbone.make_regions_by(element="chain")
 backbone.regions["chain-A"].hide()
 backbone.regions["chain-B"].show()

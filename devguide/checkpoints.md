@@ -17,59 +17,33 @@ Do not append dated historical entries unless a date is itself operationally rel
 
 ## Current Focus
 
-### `view.movie` (MolSysMovie): current state
+### Phase E — Standalone App & Parity Consolidation
 
-Three of five planned phases are complete.
+With Phase D (unit consistency, TopoMT integration, and high-performance WebGL coordinate updates) fully closed and validated, the current focus shifts toward the production-ready maturation of the standalone Qt-based application shell and achieving parity in all user-facing documentation/tutorials.
 
-**Phases done:**
-
-- **Phase 1 — Python data model** (`molsysviewer/viewer/movie.py`):
-  `MovieManager` with `add_keyframe`, `add_visibility_transition`,
-  `add_camera_orbit`, `add_structure_sweep`, `clear`, `info`, `duration_ms`,
-  `to_dict`/`from_dict`, `save`/`load`. 37 unit tests; all pass.
-  Wired as `view.movie` in `viewer/core.py`.
-
-- **Phase 2 — JS animation engine** (`movie-handlers.ts`):
-  `MovieHandlers.play()` drives `requestAnimationFrame` loop with
-  camera lerp, normalized-up, structure-index step, layer-visibility
-  accumulation, loop-restart tracking, and `movie_playback_done` event.
-  `play_movie` / `stop_movie` message types; Python `play()`/`stop()`
-  use `_send_runtime_only` (not in message history).
-
-- **Phase 3 — Export pipeline** (`movie-handlers.ts`, `movie.py`, `core.py`):
-  JS `exportFrames()` iterates tick-by-tick (no wall clock), awaits each
-  state update, captures via `getImageDataUri`, emits `movie_frame` events.
-  Python `export()` polls for `movie_export_done`, decodes base64 PNGs,
-  stitches with `imageio.mimwrite()`. Optional dep: `imageio[ffmpeg]`.
-  43 Python tests (42 pass, 1 skipped when imageio present).
-
-- **Phase 4 — Convenience builders**: already done inside Phase 1
-  (`add_camera_orbit`, `add_structure_sweep` with full test coverage).
-
-**Phase remaining:**
-
-- **Phase 5 — Docs**: user-facing docs (`docs/content/user/movie/index.md`),
-  cookbook with orbit + sweep + storyboard examples, `roadmap.md` update.
-  Not yet started; low risk, no blockers.
-
-**Key constraints:**
-- Movie ops (`play_movie`, `stop_movie`) use `_send_runtime_only` → not
-  replayed in HTML export or popup sync.
-- `imageio[ffmpeg]` checked at call time, not import time.
-- JS export mode must use `getImageDataUri` (same path as `export.image()`),
-  never raw `canvas.toDataURL()`.
+**Remaining steps toward `1.0.0`:**
+- **Mature the Qt Standalone Host**: Integrate the PySide6/QtWebEngine app shell with our unified reproducible workspace and scene state representation.
+- **Visuals and Parity**: Promote any additional curated visual schemes or custom sizes to matching public Python APIs.
+- **Downstream Hardening**: Validate other add-on integrations (e.g. `pharmacophoremt`, `elasnetmt`, `topomt`) to ensure no regression or visual bugs occur during complex analysis workflows.
 
 ### Pending proposals and bugs: current state
 
-`devguide/pending_proposals/` has 2 files:
-
-* `PROPOSAL_box_merging_logic_refinement.md` — MolSysMT-level concern; not
-  actionable in MolSysViewer until MolSysMT exposes per-frame box API.
-* `PROPOSAL_orientation_plane_api.md` — dedicated methods for Mol* orientation
-  axes and best-fit plane helpers (removed from `ALLOWED_REPRESENTATIONS`);
-  low priority, no user demand yet.
+`devguide/pending_proposals/` has 1 file:
+* `partial_coordinate_updates.md` — **[IMPLEMENTED]** In-place WebGL updates and sequence ACKs are fully functional and integrated.
 
 `devguide/pending_bugs/` is empty.
+
+Recently closed and implemented in this session (twenty-second batch):
+
+**Core Feature Copy, Index Mismatch Resolution, Support Geometries, TopoMT, and Bidirectional WebGL updates**:
+
+- **Core Feature Copy Refactor**: Refactored `__copy__` and `__deepcopy__` in TopoMT's `BaseFeature.py` to dynamically clone the feature's entire `__dict__` instead of relying on a whitelist of hardcoded attributes, removing the addon-level workaround in `molsysviewer_topomt`.
+- **Index Mismatch Resolution**: Implemented `IndexMapper` in `molsysviewer/viewer/index_mapper.py` to bidirectionally translate original/global atom and structure indices to local viewer indices, ensuring correct indexing in picks, hovers, selections, active selection updates, player navigation, camera zooms, and regions.
+- **Unit Consistency in Support Geometries**: Standardized the `info()` outputs of both `ShapesManager` and `MeasurementsManager` to return Pint/PyUnitWizard quantities in nanometers (`nm`) by default. Intercepted picking, hover, selection, and measurement events to convert coordinate points from raw Angstroms back to `nm`.
+- **TopoMT Features Support**: Added unified `add_topomt_feature(feature)` handler to automatically detect and parse Pocket, Void, Mouth, Channel, and Boundary objects from `topomt`, converting units via PyUnitWizard and registering them to representation layers.
+- **In-Place WebGL Coordinate Updates & Transaction ACKs**: Implemented `partial_coordinates_update(coords_ang, atom_indices, transaction_id)` in Python and TS. The frontend mutates active conformation coordinates (`model.atomicConformation.x/y/z` Float32Array arrays) in-place and versions the conformation ID (`conformation.id = currentId + "_upd"`), triggering rapid WebGL vertex buffer modification (`gl.bufferSubData`, <10ms rendering time). Implemented transaction ACKs (`trajectory_frame_rendered` event) backpressure throttling in playbacks to prevent WebSocket queue flooding.
+- **JS unit tests**: All 110 tests pass successfully.
+- **Python regression suite**: All 423 tests pass successfully.
 
 Recently closed and implemented in this session (twenty-first batch):
 
@@ -3512,3 +3486,49 @@ view.export.figure_publication_set("publication/", figure_spec=base, stem="scene
 - `view.set_figure_spec(base)` conecta la FigureSpec con el workbench ✓
 - El spec se incluye en el replay de HTML exports ✓
 - JS unit tests: 64 passing ✓
+
+## 2026-05-22 Phase D — Refactor de copia, consistencia de unidades y actualización rápida de WebGL
+
+### Contexto
+
+El roadmap de la Phase D se enfocó en tres grandes ejes: consistencia de unidades físicas según el contrato de `molsysmt`, integración directa de geometrías analíticas complejas desde `topomt`, y rendimiento extremo en trayectorias 3D (para evitar cuellos de botella en Jupyter y lograr 60 FPS). Adicionalmente, se resolvieron dos problemas críticos de base: el desajuste de índices de átomos/estructuras en sub-sistemas moleculares sub-seleccionados y la pérdida de estado visual al copiar descriptores de relieve en `topomt`.
+
+### Cambios implementados
+
+**Core de TopoMT y Addon de Visualización:**
+- **BaseFeature.py**: Rediseño de `__copy__` y `__deepcopy__` para duplicar dinámicamente `self.__dict__` en lugar de una lista fija de atributos.
+- **integration.py**: Eliminación del workaround `_clone_feature_preserving_state` en `molsysviewer_topomt`; ahora se invoca nativamente `feature.copy(deep=True)`.
+
+**Resolución de Desajuste de Índices (Problem 2):**
+- **index_mapper.py**: Nueva clase `IndexMapper` que calcula bidireccionalmente la traslación entre los índices globales del sistema molecular cargado y los índices locales asignados en el visor de Mol*.
+- **Integración**: Conexión de `IndexMapper` en la carga (`load_from_molsysmt`), eventos de pick/hover (`_enrich_interaction_payload`), cambios de selección activa, navegación del player de trayectorias, zoom de cámara y la persistencia en `SelectionsManager` y `regions`.
+
+**Consistencia de Unidades en Geometrías de Soporte (Task 3):**
+- **ShapesManager.info()** y **MeasurementsManager.info()**: Modificación para que todos los parámetros espaciales (radios, vectores, centros, vértices) retornen cantidades físicas Pint/PyUnitWizard expresadas en nanómetros (`nm`).
+- **Intercepción de Eventos**: Conversión automática al vuelo de coordenadas obtenidas mediante interacciones en el canvas ( picks, hovers, medidas ) desde Ángstroms (unidades de Mol*) a nanómetros en Pint.
+
+**Soporte de Accidentes Topográficos de TopoMT (Task 4):**
+- **ShapesManager.add_topomt_feature(feature)**: Nuevo despachador unificado que reconoce los tipos de accidentes topográficos de `topomt` (`pocket`, `void`, `mouth`, `channel`, `branched_channel`, `boundary`), extrae automáticamente los puntos/centros/radios/índices, aplica conversiones Pint y los registra en las capas de representación correspondientes (`add_pocket_surface`, `add_channel_tube`).
+
+**Actualizaciones Rápidas WebGL y ACKs de Transacción (Task 5 & partial_coordinates_update):**
+- **Python (scene.py / core.py)**: Método `partial_coordinates_update(coords_ang, atom_indices, transaction_id)` para despachar arreglos numéricos de coordenadas y mapear transacciones. Integración de control de flujo (backpressure) en `player.py` para pausar la reproducción hasta recibir el ACK de renderizado de la transacción previa.
+- **TypeScript (trajectory-handlers.ts)**: Implementación de `partialCoordinatesUpdate` que sobrescribe directamente en sitio los arreglos de Float32Array (`model.atomicConformation.x/y/z`) de la estructura activa. Incrementa el número de versión `(structure).conformation.id` para indicarle a Mol* que realice una sub-transferencia WebGL directa (`gl.bufferSubData`) en lugar de recrear la geometría del render, logrando latencias de renderizado inferiores a 10ms.
+- **TS (viewer-controller.ts)**: Enrutamiento y despacho de los mensajes de coordenadas parciales.
+
+### Pruebas y Verificación
+
+1. **Pruebas de Interacción y Eventos de Transacción (Python)**:
+   - `test_trajectory_frame_rendered_transaction_ack()` en `tests/test_interaction_events.py`.
+   - `test_add_topomt_feature_*` en `tests/shapes/test_topomt_features.py`.
+   - 423 de 423 pruebas de Python pasando exitosamente.
+
+2. **Pruebas de Frontend (JS/TS)**:
+   - Nuevo archivo `trajectory-handler.test.ts` en `js/tests/unit/` para probar mutaciones en sitio y emisión de ACKs.
+   - 110 de 110 pruebas de JavaScript pasando exitosamente.
+
+### Criterio Phase D: satisfecho
+
+- Unidades Pint consistentes en nanómetros para todas las formas y consultas espaciales ✓
+- Carga e integración directa de accidentes topográficos de `topomt` ✓
+- Actualizaciones de trayectorias en sitio por WebGL ultra-rápidas (<10ms) con control de flujo por ACKs ✓
+- Desajuste de índices resuelto de manera completamente transparente en el backend y frontend ✓

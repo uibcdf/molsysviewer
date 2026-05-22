@@ -1,6 +1,6 @@
 {
   "name": "@uibcdf/molsysviewer",
-  "version": "0.18.0",
+  "version": "0.14.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -18,16 +18,19 @@
     "test:js": "npm run build:test:js && node --test tests/unit/dist-index.js",
     "coverage:js": "npm run build:test:js && npx c8 --reporter=lcov --report-dir=coverage-js node --test tests/unit/dist-index.js",
     "build:harness": "npx esbuild tests/e2e/harness.ts --bundle --format=iife --global-name=Harness --outfile=tests/e2e/harness.bundle.js",
-    "build:e2e": "npx esbuild tests/e2e/region-hide.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/region-hide.e2e.js --external:playwright --external:chromium-bidi/*",
-    "build:e2e:annotations": "npx esbuild tests/e2e/annotations-interaction.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/annotations-interaction.e2e.js --external:playwright --external:chromium-bidi/*",
-    "build:e2e:shapes": "npx esbuild tests/e2e/shape-trajectory.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/shape-trajectory.e2e.js --external:playwright --external:chromium-bidi/*",
-    "build:e2e:export": "npx esbuild tests/e2e/export-replay.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/export-replay.e2e.js --external:playwright --external:chromium-bidi/*",
-    "test:e2e": "npm run build:harness && npm run build:e2e && node tests/e2e/region-hide.e2e.js",
-    "test:e2e:annotations": "npm run build:harness && npm run build:e2e:annotations && node tests/e2e/annotations-interaction.e2e.js",
-    "test:e2e:shapes": "npm run build:harness && npm run build:e2e:shapes && node tests/e2e/shape-trajectory.e2e.js",
-    "test:e2e:export": "npm run build:harness && npm run build:e2e:export && node tests/e2e/export-replay.e2e.js",
-    "build:e2e:workflow": "npx esbuild tests/e2e/workflow-integration.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/workflow-integration.e2e.js --external:playwright --external:chromium-bidi/*",
-    "test:e2e:workflow": "npm run build:harness && npm run build:e2e:workflow && node tests/e2e/workflow-integration.e2e.js"
+    "build:e2e:all": "npx esbuild tests/e2e/annotations-interaction.e2e.ts tests/e2e/export-replay.e2e.ts tests/e2e/group-panel-interaction.e2e.ts tests/e2e/hierarchy-interaction.e2e.ts tests/e2e/measurements-interaction.e2e.ts tests/e2e/range-selection.e2e.ts tests/e2e/region-hide.e2e.ts tests/e2e/shape-trajectory.e2e.ts tests/e2e/workflow-integration.e2e.ts tests/e2e/scientific-workflow.e2e.ts --bundle --platform=node --format=esm --outdir=tests/e2e --external:playwright --external:chromium-bidi/*",
+    "test:e2e:annotations": "npm run build:harness && npx esbuild tests/e2e/annotations-interaction.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/annotations-interaction.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/annotations-interaction.e2e.js",
+    "test:e2e:export": "npm run build:harness && npx esbuild tests/e2e/export-replay.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/export-replay.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/export-replay.e2e.js",
+    "test:e2e:group-panel": "npm run build:harness && npx esbuild tests/e2e/group-panel-interaction.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/group-panel-interaction.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/group-panel-interaction.e2e.js",
+    "test:e2e:hierarchy": "npm run build:harness && npx esbuild tests/e2e/hierarchy-interaction.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/hierarchy-interaction.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/hierarchy-interaction.e2e.js",
+    "test:e2e:measurements": "npm run build:harness && npx esbuild tests/e2e/measurements-interaction.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/measurements-interaction.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/measurements-interaction.e2e.js",
+    "test:e2e:range-selection": "npm run build:harness && npx esbuild tests/e2e/range-selection.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/range-selection.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/range-selection.e2e.js",
+    "test:e2e:region-hide": "npm run build:harness && npx esbuild tests/e2e/region-hide.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/region-hide.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/region-hide.e2e.js",
+    "test:e2e:shapes": "npm run build:harness && npx esbuild tests/e2e/shape-trajectory.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/shape-trajectory.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/shape-trajectory.e2e.js",
+    "test:e2e:workflow": "npm run build:harness && npx esbuild tests/e2e/workflow-integration.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/workflow-integration.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/workflow-integration.e2e.js",
+    "test:e2e:scientific": "npm run build:harness && npx esbuild tests/e2e/scientific-workflow.e2e.ts --bundle --platform=node --format=esm --outfile=tests/e2e/scientific-workflow.e2e.js --external:playwright --external:chromium-bidi/* && node tests/e2e/scientific-workflow.e2e.js",
+    "test:e2e": "npm run test:e2e:region-hide",
+    "test:e2e:all": "npm run build:harness && npm run build:e2e:all && node tests/e2e/annotations-interaction.e2e.js && node tests/e2e/export-replay.e2e.js && node tests/e2e/group-panel-interaction.e2e.js && node tests/e2e/hierarchy-interaction.e2e.js && node tests/e2e/measurements-interaction.e2e.js && node tests/e2e/range-selection.e2e.js && node tests/e2e/region-hide.e2e.js && node tests/e2e/shape-trajectory.e2e.js && node tests/e2e/workflow-integration.e2e.js && node tests/e2e/scientific-workflow.e2e.js"
   },
   "dependencies": {
     "molstar": "^5.4.1"
@@ -38,5 +41,5 @@
     "playwright": "^1.57.0",
     "typescript": "^5.6.0"
   },
-  "pythonVersion": "0.18.0"
+  "pythonVersion": "0.14.0+3.g7e16f6d.dirty"
 }
