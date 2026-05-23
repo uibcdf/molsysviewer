@@ -74,3 +74,12 @@ Offload trajectory frame interpolation to the GPU:
 As the scientific visualization ecosystem transitions to WebGPU:
 - **Shared Array Buffers**: Leverage zero-copy shared memory systems in multi-threaded Web Workers to stream coordinate arrays directly to WebGPU storage buffers.
 - **Compute-to-Render Pipeline**: Fully align `molsysviewer` with high-performance WebGPU compute pipelines, enabling real-time physics simulations (e.g., interactive molecular dynamics) and rendering to run in a unified, zero-copy GPU memory space.
+
+---
+
+## 6. OpenCL and WebGL/WebGPU Heterogeneous Interoperability
+
+To prevent duplicate CPU-GPU transfers in heterogeneous environments where scientific analytical solvers run on the GPU:
+- **Shared OpenGL Contexts via PyOpenCL / WebCL**: Support context sharing using the `cl_khr_gl_sharing` OpenCL extension. In workflows where calculations (such as dynamic pocket searches or hydrogen bond metrics) are computed on the GPU via PyOpenCL, the resulting coordinate buffers or scalar fields are shared *directly* with the WebGL/WebGPU rendering pipeline as shared texture/vertex buffers, completely bypassing host (CPU) memory roundtrips.
+- **Uniform API Invariants**: Align coordinates representations in `molsysviewer` with OpenCL memory buffers, allowing immediate rendering of GPU-computed spatial properties (such as pocket volume vertices).
+
