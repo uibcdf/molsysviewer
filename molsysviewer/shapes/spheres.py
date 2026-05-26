@@ -259,3 +259,20 @@ class SphereShapes:
     def clear(self, tag: str | None = None, skip_digestion: bool = False):
         """Delete shapes in the frontend (all or by tag)."""
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
+        if hasattr(self._view, "_unregister_scene_object"):
+            if tag is None:
+                shape_tags = [t for t, obj in getattr(self._view, "_scene_objects", {}).items() if getattr(obj, "kind", None) == "shape"]
+                for t in shape_tags:
+                    self._view._unregister_scene_object(t)
+            else:
+                self._view._unregister_scene_object(tag)
+        else:
+            scene_objects = getattr(self._view, "_scene_objects", None)
+            if isinstance(scene_objects, dict):
+                if tag is None:
+                    shape_tags = [t for t, obj in scene_objects.items() if getattr(obj, "kind", None) == "shape"]
+                    for t in shape_tags:
+                        scene_objects.pop(t, None)
+                else:
+                    scene_objects.pop(tag, None)
+

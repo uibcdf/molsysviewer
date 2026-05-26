@@ -749,7 +749,8 @@ class MolSysView(
         return True
 
     def _enrich_interaction_payload(self, payload: dict) -> dict:
-        if payload.get("kind") != "structure":
+        kind = payload.get("kind")
+        if kind not in ("structure", "shape", "measurement", "annotation"):
             return payload
         raw = payload.get("atom_indices")
         if not raw:

@@ -142490,7 +142490,11 @@ async function addTriangleFacesFromPython(plugin, options) {
   const data = prepareTriangleFacesData(plugin, options);
   if (!data) return void 0;
   const props = {
-    ...ParamDefinition.getDefaultValues(TriangleFacesParams)
+    ...ParamDefinition.getDefaultValues(TriangleFacesParams),
+    doubleSided: true,
+    // See addTetrahedraFromPython: 'on' keeps both sides of transparent
+    // faces visible regardless of triangle winding / view angle.
+    transparentBackfaces: "on"
   };
   const builder = plugin.state.data.build();
   const node = builder.toRoot().apply(
@@ -142549,6 +142553,7 @@ function collectTetraFaces(data) {
 function buildTetrahedraMesh(data, _props, prev) {
   const state = MeshBuilder.createState(512, 256, prev);
   const faces = collectTetraFaces(data);
+  const drawFaces = data.drawFaces !== false;
   const edgeRadius = data.edges?.radius ?? 0.05;
   const normalLength = data.normals?.length ?? 0.5;
   const normalRadius = data.normals?.radius ?? edgeRadius * 0.6;
@@ -142560,12 +142565,14 @@ function buildTetrahedraMesh(data, _props, prev) {
     const face = faces[i];
     state.currentGroup = face.tetraIndex;
     const [a8, b8, c8] = face.vertices;
-    MeshBuilder.addTriangle(
-      state,
-      Vec3.set(Vec3(), a8[0], a8[1], a8[2]),
-      Vec3.set(Vec3(), b8[0], b8[1], b8[2]),
-      Vec3.set(Vec3(), c8[0], c8[1], c8[2])
-    );
+    if (drawFaces) {
+      MeshBuilder.addTriangle(
+        state,
+        Vec3.set(Vec3(), a8[0], a8[1], a8[2]),
+        Vec3.set(Vec3(), b8[0], b8[1], b8[2]),
+        Vec3.set(Vec3(), c8[0], c8[1], c8[2])
+      );
+    }
     if (data.edges?.enabled) {
       const faceEdges = [
         [a8, b8],
@@ -142825,12 +142832,27 @@ function prepareTetrahedraData(plugin, options) {
     color: options.normal_color ?? ColorNames.red,
     radius: Math.max(5e-3, (options.edge_radius ?? 0.05) * 0.6)
   } : void 0;
+  const atomIndices = [];
+  if (atomQuads && atomQuads.length > 0) {
+    const seen = /* @__PURE__ */ new Set();
+    for (const quad of atomQuads) {
+      for (const idx of quad) {
+        if (typeof idx === "number" && !seen.has(idx)) {
+          seen.add(idx);
+          atomIndices.push(idx);
+        }
+      }
+    }
+  }
   return {
     tetrahedra,
     name,
     exteriorOnly: !!exteriorOnly,
+    drawFaces: options.draw_faces ?? true,
     edges: edgesConfig,
-    normals: normalsConfig
+    normals: normalsConfig,
+    tag: options.tag,
+    atom_indices: atomIndices
   };
 }
 async function addTetrahedraFromPython(plugin, options) {
@@ -142838,7 +142860,12 @@ async function addTetrahedraFromPython(plugin, options) {
   if (!data) return void 0;
   const props = {
     ...ParamDefinition.getDefaultValues(TetrahedraParams),
-    doubleSided: true
+    doubleSided: true,
+    flatShaded: true,
+    // Mol* culls back-faces of transparent meshes by default ('off'); face
+    // winding from collectTetraFaces is not outward-normalized, so alpha<1
+    // would drop faces depending on view angle. 'on' draws both sides.
+    transparentBackfaces: "on"
   };
   const builder = plugin.state.data.build();
   const node = builder.toRoot().apply(
@@ -146838,10 +146865,21 @@ function lociToShapeItems(rawLoci) {
   const shape = ShapeGroup.isLoci(rawLoci) ? rawLoci.shape : Shape.isLoci(rawLoci) ? rawLoci.shape : null;
   if (!shape) return [];
   const data = shape.sourceData ?? {};
+  let shapeName = shape.name;
+  if (ShapeGroup.isLoci(rawLoci) && rawLoci.groups.length > 0) {
+    try {
+      const groupIdx = OrderedSet2.getAt(rawLoci.groups[0].ids, 0);
+      if (typeof shape.getLabel === "function") {
+        shapeName = shape.getLabel(groupIdx);
+      }
+    } catch (e) {
+      console.warn("[MolSysViewer] Error getting shape group label:", e);
+    }
+  }
   return [{
     source_kind: "shape",
     shape_kind: typeof data.kind === "string" ? data.kind : shape.name,
-    shape_name: shape.name,
+    shape_name: shapeName,
     tag: typeof data.tag === "string" ? data.tag : void 0,
     atom_indices: arrayOfNumbers(data.atom_indices),
     group_indices: arrayOfNumbers(data.group_indices),
@@ -149708,6 +149746,84 @@ var WorkbenchPanel = class {
   }
 };
 
+// src/ui/hover-tooltip.ts
+var HoverTooltip = class {
+  constructor(host, plugin) {
+    this.lastMouseX = 0;
+    this.lastMouseY = 0;
+    this.host = host;
+    this.el = document.createElement("div");
+    this.el.setAttribute("data-molsysviewer-hover-tooltip", "true");
+    Object.assign(this.el.style, {
+      position: "absolute",
+      display: "none",
+      maxWidth: "380px",
+      padding: "5px 10px",
+      borderRadius: "8px",
+      background: "rgba(14, 14, 18, 0.90)",
+      color: "#eee",
+      boxShadow: "0 4px 16px rgba(0,0,0,0.32)",
+      zIndex: "30",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "11.5px",
+      lineHeight: "1.35",
+      pointerEvents: "none",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      transition: "opacity 80ms ease"
+    });
+    host.appendChild(this.el);
+    this.onMouseMove = (e) => {
+      const rect = this.host.getBoundingClientRect();
+      this.lastMouseX = e.clientX - rect.left;
+      this.lastMouseY = e.clientY - rect.top;
+      this.reposition();
+    };
+    host.addEventListener("mousemove", this.onMouseMove, { passive: true });
+    const labelsObs = plugin?.behaviors?.labels?.highlight;
+    if (typeof labelsObs?.subscribe === "function") {
+      labelsObs.subscribe((ev) => {
+        this.setLabels(ev.labels);
+      });
+    }
+  }
+  setLabels(labels) {
+    const text = labels.filter((l) => !!l).join(" \xB7 ");
+    if (!text) {
+      this.el.style.display = "none";
+      return;
+    }
+    this.el.innerHTML = text;
+    this.el.style.display = "block";
+    this.reposition();
+  }
+  reposition() {
+    if (this.el.style.display === "none") return;
+    const hostRect = this.host.getBoundingClientRect();
+    const elWidth = this.el.offsetWidth;
+    const elHeight = this.el.offsetHeight;
+    const offsetX = 14;
+    const offsetY = 18;
+    let x = this.lastMouseX + offsetX;
+    let y = this.lastMouseY + offsetY;
+    if (x + elWidth > hostRect.width - 4) {
+      x = this.lastMouseX - elWidth - 8;
+    }
+    if (y + elHeight > hostRect.height - 4) {
+      y = this.lastMouseY - elHeight - 8;
+    }
+    if (x < 4) x = 4;
+    if (y < 4) y = 4;
+    this.el.style.left = `${x}px`;
+    this.el.style.top = `${y}px`;
+  }
+  dispose() {
+    this.host.removeEventListener("mousemove", this.onMouseMove);
+    this.el.remove();
+  }
+};
+
 // src/managers/viewer-controller.ts
 function normalizeToElementLoci3(loci) {
   if (element_exports.Loci.is(loci)) return loci;
@@ -149740,10 +149856,21 @@ function shapeTargetFromLoci(loci) {
   if (!shape) return null;
   const sourceData = shape.sourceData ?? {};
   const atomIndices = Array.isArray(sourceData.atom_indices) ? sourceData.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
+  let shapeName = shape.name;
+  if (ShapeGroup.isLoci(loci) && loci.groups.length > 0) {
+    try {
+      const groupIdx = OrderedSet2.getAt(loci.groups[0].ids, 0);
+      if (typeof shape.getLabel === "function") {
+        shapeName = shape.getLabel(groupIdx);
+      }
+    } catch (e) {
+      console.warn("[MolSysViewer] Error getting shape group label:", e);
+    }
+  }
   return {
     atom_indices: atomIndices,
     tag: typeof sourceData.tag === "string" ? sourceData.tag : void 0,
-    shape_name: shape.name
+    shape_name: shapeName
   };
 }
 function normalizeContextPayloadFromLoci(loci, page_x, page_y) {
@@ -149985,6 +150112,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.notify?.(msg);
     };
     this.toolStatusOverlay = new ToolStatusOverlay(host);
+    new HoverTooltip(host, plugin);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
       const tag = this.nextMeasurementTag();
       const structure = this.getStructureData();

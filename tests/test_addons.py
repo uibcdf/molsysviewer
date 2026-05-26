@@ -329,6 +329,33 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
         addons.clear()
 
 
+def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch):
+    import smonitor
+    addons.clear()
+    module = ModuleType("molsysviewer_topomt")
+
+    def _get_addon():
+        raise ValueError("Simulated load failure")
+
+    from importlib.machinery import ModuleSpec
+    module.get_addon = _get_addon
+    module.__spec__ = ModuleSpec(module.__name__, None)
+    sys.modules[module.__name__] = module
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt",))
+
+    manager = smonitor.get_manager()
+    before_warnings = manager.report().get("warnings_total", 0)
+
+    try:
+        discovered = addons.discover()
+        assert len(discovered) == 0
+        after_warnings = manager.report().get("warnings_total", 0)
+        assert after_warnings == before_warnings + 1
+    finally:
+        sys.modules.pop(module.__name__, None)
+        addons.clear()
+
+
 def test_addon_template_module_is_importable_and_registerable():
     addons.clear()
     try:

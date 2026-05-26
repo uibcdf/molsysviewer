@@ -10,9 +10,11 @@ from typing import Any
 import anywidget
 import traitlets as T
 from smonitor import signal
+from smonitor.integrations import emit_from_catalog
 
 from ._private.arg_digestion import digest
 from .config.project_config import load_project_config
+from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
 
 
 class AddonPanelWidget(anywidget.AnyWidget):
@@ -611,7 +613,13 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                 continue
             try:
                 addon = self.register_module(module_name)
-            except Exception:
+            except Exception as exc:
+                emit_from_catalog(
+                    CATALOG["addon_load_failed"],
+                    package_root=PACKAGE_ROOT,
+                    meta=META,
+                    extra={"module": module_name, "reason": str(exc)},
+                )
                 continue
             discovered.append(addon)
         return discovered

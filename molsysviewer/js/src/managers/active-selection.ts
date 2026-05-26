@@ -266,10 +266,23 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
     const shape = ShapeGroup.isLoci(rawLoci) ? rawLoci.shape : Shape.isLoci(rawLoci) ? rawLoci.shape : null;
     if (!shape) return [];
     const data = (shape.sourceData ?? {}) as Record<string, unknown>;
+
+    let shapeName = shape.name;
+    if (ShapeGroup.isLoci(rawLoci) && rawLoci.groups.length > 0) {
+        try {
+            const groupIdx = OrderedSet.getAt(rawLoci.groups[0].ids, 0);
+            if (typeof shape.getLabel === "function") {
+                shapeName = shape.getLabel(groupIdx);
+            }
+        } catch (e) {
+            console.warn("[MolSysViewer] Error getting shape group label:", e);
+        }
+    }
+
     return [{
         source_kind: "shape",
         shape_kind: typeof data.kind === "string" ? data.kind : shape.name,
-        shape_name: shape.name,
+        shape_name: shapeName,
         tag: typeof data.tag === "string" ? data.tag : undefined,
         atom_indices: arrayOfNumbers(data.atom_indices),
         group_indices: arrayOfNumbers(data.group_indices),

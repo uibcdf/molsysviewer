@@ -103,6 +103,12 @@ CATALOG = {
         "category": "frontend",
         "level": "WARNING",
     },
+    "addon_load_failed": {
+        "code": "MOLSYSVIEWER-ADDON-LOAD-FAILED",
+        "source": "molsysviewer.addons",
+        "category": "addon",
+        "level": "WARNING",
+    },
     "payload_invalid_coordinates": {
         "code": "MOLSYSVIEWER-PAYLOAD-INVALID-COORDINATES",
         "source": "molsysviewer.loaders.molsysmt",
@@ -145,6 +151,7 @@ CODES = {
     "not_with_this_form": "Not with this form.",
     "not_digested_argument": "The argument '{argument}' in '{caller}' has no digester. (Standard: ArgDigest style='package')",
     "viewer_init_failed": "Mol* viewer failed to initialize. Reason: {reason}. {message}",
+    "addon_load_failed": "Failed to load add-on module '{module}': {reason}.",
     "payload_invalid_coordinates": "Invalid coordinates in payload: {detail}",
     "payload_invalid_box_vectors": "Invalid box vectors in payload: {detail}",
     "payload_invalid_bond_pairs": "Invalid bond pairs in payload: {detail}",
