@@ -77,6 +77,7 @@ class Tetrahedra:
         labels: Sequence[str] | str | None = None,
         exterior_only: bool = True,
         show_all_faces: bool | None = None,
+        draw_faces: bool | None = None,
         draw_edges: bool | None = None,
         edge_radius: float | None = None,
         edge_color: int | None = None,
@@ -111,6 +112,8 @@ class Tetrahedra:
 
         if show_all_faces is not None:
             options["show_all_faces"] = bool(show_all_faces)
+        if draw_faces is not None:
+            options["draw_faces"] = bool(draw_faces)
         if name is not None:
             options["name"] = name
         if coords_list:

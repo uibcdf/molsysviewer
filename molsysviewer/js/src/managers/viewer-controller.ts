@@ -30,6 +30,7 @@ import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
 import { WorkbenchPanel } from "../ui/workbench-panel";
 import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
+import { HoverTooltip } from "../ui/hover-tooltip";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
@@ -152,10 +153,23 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
     const atomIndices = Array.isArray(sourceData.atom_indices)
         ? sourceData.atom_indices.map((i) => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter((i) => Number.isFinite(i))
         : [];
+
+    let shapeName = shape.name;
+    if (ShapeGroup.isLoci(loci) && loci.groups.length > 0) {
+        try {
+            const groupIdx = OrderedSet.getAt(loci.groups[0].ids, 0);
+            if (typeof shape.getLabel === "function") {
+                shapeName = shape.getLabel(groupIdx);
+            }
+        } catch (e) {
+            console.warn("[MolSysViewer] Error getting shape group label:", e);
+        }
+    }
+
     return {
         atom_indices: atomIndices,
         tag: typeof sourceData.tag === "string" ? sourceData.tag : undefined,
-        shape_name: shape.name,
+        shape_name: shapeName,
     };
 }
 
@@ -533,6 +547,7 @@ export class MolSysViewerController {
         };
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
+        new HoverTooltip(host, plugin);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
             const tag = this.nextMeasurementTag();
             const structure = this.getStructureData();

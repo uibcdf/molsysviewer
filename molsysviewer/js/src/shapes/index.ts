@@ -2280,6 +2280,10 @@ export async function addTriangleFacesFromPython(
 
     const props: TriangleFacesProps = {
         ...PD.getDefaultValues(TriangleFacesParams),
+        doubleSided: true,
+        // See addTetrahedraFromPython: 'on' keeps both sides of transparent
+        // faces visible regardless of triangle winding / view angle.
+        transparentBackfaces: 'on',
     };
 
     const builder = plugin.state.data.build();
@@ -2323,6 +2327,7 @@ interface TetrahedraData {
     tetrahedra: TetrahedronSpec[];
     name: string;
     exteriorOnly: boolean;
+    drawFaces?: boolean;
     edges?: {
         enabled: boolean;
         radius: number;
@@ -2334,6 +2339,8 @@ interface TetrahedraData {
         color: number;
         radius: number;
     };
+    tag?: string;
+    atom_indices?: number[];
 }
 
 const TetrahedraParams = {
@@ -2401,6 +2408,7 @@ function collectTetraFaces(data: TetrahedraData): TetraFaceInfo[] {
 function buildTetrahedraMesh(data: TetrahedraData, _props: TetrahedraProps, prev?: Mesh): Mesh {
     const state = MeshBuilder.createState(512, 256, prev);
     const faces = collectTetraFaces(data);
+    const drawFaces = data.drawFaces !== false;
     const edgeRadius = data.edges?.radius ?? 0.05;
     const normalLength = data.normals?.length ?? 0.5;
     const normalRadius = data.normals?.radius ?? edgeRadius * 0.6;
@@ -2416,12 +2424,14 @@ function buildTetrahedraMesh(data: TetrahedraData, _props: TetrahedraProps, prev
         const face = faces[i];
         state.currentGroup = face.tetraIndex;
         const [a, b, c] = face.vertices;
-        MeshBuilder.addTriangle(
-            state,
-            Vec3.set(Vec3(), a[0], a[1], a[2]),
-            Vec3.set(Vec3(), b[0], b[1], b[2]),
-            Vec3.set(Vec3(), c[0], c[1], c[2])
-        );
+        if (drawFaces) {
+            MeshBuilder.addTriangle(
+                state,
+                Vec3.set(Vec3(), a[0], a[1], a[2]),
+                Vec3.set(Vec3(), b[0], b[1], b[2]),
+                Vec3.set(Vec3(), c[0], c[1], c[2])
+            );
+        }
 
         if (data.edges?.enabled) {
             const faceEdges: Array<[[number, number, number], [number, number, number]]> = [
@@ -2632,6 +2642,7 @@ export interface TetrahedraOptions {
     labels?: string | string[];
     exterior_only?: boolean;
     show_all_faces?: boolean;
+    draw_faces?: boolean;
     draw_edges?: boolean;
     edge_radius?: number;
     edge_color?: number;
@@ -2768,12 +2779,28 @@ function prepareTetrahedraData(plugin: PluginContext, options: TetrahedraOptions
         }
         : undefined;
 
+    const atomIndices: number[] = [];
+    if (atomQuads && atomQuads.length > 0) {
+        const seen = new Set<number>();
+        for (const quad of atomQuads) {
+            for (const idx of quad) {
+                if (typeof idx === "number" && !seen.has(idx)) {
+                    seen.add(idx);
+                    atomIndices.push(idx);
+                }
+            }
+        }
+    }
+
     return {
         tetrahedra,
         name,
         exteriorOnly: !!exteriorOnly,
+        drawFaces: options.draw_faces ?? true,
         edges: edgesConfig,
         normals: normalsConfig,
+        tag: options.tag,
+        atom_indices: atomIndices,
     };
 }
 
@@ -2787,6 +2814,11 @@ export async function addTetrahedraFromPython(
     const props: TetrahedraProps = {
         ...PD.getDefaultValues(TetrahedraParams),
         doubleSided: true,
+        flatShaded: true,
+        // Mol* culls back-faces of transparent meshes by default ('off'); face
+        // winding from collectTetraFaces is not outward-normalized, so alpha<1
+        // would drop faces depending on view angle. 'on' draws both sides.
+        transparentBackfaces: 'on',
     };
 
     const builder = plugin.state.data.build();
