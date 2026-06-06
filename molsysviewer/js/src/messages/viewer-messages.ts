@@ -315,6 +315,14 @@ export type SetClipPlanesMessage = {
     min_near?: number;
 };
 
+export type SetLegendMessage = {
+    op: "set_legend";
+    options?: {
+        items?: Array<{ label: string; color: number }>;
+        position?: string;
+    };
+};
+
 export type SectionEntry = {
     tag: string;
     /** Point on the plane in nm (Python convention). */
