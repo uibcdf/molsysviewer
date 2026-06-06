@@ -8,6 +8,7 @@ import {
     NetworkLinkOptions,
     PharmacophoreOptions,
     PocketBlobOptions,
+    RingsOptions,
     TetrahedraOptions,
     TriangleFacesOptions,
 } from "../shapes";
@@ -72,6 +73,11 @@ export type AddPocketBlobMessage = {
 export type AddChannelTubeMessage = {
     op: "add_channel_tube";
     options?: ChannelTubeOptions;
+};
+
+export type AddRingsMessage = {
+    op: "add_rings";
+    options?: RingsOptions;
 };
 
 export type AddAnisotropyEllipsoidsMessage = {
@@ -228,6 +234,14 @@ export type UpdateVisibilityMessage = {
     op: "update_visibility";
     options?: {
         visible_atom_indices?: number[];
+    };
+};
+
+export type SetFocusFadeMessage = {
+    op: "set_focus_fade";
+    options?: {
+        focus_atom_indices?: number[] | null;
+        fade?: number;
     };
 };
 
@@ -640,6 +654,7 @@ export type ViewerMessage =
     AddPocketSurfaceMessage |
     AddPocketBlobMessage |
     AddChannelTubeMessage |
+    AddRingsMessage |
     AddAnisotropyEllipsoidsMessage |
     AddPharmacophoreMessage |
     AddNetworkLinksMessage |
@@ -658,6 +673,7 @@ export type ViewerMessage =
     LoadStructureFromUrlMessage |
     LoadPdbIdMessage |
     UpdateVisibilityMessage |
+    SetFocusFadeMessage |
     ClearSceneMessage |
     ClearAllMessage |
     ClearByTagMessage |

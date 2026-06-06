@@ -73,6 +73,7 @@ type AddonWorkbenchSectionRuntime = {
     itemSubtitle?: string;
 };
 type AddonContextActionRuntime = { addon: string; id: string; title: string; target_kinds: string[]; group?: string };
+type AddonContextItemRuntime = { addon: string; id: string; title: string; group?: string; order?: number; enabled?: boolean; target_kinds?: string[]; payload?: any };
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
@@ -155,11 +156,18 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
         : [];
 
     let shapeName = shape.name;
+    let groupAtoms: number[] | null = null;
     if (ShapeGroup.isLoci(loci) && loci.groups.length > 0) {
         try {
             const groupIdx = OrderedSet.getAt(loci.groups[0].ids, 0);
             if (typeof shape.getLabel === "function") {
                 shapeName = shape.getLabel(groupIdx);
+            }
+            // Prefer the picked group's own atoms (face/edge/tetra) when the shape
+            // exposes them, so a pick selects only that simplex, not the whole shape.
+            const perGroup = (sourceData as any).__groupAtoms;
+            if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
+                groupAtoms = perGroup[groupIdx].map((i: any) => Math.trunc(Number(i))).filter((i: number) => Number.isFinite(i));
             }
         } catch (e) {
             console.warn("[MolSysViewer] Error getting shape group label:", e);
@@ -167,7 +175,7 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
     }
 
     return {
-        atom_indices: atomIndices,
+        atom_indices: groupAtoms ?? atomIndices,
         tag: typeof sourceData.tag === "string" ? sourceData.tag : undefined,
         shape_name: shapeName,
     };
@@ -410,6 +418,7 @@ export class MolSysViewerController {
     private addonRuntimeInitialized = false;
     private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
+    private addonContextItems: AddonContextItemRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
@@ -767,7 +776,7 @@ export class MolSysViewerController {
                 this.groupPanel.updateContextTarget(annPayload);
                 this.syncWorkbenchContextFromPayload(annPayload);
                 emitInteractionEvent(annPayload);
-                this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions);
+                this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems);
                 return;
             }
             if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
@@ -785,7 +794,7 @@ export class MolSysViewerController {
                 this.groupPanel.updateContextTarget(measPayload);
                 this.syncWorkbenchContextFromPayload(measPayload);
                 emitInteractionEvent(measPayload);
-                this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions);
+                this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems);
                 return;
             }
             let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
@@ -860,6 +869,7 @@ export class MolSysViewerController {
                 this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
                 this.getRelevantRegionSummaries(payload),
                 this.addonContextActions,
+                this.addonContextItems,
             );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
@@ -1284,6 +1294,7 @@ export class MolSysViewerController {
             this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
             this.getRelevantRegionSummaries(payload),
             this.addonContextActions,
+            this.addonContextItems,
         );
     }
 
@@ -1311,6 +1322,7 @@ export class MolSysViewerController {
             this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
             this.getRelevantRegionSummaries(payload),
             this.addonContextActions,
+            this.addonContextItems,
         );
     }
 
@@ -1456,6 +1468,21 @@ export class MolSysViewerController {
             const right = b.group_indices[0] ?? b.atom_indices[0] ?? Number.MAX_SAFE_INTEGER;
             return left - right;
         });
+        // Shape items: select the picked shape-group loci (face triangle, edge
+        // cylinder, etc.) so it stays visually marked alongside its atoms. The
+        // ``_loci`` refs only survive on the frontend's live JS items (not the
+        // JSON-round-tripped ``msg.items``), so we read them from the controller.
+        const liveItems = this.activeSelection.getCurrentItems();
+        for (const liveItem of liveItems) {
+            const shapeLoci = (liveItem as any)._loci;
+            if (shapeLoci) {
+                try {
+                    this.plugin.managers.interactivity.lociSelects.select({ loci: shapeLoci }, true);
+                } catch (e) {
+                    console.warn("[MolSysViewer] shape loci select failed:", e);
+                }
+            }
+        }
         for (const item of orderedItems) {
             const loci = this.atomIndicesToLoci(item.atom_indices);
             if (!loci) continue;
@@ -1507,6 +1534,7 @@ export class MolSysViewerController {
                 case "add_pocket_surface": await this.shapes.addPocketSurface(msg); break;
                 case "add_pocket_blob": await this.shapes.addPocketBlob(msg); break;
                 case "add_channel_tube": await this.shapes.addChannelTube(msg); break;
+                case "add_rings": await this.shapes.addRings(msg); break;
                 case "add_anisotropy_ellipsoids": await this.shapes.addAnisotropyEllipsoids(msg); break;
                 case "add_pharmacophore_features": await this.shapes.addPharmacophore(msg); break;
                 case "add_network_links": await this.shapes.addNetworkLinks(msg); break;
@@ -1583,6 +1611,7 @@ export class MolSysViewerController {
 
                 // State/Region Ops
                 case "update_visibility": await this.state.updateVisibility(msg); break;
+                case "set_focus_fade": await this.state.setFocusFade(msg); break;
                 case "create_region": {
                     await this.state.createRegion(msg);
                     const tag = (msg as any).tag || "region";
@@ -1696,6 +1725,25 @@ export class MolSysViewerController {
                         }
                     }
                     this.refreshWorkbenchPanel();
+                    break;
+                }
+
+                case "set_addon_context_items": {
+                    const rawItems = Array.isArray((msg as any).items) ? (msg as any).items : [];
+                    this.addonContextItems = rawItems
+                        .filter((it: any) => it && typeof it.addon === "string" && typeof it.id === "string" && typeof it.title === "string")
+                        .map((it: any) => ({
+                            addon: it.addon as string,
+                            id: it.id as string,
+                            title: it.title as string,
+                            group: typeof it.group === "string" ? it.group : undefined,
+                            order: typeof it.order === "number" ? it.order : 0,
+                            enabled: it.enabled !== false,
+                            target_kinds: Array.isArray(it.target_kinds)
+                                ? it.target_kinds.filter((v: unknown): v is string => typeof v === "string")
+                                : [],
+                            payload: it.payload ?? {},
+                        }));
                     break;
                 }
 

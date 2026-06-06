@@ -10,6 +10,7 @@ from .triangle_faces import TriangleFaces
 from .tetrahedra import Tetrahedra
 from .pocket_blobs import PocketBlobs
 from .channel_tubes import ChannelTubes
+from .rings import Rings
 from .anisotropy_ellipsoids import AnisotropyEllipsoids
 from .pharmacophore import PharmacophoreShapes
 from smonitor import signal
@@ -36,6 +37,7 @@ class ShapesManager:
         self.tetrahedra = Tetrahedra(view)
         self.blobs = PocketBlobs(view)
         self.tubes = ChannelTubes(view)
+        self.rings = Rings(view)
         self.ellipsoids = AnisotropyEllipsoids(view)
         self.interaction_sites = PharmacophoreShapes(view)
 
@@ -270,6 +272,15 @@ class ShapesManager:
         return self.tubes.add_channel_tube(*args, skip_digestion=True, **kwargs)
 
     @signal(tags=["shape"])
+    def add_rings(
+        self,
+        *args,
+        skip_digestion: bool = False,
+        **kwargs,
+    ):
+        return self.rings.add_rings(*args, skip_digestion=True, **kwargs)
+
+    @signal(tags=["shape"])
     def add_anisotropy_ellipsoids(
         self,
         *args,
@@ -466,6 +477,7 @@ __all__ = [
     "Tetrahedra",
     "PocketBlobs",
     "ChannelTubes",
+    "Rings",
     "AnisotropyEllipsoids",
     "PharmacophoreShapes",
 ]
