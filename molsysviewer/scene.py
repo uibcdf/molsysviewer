@@ -185,6 +185,32 @@ class SceneManager:
             msg["min_near"] = float(min_near)
         self._view._send(msg)  # noqa: SLF001
 
+    # ── Legend ────────────────────────────────────────────────────────────
+
+    def set_legend(self, items: Any = None, *, position: str = "top-right") -> None:
+        """Show a colour legend overlay (a generic key for any colour scheme).
+
+        Parameters
+        ----------
+        items
+            Iterable of legend entries, each a ``{"label": str, "color": int}``
+            mapping or a ``(label, color)`` pair. ``None`` or ``[]`` hides the
+            legend.
+        position
+            Corner of the viewport: ``"top-right"`` (default), ``"top-left"``,
+            ``"bottom-right"`` or ``"bottom-left"``.
+        """
+        entries: list[dict] = []
+        for item in (items or []):
+            if isinstance(item, dict):
+                label, color = item.get("label"), item.get("color")
+            else:
+                label, color = item[0], item[1]
+            entries.append({"label": str(label), "color": int(color)})
+        self._view._send(  # noqa: SLF001
+            {"op": "set_legend", "options": {"items": entries, "position": str(position)}}
+        )
+
 
     # ── Sectioning ────────────────────────────────────────────────────────
 

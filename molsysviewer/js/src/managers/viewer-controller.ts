@@ -25,6 +25,7 @@ import { MovieHandlers } from "./handlers/movie-handlers";
 import { LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
+import { LegendOverlay } from "../ui/legend-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
@@ -392,6 +393,7 @@ export class MolSysViewerController {
     private readonly measurementTools: MeasurementToolController;
     private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
+    private readonly legendOverlay: LegendOverlay;
     private readonly groupPanel: GroupPanel;
     private readonly workbenchPanel: WorkbenchPanel;
     private readonly canvasHost: HTMLDivElement;
@@ -556,6 +558,7 @@ export class MolSysViewerController {
         };
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
+        this.legendOverlay = new LegendOverlay(host);
         new HoverTooltip(host, plugin);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
             const tag = this.nextMeasurementTag();
@@ -1002,6 +1005,7 @@ export class MolSysViewerController {
     dispose(): void {
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
+        this.legendOverlay.dispose();
         this.groupPanel.dispose();
         this.workbenchPanel.dispose();
         this.contextMenu.dispose();
@@ -1583,6 +1587,7 @@ export class MolSysViewerController {
                 case "set_background_color": await this.scene.setBackgroundColor(msg as any); break;
                 case "set_lighting": await this.scene.setLighting(msg as any); break;
                 case "set_clip_planes": await this.scene.setClipPlanes(msg as any); break;
+                case "set_legend": this.legendOverlay.set((msg as any).options?.items, (msg as any).options?.position); break;
                 case "set_camera_mode": await this.scene.setCameraMode(msg as any); break;
                 case "set_panel_mode": this.setPanelMode((msg as any).panel, (msg as any).expanded); break;
                 case "set_workspace": this.selectWorkspace((msg as any).workspace ?? "core"); break;
