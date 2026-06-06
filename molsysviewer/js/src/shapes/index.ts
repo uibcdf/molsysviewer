@@ -20,6 +20,7 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 
 import { Structure, Unit, ElementIndex } from "molstar/lib/mol-model/structure";
 
+import { computeMarchingCubesMesh } from "molstar/lib/mol-geo/util/marching-cubes/algorithm";
 import { Mesh } from "molstar/lib/mol-geo/geometry/mesh/mesh";
 import { MeshBuilder } from "molstar/lib/mol-geo/geometry/mesh/mesh-builder";
 import { addSphere } from "molstar/lib/mol-geo/geometry/mesh/builder/sphere";
@@ -937,6 +938,144 @@ export async function addChannelTubeFromPython(
         options: { doNotLogTiming: true },
     });
 
+    return node.ref;
+}
+
+// ------------------------------------------------------------------
+// Rings (flat circles perpendicular to a per-ring axis)
+// ------------------------------------------------------------------
+
+export interface RingsOptions {
+    centers?: Array<[number, number, number]>;
+    normals?: Array<[number, number, number]>;
+    radii?: number[];
+    thickness?: number[] | number;
+    colors?: number[];
+    values?: number[];
+    palette?: number[] | string;
+    color_map?: number[] | string;
+    color_by?: string;
+    color_mode?: string;
+    segments?: number;
+    alpha?: number;
+    tag?: string;
+    layer_tag?: string;
+    name?: string;
+}
+
+function ringBasis(normal: [number, number, number]): { u: Vec3; v: Vec3 } {
+    const n = Vec3.create(normal[0], normal[1], normal[2]);
+    if (Vec3.magnitude(n) < 1e-9) Vec3.set(n, 0, 0, 1);
+    Vec3.normalize(n, n);
+    const aux = Math.abs(n[0]) < 0.9 ? Vec3.create(1, 0, 0) : Vec3.create(0, 1, 0);
+    const u = Vec3();
+    Vec3.cross(u, aux, n);
+    Vec3.normalize(u, u);
+    const v = Vec3();
+    Vec3.cross(v, n, u);
+    Vec3.normalize(v, v);
+    return { u, v };
+}
+
+function buildRingSegments(options: RingsOptions): { segments: ChannelSegment[]; radialSegments: number } {
+    const centers = options.centers ?? [];
+    const normals = options.normals ?? [];
+    const radii = options.radii ?? [];
+    const n = centers.length;
+    if (n === 0 || normals.length !== n || radii.length !== n) {
+        return { segments: [], radialSegments: 8 };
+    }
+
+    const chords = Math.max(6, Math.floor(options.segments ?? 24));
+    const thicknessOpt = options.thickness;
+    const thicknessList: number[] = Array.isArray(thicknessOpt)
+        ? thicknessOpt
+        : new Array(n).fill(typeof thicknessOpt === "number" ? thicknessOpt : 0);
+
+    const palette = [
+        ColorNames.blue,
+        ColorNames.orange,
+        ColorNames.green,
+        ColorNames.red,
+        ColorNames.purple,
+        ColorNames.gray,
+    ];
+
+    let valueScale: ColorScale | undefined;
+    const values = options.values;
+    const colorMap = options.palette ?? options.color_map;
+    if (options.color_by && values && values.length === n) {
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const domain = min === max ? [min, min + 1] : [min, max];
+        valueScale = ColorScale.create({ domain, listOrName: colorMap ?? "turbo" });
+    }
+
+    const segments: ChannelSegment[] = [];
+    for (let i = 0; i < n; i++) {
+        const c = centers[i];
+        const radius = Math.max(0.01, radii[i]);
+        const thickness = thicknessList[i] > 0 ? thicknessList[i] : Math.max(0.05, radius * 0.08);
+        const { u, v } = ringBasis(normals[i]);
+
+        let color = ColorNames.skyblue;
+        if (options.colors && options.colors.length) {
+            color = options.colors[i % options.colors.length] as unknown as typeof color;
+        } else if (valueScale && values) {
+            color = valueScale.color(values[i]);
+        } else {
+            color = palette[i % palette.length];
+        }
+
+        const pts: Array<[number, number, number]> = [];
+        for (let k = 0; k <= chords; k++) {
+            const theta = (2 * Math.PI * k) / chords;
+            const cosT = Math.cos(theta);
+            const sinT = Math.sin(theta);
+            pts.push([
+                c[0] + radius * (cosT * u[0] + sinT * v[0]),
+                c[1] + radius * (cosT * u[1] + sinT * v[1]),
+                c[2] + radius * (cosT * u[2] + sinT * v[2]),
+            ]);
+        }
+        for (let k = 0; k < pts.length - 1; k++) {
+            segments.push({ start: pts[k], end: pts[k + 1], radius: thickness, color: color as unknown as number });
+        }
+    }
+
+    return { segments, radialSegments: 8 };
+}
+
+export async function addRingsFromPython(
+    plugin: PluginContext,
+    options: RingsOptions
+): Promise<StateObjectRef<SO.Shape.Representation3D> | undefined> {
+    const built = buildRingSegments(options);
+    if (!built.segments.length) {
+        console.warn("[MolSysViewer] add_rings: no valid rings");
+        return undefined;
+    }
+    const data: ChannelTubeData = {
+        segments: built.segments,
+        alpha: options.alpha ?? 1.0,
+        name: options.name ?? "Rings",
+    };
+    const props: ChannelTubeProps = {
+        ...PD.getDefaultValues(ChannelTubeParams),
+        radialSegments: built.radialSegments,
+    } as any;
+
+    const builder = plugin.state.data.build();
+    const node = builder.toRoot().apply(
+        ChannelTube3D,
+        { data, props } as any,
+        { tags: options.tag ?? "molsysviewer:rings" }
+    );
+    await PluginCommands.State.Update(plugin, {
+        state: plugin.state.data,
+        tree: builder,
+        options: { doNotLogTiming: true },
+    });
     return node.ref;
 }
 
@@ -1888,6 +2027,7 @@ export async function addNetworkLinksFromPython(plugin: PluginContext, options: 
 interface TriangleFaceSpec {
     vertices: [[number, number, number], [number, number, number], [number, number, number]];
     color: number;
+    alpha?: number;
     label?: string;
 }
 
@@ -2038,6 +2178,34 @@ function getTriangleFacesShape(
     return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
 }
 
+function applyTriangleFacesTransparency(
+    repr: Representation<TriangleFacesData, TriangleFacesParams>,
+    data: TriangleFacesData
+) {
+    // Per-face alpha: when any triangle declares its own alpha, drive transparency
+    // per group-loci (mirrors applyTetrahedraTransparency). Otherwise fall back to
+    // the uniform alphaFactor.
+    const hasPerFace = data.triangles.some(t => typeof t.alpha === "number");
+    if (!hasPerFace) {
+        repr.setState({ transparency: Transparency.Empty, alphaFactor: data.alpha });
+        return;
+    }
+    const loci = repr.getAllLoci().find(Shape.isLoci);
+    if (!loci) {
+        repr.setState({ alphaFactor: data.alpha });
+        return;
+    }
+    const layers = data.triangles
+        .map((tri, idx) => ({ tri, idx }))
+        .filter(({ tri }) => (tri.alpha ?? data.alpha) < 1)
+        .map(({ tri, idx }) => ({
+            loci: ShapeGroup.Loci(loci.shape, [{ ids: OrderedSet.ofSingleton(idx), instance: 0 }]),
+            value: 1 - Math.max(0, Math.min(1, tri.alpha ?? data.alpha)),
+        }));
+    const transparency = layers.length > 0 ? Transparency("group-loci", layers) : Transparency.Empty;
+    repr.setState({ transparency, alphaFactor: 1 });
+}
+
 const TriangleFacesVisuals = {
     mesh: (
         _ctx: RepresentationContext,
@@ -2085,7 +2253,7 @@ export const TriangleFaces3D = MSVTransform({
             );
 
             await repr.createOrUpdate(params.props, params.data).runInContext(ctx);
-            repr.setState({ alphaFactor: params.data.alpha });
+            applyTriangleFacesTransparency(repr, params.data);
 
             return new SO.Shape.Representation3D(
                 { repr, sourceData: params.data },
@@ -2096,7 +2264,7 @@ export const TriangleFaces3D = MSVTransform({
     update({ b, newParams }, _plugin: PluginContext) {
         return Task.create("Triangle Faces", async ctx => {
             await b.data.repr.createOrUpdate(newParams.props, newParams.data).runInContext(ctx);
-            b.data.repr.setState({ alphaFactor: newParams.data.alpha });
+            applyTriangleFacesTransparency(b.data.repr, newParams.data);
             b.data.sourceData = newParams.data;
             return StateTransformer.UpdateResult.Updated;
         });
@@ -2113,6 +2281,7 @@ export interface TriangleFacesOptions {
     atomTriplets?: number[][];
     colors?: number | number[];
     alpha?: number;
+    alphas?: number[];
     labels?: string | string[];
     draw_edges?: boolean;
     edge_radius?: number;
@@ -2165,10 +2334,12 @@ function buildTrianglesFromVertices(options: TriangleFacesOptions): TriangleFace
 
     const colors = expandToList<number>(options.colors, count, Number, ColorNames.orange);
     const labels = expandOptionalToList<string>(options.labels, count, String);
+    const alphas = expandOptionalToList<number>(options.alphas, count, Number);
 
     return normalized.map((verts, idx) => ({
         vertices: verts,
         color: colors[idx],
+        alpha: alphas[idx],
         label: labels[idx],
     }));
 }
@@ -2184,6 +2355,7 @@ function buildTrianglesFromAtoms(structure: Structure, options: TriangleFacesOpt
 
     const colors = expandToList<number>(options.colors, triplets.length, Number, ColorNames.orange);
     const labels = expandOptionalToList<string>(options.labels, triplets.length, String);
+    const alphas = expandOptionalToList<number>(options.alphas, triplets.length, Number);
 
     const triangles: TriangleFaceSpec[] = [];
 
@@ -2213,6 +2385,7 @@ function buildTrianglesFromAtoms(structure: Structure, options: TriangleFacesOpt
                 [c[0], c[1], c[2]],
             ],
             color: colors[i],
+            alpha: alphas[i],
             label: labels[i],
         });
     }
@@ -2321,6 +2494,15 @@ interface TetrahedronSpec {
     color: number;
     alpha: number;
     label?: string;
+    atomIndices?: [number, number, number, number];
+}
+
+interface FaceMetaEntry {
+    face_id?: number | string;
+    permeability?: string;
+    owner_id?: number | string;
+    neighbor_id?: number | string;
+    color?: number;
 }
 
 interface TetrahedraData {
@@ -2328,6 +2510,15 @@ interface TetrahedraData {
     name: string;
     exteriorOnly: boolean;
     drawFaces?: boolean;
+    // When true, faces are individually pickable (one group per unique face,
+    // labelled with both owning tetrahedra) instead of grouped by tetrahedron.
+    facesPickable?: boolean;
+    // Optional per-face metadata keyed by sorted atom-triple "a,b,c" (atom indices
+    // as passed in atom_quads), used to build rich face labels (id/permeability).
+    faceMeta?: Map<string, FaceMetaEntry>;
+    // Optional per-edge metadata keyed by sorted atom-pair "a,b", for wireframe
+    // edge labels (edge id).
+    edgeMeta?: Map<string, { edge_id?: number | string }>;
     edges?: {
         enabled: boolean;
         radius: number;
@@ -2359,6 +2550,15 @@ type FaceVertices = [
 interface TetraFaceInfo {
     tetraIndex: number;
     vertices: FaceVertices;
+    // Index of the second tetrahedron sharing this face (internal faces); -1 for
+    // exterior/hull faces owned by a single tetrahedron.
+    otherTetraIndex?: number;
+    // Sorted atom-triple key "a,b,c" when atom indices are known (atom_quads path),
+    // used to look up rich per-face metadata.
+    atomKey?: string;
+    // Atom index of each of the three face vertices, in vertex order (atom_quads
+    // path only). Lets edges be keyed/labelled by their atom pair.
+    vertexAtoms?: [number, number, number];
 }
 
 function faceKey(vertices: FaceVertices) {
@@ -2386,43 +2586,96 @@ function collectTetraFaces(data: TetrahedraData): TetraFaceInfo[] {
             const entry = faceMap.get(key);
             if (entry) {
                 entry.count += 1;
+                if (entry.otherTetraIndex === undefined) entry.otherTetraIndex = i;
             } else {
-                faceMap.set(key, { tetraIndex: i, vertices, count: 1 });
+                let atomKey: string | undefined;
+                let vertexAtoms: [number, number, number] | undefined;
+                if (tetra.atomIndices) {
+                    vertexAtoms = [tetra.atomIndices[a], tetra.atomIndices[b], tetra.atomIndices[c]];
+                    atomKey = vertexAtoms.slice().sort((x, y) => x - y).join(",");
+                }
+                faceMap.set(key, { tetraIndex: i, vertices, count: 1, atomKey, vertexAtoms });
             }
         }
     }
 
-    if (!data.exteriorOnly) {
-        return Array.from(faceMap.values()).map(({ tetraIndex, vertices }) => ({ tetraIndex, vertices }));
-    }
-
-    const exterior: TetraFaceInfo[] = [];
-    faceMap.forEach(face => {
-        if (face.count === 1) {
-            exterior.push({ tetraIndex: face.tetraIndex, vertices: face.vertices });
-        }
+    const project = (face: TetraFaceInfo & { count: number }): TetraFaceInfo => ({
+        tetraIndex: face.tetraIndex,
+        vertices: face.vertices,
+        otherTetraIndex: face.otherTetraIndex ?? -1,
+        atomKey: face.atomKey,
+        vertexAtoms: face.vertexAtoms,
     });
-    return exterior;
+
+    let result: TetraFaceInfo[];
+    if (!data.exteriorOnly) {
+        result = Array.from(faceMap.values()).map(project);
+    } else {
+        const exterior: TetraFaceInfo[] = [];
+        faceMap.forEach(face => {
+            if (face.count === 1) {
+                exterior.push(project(face));
+            }
+        });
+        result = exterior;
+    }
+    // When per-face metadata is supplied with facesPickable, treat it as a
+    // visibility filter: only keep faces whose atomKey appears in faceMeta.
+    // Lets callers hide subsets of faces (e.g. permeable ones) by simply
+    // omitting them from the map.
+    if (data.facesPickable && data.faceMeta) {
+        result = result.filter(face => face.atomKey !== undefined && data.faceMeta!.has(face.atomKey));
+    }
+    return result;
+}
+
+interface TetraEdgeInfo {
+    p1: [number, number, number];
+    p2: [number, number, number];
+    atoms?: [number, number];
+}
+
+// Unique wireframe edges in a deterministic order (shared by the mesh builder and
+// the label/colour getters so edge group ids line up). Carries the atom pair when
+// known so edges can be labelled by their atoms / metadata.
+function collectTetraEdges(faces: TetraFaceInfo[]): TetraEdgeInfo[] {
+    const seen = new Set<string>();
+    const edges: TetraEdgeInfo[] = [];
+    const positions: Array<[number, number]> = [[0, 1], [1, 2], [2, 0]];
+    for (const face of faces) {
+        for (const [i, j] of positions) {
+            const p1 = face.vertices[i];
+            const p2 = face.vertices[j];
+            const key = `${p1[0]},${p1[1]},${p1[2]}|${p2[0]},${p2[1]},${p2[2]}`;
+            const revKey = `${p2[0]},${p2[1]},${p2[2]}|${p1[0]},${p1[1]},${p1[2]}`;
+            if (seen.has(key) || seen.has(revKey)) continue;
+            seen.add(key);
+            const atoms = face.vertexAtoms
+                ? ([face.vertexAtoms[i], face.vertexAtoms[j]] as [number, number])
+                : undefined;
+            edges.push({ p1, p2, atoms });
+        }
+    }
+    return edges;
 }
 
 function buildTetrahedraMesh(data: TetrahedraData, _props: TetrahedraProps, prev?: Mesh): Mesh {
     const state = MeshBuilder.createState(512, 256, prev);
     const faces = collectTetraFaces(data);
     const drawFaces = data.drawFaces !== false;
+    const facesPickable = data.facesPickable === true;
     const edgeRadius = data.edges?.radius ?? 0.05;
     const normalLength = data.normals?.length ?? 0.5;
     const normalRadius = data.normals?.radius ?? edgeRadius * 0.6;
 
-    const edgeKeySet = new Set<string>();
-    const edges: Array<[[number, number, number], [number, number, number]]> = [];
-
-    // Contar grupos: caras, aristas opcionales, normales opcionales
-    const baseDecorGroup = data.tetrahedra.length;
+    // Group ids: faces first (per-tetrahedron, or per-face when facesPickable),
+    // then optional normals/edges decorations.
+    const baseDecorGroup = facesPickable ? faces.length : data.tetrahedra.length;
     let decorIndex = 0;
 
     for (let i = 0, il = faces.length; i < il; i++) {
         const face = faces[i];
-        state.currentGroup = face.tetraIndex;
+        state.currentGroup = facesPickable ? i : face.tetraIndex;
         const [a, b, c] = face.vertices;
         if (drawFaces) {
             MeshBuilder.addTriangle(
@@ -2431,22 +2684,6 @@ function buildTetrahedraMesh(data: TetrahedraData, _props: TetrahedraProps, prev
                 Vec3.set(Vec3(), b[0], b[1], b[2]),
                 Vec3.set(Vec3(), c[0], c[1], c[2])
             );
-        }
-
-        if (data.edges?.enabled) {
-            const faceEdges: Array<[[number, number, number], [number, number, number]]> = [
-                [a, b],
-                [b, c],
-                [c, a],
-            ];
-            for (const [p1, p2] of faceEdges) {
-                const key = `${p1[0]},${p1[1]},${p1[2]}|${p2[0]},${p2[1]},${p2[2]}`;
-                const revKey = `${p2[0]},${p2[1]},${p2[2]}|${p1[0]},${p1[1]},${p1[2]}`;
-                if (!edgeKeySet.has(key) && !edgeKeySet.has(revKey)) {
-                    edgeKeySet.add(key);
-                    edges.push([p1, p2]);
-                }
-            }
         }
 
         if (data.normals?.enabled) {
@@ -2478,12 +2715,12 @@ function buildTetrahedraMesh(data: TetrahedraData, _props: TetrahedraProps, prev
     }
 
     if (data.edges?.enabled) {
-        for (const [p1, p2] of edges) {
+        for (const edge of collectTetraEdges(faces)) {
             state.currentGroup = baseDecorGroup + decorIndex++;
             addCylinder(
                 state,
-                Vec3.create(p1[0], p1[1], p1[2]),
-                Vec3.create(p2[0], p2[1], p2[2]),
+                Vec3.create(edge.p1[0], edge.p1[1], edge.p1[2]),
+                Vec3.create(edge.p2[0], edge.p2[1], edge.p2[2]),
                 1,
                 { radiusTop: edgeRadius, radiusBottom: edgeRadius, radialSegments: 10 }
             );
@@ -2500,12 +2737,18 @@ function applyTetrahedraTransparency(
     const loci = repr.getAllLoci().find(Shape.isLoci);
     if (!loci) return;
 
-    const layers = data.tetrahedra
-        .map((tetra, idx) => ({ tetra, idx }))
-        .filter(({ tetra }) => tetra.alpha < 1)
-        .map(({ tetra, idx }) => ({
+    // Each face group inherits its owner tetrahedron's alpha when faces are
+    // pickable; otherwise group == tetrahedron.
+    const alphaByGroup: number[] = data.facesPickable === true
+        ? collectTetraFaces(data).map(face => data.tetrahedra[face.tetraIndex]?.alpha ?? 1)
+        : data.tetrahedra.map(tetra => tetra.alpha);
+
+    const layers = alphaByGroup
+        .map((alpha, idx) => ({ alpha, idx }))
+        .filter(({ alpha }) => alpha < 1)
+        .map(({ alpha, idx }) => ({
             loci: ShapeGroup.Loci(loci.shape, [{ ids: OrderedSet.ofSingleton(idx), instance: 0 }]),
-            value: 1 - Math.max(0, Math.min(1, tetra.alpha)),
+            value: 1 - Math.max(0, Math.min(1, alpha)),
         }));
 
     const transparency = layers.length > 0 ? Transparency("group-loci", layers) : Transparency.Empty;
@@ -2520,20 +2763,58 @@ function getTetrahedraShape(
 ) {
     const mesh = buildTetrahedraMesh(data, _props, shape?.geometry);
     const tetraCount = data.tetrahedra.length;
+    const facesPickable = data.facesPickable === true;
     const edgesEnabled = !!data.edges?.enabled;
     const normalsEnabled = !!data.normals?.enabled;
     const faces = collectTetraFaces(data);
     const faceCount = faces.length;
-    const edgeCount = edgesEnabled ? new Set(faces.flatMap(f => {
-        const [a, b, c] = f.vertices;
-        return [`${a}|${b}`, `${b}|${c}`, `${c}|${a}`];
-    })).size : 0;
+    // Group ids 0..faceGroupCount-1 are the faces (one per tetrahedron, or one per
+    // unique face when facesPickable); decorations follow.
+    const faceGroupCount = facesPickable ? faceCount : tetraCount;
+    const edgeList = edgesEnabled ? collectTetraEdges(faces) : [];
+    const edgeCount = edgeList.length;
+
+    const edgeLabel = (edge: TetraEdgeInfo | undefined): string => {
+        if (edge?.atoms) {
+            const [a, b] = edge.atoms;
+            const key = [a, b].slice().sort((x, y) => x - y).join(",");
+            const meta = data.edgeMeta?.get(key);
+            if (meta && meta.edge_id !== undefined && meta.edge_id !== null) {
+                return `Edge id ${meta.edge_id}: atoms ${a}-${b}`;
+            }
+            return `Edge: atoms ${a}-${b}`;
+        }
+        return "Tetrahedron edge";
+    };
+
+    const faceLabel = (face: TetraFaceInfo): string => {
+        const meta = facesPickable && face.atomKey ? data.faceMeta?.get(face.atomKey) : undefined;
+        if (meta) {
+            const owner = meta.owner_id ?? face.tetraIndex;
+            const neighbor = meta.neighbor_id ?? (face.otherTetraIndex ?? -1);
+            const neighborLabel = (neighbor === -1 || neighbor === "-1") ? "OCEAN" : neighbor;
+            const id = meta.face_id ?? "?";
+            const perm = meta.permeability ?? "unknown";
+            return `Face id ${id}: tetrahedra ${owner}-${neighborLabel}; permeability=${perm}`;
+        }
+        const neighbor = face.otherTetraIndex ?? -1;
+        const neighborLabel = neighbor === -1 ? "exterior" : neighbor;
+        return `Face: tetrahedra ${face.tetraIndex}-${neighborLabel}`;
+    };
 
     const getColor = (groupId: number) => {
-        if (groupId < tetraCount) {
-            return Color(data.tetrahedra[groupId].color);
+        if (groupId < faceGroupCount) {
+            if (facesPickable) {
+                const f = faces[groupId];
+                const meta = f.atomKey ? data.faceMeta?.get(f.atomKey) : undefined;
+                if (meta && typeof meta.color === "number") {
+                    return Color(meta.color);
+                }
+            }
+            const tetraIndex = facesPickable ? faces[groupId].tetraIndex : groupId;
+            return Color(data.tetrahedra[tetraIndex].color);
         }
-        let offset = groupId - tetraCount;
+        let offset = groupId - faceGroupCount;
         if (normalsEnabled) {
             if (offset < faceCount) {
                 return Color(data.normals?.color ?? ColorNames.red);
@@ -2549,10 +2830,13 @@ function getTetrahedraShape(
     };
     const getSize = () => 1;
     const getLabel = (groupId: number) => {
-        if (groupId < tetraCount) {
+        if (groupId < faceGroupCount) {
+            if (facesPickable) {
+                return faceLabel(faces[groupId]);
+            }
             return data.tetrahedra[groupId].label ?? `Tetrahedron ${groupId}`;
         }
-        let offset = groupId - tetraCount;
+        let offset = groupId - faceGroupCount;
         if (normalsEnabled) {
             if (offset < faceCount) {
                 return `Tetrahedron normal ${offset}`;
@@ -2560,10 +2844,34 @@ function getTetrahedraShape(
             offset -= faceCount;
         }
         if (edgesEnabled && offset < edgeCount) {
-            return `Tetrahedron edge ${offset}`;
+            return edgeLabel(edgeList[offset]);
         }
         return `Decoration ${groupId}`;
     };
+
+    // Per-group atom indices so a pick selects only the picked simplex's atoms
+    // (face -> its 3, edge -> its 2, tetra -> its 4) instead of the whole shape.
+    // Read by shapeTargetFromLoci; only present on the atom_quads path.
+    const groupAtoms: (number[] | undefined)[] = [];
+    for (let g = 0; g < faceGroupCount; g++) {
+        const tetraIndex = facesPickable ? faces[g].tetraIndex : g;
+        groupAtoms[g] = facesPickable
+            ? (faces[g].vertexAtoms ? [...faces[g].vertexAtoms!] : undefined)
+            : (data.tetrahedra[tetraIndex]?.atomIndices ? [...data.tetrahedra[tetraIndex].atomIndices!] : undefined);
+    }
+    let decorBase = faceGroupCount;
+    if (normalsEnabled) {
+        for (let k = 0; k < faceCount; k++) {
+            groupAtoms[decorBase + k] = faces[k].vertexAtoms ? [...faces[k].vertexAtoms!] : undefined;
+        }
+        decorBase += faceCount;
+    }
+    if (edgesEnabled) {
+        for (let k = 0; k < edgeCount; k++) {
+            groupAtoms[decorBase + k] = edgeList[k].atoms ? [...edgeList[k].atoms!] : undefined;
+        }
+    }
+    (data as any).__groupAtoms = groupAtoms;
 
     return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
 }
@@ -2641,8 +2949,17 @@ export interface TetrahedraOptions {
     alphas?: number | number[];
     labels?: string | string[];
     exterior_only?: boolean;
-    show_all_faces?: boolean;
     draw_faces?: boolean;
+    faces_pickable?: boolean;
+    face_meta?: Array<{
+        atoms: number[];
+        face_id?: number | string;
+        permeability?: string;
+        owner_id?: number | string;
+        neighbor_id?: number | string;
+        color?: number;
+    }>;
+    edge_meta?: Array<{ atoms: number[]; edge_id?: number | string }>;
     draw_edges?: boolean;
     edge_radius?: number;
     edge_color?: number;
@@ -2732,6 +3049,7 @@ function buildTetrahedraFromAtoms(structure: Structure, options: TetrahedraOptio
             color: colors[i],
             alpha: alphas[i],
             label: labels[i],
+            atomIndices: [quad[0], quad[1], quad[2], quad[3]],
         });
     }
 
@@ -2739,7 +3057,7 @@ function buildTetrahedraFromAtoms(structure: Structure, options: TetrahedraOptio
 }
 
 function prepareTetrahedraData(plugin: PluginContext, options: TetrahedraOptions): TetrahedraData | undefined {
-    const exteriorOnly = options.exterior_only ?? !options.show_all_faces;
+    const exteriorOnly = options.exterior_only ?? true;
     let tetrahedra: TetrahedronSpec[] = [];
 
     const atomQuads = options.atomQuads ?? options.atom_quads;
@@ -2792,11 +3110,40 @@ function prepareTetrahedraData(plugin: PluginContext, options: TetrahedraOptions
         }
     }
 
+    let faceMeta: Map<string, FaceMetaEntry> | undefined;
+    if (Array.isArray(options.face_meta) && options.face_meta.length > 0) {
+        faceMeta = new Map<string, FaceMetaEntry>();
+        for (const entry of options.face_meta) {
+            if (!entry || !Array.isArray(entry.atoms) || entry.atoms.length !== 3) continue;
+            const key = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
+            faceMeta.set(key, {
+                face_id: entry.face_id,
+                permeability: entry.permeability,
+                owner_id: entry.owner_id,
+                neighbor_id: entry.neighbor_id,
+                color: typeof (entry as any).color === "number" ? (entry as any).color : undefined,
+            });
+        }
+    }
+
+    let edgeMeta: Map<string, { edge_id?: number | string }> | undefined;
+    if (Array.isArray(options.edge_meta) && options.edge_meta.length > 0) {
+        edgeMeta = new Map<string, { edge_id?: number | string }>();
+        for (const entry of options.edge_meta) {
+            if (!entry || !Array.isArray(entry.atoms) || entry.atoms.length !== 2) continue;
+            const key = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
+            edgeMeta.set(key, { edge_id: entry.edge_id });
+        }
+    }
+
     return {
         tetrahedra,
         name,
         exteriorOnly: !!exteriorOnly,
         drawFaces: options.draw_faces ?? true,
+        facesPickable: options.faces_pickable === true,
+        faceMeta,
+        edgeMeta,
         edges: edgesConfig,
         normals: normalsConfig,
         tag: options.tag,

@@ -21,6 +21,44 @@ We use ArgDigest in **package style**. Validation and normalization live outside
 - missing-digester warnings on stable public paths are treated as integration debt;
 - shape/detail coverage is broader than before, but not yet exhaustive across every argument of every overlay method.
 
+### Known issue: shape-overlay digestion is effectively bypassed
+
+The `ShapesManager.add_*` wrappers are thin `*args/**kwargs` forwarders, so per
+Rule 1 they are **not** decorated with `@digest()`. The real digesters live on the
+submodules (`ChannelTubes.add_channel_tube`, `Rings.add_rings`, …) which *do*
+carry `@digest()`. However, each wrapper delegates with a **hardcoded
+`skip_digestion=True`**:
+
+```python
+def add_channel_tube(self, *args, skip_digestion=False, **kwargs):
+    return self.tubes.add_channel_tube(*args, skip_digestion=True, **kwargs)
+```
+
+The effect: on the public `view.shapes.add_*` path the submodule digester never
+runs either — shape-overlay digestion is **off end to end**.
+
+This is not (only) missing coverage; some *existing* shape digesters are also
+**wrong for the real input types**. `digest_coordinate_pairs` raises
+`ArgumentError` on a `Quantity`:
+
+```python
+if not isinstance(coordinate_pairs, (list, tuple)):
+    raise ArgumentError("coordinate_pairs", ...)
+```
+
+but callers pass `puw.quantity(...)`. Verified empirically: switching the
+wrappers to propagate `skip_digestion` (so the submodule digesters run) breaks 6
+shape tests with `ArgumentError`, because the digesters reject the `Quantity`
+values that are actually used. The forced `skip_digestion=True` is therefore
+**masking** an incomplete/incorrect digester layer, not a careless bypass.
+
+Correct fix (a project in itself, not part of adding a shape): make the shape
+digesters accept the real input types (`Quantity`, ndarray, nested lists) and
+*then* propagate `skip_digestion` instead of forcing it. Until then, keep the
+current pattern: forwarders undecorated, submodule digesters present but bypassed
+on the manager path. Do **not** propagate `skip_digestion` in the `add_*`
+wrappers and do **not** add `@digest()` to the forwarders.
+
 ### Rules
 
 1. **Decorate real public entry points**

@@ -27,6 +27,7 @@ import {
     HideRegionMessage,
     SetAtomColorsMessage,
     SetGlobalRepresentationMessage,
+    SetFocusFadeMessage,
     SetLayerTagMessage,
     SetRegionRepresentationMessage,
     ShowGlobalMessage,
@@ -267,6 +268,57 @@ export class StateHandlers {
 
         const loci = StructureSelection.toLociWithSourceUnits(selection);
         await setStructureTransparency(this.plugin, components, 1, async () => loci);
+    }
+
+    async setFocusFade(msg: SetFocusFadeMessage) {
+        // Soft spotlight: fade everything *outside* focus_atom_indices to a
+        // partial transparency (the buried-feature focus, e.g. for voids).
+        // Same loci construction as updateVisibility, but a partial transparency
+        // on the complement instead of fully hiding it.
+        const structure = this.callbacks.getStructure();
+        if (!structure) return;
+        const components = this.callbacks.getComponents();
+        if (components.length === 0) return;
+
+        await clearStructureTransparency(this.plugin, components);
+
+        const indices = msg.options?.focus_atom_indices;
+        const fade = msg.options?.fade ?? 0;
+        if (!Array.isArray(indices) || indices.length === 0 || fade <= 0) return;
+
+        const focusSet = new Set(indices);
+        const selectionBuilder = StructureSelection.LinearBuilder(structure);
+        let hasFaded = false;
+
+        for (const unit of structure.units) {
+            if (!Unit.isAtomic(unit)) continue;
+            const elementCount = OrderedSet.size(unit.elements);
+            if (elementCount === 0) continue;
+
+            const fadedElements: number[] = [];
+            for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+                const elementIndex = OrderedSet.getAt(unit.elements, ordinal);
+                if (!focusSet.has(elementIndex)) fadedElements.push(elementIndex);
+            }
+            if (fadedElements.length === 0) continue;
+            hasFaded = true;
+
+            const elementSubset =
+                fadedElements.length === elementCount
+                    ? unit.elements
+                    : (SortedArray.ofSortedArray(fadedElements) as StructureElement.Set);
+            const childUnit = unit.getChild(elementSubset);
+            const fadedStructure = Structure.create([childUnit], { parent: structure });
+            selectionBuilder.add(fadedStructure);
+        }
+
+        if (!hasFaded) return;
+
+        const selection = selectionBuilder.getSelection();
+        if (StructureSelection.isEmpty(selection)) return;
+
+        const loci = StructureSelection.toLociWithSourceUnits(selection);
+        await setStructureTransparency(this.plugin, components, Math.min(1, fade), async () => loci);
     }
 
     async createRegion(msg: CreateRegionMessage) {

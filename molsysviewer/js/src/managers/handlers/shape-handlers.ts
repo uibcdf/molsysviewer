@@ -7,12 +7,14 @@ import {
     addNetworkLinksFromPython,
     addPharmacophoreFromPython,
     addPocketBlobFromPython,
+    addRingsFromPython,
     addTetrahedraFromPython,
     addTransparentSphereFromPython,
     addTransparentSpheresFromPython,
     addTriangleFacesFromPython,
     AnisotropyEllipsoidOptions,
     ChannelTubeOptions,
+    RingsOptions,
     DisplacementVectorOptions,
     NetworkLinkOptions,
     PharmacophoreOptions,
@@ -32,6 +34,7 @@ import {
     AddPharmacophoreMessage,
     AddPocketBlobMessage,
     AddPocketSurfaceMessage,
+    AddRingsMessage,
     AddSphereMessage,
     AddTetrahedraMessage,
     AddTriangleFacesMessage,
@@ -250,6 +253,23 @@ export class ShapeHandlers {
             this.registerRef(ref, options.tag);
         } catch (err) {
             console.error("[MolSysViewer] Error creando channel tube", err);
+        }
+    }
+
+    async addRings(msg: AddRingsMessage) {
+        const options: RingsOptions = msg.options ?? {};
+        if (
+            !options.centers || !options.normals || !options.radii ||
+            options.centers.length === 0
+        ) {
+            console.warn("[MolSysViewer] add_rings requires centers, normals and radii");
+            return;
+        }
+        try {
+            const ref = await addRingsFromPython(this.plugin, options);
+            if (ref) this.registerRef(ref, options.tag);
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando rings", err);
         }
     }
 
