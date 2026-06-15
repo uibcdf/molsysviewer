@@ -42,5 +42,20 @@ def digest_vectors(vectors, caller=None):
         if can_be_selection(vectors):
             return vectors
 
+    if vectors is None:
+        return None
+
+    # General length-vector handling (e.g. shape displacement vectors): accept a
+    # PyUnitWizard quantity (validate length dimensionality, normalize to the
+    # suite-native unit) or a plain coordinate-like array.
+    if puw.is_quantity(vectors):
+        if puw.check(vectors, dimensionality={'[L]': 1}):
+            return puw.standardize(vectors)
+        raise ArgumentError('vectors', value=vectors, caller=caller, message=None)
+    try:
+        return make_coordinates_like(vectors)
+    except Exception:
+        pass
+
     raise ArgumentError('vectors', value=vectors, caller=caller, message=None)
 
