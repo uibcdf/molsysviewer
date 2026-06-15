@@ -5,6 +5,7 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
+from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import normalize_color
 from ._registry import register_shape_layer
@@ -20,7 +21,7 @@ class Tetrahedra:
             return []
 
         # Extract raw magnitudes in Angstroms (wire format for Mol*)
-        coords_raw = puw.get_value(tetra_coords, to_unit="angstroms")
+        coords_raw = to_wire_angstroms(tetra_coords)
 
         normalized: list[list[list[float]]] = []
         for idx, tetra in enumerate(coords_raw):
@@ -76,8 +77,10 @@ class Tetrahedra:
         alphas: float | Sequence[float] = 0.6,
         labels: Sequence[str] | str | None = None,
         exterior_only: bool = True,
-        show_all_faces: bool | None = None,
         draw_faces: bool | None = None,
+        faces_pickable: bool | None = None,
+        face_meta: Iterable[dict] | None = None,
+        edge_meta: Iterable[dict] | None = None,
         draw_edges: bool | None = None,
         edge_radius: float | None = None,
         edge_color: int | None = None,
@@ -110,10 +113,14 @@ class Tetrahedra:
 
         options: dict = {"exterior_only": bool(exterior_only)}
 
-        if show_all_faces is not None:
-            options["show_all_faces"] = bool(show_all_faces)
         if draw_faces is not None:
             options["draw_faces"] = bool(draw_faces)
+        if faces_pickable is not None:
+            options["faces_pickable"] = bool(faces_pickable)
+        if face_meta is not None:
+            options["face_meta"] = [dict(entry) for entry in face_meta]
+        if edge_meta is not None:
+            options["edge_meta"] = [dict(entry) for entry in edge_meta]
         if name is not None:
             options["name"] = name
         if coords_list:
@@ -129,13 +136,13 @@ class Tetrahedra:
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:
-            options["edge_radius"] = float(puw.get_value(edge_radius, to_unit="angstroms"))
+            options["edge_radius"] = float(to_wire_angstroms(edge_radius))
         if edge_color is not None:
             options["edge_color"] = int(edge_color)
         if show_normals is not None:
             options["show_normals"] = bool(show_normals)
         if normal_length is not None:
-            options["normal_length"] = float(puw.get_value(normal_length, to_unit="angstroms"))
+            options["normal_length"] = float(to_wire_angstroms(normal_length))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001
