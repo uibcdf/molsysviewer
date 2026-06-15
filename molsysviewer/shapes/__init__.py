@@ -206,7 +206,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.pockets.add_pocket_surface(*args, skip_digestion=True, **kwargs)
+        return self.pockets.add_pocket_surface(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_set_alpha_spheres(
@@ -215,7 +215,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.spheres.add_set_alpha_spheres(*args, skip_digestion=True, **kwargs)
+        return self.spheres.add_set_alpha_spheres(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_links(
@@ -224,7 +224,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.links.add_links(*args, skip_digestion=True, **kwargs)
+        return self.links.add_links(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_displacement_vectors(
@@ -233,7 +233,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.vectors.add_displacement_vectors(*args, skip_digestion=True, **kwargs)
+        return self.vectors.add_displacement_vectors(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_triangle_faces(
@@ -242,7 +242,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.triangles.add_triangle_faces(*args, skip_digestion=True, **kwargs)
+        return self.triangles.add_triangle_faces(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_tetrahedra(
@@ -251,7 +251,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.tetrahedra.add_tetrahedra(*args, skip_digestion=True, **kwargs)
+        return self.tetrahedra.add_tetrahedra(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_pocket_blob(
@@ -260,7 +260,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.blobs.add_pocket_blob(*args, skip_digestion=True, **kwargs)
+        return self.blobs.add_pocket_blob(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_channel_tube(
@@ -269,7 +269,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.tubes.add_channel_tube(*args, skip_digestion=True, **kwargs)
+        return self.tubes.add_channel_tube(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_rings(
@@ -278,7 +278,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.rings.add_rings(*args, skip_digestion=True, **kwargs)
+        return self.rings.add_rings(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_anisotropy_ellipsoids(
@@ -287,7 +287,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.ellipsoids.add_anisotropy_ellipsoids(*args, skip_digestion=True, **kwargs)
+        return self.ellipsoids.add_anisotropy_ellipsoids(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_interaction_sites(
@@ -296,7 +296,7 @@ class ShapesManager:
         skip_digestion: bool = False,
         **kwargs,
     ):
-        return self.interaction_sites.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+        return self.interaction_sites.add_interaction_sites(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_pharmacophore_features(
@@ -310,7 +310,7 @@ class ShapesManager:
             DeprecationWarning,
             stacklevel=2,
         )
-        return self.interaction_sites.add_interaction_sites(*args, skip_digestion=True, **kwargs)
+        return self.interaction_sites.add_interaction_sites(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_topomt_feature(
