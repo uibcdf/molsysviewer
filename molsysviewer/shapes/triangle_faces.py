@@ -5,6 +5,7 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
+from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import normalize_color
 from ._registry import register_shape_layer
@@ -20,7 +21,7 @@ class TriangleFaces:
             return []
 
         # Extract raw magnitudes in Angstroms (wire format for Mol*)
-        vertices_raw = puw.get_value(vertices, to_unit="angstroms")
+        vertices_raw = to_wire_angstroms(vertices)
 
         normalized: list[list[list[float]]] = []
         for tri in vertices_raw:
@@ -109,6 +110,7 @@ class TriangleFaces:
         atom_triplets: Iterable[Sequence[int]] | None = None,
         colors: int | Sequence[int] = 0xCCCCCC,
         alpha: float = 1.0,
+        alphas: float | Sequence[float] | None = None,
         labels: Sequence[str] | str | None = None,
         draw_edges: bool | None = None,
         edge_radius: float | None = None,
@@ -147,6 +149,11 @@ class TriangleFaces:
 
         colors_list = self._normalize_optional_list(colors, n, normalize_color)
         labels_list = self._normalize_optional_list(labels, n, str)
+        alphas_list = (
+            self._normalize_optional_list(alphas, n, float)
+            if alphas is not None
+            else None
+        )
 
         options: dict = {"alpha": float(alpha)}
 
@@ -156,18 +163,20 @@ class TriangleFaces:
             options["atom_triplets"] = atom_triplets_list
         if colors_list is not None:
             options["colors"] = colors_list
+        if alphas_list is not None:
+            options["alphas"] = alphas_list
         if labels_list is not None:
             options["labels"] = labels_list
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:
-            options["edge_radius"] = float(puw.get_value(edge_radius, to_unit="angstroms"))
+            options["edge_radius"] = float(to_wire_angstroms(edge_radius))
         if edge_color is not None:
             options["edge_color"] = int(edge_color)
         if show_normals is not None:
             options["show_normals"] = bool(show_normals)
         if normal_length is not None:
-            options["normal_length"] = float(puw.get_value(normal_length, to_unit="angstroms"))
+            options["normal_length"] = float(to_wire_angstroms(normal_length))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001

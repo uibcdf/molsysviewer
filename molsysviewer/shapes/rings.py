@@ -5,6 +5,7 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
+from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import colors as global_colors, normalize_color
 from ._registry import register_shape_layer
@@ -26,7 +27,7 @@ class Rings:
     @staticmethod
     def _normalize_vectors(values: Iterable[Sequence[float]], name: str,
                            to_angstroms: bool) -> list[list[float]]:
-        raw = puw.get_value(values, to_unit="angstroms") if to_angstroms else values
+        raw = to_wire_angstroms(values) if to_angstroms else values
         out: list[list[float]] = []
         for idx, v in enumerate(raw):
             if len(v) != 3:
@@ -92,7 +93,7 @@ class Rings:
         """
         centers_list = self._normalize_vectors(centers, "centers", to_angstroms=True)
         normals_list = self._normalize_vectors(normals, "normals", to_angstroms=False)
-        radii_list = [float(r) for r in puw.get_value(radii, to_unit="angstroms")]
+        radii_list = [float(r) for r in to_wire_angstroms(radii)]
 
         n = len(centers_list)
         if n == 0:
@@ -101,7 +102,7 @@ class Rings:
             raise ValueError("centers, normals and radii must have the same length")
 
         thickness_list = self._normalize_scalars(
-            None if thickness is None else puw.get_value(thickness, to_unit="angstroms"),
+            None if thickness is None else to_wire_angstroms(thickness),
             n,
             float,
         )
