@@ -46,7 +46,6 @@ Issues = "https://github.com/uibcdf/molsysviewer/issues"
 
 [project.optional-dependencies]
 dev = [
-  "black",
   "ruff",
   "pytest",
   "pytest-cov",
@@ -75,16 +74,13 @@ include = ["molsysviewer", "molsysviewer.*"]
 "molsysviewer" = ["viewer.js", "viewer.js.map"]
 "molsysviewer.data" = ["**"]
 
-[tool.black]
-line-length = 120
-target-version = ["py312"]
-
 [tool.ruff]
 line-length = 120
 target-version = "py312"
 # Directories to analyze (adjust if needed).
 src = ["molsysviewer", "tests"]
 
+[tool.ruff.lint]
 # Base rules (similar to flake8 + import order, etc.)
 select = [
   "E",  # style errors (flake8)
@@ -94,12 +90,10 @@ select = [
   "B",  # bugbear
 ]
 ignore = [
-  "E203",  # compatible with Black (spaces before ':')
-  "W503",  # compatible with Black (line break before operator)
+  "E203",  # keep compatibility with the existing formatted code around slices
 ]
 
 [tool.ruff.format]
-# Black remains the primary formatter, but this future-proofs formatting if you use `ruff format`.
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
