@@ -61,6 +61,23 @@ def test_add_pocket_blob_message():
     ]
 
 
+def test_add_pocket_blob_wireframe_message():
+    view = DummyView()
+    blobs = PocketBlobs(view)
+
+    blobs.add_pocket_blob(
+        centers=puw.quantity([(0, 0, 0)], "nm"),
+        radii=puw.quantity([1.0], "nm"),
+        wireframe=True,
+        wireframe_size=2.5,
+        tag="wire",
+    )
+
+    options = view.messages[0]["options"]
+    assert options["wireframe"] is True
+    assert options["wireframe_size"] == 2.5
+
+
 def test_add_pocket_blob_validates_lengths():
     view = DummyView()
     blobs = PocketBlobs(view)

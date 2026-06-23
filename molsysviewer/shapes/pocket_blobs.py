@@ -52,6 +52,8 @@ class PocketBlobs:
         values: Iterable[float] | None = None,
         color_map: Sequence[int] | str | None = None,
         alpha: float | None = None,
+        wireframe: bool = False,
+        wireframe_size: float | None = None,
         tag: str | None = None,
         layer_tag: str | None = None,
         name: str | None = None,
@@ -88,6 +90,10 @@ class PocketBlobs:
             options["color_map"] = color_map
         if alpha is not None:
             options["alpha"] = float(alpha)
+        if wireframe:
+            options["wireframe"] = True
+        if wireframe_size is not None:
+            options["wireframe_size"] = float(wireframe_size)
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001
         layer = register_shape_layer(self._view, tag, layer_tag=layer_tag)
         options["tag"] = layer.tag

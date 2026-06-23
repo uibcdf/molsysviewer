@@ -20,8 +20,9 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 
 import { Structure, Unit, ElementIndex } from "molstar/lib/mol-model/structure";
 
-import { computeMarchingCubesMesh } from "molstar/lib/mol-geo/util/marching-cubes/algorithm";
+import { computeMarchingCubesMesh, computeMarchingCubesLines } from "molstar/lib/mol-geo/util/marching-cubes/algorithm";
 import { Mesh } from "molstar/lib/mol-geo/geometry/mesh/mesh";
+import { Lines } from "molstar/lib/mol-geo/geometry/lines/lines";
 import { MeshBuilder } from "molstar/lib/mol-geo/geometry/mesh/mesh-builder";
 import { addSphere } from "molstar/lib/mol-geo/geometry/mesh/builder/sphere";
 import { addCylinder, BasicCylinderProps } from "molstar/lib/mol-geo/geometry/mesh/builder/cylinder";
@@ -338,24 +339,29 @@ export interface PocketBlobOptions {
     values?: number[];
     color_map?: number[] | string;
     alpha?: number;
+    wireframe?: boolean;
+    wireframe_size?: number;
     tag?: string;
     layer_tag?: string;
     name?: string;
 }
 
+type PocketBlobVisual = "mesh" | "wireframe";
+
 interface PocketBlobData {
-    mesh: Mesh;
+    geometry: Mesh | Lines;
+    visual: PocketBlobVisual;
     colors: Map<number, Color>;
     alpha: number;
     name: string;
+    wireframeSize: number;
 }
 
-const PocketBlobParams = {
-    ...Mesh.Params,
-};
+interface PreparedPocketBlobData extends Omit<PocketBlobData, "geometry"> {
+    geometryTask: any;
+    transform: Mat4;
+}
 
-type PocketBlobParams = typeof PocketBlobParams;
-type PocketBlobProps = PD.Values<PocketBlobParams>;
 
 function buildPocketBlobColors(count: number, values?: number[], colorMap?: number[] | string) {
     const colors = new Map<number, Color>();
@@ -464,7 +470,7 @@ function buildPocketBlobField(options: PocketBlobOptions) {
     };
 }
 
-function getPocketBlobShape(
+function getPocketBlobMeshShape(
     _ctx: RuntimeContext,
     data: PocketBlobData,
     _props: PocketBlobProps,
@@ -473,16 +479,40 @@ function getPocketBlobShape(
     const getColor = (groupId: number) => data.colors.get(groupId) ?? Color(ColorNames.lightgrey);
     const getSize = () => 1;
     const getLabel = (groupId: number) => `${data.name} (region ${groupId})`;
-    return Shape.create(data.name, data, data.mesh, getColor, getSize, getLabel, shape?.transforms);
+    return Shape.create(data.name, data, data.geometry as Mesh, getColor, getSize, getLabel, shape?.transforms);
+}
+
+function getPocketBlobWireframeShape(
+    _ctx: RuntimeContext,
+    data: PocketBlobData,
+    _props: PocketBlobProps,
+    shape?: Shape<Lines>
+) {
+    const getColor = (groupId: number) => data.colors.get(groupId) ?? Color(ColorNames.lightgrey);
+    const getSize = () => data.wireframeSize;
+    const getLabel = (groupId: number) => `${data.name} (region ${groupId})`;
+    return Shape.create(data.name, data, data.geometry as Lines, getColor, getSize, getLabel, shape?.transforms);
 }
 
 const PocketBlobVisuals = {
     mesh: (
         _ctx: RepresentationContext,
         _getParams: RepresentationParamsGetter<PocketBlobData, PocketBlobParams>
-    ) => ShapeRepresentation(getPocketBlobShape, Mesh.Utils),
+    ) => ShapeRepresentation(getPocketBlobMeshShape, Mesh.Utils),
+    wireframe: (
+        _ctx: RepresentationContext,
+        _getParams: RepresentationParamsGetter<PocketBlobData, PocketBlobParams>
+    ) => ShapeRepresentation(getPocketBlobWireframeShape, Lines.Utils),
 };
 
+const PocketBlobParams = {
+    ...Mesh.Params,
+    ...Lines.Params,
+    visuals: PD.MultiSelect(["mesh"], PD.objectToOptions(PocketBlobVisuals)),
+};
+
+type PocketBlobParams = typeof PocketBlobParams;
+type PocketBlobProps = PD.Values<PocketBlobParams>;
 type PocketBlobRepresentation = Representation<PocketBlobData, PocketBlobParams>;
 
 function PocketBlobRepresentation(
@@ -538,7 +568,7 @@ export const PocketBlob3D = MSVTransform({
     },
 });
 
-function preparePocketBlobData(options: PocketBlobOptions): Array<PocketBlobData & { transform: Mat4 }> | undefined {
+function preparePocketBlobData(options: PocketBlobOptions): PreparedPocketBlobData[] | undefined {
     const field = buildPocketBlobField(options);
     if (!field) {
         console.warn("[MolSysViewer] add_pocket_blob: no valid data");
@@ -557,30 +587,36 @@ function preparePocketBlobData(options: PocketBlobOptions): Array<PocketBlobData
 
     const colorScale = !isoColors ? ColorScale.create({ domain: [Math.min(...levels), Math.max(...levels)], listOrName: options.color_map ?? "turbo" }) : undefined;
 
-    const results: Array<PocketBlobData & { transform: Mat4 }> = [];
+    const results: PreparedPocketBlobData[] = [];
     levels.forEach((level, idx) => {
         const isoColor = isoColors ? isoColors[idx] : colorScale?.color(level);
         const regionColors = isoColor !== undefined
             ? new Map<number, Color>(Array.from({ length: field.count }, (_v, i) => [i, isoColor]))
             : buildPocketBlobColors(field.count, options.values, options.color_map);
 
-        const mesh = computeMarchingCubesMesh({
+        const marchingCubesParams = {
             isoLevel: level,
             scalarField: field.scalarField,
             idField: field.idField,
             bottomLeft: field.bottomLeft,
             topRight: field.topRight,
-        });
+        };
+        const visual: PocketBlobVisual = options.wireframe ? "wireframe" : "mesh";
+        const geometryTask = options.wireframe
+            ? computeMarchingCubesLines(marchingCubesParams)
+            : computeMarchingCubesMesh(marchingCubesParams);
 
         const transform = Mat4.identity();
         Mat4.fromScaling(transform, Vec3.create(field.resolution, field.resolution, field.resolution));
         Mat4.setTranslation(transform, Vec3.create(field.origin[0], field.origin[1], field.origin[2]));
 
         results.push({
-            mesh,
+            geometryTask,
+            visual,
             colors: regionColors,
             alpha: isoAlphas[idx],
             name: `${options.name ?? "Pocket Blob"} (iso=${level})`,
+            wireframeSize: Math.max(0.1, options.wireframe_size ?? 1.0),
             transform,
         });
     });
@@ -602,15 +638,23 @@ export async function addPocketBlobFromPython(
     const refs: StateObjectRef<SO.Shape.Representation3D>[] = [];
 
     for (const data of datasets) {
-        const blobMesh = await plugin.runTask(data.mesh);
-        Mesh.transform(blobMesh, data.transform);
+        const geometry = await plugin.runTask(data.geometryTask);
+        if (data.visual === "wireframe") {
+            Lines.transform(geometry as Lines, data.transform);
+        } else {
+            Mesh.transform(geometry as Mesh, data.transform);
+        }
+        const datasetProps: PocketBlobProps = {
+            ...props,
+            visuals: [data.visual],
+        };
 
         const builder = plugin.state.data.build();
         const node = builder.toRoot().apply(
             PocketBlob3D,
             {
-                data: { ...data, mesh: blobMesh },
-                props,
+                data: { ...data, geometry },
+                props: datasetProps,
             } as any,
             { tags: options.tag ?? "molsysviewer:pocket-blob" }
         );
