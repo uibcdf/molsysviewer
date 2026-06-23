@@ -593,6 +593,66 @@ test("ViewerContextMenu renders add-on actions and emits addon_context_action", 
     }
 });
 
+test("ViewerContextMenu renders dynamic add-on items and emits addon_context_action", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        });
+
+        const target = { event: "interaction_context_menu", kind: "shape" as const, tag: "dfnd-face" };
+        menu.open(
+            target,
+            10,
+            20,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [
+                {
+                    addon: "topomt",
+                    id: "inspect-simplex",
+                    title: "Inspect simplex",
+                    group: "Selection",
+                    order: 1,
+                    target_kinds: ["shape"],
+                    payload: { kind: "face", face_id: 7 },
+                },
+            ],
+        );
+
+        const root = (menu as any).root as FakeElement;
+        const texts = collectTexts(root);
+        assert.ok(texts.includes("topomt"));
+        assert.ok(texts.includes("Selection"));
+        assert.ok(texts.includes("Inspect simplex"));
+
+        const button = findNodeByText(root, "Inspect simplex");
+        assert.ok(button);
+        button!.dispatch("click");
+
+        assert.deepStrictEqual(notifications, [
+            {
+                event: "interaction_context_action",
+                action: "addon_context_action",
+                context: target,
+                addon: "topomt",
+                addon_action_id: "inspect-simplex",
+                addon_action_title: "Inspect simplex",
+                addon_action_payload: { kind: "face", face_id: 7 },
+            },
+        ]);
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu opens inline label composer before add-label action", () => {
     const restore = installFakeDom();
     try {

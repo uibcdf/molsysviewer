@@ -268,27 +268,42 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
     const data = (shape.sourceData ?? {}) as Record<string, unknown>;
 
     let shapeName = shape.name;
+    // Default to the whole-shape atoms; narrow to the picked group's own atoms when
+    // the shape exposes them (face -> its 3, edge -> 2, tetra -> 4) so clicking a
+    // sub-element selects only that simplex, not the entire shape.
+    let atomIndices = arrayOfNumbers(data.atom_indices);
     if (ShapeGroup.isLoci(rawLoci) && rawLoci.groups.length > 0) {
         try {
             const groupIdx = OrderedSet.getAt(rawLoci.groups[0].ids, 0);
             if (typeof shape.getLabel === "function") {
                 shapeName = shape.getLabel(groupIdx);
             }
+            const perGroup = (data as any).__groupAtoms;
+            if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
+                atomIndices = arrayOfNumbers(perGroup[groupIdx]);
+            }
         } catch (e) {
             console.warn("[MolSysViewer] Error getting shape group label:", e);
         }
     }
 
-    return [{
+    const item: any = {
         source_kind: "shape",
         shape_kind: typeof data.kind === "string" ? data.kind : shape.name,
         shape_name: shapeName,
         tag: typeof data.tag === "string" ? data.tag : undefined,
-        atom_indices: arrayOfNumbers(data.atom_indices),
+        atom_indices: atomIndices,
         group_indices: arrayOfNumbers(data.group_indices),
         chain_indices: arrayOfNumbers(data.chain_indices),
         entity_indices: arrayOfNumbers(data.entity_indices),
-    }];
+    };
+    // Keep the picked loci alongside the item for persistent shape-group
+    // highlighting (consumed by syncVisualSelection). Non-enumerable so it does
+    // not leak into the JSON payload sent to Python.
+    if (rawLoci) {
+        Object.defineProperty(item, "_loci", { value: rawLoci, enumerable: false, configurable: true });
+    }
+    return [item];
 }
 
 function emptyPayload(): ActiveSelectionPayload {
@@ -388,6 +403,14 @@ export class ActiveSelectionController {
     private items: ActiveSelectionItem[] = [];
     private allAvailableItems: ActiveSelectionItem[] = [];
     private anchorItem: ActiveSelectionItem | null = null;
+
+    // The original in-memory items (with their non-enumerable shape ``_loci`` refs)
+    // for callers that need the live JS objects (e.g. ``syncVisualSelection`` to
+    // mark shape-group selections persistently). The JSON payload sent to Python
+    // strips ``_loci`` (non-enumerable), so consumers wanting it must read here.
+    getCurrentItems(): ActiveSelectionItem[] {
+        return this.items;
+    }
 
     constructor(private readonly notify?: (msg: any) => void) {}
 
