@@ -77,6 +77,17 @@ export type AddonContextActionSummary = {
     group?: string;
 };
 
+export type AddonContextItemSummary = {
+    addon: string;
+    id: string;
+    title: string;
+    group?: string;
+    order?: number;
+    enabled?: boolean;
+    target_kinds?: string[];
+    payload?: any;
+};
+
 function targetTitle(target: ContextMenuTarget): string {
     if (target.kind === "empty") return "Canvas";
     if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
@@ -119,6 +130,7 @@ export class ViewerContextMenu {
     private currentSavedSelections: SavedSelectionSummary[] = [];
     private currentRegions: RegionSummary[] = [];
     private currentAddonActions: AddonContextActionSummary[] = [];
+    private currentAddonItems: AddonContextItemSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
 
@@ -185,6 +197,7 @@ export class ViewerContextMenu {
         savedSelections?: SavedSelectionSummary[] | null,
         regions?: RegionSummary[] | null,
         addonActions?: AddonContextActionSummary[] | null,
+        addonItems?: AddonContextItemSummary[] | null,
     ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
@@ -192,6 +205,7 @@ export class ViewerContextMenu {
         this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
         this.currentRegions = Array.isArray(regions) ? [...regions] : [];
         this.currentAddonActions = Array.isArray(addonActions) ? [...addonActions] : [];
+        this.currentAddonItems = Array.isArray(addonItems) ? [...addonItems] : [];
         this.currentPageX = pageX;
         this.currentPageY = pageY;
         this.scrollEl.replaceChildren();
@@ -337,6 +351,61 @@ export class ViewerContextMenu {
             this.scrollEl.appendChild(section);
         }
 
+        // Dynamic, selection-driven add-on items: one section per add-on, with a
+        // sub-heading per `group` (e.g. "Selección actual"). Shown regardless of
+        // target.kind unless the item declares target_kinds.
+        const matchingItems = this.currentAddonItems.filter(
+            (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target.kind),
+        );
+        if (matchingItems.length > 0) {
+            const byAddon = new Map<string, AddonContextItemSummary[]>();
+            for (const it of matchingItems) {
+                if (!byAddon.has(it.addon)) byAddon.set(it.addon, []);
+                byAddon.get(it.addon)!.push(it);
+            }
+            for (const [addonName, addonItems] of byAddon) {
+                const section = document.createElement("div");
+                Object.assign(section.style, {
+                    marginTop: "8px",
+                    paddingTop: "8px",
+                    borderTop: "1px solid rgba(255,255,255,0.10)",
+                });
+                const header = document.createElement("div");
+                header.textContent = addonName;
+                Object.assign(header.style, {
+                    padding: "4px 8px 6px 8px",
+                    opacity: "0.82",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                });
+                section.appendChild(header);
+
+                const byGroup = new Map<string, AddonContextItemSummary[]>();
+                for (const it of addonItems) {
+                    const g = it.group ?? "";
+                    if (!byGroup.has(g)) byGroup.set(g, []);
+                    byGroup.get(g)!.push(it);
+                }
+                for (const [groupName, groupItems] of byGroup) {
+                    if (groupName) {
+                        const sub = document.createElement("div");
+                        sub.textContent = groupName;
+                        Object.assign(sub.style, {
+                            padding: "2px 8px 4px 14px",
+                            opacity: "0.6",
+                            fontSize: "11px",
+                        });
+                        section.appendChild(sub);
+                    }
+                    groupItems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+                    for (const it of groupItems) {
+                        section.appendChild(this.makeAddonItemButton(it));
+                    }
+                }
+                this.scrollEl.appendChild(section);
+            }
+        }
+
         const rect = this.host.getBoundingClientRect();
         this.scrollEl.style.maxHeight = "";
         this.root.style.display = "block";
@@ -374,6 +443,7 @@ export class ViewerContextMenu {
         this.currentSavedSelections = [];
         this.currentRegions = [];
         this.currentAddonActions = [];
+        this.currentAddonItems = [];
         this.root.style.display = "none";
         this.detachOutsidePointerHandler();
         if (wasOpen) this.onClose?.();
@@ -733,6 +803,49 @@ export class ViewerContextMenu {
             });
             this.close();
         });
+        return button;
+    }
+
+    private makeAddonItemButton(item: AddonContextItemSummary): HTMLButtonElement {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = item.title;
+        button.setAttribute("data-molsysviewer-addon-item", `${item.addon}:${item.id}`);
+        const disabled = item.enabled === false;
+        Object.assign(button.style, {
+            display: "block",
+            width: "100%",
+            padding: "8px 10px",
+            margin: "0",
+            border: "0",
+            borderRadius: "8px",
+            background: "transparent",
+            color: "inherit",
+            textAlign: "left",
+            cursor: disabled ? "default" : "pointer",
+            opacity: disabled ? "0.45" : "1",
+        });
+        if (!disabled) {
+            button.addEventListener("pointerenter", () => {
+                button.style.background = "rgba(255,255,255,0.10)";
+            });
+            button.addEventListener("pointerleave", () => {
+                button.style.background = "transparent";
+            });
+            button.addEventListener("click", () => {
+                if (!this.currentTarget) return;
+                this.notify?.({
+                    event: "interaction_context_action",
+                    action: "addon_context_action",
+                    context: this.currentTarget,
+                    addon: item.addon,
+                    addon_action_id: item.id,
+                    addon_action_title: item.title,
+                    addon_action_payload: item.payload ?? {},
+                });
+                this.close();
+            });
+        }
         return button;
     }
 

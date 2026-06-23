@@ -366,6 +366,11 @@ class AddonLifecycleSpec:
     on_enable: Callable[[Any], None] | None = None
     on_disable: Callable[[Any], None] | None = None
     on_context_action: Callable[[Any, str, dict[str, Any]], None] | None = None
+    # Push hook: called when the active selection changes. May return a list of
+    # dynamic context-menu items (dicts with id/title/group/order/enabled/
+    # target_kinds/payload) computed from the selection. The host stores them and
+    # shows them in the canvas context menu under this add-on's section.
+    on_active_selection_changed: Callable[[Any, dict[str, Any]], Any] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "on_enable", _coerce_callback(self.on_enable, "AddonLifecycleSpec.on_enable"))
@@ -375,12 +380,21 @@ class AddonLifecycleSpec:
             "on_context_action",
             _coerce_callback(self.on_context_action, "AddonLifecycleSpec.on_context_action"),
         )
+        object.__setattr__(
+            self,
+            "on_active_selection_changed",
+            _coerce_callback(
+                self.on_active_selection_changed,
+                "AddonLifecycleSpec.on_active_selection_changed",
+            ),
+        )
 
     def info(self) -> dict[str, bool]:
         return {
             "has_on_enable": self.on_enable is not None,
             "has_on_disable": self.on_disable is not None,
             "has_on_context_action": self.on_context_action is not None,
+            "has_on_active_selection_changed": self.on_active_selection_changed is not None,
         }
 
 
@@ -424,7 +438,14 @@ def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec 
     on_enable = getattr(module, "on_enable", None)
     on_disable = getattr(module, "on_disable", None)
     on_context_action = getattr(module, "on_context_action", None)
-    if lifecycle is None and on_enable is None and on_disable is None and on_context_action is None:
+    on_active_selection_changed = getattr(module, "on_active_selection_changed", None)
+    if (
+        lifecycle is None
+        and on_enable is None
+        and on_disable is None
+        and on_context_action is None
+        and on_active_selection_changed is None
+    ):
         return None
 
     if lifecycle is not None and not isinstance(lifecycle, AddonLifecycleSpec):
@@ -438,6 +459,7 @@ def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec 
         on_enable=on_enable,
         on_disable=on_disable,
         on_context_action=on_context_action,
+        on_active_selection_changed=on_active_selection_changed,
     )
 
 
@@ -455,6 +477,10 @@ class AddonSpec:
     style_helpers: tuple[AddonStyleHelperSpec, ...] = field(default_factory=tuple)
     export_helpers: tuple[AddonExportHelperSpec, ...] = field(default_factory=tuple)
     tool_modes: tuple[AddonToolModeSpec, ...] = field(default_factory=tuple)
+    # Optional factory producing the add-on's per-view public state namespace,
+    # accessible as ``view.addons.<addon_name>``. Receives the view; should return
+    # an object with the add-on's public attributes (e.g. topography).
+    state_factory: Any = None
     meta: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -678,6 +704,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                 "has_on_enable": False,
                 "has_on_disable": False,
                 "has_on_context_action": False,
+                "has_on_active_selection_changed": False,
             }
             records.append(record)
         return records
@@ -769,6 +796,28 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         }
 
 
+class _AddonsManagerProxy:
+    """Public surface for add-on **management** on a view, accessible as
+    ``view.addons.manager``. Per-add-on state namespaces live directly under
+    ``view.addons.<addon_name>``; this proxy keeps enable/disable/records/...
+    discoverable without cluttering ``dir(view.addons)``.
+
+    All calls are forwarded to the underlying ``ViewAddonsManager``; existing
+    code that does ``view.addons.enable(...)`` keeps working.
+    """
+
+    def __init__(self, manager: "ViewAddonsManager") -> None:
+        object.__setattr__(self, "_manager", manager)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._manager, name)
+
+    def __dir__(self) -> list[str]:
+        # Show the management surface defined on the manager class; per-add-on
+        # namespaces (resolved via __getattr__) are intentionally not listed here.
+        return sorted({a for a in dir(type(self._manager)) if not a.startswith("_")})
+
+
 class ViewAddonsManager(_AddonAggregationMixin):
     """View-local add-on projection derived from the host registry."""
 
@@ -779,7 +828,63 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._disabled_overrides: set[str] = set()
         self._active_runtime: set[str] = set()
         self._notify_view_runtime = False
+        # Per-view per-addon public state namespaces (lazy, accessed as
+        # ``view.addons.<addon_name>``). Created via the add-on's ``state_factory``
+        # the first time the namespace is accessed, falling back to an empty
+        # ``types.SimpleNamespace`` when no factory is declared.
+        self._states: dict[str, Any] = {}
         self._sync_runtime()
+
+    def __getattr__(self, name: str) -> Any:
+        # __getattr__ runs only when normal lookup fails -> safe for explicit
+        # methods/fields. Skip private/dunder names to avoid catching internal
+        # probes by pickle / copy / dataclass / repr.
+        if name.startswith("_"):
+            raise AttributeError(name)
+        host = self.__dict__.get("_host")
+        if host is None or not host.contains(name, skip_digestion=True):
+            raise AttributeError(name)
+        states = self.__dict__["_states"]
+        if name not in states:
+            addon = host.get(name, skip_digestion=True)
+            factory = getattr(addon, "state_factory", None) if addon is not None else None
+            if callable(factory):
+                try:
+                    states[name] = factory(self._view)
+                except Exception:
+                    import types as _types
+                    states[name] = _types.SimpleNamespace()
+            else:
+                import types as _types
+                states[name] = _types.SimpleNamespace()
+        return states[name]
+
+    @property
+    def manager(self) -> _AddonsManagerProxy:
+        """Public entry point for add-on **management** (enable/disable/records/
+        lifecycle/...). See ``view.addons.manager``. The methods are still
+        directly callable on ``view.addons`` for backward compatibility; this
+        property exists so that ``dir(view.addons)`` stays focused on registered
+        add-on namespaces and `manager`."""
+        cached = self.__dict__.get("_manager_proxy")
+        if cached is None:
+            cached = _AddonsManagerProxy(self)
+            self.__dict__["_manager_proxy"] = cached
+        return cached
+
+    def __dir__(self) -> list[str]:
+        # Top-level ``dir(view.addons)`` is the user-facing surface: list only the
+        # registered add-on namespaces plus ``manager``. The management methods
+        # remain callable on ``view.addons`` for backward compatibility, but are
+        # not advertised here -- they are listed under ``dir(view.addons.manager)``.
+        names: set[str] = {"manager"}
+        host = self.__dict__.get("_host")
+        if host is not None:
+            try:
+                names.update(host.available(skip_digestion=True))
+            except Exception:
+                pass
+        return sorted(names)
 
     def bind_runtime(self) -> None:
         self._notify_view_runtime = True
@@ -896,6 +1001,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
                 "has_on_enable": False,
                 "has_on_disable": False,
                 "has_on_context_action": False,
+                "has_on_active_selection_changed": False,
             }
             records.append(record)
         return records
@@ -917,6 +1023,45 @@ class ViewAddonsManager(_AddonAggregationMixin):
             return False
         handler(self._view, action_id, dict(payload))
         return True
+
+    def refresh_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
+        """Recompute selection-driven context-menu items from enabled add-ons and
+        push them to the frontend (model: push on every active-selection change).
+
+        Each enabled add-on that defines ``on_active_selection_changed`` is called
+        with ``(view, selection)`` and may return a list of dynamic item dicts. The
+        items are tagged with their owning add-on (so clicks route back via
+        ``handle_context_action``) and sent to the canvas context menu.
+        """
+        items: list[dict[str, Any]] = []
+        for name in self._effective_enabled():
+            lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
+            hook = lifecycle.on_active_selection_changed if lifecycle is not None else None
+            if hook is None:
+                continue
+            try:
+                produced = hook(self._view, dict(selection)) or []
+            except Exception:
+                produced = []
+            for entry in produced:
+                if not isinstance(entry, dict) or not entry.get("id") or not entry.get("title"):
+                    continue
+                items.append(
+                    {
+                        "addon": name,
+                        "id": str(entry["id"]),
+                        "title": str(entry["title"]),
+                        "group": entry.get("group"),
+                        "order": int(entry.get("order", 0)),
+                        "enabled": bool(entry.get("enabled", True)),
+                        "target_kinds": list(entry.get("target_kinds", []) or []),
+                        "payload": dict(entry.get("payload", {}) or {}),
+                    }
+                )
+        send = getattr(self._view, "_send", None)
+        if callable(send):
+            send({"op": "set_addon_context_items", "items": items})
+        return items
 
     def resolve_panel_widget(
         self, addon_name: str, panel_id: str

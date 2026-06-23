@@ -635,6 +635,12 @@ class MolSysView(
                     enriched["count_atoms"] = len(orig_atoms)
 
             self._last_active_selection_event = enriched
+            addons = getattr(self, "addons", None)
+            if addons is not None and hasattr(addons, "refresh_context_items"):
+                try:
+                    addons.refresh_context_items(enriched)
+                except Exception:
+                    pass
         elif event == "interaction_tool_state":
             self._last_tool_state_event = dict(content)
         elif event == "interaction_measurement_created":
@@ -749,8 +755,9 @@ class MolSysView(
         return True
 
     def _enrich_interaction_payload(self, payload: dict) -> dict:
-        kind = payload.get("kind")
-        if kind not in ("structure", "shape", "measurement", "annotation"):
+        # region_tags are a structure-region concept: only structure picks carry
+        # them. Other kinds (annotation, shape, measurement) are left unchanged.
+        if payload.get("kind") != "structure":
             return payload
         raw = payload.get("atom_indices")
         if not raw:

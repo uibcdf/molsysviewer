@@ -158,6 +158,34 @@ def test_global_addons_registry_supports_complete_fake_addon():
     assert addons.tool_mode_specs()[0]["id"] == "pocket-pick"
 
 
+def test_view_addons_expose_lazy_state_namespace_and_manager_proxy():
+    addons.clear()
+
+    class State:
+        def __init__(self, view):
+            self.view = view
+            self.enabled = False
+
+    try:
+        addons.register(
+            AddonSpec(
+                name="topomt",
+                state_factory=State,
+                panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel"),),
+            )
+        )
+        view = MolSysView()
+
+        assert sorted(dir(view.addons)) == ["manager", "topomt"]
+        assert view.addons.manager.enabled() == ["topomt"]
+        assert view.addons.enabled() == ["topomt"]
+        assert isinstance(view.addons.topomt, State)
+        assert view.addons.topomt is view.addons.topomt
+        assert view.addons.topomt.view is view
+    finally:
+        addons.clear()
+
+
 def test_view_addons_inherit_global_registry_and_support_local_overrides():
     addons.clear()
     addons.register(
@@ -297,6 +325,7 @@ def test_addons_registry_supports_manual_module_registration():
             "has_on_enable": True,
             "has_on_disable": True,
             "has_on_context_action": True,
+            "has_on_active_selection_changed": False,
         }
     finally:
         sys.modules.pop(module.__name__, None)
@@ -356,6 +385,52 @@ def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch
         addons.clear()
 
 
+def test_view_addons_refresh_context_items_from_active_selection_hook():
+    addons.clear()
+    sent = []
+
+    def on_active_selection_changed(_view, selection):
+        assert selection["atom_indices"] == [1, 2, 3]
+        return [
+            {
+                "id": "inspect-simplex",
+                "title": "Inspect simplex",
+                "group": "Selection",
+                "order": 5,
+                "target_kinds": ["shape"],
+                "payload": {"kind": "face", "face_id": 7},
+            },
+            {"id": "broken"},
+        ]
+
+    try:
+        addon = AddonSpec(name="topomt")
+        lifecycle = addons_module.AddonLifecycleSpec(
+            on_active_selection_changed=on_active_selection_changed
+        )
+        addons.register(addon, lifecycle=lifecycle)
+        view = MolSysView()
+        view._send = lambda message: sent.append(message)
+
+        items = view.addons.refresh_context_items({"atom_indices": [1, 2, 3]})
+
+        assert items == [
+            {
+                "addon": "topomt",
+                "id": "inspect-simplex",
+                "title": "Inspect simplex",
+                "group": "Selection",
+                "order": 5,
+                "enabled": True,
+                "target_kinds": ["shape"],
+                "payload": {"kind": "face", "face_id": 7},
+            }
+        ]
+        assert sent == [{"op": "set_addon_context_items", "items": items}]
+    finally:
+        addons.clear()
+
+
 def test_addon_template_module_is_importable_and_registerable():
     addons.clear()
     try:
@@ -373,6 +448,7 @@ def test_addon_template_module_is_importable_and_registerable():
             "has_on_enable": True,
             "has_on_disable": True,
             "has_on_context_action": True,
+            "has_on_active_selection_changed": False,
         }
     finally:
         addons.clear()
@@ -395,6 +471,7 @@ def test_elasnetmt_addon_template_module_is_importable_and_registerable():
             "has_on_enable": True,
             "has_on_disable": True,
             "has_on_context_action": True,
+            "has_on_active_selection_changed": False,
         }
     finally:
         addons.clear()
