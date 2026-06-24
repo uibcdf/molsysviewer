@@ -4,10 +4,9 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
-from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ._registry import register_shape_layer
+from ._units import to_wire_angstroms
 
 
 class PocketBlobs:
@@ -38,11 +37,10 @@ class PocketBlobs:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
-    @signal(tags=["shape", "pocket"])
-    @digest()
-    def add_pocket_blob(
+    def _add_gaussian_isosurface(
         self,
         *,
+        op: str,
         centers: Iterable[Sequence[float]],
         radii: Iterable[float],
         radius_scale: float | None = None,
@@ -57,10 +55,7 @@ class PocketBlobs:
         tag: str | None = None,
         layer_tag: str | None = None,
         name: str | None = None,
-        skip_digestion: bool = False,
     ):
-        """Create a volumetric blob (iso-surface) from alpha-spheres."""
-
         centers_list = self._normalize_centers(centers)
         radii_list = [float(r) for r in to_wire_angstroms(radii)]
 
@@ -101,5 +96,88 @@ class PocketBlobs:
         if name is not None:
             options["name"] = name
 
-        self._view._send({"op": "add_pocket_blob", "options": options})
+        self._view._send({"op": op, "options": options})
         return layer
+
+    @signal(tags=["shape", "isosurface"])
+    @digest()
+    def add_scalar_isosurface(
+        self,
+        *,
+        centers: Iterable[Sequence[float]],
+        radii: Iterable[float],
+        radius_scale: float | None = None,
+        resolution: float | None = None,
+        iso_level: float | None = None,
+        smoothing: float | None = None,
+        values: Iterable[float] | None = None,
+        color_map: Sequence[int] | str | None = None,
+        alpha: float | None = None,
+        wireframe: bool = False,
+        wireframe_size: float | None = None,
+        tag: str | None = None,
+        layer_tag: str | None = None,
+        name: str | None = None,
+        skip_digestion: bool = False,
+    ):
+        """Create a generic scalar/gaussian isosurface from centers and radii."""
+        return self._add_gaussian_isosurface(
+            op="add_scalar_isosurface",
+            centers=centers,
+            radii=radii,
+            radius_scale=radius_scale,
+            resolution=resolution,
+            iso_level=iso_level,
+            smoothing=smoothing,
+            values=values,
+            color_map=color_map,
+            alpha=alpha,
+            wireframe=wireframe,
+            wireframe_size=wireframe_size,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+        )
+
+    add_gaussian_isosurface = add_scalar_isosurface
+
+    @signal(tags=["shape", "pocket"])
+    @digest()
+    def add_pocket_blob(
+        self,
+        *,
+        centers: Iterable[Sequence[float]],
+        radii: Iterable[float],
+        radius_scale: float | None = None,
+        resolution: float | None = None,
+        iso_level: float | None = None,
+        smoothing: float | None = None,
+        values: Iterable[float] | None = None,
+        color_map: Sequence[int] | str | None = None,
+        alpha: float | None = None,
+        wireframe: bool = False,
+        wireframe_size: float | None = None,
+        tag: str | None = None,
+        layer_tag: str | None = None,
+        name: str | None = None,
+        skip_digestion: bool = False,
+    ):
+        """Create a volumetric blob (iso-surface) from alpha-spheres."""
+
+        return self._add_gaussian_isosurface(
+            op="add_pocket_blob",
+            centers=centers,
+            radii=radii,
+            radius_scale=radius_scale,
+            resolution=resolution,
+            iso_level=iso_level,
+            smoothing=smoothing,
+            values=values,
+            color_map=color_map,
+            alpha=alpha,
+            wireframe=wireframe,
+            wireframe_size=wireframe_size,
+            tag=tag,
+            layer_tag=layer_tag,
+            name=name,
+        )

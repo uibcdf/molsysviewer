@@ -4,11 +4,11 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
-from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
-from ..colors import colors as global_colors, normalize_color
+from ..colors import colors as global_colors
+from ..colors import normalize_color
 from ._registry import register_shape_layer
+from ._units import to_wire_angstroms
 
 
 class ChannelTubes:
@@ -70,6 +70,12 @@ class ChannelTubes:
         color_map: Sequence[int] | str | None = None,
         radial_segments: int | None = None,
         smoothing_subdivisions: int | None = None,
+        tube_style: str | None = None,
+        tube_aspect_ratio: float | None = None,
+        surface_resolution: float | None = None,
+        surface_smoothing: float | None = None,
+        surface_iso_level: float | None = None,
+        surface_radius_scale: float | None = None,
         alpha: float | None = None,
         tag: str | None = None,
         layer_tag: str | None = None,
@@ -113,6 +119,22 @@ class ChannelTubes:
             options["radial_segments"] = int(radial_segments)
         if smoothing_subdivisions is not None:
             options["smoothing_subdivisions"] = int(smoothing_subdivisions)
+        if tube_style is not None:
+            if tube_style not in {"smooth", "segments", "surface"}:
+                raise ValueError("tube_style must be 'smooth', 'segments' or 'surface'")
+            options["tube_style"] = tube_style
+        if tube_aspect_ratio is not None:
+            if tube_aspect_ratio <= 0:
+                raise ValueError("tube_aspect_ratio must be positive")
+            options["tube_aspect_ratio"] = float(tube_aspect_ratio)
+        if surface_resolution is not None:
+            options["surface_resolution"] = float(surface_resolution)
+        if surface_smoothing is not None:
+            options["surface_smoothing"] = float(surface_smoothing)
+        if surface_iso_level is not None:
+            options["surface_iso_level"] = float(surface_iso_level)
+        if surface_radius_scale is not None:
+            options["surface_radius_scale"] = float(surface_radius_scale)
         if alpha is not None:
             options["alpha"] = float(alpha)
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001

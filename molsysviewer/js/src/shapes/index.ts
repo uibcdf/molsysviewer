@@ -26,6 +26,7 @@ import { Lines } from "molstar/lib/mol-geo/geometry/lines/lines";
 import { MeshBuilder } from "molstar/lib/mol-geo/geometry/mesh/mesh-builder";
 import { addSphere } from "molstar/lib/mol-geo/geometry/mesh/builder/sphere";
 import { addCylinder, BasicCylinderProps } from "molstar/lib/mol-geo/geometry/mesh/builder/cylinder";
+import { addTube } from "molstar/lib/mol-geo/geometry/mesh/builder/tube";
 
 import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { ShapeRepresentation } from "molstar/lib/mol-repr/shape/representation";
@@ -676,6 +677,7 @@ export async function addPocketBlobFromPython(
 // ------------------------------------------------------------------
 
 type ChannelColorMode = "segment" | "solvent";
+type ChannelTubeStyle = "smooth" | "segments" | "surface";
 
 export interface ChannelTubeOptions {
     centers?: Array<[number, number, number]>;
@@ -688,6 +690,12 @@ export interface ChannelTubeOptions {
     color_mode?: ChannelColorMode;
     radial_segments?: number;
     smoothing_subdivisions?: number;
+    tube_style?: ChannelTubeStyle;
+    tube_aspect_ratio?: number;
+    surface_resolution?: number;
+    surface_smoothing?: number;
+    surface_iso_level?: number;
+    surface_radius_scale?: number;
     alpha?: number;
     tag?: string;
     layer_tag?: string;
@@ -706,6 +714,8 @@ interface ChannelTubeData {
     segments: ChannelSegment[];
     alpha: number;
     name: string;
+    tubeStyle: ChannelTubeStyle;
+    tubeAspectRatio: number;
 }
 
 const ChannelTubeParams = {
@@ -832,7 +842,83 @@ function buildChannelSegments(options: ChannelTubeOptions): { segments: ChannelS
     return { segments, radialSegments };
 }
 
-function buildChannelTubeMesh(data: { segments: ChannelSegment[]; radialSegments: number }, _props: ChannelTubeProps, prev?: Mesh) {
+function normalizeTriplet(v: [number, number, number]): [number, number, number] {
+    const length = Math.hypot(v[0], v[1], v[2]);
+    if (length <= 1e-12) return [0, 0, 1];
+    return [v[0] / length, v[1] / length, v[2] / length];
+}
+
+function crossTriplet(a: [number, number, number], b: [number, number, number]): [number, number, number] {
+    return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    ];
+}
+
+function subTriplet(a: [number, number, number], b: [number, number, number]): [number, number, number] {
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+}
+
+function buildSmoothChannelTubeMesh(data: { segments: ChannelSegment[]; radialSegments: number; tubeAspectRatio: number }, prev?: Mesh) {
+    const radialSegments = Math.max(3, data.radialSegments);
+    const segments = data.segments;
+    const vertexCount = Math.max(512, (segments.length + 1) * radialSegments * 2);
+    const state = MeshBuilder.createState(vertexCount, vertexCount / 2, prev);
+    const points: [number, number, number][] = segments.map(seg => seg.start);
+    points.push(segments[segments.length - 1].end);
+
+    const controlPoints = new Float32Array(points.length * 3);
+    const normalVectors = new Float32Array(points.length * 3);
+    const binormalVectors = new Float32Array(points.length * 3);
+    const widthValues = new Float32Array(points.length);
+    const heightValues = new Float32Array(points.length);
+
+    for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        controlPoints[i * 3] = p[0];
+        controlPoints[i * 3 + 1] = p[1];
+        controlPoints[i * 3 + 2] = p[2];
+
+        if (i === 0) widthValues[i] = segments[0].radius;
+        else if (i === points.length - 1) widthValues[i] = segments[segments.length - 1].radius;
+        else widthValues[i] = (segments[i - 1].radius + segments[i].radius) * 0.5;
+        heightValues[i] = widthValues[i] * data.tubeAspectRatio;
+
+        const prevPoint = points[Math.max(0, i - 1)];
+        const nextPoint = points[Math.min(points.length - 1, i + 1)];
+        const tangent = normalizeTriplet(subTriplet(nextPoint, prevPoint));
+        const reference: [number, number, number] = Math.abs(tangent[2]) < 0.9 ? [0, 0, 1] : [0, 1, 0];
+        const normal = normalizeTriplet(crossTriplet(tangent, reference));
+        const binormal = normalizeTriplet(crossTriplet(tangent, normal));
+        normalVectors[i * 3] = normal[0];
+        normalVectors[i * 3 + 1] = normal[1];
+        normalVectors[i * 3 + 2] = normal[2];
+        binormalVectors[i * 3] = binormal[0];
+        binormalVectors[i * 3 + 1] = binormal[1];
+        binormalVectors[i * 3 + 2] = binormal[2];
+    }
+
+    state.currentGroup = 0;
+    addTube(
+        state,
+        controlPoints,
+        normalVectors,
+        binormalVectors,
+        segments.length,
+        radialSegments,
+        widthValues,
+        heightValues,
+        true,
+        true,
+        "elliptical",
+        false
+    );
+
+    return MeshBuilder.getMesh(state);
+}
+
+function buildSegmentedChannelTubeMesh(data: { segments: ChannelSegment[]; radialSegments: number }, prev?: Mesh) {
     const state = MeshBuilder.createState(512, 256, prev);
     const start = Vec3();
     const end = Vec3();
@@ -852,6 +938,13 @@ function buildChannelTubeMesh(data: { segments: ChannelSegment[]; radialSegments
     return MeshBuilder.getMesh(state);
 }
 
+function buildChannelTubeMesh(data: { segments: ChannelSegment[]; radialSegments: number; tubeStyle: ChannelTubeStyle; tubeAspectRatio: number }, _props: ChannelTubeProps, prev?: Mesh) {
+    if (data.tubeStyle === "segments") {
+        return buildSegmentedChannelTubeMesh(data, prev);
+    }
+    return buildSmoothChannelTubeMesh(data, prev);
+}
+
 function getChannelTubeShape(
     _ctx: RuntimeContext,
     data: ChannelTubeData,
@@ -859,13 +952,19 @@ function getChannelTubeShape(
     shape?: Shape<Mesh>
 ) {
     const mesh = buildChannelTubeMesh(
-        { segments: data.segments, radialSegments: (_props as any).radialSegments ?? 16 },
+        {
+            segments: data.segments,
+            radialSegments: (_props as any).radialSegments ?? 16,
+            tubeStyle: data.tubeStyle,
+            tubeAspectRatio: data.tubeAspectRatio,
+        },
         _props,
         shape?.geometry
     );
-    const getColor = (groupId: number) => Color(data.segments[groupId].color);
-    const getSize = (groupId: number) => data.segments[groupId].radius;
-    const getLabel = (groupId: number) => `${data.name} ${groupId}`;
+    const segmentAt = (groupId: number) => data.segments[Math.max(0, Math.min(data.segments.length - 1, groupId))];
+    const getColor = (groupId: number) => Color(segmentAt(groupId).color);
+    const getSize = (groupId: number) => segmentAt(groupId).radius;
+    const getLabel = (groupId: number) => `${data.name} ${Math.max(0, Math.min(data.segments.length - 1, groupId))}`;
 
     return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
 }
@@ -943,12 +1042,16 @@ function prepareChannelTubeData(options: ChannelTubeOptions): { data?: ChannelTu
     const alpha = options.alpha ?? 1.0;
     const name = options.name ?? "Channel Tube";
     const radialSegments = built.radialSegments;
+    const tubeStyle = options.tube_style ?? "smooth";
+    const tubeAspectRatio = Math.max(0.05, options.tube_aspect_ratio ?? 1.0);
 
     return {
         data: {
             segments,
             alpha,
             name,
+            tubeStyle,
+            tubeAspectRatio,
         },
         radialSegments,
     };
@@ -957,7 +1060,26 @@ function prepareChannelTubeData(options: ChannelTubeOptions): { data?: ChannelTu
 export async function addChannelTubeFromPython(
     plugin: PluginContext,
     options: ChannelTubeOptions
-): Promise<StateObjectRef<SO.Shape.Representation3D> | undefined> {
+): Promise<StateObjectRef<SO.Shape.Representation3D> | StateObjectRef<SO.Shape.Representation3D>[] | undefined> {
+    if (options.tube_style === "surface") {
+        const colors = options.colors && options.colors.length > 0 ? options.colors : [ColorNames.skyblue];
+        return addPocketBlobFromPython(plugin, {
+            centers: options.centers,
+            radii: options.radii,
+            values: options.solvent_distances,
+            color_map: options.color_map ?? options.palette,
+            iso_colors: [colors[0]],
+            iso_level: options.surface_iso_level ?? 0.5,
+            resolution: options.surface_resolution ?? 0.5,
+            smoothing: options.surface_smoothing ?? 0.75,
+            radius_scale: options.surface_radius_scale ?? 1.0,
+            alpha: options.alpha ?? 0.55,
+            tag: options.tag,
+            layer_tag: options.layer_tag,
+            name: options.name ?? "Channel Lumen",
+        });
+    }
+
     const { data, radialSegments } = prepareChannelTubeData(options);
     if (!data) return undefined;
 

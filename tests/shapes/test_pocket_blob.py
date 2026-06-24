@@ -88,3 +88,29 @@ def test_add_pocket_blob_validates_lengths():
         pass
     else:
         raise AssertionError("Expected ValueError for mismatched lengths")
+
+
+def test_add_scalar_isosurface_message():
+    view = DummyView()
+    blobs = PocketBlobs(view)
+
+    blobs.add_scalar_isosurface(
+        centers=puw.quantity([(0, 0, 0), (1, 1, 1)], "nm"),
+        radii=puw.quantity([1.0, 1.5], "nm"),
+        values=[0.2, 0.8],
+        color_map="turbo",
+        wireframe=True,
+        tag="iso",
+        name="generic iso",
+    )
+
+    assert view.messages[0]["op"] == "add_scalar_isosurface"
+    options = view.messages[0]["options"]
+    assert options["centers"] == [[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]]
+    assert options["radii"] == [10.0, 15.0]
+    assert options["values"] == [0.2, 0.8]
+    assert options["color_map"] == "turbo"
+    assert options["wireframe"] is True
+    assert options["tag"] == "iso"
+    assert options["layer_tag"] == "iso"
+    assert options["name"] == "generic iso"
