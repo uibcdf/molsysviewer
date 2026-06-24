@@ -141486,7 +141486,73 @@ function buildChannelSegments(options) {
   }
   return { segments: segments2, radialSegments };
 }
-function buildChannelTubeMesh(data, _props, prev) {
+function normalizeTriplet(v4) {
+  const length = Math.hypot(v4[0], v4[1], v4[2]);
+  if (length <= 1e-12) return [0, 0, 1];
+  return [v4[0] / length, v4[1] / length, v4[2] / length];
+}
+function crossTriplet(a8, b8) {
+  return [
+    a8[1] * b8[2] - a8[2] * b8[1],
+    a8[2] * b8[0] - a8[0] * b8[2],
+    a8[0] * b8[1] - a8[1] * b8[0]
+  ];
+}
+function subTriplet(a8, b8) {
+  return [a8[0] - b8[0], a8[1] - b8[1], a8[2] - b8[2]];
+}
+function buildSmoothChannelTubeMesh(data, prev) {
+  const radialSegments = Math.max(3, data.radialSegments);
+  const segments2 = data.segments;
+  const vertexCount = Math.max(512, (segments2.length + 1) * radialSegments * 2);
+  const state = MeshBuilder.createState(vertexCount, vertexCount / 2, prev);
+  const points3 = segments2.map((seg) => seg.start);
+  points3.push(segments2[segments2.length - 1].end);
+  const controlPoints = new Float32Array(points3.length * 3);
+  const normalVectors = new Float32Array(points3.length * 3);
+  const binormalVectors = new Float32Array(points3.length * 3);
+  const widthValues = new Float32Array(points3.length);
+  const heightValues = new Float32Array(points3.length);
+  for (let i = 0; i < points3.length; i++) {
+    const p6 = points3[i];
+    controlPoints[i * 3] = p6[0];
+    controlPoints[i * 3 + 1] = p6[1];
+    controlPoints[i * 3 + 2] = p6[2];
+    if (i === 0) widthValues[i] = segments2[0].radius;
+    else if (i === points3.length - 1) widthValues[i] = segments2[segments2.length - 1].radius;
+    else widthValues[i] = (segments2[i - 1].radius + segments2[i].radius) * 0.5;
+    heightValues[i] = widthValues[i] * data.tubeAspectRatio;
+    const prevPoint = points3[Math.max(0, i - 1)];
+    const nextPoint = points3[Math.min(points3.length - 1, i + 1)];
+    const tangent = normalizeTriplet(subTriplet(nextPoint, prevPoint));
+    const reference = Math.abs(tangent[2]) < 0.9 ? [0, 0, 1] : [0, 1, 0];
+    const normal3 = normalizeTriplet(crossTriplet(tangent, reference));
+    const binormal = normalizeTriplet(crossTriplet(tangent, normal3));
+    normalVectors[i * 3] = normal3[0];
+    normalVectors[i * 3 + 1] = normal3[1];
+    normalVectors[i * 3 + 2] = normal3[2];
+    binormalVectors[i * 3] = binormal[0];
+    binormalVectors[i * 3 + 1] = binormal[1];
+    binormalVectors[i * 3 + 2] = binormal[2];
+  }
+  state.currentGroup = 0;
+  addTube(
+    state,
+    controlPoints,
+    normalVectors,
+    binormalVectors,
+    segments2.length,
+    radialSegments,
+    widthValues,
+    heightValues,
+    true,
+    true,
+    "elliptical",
+    false
+  );
+  return MeshBuilder.getMesh(state);
+}
+function buildSegmentedChannelTubeMesh(data, prev) {
   const state = MeshBuilder.createState(512, 256, prev);
   const start4 = Vec3();
   const end4 = Vec3();
@@ -141503,15 +141569,27 @@ function buildChannelTubeMesh(data, _props, prev) {
   });
   return MeshBuilder.getMesh(state);
 }
+function buildChannelTubeMesh(data, _props, prev) {
+  if (data.tubeStyle === "segments") {
+    return buildSegmentedChannelTubeMesh(data, prev);
+  }
+  return buildSmoothChannelTubeMesh(data, prev);
+}
 function getChannelTubeShape(_ctx, data, _props, shape) {
   const mesh = buildChannelTubeMesh(
-    { segments: data.segments, radialSegments: _props.radialSegments ?? 16 },
+    {
+      segments: data.segments,
+      radialSegments: _props.radialSegments ?? 16,
+      tubeStyle: data.tubeStyle,
+      tubeAspectRatio: data.tubeAspectRatio
+    },
     _props,
     shape?.geometry
   );
-  const getColor2 = (groupId) => Color(data.segments[groupId].color);
-  const getSize = (groupId) => data.segments[groupId].radius;
-  const getLabel = (groupId) => `${data.name} ${groupId}`;
+  const segmentAt = (groupId) => data.segments[Math.max(0, Math.min(data.segments.length - 1, groupId))];
+  const getColor2 = (groupId) => Color(segmentAt(groupId).color);
+  const getSize = (groupId) => segmentAt(groupId).radius;
+  const getLabel = (groupId) => `${data.name} ${Math.max(0, Math.min(data.segments.length - 1, groupId))}`;
   return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
 }
 var ChannelTubeVisuals = {
@@ -141570,16 +141648,38 @@ function prepareChannelTubeData(options) {
   const alpha = options.alpha ?? 1;
   const name = options.name ?? "Channel Tube";
   const radialSegments = built.radialSegments;
+  const tubeStyle = options.tube_style ?? "smooth";
+  const tubeAspectRatio = Math.max(0.05, options.tube_aspect_ratio ?? 1);
   return {
     data: {
       segments: segments2,
       alpha,
-      name
+      name,
+      tubeStyle,
+      tubeAspectRatio
     },
     radialSegments
   };
 }
 async function addChannelTubeFromPython(plugin, options) {
+  if (options.tube_style === "surface") {
+    const colors = options.colors && options.colors.length > 0 ? options.colors : [ColorNames.skyblue];
+    return addPocketBlobFromPython(plugin, {
+      centers: options.centers,
+      radii: options.radii,
+      values: options.solvent_distances,
+      color_map: options.color_map ?? options.palette,
+      iso_colors: [colors[0]],
+      iso_level: options.surface_iso_level ?? 0.5,
+      resolution: options.surface_resolution ?? 0.5,
+      smoothing: options.surface_smoothing ?? 0.75,
+      radius_scale: options.surface_radius_scale ?? 1,
+      alpha: options.alpha ?? 0.55,
+      tag: options.tag,
+      layer_tag: options.layer_tag,
+      name: options.name ?? "Channel Lumen"
+    });
+  }
   const { data, radialSegments } = prepareChannelTubeData(options);
   if (!data) return void 0;
   const props = {
@@ -143665,7 +143765,8 @@ var ShapeHandlers = class {
       this.registerRef(ref, tag);
     } else if (op4 === "add_channel_tube") {
       const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: frameCoords });
-      this.registerRef(ref, tag);
+      if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, tag));
+      else if (ref) this.registerRef(ref, tag);
     } else if (op4 === "add_network_links") {
       const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: frameCoords });
       this.registerRef(ref, tag);
@@ -143772,6 +143873,23 @@ var ShapeHandlers = class {
       console.error("[MolSysViewer] Error creando pocket blob", err);
     }
   }
+  async addScalarIsosurface(msg) {
+    const options = msg.options ?? {};
+    if (!options.centers || !options.radii || options.centers.length === 0 || options.radii.length === 0) {
+      console.warn("[MolSysViewer] add_scalar_isosurface without centers or radii");
+      return;
+    }
+    try {
+      const ref = await addPocketBlobFromPython(this.plugin, options);
+      if (Array.isArray(ref)) {
+        ref.forEach((r) => this.registerRef(r, options.tag));
+      } else {
+        this.registerRef(ref, options.tag);
+      }
+    } catch (err) {
+      console.error("[MolSysViewer] Error creando scalar isosurface", err);
+    }
+  }
   async addChannelTube(msg) {
     const options = msg.options ?? {};
     if (options.structures_coords) {
@@ -143783,7 +143901,8 @@ var ShapeHandlers = class {
       if (fc !== null) {
         try {
           const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: fc });
-          this.registerRef(ref, tag);
+          if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, tag));
+          else if (ref) this.registerRef(ref, tag);
         } catch (err) {
           console.error("[MolSysViewer] Error creando channel tube (trajectory frame)", err);
         }
@@ -143796,7 +143915,8 @@ var ShapeHandlers = class {
     }
     try {
       const ref = await addChannelTubeFromPython(this.plugin, options);
-      this.registerRef(ref, options.tag);
+      if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, options.tag));
+      else if (ref) this.registerRef(ref, options.tag);
     } catch (err) {
       console.error("[MolSysViewer] Error creando channel tube", err);
     }
@@ -151564,6 +151684,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "add_pocket_blob":
           await this.shapes.addPocketBlob(msg);
           break;
+        case "add_scalar_isosurface":
+          await this.shapes.addScalarIsosurface(msg);
+          break;
         case "add_channel_tube":
           await this.shapes.addChannelTube(msg);
           break;
@@ -152157,7 +152280,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       return;
     }
-    if (op4 === "add_pocket_blob") {
+    if (op4 === "add_pocket_blob" || op4 === "add_scalar_isosurface") {
       const tag = msg.options?.tag;
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       if (typeof tag === "string") {

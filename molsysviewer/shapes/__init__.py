@@ -1,20 +1,22 @@
 # molsysviewer/shapes/__init__.py
 
 import warnings
+from typing import Any
 
-from .spheres import SphereShapes
-from .pocket_surfaces import PocketSurfaces
-from .links import LinkShapes
-from .displacements import DisplacementVectors
-from .triangle_faces import TriangleFaces
-from .tetrahedra import Tetrahedra
-from .pocket_blobs import PocketBlobs
-from .channel_tubes import ChannelTubes
-from .rings import Rings
-from .anisotropy_ellipsoids import AnisotropyEllipsoids
-from .pharmacophore import PharmacophoreShapes
 from smonitor import signal
+
 from .._private.arg_digestion import digest
+from .anisotropy_ellipsoids import AnisotropyEllipsoids
+from .channel_tubes import ChannelTubes
+from .displacements import DisplacementVectors
+from .links import LinkShapes
+from .pharmacophore import PharmacophoreShapes
+from .pocket_blobs import PocketBlobs
+from .pocket_surfaces import PocketSurfaces
+from .rings import Rings
+from .spheres import SphereShapes
+from .tetrahedra import Tetrahedra
+from .triangle_faces import TriangleFaces
 
 
 class ShapesManager:
@@ -50,7 +52,11 @@ class ShapesManager:
     @signal(tags=["shape"])
     @digest()
     def tags(self, skip_digestion: bool = False) -> list[str]:
-        return [tag for tag, layer in getattr(self._view, "_scene_objects", {}).items() if getattr(layer, "kind", None) == "shape"]  # noqa: SLF001
+        return [
+            tag
+            for tag, layer in getattr(self._view, "_scene_objects", {}).items()
+            if getattr(layer, "kind", None) == "shape"
+        ]  # noqa: SLF001
 
     @signal(tags=["shape"])
     @digest()
@@ -92,8 +98,6 @@ class ShapesManager:
         Each entry contains: ``kind``, ``tag``, ``layer_tag``, ``color``,
         ``radius`` / ``width`` (when applicable), and ``visible``.
         """
-        from ..colors import normalize_color as _nc
-
         def _hex(v: int | None) -> str | None:
             if v is None:
                 return None
@@ -119,6 +123,7 @@ class ShapesManager:
                 "add_alpha_sphere_set": "alpha-sphere-set",
                 "add_pocket_surface": "pocket-surface",
                 "add_pocket_blob": "pocket-blob",
+                "add_scalar_isosurface": "scalar-isosurface",
                 "add_channel_tube": "channel-tube",
                 "add_tetrahedra": "tetrahedra",
                 "add_triangle_faces": "triangle-faces",
@@ -261,6 +266,24 @@ class ShapesManager:
         **kwargs,
     ):
         return self.blobs.add_pocket_blob(*args, **kwargs)
+
+    @signal(tags=["shape"])
+    def add_scalar_isosurface(
+        self,
+        *args,
+        skip_digestion: bool = False,
+        **kwargs,
+    ):
+        return self.blobs.add_scalar_isosurface(*args, **kwargs)
+
+    @signal(tags=["shape"])
+    def add_gaussian_isosurface(
+        self,
+        *args,
+        skip_digestion: bool = False,
+        **kwargs,
+    ):
+        return self.blobs.add_gaussian_isosurface(*args, **kwargs)
 
     @signal(tags=["shape"])
     def add_channel_tube(
@@ -438,7 +461,10 @@ class ShapesManager:
                         skip_digestion=True,
                         **kwargs
                     )
-            raise ValueError(f"TopoMT feature {feature} of type {f_type} has no atom_indices or coordinate points to render.")
+            raise ValueError(
+                f"TopoMT feature {feature} of type {f_type} "
+                "has no atom_indices or coordinate points to render."
+            )
 
         else:
             raise NotImplementedError(f"Rendering for TopoMT feature type '{f_type}' is not implemented.")
@@ -450,7 +476,11 @@ class ShapesManager:
         self._view._send({"op": "clear_shapes_by_tag", "tag": tag})
         if hasattr(self._view, "_unregister_scene_object"):
             if tag is None:
-                shape_tags = [t for t, obj in getattr(self._view, "_scene_objects", {}).items() if getattr(obj, "kind", None) == "shape"]
+                shape_tags = [
+                    t
+                    for t, obj in getattr(self._view, "_scene_objects", {}).items()
+                    if getattr(obj, "kind", None) == "shape"
+                ]
                 for t in shape_tags:
                     self._view._unregister_scene_object(t)
             else:

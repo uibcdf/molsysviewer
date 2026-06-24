@@ -34,6 +34,7 @@ import {
     AddPharmacophoreMessage,
     AddPocketBlobMessage,
     AddPocketSurfaceMessage,
+    AddScalarIsosurfaceMessage,
     AddRingsMessage,
     AddSphereMessage,
     AddTetrahedraMessage,
@@ -110,7 +111,8 @@ export class ShapeHandlers {
             this.registerRef(ref, tag);
         } else if (op === "add_channel_tube") {
             const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: frameCoords });
-            this.registerRef(ref, tag);
+            if (Array.isArray(ref)) ref.forEach(r => this.registerRef(r, tag));
+            else if (ref) this.registerRef(ref, tag);
         } else if (op === "add_network_links") {
             const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: frameCoords });
             this.registerRef(ref as any, tag);
@@ -226,6 +228,24 @@ export class ShapeHandlers {
         }
     }
 
+    async addScalarIsosurface(msg: AddScalarIsosurfaceMessage) {
+        const options = msg.options ?? {};
+        if (!options.centers || !options.radii || options.centers.length === 0 || options.radii.length === 0) {
+            console.warn("[MolSysViewer] add_scalar_isosurface without centers or radii");
+            return;
+        }
+        try {
+            const ref = await addPocketBlobFromPython(this.plugin, options);
+            if (Array.isArray(ref)) {
+                ref.forEach(r => this.registerRef(r, options.tag));
+            } else {
+                this.registerRef(ref, options.tag);
+            }
+        } catch (err) {
+            console.error("[MolSysViewer] Error creando scalar isosurface", err);
+        }
+    }
+
     async addChannelTube(msg: AddChannelTubeMessage) {
         const options = msg.options ?? {};
         if (options.structures_coords) {
@@ -237,7 +257,8 @@ export class ShapeHandlers {
             if (fc !== null) {
                 try {
                     const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: fc });
-                    this.registerRef(ref, tag);
+                    if (Array.isArray(ref)) ref.forEach(r => this.registerRef(r, tag));
+                    else if (ref) this.registerRef(ref, tag);
                 } catch (err) {
                     console.error("[MolSysViewer] Error creando channel tube (trajectory frame)", err);
                 }
@@ -250,7 +271,8 @@ export class ShapeHandlers {
         }
         try {
             const ref = await addChannelTubeFromPython(this.plugin, options);
-            this.registerRef(ref, options.tag);
+            if (Array.isArray(ref)) ref.forEach(r => this.registerRef(r, options.tag));
+            else if (ref) this.registerRef(ref, options.tag);
         } catch (err) {
             console.error("[MolSysViewer] Error creando channel tube", err);
         }

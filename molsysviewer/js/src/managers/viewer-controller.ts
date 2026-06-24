@@ -1537,6 +1537,7 @@ export class MolSysViewerController {
                 case "add_alpha_sphere_set": await this.shapes.addAlphaSphereSet(msg); break;
                 case "add_pocket_surface": await this.shapes.addPocketSurface(msg); break;
                 case "add_pocket_blob": await this.shapes.addPocketBlob(msg); break;
+                case "add_scalar_isosurface": await this.shapes.addScalarIsosurface(msg); break;
                 case "add_channel_tube": await this.shapes.addChannelTube(msg); break;
                 case "add_rings": await this.shapes.addRings(msg); break;
                 case "add_anisotropy_ellipsoids": await this.shapes.addAnisotropyEllipsoids(msg); break;
@@ -2085,7 +2086,7 @@ export class MolSysViewerController {
             return;
         }
 
-        if (op === "add_pocket_blob") {
+        if (op === "add_pocket_blob" || op === "add_scalar_isosurface") {
             const tag = (msg as any).options?.tag;
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             if (typeof tag === "string") {

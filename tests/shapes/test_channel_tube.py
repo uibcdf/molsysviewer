@@ -1,6 +1,5 @@
-import pyunitwizard as puw
 import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
-
+import pyunitwizard as puw
 from molsysviewer.shapes import ChannelTubes
 
 
@@ -76,6 +75,61 @@ def test_add_channel_tube_accepts_color_by_and_palette():
     assert options["color_mode"] == "solvent"
     assert options["palette"] == [0xFF0000, 0x00FF00, 0x0000FF]
     assert options["color_map"] == [0xFF0000, 0x00FF00, 0x0000FF]
+
+
+def test_add_channel_tube_accepts_tube_style():
+    view = DummyView()
+    tubes = ChannelTubes(view)
+
+    tubes.add_channel_tube(
+        centers=puw.quantity([(0, 0, 0), (1, 0, 0), (2, 0, 0)], "nm"),
+        radii=puw.quantity([1.0, 1.0, 1.0], "nm"),
+        tube_style="segments",
+        tube_aspect_ratio=0.35,
+        tag="tube",
+        skip_digestion=True,
+    )
+
+    assert view.messages[0]["options"]["tube_style"] == "segments"
+    assert view.messages[0]["options"]["tube_aspect_ratio"] == 0.35
+
+    surface_view = DummyView()
+    surface_tubes = ChannelTubes(surface_view)
+    surface_tubes.add_channel_tube(
+        centers=puw.quantity([(0, 0, 0), (1, 0, 0), (2, 0, 0)], "nm"),
+        radii=puw.quantity([1.0, 1.0, 1.0], "nm"),
+        tube_style="surface",
+        surface_resolution=0.5,
+        surface_smoothing=0.75,
+        surface_iso_level=0.5,
+        surface_radius_scale=0.8,
+        tag="tube",
+        skip_digestion=True,
+    )
+
+    options = surface_view.messages[0]["options"]
+    assert options["tube_style"] == "surface"
+    assert options["surface_resolution"] == 0.5
+    assert options["surface_smoothing"] == 0.75
+    assert options["surface_iso_level"] == 0.5
+    assert options["surface_radius_scale"] == 0.8
+
+
+def test_add_channel_tube_rejects_unknown_tube_style():
+    view = DummyView()
+    tubes = ChannelTubes(view)
+
+    try:
+        tubes.add_channel_tube(
+            centers=puw.quantity([(0, 0, 0), (1, 0, 0)], "nm"),
+            radii=puw.quantity([1.0, 1.0], "nm"),
+            tube_style="broken",
+            skip_digestion=True,
+        )
+    except ValueError as exc:
+        assert "tube_style" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError for invalid tube_style")
 
 
 def test_add_channel_tube_requires_two_points():

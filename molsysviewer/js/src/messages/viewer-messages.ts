@@ -70,6 +70,11 @@ export type AddPocketBlobMessage = {
     options?: PocketBlobOptions;
 };
 
+export type AddScalarIsosurfaceMessage = {
+    op: "add_scalar_isosurface";
+    options?: PocketBlobOptions;
+};
+
 export type AddChannelTubeMessage = {
     op: "add_channel_tube";
     options?: ChannelTubeOptions;
@@ -661,6 +666,7 @@ export type ViewerMessage =
     AddAlphaSphereSetMessage |
     AddPocketSurfaceMessage |
     AddPocketBlobMessage |
+    AddScalarIsosurfaceMessage |
     AddChannelTubeMessage |
     AddRingsMessage |
     AddAnisotropyEllipsoidsMessage |
