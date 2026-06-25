@@ -22,6 +22,9 @@ controls_mode: str = "classic"
 # Panel container architecture: "drawer" (side drawers) or "floating" (centered overlay).
 panel_mode_style: str = "drawer"
 
+# High-level viewer mode preset: "classic", "classic-floating", "zen", or "integrated".
+viewer_mode: str = "classic"
+
 from .user_presets import user_presets, load_user_presets
 from .project_config import load_project_config
 from .._private.arg_digestion import digest
@@ -34,6 +37,7 @@ __all__ = [
     "controls_position_fullscreen",
     "controls_mode",
     "panel_mode_style",
+    "viewer_mode",
     "user_presets",
     "load_user_presets",
     "load_project_config",
@@ -57,8 +61,10 @@ def set_default_quantities_parser(form='pint', skip_digestion: bool = False):
 
 @signal(tags=["config", "pyunitwizard"])
 @digest()
-def set_default_standard_units(standards=['nm', 'ps', 'K', 'mole', 'amu', 'e',
-    'kJ/mol', 'kJ/(mol*nm)', 'kJ/(mol*nm**2)', 'radians'], skip_digestion: bool = False):
+def set_default_standard_units(standards: list[str] | None = None, skip_digestion: bool = False):
+    if standards is None:
+        standards = ['nm', 'ps', 'K', 'mole', 'amu', 'e',
+            'kJ/mol', 'kJ/(mol*nm)', 'kJ/(mol*nm**2)', 'radians']
 
     from molsysviewer._pyunitwizard import puw
     puw.configure.set_standard_units(standards)
