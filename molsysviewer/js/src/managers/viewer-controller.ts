@@ -30,6 +30,7 @@ import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStru
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
 import { WorkbenchPanel } from "../ui/workbench-panel";
+import { FloatingPanelShell } from "../ui/floating-panel-shell";
 import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
 import { HoverTooltip } from "../ui/hover-tooltip";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
@@ -88,6 +89,16 @@ type InteractionPayload =
         group_name?: string;
         chain_name?: string;
         entity_name?: string;
+        atom_index?: number;
+        atom_id?: string;
+        metadata?: {
+            chain_id: string;
+            group_name: string;
+            group_id: string;
+            group_index: number;
+            atom_name: string;
+            element: string;
+        };
     }
     | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
     | { event: "interaction_hover" | "interaction_click"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
@@ -107,6 +118,16 @@ type ContextInteractionPayload =
         entity_name?: string;
         page_x?: number;
         page_y?: number;
+        atom_index?: number;
+        atom_id?: string;
+        metadata?: {
+            chain_id: string;
+            group_name: string;
+            group_id: string;
+            group_index: number;
+            atom_name: string;
+            element: string;
+        };
     }
     | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; page_x?: number; page_y?: number }
     | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string; page_x?: number; page_y?: number }
@@ -182,12 +203,57 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
     };
 }
 
+function extractAtomMetadata(loci: any) {
+    const normalized = normalizeToElementLoci(loci);
+    if (!StructureElement.Loci.is(normalized) || normalized.elements.length === 0) return null;
+    const element = normalized.elements[0];
+    const size = OrderedSet.size(element.indices);
+    if (size === 0) return null;
+    const unitIndex = OrderedSet.getAt(element.indices, 0);
+    const atomIndex = element.unit.elements[unitIndex];
+    
+    const unit = element.unit;
+    const model = unit.model;
+    const hierarchy = model?.atomicHierarchy;
+    if (!hierarchy) return null;
+    
+    const residueIndexByAtom = hierarchy.residueAtomSegments.index;
+    const chainIndexByAtom = hierarchy.chainAtomSegments.index;
+    const atoms = hierarchy.atoms;
+    const residues = hierarchy.residues;
+    const chains = hierarchy.chains;
+    
+    const groupIndex = residueIndexByAtom[atomIndex];
+    const chainIndex = chainIndexByAtom[atomIndex];
+    
+    const authSeqId = residues.auth_seq_id.value(groupIndex);
+    const compId = atoms.label_comp_id.value(atomIndex);
+    const chainId = chains.label_asym_id.value(chainIndex);
+    const atomName = atoms.label_atom_id.value(atomIndex);
+    const elementSymbol = atoms.type_symbol.value(atomIndex);
+    const atomId = atoms.id.value(atomIndex).toString();
+    
+    return {
+        atom_index: atomIndex,
+        atom_id: atomId,
+        metadata: {
+            chain_id: chainId,
+            group_name: compId,
+            group_id: authSeqId.toString(),
+            group_index: groupIndex,
+            atom_name: atomName,
+            element: elementSymbol,
+        }
+    };
+}
+
 function normalizeContextPayloadFromLoci(loci: any, page_x?: number, page_y?: number): ContextInteractionPayload {
     const groupItems = lociToGroupItems(loci);
     const atomIndices = lociToAtomIndices(loci);
+    const meta = extractAtomMetadata(loci);
     if (groupItems.length === 0) {
         if (atomIndices.length > 0) {
-            return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };
+            return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y, ...(meta || {}) };
         }
         const shapeTarget = shapeTargetFromLoci(loci);
         if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
@@ -206,6 +272,7 @@ function normalizeContextPayloadFromLoci(loci: any, page_x?: number, page_y?: nu
         entity_name: item.entity_name,
         page_x,
         page_y,
+        ...(meta || {}),
     };
 }
 
@@ -216,9 +283,10 @@ export function normalizeInteractionEvent(kind: InteractionKind, ev: any): Inter
     const event = kind === "hover" ? "interaction_hover" : "interaction_click";
     const groupItems = lociToGroupItems(ev?.current?.loci);
     const atomIndices = lociToAtomIndices(ev?.current?.loci);
+    const meta = extractAtomMetadata(ev?.current?.loci);
     if (groupItems.length === 0) {
         if (atomIndices.length > 0) {
-            return { event, kind: "structure", atom_indices: atomIndices };
+            return { event, kind: "structure", atom_indices: atomIndices, ...(meta || {}) };
         }
         const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
         if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
@@ -235,6 +303,7 @@ export function normalizeInteractionEvent(kind: InteractionKind, ev: any): Inter
         group_name: item.group_name,
         chain_name: item.chain_name,
         entity_name: item.entity_name,
+        ...(meta || {}),
     };
 }
 
@@ -396,6 +465,7 @@ export class MolSysViewerController {
     private readonly legendOverlay: LegendOverlay;
     private readonly groupPanel: GroupPanel;
     private readonly workbenchPanel: WorkbenchPanel;
+    private readonly sharedShell?: FloatingPanelShell;
     private readonly canvasHost: HTMLDivElement;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
     private canvasInsetFrom = { left: 0, right: 0 };
@@ -431,6 +501,40 @@ export class MolSysViewerController {
     private activePanelMsgListeners: Array<(msg: any) => void> = [];
     private activePanelCleanup: (() => void) | null = null;
     private activePanelWidgetKey: string | null = null;
+    private readonly addonListeners = new Map<string, Map<string, Array<(payload: any) => void>>>();
+
+    public registerAddonListener(addonName: string, eventName: string, cb: (payload: any) => void) {
+        if (!this.addonListeners.has(addonName)) {
+            this.addonListeners.set(addonName, new Map());
+        }
+        const addonEvents = this.addonListeners.get(addonName)!;
+        if (!addonEvents.has(eventName)) {
+            addonEvents.set(eventName, []);
+        }
+        addonEvents.get(eventName)!.push(cb);
+    }
+
+    public unregisterAddonListener(addonName: string, eventName: string, cb: (payload: any) => void) {
+        const addonEvents = this.addonListeners.get(addonName);
+        if (!addonEvents) return;
+        const callbacks = addonEvents.get(eventName);
+        if (!callbacks) return;
+        const idx = callbacks.indexOf(cb);
+        if (idx >= 0) {
+            callbacks.splice(idx, 1);
+        }
+    }
+
+    private triggerLocalAddonEvent(eventName: string, payload: any) {
+        for (const [addonName, addonEvents] of this.addonListeners) {
+            const callbacks = addonEvents.get(eventName);
+            if (callbacks) {
+                for (const cb of callbacks) {
+                    try { cb(payload); } catch (e) { console.error(`Error in local addon listener for ${addonName}:${eventName}`, e); }
+                }
+            }
+        }
+    }
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -454,7 +558,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string }): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -518,6 +622,7 @@ export class MolSysViewerController {
     private lastMeasurementSummary: LastMeasurementSummary | null = null;
     private measurementTagCounter = 0;
     private welcomeCard: HTMLDivElement | null = null;
+    private readonly model?: any;
 
     // Getters for scene state delegated to scene handler
     get isSpinActive() { return this.scene.isSpinActive; }
@@ -529,7 +634,8 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string }) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string, model?: any }) {
+        this.model = initOptions?.model;
         this.canvasHost = canvasHost ?? (() => { const d = document.createElement("div"); host.appendChild(d); return d; })();
         this.injectGlobalStyles();
         const emitInteractionEvent = (msg: any) => {
@@ -548,6 +654,7 @@ export class MolSysViewerController {
                 this.currentActiveSelection = msg;
                 this.groupPanel.updateSelection(msg);
                 this.syncVisualSelection(msg);
+                this.triggerLocalAddonEvent("selection-changed", msg);
             } else if (msg?.event === "interaction_measurement_created") {
                 this.lastMeasurementSummary = {
                     action: msg.action,
@@ -601,7 +708,31 @@ export class MolSysViewerController {
                 value,
             };
         });
-        const floatingPanels = initOptions?.panelModeStyle === "floating";
+        const floatingPanels = initOptions?.panelModeStyle === "floating" || 
+                               initOptions?.panelModeStyle === "floating-unified" || 
+                               initOptions?.panelModeStyle === "integrated" ||
+                               initOptions?.panelModeStyle === "ambient" ||
+                               initOptions?.panelModeStyle === "split";
+        const floatingUnified = initOptions?.panelModeStyle === "floating-unified" || 
+                                initOptions?.panelModeStyle === "integrated" ||
+                                initOptions?.panelModeStyle === "ambient" ||
+                                initOptions?.panelModeStyle === "split";
+
+        let sharedShell: FloatingPanelShell | undefined = undefined;
+        if (floatingUnified) {
+            sharedShell = new FloatingPanelShell(host, { 
+                title: "Navigate", 
+                panelModeStyle: initOptions?.panelModeStyle 
+            });
+            // Close button of the shared shell collapses both panels
+            sharedShell.toggleButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.collapsePanels();
+            });
+            this.sharedShell = sharedShell;
+        }
+
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
         this.groupPanel = new GroupPanel(host, (items, additive) => {
             this.activeSelection.setItems(items, additive);
@@ -636,8 +767,8 @@ export class MolSysViewerController {
             const region = this.state.getRegionSummaries().find((item) => item.tag === tag);
             if (!region) return;
             this.focusTarget({ atom_indices: region.atom_indices });
-        }, floatingPanels ? { floating: true } : undefined);
-        this.workbenchPanel = new WorkbenchPanel(host, floatingPanels ? { floating: true } : undefined);
+        }, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
+        this.workbenchPanel = new WorkbenchPanel(host, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
@@ -779,7 +910,7 @@ export class MolSysViewerController {
                 this.groupPanel.updateContextTarget(annPayload);
                 this.syncWorkbenchContextFromPayload(annPayload);
                 emitInteractionEvent(annPayload);
-                this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems);
+                this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
                 return;
             }
             if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
@@ -797,7 +928,7 @@ export class MolSysViewerController {
                 this.groupPanel.updateContextTarget(measPayload);
                 this.syncWorkbenchContextFromPayload(measPayload);
                 emitInteractionEvent(measPayload);
-                this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems);
+                this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
                 return;
             }
             let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
@@ -873,6 +1004,7 @@ export class MolSysViewerController {
                 this.getRelevantRegionSummaries(payload),
                 this.addonContextActions,
                 this.addonContextItems,
+                { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
             );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
@@ -997,6 +1129,21 @@ export class MolSysViewerController {
             hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
             notify: (msg) => this.notify?.(msg),
         });
+        // Subscriptions to local event bus
+        this.trajectory.onTrajectoryState(
+            (state) => {
+                this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
+            },
+            { immediate: false },
+        );
+
+        if (plugin.canvas3d?.didDraw) {
+            plugin.canvas3d.didDraw.subscribe(() => {
+                const cameraState = plugin.canvas3d!.camera.getSnapshot();
+                this.triggerLocalAddonEvent("camera-moved", cameraState);
+            });
+        }
+
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
         this.updateWelcomeState();
@@ -1008,6 +1155,7 @@ export class MolSysViewerController {
         this.legendOverlay.dispose();
         this.groupPanel.dispose();
         this.workbenchPanel.dispose();
+        this.sharedShell?.dispose();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.releaseGlobalEscapeHandler?.();
@@ -1022,6 +1170,7 @@ export class MolSysViewerController {
     private installGlobalEscapeHandler(): () => void {
         const onKeyDown = (event: KeyboardEvent) => {
             if ((event.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
+            if (!this.host.contains(event.target as Node)) return;
 
             if (event.key === "Escape") {
                 if (this.measurementTools.isActive()) return;
@@ -1299,6 +1448,7 @@ export class MolSysViewerController {
             this.getRelevantRegionSummaries(payload),
             this.addonContextActions,
             this.addonContextItems,
+            { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
         );
     }
 
@@ -1327,6 +1477,7 @@ export class MolSysViewerController {
             this.getRelevantRegionSummaries(payload),
             this.addonContextActions,
             this.addonContextItems,
+            { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
         );
     }
 
@@ -1772,21 +1923,111 @@ export class MolSysViewerController {
                     }
                     const msgListeners: Array<(msg: any) => void> = [];
                     this.activePanelMsgListeners = msgListeners;
+
+                    const addonStateLocal: Record<string, any> = this.model
+                        ? { ...((this.model.get("addon_states") || {})[mAddon] || {}) }
+                        : {};
+                    const changeListeners: Record<string, Array<(model: any, val: any) => void>> = {};
+
                     const panelModel = {
                         send: (content: any) => {
                             this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
                         },
                         on: (event: string, cb: (msg: any) => void) => {
-                            if (event === "msg:custom") msgListeners.push(cb);
+                            if (event === "msg:custom") {
+                                msgListeners.push(cb);
+                            } else if (event.startsWith("change:")) {
+                                const key = event.split(":")[1];
+                                if (key) {
+                                     (changeListeners[key] || (changeListeners[key] = [])).push(cb);
+                                }
+                            } else if (event.startsWith("viewer:")) {
+                                const viewerEvent = event.split(":")[1];
+                                if (viewerEvent && mAddon) {
+                                    this.registerAddonListener(mAddon, viewerEvent, cb);
+                                }
+                            }
                         },
                         off: (event: string, cb: (msg: any) => void) => {
                             if (event === "msg:custom") {
                                 const idx = msgListeners.indexOf(cb);
                                 if (idx >= 0) msgListeners.splice(idx, 1);
+                            } else if (event.startsWith("change:")) {
+                                const key = event.split(":")[1];
+                                if (key && changeListeners[key]) {
+                                    const idx = changeListeners[key].indexOf(cb);
+                                    if (idx >= 0) changeListeners[key].splice(idx, 1);
+                                }
+                            } else if (event.startsWith("viewer:")) {
+                                const viewerEvent = event.split(":")[1];
+                                if (viewerEvent && mAddon) {
+                                    this.unregisterAddonListener(mAddon, viewerEvent, cb);
+                                }
                             }
                         },
-                        get: (_key: string) => undefined,
+                        get: (key: string) => {
+                            if (this.model) {
+                                const states = this.model.get("addon_states") || {};
+                                const addonState = states[mAddon] || {};
+                                return addonState[key];
+                            }
+                            return addonStateLocal[key];
+                        },
+                        set: (keyOrObj: any, val?: any) => {
+                            const updates: Record<string, any> = {};
+                            if (typeof keyOrObj === "string") {
+                                updates[keyOrObj] = val;
+                            } else if (keyOrObj && typeof keyOrObj === "object") {
+                                Object.assign(updates, keyOrObj);
+                            }
+
+                            let changed = false;
+                            for (const [k, v] of Object.entries(updates)) {
+                                if (addonStateLocal[k] !== v) {
+                                    addonStateLocal[k] = v;
+                                    changed = true;
+                                    if (changeListeners[k]) {
+                                        for (const cb of changeListeners[k]) {
+                                            try { cb(panelModel, v); } catch (e) { console.error(e); }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (this.model && changed) {
+                                const states = { ...this.model.get("addon_states") || {} };
+                                states[mAddon] = { ...states[mAddon] || {}, ...addonStateLocal };
+                                this.model.set("addon_states", states);
+                                this.model.save_changes();
+                            }
+
+                            this.notify?.({
+                                event: "addon_panel_state_changed",
+                                addon: mAddon,
+                                panel: mPanel,
+                                state: updates
+                            });
+                        }
                     };
+
+                    let onModelChange: (() => void) | undefined = undefined;
+                    if (this.model) {
+                        onModelChange = () => {
+                            const states = this.model.get("addon_states") || {};
+                            const addonState = states[mAddon] || {};
+                            for (const key of Object.keys(changeListeners)) {
+                                const v = addonState[key];
+                                if (addonStateLocal[key] !== v) {
+                                    addonStateLocal[key] = v;
+                                    for (const cb of changeListeners[key]) {
+                                        try { cb(panelModel, v); } catch (e) { console.error(e); }
+                                    }
+                                }
+                            }
+                        };
+                        this.model.on("change:addon_states", onModelChange);
+                    }
+
                     const blob = new Blob([mEsm], { type: "application/javascript" });
                     const blobUrl = URL.createObjectURL(blob);
                     try {
@@ -1799,6 +2040,9 @@ export class MolSysViewerController {
                         }
                         this.activePanelCleanup = () => {
                             if (typeof cleanup === "function") { try { cleanup(); } catch { /* ignore */ } }
+                            if (this.model && onModelChange) {
+                                this.model.off("change:addon_states", onModelChange);
+                            }
                             URL.revokeObjectURL(blobUrl);
                         };
                     } catch (err) {
@@ -2543,6 +2787,13 @@ export class MolSysViewerController {
     }
 
     private cleanupActivePanelWidget(): void {
+        if (this.activePanelWidgetKey) {
+            const parts = this.activePanelWidgetKey.split(":");
+            if (parts.length > 0) {
+                const addonName = parts[0];
+                this.addonListeners.delete(addonName);
+            }
+        }
         if (this.activePanelCleanup) {
             try { this.activePanelCleanup(); } catch { /* ignore */ }
             this.activePanelCleanup = null;
@@ -2624,24 +2875,28 @@ export class MolSysViewerController {
         style.textContent = `
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar {
                 width: 6px;
                 height: 6px;
             }
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar-track,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar-track,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-track {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-track {
                 background: transparent;
             }
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb {
                 background: rgba(255, 255, 255, 0.15);
                 border-radius: 3px;
             }
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb:hover,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb:hover {
                 background: rgba(255, 255, 255, 0.35);
             }
             @keyframes molsysviewer-fade-in-up {

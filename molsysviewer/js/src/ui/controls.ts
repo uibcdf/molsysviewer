@@ -213,6 +213,42 @@ export const buildControls = (
     onPopClick?: () => void,
     opts?: { initialHasTrajectory?: boolean; initialFrameCount?: number }
 ) => {
+    const controlsMode = (model.get("controls_mode") as string) || "classic";
+    if (controlsMode === "focus") {
+        // Render a subtle, elegant, self-dismissing helper toast for accessibility
+        const toast = document.createElement("div");
+        toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
+        Object.assign(toast.style, {
+            position: "absolute",
+            bottom: "24px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "rgba(18, 18, 22, 0.88)",
+            color: "rgba(244, 244, 245, 0.95)",
+            padding: "8px 16px",
+            borderRadius: "999px",
+            fontSize: "11px",
+            fontWeight: "500",
+            fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
+            zIndex: "100",
+            pointerEvents: "none",
+            transition: "opacity 0.8s ease-in-out",
+            opacity: "1",
+        });
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => {
+                toast.remove();
+            }, 800);
+        }, 3200);
+
+        return; // Completely clean canvas after toast fades out
+    }
+
     injectStyles();
 
     const overlay = document.createElement("div");
@@ -227,7 +263,7 @@ export const buildControls = (
     overlay.style.opacity = "0"; // Reveal after initial trajectory state to avoid flash
     overlay.style.display = "none"; // Keep hidden until we know if trajectory bar is needed
 
-    const controlsMode = (model.get("controls_mode") as string) || "classic";
+    const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
 
     // Help overlay — shared by both modes; must be created before the mode branch
     // so the minimal ? button can reference it
@@ -305,6 +341,9 @@ export const buildControls = (
             sendSync({ op: "toggle_swing", enable: c.isSwingActive });
         });
         if (onPopClick) mk("Pop", onPopClick);
+        if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
+            mk("Panel", () => c.togglePanelMode());
+        }
     }
 
     // Trajectory controls
@@ -527,6 +566,7 @@ export const buildControls = (
     // H key — available in both modes
     const onHelpKey = (ev: KeyboardEvent) => {
         if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
+        if (!container.contains(ev.target as Node)) return;
         if (ev.key.toLowerCase() === "h") {
             ev.preventDefault();
             ev.stopPropagation();

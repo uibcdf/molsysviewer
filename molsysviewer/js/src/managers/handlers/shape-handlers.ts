@@ -1,5 +1,6 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { StateObjectRef } from "molstar/lib/mol-state";
+import { Structure } from "molstar/lib/mol-model/structure";
 import {
     addAnisotropyEllipsoidsFromPython,
     addChannelTubeFromPython,
@@ -22,6 +23,7 @@ import {
     TetrahedraOptions,
     TransparentSphereSpec,
     TriangleFacesOptions,
+    computeCentroidFromAtoms,
 } from "../../shapes";
 import { addPocketSurfaceFromPython, PocketSurfaceOptions } from "../../shapes/pocket-surface";
 import {
@@ -98,7 +100,20 @@ export class ShapeHandlers {
     }
 
     private async renderTrajectoryFrame(tag: string, op: string, baseOptions: any, frameCoords: any) {
-        if (op === "add_sphere") {
+        if (op === "add_sphere_from_atoms") {
+            const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+            const structure = structureRef?.cell.obj?.data as Structure | undefined;
+            const center = structure ? computeCentroidFromAtoms(structure, frameCoords) : null;
+            if (center !== null) {
+                const ref = await addTransparentSphereFromPython(this.plugin, {
+                    center,
+                    radius: baseOptions.radius ?? 10,
+                    color: baseOptions.color ?? 0x00ff00,
+                    alpha: baseOptions.alpha ?? 0.4,
+                });
+                this.registerRef(ref, tag);
+            }
+        } else if (op === "add_sphere") {
             const ref = await addTransparentSphereFromPython(this.plugin, {
                 center: frameCoords as [number, number, number],
                 radius: baseOptions.radius ?? 10,
@@ -125,6 +140,29 @@ export class ShapeHandlers {
     async addSphere(msg: AddSphereMessage) {
         const options = msg.options ?? {};
         const tag = options.tag ?? msg.tag;
+        
+        if (options.structures_atom_indices) {
+            const baseOptions = { ...options };
+            delete (baseOptions as any).structures_atom_indices;
+            this.storeTrajectoryShape(tag!, "add_sphere_from_atoms", baseOptions, options.structures_atom_indices);
+            const fc = options.structures_atom_indices[this.currentFrame] ?? null;
+            if (fc !== null) {
+                const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+                const structure = structureRef?.cell.obj?.data as Structure | undefined;
+                const center = structure ? computeCentroidFromAtoms(structure, fc) : null;
+                if (center !== null) {
+                    const ref = await addTransparentSphereFromPython(this.plugin, {
+                        center,
+                        radius: options.radius ?? 10,
+                        color: options.color ?? 0x00ff00,
+                        alpha: options.alpha ?? 0.4,
+                    });
+                    this.registerRef(ref, tag);
+                }
+            }
+            return;
+        }
+        
         if (options.structures_coords) {
             const baseOptions = { ...options };
             delete (baseOptions as any).structures_coords;
@@ -141,8 +179,21 @@ export class ShapeHandlers {
             }
             return;
         }
+        
+        let center = options.center ?? [0, 0, 0];
+        if (options.atom_indices) {
+            const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+            const structure = structureRef?.cell.obj?.data as Structure | undefined;
+            const resolvedCenter = structure ? computeCentroidFromAtoms(structure, options.atom_indices) : null;
+            if (resolvedCenter === null) {
+                console.warn("[MolSysViewer] addSphere: could not compute centroid for atom_indices");
+                return;
+            }
+            center = resolvedCenter;
+        }
+        
         const ref = await addTransparentSphereFromPython(this.plugin, {
-            center: options.center ?? [0, 0, 0],
+            center,
             radius: options.radius ?? 10,
             color: options.color ?? 0x00ff00,
             alpha: options.alpha ?? 0.4,

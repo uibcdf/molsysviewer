@@ -109,16 +109,41 @@ export class WorkbenchPanel {
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToNavigate?: () => void;
     private readonly floating: boolean;
+    private readonly sharedShell: boolean;
 
-    constructor(private readonly host: HTMLElement, options?: { floating?: boolean }) {
-        const floating = !!options?.floating;
+    constructor(private readonly host: HTMLElement, options?: { floating?: boolean; sharedShell?: FloatingPanelShell }) {
+        const floating = options?.floating || !!options?.sharedShell;
         this.floating = floating;
-        this.shell = floating
-            ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" })
-            : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
+        this.sharedShell = !!options?.sharedShell;
+        this.shell = options?.sharedShell
+            ? options.sharedShell
+            : (floating
+                ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" })
+                : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" }));
         this.root = this.shell.root;
-        this.body = this.shell.content;
         this.toggleButton = this.shell.toggleButton;
+
+        if (options?.sharedShell) {
+            this.body = document.createElement("div");
+            Object.assign(this.body.style, {
+                display: "none",
+                flexDirection: "column",
+                overflowX: "hidden",
+                overflowY: "auto",
+                gap: "8px",
+                width: "100%",
+                height: "100%",
+            });
+            this.shell.content.appendChild(this.body);
+        } else {
+            this.body = this.shell.content;
+            Object.assign(this.body.style, {
+                flexDirection: "column",
+                overflowX: "hidden",
+                overflowY: "auto",
+                gap: "8px",
+            });
+        }
 
         this.root.setAttribute("data-molsysviewer-workbench-panel", "true");
         this.shell.titleElement.setAttribute("data-molsysviewer-workbench-panel-title", "true");
@@ -143,17 +168,19 @@ export class WorkbenchPanel {
             });
         }
 
-        this.toggleButton.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.expanded = !this.expanded;
-            this.applyExpandedState();
-        });
-        this.shell.navButton?.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.onNavigateToNavigate?.();
-        });
+        if (!this.sharedShell) {
+            this.toggleButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.expanded = !this.expanded;
+                this.applyExpandedState();
+            });
+            this.shell.navButton?.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.onNavigateToNavigate?.();
+            });
+        }
 
         Object.assign(this.body.style, {
             flexDirection: "column",
@@ -264,7 +291,11 @@ export class WorkbenchPanel {
     }
 
     setVisible(visible: boolean): void {
-        this.shell.setVisible(visible);
+        if (this.sharedShell) {
+            this.body.style.display = visible ? "flex" : "none";
+        } else {
+            this.shell.setVisible(visible);
+        }
         if (!visible && this.expanded) {
             this.expanded = false;
             this.applyExpandedState();
@@ -276,7 +307,7 @@ export class WorkbenchPanel {
     }
 
     isVisible(): boolean {
-        return this.shell.isVisible();
+        return this.sharedShell ? (this.body.style.display !== "none") : this.shell.isVisible();
     }
 
     setExpanded(expanded: boolean): void {
@@ -294,7 +325,9 @@ export class WorkbenchPanel {
 
     setOnNavigateToNavigate(callback: (() => void) | undefined, label = "Navigate"): void {
         this.onNavigateToNavigate = callback;
-        this.shell.setNavButtonLabel(callback ? label : undefined);
+        if (!this.sharedShell) {
+            this.shell.setNavButtonLabel(callback ? label : undefined);
+        }
     }
 
     setWorkspaces(items: WorkspaceOption[], currentId: string, onSelect: ((workspaceId: string) => void) | undefined): void {
@@ -919,7 +952,9 @@ export class WorkbenchPanel {
     }
 
     dispose(): void {
-        this.shell.dispose();
+        if (!this.sharedShell) {
+            this.shell.dispose();
+        }
     }
 
     private applyExpandedState(): void {

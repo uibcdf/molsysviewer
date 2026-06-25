@@ -142386,6 +142386,25 @@ function buildLinksFromAtoms(structure, options) {
   }
   return specs;
 }
+function computeCentroidFromAtoms(structure, atomIndices) {
+  if (atomIndices.length === 0) return null;
+  const lookup = buildUnitLookup(structure);
+  const pos = Vec3();
+  let sumX = 0, sumY = 0, sumZ = 0;
+  let count3 = 0;
+  for (const idx of atomIndices) {
+    const loc = lookup.get(idx);
+    if (loc) {
+      loc.unit.conformation.position(loc.elementIndex, pos);
+      sumX += pos[0];
+      sumY += pos[1];
+      sumZ += pos[2];
+      count3++;
+    }
+  }
+  if (count3 === 0) return null;
+  return [sumX / count3, sumY / count3, sumZ / count3];
+}
 async function addNetworkLinksFromPython(plugin, options) {
   const mode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
   const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));
@@ -143752,7 +143771,20 @@ var ShapeHandlers = class {
     }
   }
   async renderTrajectoryFrame(tag, op4, baseOptions, frameCoords) {
-    if (op4 === "add_sphere") {
+    if (op4 === "add_sphere_from_atoms") {
+      const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+      const structure = structureRef?.cell.obj?.data;
+      const center2 = structure ? computeCentroidFromAtoms(structure, frameCoords) : null;
+      if (center2 !== null) {
+        const ref = await addTransparentSphereFromPython(this.plugin, {
+          center: center2,
+          radius: baseOptions.radius ?? 10,
+          color: baseOptions.color ?? 65280,
+          alpha: baseOptions.alpha ?? 0.4
+        });
+        this.registerRef(ref, tag);
+      }
+    } else if (op4 === "add_sphere") {
       const ref = await addTransparentSphereFromPython(this.plugin, {
         center: frameCoords,
         radius: baseOptions.radius ?? 10,
@@ -143778,6 +143810,27 @@ var ShapeHandlers = class {
   async addSphere(msg) {
     const options = msg.options ?? {};
     const tag = options.tag ?? msg.tag;
+    if (options.structures_atom_indices) {
+      const baseOptions = { ...options };
+      delete baseOptions.structures_atom_indices;
+      this.storeTrajectoryShape(tag, "add_sphere_from_atoms", baseOptions, options.structures_atom_indices);
+      const fc = options.structures_atom_indices[this.currentFrame] ?? null;
+      if (fc !== null) {
+        const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+        const structure = structureRef?.cell.obj?.data;
+        const center3 = structure ? computeCentroidFromAtoms(structure, fc) : null;
+        if (center3 !== null) {
+          const ref2 = await addTransparentSphereFromPython(this.plugin, {
+            center: center3,
+            radius: options.radius ?? 10,
+            color: options.color ?? 65280,
+            alpha: options.alpha ?? 0.4
+          });
+          this.registerRef(ref2, tag);
+        }
+      }
+      return;
+    }
     if (options.structures_coords) {
       const baseOptions = { ...options };
       delete baseOptions.structures_coords;
@@ -143794,8 +143847,19 @@ var ShapeHandlers = class {
       }
       return;
     }
+    let center2 = options.center ?? [0, 0, 0];
+    if (options.atom_indices) {
+      const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+      const structure = structureRef?.cell.obj?.data;
+      const resolvedCenter = structure ? computeCentroidFromAtoms(structure, options.atom_indices) : null;
+      if (resolvedCenter === null) {
+        console.warn("[MolSysViewer] addSphere: could not compute centroid for atom_indices");
+        return;
+      }
+      center2 = resolvedCenter;
+    }
     const ref = await addTransparentSphereFromPython(this.plugin, {
-      center: options.center ?? [0, 0, 0],
+      center: center2,
       radius: options.radius ?? 10,
       color: options.color ?? 65280,
       alpha: options.alpha ?? 0.4
@@ -145953,6 +146017,7 @@ var ViewerContextMenu = class {
     this.currentAddonItems = [];
     this.currentPageX = 0;
     this.currentPageY = 0;
+    this.currentSceneState = null;
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-context-menu", "true");
     Object.assign(this.root.style, {
@@ -145997,7 +146062,7 @@ var ViewerContextMenu = class {
       document.head.appendChild(style);
     }
   }
-  open(target, pageX, pageY, activeSelection, lastMeasurement, savedSelections, regions, addonActions, addonItems) {
+  open(target, pageX, pageY, activeSelection, lastMeasurement, savedSelections, regions, addonActions, addonItems, sceneState) {
     this.currentTarget = target;
     this.currentSelection = activeSelection ?? null;
     this.currentLastMeasurement = lastMeasurement ?? null;
@@ -146007,6 +146072,7 @@ var ViewerContextMenu = class {
     this.currentAddonItems = Array.isArray(addonItems) ? [...addonItems] : [];
     this.currentPageX = pageX;
     this.currentPageY = pageY;
+    this.currentSceneState = sceneState ?? null;
     this.scrollEl.replaceChildren();
     const header2 = document.createElement("div");
     header2.setAttribute("data-molsysviewer-context-menu-title", "true");
@@ -146043,10 +146109,22 @@ var ViewerContextMenu = class {
         this.scrollEl.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
       }
     } else {
+      const isSpin = this.currentSceneState?.isSpinActive;
+      const isSwing = this.currentSceneState?.isSwingActive;
+      const isDark = this.currentSceneState?.isDarkMode;
       this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
-      this.scrollEl.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
-      this.scrollEl.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
-      this.scrollEl.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
+      this.scrollEl.appendChild(this.makeActionButton(
+        isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
+        "toggle_background"
+      ));
+      this.scrollEl.appendChild(this.makeActionButton(
+        isSpin ? "Toggle Spin (Active \u2713)" : "Toggle Spin",
+        "toggle_spin"
+      ));
+      this.scrollEl.appendChild(this.makeActionButton(
+        isSwing ? "Toggle Swing (Active \u2713)" : "Toggle Swing",
+        "toggle_swing"
+      ));
     }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
       const section = document.createElement("div");
@@ -146503,7 +146581,9 @@ var ViewerContextMenu = class {
         this.currentLastMeasurement,
         this.currentSavedSelections,
         this.currentRegions,
-        this.currentAddonActions
+        this.currentAddonActions,
+        this.currentAddonItems,
+        this.currentSceneState
       );
     };
     save.addEventListener("click", submit);
@@ -146696,7 +146776,9 @@ var ViewerContextMenu = class {
         this.currentLastMeasurement,
         this.currentSavedSelections,
         this.currentRegions,
-        this.currentAddonActions
+        this.currentAddonActions,
+        this.currentAddonItems,
+        this.currentSceneState
       );
     };
     save.addEventListener("click", submit);
@@ -146836,7 +146918,9 @@ var ViewerContextMenu = class {
         this.currentLastMeasurement,
         this.currentSavedSelections,
         this.currentRegions,
-        this.currentAddonActions
+        this.currentAddonActions,
+        this.currentAddonItems,
+        this.currentSceneState
       );
     };
     save.addEventListener("click", submit);
@@ -146944,7 +147028,9 @@ var ViewerContextMenu = class {
         this.currentLastMeasurement,
         this.currentSavedSelections,
         this.currentRegions,
-        this.currentAddonActions
+        this.currentAddonActions,
+        this.currentAddonItems,
+        this.currentSceneState
       );
     };
     save.addEventListener("click", submit);
@@ -147741,6 +147827,7 @@ var GroupStrip = class {
       minWidth: "120px",
       maxWidth: "150px",
       height: "100%",
+      minHeight: "0",
       overflowY: "hidden",
       overflowX: "hidden",
       display: "flex",
@@ -147765,6 +147852,7 @@ var GroupStrip = class {
     });
     this.title.textContent = `Chain ${this.chainLabel}`;
     this.row = document.createElement("div");
+    this.row.setAttribute("data-molsysviewer-group-strip-row", "true");
     Object.assign(this.row.style, {
       display: "flex",
       flexDirection: "column",
@@ -147773,7 +147861,9 @@ var GroupStrip = class {
       overflowY: "auto",
       overflowX: "hidden",
       minHeight: "0",
-      flex: "1 1 auto"
+      flex: "1 1 auto",
+      scrollbarWidth: "thin",
+      scrollbarColor: "rgba(255, 255, 255, 0.15) transparent"
     });
     this.section.appendChild(this.title);
     this.section.appendChild(this.row);
@@ -148621,39 +148711,81 @@ var FloatingPanelShell = class {
     this.toggleWidth = 0;
     this.visible = false;
     this.expanded = false;
+    this.displayUpdatePending = false;
+    this.minimized = false;
     this.workspaceMenuOpen = false;
+    const style = options.panelModeStyle || "floating";
+    const isAmbient = style === "ambient";
+    const isSplit = style === "split";
     this.root = document.createElement("div");
     Object.assign(this.root.style, {
       position: "absolute",
       inset: "0",
       display: "none",
       alignItems: "center",
-      justifyContent: "center",
+      justifyContent: isSplit ? "flex-start" : "center",
       zIndex: "18",
-      pointerEvents: "auto",
-      background: "rgba(0,0,0,0.32)"
+      pointerEvents: isAmbient || isSplit ? "none" : "auto",
+      background: isAmbient || isSplit ? "transparent" : "rgba(0,0,0,0.32)",
+      paddingLeft: isSplit ? "10px" : "0"
     });
     this.panel = document.createElement("div");
-    Object.assign(this.panel.style, {
+    const baseCardStyle = {
       pointerEvents: "auto",
       display: "flex",
       flexDirection: "column",
       alignItems: "stretch",
-      width: "min(72%, 900px)",
-      height: "min(68%, 700px)",
-      minWidth: "380px",
-      minHeight: "420px",
       boxSizing: "border-box",
       overflow: "hidden",
       padding: "10px",
-      borderRadius: "16px",
-      border: "1px solid rgba(255,255,255,0.14)",
-      boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-      background: "rgba(18, 18, 22, 0.95)",
       color: "#f4f4f5",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
       fontSize: "12px"
-    });
+    };
+    if (isSplit) {
+      Object.assign(baseCardStyle, {
+        width: "330px",
+        height: "calc(100% - 20px)",
+        minWidth: "300px",
+        minHeight: "0",
+        borderRadius: "14px",
+        border: "1px solid rgba(255,255,255,0.12)",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+        background: "rgba(18, 18, 22, 0.90)",
+        resize: "horizontal"
+        // Elastic native resizing for split mode
+      });
+    } else if (isAmbient) {
+      Object.assign(baseCardStyle, {
+        width: "min(72%, 900px)",
+        height: "min(68%, 700px)",
+        minWidth: "380px",
+        minHeight: "420px",
+        borderRadius: "16px",
+        border: "1px solid rgba(255,255,255,0.18)",
+        boxShadow: "0 24px 64px rgba(0,0,0,0.40)",
+        background: "rgba(18, 18, 22, 0.50)",
+        // Adjusted from 0.45 for perfect legibility contrast
+        backdropFilter: "blur(24px)",
+        webkitBackdropFilter: "blur(24px)",
+        resize: "both"
+        // Elastic resizing
+      });
+    } else {
+      Object.assign(baseCardStyle, {
+        width: "min(72%, 900px)",
+        height: "min(68%, 700px)",
+        minWidth: "380px",
+        minHeight: "420px",
+        borderRadius: "16px",
+        border: "1px solid rgba(255,255,255,0.14)",
+        boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+        background: "rgba(18, 18, 22, 0.95)",
+        resize: "both"
+        // Elastic resizing
+      });
+    }
+    Object.assign(this.panel.style, baseCardStyle);
     this.headerElement = document.createElement("div");
     Object.assign(this.headerElement.style, {
       display: "flex",
@@ -148665,6 +148797,55 @@ var FloatingPanelShell = class {
       borderBottom: "1px solid rgba(255,255,255,0.08)",
       flexShrink: "0"
     });
+    if (!isSplit) {
+      this.headerElement.style.cursor = "move";
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let dragX = 0;
+      let dragY = 0;
+      this.headerElement.addEventListener("mousedown", (e) => {
+        if (e.button !== 0) return;
+        if (e.target.closest("button, input, select")) return;
+        isDragging = true;
+        startX = e.clientX - dragX;
+        startY = e.clientY - dragY;
+        const onMouseMove = (moveEvent) => {
+          if (!isDragging) return;
+          dragX = moveEvent.clientX - startX;
+          dragY = moveEvent.clientY - startY;
+          this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
+        };
+        const onMouseUp = () => {
+          isDragging = false;
+          window.removeEventListener("mousemove", onMouseMove);
+          window.removeEventListener("mouseup", onMouseUp);
+        };
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+      });
+      this.headerElement.addEventListener("touchstart", (e) => {
+        if (e.target.closest("button, input, select")) return;
+        const touch = e.touches[0];
+        isDragging = true;
+        startX = touch.clientX - dragX;
+        startY = touch.clientY - dragY;
+        const onTouchMove = (moveEvent) => {
+          if (!isDragging) return;
+          const moveTouch = moveEvent.touches[0];
+          dragX = moveTouch.clientX - startX;
+          dragY = moveTouch.clientY - startY;
+          this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
+        };
+        const onTouchEnd = () => {
+          isDragging = false;
+          window.removeEventListener("touchmove", onTouchMove);
+          window.removeEventListener("touchend", onTouchEnd);
+        };
+        window.addEventListener("touchmove", onTouchMove, { passive: false });
+        window.addEventListener("touchend", onTouchEnd);
+      });
+    }
     this.titleElement = document.createElement("div");
     this.titleElement.textContent = options.title;
     if (options.navButtonLabel) {
@@ -148808,6 +148989,88 @@ var FloatingPanelShell = class {
     this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
     this.workspaceGroupElement.appendChild(this.workspaceMenuElement);
     this.headerElement.appendChild(this.workspaceGroupElement);
+    const opacityStates = isAmbient ? [0.45, 0.85, 0.2] : [0.95, 0.6, 0.3];
+    let opacityIndex = 0;
+    const opacityButton = document.createElement("button");
+    opacityButton.type = "button";
+    opacityButton.title = "Toggle opacity";
+    opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
+    Object.assign(opacityButton.style, {
+      background: "transparent",
+      border: "none",
+      color: "rgba(255,255,255,0.45)",
+      cursor: "default",
+      padding: "4px",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "5px",
+      flexShrink: "0",
+      marginLeft: "4px"
+    });
+    opacityButton.addEventListener("mouseenter", () => {
+      opacityButton.style.color = "rgba(255,255,255,0.9)";
+    });
+    opacityButton.addEventListener("mouseleave", () => {
+      opacityButton.style.color = "rgba(255,255,255,0.45)";
+    });
+    opacityButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      opacityIndex = (opacityIndex + 1) % opacityStates.length;
+      this.panel.style.opacity = String(opacityStates[opacityIndex]);
+    });
+    this.headerElement.appendChild(opacityButton);
+    const minimizeButton = document.createElement("button");
+    minimizeButton.type = "button";
+    minimizeButton.title = "Minimize";
+    minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+    Object.assign(minimizeButton.style, {
+      background: "transparent",
+      border: "none",
+      color: "rgba(255,255,255,0.45)",
+      cursor: "default",
+      padding: "4px",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "5px",
+      flexShrink: "0",
+      marginLeft: "4px"
+    });
+    minimizeButton.addEventListener("mouseenter", () => {
+      minimizeButton.style.color = "rgba(255,255,255,0.9)";
+    });
+    minimizeButton.addEventListener("mouseleave", () => {
+      minimizeButton.style.color = "rgba(255,255,255,0.45)";
+    });
+    let originalHeight = "";
+    let originalMinHeight = "";
+    minimizeButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.minimized = !this.minimized;
+      if (this.minimized) {
+        originalHeight = this.panel.style.height;
+        originalMinHeight = this.panel.style.minHeight;
+        this.panel.style.height = "auto";
+        this.panel.style.minHeight = "0";
+        this.content.style.display = "none";
+        this.root.style.background = "transparent";
+        this.root.style.pointerEvents = "none";
+        minimizeButton.title = "Restore";
+        minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
+      } else {
+        this.panel.style.height = originalHeight || (isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
+        this.panel.style.minHeight = originalMinHeight || (isSplit ? "0" : "420px");
+        this.content.style.display = "flex";
+        this.root.style.background = isAmbient || isSplit ? "transparent" : "rgba(0,0,0,0.32)";
+        this.root.style.pointerEvents = isAmbient || isSplit ? "none" : "auto";
+        minimizeButton.title = "Minimize";
+        minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+      }
+    });
+    this.headerElement.appendChild(minimizeButton);
     this.toggleButton = document.createElement("button");
     this.toggleButton.type = "button";
     this.toggleButton.title = "Close (Esc)";
@@ -148860,20 +149123,28 @@ var FloatingPanelShell = class {
   applyDisplay() {
     this.root.style.display = this.visible && this.expanded ? "flex" : "none";
   }
+  scheduleDisplayUpdate() {
+    if (this.displayUpdatePending) return;
+    this.displayUpdatePending = true;
+    queueMicrotask(() => {
+      this.displayUpdatePending = false;
+      this.applyDisplay();
+    });
+  }
   setVisible(visible) {
     this.visible = visible;
     if (!visible) {
       this.workspaceMenuOpen = false;
       this.applyWorkspaceMenuState();
     }
-    this.applyDisplay();
+    this.scheduleDisplayUpdate();
   }
   isVisible() {
     return this.visible;
   }
   setExpanded(expanded) {
     this.expanded = expanded;
-    this.applyDisplay();
+    this.scheduleDisplayUpdate();
   }
   setNavButtonLabel(label2) {
     if (!this.navButton) return;
@@ -148891,9 +149162,11 @@ var FloatingPanelShell = class {
     this.panelStackGroupElement.replaceChildren();
     if (!Array.isArray(items) || items.length <= 1) {
       this.panelStackGroupElement.style.display = "none";
+      this.titleElement.style.display = "block";
       return;
     }
     this.panelStackGroupElement.style.display = "flex";
+    this.titleElement.style.display = "none";
     for (const item2 of items) {
       const node = document.createElement(item2.active ? "span" : "button");
       if (item2.active) {
@@ -149096,24 +149369,46 @@ var GroupPanel = class {
     this.savedSelections = [];
     this.regions = [];
     this.runtimeVisibleOverride = null;
-    this.shell = options?.floating ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" }) : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
+    const floating = options?.floating || !!options?.sharedShell;
+    this.sharedShell = !!options?.sharedShell;
+    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" }) : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
     this.root = this.shell.root;
     this.toggleButton = this.shell.toggleButton;
-    this.body = this.shell.content;
+    if (options?.sharedShell) {
+      this.body = document.createElement("div");
+      Object.assign(this.body.style, {
+        display: "none",
+        flexDirection: "row",
+        overflow: "hidden",
+        gap: "0",
+        width: "100%",
+        height: "100%"
+      });
+      this.shell.content.appendChild(this.body);
+    } else {
+      this.body = this.shell.content;
+      Object.assign(this.body.style, {
+        flexDirection: "row",
+        overflow: "hidden",
+        gap: "0"
+      });
+    }
     this.root.setAttribute("data-molsysviewer-group-panel", "true");
     this.toggleButton.setAttribute("data-molsysviewer-group-panel-toggle", "true");
     this.shell.titleElement.setAttribute("data-molsysviewer-group-panel-title", "true");
-    this.toggleButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.expanded = !this.expanded;
-      this.applyExpandedState();
-    });
-    this.shell.navButton?.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.onNavigateToWorkbench?.();
-    });
+    if (!this.sharedShell) {
+      this.toggleButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.expanded = !this.expanded;
+        this.applyExpandedState();
+      });
+      this.shell.navButton?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onNavigateToWorkbench?.();
+      });
+    }
     this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
     Object.assign(this.body.style, {
       flexDirection: "row",
@@ -149172,7 +149467,7 @@ var GroupPanel = class {
     return this.shell.width;
   }
   isVisible() {
-    return this.shell.isVisible();
+    return this.sharedShell ? this.body.style.display !== "none" : this.shell.isVisible();
   }
   setExpanded(expanded) {
     this.expanded = expanded;
@@ -149186,7 +149481,9 @@ var GroupPanel = class {
   }
   setOnNavigateToWorkbench(callback, label2 = "Workbench") {
     this.onNavigateToWorkbench = callback;
-    this.shell.setNavButtonLabel(callback ? label2 : void 0);
+    if (!this.sharedShell) {
+      this.shell.setNavButtonLabel(callback ? label2 : void 0);
+    }
   }
   setRuntimeVisible(visible) {
     this.runtimeVisibleOverride = visible;
@@ -149264,7 +149561,9 @@ var GroupPanel = class {
     this.captureCollapseState();
     for (const strip of this.strips.values()) strip.dispose();
     this.strips.clear();
-    this.shell.dispose();
+    if (!this.sharedShell) {
+      this.shell.dispose();
+    }
   }
   applyExpandedState() {
     this.shell.setExpanded(this.expanded);
@@ -149288,7 +149587,11 @@ var GroupPanel = class {
     }
     const naturalVisible = Boolean(this.structure) && grouped.size > 0;
     const visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
-    this.shell.setVisible(visible);
+    if (this.sharedShell) {
+      this.body.style.display = visible ? "flex" : "none";
+    } else {
+      this.shell.setVisible(visible);
+    }
     if (!visible && this.expanded) {
       this.expanded = false;
     }
@@ -149443,12 +149746,33 @@ var WorkbenchPanel = class {
     this.currentWorkspaceId = "core";
     this.activeWorkspacePanelSummary = null;
     this.expanded = false;
-    const floating = !!options?.floating;
+    const floating = options?.floating || !!options?.sharedShell;
     this.floating = floating;
-    this.shell = floating ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" }) : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
+    this.sharedShell = !!options?.sharedShell;
+    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" }) : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
     this.root = this.shell.root;
-    this.body = this.shell.content;
     this.toggleButton = this.shell.toggleButton;
+    if (options?.sharedShell) {
+      this.body = document.createElement("div");
+      Object.assign(this.body.style, {
+        display: "none",
+        flexDirection: "column",
+        overflowX: "hidden",
+        overflowY: "auto",
+        gap: "8px",
+        width: "100%",
+        height: "100%"
+      });
+      this.shell.content.appendChild(this.body);
+    } else {
+      this.body = this.shell.content;
+      Object.assign(this.body.style, {
+        flexDirection: "column",
+        overflowX: "hidden",
+        overflowY: "auto",
+        gap: "8px"
+      });
+    }
     this.root.setAttribute("data-molsysviewer-workbench-panel", "true");
     this.shell.titleElement.setAttribute("data-molsysviewer-workbench-panel-title", "true");
     this.body.setAttribute("data-molsysviewer-workbench-panel-body", "true");
@@ -149470,17 +149794,19 @@ var WorkbenchPanel = class {
         borderRadius: "10px 0 0 10px"
       });
     }
-    this.toggleButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.expanded = !this.expanded;
-      this.applyExpandedState();
-    });
-    this.shell.navButton?.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.onNavigateToNavigate?.();
-    });
+    if (!this.sharedShell) {
+      this.toggleButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.expanded = !this.expanded;
+        this.applyExpandedState();
+      });
+      this.shell.navButton?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onNavigateToNavigate?.();
+      });
+    }
     Object.assign(this.body.style, {
       flexDirection: "column",
       overflowX: "hidden",
@@ -149575,7 +149901,11 @@ var WorkbenchPanel = class {
     this.setVisible(!floating);
   }
   setVisible(visible) {
-    this.shell.setVisible(visible);
+    if (this.sharedShell) {
+      this.body.style.display = visible ? "flex" : "none";
+    } else {
+      this.shell.setVisible(visible);
+    }
     if (!visible && this.expanded) {
       this.expanded = false;
       this.applyExpandedState();
@@ -149585,7 +149915,7 @@ var WorkbenchPanel = class {
     return this.shell.width;
   }
   isVisible() {
-    return this.shell.isVisible();
+    return this.sharedShell ? this.body.style.display !== "none" : this.shell.isVisible();
   }
   setExpanded(expanded) {
     this.expanded = expanded;
@@ -149599,7 +149929,9 @@ var WorkbenchPanel = class {
   }
   setOnNavigateToNavigate(callback, label2 = "Navigate") {
     this.onNavigateToNavigate = callback;
-    this.shell.setNavButtonLabel(callback ? label2 : void 0);
+    if (!this.sharedShell) {
+      this.shell.setNavButtonLabel(callback ? label2 : void 0);
+    }
   }
   setWorkspaces(items, currentId, onSelect) {
     this.workspaceItems = Array.isArray(items) ? items : [];
@@ -150155,7 +150487,9 @@ var WorkbenchPanel = class {
     this.workspaceAddonWidgetHost.style.display = "none";
   }
   dispose() {
-    this.shell.dispose();
+    if (!this.sharedShell) {
+      this.shell.dispose();
+    }
   }
   applyExpandedState() {
     if (this.floating) {
@@ -150471,12 +150805,51 @@ function shapeTargetFromLoci(loci) {
     shape_name: shapeName
   };
 }
+function extractAtomMetadata(loci) {
+  const normalized2 = normalizeToElementLoci3(loci);
+  if (!element_exports.Loci.is(normalized2) || normalized2.elements.length === 0) return null;
+  const element = normalized2.elements[0];
+  const size4 = OrderedSet2.size(element.indices);
+  if (size4 === 0) return null;
+  const unitIndex = OrderedSet2.getAt(element.indices, 0);
+  const atomIndex = element.unit.elements[unitIndex];
+  const unit2 = element.unit;
+  const model = unit2.model;
+  const hierarchy = model?.atomicHierarchy;
+  if (!hierarchy) return null;
+  const residueIndexByAtom = hierarchy.residueAtomSegments.index;
+  const chainIndexByAtom = hierarchy.chainAtomSegments.index;
+  const atoms2 = hierarchy.atoms;
+  const residues2 = hierarchy.residues;
+  const chains2 = hierarchy.chains;
+  const groupIndex = residueIndexByAtom[atomIndex];
+  const chainIndex2 = chainIndexByAtom[atomIndex];
+  const authSeqId = residues2.auth_seq_id.value(groupIndex);
+  const compId3 = atoms2.label_comp_id.value(atomIndex);
+  const chainId = chains2.label_asym_id.value(chainIndex2);
+  const atomName = atoms2.label_atom_id.value(atomIndex);
+  const elementSymbol = atoms2.type_symbol.value(atomIndex);
+  const atomId2 = atoms2.id.value(atomIndex).toString();
+  return {
+    atom_index: atomIndex,
+    atom_id: atomId2,
+    metadata: {
+      chain_id: chainId,
+      group_name: compId3,
+      group_id: authSeqId.toString(),
+      group_index: groupIndex,
+      atom_name: atomName,
+      element: elementSymbol
+    }
+  };
+}
 function normalizeContextPayloadFromLoci(loci, page_x, page_y) {
   const groupItems = lociToGroupItems(loci);
   const atomIndices = lociToAtomIndices2(loci);
+  const meta = extractAtomMetadata(loci);
   if (groupItems.length === 0) {
     if (atomIndices.length > 0) {
-      return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y };
+      return { event: "interaction_context_menu", kind: "structure", atom_indices: atomIndices, page_x, page_y, ...meta || {} };
     }
     const shapeTarget = shapeTargetFromLoci(loci);
     if (shapeTarget) return { event: "interaction_context_menu", kind: "shape", ...shapeTarget, page_x, page_y };
@@ -150494,7 +150867,8 @@ function normalizeContextPayloadFromLoci(loci, page_x, page_y) {
     chain_name: item2.chain_name,
     entity_name: item2.entity_name,
     page_x,
-    page_y
+    page_y,
+    ...meta || {}
   };
 }
 function normalizeInteractionEvent(kind, ev) {
@@ -150504,9 +150878,10 @@ function normalizeInteractionEvent(kind, ev) {
   const event = kind === "hover" ? "interaction_hover" : "interaction_click";
   const groupItems = lociToGroupItems(ev?.current?.loci);
   const atomIndices = lociToAtomIndices2(ev?.current?.loci);
+  const meta = extractAtomMetadata(ev?.current?.loci);
   if (groupItems.length === 0) {
     if (atomIndices.length > 0) {
-      return { event, kind: "structure", atom_indices: atomIndices };
+      return { event, kind: "structure", atom_indices: atomIndices, ...meta || {} };
     }
     const shapeTarget = shapeTargetFromLoci(ev?.current?.loci);
     if (shapeTarget) return { event, kind: "shape", ...shapeTarget };
@@ -150522,7 +150897,8 @@ function normalizeInteractionEvent(kind, ev) {
     entity_indices: item2.entity_indices,
     group_name: item2.group_name,
     chain_name: item2.chain_name,
-    entity_name: item2.entity_name
+    entity_name: item2.entity_name,
+    ...meta || {}
   };
 }
 function normalizeContextInteractionEvent(ev, fallbackLoci) {
@@ -150675,11 +151051,13 @@ var MolSysViewerController = class _MolSysViewerController {
     this.activePanelMsgListeners = [];
     this.activePanelCleanup = null;
     this.activePanelWidgetKey = null;
+    this.addonListeners = /* @__PURE__ */ new Map();
     // Loaded structure bundle
     this.currentActiveSelection = null;
     this.lastMeasurementSummary = null;
     this.measurementTagCounter = 0;
     this.welcomeCard = null;
+    this.model = initOptions?.model;
     this.canvasHost = canvasHost ?? (() => {
       const d5 = document.createElement("div");
       host.appendChild(d5);
@@ -150702,6 +151080,7 @@ var MolSysViewerController = class _MolSysViewerController {
         this.currentActiveSelection = msg;
         this.groupPanel.updateSelection(msg);
         this.syncVisualSelection(msg);
+        this.triggerLocalAddonEvent("selection-changed", msg);
       } else if (msg?.event === "interaction_measurement_created") {
         this.lastMeasurementSummary = {
           action: msg.action,
@@ -150750,7 +151129,21 @@ var MolSysViewerController = class _MolSysViewerController {
         value
       };
     });
-    const floatingPanels = initOptions?.panelModeStyle === "floating";
+    const floatingPanels = initOptions?.panelModeStyle === "floating" || initOptions?.panelModeStyle === "floating-unified" || initOptions?.panelModeStyle === "integrated" || initOptions?.panelModeStyle === "ambient" || initOptions?.panelModeStyle === "split";
+    const floatingUnified = initOptions?.panelModeStyle === "floating-unified" || initOptions?.panelModeStyle === "integrated" || initOptions?.panelModeStyle === "ambient" || initOptions?.panelModeStyle === "split";
+    let sharedShell = void 0;
+    if (floatingUnified) {
+      sharedShell = new FloatingPanelShell(host, {
+        title: "Navigate",
+        panelModeStyle: initOptions?.panelModeStyle
+      });
+      sharedShell.toggleButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.collapsePanels();
+      });
+      this.sharedShell = sharedShell;
+    }
     this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
     this.groupPanel = new GroupPanel(host, (items, additive) => {
       this.activeSelection.setItems(items, additive);
@@ -150785,8 +151178,8 @@ var MolSysViewerController = class _MolSysViewerController {
       const region = this.state.getRegionSummaries().find((item2) => item2.tag === tag);
       if (!region) return;
       this.focusTarget({ atom_indices: region.atom_indices });
-    }, floatingPanels ? { floating: true } : void 0);
-    this.workbenchPanel = new WorkbenchPanel(host, floatingPanels ? { floating: true } : void 0);
+    }, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
+    this.workbenchPanel = new WorkbenchPanel(host, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
     this.refreshPanelWorkspaceChrome();
     this.groupPanel.setOnExpandedChange((expanded) => {
       this.handlePanelExpansionChanged("navigate", expanded);
@@ -150917,7 +151310,7 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.updateContextTarget(annPayload);
         this.syncWorkbenchContextFromPayload(annPayload);
         emitInteractionEvent(annPayload);
-        this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems);
+        this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
         return;
       }
       if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
@@ -150935,7 +151328,7 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.updateContextTarget(measPayload);
         this.syncWorkbenchContextFromPayload(measPayload);
         emitInteractionEvent(measPayload);
-        this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems);
+        this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
         return;
       }
       let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
@@ -151010,7 +151403,8 @@ var MolSysViewerController = class _MolSysViewerController {
         this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
         this.getRelevantRegionSummaries(payload),
         this.addonContextActions,
-        this.addonContextItems
+        this.addonContextItems,
+        { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
       );
     }, (ev) => {
       this.lastHoverLoci = ev?.current?.loci ?? null;
@@ -151131,9 +151525,55 @@ var MolSysViewerController = class _MolSysViewerController {
       hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
       notify: (msg) => this.notify?.(msg)
     });
+    this.trajectory.onTrajectoryState(
+      (state) => {
+        this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
+      },
+      { immediate: false }
+    );
+    if (plugin.canvas3d?.didDraw) {
+      plugin.canvas3d.didDraw.subscribe(() => {
+        const cameraState = plugin.canvas3d.camera.getSnapshot();
+        this.triggerLocalAddonEvent("camera-moved", cameraState);
+      });
+    }
     this.refreshNavigatePanel();
     this.refreshWorkbenchPanel();
     this.updateWelcomeState();
+  }
+  registerAddonListener(addonName, eventName, cb2) {
+    if (!this.addonListeners.has(addonName)) {
+      this.addonListeners.set(addonName, /* @__PURE__ */ new Map());
+    }
+    const addonEvents = this.addonListeners.get(addonName);
+    if (!addonEvents.has(eventName)) {
+      addonEvents.set(eventName, []);
+    }
+    addonEvents.get(eventName).push(cb2);
+  }
+  unregisterAddonListener(addonName, eventName, cb2) {
+    const addonEvents = this.addonListeners.get(addonName);
+    if (!addonEvents) return;
+    const callbacks = addonEvents.get(eventName);
+    if (!callbacks) return;
+    const idx = callbacks.indexOf(cb2);
+    if (idx >= 0) {
+      callbacks.splice(idx, 1);
+    }
+  }
+  triggerLocalAddonEvent(eventName, payload) {
+    for (const [addonName, addonEvents] of this.addonListeners) {
+      const callbacks = addonEvents.get(eventName);
+      if (callbacks) {
+        for (const cb2 of callbacks) {
+          try {
+            cb2(payload);
+          } catch (e) {
+            console.error(`Error in local addon listener for ${addonName}:${eventName}`, e);
+          }
+        }
+      }
+    }
   }
   static showInitFailureOverlay(target, message) {
     const overlay = document.createElement("div");
@@ -151215,6 +151655,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.legendOverlay.dispose();
     this.groupPanel.dispose();
     this.workbenchPanel.dispose();
+    this.sharedShell?.dispose();
     this.contextMenu.dispose();
     this.releaseContextMenuSuppression?.();
     this.releaseGlobalEscapeHandler?.();
@@ -151227,6 +151668,7 @@ var MolSysViewerController = class _MolSysViewerController {
   installGlobalEscapeHandler() {
     const onKeyDown = (event) => {
       if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
+      if (!this.host.contains(event.target)) return;
       if (event.key === "Escape") {
         if (this.measurementTools.isActive()) return;
         if (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded()) {
@@ -151464,7 +151906,8 @@ var MolSysViewerController = class _MolSysViewerController {
       this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
       this.getRelevantRegionSummaries(payload),
       this.addonContextActions,
-      this.addonContextItems
+      this.addonContextItems,
+      { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
     );
   }
   openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent) {
@@ -151486,7 +151929,8 @@ var MolSysViewerController = class _MolSysViewerController {
       this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
       this.getRelevantRegionSummaries(payload),
       this.addonContextActions,
-      this.addonContextItems
+      this.addonContextItems,
+      { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
     );
   }
   focusCurrentSelection() {
@@ -152005,21 +152449,110 @@ var MolSysViewerController = class _MolSysViewerController {
           }
           const msgListeners = [];
           this.activePanelMsgListeners = msgListeners;
+          const addonStateLocal = this.model ? { ...(this.model.get("addon_states") || {})[mAddon] || {} } : {};
+          const changeListeners = {};
           const panelModel = {
             send: (content) => {
               this.notify?.({ event: "addon_panel_action", addon: mAddon, panel: mPanel, content });
             },
             on: (event, cb2) => {
-              if (event === "msg:custom") msgListeners.push(cb2);
+              if (event === "msg:custom") {
+                msgListeners.push(cb2);
+              } else if (event.startsWith("change:")) {
+                const key2 = event.split(":")[1];
+                if (key2) {
+                  (changeListeners[key2] || (changeListeners[key2] = [])).push(cb2);
+                }
+              } else if (event.startsWith("viewer:")) {
+                const viewerEvent = event.split(":")[1];
+                if (viewerEvent && mAddon) {
+                  this.registerAddonListener(mAddon, viewerEvent, cb2);
+                }
+              }
             },
             off: (event, cb2) => {
               if (event === "msg:custom") {
                 const idx = msgListeners.indexOf(cb2);
                 if (idx >= 0) msgListeners.splice(idx, 1);
+              } else if (event.startsWith("change:")) {
+                const key2 = event.split(":")[1];
+                if (key2 && changeListeners[key2]) {
+                  const idx = changeListeners[key2].indexOf(cb2);
+                  if (idx >= 0) changeListeners[key2].splice(idx, 1);
+                }
+              } else if (event.startsWith("viewer:")) {
+                const viewerEvent = event.split(":")[1];
+                if (viewerEvent && mAddon) {
+                  this.unregisterAddonListener(mAddon, viewerEvent, cb2);
+                }
               }
             },
-            get: (_key) => void 0
+            get: (key2) => {
+              if (this.model) {
+                const states = this.model.get("addon_states") || {};
+                const addonState = states[mAddon] || {};
+                return addonState[key2];
+              }
+              return addonStateLocal[key2];
+            },
+            set: (keyOrObj, val) => {
+              const updates = {};
+              if (typeof keyOrObj === "string") {
+                updates[keyOrObj] = val;
+              } else if (keyOrObj && typeof keyOrObj === "object") {
+                Object.assign(updates, keyOrObj);
+              }
+              let changed = false;
+              for (const [k, v4] of Object.entries(updates)) {
+                if (addonStateLocal[k] !== v4) {
+                  addonStateLocal[k] = v4;
+                  changed = true;
+                  if (changeListeners[k]) {
+                    for (const cb2 of changeListeners[k]) {
+                      try {
+                        cb2(panelModel, v4);
+                      } catch (e) {
+                        console.error(e);
+                      }
+                    }
+                  }
+                }
+              }
+              if (this.model && changed) {
+                const states = { ...this.model.get("addon_states") || {} };
+                states[mAddon] = { ...states[mAddon] || {}, ...addonStateLocal };
+                this.model.set("addon_states", states);
+                this.model.save_changes();
+              }
+              this.notify?.({
+                event: "addon_panel_state_changed",
+                addon: mAddon,
+                panel: mPanel,
+                state: updates
+              });
+            }
           };
+          let onModelChange = void 0;
+          if (this.model) {
+            onModelChange = () => {
+              const states = this.model.get("addon_states") || {};
+              const addonState = states[mAddon] || {};
+              for (const key2 of Object.keys(changeListeners)) {
+                const v4 = addonState[key2];
+                if (addonStateLocal[key2] !== v4) {
+                  addonStateLocal[key2] = v4;
+                  for (const cb2 of changeListeners[key2]) {
+                    try {
+                      cb2(panelModel, v4);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }
+                }
+              }
+            };
+            this.model.on("change:addon_states", onModelChange);
+          }
           const blob = new Blob([mEsm], { type: "application/javascript" });
           const blobUrl = URL.createObjectURL(blob);
           try {
@@ -152039,6 +152572,9 @@ var MolSysViewerController = class _MolSysViewerController {
                   cleanup();
                 } catch {
                 }
+              }
+              if (this.model && onModelChange) {
+                this.model.off("change:addon_states", onModelChange);
               }
               URL.revokeObjectURL(blobUrl);
             };
@@ -152643,6 +153179,13 @@ var MolSysViewerController = class _MolSysViewerController {
     return next;
   }
   cleanupActivePanelWidget() {
+    if (this.activePanelWidgetKey) {
+      const parts = this.activePanelWidgetKey.split(":");
+      if (parts.length > 0) {
+        const addonName = parts[0];
+        this.addonListeners.delete(addonName);
+      }
+    }
     if (this.activePanelCleanup) {
       try {
         this.activePanelCleanup();
@@ -152717,24 +153260,28 @@ var MolSysViewerController = class _MolSysViewerController {
     style.textContent = `
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar {
                 width: 6px;
                 height: 6px;
             }
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar-track,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar-track,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-track {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-track {
                 background: transparent;
             }
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb {
                 background: rgba(255, 255, 255, 0.15);
                 border-radius: 3px;
             }
             [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb:hover,
             [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover {
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb:hover {
                 background: rgba(255, 255, 255, 0.35);
             }
             @keyframes molsysviewer-fade-in-up {
@@ -153773,6 +154320,7 @@ var HelpOverlay = class {
     this.root.style.display = "flex";
     const onKey = (ev) => {
       if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
+      if (!this.host.contains(ev.target)) return;
       if (ev.key === "Escape" || ev.key.toLowerCase() === "h") {
         ev.stopPropagation();
         this.hide();
@@ -153990,6 +154538,38 @@ var makeNumberControl = (initial, onChange, title) => {
   return { wrapper, input };
 };
 var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
+  const controlsMode = model.get("controls_mode") || "classic";
+  if (controlsMode === "focus") {
+    const toast = document.createElement("div");
+    toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
+    Object.assign(toast.style, {
+      position: "absolute",
+      bottom: "24px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      background: "rgba(18, 18, 22, 0.88)",
+      color: "rgba(244, 244, 245, 0.95)",
+      padding: "8px 16px",
+      borderRadius: "999px",
+      fontSize: "11px",
+      fontWeight: "500",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      border: "1px solid rgba(255, 255, 255, 0.12)",
+      boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
+      zIndex: "100",
+      pointerEvents: "none",
+      transition: "opacity 0.8s ease-in-out",
+      opacity: "1"
+    });
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      setTimeout(() => {
+        toast.remove();
+      }, 800);
+    }, 3200);
+    return;
+  }
   injectStyles();
   const overlay = document.createElement("div");
   overlay.className = "molsysviewer-controls";
@@ -154001,7 +154581,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
   overlay.style.flexWrap = "nowrap";
   overlay.style.opacity = "0";
   overlay.style.display = "none";
-  const controlsMode = model.get("controls_mode") || "classic";
+  const panelModeStyle = model.get("panel_mode_style") || "drawer";
   const helpOverlay = new HelpOverlay(container);
   if (controlsMode === "minimal") {
     const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
@@ -154070,6 +154650,9 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
       sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
     });
     if (onPopClick) mk("Pop", onPopClick);
+    if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
+      mk("Panel", () => c8.togglePanelMode());
+    }
   }
   const traj = document.createElement("div");
   traj.style.display = "flex";
@@ -154263,6 +154846,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
   });
   const onHelpKey = (ev) => {
     if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
+    if (!container.contains(ev.target)) return;
     if (ev.key.toLowerCase() === "h") {
       ev.preventDefault();
       ev.stopPropagation();
@@ -154552,7 +155136,7 @@ var index_default = {
         const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
         popupMgr.send("molsysviewer-sync-op", syncOp);
       }
-    }, void 0, { panelModeStyle });
+    }, void 0, { panelModeStyle, model });
     const popupJsSource = model.get("popup_js_source");
     const esmSource = model.get("_esm");
     const viewerJsSource = popupJsSource || esmSource;

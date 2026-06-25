@@ -133,6 +133,7 @@ export class ViewerContextMenu {
     private currentAddonItems: AddonContextItemSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
+    private currentSceneState: { isSpinActive?: boolean; isSwingActive?: boolean; isDarkMode?: boolean } | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -198,6 +199,7 @@ export class ViewerContextMenu {
         regions?: RegionSummary[] | null,
         addonActions?: AddonContextActionSummary[] | null,
         addonItems?: AddonContextItemSummary[] | null,
+        sceneState?: { isSpinActive?: boolean; isSwingActive?: boolean; isDarkMode?: boolean } | null,
     ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
@@ -208,6 +210,7 @@ export class ViewerContextMenu {
         this.currentAddonItems = Array.isArray(addonItems) ? [...addonItems] : [];
         this.currentPageX = pageX;
         this.currentPageY = pageY;
+        this.currentSceneState = sceneState ?? null;
         this.scrollEl.replaceChildren();
 
         const header = document.createElement("div");
@@ -247,10 +250,23 @@ export class ViewerContextMenu {
             }
         } else {
             // Empty canvas — scene-level actions
+            const isSpin = this.currentSceneState?.isSpinActive;
+            const isSwing = this.currentSceneState?.isSwingActive;
+            const isDark = this.currentSceneState?.isDarkMode;
+
             this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
-            this.scrollEl.appendChild(this.makeActionButton("Toggle Background", "toggle_background"));
-            this.scrollEl.appendChild(this.makeActionButton("Toggle Spin", "toggle_spin"));
-            this.scrollEl.appendChild(this.makeActionButton("Toggle Swing", "toggle_swing"));
+            this.scrollEl.appendChild(this.makeActionButton(
+                isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
+                "toggle_background"
+            ));
+            this.scrollEl.appendChild(this.makeActionButton(
+                isSpin ? "Toggle Spin (Active ✓)" : "Toggle Spin",
+                "toggle_spin"
+            ));
+            this.scrollEl.appendChild(this.makeActionButton(
+                isSwing ? "Toggle Swing (Active ✓)" : "Toggle Swing",
+                "toggle_swing"
+            ));
         }
 
         if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
@@ -734,6 +750,8 @@ export class ViewerContextMenu {
                 this.currentSavedSelections,
                 this.currentRegions,
                 this.currentAddonActions,
+                this.currentAddonItems,
+                this.currentSceneState,
             );
         };
 
@@ -939,6 +957,8 @@ export class ViewerContextMenu {
                 this.currentSavedSelections,
                 this.currentRegions,
                 this.currentAddonActions,
+                this.currentAddonItems,
+                this.currentSceneState,
             );
         };
 
@@ -1090,6 +1110,8 @@ export class ViewerContextMenu {
                 this.currentSavedSelections,
                 this.currentRegions,
                 this.currentAddonActions,
+                this.currentAddonItems,
+                this.currentSceneState,
             );
         };
 
@@ -1209,6 +1231,8 @@ export class ViewerContextMenu {
                 this.currentSavedSelections,
                 this.currentRegions,
                 this.currentAddonActions,
+                this.currentAddonItems,
+                this.currentSceneState,
             );
         };
 

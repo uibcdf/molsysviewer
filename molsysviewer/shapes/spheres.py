@@ -2,6 +2,7 @@
 
 from typing import Sequence
 import numpy as np
+import molsysmt as msm
 from smonitor import signal
 
 from .. import pyunitwizard as puw
@@ -49,6 +50,9 @@ class SphereShapes:
         tag: str | list | None = None,
         layer_tag: str | None = None,
         structure_centers=None,
+        selection: str | None = None,
+        atom_indices: Sequence[int] | None = None,
+        structures_atom_indices: Sequence[Sequence[int]] | None = None,
         skip_digestion: bool = False,
         **kwargs,
     ):
@@ -95,6 +99,24 @@ class SphereShapes:
             warnings.warn("'alphas' is deprecated; use 'alpha'.", DeprecationWarning, stacklevel=2)
             alpha = kwargs.pop("alphas")
 
+        # Resolve selection using MolSysMT if provided
+        if selection is not None:
+            n_structures = msm.get(self._view._molsys, element="system", n_structures=True)
+            if n_structures > 1:
+                indices_per_frame = []
+                for frame in range(n_structures):
+                    indices = msm.select(self._view._molsys, selection=selection, structure_indices=frame)
+                    indices_per_frame.append([int(idx) for idx in indices])
+                # Check if they are all identical
+                first = indices_per_frame[0]
+                if all(indices == first for indices in indices_per_frame):
+                    atom_indices = first
+                else:
+                    structures_atom_indices = indices_per_frame
+            else:
+                indices = msm.select(self._view._molsys, selection=selection)
+                atom_indices = [int(idx) for idx in indices]
+
         # Detect batch vs single by inspecting the resolved numpy array.
         try:
             arr = np.asarray(to_wire_angstroms(center), dtype=float)
@@ -123,6 +145,11 @@ class SphereShapes:
             "tag": layer.tag,
             "layer_tag": layer.layer_tag,
         }
+        if atom_indices is not None:
+            options["atom_indices"] = [int(i) for i in atom_indices]
+        if structures_atom_indices is not None:
+            options["structures_atom_indices"] = [[int(i) for i in f] for f in structures_atom_indices]
+
         if structure_centers is not None:
             fc_arr = np.asarray(to_wire_angstroms(structure_centers), dtype=float)
             options["structures_coords"] = [

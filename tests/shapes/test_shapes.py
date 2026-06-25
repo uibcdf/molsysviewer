@@ -545,3 +545,24 @@ def test_add_sphere_batch_broadcasts_and_validates():
 
     with pytest.raises(ValueError):
         shapes.add_sphere(centers, radius=puw.quantity([1.0, 1.5, 2.0], "nm"), color=0x00FF00, alpha=0.5, skip_digestion=True)
+
+
+def test_add_sphere_selection_and_indices():
+    from molsysviewer.demo import demo
+    view = demo["dialanine"]
+
+    # 1. Test selection (should be static since it's atom_index == 0)
+    view.shapes.add_sphere(selection="atom_index == 0", tag="s_static")
+    msg = [m for m in view._shape_history if m.get("op") == "add_sphere" and m["options"]["tag"] == "s_static"][0]
+    assert msg["options"]["atom_indices"] == [0]
+    assert "structures_atom_indices" not in msg["options"]
+
+    # 2. Test explicit atom_indices
+    view.shapes.add_sphere(atom_indices=[10, 11], tag="s_indices")
+    msg2 = [m for m in view._shape_history if m.get("op") == "add_sphere" and m["options"]["tag"] == "s_indices"][0]
+    assert msg2["options"]["atom_indices"] == [10, 11]
+
+    # 3. Test explicit structures_atom_indices
+    view.shapes.add_sphere(structures_atom_indices=[[0, 1], [2, 3]], tag="s_struct_indices")
+    msg3 = [m for m in view._shape_history if m.get("op") == "add_sphere" and m["options"]["tag"] == "s_struct_indices"][0]
+    assert msg3["options"]["structures_atom_indices"] == [[0, 1], [2, 3]]
