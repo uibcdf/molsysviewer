@@ -1,5 +1,4 @@
 from molsysviewer._private.exceptions import ArgumentError
-import numpy as np
 
 def digest_reference_center_of_selection(reference_center_of_selection, syntax="MolSysMT", caller=None):
 
