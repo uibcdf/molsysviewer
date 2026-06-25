@@ -28,10 +28,44 @@ With Phase D (unit consistency, TopoMT integration, and high-performance WebGL c
 
 ### Pending proposals and bugs: current state
 
-`devguide/pending_proposals/` has 1 file:
-* `partial_coordinate_updates.md` — **[IMPLEMENTED]** In-place WebGL updates and sequence ACKs are fully functional and integrated.
+`devguide/pending_proposals/` now holds an extensive robustness/quality backlog
+(42 files). It mixes earlier visualization/addon proposals with a recent
+code-review pass focused on consistency, conceptual gaps, maintainability, and
+performance. Highlights from that review (not yet implemented):
 
-`devguide/pending_bugs/` is empty.
+* `scene_look_state_reconstruction.md` — scene look (background, lighting, fog,
+  clip planes, legend, focus-fade) is dropped on rebuild because
+  `_rebuild_view_from_current_molsys` reconstructs from an explicit category
+  enumeration that omits the scene-look category. Generalizes and subsumes
+  `background_color_replay_omission.md` / `background_color_persistence_gap.md`.
+* `viewer_mixin_contract_and_caller_resolution.md` — the 11 `MolSysView` mixins
+  share ~33 untyped attributes/methods with no Protocol/base, and the ArgDigest
+  caller resolution is double-bookkept (`__name__` spoof in 8 mixins +
+  `normalize_viewer_caller` string surgery).
+* `payload_column_vectorization.md` — `_column` runs 13 pure-Python per-atom
+  loops on the load hot path; vectorizable fast path.
+* `visibility_diff_updates.md` — `update_visibility` resends the full visible
+  index list on every visibility op.
+* `silent_except_swallowing_diagnostics.md` — ~198 silent `except` handlers in
+  state-affecting paths; instrument via smonitor / narrow types.
+* `payload_residue_vocabulary_consistency.md` — confirm/document the
+  `group_* → residue_*` remap at the Mol*/mmCIF payload boundary.
+
+`devguide/pending_bugs/` holds 4 files:
+* `BUG_structure_indices_ignored_in_visibility.md` — `hide/show/isolate/
+  focus_with_fade` accept `structure_indices` but silently ignore it (single
+  global `atom_mask`, no per-structure dimension).
+* `BUG_index_mapper_silent_drop_and_identity_fallback.md` — `IndexMapper`
+  silently drops unmapped indices and falls back to identity on `msm.select`
+  failure (paired-data corruption risk).
+* `BUG_whole_representation_rebuild_live_divergence.md` — live additive
+  representation stacking vs rebuild reapplying only the last one.
+* `BUG_orphan_update_coordinates_op.md` — benchmark sends `update_coordinates`,
+  an op with no TS handler (superseded by `partial_coordinates_update`).
+
+Note: `partial_coordinate_updates.md` (the previously-tracked single proposal)
+was implemented and removed; in-place WebGL updates and sequence ACKs are fully
+functional and integrated.
 
 Recently closed and implemented in this session (twenty-second batch):
 

@@ -95,14 +95,98 @@ class MyDomainPanel(AddonPanelWidget):
 
 - handles the message routing from JS to `handle_action`
 - holds a reference to the current `view` after mounting
-- exposes `push_state(state: dict)` to push updates to the JS side
+- exposes the `state` property and `set_state(updates: dict)` for two-way synchronized state management (recommended)
+- exposes `push_state(state: dict)` to push legacy one-way state updates to the JS side
 - exposes `request_context()` to request the current viewer context snapshot
 
 ## Communication Protocol
 
-### Panel → Python: Actions
+MolSysViewer supports two communication patterns between the Python backend and the JavaScript frontend panel:
+1. **Two-Way State Synchronization (Recommended)**: A reactive, Backbone-like state sync model where properties are automatically shared and synchronized, allowing direct gets, sets, and property-specific change listeners.
+2. **Message-Driven Actions (Legacy / Direct)**: A message-passing model where the frontend sends explicit action intents to Python, and Python can optionally push state snapshots back.
 
-The panel sends a standardized action message:
+---
+
+### 1. Two-Way State Synchronization (Recommended)
+
+This pattern provides a modern, reactive programming model similar to standard `anywidget` state synchronization, but with automatic namespace isolation and environment fallback.
+
+#### The State Synchronization Mechanism
+- **Backend Storage**: All active add-on states are stored in a single synchronized dictionary traitlet, `addon_states`, on the main viewer widget. This dictionary is keyed by the add-on name, e.g. `addon_states["my-addon"] = { ... }`.
+- **Namespace Isolation**: The `AddonPanelWidget` in Python and the state proxy in JavaScript automatically isolate state operations. The panel only reads and writes within its own add-on namespace, preventing collisions with other add-ons.
+- **Environment Fallback**: In stand-alone or popout modes where the Backbone widget connection is not active, the JavaScript state proxy automatically falls back to a local state dictionary. This ensures that panels run identically and flawlessly across all hosts (Jupyter, Standalone, exports) with zero code changes.
+
+#### Python API (Backend)
+The Python panel class can read, update, and react to state changes using the `state` property and `set_state` method:
+
+```python
+# Reading state
+current_cutoff = self.state.get("cutoff", 7.0)
+
+# Updating state (triggers automatic synchronization and reactive JS listeners)
+self.set_state({
+    "cutoff": 7.5,
+    "n_nodes": 247,
+    "active_mode_index": 2
+})
+```
+
+#### JavaScript/TypeScript API (Frontend)
+The frontend receives a mock Backbone `model` proxy that matches standard `anywidget` syntax. Panel developers can use `get`, `set`, and reactive `on("change:key")` listeners:
+
+```js
+// Inside the ESM render function
+export function render({ model, el }) {
+    // 1. Read state
+    const currentCutoff = model.get("cutoff") || 7.0;
+
+    // 2. React to specific state changes (from Python or JS)
+    model.on("change:cutoff", (model, value) => {
+        console.log("Cutoff changed to:", value);
+        updateCutoffUI(value);
+    });
+
+    // 3. Update state (synchronizes back to Python automatically)
+    el.querySelector("input.cutoff").addEventListener("input", (e) => {
+        model.set("cutoff", parseFloat(e.target.value));
+    });
+}
+```
+
+#### 1.1 Local Frontend Event Bus (Zero-Latency Notifications)
+
+For high-frequency or interactive synchronization (such as updating an energy plot during trajectory playback or coordinate displays on camera movement), panels can subscribe directly to the local event bus of the viewer without going through Python.
+
+The proxy `model` forwards the following local event triggers under the `"viewer:"` namespace:
+
+- `"viewer:frame-changed"`: Fired when the active conformation structure/frame changes. Receives the `frameIndex` (number) as the argument.
+- `"viewer:selection-changed"`: Fired when the active selection changes. Receives the list of selected atom indices (number[]) as the argument.
+- `"viewer:camera-moved"`: Fired when the camera position, focus, or zoom changes. Receives the camera state object (snapshot).
+
+```js
+export function render({ model, el }) {
+    // Zero-latency local subscription (runs in the browser at 60 FPS, < 1ms latency)
+    model.on("viewer:frame-changed", (frameIndex) => {
+        updateInteractivePlot(frameIndex);
+    });
+
+    model.on("viewer:camera-moved", (cameraState) => {
+        updateCameraCoordinateDisplay(cameraState.position);
+    });
+}
+```
+
+> [!IMPORTANT]
+> **Automatic Cleanup**: To prevent memory leaks in persistent Jupyter environments, the MolSysViewer controller automatically purges all `"viewer:*"` subscriptions registered on the proxy `model` when the panel is unmounted or the active workspace is switched. Panel developers do not need to manually write clean-up logic for these local event listeners.
+
+---
+
+### 2. Message-Driven Actions & Message Passing
+
+For explicit operations or calling specific scientific methods in Python, the message-driven pattern is highly appropriate.
+
+#### Panel → Python: Actions
+The panel sends a standardized action message using the model proxy:
 
 ```js
 // Inside _esm
@@ -122,24 +206,25 @@ def handle_action(self, view, action_id, payload):
     if action_id == "compute-gnm":
         from molsysviewer_elasnetmt.adapters.contacts import render_contact_network
         render_contact_network(view, cutoff=f"{payload['cutoff']} angstroms")
-        self.push_state(self._build_state(view))
+        
+        # Synchronize new state to the frontend
+        self.set_state({
+            "cutoff": payload["cutoff"],
+            "contacts_rendered": True
+        })
 ```
 
-### Python → Panel: State Updates
-
-Python pushes state to the panel at any point:
+#### Python → Panel: Legacy State Updates (One-way)
+For backward compatibility, Python can push state snapshots directly via `push_state`:
 
 ```python
 self.push_state({
     "model_kind": "gnm",
     "cutoff": "7.5 angstroms",
-    "n_nodes": 247,
-    "active_mode_index": 2,
-    "visible_overlays": ["elasnetmt:contacts", "elasnetmt:mode:2"],
 })
 ```
 
-In JS:
+In the frontend, these are received as custom messages:
 
 ```js
 model.on("msg:custom", (msg) => {
@@ -262,49 +347,52 @@ AddonPanelSpec(
 
 ## Host Requirements (MolSysViewer side)
 
-The following work is needed in MolSysViewer to implement this contract:
+The following work has been fully implemented in MolSysViewer to support this contract:
 
 1. **`AddonPanelWidget` base class** in `molsysviewer/addons.py`: ✓
-   - subclass of anywidget's `AnyWidget`
-   - `push_state(state: dict)` method
-   - `request_context()` method
-   - message routing to `handle_action`
-   - `on_mount` / `on_unmount` hooks
+   - Subclass of anywidget's `AnyWidget`.
+   - `state` property and `set_state(updates: dict)` for namespace-isolated synchronized state.
+   - `push_state(state: dict)` method (legacy one-way).
+   - `request_context()` method.
+   - Message routing to `handle_action`.
+   - `on_mount` / `on_unmount` hooks.
 
 2. **Panel widget resolver** `ViewAddonsManager.resolve_panel_widget(addon, panel)`: ✓
-   - when `widget_class` is present in `AddonPanelSpec`, import and instantiate
-     the class bound to the current view
+   - Imports and instantiates the `widget_class` bound to the current view when a user navigates to the panel.
 
-3. **Panel host embedding** in the TS canvas: ✓
-   - `workspaceAddonWidgetHost` div inside `WorkbenchPanel`
-   - dynamic ESM import via Blob URL in `viewer-controller.ts`
-   - model proxy translates `model.send` / `model.on` to the viewer comm channel
-   - clean unmount on panel navigation or workspace switch
+3. **Panel host embedding and state proxy** in the TS canvas: ✓
+   - `workspaceAddonWidgetHost` div inside `WorkbenchPanel`.
+   - Dynamic ESM import via Blob URL in `viewer-controller.ts`.
+   - Backbone-compatible model proxy simulating `model.get()`, `model.set()`, and `model.on("change:key")` listeners.
+   - Namespace-isolated state routing: maps local panel keys into `addon_states[addon_name]` and synchronizes them to Python using `model.save_changes()`.
+   - Environment independence: falls back automatically to a local state store when running in standalone, popup, or exported HTML pages where the Backbone widget connection is not present.
+   - Clean unmount on panel navigation or workspace switch.
 
 4. **Viewer context response** in `viewer/core.py`: ✓
    - `panel_navigate` event → `_mount_addon_panel`
    - `panel_unmount` event → `_unmount_addon_panel`
-   - `addon_panel_action` event → routes to active widget
-   - context pushed automatically on mount
+   - `addon_panel_action` event → routes to active widget.
+   - Context pushed automatically on mount.
+
+5. **Main widget synchronization** in `molsysviewer/widget.py`: ✓
+   - `addon_states` synchronized traitlet dictionary containing state for all active panels, guaranteeing two-way Python-JS synchronizations.
 
 ## Add-On Author Requirements
 
-To contribute a real interactive panel, the add-on author:
+To contribute an interactive panel, the add-on author:
 
 1. Subclasses `AddonPanelWidget` from `molsysviewer.addons`
 2. Writes `_esm` (and optionally `_css`) for the panel UI
-3. Implements `handle_action(view, action_id, payload)`
-4. Calls `push_state(...)` after any action that changes visible state
-5. Optionally implements `on_mount` to send initial state
+3. Implements `handle_action(view, action_id, payload)` (if message-driven actions are needed)
+4. Uses `self.state` and `self.set_state(...)` in Python, and standard Backbone `model.get()`, `model.set()`, and `model.on("change:key")` in JavaScript to read, write, and react to state changes in a fully synchronized manner.
+5. Optionally implements `on_mount` to send initial state or configure the panel
 6. Registers the class via `widget_class` in `AddonPanelSpec`
 
-No TypeScript or MolSysViewer-internal knowledge is required. The add-on author
-works entirely in Python + HTML/CSS/JS.
+No TypeScript or MolSysViewer-internal knowledge is required. The add-on author works entirely in Python + HTML/CSS/JS.
 
 ## Future Extension: Bundle JS Panels
 
-Once the anywidget path is stable, the host can add support for panels backed
-by a registered JS bundle. The extension is additive:
+Once the anywidget path is stable, the host can add support for panels backed by a registered JS bundle. The extension is additive:
 
 ```python
 AddonPanelSpec(
@@ -317,24 +405,15 @@ AddonPanelSpec(
 )
 ```
 
-The host dispatches based on which field is present. anywidget panels and
-JS-bundle panels coexist without conflict. Add-ons using `widget_class` do not
-need changes when JS-bundle support is added.
+The host dispatches based on which field is present. anywidget panels and JS-bundle panels coexist without conflict. Add-ons using `widget_class` do not need changes when JS-bundle support is added.
 
 ## Design Constraints
 
-- **Python owns the logic.** The panel sends intents (actions), never commands
-  to the viewer directly. Python is the orchestrator.
-- **State is owned by the add-on runtime, not by the widget.** The widget is
-  stateless between navigations. State survives in the per-view runtime object.
-- **The panel must not access MolSysViewer internals directly.** All viewer
-  interaction goes through the public Python API (`view.shapes`, `view.regions`,
-  etc.) or through the context bridge.
-- **Actions must be reproducible.** Any action a panel can trigger must also be
-  callable from the Python API with the same effect.
-- **The panel body is the only add-on-owned UI area.** Add-ons do not get
-  permanent canvas chrome, toolbar buttons, or new context menu families outside
-  of what `AddonContextActionSpec` already supports.
+- **Python owns the logic.** The panel sends intents (actions or state changes), never commands to the viewer directly. Python is the orchestrator.
+- **State is synchronized and namespace-isolated.** The widget leverages `addon_states` to maintain two-way state synchronization. To preserve scientific reproducibility across cell executions and environments, state changes are automatically synchronized between Python and the frontend.
+- **The panel must not access MolSysViewer internals directly.** All viewer interaction goes through the public Python API (`view.shapes`, `view.regions`, etc.) or through the context bridge.
+- **Actions must be reproducible.** Any action a panel can trigger must also be callable from the Python API with the same effect.
+- **The panel body is the only add-on-owned UI area.** Add-ons do not get permanent canvas chrome, toolbar buttons, or new context menu families outside of what `AddonContextActionSpec` already supports.
 
 ## Relationship with Other Devguide Documents
 
@@ -351,8 +430,8 @@ need changes when JS-bundle support is added.
   panels. The architectural requirement "host-agnostic panel concepts" from
   `standalone_direction.md` is satisfied by anywidget panels, which are
   host-independent by design.
-- `path_to_8_5.md` — Gap 4 explicitly requires ElasNetMT to "use the workspace
-  panel host" as a condition for reaching the 8.5/10 competitive target. This
+- `path_to_1_0.md` — The unified release plan requires ElasNetMT to "use the workspace
+  panel host" as a condition for the stable 1.0.0 release. This
   contract is the implementation path for that gap.
 - `elasnetmt_addon_plan.md` — ElasNetMT add-on plan. The "richer
   parameter-editing surface" flagged there is implemented through this contract.

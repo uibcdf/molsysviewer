@@ -92,18 +92,14 @@ Controls which set of canvas surface buttons is rendered.
 |-------|----------|
 | `"classic"` | Current six-button set (Reset, Full, Bg, Spin, Swing, Pop) with text labels |
 | `"minimal"` | Three-control cluster (panel, fullscreen, popup) with SVG icons |
+| `"focus"` | 100% clean canvas with no permanent controls; relies on keyboard shortcuts and context menu |
 
-Default: `"classic"` until `"minimal"` is validated.
+Default: `"classic"` until `"minimal"` or `"focus"` is validated.
 
 Implementation seam: `buildControls()` in `controls.ts`.
-The `classic` path is the current code.
-The `minimal` path adds a parallel branch that renders the three-icon cluster
-and omits the scene-facing buttons.
-
-Scene-facing actions (`background`, `spin`, `swing`, `reset`) must be available
-through the context menu or the Workbench Scene section before `"minimal"` can
-be the default.
-Do not switch the default until those alternatives exist and are tested.
+The `classic` path is the original code.
+The `minimal` path renders the three-icon cluster and omits the scene-facing buttons.
+The `focus` path hides all controls and renders a temporary helper toast upon initialization.
 
 ### Axis 2: `panel_mode_style`
 
@@ -111,79 +107,95 @@ Controls the container architecture for panel mode.
 
 | Value | Behavior |
 |-------|----------|
-| `"drawer"` | Current drawer architecture (left/right anchored, full height, translate slide) |
-| `"floating"` | Target floating panel (centered, percentage-based size, tabs) |
+| `"drawer"` | Original drawer architecture (left/right anchored, full height, translate slide) |
+| `"floating"` | Target floating panel (centered, percentage-based size, separate shells for Navigate/Workbench) |
+| `"floating-unified"` | Unified floating panel (single shared shell, tab-based navigation, drag, opacity, minimize) |
+| `"ambient"` | Glassmorphism floating panel (high blur, translucent dark base, transparent click-through backdrop) |
+| `"split"` | Docked overlay vertical panel (narrow strip on the left, transparent click-through backdrop on the right) |
 
-Default: `"drawer"` until `"floating"` is validated.
+Default: `"drawer"` until a floating/unified mode is validated.
 
-Implementation seam: the panel content (`group-panel.ts`, `workbench-panel.ts`)
-is already independent from the shell (`panel-shell.ts`).
-The floating container is a second shell implementation that hosts the same
-content panels.
-Do not duplicate panel content logic — only duplicate the container/chrome.
+Implementation seam: the panel content (`group-panel.ts`, `workbench-panel.ts`) is independent from the container shell.
+The floating container shells (`FloatingPanelShell`) host the same content panels.
+In `"floating-unified"`, `"ambient"`, and `"split"`, both panels share a single coordinated shell, avoiding visual overlaps.
 
 ### Where the parameters live
 
-Both axes should be exposed at the Python viewer construction level:
+Both axes, along with the high-level preset parameter `viewer_mode`, are exposed at the Python viewer construction level:
 
 ```python
 view = MolSysView(
-    controls_mode="classic",       # or "minimal"
-    panel_mode_style="drawer",     # or "floating"
+    viewer_mode="classic",         # "classic", "classic-floating", "zen", "integrated", "ambient", "focus", "split"
+    controls_mode=None,            # Explicit override
+    panel_mode_style=None,         # Explicit override
 )
 ```
 
-These should also be passable through the existing viewer config path so that
-the JS side receives them at initialization rather than as runtime messages.
+The high-level `viewer_mode` preset maps to the following combinations:
+- `"classic"` (default): `controls_mode="classic"`, `panel_mode_style="drawer"`
+- `"classic-floating"`: `controls_mode="classic"`, `panel_mode_style="floating"`
+- `"zen"`: `controls_mode="minimal"`, `panel_mode_style="floating"`
+- `"integrated"`: `controls_mode="minimal"`, `panel_mode_style="floating-unified"`
+- `"ambient"`: `controls_mode="minimal"`, `panel_mode_style="ambient"`
+- `"focus"`: `controls_mode="focus"`, `panel_mode_style="floating-unified"`
+- `"split"`: `controls_mode="minimal"`, `panel_mode_style="split"`
 
 ## Prerequisite: Scene Actions Before `controls_mode="minimal"` Is Default
 
-Before `controls_mode="minimal"` can become the default, the following must
-exist:
+Before `controls_mode="minimal"` can become the default, the alternative surfaces for scene actions must exist.
+*Status (2026-06-25):* The prerequisites are fully met. The empty-canvas context menu now provides:
+- `Reset View` (Reset camera)
+- `Toggle Background`
+- `Toggle Spin`
+- `Toggle Swing`
 
-- `background` toggle available from the empty-canvas context menu
-- `spin` toggle available from the empty-canvas context menu
-- `swing` toggle available from the empty-canvas context menu
-- `reset camera` available from the empty-canvas context menu or a
-  Workbench Scene section
+These options are functional and validated.
 
-Until these alternatives exist, switching to `"minimal"` would silently remove
-user-facing controls with no replacement path, which is a regression.
+## Transition Horizon & Decision Plan
 
-## Transition Horizon
+These modes should not remain open indefinitely. The experimental phase with the expanded suite of modes (`classic`, `classic-floating`, `zen`, `integrated`, `ambient`, `focus`, `split`) is designed for exploration and evaluation during version `0.14.x`.
 
-These modes should not remain open indefinitely.
+At the `0.14.x` → `0.15.x` boundary:
+- **Decision to close:** We must decide on a single new default and deprecate redundant modes. Keeping 7 modes indefinitely doubles the maintenance and documentation surface.
+- **Proposed Target:** Promote `integrated` (or `split`) as the new default layout, keeping `classic` as an optional legacy fallback, and deprecate `classic-floating` and `zen`.
 
-Proposed horizon: during `0.16.x`, both modes are available and the default
-remains `"classic"` / `"drawer"`. The floating and minimal modes are
-experimentally available for testing.
+## Evaluation and Validation Plan (Experimental Phase)
 
-At the `0.16.x` → `0.17.x` boundary:
+During the `0.14.x` cycle, the following criteria and questions must be studied and resolved to close the transition:
 
-- if `"floating"` + `"minimal"` are proven better: flip the defaults, mark
-  the classic/drawer modes as deprecated, plan removal in `0.18.x`
-- if the drawer proves better or the decision is not clear: document that
-  explicitly and keep the drawer as the permanent default; close or archive
-  this document
+### A. Scientific Workflow Validation
+Test the new modes in real-world, non-trivial notebooks (e.g., trajectory analysis, pockets, or pharmacophores) to evaluate:
+- **Ergonomics (Split vs. Integrated):** Does `split` (Side-HUD) mode provide a significantly more comfortable and fast workflow for residue selection than opening/closing the central card in `integrated`?
+- **Visual Fatigue in Ambient Mode:** Does the translucent *glassmorphism* card in `ambient` mode remain comfortable for reading long residue lists over complex molecular structures, or does it cause eye strain?
+- **Cinema Accessibility:** Does the self-dismissing helper toast in `focus` mode successfully guide first-time users without cluttering the canvas, or do they still struggle with keyboard shortcuts?
 
-**The decision must be closed.** Indefinite coexistence is not a valid
-long-term state — it doubles the maintenance surface without clear benefit.
+### B. Keyboard Shortcut Conflicts
+Since `focus` and floating modes rely heavily on shortcuts (`N`, `W`, `H`, `Esc`):
+- **Audit focus capture:** Test if pressing `Esc` or `H` conflicts with global shortcuts in JupyterLab, classic Jupyter notebooks, or VS Code.
+- Ensure that shortcuts are only captured when the visualizer canvas has focus or that they do not block standard notebook cell operations.
+
+### C. Responsiveness & Split-Screen Performance
+- Test the elastic resizing (`resize: both`) of the floating panels when the Jupyter workspace is split side-by-side.
+- Evaluate if the fixed `330px` width of the `split` panel is too wide in narrow side-by-side celdas, and determine if `split` mode should also support elastic resizing.
+
+### D. Export and Serialization Parity
+- Verify that state-based properties (e.g., whether the panel is minimized, the current opacity index, and the active panel tab) are correctly serialized and restored.
+- Confirm that standalone static HTML exports (`view.export.html()`) render the new modes (`ambient`, `split`, `focus`) perfectly without a running Python backend.
 
 ## Closing Criteria
 
 A mode can be promoted to default when:
 
-1. It has been usable for at least one release cycle without regression reports
-2. The prerequisite scene actions are available through alternative surfaces
-3. At least one non-trivial scientific workflow has been tested through it
-4. The implementation does not require maintaining substantially divergent code
-   paths for panel content
+1. It has been usable for at least one release cycle without regression reports.
+2. The prerequisite scene actions are fully validated through alternative surfaces (context menu).
+3. At least one non-trivial scientific workflow has been verified.
+4. The implementation maintains a unified, non-divergent code path (achieved via the shared shell in `FloatingPanelShell`).
 
 A mode can be deprecated when:
 
-1. Its replacement has been the default for at least one release cycle
-2. No known user workflow depends on it uniquely
-3. Its removal is announced in `changes_notes.md` with the relevant release
+1. Its replacement has been the default for at least one release cycle.
+2. No known user workflow depends on it uniquely.
+3. Its removal is announced in `changes_notes.md`.
 
 ## What This Document Is Not
 

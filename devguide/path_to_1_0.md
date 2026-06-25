@@ -1,80 +1,65 @@
-# Path to 1.0
+# Path to 1.0.0 (Unified Release Plan)
 
-Recorded 2026-04-28 after a full repository audit.
+This document is the authoritative release plan for the **v1.0.0** release of MolSysViewer. 
 
-This document is the working plan for the 1.0 release.
-It is ordered by milestone and updated as items are completed.
+It consolidates the strategic milestones with the competitive quality gaps (previously tracked under the confusing `path_to_8_5.md` document) to ensure that the stable `1.0.0` release reaches a high-quality competitive score (**8.5/10**) in the scientific Python ecosystem.
 
 ---
 
-## 0.18.x — poner la casa en orden
+## 0.18.x — Poner la casa en orden (Completed)
 
-Work done against the current tag (0.18.0).
+Work done against the `0.18.0` tag.
 
 | # | Task | Owner | Status |
 |---|---|---|---|
-| 1 | Rewrite README (current features, real API, no "prototype") | Claude | ✅ 2026-04-28 |
-| 2 | Fix `pyproject.toml`: classifiers, keywords, description | Claude | ✅ 2026-04-28 |
-| 3 | Fill `changes_notes.md`: entries post-2026-04-26 (region_tags, movie, JS test suite) | Claude | ✅ 2026-04-28 |
+| 1 | Rewrite README (current features, real API, no "prototype" mentions) | Claude | ✅ 2026-04-28 |
+| 2 | Fix `pyproject.toml` metadata: classifiers, keywords, description | Claude | ✅ 2026-04-28 |
+| 3 | Update `changes_notes.md` with entries post-2026-04-26 | Claude | ✅ 2026-04-28 |
 | 4 | Fill 3 placeholder doc pages (`demo_systems/catalog`, `demo_systems/index`, `scene_management/visibility`) | Claude | ✅ 2026-04-28 |
-| 5 | Manual smoke test — 14-step flow in `devguide/smoke_test.md` | Diego (display) | — |
-| 6 | Visual smoke of `controls_mode="minimal"` + `panel_mode_style="floating"` in a real notebook | Diego (display) | — |
-| 7 | Publish conda + npm packages for `0.18.0` | Diego (credentials) | — |
+| 5 | Manual smoke test — 14-step flow in `devguide/smoke_test.md` | Diego | — |
+| 6 | Visual smoke of `controls_mode="minimal"` + `panel_mode_style="floating"` in a real notebook | Diego | — |
+| 7 | Publish conda + npm packages for `0.18.0` | Diego | — |
 
 ---
 
-## 0.19.0 — estabilización, dogfooding y features finales
+## 0.19.0 — Estabilización, Dogfooding y Calidad Final (Active)
 
-| # | Task | Owner | Notes |
+This milestone focuses on verifying the mature codebase, polishing the user experience, and creating onboarding materials to drive adoption.
+
+### 1. Technical Features & Infrastructure
+| # | Task | Notes | Status |
 |---|---|---|---|
-| 8 | Run the 5 tutorial notebooks in a real environment; fix discrepancies | Diego + Claude | |
-| 9 | Scientific dogfooding in the lab — collect friction and real bugs | Diego | |
-| 10 | Fix bugs and UX roughness from dogfooding | Claude | |
-| 11 | Fill remaining incomplete docs | Claude | ✅ 2026-04-28 — styles (Focus Styles section), user_presets schema, 4 shape pages, 2 export pages |
-| 12 | **Focus Styles**: cumulative data-driven styles (`+ Hydrophobicity`, `+ H-Bonds` over existing scene) | Claude | ✅ 2026-04-28 — `styles.focus()`, `BUILTIN_FOCUS_STYLES`, `clear_focus()`; 16 new tests |
-| 13 | **Box merging logic**: deterministic box display when merging systems with different unit cells | Claude | 🔍 Audited 2026-04-28 — see note below |
-| 14 | **Orientation plane API**: orientation axes and best-fit plane via Mol* built-ins | Claude | ✅ 2026-04-28 — `view.show_orientation_axes()`, `view.show_best_fit_plane()`; 14 tests |
+| 8 | **Focus Styles**: Cumulative data-driven styles (`styles.focus()`, `clear_focus()`) | Allows highlighting regions (e.g. `+ Hydrophobicity` or `+ H-Bonds`) | ✅ 2026-04-28 |
+| 9 | **Orientation Plane API**: Axes and best-fit planes (`show_orientation_axes()`, `show_best_fit_plane()`) | Exposes Mol* principal axes and best-fit plane representations | ✅ 2026-04-28 |
+| 10 | **Box Merging Logic**: Deterministic unit-cell display when merging systems | Audited: identified as a MolSysMT-side change (requires no code change in viewer) | 🔍 Audited |
 
----
+### 2. Scientific Adoption & Onboarding
+| # | Task | Notes | Status |
+|---|---|---|---|
+| 12 | **First-Contact Onboarding**: Simplify README quickstart | Show the 10-line synergy: MolSysMT reads anything ➔ MolSysViewer displays it | — |
+| 13 | **Surface & UX Polish**: Close minor interaction gaps | Add scroll inside the `GroupStrip` for large systems; improve context menu status feedback | ✅ 2026-06-24 |
 
-### Item 13 — Box merging audit (2026-04-28)
-
-**Where the bug lives: MolSysMT, not MolSysViewer.**
-
-MolSysViewer's loader already passes per-frame box vectors correctly to Mol* —
-box handling in `molsysviewer/loaders/load_molsysmt.py` is per-structure and
-correct for the viewer side.
-
-The issue is in `molsysmt.form.molsysmt_Structures.merge` (line 37-44 of
-`merge.py`): the output box is taken from the **first system only**. Boxes from
-subsequent systems are silently discarded regardless of whether they are
-compatible.
-
-**Proposed fix for MolSysMT's `merge`:**
-
-```python
-# In molsysmt/form/molsysmt_Structures/merge.py
-# After collecting all items, decide the output box:
-# - all have None → output.box = None
-# - all identical → output.box = first box
-# - otherwise (mixed or incompatible) → output.box = None
-#   (no unit cell displayed; safer than silently using a wrong cell)
-```
-
-This is a MolSysMT change — Diego should file/track it there.
-MolSysViewer requires no code change once MolSysMT produces the correct box.
+### 3. Validation & Hardening
+| # | Task | Notes | Status |
+|---|---|---|---|
+| 14 | **Scientific Dogfooding**: Daily lab usage | Collect real-world friction and identify edge cases or bugs | — |
+| 15 | **Bug Resolution**: Fix findings from dogfooding | Address any stability or usability bugs raised by researchers | — |
 
 ---
 
 ## → Tag 1.0.0
-
-Released when 0.19.0 dogfooding produces no new surprises.
+Released when the `0.19.0` dogfooding and validation produce no new surprises.
 
 ---
 
-## Post-1.0
+## Post-1.0 — Escalabilidad y Distribución
 
-| # | Task | Notes |
-|---|---|---|
-| 15 | Add Windows to CI matrix | |
-| 16 | Add Python 3.13 to CI matrix | |
+Tasks that extend the reach and automation of the project but do not block the initial stable release.
+
+| # | Task | Notes | Status |
+|---|---|---|---|
+| 11 | **Scientific Tutorials**: 3-5 case-driven notebooks | Focus on real problems (Pocket Contact Analysis, Conformational Comparison, Pharmacophore Model). Postponed to post-1.0 to wait until sibling tools (`elasnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`) and their respective addons are fully mature and polished. | Postponed |
+| 16 | **E2E Playwright CI Automation** | Run the 10 Playwright E2E tests headlessly in GitHub Actions on every pull request | Planned |
+| 17 | **macOS & Windows Standalone Support** | Build and publish PySide6/QtWebEngine conda recipes for macOS and Windows | Planned |
+| 18 | Add Windows to CI matrix | Standard runner compatibility verification | Planned |
+| 19 | Add Python 3.13 to CI matrix | Upgrade testing environment | Planned |
