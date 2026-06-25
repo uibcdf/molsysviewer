@@ -92,8 +92,8 @@ That principle should guide prioritization throughout the repository.
    - Work lines, roadmap, premium/publication goals, and open questions for image export on top of the current Mol* runtime.
 29. [**MolSysSuite Add-On Direction**](molsyssuite_addon_direction.md)
    - Core-vs-add-on boundary for MolSysViewer, optional ecosystem panels, and the requirement that 1.0 already leave plugin entry points or a template/test in place.
-30. [**Path to 8.5**](path_to_8_5.md)
-   - Competitive assessment of MolSysViewer and the concrete steps needed to reach parity/differentiation at a "8.5/10" quality level.
+30. [**Path to 1.0.0 (Unified Release Plan)**](path_to_1_0.md)
+   - Unified roadmap for the stable 1.0.0 release, integrating competitive quality gaps and strategic milestones.
 31. [**ElasNetMT Add-On Plan**](elasnetmt_addon_plan.md)
    - Concrete integration plan for the ElasNetMT add-on, using the existing overlay primitive set (links, displacement vectors, anisotropy ellipsoids).
 32. [**Course Structure**](course_structure.md)

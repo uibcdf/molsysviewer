@@ -127,7 +127,7 @@ interaction behavior.
 
 ## Python Interaction Callbacks
 
-### Implemented (not yet smoke-tested in a live session)
+### Verified (2026-06-25)
 
 - `view.on_hover(callback)` — registers a callback fired on every
   `interaction_hover` event; deregisters on second call with same callable
@@ -135,6 +135,16 @@ interaction behavior.
 - `view.on_context_menu(callback)` — same pattern for `interaction_context_menu`
 - Callbacks receive the raw event dict (same payload stored in
   `view.get_last_hover_event()` / `view.get_last_click_event()`)
+- **Enriched Biological Metadata**: The frontend now queries the molecular hierarchy in Mol* directly and attaches a complete metadata block. The payload includes:
+  - `chain_id` (string)
+  - `group_name` (string, e.g. "ALA")
+  - `group_id` (string, e.g. "43")
+  - `group_index` (int, 0-indexed residue/group position)
+  - `atom_name` (string, e.g. "CA")
+  - `element` (string, e.g. "C")
+  - `atom_index` (int, global 0-indexed atom index)
+  - `atom_id` (int, global atom ID)
+- This enrichment is resolved locally on the JS side and sent directly, avoiding round-trip latency to Python for standard hover/click inspections.
 - Implementation: `_hover_callbacks`, `_click_callbacks`, `_context_callbacks`
   lists in `core.py`; fired inside the `_handle_frontend_event` dispatcher
 

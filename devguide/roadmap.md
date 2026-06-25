@@ -770,3 +770,4 @@ To reach a successful **1.0 release**, these three pillars must be prioritized o
 ### 3. Documentation for the "Scientific Workbench"
 - The documentation must shift from API reference to case-study-driven tutorials.
 - **Priority:** Create "Workbench Tutorials" (e.g., "How to analyze pocket contacts") that showcase the library as an integrated tool for structural biochemistry and drug design.
+- **Status (Update 2026-06-25):** Postponed to post-1.0. These tutorials heavily depend on sibling packages (`elasnetmt`, `pharmacophoremt`, `molsysmt`, `topomt`). To ensure high-quality and stable integration, they will be developed once those libraries are mature and their respective addons are fully polished.
