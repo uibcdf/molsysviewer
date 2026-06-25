@@ -18,7 +18,7 @@ def digest_bond_length(bond_length, caller=None):
                 if puw.check(bond_length, dimensionality={'[L]':1}):
                     value, unit = puw.get_value_and_unit(bond_length)
                     if is_iterable(value):
-                        return [puw.quantity(ii, unit, standardized=True) for item in value]
+                        return [puw.quantity(item, unit, standardized=True) for item in value]
                     else:
                         return [puw.quantity(value, unit, standardized=True)]
             elif is_iterable(bond_length):

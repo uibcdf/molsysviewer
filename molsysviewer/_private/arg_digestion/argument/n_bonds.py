@@ -15,4 +15,4 @@ def digest_n_bonds(n_bonds, caller=None):
         if isinstance(n_bonds, int):
             return n_bonds
 
-    raise ArgumentError('n_entities', value=n_entities, caller=caller, message=None)
+    raise ArgumentError('n_bonds', value=n_bonds, caller=caller, message=None)

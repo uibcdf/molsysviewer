@@ -1,3 +1,4 @@
+import numpy as np
 from molsysviewer._private.exceptions import ArgumentError
 from molsysviewer._private.variables import is_all
 

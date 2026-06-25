@@ -10,6 +10,6 @@ def digest_rotations(rotations, caller=None):
             if isinstance(rotations, (np.ndarray, list, tuple)):
                 return [digest_rotation(ii) for ii in rotations]
 
-    raise ArgumentError('rotations', value=rotation, caller=caller, message=None)
+    raise ArgumentError('rotations', value=rotations, caller=caller, message=None)
 
 

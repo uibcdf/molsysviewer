@@ -1,4 +1,5 @@
 import numpy as np
+from molsysviewer._pyunitwizard import puw
 from ...exceptions import ArgumentError
 
 functions_where_boolean = (

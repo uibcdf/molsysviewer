@@ -9,7 +9,6 @@ def digest_items(items, forms=None, caller=None):
     if not isinstance(items, (list, tuple)):
         aux_items = [items]
 
-    output_items = []
     in_forms = []
     output = True
 
@@ -26,7 +25,6 @@ def digest_items(items, forms=None, caller=None):
                 forms = [forms]
             for in_form, form in zip(in_forms, forms):
                 if in_form!=form:
-                    message = "The items have not the required forms."
                     raise ArgumentError('item', value=item, caller=caller, message=None)
         return aux_items
 

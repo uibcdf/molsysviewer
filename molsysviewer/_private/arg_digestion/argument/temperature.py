@@ -42,7 +42,7 @@ def digest_temperature(temperature, caller=None):
     value, unit = puw.get_value_and_unit(temperature)
 
     if not puw.check(unit, dimensionality={'[K]':1}):
-        raise ArgumentError('temperature', value=coordinates, caller=caller, message=None)
+        raise ArgumentError('temperature', value=temperature, caller=caller, message=None)
 
     if isinstance(value, (int, np.int64, float, np.float64)):
         return puw.quantity(value, unit, standardized=True)
