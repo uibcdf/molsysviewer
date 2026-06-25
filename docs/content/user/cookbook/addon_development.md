@@ -53,7 +53,7 @@ addon = AddonSpec(
 If you prefer to start from the bundled reference example instead of from
 scratch, use:
 
-- [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
+- [`minimal_topomt.py`](https://github.com/uibcdf/molsysviewer/blob/main/molsysviewer/addon_templates/minimal_topomt.py)
 
 That template is now more than declarative and more than single-panel:
 
@@ -278,5 +278,5 @@ The current goal is a small, explicit, stable extension contract.
 
 For the more normative version of this contract, also see:
 
-- [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
-- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+- [`standards/addons/README.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/README.md)
+- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/IMPLEMENTATION_CONTRACT.md)

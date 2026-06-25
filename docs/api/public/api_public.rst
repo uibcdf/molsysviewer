@@ -14,8 +14,39 @@ Core entrypoints
    molsysviewer.new_view
    molsysviewer.demo
 
-MolSysView: query and live operations
+MolSysView: core operations & loading
 -------------------------------------
+
+.. autosummary::
+   :toctree: autosummary
+   :nosignatures:
+
+   molsysviewer.MolSysView.load
+   molsysviewer.MolSysView.reset_viewer
+   molsysviewer.MolSysView.zoom
+   molsysviewer.MolSysView.focus_selection
+   molsysviewer.MolSysView.focus_region
+   molsysviewer.MolSysView.reset_camera
+   molsysviewer.MolSysView.get_camera_snapshot
+   molsysviewer.MolSysView.set_camera_snapshot
+   molsysviewer.MolSysView.clear_decorations
+
+MolSysView: trajectory navigation & playback
+--------------------------------------------
+
+.. autosummary::
+   :toctree: autosummary
+   :nosignatures:
+
+   molsysviewer.MolSysView.play
+   molsysviewer.MolSysView.pause
+   molsysviewer.MolSysView.set_play_speed
+   molsysviewer.MolSysView.current_structure_index
+   molsysviewer.MolSysView.get_coordinates
+   molsysviewer.MolSysView.set_coordinates
+
+MolSysView: query & live operations
+-----------------------------------
 
 .. autosummary::
    :toctree: autosummary
@@ -28,6 +59,22 @@ MolSysView: query and live operations
    molsysviewer.MolSysView.set
    molsysviewer.MolSysView.add
    molsysviewer.MolSysView.remove
+
+MolSysView: state management & callbacks
+----------------------------------------
+
+.. autosummary::
+   :toctree: autosummary
+   :nosignatures:
+
+   molsysviewer.MolSysView.export_state
+   molsysviewer.MolSysView.import_state
+   molsysviewer.MolSysView.on_hover
+   molsysviewer.MolSysView.off_hover
+   molsysviewer.MolSysView.on_click
+   molsysviewer.MolSysView.off_click
+   molsysviewer.MolSysView.on_context
+   molsysviewer.MolSysView.off_context
 
 Version
 -------
@@ -51,18 +98,33 @@ Configuration
 User presets registry
 ---------------------
 
-.. autodata:: molsysviewer.config.user_presets
+.. data:: molsysviewer.config.user_presets
 
-Scene management
-----------------
+   Registry of user-defined representation presets.
+
+   The registry is a mapping from preset name to configuration dict.
+   Each configuration typically contains 'base', optional 'options', and a list
+   of 'rules' (by selection or atom indices).
+
+   See :func:`load_user_presets` for the expected file structure.
+
+Scene management & objects
+--------------------------
 
 .. autosummary::
    :toctree: autosummary
    :nosignatures:
 
    molsysviewer.whole.Whole
+   molsysviewer.regions.RegionsManager
    molsysviewer.regions.Region
    molsysviewer.layers.Layer
+   molsysviewer.styles.StylesManager
+   molsysviewer.styles.Style
+   molsysviewer.selections.SelectionsManager
+   molsysviewer.selections.Selection
+   molsysviewer.annotations.AnnotationsManager
+   molsysviewer.measurements.MeasurementsManager
 
 Loaders
 -------
@@ -74,8 +136,8 @@ Loaders
    molsysviewer.loaders
    molsysviewer.loaders.load_from_molsysmt
 
-Shapes and overlays
--------------------
+Shapes, timeline & export namespaces
+------------------------------------
 
 .. autosummary::
    :toctree: autosummary
@@ -83,6 +145,8 @@ Shapes and overlays
 
    molsysviewer.shapes
    molsysviewer.shapes.ShapesManager
+   molsysviewer.viewer.movie.MovieManager
+   molsysviewer.exports.ExportManager
    molsysviewer.shapes.SphereShapes
    molsysviewer.shapes.PocketSurfaces
    molsysviewer.shapes.PocketBlobs

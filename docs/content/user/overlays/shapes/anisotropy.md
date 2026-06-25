@@ -114,4 +114,4 @@ layer.delete()
 
 ## Cookbook
 
-- {doc}`../../../cookbook/anisotropy_ellipsoids` — ANM mode ellipsoids from ElasNetMT.
+- {doc}`../../cookbook/anisotropy_ellipsoids` — ANM mode ellipsoids from ElasNetMT.
