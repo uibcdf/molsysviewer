@@ -52,8 +52,8 @@ What downstream teams should not assume yet:
 
 For the most stable normative references, also see:
 
-- [`standards/addons/README.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/README.md)
-- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+- [`standards/addons/README.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/README.md)
+- [`standards/addons/IMPLEMENTATION_CONTRACT.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/IMPLEMENTATION_CONTRACT.md)
 
 ## Public vocabulary
 
@@ -257,7 +257,7 @@ first-class add-on story.
 
 MolSysViewer now ships an importable reference template:
 
-- [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
+- [`minimal_topomt.py`](https://github.com/uibcdf/molsysviewer/blob/main/molsysviewer/addon_templates/minimal_topomt.py)
 
 That template already includes:
 

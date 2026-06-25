@@ -107,5 +107,5 @@ layer.delete()
 
 ## Cookbook
 
-- {doc}`../../../cookbook/pharmacophore_overlay` — complete scientific workflow
+- {doc}`../../cookbook/pharmacophore_overlay` — complete scientific workflow
   combining pocket detection and pharmacophore rendering.

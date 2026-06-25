@@ -105,4 +105,4 @@ layer = view.shapes.add_channel_tube(
 
 ## Cookbook
 
-- {doc}`../../../cookbook/channel_tube` — full workflow with TopoMT route data.
+- {doc}`../../cookbook/channel_tube` — full workflow with TopoMT route data.

@@ -21,10 +21,10 @@ The important product direction is already fixed:
 
 Teams that want to start now already have a starter pack:
 
-- [`minimal_topomt.py`](/home/diego/repos@uibcdf/molsysviewer/molsysviewer/addon_templates/minimal_topomt.py)
-- [`addon_development.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_development.md)
-- [`addon_workspace_workbench.md`](/home/diego/repos@uibcdf/molsysviewer/docs/content/user/cookbook/addon_workspace_workbench.md)
-- [`IMPLEMENTATION_CONTRACT.md`](/home/diego/repos@uibcdf/molsysviewer/standards/addons/IMPLEMENTATION_CONTRACT.md)
+- [`minimal_topomt.py`](https://github.com/uibcdf/molsysviewer/blob/main/molsysviewer/addon_templates/minimal_topomt.py)
+- {doc}`../user/cookbook/addon_development`
+- {doc}`../user/cookbook/addon_workspace_workbench`
+- [`IMPLEMENTATION_CONTRACT.md`](https://github.com/uibcdf/molsysviewer/blob/main/standards/addons/IMPLEMENTATION_CONTRACT.md)
 
 There is now also a single supported smoke/demo path for external teams:
 

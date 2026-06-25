@@ -122,5 +122,5 @@ layer.delete()
 
 ## Cookbook
 
-- {doc}`../../../cookbook/pocket_surface` — `add_pocket_surface` with scalar mapping.
-- {doc}`../../../cookbook/pocket_blob` — `add_pocket_blob` workflow from alpha spheres.
+- {doc}`../../cookbook/pocket_surface` — `add_pocket_surface` with scalar mapping.
+- {doc}`../../cookbook/pocket_blob` — `add_pocket_blob` workflow from alpha spheres.
