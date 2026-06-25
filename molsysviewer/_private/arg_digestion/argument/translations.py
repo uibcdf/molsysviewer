@@ -10,6 +10,6 @@ def digest_translations(translations, caller=None):
             if isinstance(translations, (np.ndarray, list, tuple)):
                 return [digest_translation(ii) for ii in translations]
 
-    raise ArgumentError('translations', value=rotation, caller=caller, message=None)
+    raise ArgumentError('translations', value=translations, caller=caller, message=None)
 
 

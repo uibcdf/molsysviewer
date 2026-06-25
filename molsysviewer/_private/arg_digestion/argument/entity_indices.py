@@ -1,3 +1,4 @@
+import numpy as np
 from ...exceptions import ArgumentError
 from ...variables import is_all
 

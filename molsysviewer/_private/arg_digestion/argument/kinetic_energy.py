@@ -42,7 +42,7 @@ def digest_kinetic_energy(kinetic_energy, caller=None):
     value, unit = puw.get_value_and_unit(kinetic_energy)
 
     if not puw.check(unit, dimensionality={'[L]': 2, '[M]': 1, '[T]': -2, '[mol]': -1}):
-        raise ArgumentError('kinetic_energy', value=coordinates, caller=caller, message=None)
+        raise ArgumentError('kinetic_energy', value=kinetic_energy, caller=caller, message=None)
 
     if isinstance(value, (int, np.int64, float, np.float64)):
         return puw.quantity(value, unit, standardized=True)

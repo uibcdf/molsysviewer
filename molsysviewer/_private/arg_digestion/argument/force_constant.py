@@ -19,7 +19,7 @@ def digest_force_constant(force_constant, caller=None):
                 if puw.check(force_constant, dimensionality={'[M]':1, '[T]':-2, '[mol]':-1}):
                     value, unit = puw.get_value_and_unit(force_constant)
                     if is_iterable(value):
-                        return [puw.quantity(ii, unit, standardized=True) for item in value]
+                        return [puw.quantity(item, unit, standardized=True) for item in value]
                     else:
                         return [puw.quantity(value, unit, standardized=True)]
             elif is_iterable(force_constant):
