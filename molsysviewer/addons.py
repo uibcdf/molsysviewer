@@ -77,6 +77,27 @@ class AddonPanelWidget(anywidget.AnyWidget):
         self.send({"type": "context", "context": ctx})
         return ctx
 
+    @property
+    def state(self) -> dict[str, Any]:
+        """Get the synchronized state dictionary for this addon."""
+        if self._view is not None and hasattr(self._view.widget, "addon_states"):
+            states = self._view.widget.addon_states or {}
+            if self._view._active_panel_widget is not None:
+                addon_name, _, _ = self._view._active_panel_widget
+                return states.get(addon_name, {})
+        return {}
+
+    def set_state(self, updates: dict[str, Any]) -> None:
+        """Update the synchronized state for this addon."""
+        if self._view is not None and hasattr(self._view.widget, "addon_states"):
+            if self._view._active_panel_widget is not None:
+                addon_name, _, _ = self._view._active_panel_widget
+                states = dict(self._view.widget.addon_states or {})
+                addon_state = dict(states.get(addon_name, {}))
+                addon_state.update(updates)
+                states[addon_name] = addon_state
+                self._view.widget.addon_states = states
+
     def handle_action(self, view: Any, action_id: str, payload: dict[str, Any]) -> None:
         """Override to handle panel actions sent from JS."""
 

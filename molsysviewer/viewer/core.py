@@ -169,7 +169,14 @@ class MolSysView(
     @signal(tags=["viewer", "init"])
     @dep_digest('anywidget')
     @dep_digest('molsysmt')
-    def __init__(self, *, debug_js: bool | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        debug_js: bool | None = None,
+        viewer_mode: str | None = None,
+        controls_mode: str | None = None,
+        panel_mode_style: str | None = None,
+    ) -> None:
         self.widget = MolSysViewerWidget()
         self._debug_js = bool(debug_js) if debug_js is not None else False
         self.widget.debug_js = self._debug_js
@@ -290,17 +297,59 @@ class MolSysView(
         except Exception:
             self.widget.controls_position_fullscreen = ["bottom", "right"]
 
-        try:
-            mode = str(config.controls_mode)
-            self.widget.controls_mode = mode if mode in ("classic", "minimal") else "classic"
-        except Exception:
-            self.widget.controls_mode = "classic"
+        # Resolve viewer_mode, controls_mode, and panel_mode_style presets
+        presets = {
+            "classic": ("classic", "drawer"),
+            "classic-floating": ("classic", "floating"),
+            "zen": ("minimal", "floating"),
+            "integrated": ("minimal", "floating-unified"),
+            "ambient": ("minimal", "ambient"),
+            "focus": ("focus", "floating-unified"),
+            "split": ("minimal", "split"),
+        }
 
-        try:
-            style = str(config.panel_mode_style)
-            self.widget.panel_mode_style = style if style in ("drawer", "floating") else "drawer"
-        except Exception:
-            self.widget.panel_mode_style = "drawer"
+        # Retrieve values from config, falling back to defaults if not present
+        cfg_viewer_mode = getattr(config, "viewer_mode", "classic")
+        cfg_controls_mode = getattr(config, "controls_mode", "classic")
+        cfg_panel_mode_style = getattr(config, "panel_mode_style", "drawer")
+
+        # 1. Resolve viewer_mode
+        v_mode = viewer_mode if viewer_mode is not None else cfg_viewer_mode
+        if v_mode not in presets:
+            v_mode = "classic"
+
+        preset_controls, preset_panel = presets[v_mode]
+
+        # 2. Resolve controls_mode (explicit constructor arg > customized config > preset default)
+        if controls_mode is not None:
+            c_mode = controls_mode
+        elif viewer_mode is not None:
+            c_mode = preset_controls
+        else:
+            if cfg_controls_mode != "classic":
+                c_mode = cfg_controls_mode
+            else:
+                c_mode = preset_controls
+
+        c_mode_valid = c_mode if c_mode in ("classic", "minimal", "focus") else "classic"
+
+        # 3. Resolve panel_mode_style (explicit constructor arg > customized config > preset default)
+        if panel_mode_style is not None:
+            p_style = panel_mode_style
+        elif viewer_mode is not None:
+            p_style = preset_panel
+        else:
+            if cfg_panel_mode_style != "drawer":
+                p_style = cfg_panel_mode_style
+            else:
+                p_style = preset_panel
+
+        p_style_valid = p_style if p_style in ("drawer", "floating", "floating-unified", "integrated", "ambient", "split") else "drawer"
+
+        # Set traits on widget
+        self.widget.viewer_mode = v_mode
+        self.widget.controls_mode = c_mode_valid
+        self.widget.panel_mode_style = p_style_valid
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
@@ -1352,7 +1401,7 @@ class MolSysView(
             w = int(width_px or 1280)
             h = int(height_px or 720)
 
-            app = QApplication.instance() or QApplication(sys.argv)  # type: ignore[misc]
+            _app = QApplication.instance() or QApplication(sys.argv)  # type: ignore[misc]
 
             loop = QEventLoop()
             view = QWebEngineView()

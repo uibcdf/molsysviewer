@@ -1,6 +1,7 @@
 type FloatingPanelShellOptions = {
     title: string;
     navButtonLabel?: string;
+    panelModeStyle?: string;
 };
 
 type WorkspaceOption = {
@@ -32,6 +33,8 @@ export class FloatingPanelShell {
 
     private visible = false;
     private expanded = false;
+    private displayUpdatePending = false;
+    private minimized = false;
     private onSelectPanel?: (panelId: string) => void;
     private onSelectWorkspace?: (workspaceId: string) => void;
     private workspaceMenuOpen = false;
@@ -42,6 +45,10 @@ export class FloatingPanelShell {
     private readonly workspaceMenuElement: HTMLDivElement;
 
     constructor(host: HTMLElement, options: FloatingPanelShellOptions) {
+        const style = options.panelModeStyle || "floating";
+        const isAmbient = style === "ambient";
+        const isSplit = style === "split";
+
         // Backdrop overlay (fills the host, captures backdrop clicks)
         this.root = document.createElement("div");
         Object.assign(this.root.style, {
@@ -49,34 +56,68 @@ export class FloatingPanelShell {
             inset: "0",
             display: "none",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: isSplit ? "flex-start" : "center",
             zIndex: "18",
-            pointerEvents: "auto",
-            background: "rgba(0,0,0,0.32)",
+            pointerEvents: (isAmbient || isSplit) ? "none" : "auto",
+            background: (isAmbient || isSplit) ? "transparent" : "rgba(0,0,0,0.32)",
+            paddingLeft: isSplit ? "10px" : "0",
         });
 
         // Floating card
         this.panel = document.createElement("div");
-        Object.assign(this.panel.style, {
+        const baseCardStyle: Partial<CSSStyleDeclaration> = {
             pointerEvents: "auto",
             display: "flex",
             flexDirection: "column",
             alignItems: "stretch",
-            width: "min(72%, 900px)",
-            height: "min(68%, 700px)",
-            minWidth: "380px",
-            minHeight: "420px",
             boxSizing: "border-box",
             overflow: "hidden",
             padding: "10px",
-            borderRadius: "16px",
-            border: "1px solid rgba(255,255,255,0.14)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-            background: "rgba(18, 18, 22, 0.95)",
             color: "#f4f4f5",
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
             fontSize: "12px",
-        });
+        };
+
+        if (isSplit) {
+            Object.assign(baseCardStyle, {
+                width: "330px",
+                height: "calc(100% - 20px)",
+                minWidth: "300px",
+                minHeight: "0",
+                borderRadius: "14px",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+                background: "rgba(18, 18, 22, 0.90)",
+                resize: "horizontal", // Elastic native resizing for split mode
+            });
+        } else if (isAmbient) {
+            Object.assign(baseCardStyle, {
+                width: "min(72%, 900px)",
+                height: "min(68%, 700px)",
+                minWidth: "380px",
+                minHeight: "420px",
+                borderRadius: "16px",
+                border: "1px solid rgba(255,255,255,0.18)",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.40)",
+                background: "rgba(18, 18, 22, 0.50)", // Adjusted from 0.45 for perfect legibility contrast
+                backdropFilter: "blur(24px)",
+                webkitBackdropFilter: "blur(24px)",
+                resize: "both", // Elastic resizing
+            });
+        } else {
+            Object.assign(baseCardStyle, {
+                width: "min(72%, 900px)",
+                height: "min(68%, 700px)",
+                minWidth: "380px",
+                minHeight: "420px",
+                borderRadius: "16px",
+                border: "1px solid rgba(255,255,255,0.14)",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+                background: "rgba(18, 18, 22, 0.95)",
+                resize: "both", // Elastic resizing
+            });
+        }
+        Object.assign(this.panel.style, baseCardStyle);
 
         // Header
         this.headerElement = document.createElement("div");
@@ -90,6 +131,68 @@ export class FloatingPanelShell {
             borderBottom: "1px solid rgba(255,255,255,0.08)",
             flexShrink: "0",
         });
+
+        if (!isSplit) {
+            this.headerElement.style.cursor = "move";
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+            let dragX = 0;
+            let dragY = 0;
+
+            // Mouse dragging
+            this.headerElement.addEventListener("mousedown", (e) => {
+                if (e.button !== 0) return;
+                if ((e.target as HTMLElement).closest("button, input, select")) return;
+
+                isDragging = true;
+                startX = e.clientX - dragX;
+                startY = e.clientY - dragY;
+
+                const onMouseMove = (moveEvent: MouseEvent) => {
+                    if (!isDragging) return;
+                    dragX = moveEvent.clientX - startX;
+                    dragY = moveEvent.clientY - startY;
+                    this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
+                };
+
+                const onMouseUp = () => {
+                    isDragging = false;
+                    window.removeEventListener("mousemove", onMouseMove);
+                    window.removeEventListener("mouseup", onMouseUp);
+                };
+
+                window.addEventListener("mousemove", onMouseMove);
+                window.addEventListener("mouseup", onMouseUp);
+            });
+
+            // Touch dragging for mobile/tablet devices
+            this.headerElement.addEventListener("touchstart", (e) => {
+                if ((e.target as HTMLElement).closest("button, input, select")) return;
+
+                const touch = e.touches[0];
+                isDragging = true;
+                startX = touch.clientX - dragX;
+                startY = touch.clientY - dragY;
+
+                const onTouchMove = (moveEvent: TouchEvent) => {
+                    if (!isDragging) return;
+                    const moveTouch = moveEvent.touches[0];
+                    dragX = moveTouch.clientX - startX;
+                    dragY = moveTouch.clientY - startY;
+                    this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
+                };
+
+                const onTouchEnd = () => {
+                    isDragging = false;
+                    window.removeEventListener("touchmove", onTouchMove);
+                    window.removeEventListener("touchend", onTouchEnd);
+                };
+
+                window.addEventListener("touchmove", onTouchMove, { passive: false });
+                window.addEventListener("touchend", onTouchEnd);
+            });
+        }
 
         this.titleElement = document.createElement("div");
         this.titleElement.textContent = options.title;
@@ -242,6 +345,86 @@ export class FloatingPanelShell {
         this.workspaceGroupElement.appendChild(this.workspaceMenuElement);
         this.headerElement.appendChild(this.workspaceGroupElement);
 
+        // Opacity Toggle Button
+        const opacityStates = isAmbient ? [0.45, 0.85, 0.20] : [0.95, 0.60, 0.30];
+        let opacityIndex = 0;
+
+        const opacityButton = document.createElement("button");
+        opacityButton.type = "button";
+        opacityButton.title = "Toggle opacity";
+        opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
+        Object.assign(opacityButton.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.45)",
+            cursor: "default",
+            padding: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5px",
+            flexShrink: "0",
+            marginLeft: "4px",
+        });
+        opacityButton.addEventListener("mouseenter", () => { opacityButton.style.color = "rgba(255,255,255,0.9)"; });
+        opacityButton.addEventListener("mouseleave", () => { opacityButton.style.color = "rgba(255,255,255,0.45)"; });
+        opacityButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            opacityIndex = (opacityIndex + 1) % opacityStates.length;
+            this.panel.style.opacity = String(opacityStates[opacityIndex]);
+        });
+        this.headerElement.appendChild(opacityButton);
+
+        // Minimize Button
+        const minimizeButton = document.createElement("button");
+        minimizeButton.type = "button";
+        minimizeButton.title = "Minimize";
+        minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+        Object.assign(minimizeButton.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.45)",
+            cursor: "default",
+            padding: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5px",
+            flexShrink: "0",
+            marginLeft: "4px",
+        });
+        minimizeButton.addEventListener("mouseenter", () => { minimizeButton.style.color = "rgba(255,255,255,0.9)"; });
+        minimizeButton.addEventListener("mouseleave", () => { minimizeButton.style.color = "rgba(255,255,255,0.45)"; });
+        
+        let originalHeight = "";
+        let originalMinHeight = "";
+        minimizeButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.minimized = !this.minimized;
+            if (this.minimized) {
+                originalHeight = this.panel.style.height;
+                originalMinHeight = this.panel.style.minHeight;
+                this.panel.style.height = "auto";
+                this.panel.style.minHeight = "0";
+                this.content.style.display = "none";
+                this.root.style.background = "transparent";
+                this.root.style.pointerEvents = "none";
+                minimizeButton.title = "Restore";
+                minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
+            } else {
+                this.panel.style.height = originalHeight || (isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
+                this.panel.style.minHeight = originalMinHeight || (isSplit ? "0" : "420px");
+                this.content.style.display = "flex";
+                this.root.style.background = (isAmbient || isSplit) ? "transparent" : "rgba(0,0,0,0.32)";
+                this.root.style.pointerEvents = (isAmbient || isSplit) ? "none" : "auto";
+                minimizeButton.title = "Minimize";
+                minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
+            }
+        });
+        this.headerElement.appendChild(minimizeButton);
+
         // Close button (this is the toggleButton for interface compatibility)
         this.toggleButton = document.createElement("button");
         this.toggleButton.type = "button";
@@ -299,13 +482,22 @@ export class FloatingPanelShell {
         this.root.style.display = (this.visible && this.expanded) ? "flex" : "none";
     }
 
+    private scheduleDisplayUpdate(): void {
+        if (this.displayUpdatePending) return;
+        this.displayUpdatePending = true;
+        queueMicrotask(() => {
+            this.displayUpdatePending = false;
+            this.applyDisplay();
+        });
+    }
+
     setVisible(visible: boolean): void {
         this.visible = visible;
         if (!visible) {
             this.workspaceMenuOpen = false;
             this.applyWorkspaceMenuState();
         }
-        this.applyDisplay();
+        this.scheduleDisplayUpdate();
     }
 
     isVisible(): boolean {
@@ -314,7 +506,7 @@ export class FloatingPanelShell {
 
     setExpanded(expanded: boolean): void {
         this.expanded = expanded;
-        this.applyDisplay();
+        this.scheduleDisplayUpdate();
     }
 
     setNavButtonLabel(label?: string): void {
@@ -337,10 +529,12 @@ export class FloatingPanelShell {
 
         if (!Array.isArray(items) || items.length <= 1) {
             this.panelStackGroupElement.style.display = "none";
+            this.titleElement.style.display = "block";
             return;
         }
 
         this.panelStackGroupElement.style.display = "flex";
+        this.titleElement.style.display = "none";
         for (const item of items) {
             const node = document.createElement(item.active ? "span" : "button");
             if (item.active) {

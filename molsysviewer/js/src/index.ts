@@ -292,7 +292,7 @@ export default {
                 const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
                 popupMgr.send("molsysviewer-sync-op", syncOp);
             }
-        }, undefined, { panelModeStyle });
+        }, undefined, { panelModeStyle, model });
 
         // 3. Initialize Popup Manager with Payload
         // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.

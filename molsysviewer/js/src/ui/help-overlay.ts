@@ -171,6 +171,7 @@ export class HelpOverlay {
 
         const onKey = (ev: KeyboardEvent) => {
             if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
+            if (!this.host.contains(ev.target as Node)) return;
             if (ev.key === "Escape" || ev.key.toLowerCase() === "h") {
                 ev.stopPropagation();
                 this.hide();

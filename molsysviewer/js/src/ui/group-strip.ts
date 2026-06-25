@@ -81,6 +81,7 @@ export class GroupStrip {
             minWidth: "120px",
             maxWidth: "150px",
             height: "100%",
+            minHeight: "0",
             overflowY: "hidden",
             overflowX: "hidden",
             display: "flex",
@@ -108,6 +109,7 @@ export class GroupStrip {
         this.title.textContent = `Chain ${this.chainLabel}`;
 
         this.row = document.createElement("div");
+        this.row.setAttribute("data-molsysviewer-group-strip-row", "true");
         Object.assign(this.row.style, {
             display: "flex",
             flexDirection: "column",
@@ -117,6 +119,8 @@ export class GroupStrip {
             overflowX: "hidden",
             minHeight: "0",
             flex: "1 1 auto",
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(255, 255, 255, 0.15) transparent",
         });
 
         this.section.appendChild(this.title);

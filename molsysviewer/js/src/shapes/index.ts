@@ -2128,6 +2128,26 @@ function buildLinksFromAtoms(structure: Structure, options: NetworkLinkOptions):
     return specs;
 }
 
+export function computeCentroidFromAtoms(structure: Structure, atomIndices: number[]): [number, number, number] | null {
+    if (atomIndices.length === 0) return null;
+    const lookup = buildUnitLookup(structure);
+    const pos = Vec3();
+    let sumX = 0, sumY = 0, sumZ = 0;
+    let count = 0;
+    for (const idx of atomIndices) {
+        const loc = lookup.get(idx as ElementIndex);
+        if (loc) {
+            loc.unit.conformation.position(loc.elementIndex, pos);
+            sumX += pos[0];
+            sumY += pos[1];
+            sumZ += pos[2];
+            count++;
+        }
+    }
+    if (count === 0) return null;
+    return [sumX / count, sumY / count, sumZ / count];
+}
+
 export async function addNetworkLinksFromPython(plugin: PluginContext, options: NetworkLinkOptions) {
     const mode: NetworkLinkMode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
     const radialSegments = Math.max(3, Math.floor(options.radial_segments ?? 16));

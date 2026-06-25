@@ -60,6 +60,7 @@ export class GroupPanel {
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToWorkbench?: () => void;
     private runtimeVisibleOverride: boolean | null = null;
+    private readonly sharedShell: boolean;
 
     constructor(
         private readonly host: HTMLElement,
@@ -71,29 +72,54 @@ export class GroupPanel {
         private readonly onAnnotationContext: OnAnnotationContext,
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
-        options?: { floating?: boolean },
+        options?: { floating?: boolean; sharedShell?: FloatingPanelShell },
     ) {
-        this.shell = options?.floating
-            ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" })
-            : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
+        const floating = options?.floating || !!options?.sharedShell;
+        this.sharedShell = !!options?.sharedShell;
+        this.shell = options?.sharedShell
+            ? options.sharedShell
+            : (floating
+                ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" })
+                : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" }));
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
-        this.body = this.shell.content;
+
+        if (options?.sharedShell) {
+            this.body = document.createElement("div");
+            Object.assign(this.body.style, {
+                display: "none",
+                flexDirection: "row",
+                overflow: "hidden",
+                gap: "0",
+                width: "100%",
+                height: "100%",
+            });
+            this.shell.content.appendChild(this.body);
+        } else {
+            this.body = this.shell.content;
+            Object.assign(this.body.style, {
+                flexDirection: "row",
+                overflow: "hidden",
+                gap: "0",
+            });
+        }
 
         this.root.setAttribute("data-molsysviewer-group-panel", "true");
         this.toggleButton.setAttribute("data-molsysviewer-group-panel-toggle", "true");
         this.shell.titleElement.setAttribute("data-molsysviewer-group-panel-title", "true");
-        this.toggleButton.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.expanded = !this.expanded;
-            this.applyExpandedState();
-        });
-        this.shell.navButton?.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.onNavigateToWorkbench?.();
-        });
+        if (!this.sharedShell) {
+            this.toggleButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.expanded = !this.expanded;
+                this.applyExpandedState();
+            });
+            this.shell.navButton?.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.onNavigateToWorkbench?.();
+            });
+        }
 
         this.body.setAttribute("data-molsysviewer-group-panel-body", "true");
         Object.assign(this.body.style, {
@@ -163,7 +189,7 @@ export class GroupPanel {
     }
 
     isVisible(): boolean {
-        return this.shell.isVisible();
+        return this.sharedShell ? (this.body.style.display !== "none") : this.shell.isVisible();
     }
 
     setExpanded(expanded: boolean): void {
@@ -181,7 +207,9 @@ export class GroupPanel {
 
     setOnNavigateToWorkbench(callback: (() => void) | undefined, label = "Workbench"): void {
         this.onNavigateToWorkbench = callback;
-        this.shell.setNavButtonLabel(callback ? label : undefined);
+        if (!this.sharedShell) {
+            this.shell.setNavButtonLabel(callback ? label : undefined);
+        }
     }
 
     setRuntimeVisible(visible: boolean | null): void {
@@ -272,7 +300,9 @@ export class GroupPanel {
         this.captureCollapseState();
         for (const strip of this.strips.values()) strip.dispose();
         this.strips.clear();
-        this.shell.dispose();
+        if (!this.sharedShell) {
+            this.shell.dispose();
+        }
     }
 
     private applyExpandedState(): void {
@@ -300,7 +330,11 @@ export class GroupPanel {
 
         const naturalVisible = Boolean(this.structure) && grouped.size > 0;
         const visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
-        this.shell.setVisible(visible);
+        if (this.sharedShell) {
+            this.body.style.display = visible ? "flex" : "none";
+        } else {
+            this.shell.setVisible(visible);
+        }
         if (!visible && this.expanded) {
             this.expanded = false;
         }
