@@ -242,9 +242,10 @@ export default {
 
         // 1. Setup DOM
         const target = document.createElement("div");
+        target.tabIndex = 0;
         Object.assign(target.style, {
             width: "100%", height: "100%", minHeight: "400px", position: "relative",
-            touchAction: "none", cursor: "default", overflow: "hidden" // Default cursor
+            touchAction: "none", cursor: "default", overflow: "hidden", outline: "none" // Default cursor, focus outline hidden
         });
         const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
         
@@ -319,18 +320,28 @@ export default {
                 c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
             }
 
-            const overlay = buildControls(
-                c,
-                model,
-                (msg) => popupMgr.send("molsysviewer-sync-op", msg),
-                target,
-                enablePopout ? () => popupMgr.open() : undefined,
-                {
-                    initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-                    initialFrameCount: trajInfo.frameCount,
+            let overlay: HTMLElement | undefined = undefined;
+            const updateControls = () => {
+                if (overlay) {
+                    overlay.remove();
                 }
-            );
-            target.appendChild(overlay);
+                overlay = buildControls(
+                    c,
+                    model,
+                    (msg) => popupMgr.send("molsysviewer-sync-op", msg),
+                    target,
+                    enablePopout ? () => popupMgr.open() : undefined,
+                    {
+                        initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+                        initialFrameCount: trajInfo.frameCount,
+                    }
+                );
+                if (overlay) {
+                    target.appendChild(overlay);
+                }
+            };
+            updateControls();
+            model.on("change:controls_mode", updateControls);
 
             // 5. Setup Camera Sync (Host -> Popup)
             if (c.plugin.canvas3d) {

@@ -146112,6 +146112,9 @@ var ViewerContextMenu = class {
       const isSpin = this.currentSceneState?.isSpinActive;
       const isSwing = this.currentSceneState?.isSwingActive;
       const isDark = this.currentSceneState?.isDarkMode;
+      const isNavOpen = this.currentSceneState?.isNavigateExpanded;
+      const isWorkOpen = this.currentSceneState?.isWorkbenchExpanded;
+      const activeMode = this.currentSceneState?.currentViewerMode || "classic";
       this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
       this.scrollEl.appendChild(this.makeActionButton(
         isDark ? "Toggle Background (Dark)" : "Toggle Background (Light)",
@@ -146125,6 +146128,44 @@ var ViewerContextMenu = class {
         isSwing ? "Toggle Swing (Active \u2713)" : "Toggle Swing",
         "toggle_swing"
       ));
+      const divPanels = document.createElement("div");
+      Object.assign(divPanels.style, {
+        marginTop: "6px",
+        paddingTop: "6px",
+        borderTop: "1px solid rgba(255,255,255,0.10)"
+      });
+      this.scrollEl.appendChild(divPanels);
+      this.scrollEl.appendChild(this.makeActionButton(
+        isNavOpen ? "Close Navigate Panel" : "Open Navigate Panel",
+        "open_navigate"
+      ));
+      this.scrollEl.appendChild(this.makeActionButton(
+        isWorkOpen ? "Close Workbench Panel" : "Open Workbench Panel",
+        "open_workbench"
+      ));
+      const divModes = document.createElement("div");
+      Object.assign(divModes.style, {
+        marginTop: "6px",
+        paddingTop: "6px",
+        borderTop: "1px solid rgba(255,255,255,0.10)"
+      });
+      this.scrollEl.appendChild(divModes);
+      const modeHeader = document.createElement("div");
+      modeHeader.textContent = "Viewer Mode";
+      Object.assign(modeHeader.style, {
+        padding: "2px 8px 4px 8px",
+        opacity: "0.5",
+        fontSize: "11px",
+        textTransform: "uppercase",
+        letterSpacing: "0.05em",
+        fontWeight: "600"
+      });
+      this.scrollEl.appendChild(modeHeader);
+      const modes = ["classic", "classic-floating", "zen", "integrated", "ambient", "focus", "split"];
+      for (const mode of modes) {
+        const label2 = mode + (activeMode === mode ? " (Active \u2713)" : "");
+        this.scrollEl.appendChild(this.makeActionButton(label2, "set_viewer_mode", { text: mode }));
+      }
     }
     if (this.currentSelection && this.currentSelection.source_kind !== "empty") {
       const section = document.createElement("div");
@@ -148706,31 +148747,30 @@ var PanelShell = class {
 // src/ui/floating-panel-shell.ts
 var FloatingPanelShell = class {
   constructor(host, options) {
-    // No viewport shift for floating panels
-    this.width = 0;
-    this.toggleWidth = 0;
+    this.host = host;
     this.visible = false;
     this.expanded = false;
     this.displayUpdatePending = false;
     this.minimized = false;
     this.workspaceMenuOpen = false;
+    this.isSplit = false;
+    this.isAmbient = false;
     const style = options.panelModeStyle || "floating";
-    const isAmbient = style === "ambient";
-    const isSplit = style === "split";
+    this.panelModeStyle = style;
+    this.isAmbient = style === "ambient";
+    this.isSplit = style === "split";
     this.root = document.createElement("div");
     Object.assign(this.root.style, {
       position: "absolute",
       inset: "0",
       display: "none",
       alignItems: "center",
-      justifyContent: isSplit ? "flex-start" : "center",
-      zIndex: "18",
-      pointerEvents: isAmbient || isSplit ? "none" : "auto",
-      background: isAmbient || isSplit ? "transparent" : "rgba(0,0,0,0.32)",
-      paddingLeft: isSplit ? "10px" : "0"
+      // Center vertically
+      zIndex: "18"
     });
     this.panel = document.createElement("div");
-    const baseCardStyle = {
+    this.panel.style.opacity = "0.90";
+    Object.assign(this.panel.style, {
       pointerEvents: "auto",
       display: "flex",
       flexDirection: "column",
@@ -148741,51 +148781,7 @@ var FloatingPanelShell = class {
       color: "#f4f4f5",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
       fontSize: "12px"
-    };
-    if (isSplit) {
-      Object.assign(baseCardStyle, {
-        width: "330px",
-        height: "calc(100% - 20px)",
-        minWidth: "300px",
-        minHeight: "0",
-        borderRadius: "14px",
-        border: "1px solid rgba(255,255,255,0.12)",
-        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-        background: "rgba(18, 18, 22, 0.90)",
-        resize: "horizontal"
-        // Elastic native resizing for split mode
-      });
-    } else if (isAmbient) {
-      Object.assign(baseCardStyle, {
-        width: "min(72%, 900px)",
-        height: "min(68%, 700px)",
-        minWidth: "380px",
-        minHeight: "420px",
-        borderRadius: "16px",
-        border: "1px solid rgba(255,255,255,0.18)",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.40)",
-        background: "rgba(18, 18, 22, 0.50)",
-        // Adjusted from 0.45 for perfect legibility contrast
-        backdropFilter: "blur(24px)",
-        webkitBackdropFilter: "blur(24px)",
-        resize: "both"
-        // Elastic resizing
-      });
-    } else {
-      Object.assign(baseCardStyle, {
-        width: "min(72%, 900px)",
-        height: "min(68%, 700px)",
-        minWidth: "380px",
-        minHeight: "420px",
-        borderRadius: "16px",
-        border: "1px solid rgba(255,255,255,0.14)",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-        background: "rgba(18, 18, 22, 0.95)",
-        resize: "both"
-        // Elastic resizing
-      });
-    }
-    Object.assign(this.panel.style, baseCardStyle);
+    });
     this.headerElement = document.createElement("div");
     Object.assign(this.headerElement.style, {
       display: "flex",
@@ -148797,53 +148793,69 @@ var FloatingPanelShell = class {
       borderBottom: "1px solid rgba(255,255,255,0.08)",
       flexShrink: "0"
     });
-    if (!isSplit) {
-      this.headerElement.style.cursor = "move";
+    {
       let isDragging = false;
       let startX = 0;
       let startY = 0;
-      let dragX = 0;
-      let dragY = 0;
-      this.headerElement.addEventListener("mousedown", (e) => {
-        if (e.button !== 0) return;
-        if (e.target.closest("button, input, select")) return;
+      let startLeft = 0;
+      let startTop = 0;
+      const dragStart = (clientX, clientY) => {
+        if (this.isSplit) return false;
         isDragging = true;
-        startX = e.clientX - dragX;
-        startY = e.clientY - dragY;
-        const onMouseMove = (moveEvent) => {
-          if (!isDragging) return;
-          dragX = moveEvent.clientX - startX;
-          dragY = moveEvent.clientY - startY;
-          this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
-        };
-        const onMouseUp = () => {
-          isDragging = false;
-          window.removeEventListener("mousemove", onMouseMove);
-          window.removeEventListener("mouseup", onMouseUp);
-        };
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
+        startLeft = this.panel.offsetLeft;
+        startTop = this.panel.offsetTop;
+        startX = clientX;
+        startY = clientY;
+        return true;
+      };
+      const dragMove = (clientX, clientY) => {
+        if (!isDragging) return;
+        const deltaX = clientX - startX;
+        const deltaY = clientY - startY;
+        const hostWidth = this.host.clientWidth;
+        const hostHeight = this.host.clientHeight;
+        const panelWidth = this.panel.offsetWidth;
+        const panelHeight = this.panel.offsetHeight;
+        const newLeft = Math.max(100 - panelWidth, Math.min(hostWidth - 100, startLeft + deltaX));
+        const newTop = Math.max(0, Math.min(hostHeight - 40, startTop + deltaY));
+        this.panel.style.left = `${newLeft}px`;
+        this.panel.style.top = `${newTop}px`;
+      };
+      const dragEnd = () => {
+        isDragging = false;
+      };
+      this.headerElement.addEventListener("mousedown", (e) => {
+        if (e.button !== 0 || e.target.closest("button, input, select")) return;
+        if (dragStart(e.clientX, e.clientY)) {
+          e.preventDefault();
+          const onMouseMove = (moveEvent) => {
+            dragMove(moveEvent.clientX, moveEvent.clientY);
+          };
+          const onMouseUp = () => {
+            dragEnd();
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+          };
+          window.addEventListener("mousemove", onMouseMove);
+          window.addEventListener("mouseup", onMouseUp);
+        }
       });
       this.headerElement.addEventListener("touchstart", (e) => {
         if (e.target.closest("button, input, select")) return;
         const touch = e.touches[0];
-        isDragging = true;
-        startX = touch.clientX - dragX;
-        startY = touch.clientY - dragY;
-        const onTouchMove = (moveEvent) => {
-          if (!isDragging) return;
-          const moveTouch = moveEvent.touches[0];
-          dragX = moveTouch.clientX - startX;
-          dragY = moveTouch.clientY - startY;
-          this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
-        };
-        const onTouchEnd = () => {
-          isDragging = false;
-          window.removeEventListener("touchmove", onTouchMove);
-          window.removeEventListener("touchend", onTouchEnd);
-        };
-        window.addEventListener("touchmove", onTouchMove, { passive: false });
-        window.addEventListener("touchend", onTouchEnd);
+        if (dragStart(touch.clientX, touch.clientY)) {
+          const onTouchMove = (moveEvent) => {
+            const moveTouch = moveEvent.touches[0];
+            dragMove(moveTouch.clientX, moveTouch.clientY);
+          };
+          const onTouchEnd = () => {
+            dragEnd();
+            window.removeEventListener("touchmove", onTouchMove);
+            window.removeEventListener("touchend", onTouchEnd);
+          };
+          window.addEventListener("touchmove", onTouchMove, { passive: true });
+          window.addEventListener("touchend", onTouchEnd);
+        }
       });
     }
     this.titleElement = document.createElement("div");
@@ -148903,7 +148915,6 @@ var FloatingPanelShell = class {
       this.headerElement.appendChild(this.titleElement);
     }
     this.panelStackGroupElement = document.createElement("div");
-    this.panelStackGroupElement.setAttribute("data-molsysviewer-panel-stack", "true");
     Object.assign(this.panelStackGroupElement.style, {
       display: "none",
       alignItems: "center",
@@ -148913,7 +148924,6 @@ var FloatingPanelShell = class {
     });
     this.headerElement.appendChild(this.panelStackGroupElement);
     this.workspaceGroupElement = document.createElement("div");
-    this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-group", "true");
     Object.assign(this.workspaceGroupElement.style, {
       display: "none",
       position: "relative",
@@ -148936,42 +148946,21 @@ var FloatingPanelShell = class {
       textAlign: "left"
     });
     this.workspaceCurrentMarkerElement = document.createElement("span");
-    this.workspaceCurrentMarkerElement.setAttribute("data-molsysviewer-panel-workspace-current-marker", "true");
-    Object.assign(this.workspaceCurrentMarkerElement.style, {
-      fontSize: "9px",
-      fontWeight: "700",
-      lineHeight: "1.1",
-      letterSpacing: "0.08em",
-      textTransform: "uppercase",
-      color: "rgba(244,244,245,0.52)"
-    });
+    Object.assign(this.workspaceCurrentMarkerElement.style, { fontSize: "9px", fontWeight: "700", lineHeight: "1.1", letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(244,244,245,0.52)" });
     this.workspaceCurrentTitleElement = document.createElement("span");
-    this.workspaceCurrentTitleElement.setAttribute("data-molsysviewer-panel-workspace-current-title", "true");
-    Object.assign(this.workspaceCurrentTitleElement.style, {
-      fontSize: "11px",
-      fontWeight: "700",
-      lineHeight: "1.1",
-      color: "#f4f4f5"
-    });
+    Object.assign(this.workspaceCurrentTitleElement.style, { fontSize: "11px", fontWeight: "700", lineHeight: "1.1", color: "#f4f4f5" });
     this.workspaceCurrentSubtitleElement = document.createElement("span");
-    this.workspaceCurrentSubtitleElement.setAttribute("data-molsysviewer-panel-workspace-current-subtitle", "true");
-    Object.assign(this.workspaceCurrentSubtitleElement.style, {
-      fontSize: "10px",
-      lineHeight: "1.2",
-      color: "rgba(244,244,245,0.68)"
-    });
+    Object.assign(this.workspaceCurrentSubtitleElement.style, { fontSize: "10px", lineHeight: "1.2", color: "rgba(244,244,245,0.68)" });
     this.workspaceCurrentElement.appendChild(this.workspaceCurrentMarkerElement);
     this.workspaceCurrentElement.appendChild(this.workspaceCurrentTitleElement);
     this.workspaceCurrentElement.appendChild(this.workspaceCurrentSubtitleElement);
     this.workspaceCurrentElement.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      if (this.workspaceMenuElement.childElementCount <= 0) return;
       this.workspaceMenuOpen = !this.workspaceMenuOpen;
       this.applyWorkspaceMenuState();
     });
     this.workspaceMenuElement = document.createElement("div");
-    this.workspaceMenuElement.setAttribute("data-molsysviewer-panel-workspace-launcher", "true");
     Object.assign(this.workspaceMenuElement.style, {
       position: "absolute",
       top: "calc(100% + 6px)",
@@ -148986,11 +148975,63 @@ var FloatingPanelShell = class {
       boxShadow: "0 16px 32px rgba(0,0,0,0.24)",
       zIndex: "20"
     });
-    this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
-    this.workspaceGroupElement.appendChild(this.workspaceMenuElement);
     this.headerElement.appendChild(this.workspaceGroupElement);
-    const opacityStates = isAmbient ? [0.45, 0.85, 0.2] : [0.95, 0.6, 0.3];
-    let opacityIndex = 0;
+    this.dockButton = document.createElement("button");
+    this.dockButton.type = "button";
+    Object.assign(this.dockButton.style, {
+      background: "transparent",
+      border: "none",
+      color: "rgba(255,255,255,0.45)",
+      cursor: "default",
+      padding: "4px",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "5px",
+      flexShrink: "0",
+      marginLeft: "4px"
+    });
+    this.dockButton.addEventListener("mouseenter", () => {
+      this.dockButton.style.color = "rgba(255,255,255,0.9)";
+    });
+    this.dockButton.addEventListener("mouseleave", () => {
+      this.dockButton.style.color = "rgba(255,255,255,0.45)";
+    });
+    this.dockButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.isSplit = !this.isSplit;
+      this.updateLayout();
+    });
+    this.headerElement.appendChild(this.dockButton);
+    this.lockButton = document.createElement("button");
+    this.lockButton.type = "button";
+    Object.assign(this.lockButton.style, {
+      background: "transparent",
+      border: "none",
+      color: "rgba(255,255,255,0.45)",
+      cursor: "default",
+      padding: "4px",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "5px",
+      flexShrink: "0",
+      marginLeft: "4px"
+    });
+    this.lockButton.addEventListener("mouseenter", () => {
+      this.lockButton.style.color = "rgba(255,255,255,0.9)";
+    });
+    this.lockButton.addEventListener("mouseleave", () => {
+      this.lockButton.style.color = "rgba(255,255,255,0.45)";
+    });
+    this.lockButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.isAmbient = !this.isAmbient;
+      this.updateLayout();
+    });
+    this.headerElement.appendChild(this.lockButton);
     const opacityButton = document.createElement("button");
     opacityButton.type = "button";
     opacityButton.title = "Toggle opacity";
@@ -149017,8 +149058,22 @@ var FloatingPanelShell = class {
     opacityButton.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      opacityIndex = (opacityIndex + 1) % opacityStates.length;
-      this.panel.style.opacity = String(opacityStates[opacityIndex]);
+      const states = [0.9, 0.7, 0.45];
+      const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
+      let idx = states.indexOf(currentOpacity);
+      if (idx === -1) {
+        let minDiff = Infinity;
+        idx = 0;
+        for (let i = 0; i < states.length; i++) {
+          const diff = Math.abs(states[i] - currentOpacity);
+          if (diff < minDiff) {
+            minDiff = diff;
+            idx = i;
+          }
+        }
+      }
+      const nextIdx = (idx + 1) % states.length;
+      this.panel.style.opacity = String(states[nextIdx]);
     });
     this.headerElement.appendChild(opacityButton);
     const minimizeButton = document.createElement("button");
@@ -149115,10 +149170,93 @@ var FloatingPanelShell = class {
     this.panel.appendChild(this.headerElement);
     this.panel.appendChild(this.content);
     this.root.appendChild(this.panel);
-    this.root.addEventListener("pointerdown", (ev) => {
-      if (ev.target === this.root) this.toggleButton.click();
+    this.panelResizeObserver = new ResizeObserver(() => {
+      if (this.isSplit) {
+        this.onResize?.(this.panel.offsetWidth);
+      }
     });
+    this.updateLayout();
     host.appendChild(this.root);
+  }
+  get width() {
+    if (this.isSplit) {
+      return this.getWidth();
+    }
+    return 0;
+  }
+  get toggleWidth() {
+    return 0;
+  }
+  updateLayout() {
+    const isSplit2 = this.isSplit;
+    const isAmbient2 = this.isAmbient;
+    Object.assign(this.root.style, {
+      justifyContent: isSplit2 ? "flex-start" : "center",
+      pointerEvents: isAmbient2 || isSplit2 ? "none" : "auto",
+      background: isAmbient2 || isSplit2 ? "transparent" : "rgba(0,0,0,0.32)",
+      paddingLeft: isSplit2 ? "10px" : "0"
+    });
+    this.panel.style.position = "absolute";
+    if (isSplit2) {
+      this.panel.style.transform = "";
+      this.panel.style.backdropFilter = "";
+      this.panel.style.webkitBackdropFilter = "";
+      this.panel.style.left = "10px";
+      this.panel.style.top = "10px";
+      this.panel.style.width = "50%";
+      Object.assign(this.panel.style, {
+        height: "calc(100% - 20px)",
+        borderRadius: "14px",
+        border: "1px solid rgba(255,255,255,0.12)",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+        background: "rgba(18, 18, 22, 0.90)",
+        resize: "horizontal"
+      });
+      this.headerElement.style.cursor = "default";
+      this.panelResizeObserver?.observe(this.panel);
+    } else {
+      this.panelResizeObserver?.unobserve(this.panel);
+      if (!this.panel.style.width || this.panel.style.width === "50%") {
+        const hostWidth = this.host.clientWidth;
+        const hostHeight = this.host.clientHeight;
+        const panelWidth = Math.min(hostWidth * 0.75, 950);
+        const panelHeight = Math.min(hostHeight * 0.8, 780);
+        const left = Math.max(10, (hostWidth - panelWidth) / 2);
+        const top = Math.max(10, (hostHeight - panelHeight) / 2);
+        this.panel.style.left = `${left}px`;
+        this.panel.style.top = `${top}px`;
+        this.panel.style.width = `${panelWidth}px`;
+        this.panel.style.height = `${panelHeight}px`;
+      }
+      Object.assign(this.panel.style, {
+        borderRadius: "16px",
+        border: "1px solid rgba(255,255,255,0.14)",
+        boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+        background: "rgba(18, 18, 22, 0.90)",
+        backdropFilter: "blur(20px)",
+        webkitBackdropFilter: "blur(20px)",
+        resize: "both"
+      });
+      this.headerElement.style.cursor = "move";
+    }
+    if (this.dockButton) {
+      this.dockButton.title = isSplit2 ? "Float panel" : "Dock panel (Split)";
+      this.dockButton.innerHTML = isSplit2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="6" y1="2" x2="6" y2="14"/></svg>`;
+    }
+    if (this.lockButton) {
+      this.lockButton.title = isAmbient2 ? "Lock background" : "Unlock background (Ambient)";
+      this.lockButton.innerHTML = isAmbient2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 6-2.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 7 0v3"/></svg>`;
+      this.lockButton.style.display = isSplit2 ? "none" : "inline-flex";
+    }
+    this.onResize?.(this.getWidth());
+  }
+  getWidth() {
+    if (!this.expanded || !this.visible) return 0;
+    let w = this.panel.offsetWidth;
+    if (w === 0) {
+      w = Math.max(300, Math.floor(this.host.clientWidth / 2));
+    }
+    return w;
   }
   applyDisplay() {
     this.root.style.display = this.visible && this.expanded ? "flex" : "none";
@@ -149328,6 +149466,7 @@ var FloatingPanelShell = class {
     this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-launcher-open", this.workspaceMenuOpen ? "true" : "false");
   }
   dispose() {
+    this.panelResizeObserver?.disconnect();
     this.root.remove();
   }
 };
@@ -149369,6 +149508,7 @@ var GroupPanel = class {
     this.savedSelections = [];
     this.regions = [];
     this.runtimeVisibleOverride = null;
+    this.visible = false;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
     this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" }) : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
@@ -149467,7 +149607,7 @@ var GroupPanel = class {
     return this.shell.width;
   }
   isVisible() {
-    return this.sharedShell ? this.body.style.display !== "none" : this.shell.isVisible();
+    return this.visible;
   }
   setExpanded(expanded) {
     this.expanded = expanded;
@@ -149494,8 +149634,10 @@ var GroupPanel = class {
     this.shell.setWorkspaceOptions(items, currentId);
   }
   setPanelStack(items, onSelect) {
-    this.shell.setOnSelectPanel(onSelect);
-    this.shell.setPanelOptions(items);
+    if (!this.sharedShell) {
+      this.shell.setOnSelectPanel(onSelect);
+      this.shell.setPanelOptions(items);
+    }
   }
   updateSelection(selection) {
     this.currentSelection = selection;
@@ -149565,8 +149707,19 @@ var GroupPanel = class {
       this.shell.dispose();
     }
   }
+  updateBodyDisplay() {
+    if (this.sharedShell) {
+      this.body.style.display = this.visible && this.expanded ? "flex" : "none";
+    } else {
+      this.shell.setVisible(this.visible);
+    }
+  }
   applyExpandedState() {
-    this.shell.setExpanded(this.expanded);
+    if (this.sharedShell) {
+      this.updateBodyDisplay();
+    } else {
+      this.shell.setExpanded(this.expanded);
+    }
     this.onExpandedChange?.(this.expanded);
   }
   render() {
@@ -149586,13 +149739,9 @@ var GroupPanel = class {
       this.strips.delete(chain2);
     }
     const naturalVisible = Boolean(this.structure) && grouped.size > 0;
-    const visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
-    if (this.sharedShell) {
-      this.body.style.display = visible ? "flex" : "none";
-    } else {
-      this.shell.setVisible(visible);
-    }
-    if (!visible && this.expanded) {
+    this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
+    this.updateBodyDisplay();
+    if (!this.visible && this.expanded) {
       this.expanded = false;
     }
     if (!this.structure || grouped.size === 0) return;
@@ -149746,6 +149895,7 @@ var WorkbenchPanel = class {
     this.currentWorkspaceId = "core";
     this.activeWorkspacePanelSummary = null;
     this.expanded = false;
+    this.visible = false;
     const floating = options?.floating || !!options?.sharedShell;
     this.floating = floating;
     this.sharedShell = !!options?.sharedShell;
@@ -149900,12 +150050,16 @@ var WorkbenchPanel = class {
     this.applyExpandedState();
     this.setVisible(!floating);
   }
-  setVisible(visible) {
+  updateBodyDisplay() {
     if (this.sharedShell) {
-      this.body.style.display = visible ? "flex" : "none";
+      this.body.style.display = this.visible && this.expanded ? "flex" : "none";
     } else {
-      this.shell.setVisible(visible);
+      this.shell.setVisible(this.visible);
     }
+  }
+  setVisible(visible) {
+    this.visible = visible;
+    this.updateBodyDisplay();
     if (!visible && this.expanded) {
       this.expanded = false;
       this.applyExpandedState();
@@ -149915,7 +150069,7 @@ var WorkbenchPanel = class {
     return this.shell.width;
   }
   isVisible() {
-    return this.sharedShell ? this.body.style.display !== "none" : this.shell.isVisible();
+    return this.visible;
   }
   setExpanded(expanded) {
     this.expanded = expanded;
@@ -149944,12 +150098,14 @@ var WorkbenchPanel = class {
   setWorkspacePanels(items, onSelect) {
     this.workspacePanelItems = Array.isArray(items) ? items : [];
     this.onSelectWorkspacePanel = onSelect;
-    this.shell.setOnSelectPanel(onSelect);
-    this.shell.setPanelOptions(items.map((item2) => ({
-      id: item2.id,
-      title: item2.title,
-      active: item2.active
-    })));
+    if (!this.sharedShell) {
+      this.shell.setOnSelectPanel(onSelect);
+      this.shell.setPanelOptions(items.map((item2) => ({
+        id: item2.id,
+        title: item2.title,
+        active: item2.active
+      })));
+    }
     this.renderWorkspaceOverview();
   }
   setActiveWorkspacePanel(summary) {
@@ -150493,7 +150649,11 @@ var WorkbenchPanel = class {
   }
   applyExpandedState() {
     if (this.floating) {
-      this.shell.setExpanded(this.expanded);
+      if (this.sharedShell) {
+        this.updateBodyDisplay();
+      } else {
+        this.shell.setExpanded(this.expanded);
+      }
     } else {
       this.toggleButton.textContent = this.expanded ? ">" : "<";
       this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(${this.shell.width}px)`;
@@ -151142,7 +151302,18 @@ var MolSysViewerController = class _MolSysViewerController {
         event.stopPropagation();
         this.collapsePanels();
       });
+      sharedShell.setVisible(true);
       this.sharedShell = sharedShell;
+      if (initOptions?.panelModeStyle === "split") {
+        sharedShell.onResize = () => {
+          this.updateCanvasInsets();
+        };
+        const ro = new ResizeObserver(() => {
+          this.updateCanvasInsets();
+        });
+        ro.observe(host);
+        this.splitResizeObserver = ro;
+      }
     }
     this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
     this.groupPanel = new GroupPanel(host, (items, additive) => {
@@ -151248,6 +151419,22 @@ var MolSysViewerController = class _MolSysViewerController {
         void this.toggleSwing();
         return;
       }
+      if (action === "open_navigate") {
+        this.setPanelMode("navigate", true);
+        return;
+      }
+      if (action === "open_workbench") {
+        this.setPanelMode("workbench", true);
+        return;
+      }
+      if (action === "set_viewer_mode") {
+        const mode = details?.text;
+        if (mode && this.model) {
+          this.model.set("viewer_mode", mode);
+          this.model.save_changes();
+        }
+        return;
+      }
       if (action === "toggle_region_visibility") {
         const tag = typeof details?.tag === "string" ? details.tag : null;
         if (!tag) return;
@@ -151310,7 +151497,25 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.updateContextTarget(annPayload);
         this.syncWorkbenchContextFromPayload(annPayload);
         emitInteractionEvent(annPayload);
-        this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
+        this.contextMenu.open(
+          annPayload,
+          page_x ?? 0,
+          page_y ?? 0,
+          this.currentActiveSelection,
+          this.lastMeasurementSummary,
+          this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+          this.getRelevantRegionSummaries(annPayload),
+          this.addonContextActions,
+          this.addonContextItems,
+          {
+            isSpinActive: this.scene.isSpinActive,
+            isSwingActive: this.scene.isSwingActive,
+            isDarkMode: this.scene.isDarkMode,
+            isNavigateExpanded: this.groupPanel.isExpanded(),
+            isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+            currentViewerMode: this.model?.get("viewer_mode") || "classic"
+          }
+        );
         return;
       }
       if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
@@ -151328,7 +151533,25 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.updateContextTarget(measPayload);
         this.syncWorkbenchContextFromPayload(measPayload);
         emitInteractionEvent(measPayload);
-        this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
+        this.contextMenu.open(
+          measPayload,
+          page_x ?? 0,
+          page_y ?? 0,
+          this.currentActiveSelection,
+          this.lastMeasurementSummary,
+          this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+          this.getRelevantRegionSummaries(measPayload),
+          this.addonContextActions,
+          this.addonContextItems,
+          {
+            isSpinActive: this.scene.isSpinActive,
+            isSwingActive: this.scene.isSwingActive,
+            isDarkMode: this.scene.isDarkMode,
+            isNavigateExpanded: this.groupPanel.isExpanded(),
+            isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+            currentViewerMode: this.model?.get("viewer_mode") || "classic"
+          }
+        );
         return;
       }
       let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
@@ -151404,7 +151627,14 @@ var MolSysViewerController = class _MolSysViewerController {
         this.getRelevantRegionSummaries(payload),
         this.addonContextActions,
         this.addonContextItems,
-        { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
+        {
+          isSpinActive: this.scene.isSpinActive,
+          isSwingActive: this.scene.isSwingActive,
+          isDarkMode: this.scene.isDarkMode,
+          isNavigateExpanded: this.groupPanel.isExpanded(),
+          isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+          currentViewerMode: this.model?.get("viewer_mode") || "classic"
+        }
       );
     }, (ev) => {
       this.lastHoverLoci = ev?.current?.loci ?? null;
@@ -151656,6 +151886,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.groupPanel.dispose();
     this.workbenchPanel.dispose();
     this.sharedShell?.dispose();
+    this.splitResizeObserver?.disconnect();
     this.contextMenu.dispose();
     this.releaseContextMenuSuppression?.();
     this.releaseGlobalEscapeHandler?.();
@@ -151723,6 +151954,7 @@ var MolSysViewerController = class _MolSysViewerController {
     try {
       this.groupPanel.setExpanded(false);
       this.workbenchPanel.setExpanded(false);
+      this.sharedShell?.setExpanded(false);
     } finally {
       this.syncingPanelExpansion = false;
     }
@@ -151809,6 +152041,7 @@ var MolSysViewerController = class _MolSysViewerController {
     try {
       this.groupPanel.setExpanded(target === "navigate");
       this.workbenchPanel.setExpanded(target === "workbench");
+      this.sharedShell?.setExpanded(true);
       this.lastPanelMode = target;
       if (this.currentWorkspace === "core") {
         this.lastCorePanelMode = target;
@@ -151848,6 +152081,19 @@ var MolSysViewerController = class _MolSysViewerController {
       this.selectWorkspace(workspaceId);
     });
     if (this.currentWorkspace === "core") {
+      if (this.sharedShell) {
+        const activeMode = this.lastPanelMode;
+        this.sharedShell.setOnSelectPanel((panelId) => {
+          if (panelId === "navigate" || panelId === "workbench") {
+            this.setPanelMode(panelId, true);
+            this.refreshPanelWorkspaceChrome();
+          }
+        });
+        this.sharedShell.setPanelOptions([
+          { id: "navigate", title: "Navigate", active: activeMode === "navigate" },
+          { id: "workbench", title: "Workbench", active: activeMode === "workbench" }
+        ]);
+      }
       this.groupPanel.setPanelStack([
         { id: "navigate", title: "Navigate", active: true },
         { id: "workbench", title: "Workbench" }
@@ -151868,6 +152114,18 @@ var MolSysViewerController = class _MolSysViewerController {
     this.groupPanel.setPanelStack([], void 0);
     const panels = this.getWorkspacePanels(this.currentWorkspace);
     const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+    if (this.sharedShell) {
+      this.sharedShell.setOnSelectPanel((panelId) => {
+        this.selectWorkspacePanel(this.currentWorkspace, panelId);
+      });
+      this.sharedShell.setPanelOptions(
+        panels.map((item2) => ({
+          id: item2.id,
+          title: item2.title,
+          active: item2.id === selectedId
+        }))
+      );
+    }
     this.workbenchPanel.setWorkspacePanels(
       panels.map((item2) => ({
         id: item2.id,
@@ -151907,7 +152165,14 @@ var MolSysViewerController = class _MolSysViewerController {
       this.getRelevantRegionSummaries(payload),
       this.addonContextActions,
       this.addonContextItems,
-      { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
+      {
+        isSpinActive: this.scene.isSpinActive,
+        isSwingActive: this.scene.isSwingActive,
+        isDarkMode: this.scene.isDarkMode,
+        isNavigateExpanded: this.groupPanel.isExpanded(),
+        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+        currentViewerMode: this.model?.get("viewer_mode") || "classic"
+      }
     );
   }
   openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent) {
@@ -151930,7 +152195,14 @@ var MolSysViewerController = class _MolSysViewerController {
       this.getRelevantRegionSummaries(payload),
       this.addonContextActions,
       this.addonContextItems,
-      { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
+      {
+        isSpinActive: this.scene.isSpinActive,
+        isSwingActive: this.scene.isSwingActive,
+        isDarkMode: this.scene.isDarkMode,
+        isNavigateExpanded: this.groupPanel.isExpanded(),
+        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+        currentViewerMode: this.model?.get("viewer_mode") || "classic"
+      }
     );
   }
   focusCurrentSelection() {
@@ -154367,8 +154639,50 @@ var makeButton = (label2, onClick) => {
   btn.addEventListener("click", onClick);
   return btn;
 };
+var makeMinimalTrajButton = (svgInner, title, onClick) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.title = title;
+  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
+  Object.assign(btn.style, {
+    width: "28px",
+    height: "28px",
+    minWidth: "28px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    borderRadius: "6px",
+    background: "rgba(18, 18, 22, 0.75)",
+    color: "rgba(255, 255, 255, 0.75)",
+    cursor: "default",
+    userSelect: "none",
+    pointerEvents: "auto",
+    boxSizing: "border-box",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+    transition: "all 120ms ease"
+  });
+  btn.addEventListener("mouseenter", () => {
+    btn.style.background = "rgba(18, 18, 22, 0.95)";
+    btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
+    btn.style.color = "rgba(255, 255, 255, 0.98)";
+  });
+  btn.addEventListener("mouseleave", () => {
+    btn.style.background = "rgba(18, 18, 22, 0.75)";
+    btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
+    btn.style.color = "rgba(255, 255, 255, 0.75)";
+  });
+  btn.addEventListener("click", onClick);
+  return btn;
+};
 var injectStyles = () => {
-  if (document.getElementById("molsysviewer-traj-style")) return;
+  let el = document.getElementById("molsysviewer-traj-style");
+  if (!el) {
+    el = document.createElement("style");
+    el.id = "molsysviewer-traj-style";
+    document.head.appendChild(el);
+  }
   const css = `
         .molsysviewer-controls {
             font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -154462,30 +154776,111 @@ var injectStyles = () => {
             background: rgba(80,80,80,0.95) !important;
             border: none !important;
         }
+        .molsysviewer-slider-minimal {
+            background: transparent;
+            height: 4px;
+            border-radius: 999px;
+            overflow: visible;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider-minimal::-moz-range-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider-minimal::-ms-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+            border: none;
+            color: transparent;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+            margin-top: -3px;
+            cursor: default;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-thumb:hover,
+        .molsysviewer-slider-minimal::-webkit-slider-thumb:active {
+            background: #ffffff !important;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.6) !important;
+        }
+        .molsysviewer-slider-minimal::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+            cursor: default;
+        }
+        .molsysviewer-slider-minimal::-moz-range-thumb:hover,
+        .molsysviewer-slider-minimal::-moz-range-thumb:active {
+            background: #ffffff !important;
+        }
+        .molsysviewer-slider-minimal::-ms-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+        }
+        .molsysviewer-traj-capsule {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 10px;
+            background: rgba(18, 18, 22, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
     `;
-  const el = document.createElement("style");
-  el.id = "molsysviewer-traj-style";
   el.textContent = css;
-  document.head.appendChild(el);
 };
-var makeNumberControl = (initial, onChange, title) => {
+var makeNumberControl = (initial, onChange, title, minimal = false) => {
   const wrapper = document.createElement("div");
   wrapper.style.position = "relative";
   wrapper.style.display = "inline-block";
-  wrapper.style.width = "52px";
-  wrapper.style.height = "22px";
+  wrapper.style.width = minimal ? "42px" : "52px";
+  wrapper.style.height = minimal ? "28px" : "22px";
   const input = document.createElement("input");
   input.type = "text";
   input.value = String(initial);
-  input.style.width = "52px";
-  input.style.height = "22px";
-  input.style.fontSize = "11px";
+  input.style.width = minimal ? "42px" : "52px";
+  input.style.height = minimal ? "28px" : "22px";
+  input.style.fontSize = minimal ? "11px" : "11px";
+  input.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
+  input.style.fontWeight = minimal ? "600" : "normal";
+  input.style.textAlign = "center";
   input.style.boxSizing = "border-box";
-  input.style.color = "rgba(255,255,255,0.9)";
-  input.style.background = "rgba(40,40,40,0.6)";
-  input.style.border = "1px solid rgba(255,255,255,0.55)";
-  input.style.borderRadius = "4px";
-  input.style.padding = "0 18px 0 4px";
+  if (minimal) {
+    input.style.color = "rgba(255,255,255,0.9)";
+    input.style.background = "rgba(18, 18, 22, 0.75)";
+    input.style.border = "1px solid rgba(255,255,255,0.15)";
+    input.style.borderRadius = "6px";
+    input.style.padding = "0 14px 0 6px";
+  } else {
+    input.style.color = "rgba(255,255,255,0.9)";
+    input.style.background = "rgba(40,40,40,0.6)";
+    input.style.border = "1px solid rgba(255,255,255,0.55)";
+    input.style.borderRadius = "4px";
+    input.style.padding = "0 18px 0 4px";
+  }
   input.style.appearance = "none";
   input.style.MozAppearance = "textfield";
   input.style.WebkitAppearance = "none";
@@ -154503,18 +154898,27 @@ var makeNumberControl = (initial, onChange, title) => {
   spinner.style.position = "absolute";
   spinner.style.top = "1px";
   spinner.style.right = "2px";
-  spinner.style.width = "14px";
-  spinner.style.height = "18px";
+  spinner.style.width = minimal ? "12px" : "14px";
+  spinner.style.height = minimal ? "26px" : "18px";
   spinner.style.display = "flex";
   spinner.style.flexDirection = "column";
   spinner.style.alignItems = "center";
-  const mkArrow = (char, delta2, extraTop = "0px") => {
+  const mkArrow = (charOrSvg, delta2, extraTop = "0px") => {
     const btn = document.createElement("div");
-    btn.textContent = char;
-    btn.style.fontSize = "10px";
-    btn.style.lineHeight = "10px";
-    btn.style.height = "9px";
-    btn.style.color = "#ffffff";
+    if (minimal) {
+      btn.innerHTML = charOrSvg;
+      btn.style.display = "flex";
+      btn.style.alignItems = "center";
+      btn.style.justifyContent = "center";
+      btn.style.width = "12px";
+      btn.style.height = "12px";
+    } else {
+      btn.textContent = charOrSvg;
+      btn.style.fontSize = "10px";
+      btn.style.lineHeight = "10px";
+      btn.style.height = "9px";
+    }
+    btn.style.color = "rgba(255, 255, 255, 0.75)";
     btn.style.background = "transparent";
     btn.style.border = "none";
     btn.style.textAlign = "center";
@@ -154529,8 +154933,16 @@ var makeNumberControl = (initial, onChange, title) => {
     };
     return btn;
   };
-  const upBtn = mkArrow("\u25B2", 1, "0px");
-  const downBtn = mkArrow("\u25BC", -1, "1px");
+  const upBtn = mkArrow(
+    minimal ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 4,2 6.5,4.5"/></svg>` : "\u25B2",
+    1,
+    "0px"
+  );
+  const downBtn = mkArrow(
+    minimal ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,1.5 4,4 6.5,1.5"/></svg>` : "\u25BC",
+    -1,
+    minimal ? "2px" : "0px"
+  );
   spinner.appendChild(upBtn);
   spinner.appendChild(downBtn);
   wrapper.appendChild(input);
@@ -154539,7 +154951,20 @@ var makeNumberControl = (initial, onChange, title) => {
 };
 var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
   const controlsMode = model.get("controls_mode") || "classic";
-  if (controlsMode === "focus") {
+  const isFocus = controlsMode === "cinema" || controlsMode === "focus";
+  const isMinimal = controlsMode === "minimal" || isFocus;
+  const helpOverlay = new HelpOverlay(container);
+  const onHelpKey = (ev) => {
+    if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
+    if (!container.contains(ev.target)) return;
+    if (ev.key.toLowerCase() === "h") {
+      ev.preventDefault();
+      ev.stopPropagation();
+      helpOverlay.toggle();
+    }
+  };
+  window.addEventListener("keydown", onHelpKey, true);
+  if (isFocus) {
     const toast = document.createElement("div");
     toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
     Object.assign(toast.style, {
@@ -154568,22 +154993,240 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
         toast.remove();
       }, 800);
     }, 3200);
-    return;
   }
   injectStyles();
-  const overlay = document.createElement("div");
-  overlay.className = "molsysviewer-controls";
-  overlay.style.position = "absolute";
-  overlay.style.display = "flex";
-  overlay.style.gap = "6px";
-  overlay.style.zIndex = "10";
-  overlay.style.pointerEvents = "none";
-  overlay.style.flexWrap = "nowrap";
-  overlay.style.opacity = "0";
-  overlay.style.display = "none";
+  let overlay;
+  if (!isFocus) {
+    overlay = document.createElement("div");
+    overlay.className = "molsysviewer-controls";
+    overlay.style.position = "absolute";
+    overlay.style.display = "flex";
+    overlay.style.gap = "6px";
+    overlay.style.zIndex = "10";
+    overlay.style.pointerEvents = "none";
+    overlay.style.flexWrap = "nowrap";
+    overlay.style.opacity = "0";
+    overlay.style.opacity = "0";
+    overlay.style.display = "none";
+  }
   const panelModeStyle = model.get("panel_mode_style") || "drawer";
-  const helpOverlay = new HelpOverlay(container);
-  if (controlsMode === "minimal") {
+  const traj = document.createElement("div");
+  traj.style.display = "flex";
+  traj.style.alignItems = "center";
+  traj.style.gap = "6px";
+  traj.style.pointerEvents = "auto";
+  traj.style.marginLeft = isMinimal ? "0px" : "6px";
+  traj.style.marginRight = isMinimal ? "10px" : "0px";
+  traj.style.paddingLeft = "0px";
+  traj.style.borderLeft = "0px";
+  traj.style.display = "none";
+  let currentStep = 1;
+  let currentFps = 30;
+  let btnPrev;
+  let btnNext;
+  let stepControl = null;
+  let fpsControl = null;
+  let trajCapsule;
+  const btnPlayPause = isMinimal ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", () => {
+    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      c8.stopTrajectoryPlayback();
+      sendSync({ op: "set_trajectory_playback", action: "stop" });
+    } else {
+      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      sendSync({
+        op: "set_trajectory_playback",
+        action: "play",
+        fps: currentFps,
+        step: currentStep
+      });
+    }
+  }) : makeButton("\u25B6 / \u23F8", () => {
+    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
+    if (isPlaying) {
+      c8.stopTrajectoryPlayback();
+      sendSync({ op: "set_trajectory_playback", action: "stop" });
+    } else {
+      c8.playTrajectory({ fps: currentFps, step: currentStep });
+      sendSync({
+        op: "set_trajectory_playback",
+        action: "play",
+        fps: currentFps,
+        step: currentStep
+      });
+    }
+  });
+  if (isMinimal) {
+    btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
+      c8.stepTrajectory(-currentStep);
+      sendSync({ op: "step_trajectory", by: -currentStep });
+    });
+    btnNext = makeMinimalTrajButton(`<polygon points="4,3 10,8 4,13" fill="currentColor"/><rect x="11" y="3" width="2" height="10" fill="currentColor"/>`, "Next Step", () => {
+      c8.stepTrajectory(currentStep);
+      sendSync({ op: "step_trajectory", by: currentStep });
+    });
+  } else {
+    btnPlayPause.style.paddingTop = "0px";
+    btnPlayPause.style.paddingBottom = "0px";
+    btnPlayPause.style.lineHeight = "18px";
+    btnPlayPause.style.minWidth = "28px";
+    btnPlayPause.style.width = "28px";
+    btnPrev = makeButton("\u2212", () => {
+      c8.stepTrajectory(-currentStep);
+      sendSync({ op: "step_trajectory", by: -currentStep });
+    });
+    btnNext = makeButton("+", () => {
+      c8.stepTrajectory(currentStep);
+      sendSync({ op: "step_trajectory", by: currentStep });
+    });
+  }
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "0";
+  slider.value = "0";
+  slider.className = isMinimal ? "molsysviewer-slider-minimal" : "molsysviewer-slider";
+  slider.style.width = isMinimal ? "100px" : "160px";
+  slider.style.flex = isMinimal ? "0 0 100px" : "0 0 160px";
+  slider.style.background = "transparent";
+  slider.style.appearance = "none";
+  slider.style.WebkitAppearance = "none";
+  slider.style.MozAppearance = "none";
+  slider.style.setProperty("accent-color", "transparent");
+  slider.style.borderRadius = "999px";
+  slider.style.overflow = "visible";
+  const updateSliderBg = () => {
+    if (isMinimal) {
+      slider.style.background = "transparent";
+    } else {
+      const track = "rgba(200,200,200,0.35)";
+      slider.style.background = track;
+    }
+  };
+  slider.oninput = () => {
+    const val = Number(slider.value);
+    if (!Number.isFinite(val)) return;
+    void c8.setTrajectoryFrame(val);
+    sendSync({ op: "set_trajectory_frame", index: val });
+    updateSliderBg();
+  };
+  updateSliderBg();
+  const label2 = document.createElement("span");
+  if (isMinimal) {
+    label2.style.color = "rgba(255, 255, 255, 0.85)";
+    label2.style.fontSize = "11px";
+    label2.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
+    label2.style.fontWeight = "600";
+    label2.style.minWidth = "42px";
+    label2.style.textAlign = "right";
+  } else {
+    label2.style.color = "rgba(0,0,0,0.5)";
+    label2.style.fontSize = "11px";
+    label2.style.minWidth = "60px";
+    label2.style.textAlign = "center";
+  }
+  label2.textContent = "0 / 0";
+  if (isMinimal) {
+    trajCapsule = document.createElement("div");
+    trajCapsule.className = "molsysviewer-traj-capsule";
+    trajCapsule.appendChild(slider);
+    trajCapsule.appendChild(label2);
+    traj.appendChild(trajCapsule);
+    if (btnPrev) traj.appendChild(btnPrev);
+    traj.appendChild(btnPlayPause);
+    if (btnNext) traj.appendChild(btnNext);
+    if (isFocus) {
+      stepControl = makeNumberControl(1, (n) => {
+        currentStep = n;
+        const state = c8.trajectory.getTrajectoryState();
+        if (state.isPlaying) {
+          c8.playTrajectory({ fps: currentFps, step: currentStep });
+        }
+      }, "Step size", true);
+      fpsControl = makeNumberControl(30, (n) => {
+        currentFps = n;
+        const state = c8.trajectory.getTrajectoryState();
+        if (state.isPlaying) {
+          c8.playTrajectory({ fps: currentFps, step: currentStep });
+        }
+      }, "FPS", true);
+      traj.appendChild(stepControl.wrapper);
+      traj.appendChild(fpsControl.wrapper);
+    }
+  } else {
+    stepControl = makeNumberControl(1, (n) => {
+      currentStep = n;
+      const state = c8.trajectory.getTrajectoryState();
+      if (state.isPlaying) {
+        c8.playTrajectory({ fps: currentFps, step: currentStep });
+      }
+    }, "Step size", isMinimal);
+    fpsControl = makeNumberControl(30, (n) => {
+      currentFps = n;
+      const state = c8.trajectory.getTrajectoryState();
+      if (state.isPlaying) {
+        c8.playTrajectory({ fps: currentFps, step: currentStep });
+      }
+    }, "FPS", isMinimal);
+    if (btnPrev) traj.appendChild(btnPrev);
+    traj.appendChild(btnPlayPause);
+    if (btnNext) traj.appendChild(btnNext);
+    traj.appendChild(slider);
+    traj.appendChild(label2);
+    traj.appendChild(stepControl.wrapper);
+    traj.appendChild(fpsControl.wrapper);
+  }
+  if (isFocus) {
+    Object.assign(traj.style, {
+      position: "absolute",
+      bottom: "12px",
+      left: "50%",
+      transform: "translateX(-50%) translateY(45px)",
+      opacity: "0",
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      zIndex: "10",
+      pointerEvents: "auto",
+      transition: "transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease"
+    });
+    const triggerArea = document.createElement("div");
+    Object.assign(triggerArea.style, {
+      position: "absolute",
+      bottom: "0px",
+      left: "0px",
+      width: "100%",
+      height: "56px",
+      zIndex: "9",
+      pointerEvents: "auto",
+      background: "transparent"
+    });
+    const showScrubber = () => {
+      traj.style.transform = "translateX(-50%) translateY(0)";
+      traj.style.opacity = "1";
+    };
+    const hideScrubber = () => {
+      traj.style.transform = "translateX(-50%) translateY(45px)";
+      traj.style.opacity = "0";
+    };
+    triggerArea.addEventListener("mouseenter", showScrubber);
+    traj.addEventListener("mouseenter", showScrubber);
+    triggerArea.addEventListener("mouseleave", (e) => {
+      if (e.relatedTarget !== traj && !traj.contains(e.relatedTarget)) {
+        hideScrubber();
+      }
+    });
+    traj.addEventListener("mouseleave", (e) => {
+      if (e.relatedTarget !== triggerArea && !triggerArea.contains(e.relatedTarget)) {
+        hideScrubber();
+      }
+    });
+    container.appendChild(triggerArea);
+    container.appendChild(traj);
+  } else if (overlay) {
+    overlay.appendChild(traj);
+  }
+  if (controlsMode === "minimal" && overlay) {
     const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
     const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
     const ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
@@ -154600,22 +155243,26 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
         alignItems: "center",
         justifyContent: "center",
         padding: "0",
-        border: "none",
+        border: "1px solid rgba(255, 255, 255, 0.15)",
         borderRadius: "6px",
-        background: "transparent",
-        color: "rgba(255,255,255,0.6)",
+        background: "rgba(18, 18, 22, 0.75)",
+        color: "rgba(255, 255, 255, 0.75)",
         cursor: "default",
         userSelect: "none",
         pointerEvents: "auto",
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+        transition: "all 120ms ease"
       });
       btn.addEventListener("mouseenter", () => {
-        btn.style.background = "rgba(255,255,255,0.1)";
-        btn.style.color = "rgba(255,255,255,0.95)";
+        btn.style.background = "rgba(18, 18, 22, 0.95)";
+        btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
+        btn.style.color = "rgba(255, 255, 255, 0.98)";
       });
       btn.addEventListener("mouseleave", () => {
-        btn.style.background = "transparent";
-        btn.style.color = "rgba(255,255,255,0.6)";
+        btn.style.background = "rgba(18, 18, 22, 0.75)";
+        btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
+        btn.style.color = "rgba(255, 255, 255, 0.75)";
       });
       btn.addEventListener("click", handler);
       overlay.appendChild(btn);
@@ -154625,8 +155272,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
     mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
     if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
     const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
-    const helpBtn = mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
-  } else {
+    mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+  } else if (overlay) {
     const mk = (label3, handler) => {
       const b8 = makeButton(label3, handler);
       b8.style.pointerEvents = "auto";
@@ -154650,117 +155297,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
       sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
     });
     if (onPopClick) mk("Pop", onPopClick);
+    mk("Help", () => helpOverlay.toggle());
     if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
       mk("Panel", () => c8.togglePanelMode());
     }
   }
-  const traj = document.createElement("div");
-  traj.style.display = "flex";
-  traj.style.alignItems = "center";
-  traj.style.gap = "6px";
-  traj.style.pointerEvents = "auto";
-  traj.style.marginLeft = "6px";
-  traj.style.paddingLeft = "0px";
-  traj.style.borderLeft = "0px";
-  traj.style.display = "none";
-  let currentStep = 1;
-  let currentFps = 30;
-  const btnPrev = makeButton("\u2212", () => {
-    c8.stepTrajectory(-currentStep);
-    sendSync({ op: "step_trajectory", by: -currentStep });
-  });
-  const btnPlayPause = makeButton("\u25B6 / \u23F8", () => {
-    const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
-    if (isPlaying) {
-      c8.stopTrajectoryPlayback();
-      sendSync({ op: "set_trajectory_playback", action: "stop" });
-    } else {
-      c8.playTrajectory({ fps: currentFps, step: currentStep });
-      sendSync({
-        op: "set_trajectory_playback",
-        action: "play",
-        fps: currentFps,
-        step: currentStep
-      });
-    }
-  });
-  btnPlayPause.style.paddingTop = "0px";
-  btnPlayPause.style.paddingBottom = "0px";
-  btnPlayPause.style.lineHeight = "18px";
-  btnPlayPause.style.minWidth = "28px";
-  btnPlayPause.style.width = "28px";
-  const btnNext = makeButton("+", () => {
-    c8.stepTrajectory(currentStep);
-    sendSync({ op: "step_trajectory", by: currentStep });
-  });
-  [btnPrev, btnPlayPause, btnNext].forEach((b8) => {
-    b8.style.pointerEvents = "auto";
-  });
-  const slider = document.createElement("input");
-  slider.type = "range";
-  slider.min = "0";
-  slider.max = "0";
-  slider.value = "0";
-  slider.className = "molsysviewer-slider";
-  slider.style.width = "160px";
-  slider.style.flex = "0 0 160px";
-  slider.style.background = "transparent";
-  slider.style.appearance = "none";
-  slider.style.WebkitAppearance = "none";
-  slider.style.MozAppearance = "none";
-  slider.style.setProperty("accent-color", "transparent");
-  slider.style.borderRadius = "999px";
-  slider.style.overflow = "visible";
-  const updateSliderBg = () => {
-    const min5 = Number(slider.min) || 0;
-    const max5 = Number(slider.max) || 0;
-    const val = Number(slider.value) || 0;
-    const _ = { min: min5, max: max5, val };
-    const track = "rgba(200,200,200,0.35)";
-    slider.style.background = track;
-  };
-  slider.oninput = () => {
-    const val = Number(slider.value);
-    if (!Number.isFinite(val)) return;
-    void c8.setTrajectoryFrame(val);
-    sendSync({ op: "set_trajectory_frame", index: val });
-    updateSliderBg();
-  };
-  updateSliderBg();
-  const label2 = document.createElement("span");
-  label2.style.color = "rgba(0,0,0,0.5)";
-  label2.style.fontSize = "11px";
-  label2.style.minWidth = "60px";
-  label2.style.textAlign = "center";
-  label2.textContent = "0 / 0";
-  const stepControl = makeNumberControl(1, (n) => {
-    currentStep = n;
-  }, "Step size");
-  const fpsControl = makeNumberControl(5, (n) => {
-    currentFps = n;
-  }, "FPS");
-  traj.appendChild(btnPrev);
-  traj.appendChild(btnPlayPause);
-  traj.appendChild(btnNext);
-  traj.appendChild(slider);
-  traj.appendChild(label2);
-  traj.appendChild(stepControl.wrapper);
-  traj.appendChild(fpsControl.wrapper);
-  overlay.appendChild(traj);
-  const initialHasTrajectory = !!opts?.initialHasTrajectory;
-  const initialFrameCount = typeof opts?.initialFrameCount === "number" ? opts.initialFrameCount : void 0;
-  if (initialHasTrajectory) {
-    const fc = initialFrameCount && initialFrameCount > 0 ? initialFrameCount : 2;
-    traj.style.display = fc > 1 ? "flex" : "none";
-    slider.max = fc > 0 ? String(Math.max(fc - 1, 1)) : "1";
-    slider.value = "0";
-    updateSliderBg();
-    label2.textContent = fc > 0 ? `1 / ${fc}` : "0 / 0";
-    [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
-      el.disabled = true;
-    });
-  }
   let hasSeenState = false;
+  let lastIsPlaying = null;
   const applyTrajectoryState = (state) => {
     hasSeenState = true;
     const frameCount = state.frameCount;
@@ -154771,19 +155314,37 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
     updateSliderBg();
     label2.textContent = frameCount > 0 ? `${current2 + 1} / ${frameCount}` : "0 / 0";
     const disabled = !state.hasTrajectory || frameCount <= 1;
-    [btnPrev, btnNext, slider, btnPlayPause].forEach((el) => {
+    const elsToDisable = [slider, btnPlayPause];
+    if (btnPrev) elsToDisable.push(btnPrev);
+    if (btnNext) elsToDisable.push(btnNext);
+    if (stepControl) elsToDisable.push(stepControl.input);
+    if (fpsControl) elsToDisable.push(fpsControl.input);
+    elsToDisable.forEach((el) => {
       el.disabled = disabled;
     });
-    if (state.isPlaying) {
-      btnPlayPause.textContent = "\u23F8";
-      btnPlayPause.title = "Pause Trajectory";
-    } else {
-      btnPlayPause.textContent = "\u25B6";
-      btnPlayPause.title = "Play Trajectory";
+    if (state.isPlaying !== lastIsPlaying) {
+      lastIsPlaying = state.isPlaying;
+      if (state.isPlaying) {
+        if (isMinimal) {
+          btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><rect x="4" y="3" width="2.5" height="10" fill="currentColor"/><rect x="9.5" y="3" width="2.5" height="10" fill="currentColor"/></svg>`;
+        } else {
+          btnPlayPause.textContent = "\u23F8";
+        }
+        btnPlayPause.title = "Pause Trajectory";
+      } else {
+        if (isMinimal) {
+          btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
+        } else {
+          btnPlayPause.textContent = "\u25B6";
+        }
+        btnPlayPause.title = "Play Trajectory";
+      }
     }
-    overlay.style.display = "flex";
-    overlay.style.opacity = "1";
-    overlay.style.pointerEvents = "none";
+    if (overlay) {
+      overlay.style.display = "flex";
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "none";
+    }
   };
   c8.onTrajectoryState(applyTrajectoryState, { immediate: false });
   const initialState = c8.trajectory.getTrajectoryState();
@@ -154791,69 +155352,75 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
     applyTrajectoryState(initialState);
   }
   const placeOverlay = () => {
-    const pos = model.get("controls_position");
-    const posFs = model.get("controls_position_fullscreen");
-    const isFs = !!document.fullscreenElement;
-    const use = isFs && Array.isArray(posFs) ? posFs : Array.isArray(pos) ? pos : ["top", "right"];
-    overlay.style.top = use?.includes("top") ? "8px" : "";
-    overlay.style.bottom = use?.includes("bottom") ? "8px" : "";
-    overlay.style.left = use?.includes("left") ? "8px" : "";
-    overlay.style.right = use?.includes("right") ? "8px" : "";
-  };
-  placeOverlay();
-  document.addEventListener("fullscreenchange", placeOverlay);
-  model.on("change:controls_position", placeOverlay);
-  model.on("change:controls_position_fullscreen", placeOverlay);
-  let autohide = !!model.get("autohide_controls");
-  const target = container;
-  const applyShow = (visible) => {
-    if (!hasSeenState) return;
-    if (autohide) {
-      overlay.style.opacity = visible ? "1" : "0";
-      overlay.style.pointerEvents = visible ? "auto" : "none";
-    } else {
-      overlay.style.display = visible ? "flex" : "none";
+    if (!overlay) return;
+    const isFullscreen = !!document.fullscreenElement;
+    const rawPos = isFullscreen ? model.get("controls_position_fullscreen") : model.get("controls_position");
+    let use = ["top", "right"];
+    if (Array.isArray(rawPos)) {
+      use = rawPos;
+    } else if (typeof rawPos === "string") {
+      if (rawPos === "top-left") use = ["top", "left"];
+      else if (rawPos === "top-right") use = ["top", "right"];
+      else if (rawPos === "bottom-left") use = ["bottom", "left"];
+      else if (rawPos === "bottom-center") use = ["bottom", "center"];
+      else if (rawPos === "bottom-right") use = ["bottom", "right"];
+    }
+    overlay.style.top = use.includes("top") ? "12px" : "";
+    overlay.style.bottom = use.includes("bottom") ? "12px" : "";
+    overlay.style.left = use.includes("left") ? "12px" : "";
+    overlay.style.right = use.includes("right") ? "12px" : "";
+    overlay.style.transform = "";
+    if (use.includes("center")) {
+      overlay.style.left = "50%";
+      overlay.style.transform = "translateX(-50%)";
     }
   };
-  const onEnter = () => applyShow(!!model.get("show_controls"));
-  const onLeave = () => applyShow(false);
-  const enableAutohide = () => {
-    overlay.style.transition = "opacity 150ms ease";
-    applyShow(!!model.get("show_controls"));
-    target.addEventListener("pointerenter", onEnter);
-    target.addEventListener("pointerleave", onLeave);
-  };
-  const disableAutohide = () => {
-    target.removeEventListener("pointerenter", onEnter);
-    target.removeEventListener("pointerleave", onLeave);
-    overlay.style.opacity = "1";
-    overlay.style.pointerEvents = "auto";
-    applyShow(!!model.get("show_controls"));
-  };
-  if (autohide) enableAutohide();
-  else applyShow(!!model.get("show_controls"));
-  model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
-  model.on("change:autohide_controls", () => {
-    const next = !!model.get("autohide_controls");
-    if (next === autohide) return;
-    autohide = next;
-    if (autohide) {
-      enableAutohide();
-      applyShow(false);
-    } else {
-      disableAutohide();
-    }
-  });
-  const onHelpKey = (ev) => {
-    if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
-    if (!container.contains(ev.target)) return;
-    if (ev.key.toLowerCase() === "h") {
-      ev.preventDefault();
-      ev.stopPropagation();
-      helpOverlay.toggle();
-    }
-  };
-  window.addEventListener("keydown", onHelpKey, true);
+  if (overlay) {
+    placeOverlay();
+    document.addEventListener("fullscreenchange", placeOverlay);
+    model.on("change:controls_position", placeOverlay);
+    model.on("change:controls_position_fullscreen", placeOverlay);
+    let autohide = !!model.get("autohide_controls");
+    const target = container;
+    const applyShow = (visible) => {
+      if (!hasSeenState) return;
+      if (autohide) {
+        overlay.style.opacity = visible ? "1" : "0";
+        overlay.style.pointerEvents = visible ? "auto" : "none";
+      } else {
+        overlay.style.display = visible ? "flex" : "none";
+      }
+    };
+    const onEnter = () => applyShow(!!model.get("show_controls"));
+    const onLeave = () => applyShow(false);
+    const enableAutohide = () => {
+      overlay.style.transition = "opacity 150ms ease";
+      applyShow(!!model.get("show_controls"));
+      target.addEventListener("pointerenter", onEnter);
+      target.addEventListener("pointerleave", onLeave);
+    };
+    const disableAutohide = () => {
+      target.removeEventListener("pointerenter", onEnter);
+      target.removeEventListener("pointerleave", onLeave);
+      overlay.style.opacity = "1";
+      overlay.style.pointerEvents = "auto";
+      applyShow(!!model.get("show_controls"));
+    };
+    if (autohide) enableAutohide();
+    else applyShow(!!model.get("show_controls"));
+    model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
+    model.on("change:autohide_controls", () => {
+      const next = !!model.get("autohide_controls");
+      if (next === autohide) return;
+      autohide = next;
+      if (autohide) {
+        enableAutohide();
+        applyShow(false);
+      } else {
+        disableAutohide();
+      }
+    });
+  }
   return overlay;
 };
 
@@ -155091,6 +155658,7 @@ var index_default = {
     const commandLog = [];
     let messageQueue = Promise.resolve();
     const target = document.createElement("div");
+    target.tabIndex = 0;
     Object.assign(target.style, {
       width: "100%",
       height: "100%",
@@ -155098,8 +155666,9 @@ var index_default = {
       position: "relative",
       touchAction: "none",
       cursor: "default",
-      overflow: "hidden"
-      // Default cursor
+      overflow: "hidden",
+      outline: "none"
+      // Default cursor, focus outline hidden
     });
     const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
     let isUserInteracting = false;
@@ -155154,18 +155723,28 @@ var index_default = {
       if (trajInfo.frameCount !== void 0) {
         c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
       }
-      const overlay = buildControls(
-        c8,
-        model,
-        (msg) => popupMgr.send("molsysviewer-sync-op", msg),
-        target,
-        enablePopout ? () => popupMgr.open() : void 0,
-        {
-          initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-          initialFrameCount: trajInfo.frameCount
+      let overlay = void 0;
+      const updateControls = () => {
+        if (overlay) {
+          overlay.remove();
         }
-      );
-      target.appendChild(overlay);
+        overlay = buildControls(
+          c8,
+          model,
+          (msg) => popupMgr.send("molsysviewer-sync-op", msg),
+          target,
+          enablePopout ? () => popupMgr.open() : void 0,
+          {
+            initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+            initialFrameCount: trajInfo.frameCount
+          }
+        );
+        if (overlay) {
+          target.appendChild(overlay);
+        }
+      };
+      updateControls();
+      model.on("change:controls_mode", updateControls);
       if (c8.plugin.canvas3d) {
         let hostCameraSyncTimer = null;
         let cameraSnapshotTimer = null;

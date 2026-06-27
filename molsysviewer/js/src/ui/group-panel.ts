@@ -61,6 +61,7 @@ export class GroupPanel {
     private onNavigateToWorkbench?: () => void;
     private runtimeVisibleOverride: boolean | null = null;
     private readonly sharedShell: boolean;
+    private visible = false;
 
     constructor(
         private readonly host: HTMLElement,
@@ -189,7 +190,7 @@ export class GroupPanel {
     }
 
     isVisible(): boolean {
-        return this.sharedShell ? (this.body.style.display !== "none") : this.shell.isVisible();
+        return this.visible;
     }
 
     setExpanded(expanded: boolean): void {
@@ -223,8 +224,10 @@ export class GroupPanel {
     }
 
     setPanelStack(items: PanelOption[], onSelect: ((panelId: string) => void) | undefined): void {
-        this.shell.setOnSelectPanel(onSelect);
-        this.shell.setPanelOptions(items);
+        if (!this.sharedShell) {
+            this.shell.setOnSelectPanel(onSelect);
+            this.shell.setPanelOptions(items);
+        }
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {
@@ -305,8 +308,20 @@ export class GroupPanel {
         }
     }
 
+    private updateBodyDisplay(): void {
+        if (this.sharedShell) {
+            this.body.style.display = (this.visible && this.expanded) ? "flex" : "none";
+        } else {
+            this.shell.setVisible(this.visible);
+        }
+    }
+
     private applyExpandedState(): void {
-        this.shell.setExpanded(this.expanded);
+        if (this.sharedShell) {
+            this.updateBodyDisplay();
+        } else {
+            this.shell.setExpanded(this.expanded);
+        }
         this.onExpandedChange?.(this.expanded);
     }
 
@@ -329,13 +344,9 @@ export class GroupPanel {
         }
 
         const naturalVisible = Boolean(this.structure) && grouped.size > 0;
-        const visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
-        if (this.sharedShell) {
-            this.body.style.display = visible ? "flex" : "none";
-        } else {
-            this.shell.setVisible(visible);
-        }
-        if (!visible && this.expanded) {
+        this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
+        this.updateBodyDisplay();
+        if (!this.visible && this.expanded) {
             this.expanded = false;
         }
         if (!this.structure || grouped.size === 0) return;

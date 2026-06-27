@@ -133,7 +133,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert meta_by_key["molsysviewer.new_view.new_view"].get("load_mode") == "selection"
         assert meta_by_key["molsysviewer.new_view.new_view"].get("syntax") == "MolSysMT"
         assert meta_by_key["molsysviewer.new_view.new_view"].get("reused_view") is True
-        assert meta_by_key["molsysviewer.new_view.new_view"].get("molecular_system_kind") == "MolSys"
+        assert meta_by_key["molsysviewer.new_view.new_view"].get("molecular_system_form") == "molsysmt.MolSys"
         assert meta_by_key["molsysviewer.exports.html"].get("include_popout") is False
         assert meta_by_key["molsysviewer.exports.image"].get("transparent") is True
         assert meta_by_key["molsysviewer.exports.image"].get("preset") == "current"

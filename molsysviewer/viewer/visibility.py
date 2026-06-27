@@ -32,8 +32,11 @@ class VisibilityMixin:
 
     @signal(tags=["visibility"])
     @digest()
-    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False):
-        """Show the widget (first call or if `force=True`) and optionally adjust visibility."""
+    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None):
+        """Show the widget (first call or if `force=True`) and optionally adjust visibility or change viewer modes."""
+        if viewer_mode is not None or controls_mode is not None or panel_mode_style is not None:
+            self._apply_view_modes(viewer_mode=viewer_mode, controls_mode=controls_mode, panel_mode_style=panel_mode_style)
+
         # (1) Apply visibility changes if a system is loaded
         if self._molsys is not None and self.atom_mask is not None:
             if is_all(selection) and is_all(structure_indices):

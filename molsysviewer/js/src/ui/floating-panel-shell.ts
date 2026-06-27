@@ -27,9 +27,19 @@ export class FloatingPanelShell {
     public readonly workspaceGroupElement: HTMLDivElement;
     public readonly content: HTMLDivElement;
     public readonly toggleButton: HTMLButtonElement;
-    // No viewport shift for floating panels
-    public readonly width: number = 0;
-    public readonly toggleWidth: number = 0;
+    public readonly panelModeStyle: string;
+    public onResize?: (width: number) => void;
+
+    get width(): number {
+        if (this.isSplit) {
+            return this.getWidth();
+        }
+        return 0;
+    }
+
+    get toggleWidth(): number {
+        return 0;
+    }
 
     private visible = false;
     private expanded = false;
@@ -43,11 +53,17 @@ export class FloatingPanelShell {
     private readonly workspaceCurrentTitleElement: HTMLSpanElement;
     private readonly workspaceCurrentSubtitleElement: HTMLSpanElement;
     private readonly workspaceMenuElement: HTMLDivElement;
+    private panelResizeObserver?: ResizeObserver;
+    private isSplit = false;
+    private isAmbient = false;
+    private dockButton?: HTMLButtonElement;
+    private lockButton?: HTMLButtonElement;
 
-    constructor(host: HTMLElement, options: FloatingPanelShellOptions) {
+    constructor(private readonly host: HTMLElement, options: FloatingPanelShellOptions) {
         const style = options.panelModeStyle || "floating";
-        const isAmbient = style === "ambient";
-        const isSplit = style === "split";
+        this.panelModeStyle = style;
+        this.isAmbient = style === "ambient";
+        this.isSplit = style === "split";
 
         // Backdrop overlay (fills the host, captures backdrop clicks)
         this.root = document.createElement("div");
@@ -55,17 +71,14 @@ export class FloatingPanelShell {
             position: "absolute",
             inset: "0",
             display: "none",
-            alignItems: "center",
-            justifyContent: isSplit ? "flex-start" : "center",
+            alignItems: "center", // Center vertically
             zIndex: "18",
-            pointerEvents: (isAmbient || isSplit) ? "none" : "auto",
-            background: (isAmbient || isSplit) ? "transparent" : "rgba(0,0,0,0.32)",
-            paddingLeft: isSplit ? "10px" : "0",
         });
 
         // Floating card
         this.panel = document.createElement("div");
-        const baseCardStyle: Partial<CSSStyleDeclaration> = {
+        this.panel.style.opacity = "0.90";
+        Object.assign(this.panel.style, {
             pointerEvents: "auto",
             display: "flex",
             flexDirection: "column",
@@ -76,48 +89,7 @@ export class FloatingPanelShell {
             color: "#f4f4f5",
             fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
             fontSize: "12px",
-        };
-
-        if (isSplit) {
-            Object.assign(baseCardStyle, {
-                width: "330px",
-                height: "calc(100% - 20px)",
-                minWidth: "300px",
-                minHeight: "0",
-                borderRadius: "14px",
-                border: "1px solid rgba(255,255,255,0.12)",
-                boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-                background: "rgba(18, 18, 22, 0.90)",
-                resize: "horizontal", // Elastic native resizing for split mode
-            });
-        } else if (isAmbient) {
-            Object.assign(baseCardStyle, {
-                width: "min(72%, 900px)",
-                height: "min(68%, 700px)",
-                minWidth: "380px",
-                minHeight: "420px",
-                borderRadius: "16px",
-                border: "1px solid rgba(255,255,255,0.18)",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.40)",
-                background: "rgba(18, 18, 22, 0.50)", // Adjusted from 0.45 for perfect legibility contrast
-                backdropFilter: "blur(24px)",
-                webkitBackdropFilter: "blur(24px)",
-                resize: "both", // Elastic resizing
-            });
-        } else {
-            Object.assign(baseCardStyle, {
-                width: "min(72%, 900px)",
-                height: "min(68%, 700px)",
-                minWidth: "380px",
-                minHeight: "420px",
-                borderRadius: "16px",
-                border: "1px solid rgba(255,255,255,0.14)",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-                background: "rgba(18, 18, 22, 0.95)",
-                resize: "both", // Elastic resizing
-            });
-        }
-        Object.assign(this.panel.style, baseCardStyle);
+        });
 
         // Header
         this.headerElement = document.createElement("div");
@@ -132,65 +104,81 @@ export class FloatingPanelShell {
             flexShrink: "0",
         });
 
-        if (!isSplit) {
-            this.headerElement.style.cursor = "move";
+        // Mouse/Touch dragging logic using absolute left/top coordinates (traditional behavior)
+        {
             let isDragging = false;
             let startX = 0;
             let startY = 0;
-            let dragX = 0;
-            let dragY = 0;
+            let startLeft = 0;
+            let startTop = 0;
 
-            // Mouse dragging
-            this.headerElement.addEventListener("mousedown", (e) => {
-                if (e.button !== 0) return;
-                if ((e.target as HTMLElement).closest("button, input, select")) return;
-
+            const dragStart = (clientX: number, clientY: number) => {
+                if (this.isSplit) return false;
                 isDragging = true;
-                startX = e.clientX - dragX;
-                startY = e.clientY - dragY;
+                startLeft = this.panel.offsetLeft;
+                startTop = this.panel.offsetTop;
+                startX = clientX;
+                startY = clientY;
+                return true;
+            };
 
-                const onMouseMove = (moveEvent: MouseEvent) => {
-                    if (!isDragging) return;
-                    dragX = moveEvent.clientX - startX;
-                    dragY = moveEvent.clientY - startY;
-                    this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
-                };
+            const dragMove = (clientX: number, clientY: number) => {
+                if (!isDragging) return;
+                const deltaX = clientX - startX;
+                const deltaY = clientY - startY;
 
-                const onMouseUp = () => {
-                    isDragging = false;
-                    window.removeEventListener("mousemove", onMouseMove);
-                    window.removeEventListener("mouseup", onMouseUp);
-                };
+                const hostWidth = this.host.clientWidth;
+                const hostHeight = this.host.clientHeight;
+                const panelWidth = this.panel.offsetWidth;
+                const panelHeight = this.panel.offsetHeight;
 
-                window.addEventListener("mousemove", onMouseMove);
-                window.addEventListener("mouseup", onMouseUp);
+                // Clamp to keep at least 100px of the header visible, and prevent going off-screen on top/bottom
+                const newLeft = Math.max(100 - panelWidth, Math.min(hostWidth - 100, startLeft + deltaX));
+                const newTop = Math.max(0, Math.min(hostHeight - 40, startTop + deltaY));
+
+                this.panel.style.left = `${newLeft}px`;
+                this.panel.style.top = `${newTop}px`;
+            };
+
+            const dragEnd = () => {
+                isDragging = false;
+            };
+
+            // Mouse events
+            this.headerElement.addEventListener("mousedown", (e) => {
+                if (e.button !== 0 || (e.target as HTMLElement).closest("button, input, select")) return;
+                if (dragStart(e.clientX, e.clientY)) {
+                    e.preventDefault();
+                    const onMouseMove = (moveEvent: MouseEvent) => {
+                        dragMove(moveEvent.clientX, moveEvent.clientY);
+                    };
+                    const onMouseUp = () => {
+                        dragEnd();
+                        window.removeEventListener("mousemove", onMouseMove);
+                        window.removeEventListener("mouseup", onMouseUp);
+                    };
+                    window.addEventListener("mousemove", onMouseMove);
+                    window.addEventListener("mouseup", onMouseUp);
+                }
             });
 
-            // Touch dragging for mobile/tablet devices
+            // Touch events
             this.headerElement.addEventListener("touchstart", (e) => {
                 if ((e.target as HTMLElement).closest("button, input, select")) return;
-
                 const touch = e.touches[0];
-                isDragging = true;
-                startX = touch.clientX - dragX;
-                startY = touch.clientY - dragY;
-
-                const onTouchMove = (moveEvent: TouchEvent) => {
-                    if (!isDragging) return;
-                    const moveTouch = moveEvent.touches[0];
-                    dragX = moveTouch.clientX - startX;
-                    dragY = moveTouch.clientY - startY;
-                    this.panel.style.transform = `translate(${dragX}px, ${dragY}px)`;
-                };
-
-                const onTouchEnd = () => {
-                    isDragging = false;
-                    window.removeEventListener("touchmove", onTouchMove);
-                    window.removeEventListener("touchend", onTouchEnd);
-                };
-
-                window.addEventListener("touchmove", onTouchMove, { passive: false });
-                window.addEventListener("touchend", onTouchEnd);
+                if (dragStart(touch.clientX, touch.clientY)) {
+                    const onTouchMove = (moveEvent: TouchEvent) => {
+                        const moveTouch = moveEvent.touches[0];
+                        dragMove(moveTouch.clientX, moveTouch.clientY);
+                    };
+                    const onTouchEnd = () => {
+                        dragEnd();
+                        window.removeEventListener("touchmove", onTouchMove);
+                        window.removeEventListener("touchend", onTouchEnd);
+                    };
+                    window.addEventListener("touchmove", onTouchMove, { passive: true });
+                    window.addEventListener("touchend", onTouchEnd);
+                }
             });
         }
 
@@ -253,9 +241,7 @@ export class FloatingPanelShell {
             this.headerElement.appendChild(this.titleElement);
         }
 
-        // Panel stack (sub-panel tabs)
         this.panelStackGroupElement = document.createElement("div");
-        this.panelStackGroupElement.setAttribute("data-molsysviewer-panel-stack", "true");
         Object.assign(this.panelStackGroupElement.style, {
             display: "none",
             alignItems: "center",
@@ -265,9 +251,7 @@ export class FloatingPanelShell {
         });
         this.headerElement.appendChild(this.panelStackGroupElement);
 
-        // Workspace picker
         this.workspaceGroupElement = document.createElement("div");
-        this.workspaceGroupElement.setAttribute("data-molsysviewer-panel-workspace-group", "true");
         Object.assign(this.workspaceGroupElement.style, {
             display: "none",
             position: "relative",
@@ -290,43 +274,22 @@ export class FloatingPanelShell {
             textAlign: "left",
         });
         this.workspaceCurrentMarkerElement = document.createElement("span");
-        this.workspaceCurrentMarkerElement.setAttribute("data-molsysviewer-panel-workspace-current-marker", "true");
-        Object.assign(this.workspaceCurrentMarkerElement.style, {
-            fontSize: "9px",
-            fontWeight: "700",
-            lineHeight: "1.1",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            color: "rgba(244,244,245,0.52)",
-        });
+        Object.assign(this.workspaceCurrentMarkerElement.style, { fontSize: "9px", fontWeight: "700", lineHeight: "1.1", letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(244,244,245,0.52)" });
         this.workspaceCurrentTitleElement = document.createElement("span");
-        this.workspaceCurrentTitleElement.setAttribute("data-molsysviewer-panel-workspace-current-title", "true");
-        Object.assign(this.workspaceCurrentTitleElement.style, {
-            fontSize: "11px",
-            fontWeight: "700",
-            lineHeight: "1.1",
-            color: "#f4f4f5",
-        });
+        Object.assign(this.workspaceCurrentTitleElement.style, { fontSize: "11px", fontWeight: "700", lineHeight: "1.1", color: "#f4f4f5" });
         this.workspaceCurrentSubtitleElement = document.createElement("span");
-        this.workspaceCurrentSubtitleElement.setAttribute("data-molsysviewer-panel-workspace-current-subtitle", "true");
-        Object.assign(this.workspaceCurrentSubtitleElement.style, {
-            fontSize: "10px",
-            lineHeight: "1.2",
-            color: "rgba(244,244,245,0.68)",
-        });
+        Object.assign(this.workspaceCurrentSubtitleElement.style, { fontSize: "10px", lineHeight: "1.2", color: "rgba(244,244,245,0.68)" });
         this.workspaceCurrentElement.appendChild(this.workspaceCurrentMarkerElement);
         this.workspaceCurrentElement.appendChild(this.workspaceCurrentTitleElement);
         this.workspaceCurrentElement.appendChild(this.workspaceCurrentSubtitleElement);
         this.workspaceCurrentElement.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
-            if (this.workspaceMenuElement.childElementCount <= 0) return;
             this.workspaceMenuOpen = !this.workspaceMenuOpen;
             this.applyWorkspaceMenuState();
         });
 
         this.workspaceMenuElement = document.createElement("div");
-        this.workspaceMenuElement.setAttribute("data-molsysviewer-panel-workspace-launcher", "true");
         Object.assign(this.workspaceMenuElement.style, {
             position: "absolute",
             top: "calc(100% + 6px)",
@@ -341,13 +304,57 @@ export class FloatingPanelShell {
             boxShadow: "0 16px 32px rgba(0,0,0,0.24)",
             zIndex: "20",
         });
-        this.workspaceGroupElement.appendChild(this.workspaceCurrentElement);
-        this.workspaceGroupElement.appendChild(this.workspaceMenuElement);
         this.headerElement.appendChild(this.workspaceGroupElement);
 
-        // Opacity Toggle Button
-        const opacityStates = isAmbient ? [0.45, 0.85, 0.20] : [0.95, 0.60, 0.30];
-        let opacityIndex = 0;
+        this.dockButton = document.createElement("button");
+        this.dockButton.type = "button";
+        Object.assign(this.dockButton.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.45)",
+            cursor: "default",
+            padding: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5px",
+            flexShrink: "0",
+            marginLeft: "4px",
+        });
+        this.dockButton.addEventListener("mouseenter", () => { this.dockButton!.style.color = "rgba(255,255,255,0.9)"; });
+        this.dockButton.addEventListener("mouseleave", () => { this.dockButton!.style.color = "rgba(255,255,255,0.45)"; });
+        this.dockButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.isSplit = !this.isSplit;
+            this.updateLayout();
+        });
+        this.headerElement.appendChild(this.dockButton);
+
+        this.lockButton = document.createElement("button");
+        this.lockButton.type = "button";
+        Object.assign(this.lockButton.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.45)",
+            cursor: "default",
+            padding: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5px",
+            flexShrink: "0",
+            marginLeft: "4px",
+        });
+        this.lockButton.addEventListener("mouseenter", () => { this.lockButton!.style.color = "rgba(255,255,255,0.9)"; });
+        this.lockButton.addEventListener("mouseleave", () => { this.lockButton!.style.color = "rgba(255,255,255,0.45)"; });
+        this.lockButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.isAmbient = !this.isAmbient;
+            this.updateLayout();
+        });
+        this.headerElement.appendChild(this.lockButton);
 
         const opacityButton = document.createElement("button");
         opacityButton.type = "button";
@@ -371,12 +378,25 @@ export class FloatingPanelShell {
         opacityButton.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            opacityIndex = (opacityIndex + 1) % opacityStates.length;
-            this.panel.style.opacity = String(opacityStates[opacityIndex]);
+            const states = [0.90, 0.70, 0.45];
+            const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
+            let idx = states.indexOf(currentOpacity);
+            if (idx === -1) {
+                let minDiff = Infinity;
+                idx = 0;
+                for (let i = 0; i < states.length; i++) {
+                    const diff = Math.abs(states[i] - currentOpacity);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        idx = i;
+                    }
+                }
+            }
+            const nextIdx = (idx + 1) % states.length;
+            this.panel.style.opacity = String(states[nextIdx]);
         });
         this.headerElement.appendChild(opacityButton);
 
-        // Minimize Button
         const minimizeButton = document.createElement("button");
         minimizeButton.type = "button";
         minimizeButton.title = "Minimize";
@@ -470,12 +490,112 @@ export class FloatingPanelShell {
         this.panel.appendChild(this.content);
         this.root.appendChild(this.panel);
 
-        // Backdrop click closes the panel
-        this.root.addEventListener("pointerdown", (ev) => {
-            if (ev.target === this.root) this.toggleButton.click();
+        // Backdrop click does not close the panel (per user request to prevent accidental dismissal)
+        // Only the explicit close/toggle button can close it.
+
+        // ResizeObserver to track width changes
+        this.panelResizeObserver = new ResizeObserver(() => {
+            if (this.isSplit) {
+                this.onResize?.(this.panel.offsetWidth);
+            }
         });
 
+        this.updateLayout();
+
         host.appendChild(this.root);
+    }
+
+    private updateLayout(): void {
+        const isSplit = this.isSplit;
+        const isAmbient = this.isAmbient;
+
+        // 1. Update backdrop root styles
+        Object.assign(this.root.style, {
+            justifyContent: isSplit ? "flex-start" : "center",
+            pointerEvents: (isAmbient || isSplit) ? "none" : "auto",
+            background: (isAmbient || isSplit) ? "transparent" : "rgba(0,0,0,0.32)",
+            paddingLeft: isSplit ? "10px" : "0",
+        });
+
+        // 2. Update panel card styles
+        this.panel.style.position = "absolute";
+
+        if (isSplit) {
+            this.panel.style.transform = "";
+            this.panel.style.backdropFilter = "";
+            this.panel.style.webkitBackdropFilter = "";
+            
+            this.panel.style.left = "10px";
+            this.panel.style.top = "10px";
+            this.panel.style.width = "50%";
+            Object.assign(this.panel.style, {
+                height: "calc(100% - 20px)",
+                borderRadius: "14px",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+                background: "rgba(18, 18, 22, 0.90)",
+                resize: "horizontal",
+            });
+            this.headerElement.style.cursor = "default";
+            this.panelResizeObserver?.observe(this.panel);
+        } else {
+            this.panelResizeObserver?.unobserve(this.panel);
+            
+            // Center the panel if it's the initial render or transitioning back from split
+            if (!this.panel.style.width || this.panel.style.width === "50%") {
+                const hostWidth = this.host.clientWidth;
+                const hostHeight = this.host.clientHeight;
+                const panelWidth = Math.min(hostWidth * 0.75, 950);
+                const panelHeight = Math.min(hostHeight * 0.80, 780);
+                const left = Math.max(10, (hostWidth - panelWidth) / 2);
+                const top = Math.max(10, (hostHeight - panelHeight) / 2);
+                
+                this.panel.style.left = `${left}px`;
+                this.panel.style.top = `${top}px`;
+                this.panel.style.width = `${panelWidth}px`;
+                this.panel.style.height = `${panelHeight}px`;
+            }
+            
+            Object.assign(this.panel.style, {
+                borderRadius: "16px",
+                border: "1px solid rgba(255,255,255,0.14)",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+                background: "rgba(18, 18, 22, 0.90)",
+                backdropFilter: "blur(20px)",
+                webkitBackdropFilter: "blur(20px)",
+                resize: "both",
+            });
+            this.headerElement.style.cursor = "move";
+        }
+
+        // 3. Update button icons/titles
+        if (this.dockButton) {
+            this.dockButton.title = isSplit ? "Float panel" : "Dock panel (Split)";
+            this.dockButton.innerHTML = isSplit 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` // Float layout (click to float)
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="6" y1="2" x2="6" y2="14"/></svg>`; // Split layout (click to split)
+        }
+
+        if (this.lockButton) {
+            this.lockButton.title = isAmbient ? "Lock background" : "Unlock background (Ambient)";
+            this.lockButton.innerHTML = isAmbient
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 6-2.5"/></svg>` // Open lock
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 7 0v3"/></svg>`; // Closed lock
+            this.lockButton.style.display = isSplit ? "none" : "inline-flex";
+        }
+
+        // Trigger callback to update canvas host left offset in real-time
+        this.onResize?.(this.getWidth());
+    }
+
+    getWidth(): number {
+        if (!this.expanded || !this.visible) return 0;
+        let w = this.panel.offsetWidth;
+        if (w === 0) {
+            // Fallback when display is "none" before first render
+            w = Math.max(300, Math.floor(this.host.clientWidth / 2));
+        }
+        return w;
     }
 
     private applyDisplay(): void {
@@ -704,6 +824,7 @@ export class FloatingPanelShell {
     }
 
     dispose(): void {
+        this.panelResizeObserver?.disconnect();
         this.root.remove();
     }
 }

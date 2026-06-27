@@ -297,14 +297,20 @@ class MolSysView(
         except Exception:
             self.widget.controls_position_fullscreen = ["bottom", "right"]
 
+        # Apply viewer_mode, controls_mode, and panel_mode_style presets
+        self._apply_view_modes(viewer_mode=viewer_mode, controls_mode=controls_mode, panel_mode_style=panel_mode_style)
+
+    def _apply_view_modes(self, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None) -> None:
+
         # Resolve viewer_mode, controls_mode, and panel_mode_style presets
         presets = {
             "classic": ("classic", "drawer"),
             "classic-floating": ("classic", "floating"),
             "zen": ("minimal", "floating"),
-            "integrated": ("minimal", "floating-unified"),
+            "integrated": ("minimal", "integrated"),
             "ambient": ("minimal", "ambient"),
-            "focus": ("focus", "floating-unified"),
+            "cinema": ("cinema", "integrated"),
+            "focus": ("cinema", "integrated"), # Map legacy focus to cinema
             "split": ("minimal", "split"),
         }
 
@@ -320,7 +326,7 @@ class MolSysView(
 
         preset_controls, preset_panel = presets[v_mode]
 
-        # 2. Resolve controls_mode (explicit constructor arg > customized config > preset default)
+        # 2. Resolve controls_mode (explicit constructor/method arg > customized config > preset default)
         if controls_mode is not None:
             c_mode = controls_mode
         elif viewer_mode is not None:
@@ -331,9 +337,9 @@ class MolSysView(
             else:
                 c_mode = preset_controls
 
-        c_mode_valid = c_mode if c_mode in ("classic", "minimal", "focus") else "classic"
+        c_mode_valid = c_mode if c_mode in ("classic", "minimal", "cinema") else "classic"
 
-        # 3. Resolve panel_mode_style (explicit constructor arg > customized config > preset default)
+        # 3. Resolve panel_mode_style (explicit constructor/method arg > customized config > preset default)
         if panel_mode_style is not None:
             p_style = panel_mode_style
         elif viewer_mode is not None:

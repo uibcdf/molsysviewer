@@ -34,7 +34,7 @@ def test_viewer_modes_and_parameters_resolution():
     v_int = MolSysView(viewer_mode="integrated")
     assert v_int.widget.viewer_mode == "integrated"
     assert v_int.widget.controls_mode == "minimal"
-    assert v_int.widget.panel_mode_style == "floating-unified"
+    assert v_int.widget.panel_mode_style == "integrated"
 
     # 4. Classic-floating mode preset
     v_cf = MolSysView(viewer_mode="classic-floating")
@@ -54,11 +54,17 @@ def test_viewer_modes_and_parameters_resolution():
     assert v_amb.widget.controls_mode == "minimal"
     assert v_amb.widget.panel_mode_style == "ambient"
 
-    # 7. Focus mode preset
+    # 7. Focus mode preset (legacy mapping)
     v_foc = MolSysView(viewer_mode="focus")
     assert v_foc.widget.viewer_mode == "focus"
-    assert v_foc.widget.controls_mode == "focus"
-    assert v_foc.widget.panel_mode_style == "floating-unified"
+    assert v_foc.widget.controls_mode == "cinema"
+    assert v_foc.widget.panel_mode_style == "integrated"
+
+    # 7b. Cinema mode preset
+    v_cin = MolSysView(viewer_mode="cinema")
+    assert v_cin.widget.viewer_mode == "cinema"
+    assert v_cin.widget.controls_mode == "cinema"
+    assert v_cin.widget.panel_mode_style == "integrated"
 
     # 8. Split mode preset
     v_spl = MolSysView(viewer_mode="split")

@@ -110,6 +110,7 @@ export class WorkbenchPanel {
     private onNavigateToNavigate?: () => void;
     private readonly floating: boolean;
     private readonly sharedShell: boolean;
+    private visible = false;
 
     constructor(private readonly host: HTMLElement, options?: { floating?: boolean; sharedShell?: FloatingPanelShell }) {
         const floating = options?.floating || !!options?.sharedShell;
@@ -290,12 +291,17 @@ export class WorkbenchPanel {
         this.setVisible(!floating);
     }
 
-    setVisible(visible: boolean): void {
+    private updateBodyDisplay(): void {
         if (this.sharedShell) {
-            this.body.style.display = visible ? "flex" : "none";
+            this.body.style.display = (this.visible && this.expanded) ? "flex" : "none";
         } else {
-            this.shell.setVisible(visible);
+            this.shell.setVisible(this.visible);
         }
+    }
+
+    setVisible(visible: boolean): void {
+        this.visible = visible;
+        this.updateBodyDisplay();
         if (!visible && this.expanded) {
             this.expanded = false;
             this.applyExpandedState();
@@ -307,7 +313,7 @@ export class WorkbenchPanel {
     }
 
     isVisible(): boolean {
-        return this.sharedShell ? (this.body.style.display !== "none") : this.shell.isVisible();
+        return this.visible;
     }
 
     setExpanded(expanded: boolean): void {
@@ -345,12 +351,14 @@ export class WorkbenchPanel {
     ): void {
         this.workspacePanelItems = Array.isArray(items) ? items : [];
         this.onSelectWorkspacePanel = onSelect;
-        this.shell.setOnSelectPanel(onSelect);
-        this.shell.setPanelOptions(items.map((item) => ({
-            id: item.id,
-            title: item.title,
-            active: item.active,
-        })));
+        if (!this.sharedShell) {
+            this.shell.setOnSelectPanel(onSelect);
+            this.shell.setPanelOptions(items.map((item) => ({
+                id: item.id,
+                title: item.title,
+                active: item.active,
+            })));
+        }
         this.renderWorkspaceOverview();
     }
 
@@ -959,7 +967,11 @@ export class WorkbenchPanel {
 
     private applyExpandedState(): void {
         if (this.floating) {
-            this.shell.setExpanded(this.expanded);
+            if (this.sharedShell) {
+                this.updateBodyDisplay();
+            } else {
+                this.shell.setExpanded(this.expanded);
+            }
         } else {
             this.toggleButton.textContent = this.expanded ? ">" : "<";
             this.root.style.transform = this.expanded ? "translateX(0)" : `translateX(${this.shell.width}px)`;

@@ -4,7 +4,13 @@ from depdigest import check_dependency as _check_dependency
 from ._private.smonitor import PACKAGE_ROOT as _SMONITOR_PACKAGE_ROOT
 
 _ensure_smonitor_configured(_SMONITOR_PACKAGE_ROOT)
-_check_dependency(__name__)
+import sys
+if not getattr(sys.modules.get(__name__), '_checked_dep', False):
+    _check_dependency(__name__)
+    try:
+        sys.modules[__name__]._checked_dep = True
+    except AttributeError:
+        pass
 
 from ._pyunitwizard import puw as pyunitwizard
 from ._version import __version__
