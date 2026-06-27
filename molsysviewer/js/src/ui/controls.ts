@@ -2,6 +2,8 @@ import { MolSysViewerController } from "../managers/viewer-controller";
 import { ViewerMessage } from "../messages/viewer-messages";
 import { HelpOverlay } from "./help-overlay";
 
+
+
 // Helper to send sync messages to popout
 type SyncCallback = (msg: ViewerMessage) => void;
 
@@ -28,8 +30,51 @@ const makeButton = (label: string, onClick: () => void) => {
     return btn;
 };
 
+const makeMinimalTrajButton = (svgInner: string, title: string, onClick: () => void) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.title = title;
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">${svgInner}</svg>`;
+    Object.assign(btn.style, {
+        width: "28px",
+        height: "28px",
+        minWidth: "28px",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0",
+        border: "1px solid rgba(255, 255, 255, 0.15)",
+        borderRadius: "6px",
+        background: "rgba(18, 18, 22, 0.75)",
+        color: "rgba(255, 255, 255, 0.75)",
+        cursor: "default",
+        userSelect: "none",
+        pointerEvents: "auto",
+        boxSizing: "border-box",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+        transition: "all 120ms ease",
+    });
+    btn.addEventListener("mouseenter", () => {
+        btn.style.background = "rgba(18, 18, 22, 0.95)";
+        btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
+        btn.style.color = "rgba(255, 255, 255, 0.98)";
+    });
+    btn.addEventListener("mouseleave", () => {
+        btn.style.background = "rgba(18, 18, 22, 0.75)";
+        btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
+        btn.style.color = "rgba(255, 255, 255, 0.75)";
+    });
+    btn.addEventListener("click", onClick);
+    return btn;
+};
+
 const injectStyles = () => {
-    if (document.getElementById("molsysviewer-traj-style")) return;
+    let el = document.getElementById("molsysviewer-traj-style") as HTMLStyleElement | null;
+    if (!el) {
+        el = document.createElement("style");
+        el.id = "molsysviewer-traj-style";
+        document.head.appendChild(el);
+    }
     const css = `
         .molsysviewer-controls {
             font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -123,32 +168,113 @@ const injectStyles = () => {
             background: rgba(80,80,80,0.95) !important;
             border: none !important;
         }
+        .molsysviewer-slider-minimal {
+            background: transparent;
+            height: 4px;
+            border-radius: 999px;
+            overflow: visible;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider-minimal::-moz-range-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+        }
+        .molsysviewer-slider-minimal::-ms-track {
+            background: rgba(255, 255, 255, 0.3) !important;
+            height: 4px;
+            border-radius: 999px;
+            border: none;
+            color: transparent;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+            margin-top: -3px;
+            cursor: default;
+        }
+        .molsysviewer-slider-minimal::-webkit-slider-thumb:hover,
+        .molsysviewer-slider-minimal::-webkit-slider-thumb:active {
+            background: #ffffff !important;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.6) !important;
+        }
+        .molsysviewer-slider-minimal::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+            cursor: default;
+        }
+        .molsysviewer-slider-minimal::-moz-range-thumb:hover,
+        .molsysviewer-slider-minimal::-moz-range-thumb:active {
+            background: #ffffff !important;
+        }
+        .molsysviewer-slider-minimal::-ms-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+        }
+        .molsysviewer-traj-capsule {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 10px;
+            background: rgba(18, 18, 22, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
     `;
-    const el = document.createElement("style");
-    el.id = "molsysviewer-traj-style";
     el.textContent = css;
-    document.head.appendChild(el);
 };
 
-const makeNumberControl = (initial: number, onChange: (n: number) => void, title: string) => {
+const makeNumberControl = (initial: number, onChange: (n: number) => void, title: string, minimal = false) => {
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
     wrapper.style.display = "inline-block";
-    wrapper.style.width = "52px";
-    wrapper.style.height = "22px";
+    wrapper.style.width = minimal ? "42px" : "52px";
+    wrapper.style.height = minimal ? "28px" : "22px";
 
     const input = document.createElement("input");
     input.type = "text";
     input.value = String(initial);
-    input.style.width = "52px";
-    input.style.height = "22px";
-    input.style.fontSize = "11px";
+    input.style.width = minimal ? "42px" : "52px";
+    input.style.height = minimal ? "28px" : "22px";
+    input.style.fontSize = minimal ? "11px" : "11px";
+    input.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
+    input.style.fontWeight = minimal ? "600" : "normal";
+    input.style.textAlign = "center";
     input.style.boxSizing = "border-box";
-    input.style.color = "rgba(255,255,255,0.9)";
-    input.style.background = "rgba(40,40,40,0.6)";
-    input.style.border = "1px solid rgba(255,255,255,0.55)";
-    input.style.borderRadius = "4px";
-    input.style.padding = "0 18px 0 4px";
+    if (minimal) {
+        input.style.color = "rgba(255,255,255,0.9)";
+        input.style.background = "rgba(18, 18, 22, 0.75)";
+        input.style.border = "1px solid rgba(255,255,255,0.15)";
+        input.style.borderRadius = "6px";
+        input.style.padding = "0 14px 0 6px";
+    } else {
+        input.style.color = "rgba(255,255,255,0.9)";
+        input.style.background = "rgba(40,40,40,0.6)";
+        input.style.border = "1px solid rgba(255,255,255,0.55)";
+        input.style.borderRadius = "4px";
+        input.style.padding = "0 18px 0 4px";
+    }
     input.style.appearance = "none";
     (input.style as any).MozAppearance = "textfield";
     (input.style as any).WebkitAppearance = "none";
@@ -167,23 +293,32 @@ const makeNumberControl = (initial: number, onChange: (n: number) => void, title
     spinner.style.position = "absolute";
     spinner.style.top = "1px";
     spinner.style.right = "2px";
-    spinner.style.width = "14px";
-    spinner.style.height = "18px";
+    spinner.style.width = minimal ? "12px" : "14px";
+    spinner.style.height = minimal ? "26px" : "18px";
     spinner.style.display = "flex";
     spinner.style.flexDirection = "column";
     spinner.style.alignItems = "center";
 
-    const mkArrow = (char: string, delta: number, extraTop: string = "0px") => {
+    const mkArrow = (charOrSvg: string, delta: number, extraTop: string = "0px") => {
         const btn = document.createElement("div");
-        btn.textContent = char;
-        btn.style.fontSize = "10px";
-        btn.style.lineHeight = "10px";
-        btn.style.height = "9px";
-        btn.style.color = "#ffffff";
+        if (minimal) {
+            btn.innerHTML = charOrSvg;
+            btn.style.display = "flex";
+            btn.style.alignItems = "center";
+            btn.style.justifyContent = "center";
+            btn.style.width = "12px";
+            btn.style.height = "12px";
+        } else {
+            btn.textContent = charOrSvg;
+            btn.style.fontSize = "10px";
+            btn.style.lineHeight = "10px";
+            btn.style.height = "9px";
+        }
+        btn.style.color = "rgba(255, 255, 255, 0.75)";
         btn.style.background = "transparent";
         btn.style.border = "none";
         btn.style.textAlign = "center";
-        btn.style.cursor = "default"; // Changed from pointer
+        btn.style.cursor = "default";
         btn.style.marginTop = extraTop;
         btn.onclick = () => {
             const val = Number(input.value);
@@ -195,8 +330,20 @@ const makeNumberControl = (initial: number, onChange: (n: number) => void, title
         return btn;
     };
 
-    const upBtn = mkArrow("▲", 1, "0px");
-    const downBtn = mkArrow("▼", -1, "1px");
+    const upBtn = mkArrow(
+        minimal 
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,4.5 4,2 6.5,4.5"/></svg>`
+            : "▲", 
+        1, 
+        "0px"
+    );
+    const downBtn = mkArrow(
+        minimal 
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="8" height="6" viewBox="0 0 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,1.5 4,4 6.5,1.5"/></svg>`
+            : "▼", 
+        -1, 
+        minimal ? "2px" : "0px"
+    );
     spinner.appendChild(upBtn);
     spinner.appendChild(downBtn);
 
@@ -214,7 +361,23 @@ export const buildControls = (
     opts?: { initialHasTrajectory?: boolean; initialFrameCount?: number }
 ) => {
     const controlsMode = (model.get("controls_mode") as string) || "classic";
-    if (controlsMode === "focus") {
+    const isFocus = controlsMode === "cinema" || controlsMode === "focus";
+    const isMinimal = controlsMode === "minimal" || isFocus;
+
+    const helpOverlay = new HelpOverlay(container);
+
+    const onHelpKey = (ev: KeyboardEvent) => {
+        if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
+        if (!container.contains(ev.target as Node)) return;
+        if (ev.key.toLowerCase() === "h") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            helpOverlay.toggle();
+        }
+    };
+    window.addEventListener("keydown", onHelpKey, true);
+
+    if (isFocus) {
         // Render a subtle, elegant, self-dismissing helper toast for accessibility
         const toast = document.createElement("div");
         toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
@@ -245,32 +408,268 @@ export const buildControls = (
                 toast.remove();
             }, 800);
         }, 3200);
-
-        return; // Completely clean canvas after toast fades out
     }
 
     injectStyles();
 
-    const overlay = document.createElement("div");
-    // ... (rest of the overlay creation code remains same until Autohide logic) ...
-    overlay.className = "molsysviewer-controls";
-    overlay.style.position = "absolute";
-    overlay.style.display = "flex";
-    overlay.style.gap = "6px";
-    overlay.style.zIndex = "10";
-    overlay.style.pointerEvents = "none";
-    overlay.style.flexWrap = "nowrap";
-    overlay.style.opacity = "0"; // Reveal after initial trajectory state to avoid flash
-    overlay.style.display = "none"; // Keep hidden until we know if trajectory bar is needed
+    let overlay: HTMLDivElement | undefined;
+    if (!isFocus) {
+        overlay = document.createElement("div");
+        overlay.className = "molsysviewer-controls";
+        overlay.style.position = "absolute";
+        overlay.style.display = "flex";
+        overlay.style.gap = "6px";
+        overlay.style.zIndex = "10";
+        overlay.style.pointerEvents = "none";
+        overlay.style.flexWrap = "nowrap";
+        overlay.style.opacity = "0"; // Reveal after initial trajectory state to avoid flash
+        overlay.style.opacity = "0";
+        overlay.style.display = "none";
+    }
 
     const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
 
-    // Help overlay — shared by both modes; must be created before the mode branch
-    // so the minimal ? button can reference it
-    const helpOverlay = new HelpOverlay(container);
 
-    if (controlsMode === "minimal") {
-        // ── Minimal mode: three SVG icon buttons (panel / fullscreen / popup) ──
+    const traj = document.createElement("div");
+    traj.style.display = "flex";
+    traj.style.alignItems = "center";
+    traj.style.gap = "6px";
+    traj.style.pointerEvents = "auto";
+    traj.style.marginLeft = isMinimal ? "0px" : "6px";
+    traj.style.marginRight = isMinimal ? "10px" : "0px";
+    traj.style.paddingLeft = "0px";
+    traj.style.borderLeft = "0px";
+    traj.style.display = "none";
+
+    let currentStep = 1;
+    let currentFps = 30;
+
+    let btnPrev: HTMLButtonElement | undefined;
+    let btnNext: HTMLButtonElement | undefined;
+    let stepControl: any = null;
+    let fpsControl: any = null;
+    let trajCapsule: HTMLDivElement | undefined;
+
+    const btnPlayPause = isMinimal
+        ? makeMinimalTrajButton(`<polygon points="5,3 13,8 5,13" fill="currentColor"/>`, "Play Trajectory", () => {
+            const isPlaying = c.trajectory.getTrajectoryState().isPlaying;
+            if (isPlaying) {
+                c.stopTrajectoryPlayback();
+                sendSync({ op: "set_trajectory_playback", action: "stop" });
+            } else {
+                c.playTrajectory({ fps: currentFps, step: currentStep });
+                sendSync({
+                    op: "set_trajectory_playback",
+                    action: "play",
+                    fps: currentFps,
+                    step: currentStep,
+                });
+            }
+          })
+        : makeButton("▶ / ⏸", () => {
+            const isPlaying = c.trajectory.getTrajectoryState().isPlaying;
+            if (isPlaying) {
+                c.stopTrajectoryPlayback();
+                sendSync({ op: "set_trajectory_playback", action: "stop" });
+            } else {
+                c.playTrajectory({ fps: currentFps, step: currentStep });
+                sendSync({
+                    op: "set_trajectory_playback",
+                    action: "play",
+                    fps: currentFps,
+                    step: currentStep,
+                });
+            }
+          });
+    if (isMinimal) {
+        btnPrev = makeMinimalTrajButton(`<rect x="3" y="3" width="2" height="10" fill="currentColor"/><polygon points="12,3 6,8 12,13" fill="currentColor"/>`, "Previous Step", () => {
+            c.stepTrajectory(-currentStep);
+            sendSync({ op: "step_trajectory", by: -currentStep });
+        });
+        btnNext = makeMinimalTrajButton(`<polygon points="4,3 10,8 4,13" fill="currentColor"/><rect x="11" y="3" width="2" height="10" fill="currentColor"/>`, "Next Step", () => {
+            c.stepTrajectory(currentStep);
+            sendSync({ op: "step_trajectory", by: currentStep });
+        });
+    } else {
+        btnPlayPause.style.paddingTop = "0px";
+        btnPlayPause.style.paddingBottom = "0px";
+        btnPlayPause.style.lineHeight = "18px";
+        btnPlayPause.style.minWidth = "28px";
+        btnPlayPause.style.width = "28px";
+
+        btnPrev = makeButton("−", () => {
+            c.stepTrajectory(-currentStep);
+            sendSync({ op: "step_trajectory", by: -currentStep });
+        });
+        btnNext = makeButton("+", () => {
+            c.stepTrajectory(currentStep);
+            sendSync({ op: "step_trajectory", by: currentStep });
+        });
+    }
+
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = "0";
+    slider.value = "0";
+    slider.className = isMinimal ? "molsysviewer-slider-minimal" : "molsysviewer-slider";
+    slider.style.width = isMinimal ? "100px" : "160px";
+    slider.style.flex = isMinimal ? "0 0 100px" : "0 0 160px";
+    slider.style.background = "transparent";
+    slider.style.appearance = "none";
+    (slider.style as any).WebkitAppearance = "none";
+    (slider.style as any).MozAppearance = "none";
+    slider.style.setProperty("accent-color", "transparent");
+    slider.style.borderRadius = "999px";
+    slider.style.overflow = "visible";
+    
+    const updateSliderBg = () => {
+        if (isMinimal) {
+            slider.style.background = "transparent";
+        } else {
+            const track = "rgba(200,200,200,0.35)";
+            slider.style.background = track;
+        }
+    };
+    slider.oninput = () => {
+        const val = Number(slider.value);
+        if (!Number.isFinite(val)) return;
+        void c.setTrajectoryFrame(val);
+        sendSync({ op: "set_trajectory_frame", index: val });
+        updateSliderBg();
+    };
+    updateSliderBg();
+
+    const label = document.createElement("span");
+    if (isMinimal) {
+        label.style.color = "rgba(255, 255, 255, 0.85)";
+        label.style.fontSize = "11px";
+        label.style.fontFamily = '"IBM Plex Sans", system-ui, sans-serif';
+        label.style.fontWeight = "600";
+        label.style.minWidth = "42px";
+        label.style.textAlign = "right";
+    } else {
+        label.style.color = "rgba(0,0,0,0.5)";
+        label.style.fontSize = "11px";
+        label.style.minWidth = "60px";
+        label.style.textAlign = "center";
+    }
+    label.textContent = "0 / 0";
+
+    if (isMinimal) {
+        trajCapsule = document.createElement("div");
+        trajCapsule.className = "molsysviewer-traj-capsule";
+        trajCapsule.appendChild(slider);
+        trajCapsule.appendChild(label);
+
+        traj.appendChild(trajCapsule);
+        if (btnPrev) traj.appendChild(btnPrev);
+        traj.appendChild(btnPlayPause);
+        if (btnNext) traj.appendChild(btnNext);
+
+        if (isFocus) {
+            stepControl = makeNumberControl(1, n => {
+                currentStep = n;
+                const state = c.trajectory.getTrajectoryState();
+                if (state.isPlaying) {
+                    c.playTrajectory({ fps: currentFps, step: currentStep });
+                }
+            }, "Step size", true);
+
+            fpsControl = makeNumberControl(30, n => {
+                currentFps = n;
+                const state = c.trajectory.getTrajectoryState();
+                if (state.isPlaying) {
+                    c.playTrajectory({ fps: currentFps, step: currentStep });
+                }
+            }, "FPS", true);
+
+            traj.appendChild(stepControl.wrapper);
+            traj.appendChild(fpsControl.wrapper);
+        }
+    } else {
+        stepControl = makeNumberControl(1, n => {
+            currentStep = n;
+            const state = c.trajectory.getTrajectoryState();
+            if (state.isPlaying) {
+                c.playTrajectory({ fps: currentFps, step: currentStep });
+            }
+        }, "Step size", isMinimal);
+
+        fpsControl = makeNumberControl(30, n => {
+            currentFps = n;
+            const state = c.trajectory.getTrajectoryState();
+            if (state.isPlaying) {
+                c.playTrajectory({ fps: currentFps, step: currentStep });
+            }
+        }, "FPS", isMinimal);
+
+        if (btnPrev) traj.appendChild(btnPrev);
+        traj.appendChild(btnPlayPause);
+        if (btnNext) traj.appendChild(btnNext);
+        traj.appendChild(slider);
+        traj.appendChild(label);
+        traj.appendChild(stepControl.wrapper);
+        traj.appendChild(fpsControl.wrapper);
+    }
+
+    if (isFocus) {
+        Object.assign(traj.style, {
+            position: "absolute",
+            bottom: "12px",
+            left: "50%",
+            transform: "translateX(-50%) translateY(45px)",
+            opacity: "0",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            zIndex: "10",
+            pointerEvents: "auto",
+            transition: "transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.2s ease",
+        });
+
+        const triggerArea = document.createElement("div");
+        Object.assign(triggerArea.style, {
+            position: "absolute",
+            bottom: "0px",
+            left: "0px",
+            width: "100%",
+            height: "56px",
+            zIndex: "9",
+            pointerEvents: "auto",
+            background: "transparent",
+        });
+
+        const showScrubber = () => {
+            traj.style.transform = "translateX(-50%) translateY(0)";
+            traj.style.opacity = "1";
+        };
+        const hideScrubber = () => {
+            traj.style.transform = "translateX(-50%) translateY(45px)";
+            traj.style.opacity = "0";
+        };
+
+        triggerArea.addEventListener("mouseenter", showScrubber);
+        traj.addEventListener("mouseenter", showScrubber);
+
+        triggerArea.addEventListener("mouseleave", (e) => {
+            if (e.relatedTarget !== traj && !traj.contains(e.relatedTarget as Node)) {
+                hideScrubber();
+            }
+        });
+        traj.addEventListener("mouseleave", (e) => {
+            if (e.relatedTarget !== triggerArea && !triggerArea.contains(e.relatedTarget as Node)) {
+                hideScrubber();
+            }
+        });
+
+        container.appendChild(triggerArea);
+        container.appendChild(traj);
+    } else if (overlay) {
+        overlay.appendChild(traj);
+    }
+
+    if (controlsMode === "minimal" && overlay) {
         const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
         const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
         const ICON_POPUP = `<line x1="5.5" y1="10.5" x2="11.5" y2="4.5"/><polyline points="8,4 12,4 12,8"/><polyline points="5.5,7 3,7 3,13 9,13 9,10.5"/>`;
@@ -288,25 +687,29 @@ export const buildControls = (
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "0",
-                border: "none",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
                 borderRadius: "6px",
-                background: "transparent",
-                color: "rgba(255,255,255,0.6)",
+                background: "rgba(18, 18, 22, 0.75)",
+                color: "rgba(255, 255, 255, 0.75)",
                 cursor: "default",
                 userSelect: "none",
                 pointerEvents: "auto",
                 boxSizing: "border-box",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+                transition: "all 120ms ease",
             });
             btn.addEventListener("mouseenter", () => {
-                btn.style.background = "rgba(255,255,255,0.1)";
-                btn.style.color = "rgba(255,255,255,0.95)";
+                btn.style.background = "rgba(18, 18, 22, 0.95)";
+                btn.style.borderColor = "rgba(255, 255, 255, 0.35)";
+                btn.style.color = "rgba(255, 255, 255, 0.98)";
             });
             btn.addEventListener("mouseleave", () => {
-                btn.style.background = "transparent";
-                btn.style.color = "rgba(255,255,255,0.6)";
+                btn.style.background = "rgba(18, 18, 22, 0.75)";
+                btn.style.borderColor = "rgba(255, 255, 255, 0.15)";
+                btn.style.color = "rgba(255, 255, 255, 0.75)";
             });
             btn.addEventListener("click", handler);
-            overlay.appendChild(btn);
+            overlay!.appendChild(btn);
             return btn;
         };
 
@@ -314,13 +717,12 @@ export const buildControls = (
         mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
         if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
         const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
-        const helpBtn = mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
-    } else {
-        // ── Classic mode: text buttons ───────────────────────────────────────
+        mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
+    } else if (overlay) {
         const mk = (label: string, handler: () => void) => {
             const b = makeButton(label, handler);
             b.style.pointerEvents = "auto";
-            overlay.appendChild(b);
+            overlay!.appendChild(b);
         };
 
         mk("Reset", async () => {
@@ -341,132 +743,14 @@ export const buildControls = (
             sendSync({ op: "toggle_swing", enable: c.isSwingActive });
         });
         if (onPopClick) mk("Pop", onPopClick);
+        mk("Help", () => helpOverlay.toggle());
         if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
             mk("Panel", () => c.togglePanelMode());
         }
     }
 
-    // Trajectory controls
-    const traj = document.createElement("div");
-    traj.style.display = "flex";
-    traj.style.alignItems = "center";
-    traj.style.gap = "6px";
-    traj.style.pointerEvents = "auto";
-    traj.style.marginLeft = "6px";
-    traj.style.paddingLeft = "0px";
-    traj.style.borderLeft = "0px";
-    // Hide the trajectory bar by default; update immediately based on known state.
-    traj.style.display = "none";
-
-    let currentStep = 1;
-    let currentFps = 30;
-
-    const btnPrev = makeButton("−", () => {
-        c.stepTrajectory(-currentStep);
-        sendSync({ op: "step_trajectory", by: -currentStep });
-    });
-    
-    const btnPlayPause = makeButton("▶ / ⏸", () => {
-        const isPlaying = c.trajectory.getTrajectoryState().isPlaying;
-        if (isPlaying) {
-            c.stopTrajectoryPlayback();
-            sendSync({ op: "set_trajectory_playback", action: "stop" });
-        } else {
-            c.playTrajectory({ fps: currentFps, step: currentStep });
-            sendSync({
-                op: "set_trajectory_playback",
-                action: "play",
-                fps: currentFps,
-                step: currentStep,
-            });
-        }
-    });
-    btnPlayPause.style.paddingTop = "0px";
-    btnPlayPause.style.paddingBottom = "0px";
-    btnPlayPause.style.lineHeight = "18px";
-    // Fix width so play/pause glyphs don't resize the button
-    btnPlayPause.style.minWidth = "28px";
-    btnPlayPause.style.width = "28px";
-
-    const btnNext = makeButton("+", () => {
-        c.stepTrajectory(currentStep);
-        sendSync({ op: "step_trajectory", by: currentStep });
-    });
-    [btnPrev, btnPlayPause, btnNext].forEach(b => {
-        b.style.pointerEvents = "auto";
-    });
-
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.min = "0";
-    slider.max = "0";
-    slider.value = "0";
-    slider.className = "molsysviewer-slider";
-    slider.style.width = "160px";
-    slider.style.flex = "0 0 160px";
-    slider.style.background = "transparent";
-    slider.style.appearance = "none";
-    (slider.style as any).WebkitAppearance = "none";
-    (slider.style as any).MozAppearance = "none";
-    slider.style.setProperty("accent-color", "transparent");
-    slider.style.borderRadius = "999px";
-    slider.style.overflow = "visible";
-    
-    const updateSliderBg = () => {
-        const min = Number(slider.min) || 0;
-        const max = Number(slider.max) || 0;
-        const val = Number(slider.value) || 0;
-        // Keep a flat track to avoid visible gaps under the thumb; no filled gradient.
-        const _ = { min, max, val }; // satisfy lints
-        const track = "rgba(200,200,200,0.35)";
-        slider.style.background = track;
-    };
-    slider.oninput = () => {
-        const val = Number(slider.value);
-        if (!Number.isFinite(val)) return;
-        void c.setTrajectoryFrame(val);
-        sendSync({ op: "set_trajectory_frame", index: val });
-        updateSliderBg();
-    };
-    updateSliderBg();
-
-    const label = document.createElement("span");
-    label.style.color = "rgba(0,0,0,0.5)";
-    label.style.fontSize = "11px";
-    label.style.minWidth = "60px";
-    label.style.textAlign = "center";
-    label.textContent = "0 / 0";
-
-    const stepControl = makeNumberControl(1, n => { currentStep = n; }, "Step size");
-    const fpsControl = makeNumberControl(5, n => { currentFps = n; }, "FPS");
-
-    traj.appendChild(btnPrev);
-    traj.appendChild(btnPlayPause);
-    traj.appendChild(btnNext);
-    traj.appendChild(slider);
-    traj.appendChild(label);
-    traj.appendChild(stepControl.wrapper);
-    traj.appendChild(fpsControl.wrapper);
-
-    overlay.appendChild(traj);
-
-    const initialHasTrajectory = !!opts?.initialHasTrajectory;
-    const initialFrameCount = typeof opts?.initialFrameCount === "number" ? opts.initialFrameCount : undefined;
-    if (initialHasTrajectory) {
-        const fc = initialFrameCount && initialFrameCount > 0 ? initialFrameCount : 2;
-        traj.style.display = fc > 1 ? "flex" : "none";
-        slider.max = fc > 0 ? String(Math.max(fc - 1, 1)) : "1";
-        slider.value = "0";
-        updateSliderBg();
-        label.textContent = fc > 0 ? `1 / ${fc}` : "0 / 0";
-        // Keep controls disabled until a real trajectory state arrives.
-        [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
-            (el as HTMLButtonElement | HTMLInputElement).disabled = true;
-        });
-    }
-
-    // Trajectory listener to update UI
     let hasSeenState = false;
+    let lastIsPlaying: boolean | null = null;
     const applyTrajectoryState = (state: ReturnType<typeof c.trajectory.getTrajectoryState>) => {
         hasSeenState = true;
         const frameCount = state.frameCount;
@@ -477,103 +761,129 @@ export const buildControls = (
         updateSliderBg();
         label.textContent = frameCount > 0 ? `${current + 1} / ${frameCount}` : "0 / 0";
         const disabled = !state.hasTrajectory || frameCount <= 1;
-        [btnPrev, btnNext, slider, btnPlayPause].forEach(el => {
+        const elsToDisable = [slider, btnPlayPause];
+        if (btnPrev) elsToDisable.push(btnPrev);
+        if (btnNext) elsToDisable.push(btnNext);
+        if (stepControl) elsToDisable.push(stepControl.input);
+        if (fpsControl) elsToDisable.push(fpsControl.input);
+        elsToDisable.forEach(el => {
             (el as HTMLButtonElement | HTMLInputElement).disabled = disabled;
         });
 
-        // Update button appearance based on playback state
-        if (state.isPlaying) {
-            btnPlayPause.textContent = "⏸";
-            btnPlayPause.title = "Pause Trajectory";
-        } else {
-            btnPlayPause.textContent = "▶";
-            btnPlayPause.title = "Play Trajectory";
+        if (state.isPlaying !== lastIsPlaying) {
+            lastIsPlaying = state.isPlaying;
+            if (state.isPlaying) {
+                if (isMinimal) {
+                    btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><rect x="4" y="3" width="2.5" height="10" fill="currentColor"/><rect x="9.5" y="3" width="2.5" height="10" fill="currentColor"/></svg>`;
+                } else {
+                    btnPlayPause.textContent = "⏸";
+                }
+                btnPlayPause.title = "Pause Trajectory";
+            } else {
+                if (isMinimal) {
+                    btnPlayPause.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polygon points="5,3 13,8 5,13" fill="currentColor"/></svg>`;
+                } else {
+                    btnPlayPause.textContent = "▶";
+                }
+                btnPlayPause.title = "Play Trajectory";
+            }
         }
-        // Reveal overlay after first state application
-        overlay.style.display = "flex";
-        overlay.style.opacity = "1";
-        overlay.style.pointerEvents = "none";
+        if (overlay) {
+            overlay.style.display = "flex";
+            overlay.style.opacity = "1";
+            overlay.style.pointerEvents = "none";
+        }
     };
+
     c.onTrajectoryState(applyTrajectoryState, { immediate: false });
-    // If the trajectory state is already known (e.g., expected frame count pre-seeded),
-    // apply it immediately; otherwise wait for the first update to avoid a "buttons only" flash.
     const initialState = c.trajectory.getTrajectoryState();
     if (initialState.hasTrajectory || initialState.expectedFrameCount !== undefined) {
         applyTrajectoryState(initialState);
     }
 
-    // Placement and Autohide logic
     const placeOverlay = () => {
-        const pos = model.get("controls_position") as string[] | undefined;
-        const posFs = model.get("controls_position_fullscreen") as string[] | undefined;
-        const isFs = !!document.fullscreenElement;
-        const use = isFs && Array.isArray(posFs) ? posFs : Array.isArray(pos) ? pos : ["top", "right"];
-        overlay.style.top = use?.includes("top") ? "8px" : "";
-        overlay.style.bottom = use?.includes("bottom") ? "8px" : "";
-        overlay.style.left = use?.includes("left") ? "8px" : "";
-        overlay.style.right = use?.includes("right") ? "8px" : "";
-    };
-    placeOverlay();
-    document.addEventListener("fullscreenchange", placeOverlay);
-    model.on("change:controls_position", placeOverlay);
-    model.on("change:controls_position_fullscreen", placeOverlay);
+        if (!overlay) return;
+        const isFullscreen = !!document.fullscreenElement;
+        const rawPos = isFullscreen
+            ? model.get("controls_position_fullscreen")
+            : model.get("controls_position");
 
-    let autohide = !!model.get("autohide_controls");
-    const target = container; // Use passed container
+        let use: string[] = ["top", "right"];
+        if (Array.isArray(rawPos)) {
+            use = rawPos;
+        } else if (typeof rawPos === "string") {
+            if (rawPos === "top-left") use = ["top", "left"];
+            else if (rawPos === "top-right") use = ["top", "right"];
+            else if (rawPos === "bottom-left") use = ["bottom", "left"];
+            else if (rawPos === "bottom-center") use = ["bottom", "center"];
+            else if (rawPos === "bottom-right") use = ["bottom", "right"];
+        }
 
-    const applyShow = (visible: boolean) => {
-        if (!hasSeenState) return; // Do not toggle visibility until first state is applied
-        if (autohide) {
-            overlay.style.opacity = visible ? "1" : "0";
-            overlay.style.pointerEvents = visible ? "auto" : "none";
-        } else {
-            overlay.style.display = visible ? "flex" : "none";
+        overlay.style.top = use.includes("top") ? "12px" : "";
+        overlay.style.bottom = use.includes("bottom") ? "12px" : "";
+        overlay.style.left = use.includes("left") ? "12px" : "";
+        overlay.style.right = use.includes("right") ? "12px" : "";
+        overlay.style.transform = "";
+
+        if (use.includes("center")) {
+            overlay.style.left = "50%";
+            overlay.style.transform = "translateX(-50%)";
         }
     };
-    const onEnter = () => applyShow(!!model.get("show_controls"));
-    const onLeave = () => applyShow(false);
 
-    const enableAutohide = () => {
-        overlay.style.transition = "opacity 150ms ease";
-        applyShow(!!model.get("show_controls"));
-        target.addEventListener("pointerenter", onEnter); // Changed to pointerenter
-        target.addEventListener("pointerleave", onLeave); // Changed to pointerleave
-    };
-    const disableAutohide = () => {
-        target.removeEventListener("pointerenter", onEnter);
-        target.removeEventListener("pointerleave", onLeave);
-        overlay.style.opacity = "1";
-        overlay.style.pointerEvents = "auto";
-        applyShow(!!model.get("show_controls"));
-    };
+    if (overlay) {
+        placeOverlay();
+        document.addEventListener("fullscreenchange", placeOverlay);
+        model.on("change:controls_position", placeOverlay);
+        model.on("change:controls_position_fullscreen", placeOverlay);
 
-    if (autohide) enableAutohide();
-    else applyShow(!!model.get("show_controls"));
+        let autohide = !!model.get("autohide_controls");
+        const target = container;
 
-    model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
-    model.on("change:autohide_controls", () => {
-        const next = !!model.get("autohide_controls");
-        if (next === autohide) return;
-        autohide = next;
-        if (autohide) {
-            enableAutohide();
-            applyShow(false);
-        } else {
-            disableAutohide();
-        }
-    });
+        const applyShow = (visible: boolean) => {
+            if (!hasSeenState) return;
+            if (autohide) {
+                overlay!.style.opacity = visible ? "1" : "0";
+                overlay!.style.pointerEvents = visible ? "auto" : "none";
+            } else {
+                overlay!.style.display = visible ? "flex" : "none";
+            }
+        };
+        const onEnter = () => applyShow(!!model.get("show_controls"));
+        const onLeave = () => applyShow(false);
 
-    // H key — available in both modes
-    const onHelpKey = (ev: KeyboardEvent) => {
-        if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
-        if (!container.contains(ev.target as Node)) return;
-        if (ev.key.toLowerCase() === "h") {
-            ev.preventDefault();
-            ev.stopPropagation();
-            helpOverlay.toggle();
-        }
-    };
-    window.addEventListener("keydown", onHelpKey, true);
+        const enableAutohide = () => {
+            overlay!.style.transition = "opacity 150ms ease";
+            applyShow(!!model.get("show_controls"));
+            target.addEventListener("pointerenter", onEnter);
+            target.addEventListener("pointerleave", onLeave);
+        };
+        const disableAutohide = () => {
+            target.removeEventListener("pointerenter", onEnter);
+            target.removeEventListener("pointerleave", onLeave);
+            overlay!.style.opacity = "1";
+            overlay!.style.pointerEvents = "auto";
+            applyShow(!!model.get("show_controls"));
+        };
+
+        if (autohide) enableAutohide();
+        else applyShow(!!model.get("show_controls"));
+
+        model.on("change:show_controls", () => applyShow(!!model.get("show_controls")));
+        model.on("change:autohide_controls", () => {
+            const next = !!model.get("autohide_controls");
+            if (next === autohide) return;
+            autohide = next;
+            if (autohide) {
+                enableAutohide();
+                applyShow(false);
+            } else {
+                disableAutohide();
+            }
+        });
+    }
+
+
 
     return overlay;
 };

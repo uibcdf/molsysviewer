@@ -3566,3 +3566,48 @@ El roadmap de la Phase D se enfocó en tres grandes ejes: consistencia de unidad
 - Carga e integración directa de accidentes topográficos de `topomt` ✓
 - Actualizaciones de trayectorias en sitio por WebGL ultra-rápidas (<10ms) con control de flujo por ACKs ✓
 - Desajuste de índices resuelto de manera completamente transparente en el backend y frontend ✓
+
+## 2026-06-27 Phase E — Refactor de Layouts Unificados (Integrated, Cinema, Split) y Controles de Opacidad/Anclaje Dinámicos
+
+### Contexto
+
+El roadmap de la Phase E se enfocó en la simplificación de los modos de visualización de MolSysViewer, consolidando 7 presets confusos en 3 modos principales (`classic`, `integrated`, `cinema`). Se introdujeron controles dinámicos directamente en el panel flotante de la interfaz para permitir al usuario cambiar la opacidad, la transparencia del fondo (candado) y el anclaje a pantalla dividida (split) en tiempo real con un solo clic, alineando la molécula automáticamente.
+
+### Cambios implementados
+
+**Frontend (JS/TS):**
+- **floating-panel-shell.ts**:
+  - Implementación de estado reactivo dinámico (`isSplit`, `isAmbient`) controlado por botones dedicados en la cabecera.
+  - **lockButton**: Añadido un botón de candado (🔓/🔒) en la cabecera que alterna entre el fondo transparente interactivo (`ambient`, `pointer-events: none`) y el fondo oscuro modal bloqueado (`integrated`, `pointer-events: auto`).
+  - **dockButton**: Añadido un botón de anclaje que alterna entre el panel flotante centrado y el panel lateral izquierdo (`split`). Al activarse, la tarjeta se estira y el canvas 3D se encoge y auto-centra reactivamente a la derecha.
+  - **updateLayout()**: Centraliza la aplicación de estilos CSS para posicionamiento absoluto (`left`, `top`, `width`, `height`), bordes, sombras y desenfoque (`blur(20px)`), permitiendo transiciones suaves sin saltos de color ni pérdida de redimensionamiento manual.
+  - **Redimensionamiento Tradicional**: Se migró de la escala simétrica basada en `transform: translate` a un posicionamiento absoluto real en píxeles. Arrastrar la esquina inferior derecha ahora fija la esquina superior izquierda, comportándose como una ventana estándar de escritorio.
+  - **Unificación de Opacidades**: Se unificó el ciclo de opacidades a una sola escala `[0.90, 0.70, 0.45]` con color base `rgba(18, 18, 22, 0.90)` para ambos modos.
+  - **Desactivación de Cierre en Fondo**: Se eliminó el listener de `pointerdown` en el backdrop para evitar que clics erróneos fuera del panel cierren la tarjeta.
+- **controls.ts**:
+  - Se actualizó el validador `isFocus` para aceptar tanto `"cinema"` como `"focus"` (modo de presentación limpio).
+  - En modo `cinema`, se añade el Scrubber Invisible en la base con atajos de teclado no conflictivos y botones multimedia refinados.
+
+**Backend (Python):**
+- **viewer/core.py**:
+  - Se actualizaron los presets mapeando `"focus"` y `"cinema"` a `("cinema", "integrated")` y mapeando `"integrated"`, `"ambient"` y `"split"` al nuevo panel unificado `"integrated"`.
+  - El validador `c_mode_valid` ahora admite `"cinema"`.
+- **viewer_mode.py** y **controls_mode.py**:
+  - Se añadió soporte para `"cinema"` en la digestión de argumentos.
+
+### Pruebas y Verificación
+
+1. **Pruebas de Inicialización y Presets (Python)**:
+   - Se actualizó `tests/test_init.py` para validar la nueva resolución de presets (`integrated`, `ambient`, `split`, `focus` y `cinema`).
+   - Toda la suite de pruebas de Python (`pytest tests/`) pasó exitosamente.
+2. **Pruebas de Frontend (JS/TS)**:
+   - Se validaron todos los módulos modificados. 111 de 111 pruebas de JavaScript pasaron exitosamente (`npm run test:js`).
+
+### Criterio Phase E: satisfecho
+
+- Reducción a 3 modos principales (`classic`, `integrated`, `cinema`) en el backend y frontend ✓
+- Botones de control dinámico (`lockButton`, `dockButton`, `opacityButton`) integrados en el shell ✓
+- Resizing y posicionamiento absoluto tradicional de ventana implementados sin saltos ✓
+- Alineación y centrado de la molécula automáticos reactivos al cambio de docking ✓
+- Coherencia y unificación de opacidades y color base de cristal en ambos estados del candado ✓
+

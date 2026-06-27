@@ -18,22 +18,25 @@ def _new_view_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]) -> dic
     reused_view = kwargs.get("view") is not None
     load_mode = kwargs.get("load_mode", "selection")
     syntax = kwargs.get("syntax", "MolSysMT")
-    if isinstance(molecular_system, str):
-        molecular_system_kind = "string"
-    else:
-        molecular_system_kind = type(molecular_system).__name__ if molecular_system is not None else None
+    molecular_system_form = None
+    if molecular_system is not None:
+        try:
+            import molsysmt as msm
+            molecular_system_form = msm.get_form(molecular_system)
+        except Exception:
+            molecular_system_form = type(molecular_system).__name__
     return {
         "load_mode": load_mode,
         "syntax": syntax,
         "reused_view": reused_view,
-        "molecular_system_kind": molecular_system_kind,
+        "molecular_system_form": molecular_system_form,
     }
 
 @dep_digest('molsysmt')
 @signal(tags=["load", "factory"], extra_factory=_new_view_signal_extra)
 @digest()
 def new_view(
-    molecular_system: Any,
+    molecular_system: Any = None,
     selection: Selection = "all",
     structure_indices: StructureIndices = "all",
     *,
@@ -42,6 +45,9 @@ def new_view(
     debug_js: bool | None = None,
     view: MolSysView | None = None,
     skip_digestion: bool = False,
+    viewer_mode: str | None = None,
+    controls_mode: str | None = None,
+    panel_mode_style: str | None = None,
 ) -> MolSysView:
     """Create and return a MolSysView, optionally loading a molecular system.
 
@@ -63,9 +69,18 @@ def new_view(
           selection (it inherits the global representation or uses ``"auto"``).
     """
 
-    view = MolSysView(debug_js=debug_js) if view is None else view
+    if view is None:
+        view = MolSysView(
+            debug_js=debug_js,
+            viewer_mode=viewer_mode,
+            controls_mode=controls_mode,
+            panel_mode_style=panel_mode_style,
+        )
     if load_mode not in ("selection", "all"):
         raise ValueError("load_mode must be 'selection' or 'all'")
+
+    if molecular_system is None:
+        return view
 
     if load_mode == "selection":
         view.load(

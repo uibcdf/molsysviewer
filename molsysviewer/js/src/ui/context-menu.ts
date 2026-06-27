@@ -40,7 +40,10 @@ export type ContextMenuAction =
     | "reset_view"
     | "toggle_background"
     | "toggle_spin"
-    | "toggle_swing";
+    | "toggle_swing"
+    | "open_navigate"
+    | "open_workbench"
+    | "set_viewer_mode";
 
 export type ContextActionDetails = {
     endpoint_policy?: "atom" | "centroid" | "representative_atom";
@@ -133,7 +136,14 @@ export class ViewerContextMenu {
     private currentAddonItems: AddonContextItemSummary[] = [];
     private currentPageX = 0;
     private currentPageY = 0;
-    private currentSceneState: { isSpinActive?: boolean; isSwingActive?: boolean; isDarkMode?: boolean } | null = null;
+    private currentSceneState: {
+        isSpinActive?: boolean;
+        isSwingActive?: boolean;
+        isDarkMode?: boolean;
+        isNavigateExpanded?: boolean;
+        isWorkbenchExpanded?: boolean;
+        currentViewerMode?: string;
+    } | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -199,7 +209,14 @@ export class ViewerContextMenu {
         regions?: RegionSummary[] | null,
         addonActions?: AddonContextActionSummary[] | null,
         addonItems?: AddonContextItemSummary[] | null,
-        sceneState?: { isSpinActive?: boolean; isSwingActive?: boolean; isDarkMode?: boolean } | null,
+        sceneState?: {
+            isSpinActive?: boolean;
+            isSwingActive?: boolean;
+            isDarkMode?: boolean;
+            isNavigateExpanded?: boolean;
+            isWorkbenchExpanded?: boolean;
+            currentViewerMode?: string;
+        } | null,
     ): void {
         this.currentTarget = target;
         this.currentSelection = activeSelection ?? null;
@@ -253,6 +270,9 @@ export class ViewerContextMenu {
             const isSpin = this.currentSceneState?.isSpinActive;
             const isSwing = this.currentSceneState?.isSwingActive;
             const isDark = this.currentSceneState?.isDarkMode;
+            const isNavOpen = this.currentSceneState?.isNavigateExpanded;
+            const isWorkOpen = this.currentSceneState?.isWorkbenchExpanded;
+            const activeMode = this.currentSceneState?.currentViewerMode || "classic";
 
             this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
             this.scrollEl.appendChild(this.makeActionButton(
@@ -267,6 +287,51 @@ export class ViewerContextMenu {
                 isSwing ? "Toggle Swing (Active ✓)" : "Toggle Swing",
                 "toggle_swing"
             ));
+
+            // Divider for Panels
+            const divPanels = document.createElement("div");
+            Object.assign(divPanels.style, {
+                marginTop: "6px",
+                paddingTop: "6px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+            this.scrollEl.appendChild(divPanels);
+
+            this.scrollEl.appendChild(this.makeActionButton(
+                isNavOpen ? "Close Navigate Panel" : "Open Navigate Panel",
+                "open_navigate"
+            ));
+            this.scrollEl.appendChild(this.makeActionButton(
+                isWorkOpen ? "Close Workbench Panel" : "Open Workbench Panel",
+                "open_workbench"
+            ));
+
+            // Divider for Viewer Modes
+            const divModes = document.createElement("div");
+            Object.assign(divModes.style, {
+                marginTop: "6px",
+                paddingTop: "6px",
+                borderTop: "1px solid rgba(255,255,255,0.10)",
+            });
+            this.scrollEl.appendChild(divModes);
+
+            const modeHeader = document.createElement("div");
+            modeHeader.textContent = "Viewer Mode";
+            Object.assign(modeHeader.style, {
+                padding: "2px 8px 4px 8px",
+                opacity: "0.5",
+                fontSize: "11px",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                fontWeight: "600",
+            });
+            this.scrollEl.appendChild(modeHeader);
+
+            const modes = ["classic", "classic-floating", "zen", "integrated", "ambient", "focus", "split"];
+            for (const mode of modes) {
+                const label = mode + (activeMode === mode ? " (Active ✓)" : "");
+                this.scrollEl.appendChild(this.makeActionButton(label, "set_viewer_mode", { text: mode }));
+            }
         }
 
         if (this.currentSelection && this.currentSelection.source_kind !== "empty") {

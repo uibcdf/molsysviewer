@@ -159,7 +159,7 @@ CODES = {
 }
 
 SIGNALS = {
-    "molsysviewer.new_view.new_view": {"extra_required": ["load_mode", "syntax", "reused_view", "molecular_system_kind"]},
+    "molsysviewer.new_view.new_view": {"extra_required": ["load_mode", "syntax", "reused_view", "molecular_system_form"]},
     "molsysviewer.viewer.load": {"extra_required": ["molecular_system"]},
     "molsysviewer.viewer.zoom": {"extra_required": ["selection"]},
     "molsysviewer.viewer.set_controls_visible": {"extra_required": ["visible", "autohide"]},

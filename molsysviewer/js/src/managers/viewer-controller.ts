@@ -466,6 +466,7 @@ export class MolSysViewerController {
     private readonly groupPanel: GroupPanel;
     private readonly workbenchPanel: WorkbenchPanel;
     private readonly sharedShell?: FloatingPanelShell;
+    private splitResizeObserver?: ResizeObserver;
     private readonly canvasHost: HTMLDivElement;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
     private canvasInsetFrom = { left: 0, right: 0 };
@@ -730,7 +731,20 @@ export class MolSysViewerController {
                 event.stopPropagation();
                 this.collapsePanels();
             });
+            sharedShell.setVisible(true);
             this.sharedShell = sharedShell;
+
+            if (initOptions?.panelModeStyle === "split") {
+                sharedShell.onResize = () => {
+                    this.updateCanvasInsets();
+                };
+
+                const ro = new ResizeObserver(() => {
+                    this.updateCanvasInsets();
+                });
+                ro.observe(host);
+                this.splitResizeObserver = ro;
+            }
         }
 
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
@@ -837,6 +851,22 @@ export class MolSysViewerController {
                 void this.toggleSwing();
                 return;
             }
+            if (action === "open_navigate") {
+                this.setPanelMode("navigate", true);
+                return;
+            }
+            if (action === "open_workbench") {
+                this.setPanelMode("workbench", true);
+                return;
+            }
+            if (action === "set_viewer_mode") {
+                const mode = details?.text;
+                if (mode && this.model) {
+                    this.model.set("viewer_mode", mode);
+                    this.model.save_changes();
+                }
+                return;
+            }
             if (action === "toggle_region_visibility") {
                 const tag = typeof details?.tag === "string" ? details.tag : null;
                 if (!tag) return;
@@ -910,7 +940,25 @@ export class MolSysViewerController {
                 this.groupPanel.updateContextTarget(annPayload);
                 this.syncWorkbenchContextFromPayload(annPayload);
                 emitInteractionEvent(annPayload);
-                this.contextMenu.open(annPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(annPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
+                this.contextMenu.open(
+                    annPayload,
+                    page_x ?? 0,
+                    page_y ?? 0,
+                    this.currentActiveSelection,
+                    this.lastMeasurementSummary,
+                    this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+                    this.getRelevantRegionSummaries(annPayload),
+                    this.addonContextActions,
+                    this.addonContextItems,
+                    {
+                        isSpinActive: this.scene.isSpinActive,
+                        isSwingActive: this.scene.isSwingActive,
+                        isDarkMode: this.scene.isDarkMode,
+                        isNavigateExpanded: this.groupPanel.isExpanded(),
+                        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                        currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                    }
+                );
                 return;
             }
             if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
@@ -928,7 +976,25 @@ export class MolSysViewerController {
                 this.groupPanel.updateContextTarget(measPayload);
                 this.syncWorkbenchContextFromPayload(measPayload);
                 emitInteractionEvent(measPayload);
-                this.contextMenu.open(measPayload, page_x ?? 0, page_y ?? 0, this.currentActiveSelection, this.lastMeasurementSummary, this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })), this.getRelevantRegionSummaries(measPayload), this.addonContextActions, this.addonContextItems, { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode });
+                this.contextMenu.open(
+                    measPayload,
+                    page_x ?? 0,
+                    page_y ?? 0,
+                    this.currentActiveSelection,
+                    this.lastMeasurementSummary,
+                    this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+                    this.getRelevantRegionSummaries(measPayload),
+                    this.addonContextActions,
+                    this.addonContextItems,
+                    {
+                        isSpinActive: this.scene.isSpinActive,
+                        isSwingActive: this.scene.isSwingActive,
+                        isDarkMode: this.scene.isDarkMode,
+                        isNavigateExpanded: this.groupPanel.isExpanded(),
+                        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                        currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                    }
+                );
                 return;
             }
             let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
@@ -1004,7 +1070,14 @@ export class MolSysViewerController {
                 this.getRelevantRegionSummaries(payload),
                 this.addonContextActions,
                 this.addonContextItems,
-                { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
+                {
+                    isSpinActive: this.scene.isSpinActive,
+                    isSwingActive: this.scene.isSwingActive,
+                    isDarkMode: this.scene.isDarkMode,
+                    isNavigateExpanded: this.groupPanel.isExpanded(),
+                    isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                    currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                }
             );
         }, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
@@ -1156,6 +1229,7 @@ export class MolSysViewerController {
         this.groupPanel.dispose();
         this.workbenchPanel.dispose();
         this.sharedShell?.dispose();
+        this.splitResizeObserver?.disconnect();
         this.contextMenu.dispose();
         this.releaseContextMenuSuppression?.();
         this.releaseGlobalEscapeHandler?.();
@@ -1230,6 +1304,7 @@ export class MolSysViewerController {
         try {
             this.groupPanel.setExpanded(false);
             this.workbenchPanel.setExpanded(false);
+            this.sharedShell?.setExpanded(false);
         } finally {
             this.syncingPanelExpansion = false;
         }
@@ -1339,6 +1414,7 @@ export class MolSysViewerController {
         try {
             this.groupPanel.setExpanded(target === "navigate");
             this.workbenchPanel.setExpanded(target === "workbench");
+            this.sharedShell?.setExpanded(true);
             this.lastPanelMode = target;
             if (this.currentWorkspace === "core") {
                 this.lastCorePanelMode = target;
@@ -1382,6 +1458,19 @@ export class MolSysViewerController {
         });
 
         if (this.currentWorkspace === "core") {
+            if (this.sharedShell) {
+                const activeMode = this.lastPanelMode;
+                this.sharedShell.setOnSelectPanel((panelId) => {
+                    if (panelId === "navigate" || panelId === "workbench") {
+                        this.setPanelMode(panelId, true);
+                        this.refreshPanelWorkspaceChrome();
+                    }
+                });
+                this.sharedShell.setPanelOptions([
+                    { id: "navigate", title: "Navigate", active: activeMode === "navigate" },
+                    { id: "workbench", title: "Workbench", active: activeMode === "workbench" },
+                ]);
+            }
             this.groupPanel.setPanelStack([
                 { id: "navigate", title: "Navigate", active: true },
                 { id: "workbench", title: "Workbench" },
@@ -1403,6 +1492,18 @@ export class MolSysViewerController {
         this.groupPanel.setPanelStack([], undefined);
         const panels = this.getWorkspacePanels(this.currentWorkspace);
         const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+        if (this.sharedShell) {
+            this.sharedShell.setOnSelectPanel((panelId) => {
+                this.selectWorkspacePanel(this.currentWorkspace, panelId);
+            });
+            this.sharedShell.setPanelOptions(
+                panels.map((item) => ({
+                    id: item.id,
+                    title: item.title,
+                    active: item.id === selectedId,
+                }))
+            );
+        }
         this.workbenchPanel.setWorkspacePanels(
             panels.map((item) => ({
                 id: item.id,
@@ -1448,7 +1549,14 @@ export class MolSysViewerController {
             this.getRelevantRegionSummaries(payload),
             this.addonContextActions,
             this.addonContextItems,
-            { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
+            {
+                isSpinActive: this.scene.isSpinActive,
+                isSwingActive: this.scene.isSwingActive,
+                isDarkMode: this.scene.isDarkMode,
+                isNavigateExpanded: this.groupPanel.isExpanded(),
+                isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                currentViewerMode: this.model?.get("viewer_mode") || "classic",
+            }
         );
     }
 
@@ -1477,7 +1585,14 @@ export class MolSysViewerController {
             this.getRelevantRegionSummaries(payload),
             this.addonContextActions,
             this.addonContextItems,
-            { isSpinActive: this.scene.isSpinActive, isSwingActive: this.scene.isSwingActive, isDarkMode: this.scene.isDarkMode }
+            {
+                isSpinActive: this.scene.isSpinActive,
+                isSwingActive: this.scene.isSwingActive,
+                isDarkMode: this.scene.isDarkMode,
+                isNavigateExpanded: this.groupPanel.isExpanded(),
+                isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                currentViewerMode: this.model?.get("viewer_mode") || "classic",
+            }
         );
     }
 
