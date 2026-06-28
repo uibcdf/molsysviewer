@@ -113,6 +113,9 @@ That principle should guide prioritization throughout the repository.
    - Baseline record of named color strings that MolSysViewer treats as valid Mol\* color names.
 39. [**Standalone Performance and De-pythonization Roadmap**](standalone_performance_and_depythonization.md)
    - Long-term strategy for addressing JIT/Numba latency and transitioning to Rust/WASM.
+40. [**Standalone Version 2 Evolution Plan**](standalone_v2_evolution_plan.md)
+   - Architectural roadmap for transitioning to a zero-configuration, lightweight desktop app for non-programmers.
+
 
 
 ## Workbench Tutorials (Planned)
