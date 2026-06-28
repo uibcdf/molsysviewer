@@ -152154,6 +152154,15 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
       return;
     }
+    if (this.sharedShell) {
+      const isOpened = this.sharedShell.isVisible() && this.sharedShell.isExpanded();
+      if (isOpened) {
+        this.collapsePanels();
+      } else {
+        this.setPanelMode(void 0, true);
+      }
+      return;
+    }
     const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
     if (anyExpanded) {
       this.collapsePanels();
