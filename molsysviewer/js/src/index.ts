@@ -413,6 +413,7 @@ export default {
             model,
             onPanelPopClick: enablePopout ? () => {
                 controllerPromise.then(c => {
+                    c.saveHostPanelState();
                     if (c.canvasHost.style.display === "none") {
                         c.setCanvasVisibility(true);
                     }

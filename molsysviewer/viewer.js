@@ -148762,6 +148762,7 @@ var FloatingPanelShell = class {
     this.isAmbient = false;
     this.lastSplitState = false;
     this.isCanvasHidden = false;
+    this.isPanelOnly = !!options.isPanelOnly;
     const style = options.panelModeStyle || "floating";
     this.panelModeStyle = style;
     this.isAmbient = style === "ambient";
@@ -148801,7 +148802,7 @@ var FloatingPanelShell = class {
       borderBottom: "1px solid rgba(255,255,255,0.08)",
       flexShrink: "0"
     });
-    {
+    if (!this.isPanelOnly) {
       let isDragging = false;
       let startX = 0;
       let startY = 0;
@@ -148824,16 +148825,16 @@ var FloatingPanelShell = class {
         const hostHeight = this.host.clientHeight;
         const panelWidth = this.panel.offsetWidth;
         const panelHeight = this.panel.offsetHeight;
-        const newLeft = Math.max(100 - panelWidth, Math.min(hostWidth - 100, startLeft + deltaX));
-        const newTop = Math.max(0, Math.min(hostHeight - 40, startTop + deltaY));
-        this.panel.style.left = `${newLeft}px`;
-        this.panel.style.top = `${newTop}px`;
+        const left = Math.max(10, Math.min(startLeft + deltaX, hostWidth - panelWidth - 10));
+        const top = Math.max(10, Math.min(startTop + deltaY, hostHeight - panelHeight - 10));
+        this.panel.style.left = `${left}px`;
+        this.panel.style.top = `${top}px`;
       };
       const dragEnd = () => {
         isDragging = false;
       };
       this.headerElement.addEventListener("mousedown", (e) => {
-        if (e.button !== 0 || e.target.closest("button, input, select")) return;
+        if (e.target.closest("button, input, select")) return;
         if (dragStart(e.clientX, e.clientY)) {
           e.preventDefault();
           const onMouseMove = (moveEvent) => {
@@ -149012,80 +149013,11 @@ var FloatingPanelShell = class {
       this.updateLayout();
       this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
     });
-    this.headerElement.appendChild(this.dockButton);
-    this.lockButton = document.createElement("button");
-    this.lockButton.type = "button";
-    Object.assign(this.lockButton.style, {
-      background: "transparent",
-      border: "none",
-      color: "rgba(255,255,255,0.45)",
-      cursor: "default",
-      padding: "4px",
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "5px",
-      flexShrink: "0",
-      marginLeft: "4px"
-    });
-    this.lockButton.addEventListener("mouseenter", () => {
-      this.lockButton.style.color = "rgba(255,255,255,0.9)";
-    });
-    this.lockButton.addEventListener("mouseleave", () => {
-      this.lockButton.style.color = "rgba(255,255,255,0.45)";
-    });
-    this.lockButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.isAmbient = !this.isAmbient;
-      this.updateLayout();
-      this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
-    });
-    this.headerElement.appendChild(this.lockButton);
-    const opacityButton = document.createElement("button");
-    opacityButton.type = "button";
-    opacityButton.title = "Toggle opacity";
-    opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
-    Object.assign(opacityButton.style, {
-      background: "transparent",
-      border: "none",
-      color: "rgba(255,255,255,0.45)",
-      cursor: "default",
-      padding: "4px",
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "5px",
-      flexShrink: "0",
-      marginLeft: "4px"
-    });
-    opacityButton.addEventListener("mouseenter", () => {
-      opacityButton.style.color = "rgba(255,255,255,0.9)";
-    });
-    opacityButton.addEventListener("mouseleave", () => {
-      opacityButton.style.color = "rgba(255,255,255,0.45)";
-    });
-    opacityButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const states = [0.9, 0.7, 0.45];
-      const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
-      let idx = states.indexOf(currentOpacity);
-      if (idx === -1) {
-        let minDiff = Infinity;
-        idx = 0;
-        for (let i = 0; i < states.length; i++) {
-          const diff = Math.abs(states[i] - currentOpacity);
-          if (diff < minDiff) {
-            minDiff = diff;
-            idx = i;
-          }
-        }
-      }
-      const nextIdx = (idx + 1) % states.length;
-      this.panel.style.opacity = String(states[nextIdx]);
-    });
-    this.headerElement.appendChild(opacityButton);
+    if (!this.isPanelOnly) {
+      this.headerElement.appendChild(this.dockButton);
+      this.headerElement.appendChild(this.lockButton);
+      this.headerElement.appendChild(opacityButton);
+    }
     if (options.onPanelPopClick) {
       const panelPopBtn = document.createElement("button");
       panelPopBtn.type = "button";
@@ -149166,7 +149098,9 @@ var FloatingPanelShell = class {
         minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
       }
     });
-    this.headerElement.appendChild(minimizeButton);
+    if (!this.isPanelOnly) {
+      this.headerElement.appendChild(minimizeButton);
+    }
     this.toggleButton = document.createElement("button");
     this.toggleButton.type = "button";
     this.toggleButton.title = "Close (Esc)";
@@ -149276,21 +149210,32 @@ var FloatingPanelShell = class {
       paddingLeft: isSplit2 ? "10px" : "0"
     });
     this.panel.style.position = "absolute";
-    if (isSplit2) {
+    if (this.isPanelOnly) {
       this.panel.style.transform = "";
       this.panel.style.backdropFilter = "";
       this.panel.style.webkitBackdropFilter = "";
-      this.panel.style.left = "10px";
-      this.panel.style.top = "10px";
-      this.panel.style.width = this.isCanvasHidden ? "calc(100% - 20px)" : "50%";
+      this.panel.style.left = "0";
+      this.panel.style.top = "0";
+      this.panel.style.width = "100%";
       Object.assign(this.panel.style, {
-        height: "calc(100% - 20px)",
-        borderRadius: "14px",
-        border: "1px solid rgba(255,255,255,0.12)",
-        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-        background: "rgba(18, 18, 22, 0.90)",
-        resize: "horizontal"
+        height: "100%",
+        borderRadius: "0",
+        border: "none",
+        boxShadow: "none",
+        background: "#121216",
+        resize: "none"
       });
+      this.headerElement.style.cursor = "default";
+      if (this.panelResizeObserver) {
+        this.panelResizeObserver.unobserve(this.panel);
+      }
+      Object.assign(this.root.style, {
+        justifyContent: "flex-start",
+        pointerEvents: "auto",
+        background: "#121216",
+        paddingLeft: "0"
+      });
+    } else if (isSplit2) {
       this.headerElement.style.cursor = "default";
       this.panelResizeObserver?.observe(this.panel);
     } else {
@@ -151297,6 +151242,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.localViewerMode = "classic";
     this.localControlsMode = "classic";
     this.localPanelModeStyle = "drawer";
+    this.savedHostPanelState = null;
     this.model = initOptions?.model;
     this.isPanelOnly = !!initOptions?.isPanelOnly;
     if (initOptions?.viewerMode) {
@@ -151389,7 +151335,8 @@ var MolSysViewerController = class _MolSysViewerController {
       sharedShell = new FloatingPanelShell(host, {
         title: "Navigate",
         panelModeStyle: initOptions?.panelModeStyle,
-        onPanelPopClick: initOptions?.onPanelPopClick
+        onPanelPopClick: initOptions?.onPanelPopClick,
+        isPanelOnly: this.isPanelOnly
       });
       if (this.isPanelOnly) {
         sharedShell.setSplit(true);
@@ -151406,7 +151353,14 @@ var MolSysViewerController = class _MolSysViewerController {
       sharedShell.toggleButton.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        this.collapsePanels();
+        if (this.isPanelOnly) {
+          try {
+            window.close();
+          } catch (e) {
+          }
+        } else {
+          this.collapsePanels();
+        }
       });
       sharedShell.setVisible(true);
       this.sharedShell = sharedShell;
@@ -151994,6 +151948,27 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.groupPanel.isExpanded()) return "navigate";
     if (this.workbenchPanel.isExpanded()) return "workbench";
     return null;
+  }
+  saveHostPanelState() {
+    if (this.sharedShell) {
+      this.savedHostPanelState = {
+        isSplit: this.sharedShell.isSplit,
+        isAmbient: this.sharedShell.isAmbient,
+        minimized: this.sharedShell.minimized,
+        expanded: this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded(),
+        activePanel: this.getActivePanel()
+      };
+    }
+  }
+  restoreHostPanelState() {
+    if (this.sharedShell && this.savedHostPanelState) {
+      this.sharedShell.setSplit(this.savedHostPanelState.isSplit);
+      this.sharedShell.setAmbient(this.savedHostPanelState.isAmbient);
+      this.sharedShell.setVisible(true);
+      this.setPanelMode(this.savedHostPanelState.activePanel, this.savedHostPanelState.expanded);
+    } else if (this.sharedShell) {
+      this.sharedShell.setVisible(true);
+    }
   }
   setViewerMode(mode) {
     if (this.model) {
@@ -154665,8 +154640,8 @@ var PopupHostManager = class {
           this.panelWin = null;
           this.isPanelReady = false;
           window.clearInterval(interval);
-          if (this.controller?.sharedShell) {
-            this.controller.sharedShell.setVisible(true);
+          if (this.controller) {
+            this.controller.restoreHostPanelState();
           }
         }
       }
@@ -156069,6 +156044,7 @@ var index_default = {
       model,
       onPanelPopClick: enablePopout ? () => {
         controllerPromise.then((c8) => {
+          c8.saveHostPanelState();
           if (c8.canvasHost.style.display === "none") {
             c8.setCanvasVisibility(true);
           }
