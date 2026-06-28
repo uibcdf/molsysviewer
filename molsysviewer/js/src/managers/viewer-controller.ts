@@ -796,6 +796,7 @@ export class MolSysViewerController {
             if (this.isPanelOnly) {
                 sharedShell.setSplit(true);
                 sharedShell.setVisible(true);
+                sharedShell.setExpanded(true);
             } else {
                 if (initOptions?.isAmbient !== undefined) {
                     sharedShell.setAmbient(initOptions.isAmbient);
@@ -863,6 +864,9 @@ export class MolSysViewerController {
             this.focusTarget({ atom_indices: region.atom_indices });
         }, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
         this.workbenchPanel = new WorkbenchPanel(host, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
+        if (this.isPanelOnly) {
+            this.groupPanel.setExpanded(true);
+        }
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
@@ -1485,14 +1489,18 @@ export class MolSysViewerController {
                 ? (panel ?? this.lastCorePanelMode)
                 : "workbench";
         let target: "navigate" | "workbench" | null = null;
-        if (requested === "navigate" && this.groupPanel.isVisible()) {
-            target = "navigate";
-        } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
-            target = "workbench";
-        } else if (this.groupPanel.isVisible()) {
-            target = "navigate";
-        } else if (this.workbenchPanel.isVisible()) {
-            target = "workbench";
+        if (this.isPanelOnly) {
+            target = requested === "workbench" ? "workbench" : "navigate";
+        } else {
+            if (requested === "navigate" && this.groupPanel.isVisible()) {
+                target = "navigate";
+            } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
+                target = "workbench";
+            } else if (this.groupPanel.isVisible()) {
+                target = "navigate";
+            } else if (this.workbenchPanel.isVisible()) {
+                target = "workbench";
+            }
         }
         if (!target) return;
 
