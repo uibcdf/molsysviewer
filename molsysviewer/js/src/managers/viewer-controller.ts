@@ -1418,7 +1418,9 @@ export class MolSysViewerController {
         if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
             return;
         }
-        if (this.panelOpenState) {
+        const isOpened = this.panelOpenState || 
+                         (this.sharedShell && this.sharedShell.isVisible() && this.sharedShell.isExpanded());
+        if (isOpened) {
             this.collapsePanels();
         } else {
             if (this.sharedShell) {
