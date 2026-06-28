@@ -151394,6 +151394,7 @@ var MolSysViewerController = class _MolSysViewerController {
       if (this.isPanelOnly) {
         sharedShell.setSplit(true);
         sharedShell.setVisible(true);
+        sharedShell.setExpanded(true);
       } else {
         if (initOptions?.isAmbient !== void 0) {
           sharedShell.setAmbient(initOptions.isAmbient);
@@ -151457,6 +151458,9 @@ var MolSysViewerController = class _MolSysViewerController {
       this.focusTarget({ atom_indices: region.atom_indices });
     }, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
     this.workbenchPanel = new WorkbenchPanel(host, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
+    if (this.isPanelOnly) {
+      this.groupPanel.setExpanded(true);
+    }
     this.refreshPanelWorkspaceChrome();
     this.groupPanel.setOnExpandedChange((expanded) => {
       this.handlePanelExpansionChanged("navigate", expanded);
@@ -152184,14 +152188,18 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     const requested = this.currentWorkspace === "core" ? panel ?? this.lastCorePanelMode : "workbench";
     let target = null;
-    if (requested === "navigate" && this.groupPanel.isVisible()) {
-      target = "navigate";
-    } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
-      target = "workbench";
-    } else if (this.groupPanel.isVisible()) {
-      target = "navigate";
-    } else if (this.workbenchPanel.isVisible()) {
-      target = "workbench";
+    if (this.isPanelOnly) {
+      target = requested === "workbench" ? "workbench" : "navigate";
+    } else {
+      if (requested === "navigate" && this.groupPanel.isVisible()) {
+        target = "navigate";
+      } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
+        target = "workbench";
+      } else if (this.groupPanel.isVisible()) {
+        target = "navigate";
+      } else if (this.workbenchPanel.isVisible()) {
+        target = "workbench";
+      }
     }
     if (!target) return;
     this.syncingPanelExpansion = true;
@@ -154637,8 +154645,8 @@ var PopupHostManager = class {
   <\/script>
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; }
-    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; opacity: 0; transition: opacity 240ms ease; }
-    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
+    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
+    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; background: #121216; z-index: 1000; transition: opacity 240ms ease; }
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
     .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
