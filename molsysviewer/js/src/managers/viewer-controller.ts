@@ -646,6 +646,31 @@ export class MolSysViewerController {
         return null;
     }
 
+    private savedHostPanelState: any = null;
+
+    public saveHostPanelState(): void {
+        if (this.sharedShell) {
+            this.savedHostPanelState = {
+                isSplit: this.sharedShell.isSplit,
+                isAmbient: this.sharedShell.isAmbient,
+                minimized: this.sharedShell.minimized,
+                expanded: this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded(),
+                activePanel: this.getActivePanel(),
+            };
+        }
+    }
+
+    public restoreHostPanelState(): void {
+        if (this.sharedShell && this.savedHostPanelState) {
+            this.sharedShell.setSplit(this.savedHostPanelState.isSplit);
+            this.sharedShell.setAmbient(this.savedHostPanelState.isAmbient);
+            this.sharedShell.setVisible(true);
+            this.setPanelMode(this.savedHostPanelState.activePanel, this.savedHostPanelState.expanded);
+        } else if (this.sharedShell) {
+            this.sharedShell.setVisible(true);
+        }
+    }
+
     setViewerMode(mode: string) {
         if (this.model) {
             this.model.set("viewer_mode", mode);
@@ -792,6 +817,7 @@ export class MolSysViewerController {
                 title: "Navigate", 
                 panelModeStyle: initOptions?.panelModeStyle,
                 onPanelPopClick: initOptions?.onPanelPopClick,
+                isPanelOnly: this.isPanelOnly,
             });
             if (this.isPanelOnly) {
                 sharedShell.setSplit(true);
@@ -805,11 +831,15 @@ export class MolSysViewerController {
                     sharedShell.setSplit(initOptions.isSplit);
                 }
             }
-            // Close button of the shared shell collapses both panels
+            // Close button of the shared shell collapses both panels (or closes the window in isPanelOnly)
             sharedShell.toggleButton.addEventListener("click", (event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                this.collapsePanels();
+                if (this.isPanelOnly) {
+                    try { window.close(); } catch (e) {}
+                } else {
+                    this.collapsePanels();
+                }
             });
             sharedShell.setVisible(true);
             this.sharedShell = sharedShell;

@@ -175,8 +175,8 @@ export class PopupHostManager {
                     this.isPanelReady = false;
                     window.clearInterval(interval);
                     // Automatically restore host card when panel window is closed
-                    if (this.controller?.sharedShell) {
-                        this.controller.sharedShell.setVisible(true);
+                    if (this.controller) {
+                        this.controller.restoreHostPanelState();
                     }
                 }
             }
