@@ -154507,51 +154507,6 @@ var bootPopup = async (loadedModule) => {
     }
   });
   sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
-  try {
-    const diag = document.createElement("div");
-    Object.assign(diag.style, {
-      position: "absolute",
-      bottom: "0",
-      left: "0",
-      right: "0",
-      background: "rgba(18, 18, 22, 0.95)",
-      color: "#30d158",
-      fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-      fontSize: "11px",
-      lineHeight: "1.4",
-      padding: "12px",
-      zIndex: "999999",
-      maxHeight: "200px",
-      overflowY: "auto",
-      borderTop: "1px solid rgba(255,255,255,0.1)",
-      pointerEvents: "auto",
-      boxShadow: "0 -4px 12px rgba(0,0,0,0.5)"
-    });
-    diag.innerHTML = "<strong style='color:#0a84ff;'>[MolSysViewer Diagnostic Log]</strong><br>";
-    container.appendChild(diag);
-    const logDiag = (msg) => {
-      diag.innerHTML += msg + "<br>";
-      diag.scrollTop = diag.scrollHeight;
-    };
-    logDiag("initOptions: " + JSON.stringify(initOptions));
-    logDiag("container: display=" + window.getComputedStyle(container).display + ", opacity=" + window.getComputedStyle(container).opacity + ", w=" + container.offsetWidth + ", h=" + container.offsetHeight);
-    window.setTimeout(() => {
-      try {
-        const children = container.querySelectorAll("*");
-        logDiag(`Descendants count (excluding diag): ${children.length - 1}`);
-        children.forEach((child, idx) => {
-          const el = child;
-          if (el === diag || diag.contains(el)) return;
-          const style = window.getComputedStyle(el);
-          logDiag(`[${idx}] <strong>${el.tagName}</strong> (id=${el.id || "none"}, class=${el.className || "none"}): display=${style.display}, vis=${style.visibility}, w=${style.width}, h=${style.height}, offsetW=${el.offsetWidth}, offsetH=${el.offsetHeight}`);
-        });
-      } catch (e) {
-        logDiag("Error during DOM scan: " + e.message);
-      }
-    }, 3e3);
-  } catch (e) {
-    console.error("Failed to create diagnostic overlay:", e);
-  }
 };
 
 // src/managers/popup-host.ts
@@ -154621,28 +154576,6 @@ var PopupHostManager = class {
 <head>
   <meta charset="UTF-8" />
   <title>${mode === "canvas" ? "MolSysViewer Popout" : "MolSysViewer Panel"}</title>
-  <script>
-    window.addEventListener('error', function(e) {
-      const div = document.createElement('div');
-      div.style.position = 'absolute';
-      div.style.inset = '0';
-      div.style.background = 'rgba(18,18,22,0.95)';
-      div.style.color = '#ff5f5f';
-      div.style.padding = '24px';
-      div.style.fontFamily = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
-      div.style.fontSize = '14px';
-      div.style.lineHeight = '1.5';
-      div.style.whiteSpace = 'pre-wrap';
-      div.style.zIndex = '99999';
-      div.style.overflow = 'auto';
-      div.innerHTML = '<h3 style="margin-top:0;color:#ff3b30;">JavaScript Error:</h3>' + 
-                      '<strong>Message:</strong> ' + e.message + '<br><br>' +
-                      '<strong>Source:</strong> ' + e.filename + ':' + e.lineno + ':' + e.colno + '<br><br>' +
-                      '<strong>Stack Trace:</strong><br><pre style="margin:8px 0 0 0;padding:12px;background:rgba(0,0,0,0.3);border-radius:6px;overflow:auto;">' + 
-                      (e.error ? e.error.stack : 'No stack trace available') + '</pre>';
-      document.body.appendChild(div);
-    });
-  <\/script>
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; }
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
