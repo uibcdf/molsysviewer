@@ -1410,7 +1410,12 @@ export class MolSysViewerController {
         return () => window.removeEventListener("keydown", onKeyDown, true);
     }
 
+    public onTogglePanelModeOverride?: () => boolean;
+
     public togglePanelMode(): void {
+        if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
+            return;
+        }
         const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
         if (anyExpanded) {
             this.collapsePanels();

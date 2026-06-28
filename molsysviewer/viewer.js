@@ -152151,6 +152151,9 @@ var MolSysViewerController = class _MolSysViewerController {
     return () => window.removeEventListener("keydown", onKeyDown, true);
   }
   togglePanelMode() {
+    if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
+      return;
+    }
     const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
     if (anyExpanded) {
       this.collapsePanels();
@@ -156129,6 +156132,13 @@ var index_default = {
       } : void 0
     });
     controllerPromise.then((c8) => {
+      c8.onTogglePanelModeOverride = () => {
+        if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
+          popupMgr.close("panel");
+          return true;
+        }
+        return false;
+      };
       const initialMessages = model.get("initial_messages");
       const trajInfo = parseInitialTrajectoryInfo(initialMessages);
       if (trajInfo.frameCount !== void 0) {
