@@ -714,37 +714,9 @@ export const buildControls = (
             return btn;
         };
 
-        const ICON_EYE = `<path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z"/><circle cx="8" cy="8" r="3"/>`;
-        let canvasVisible = true;
-        const eyeBtn = mkIcon(ICON_EYE, "Toggle canvas visibility", () => {
-            canvasVisible = !canvasVisible;
-            c.setCanvasVisibility(canvasVisible);
-            updateEyeBtnStyle();
-        });
-        const updateEyeBtnStyle = () => {
-            if (canvasVisible) {
-                eyeBtn.style.color = "rgba(255, 255, 255, 0.75)";
-                eyeBtn.style.borderColor = "rgba(255, 255, 255, 0.15)";
-            } else {
-                eyeBtn.style.color = "rgba(239, 68, 68, 0.9)";
-                eyeBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";
-            }
-        };
-        eyeBtn.addEventListener("mouseenter", () => {
-            if (!canvasVisible) {
-                eyeBtn.style.color = "rgba(239, 68, 68, 1)";
-                eyeBtn.style.borderColor = "rgba(239, 68, 68, 0.6)";
-            }
-        });
-        eyeBtn.addEventListener("mouseleave", () => {
-            updateEyeBtnStyle();
-        });
-
         mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c.togglePanelMode());
         mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
-        const ICON_EXTERNAL_CARD = `<rect x="3" y="6" width="7" height="7" rx="1"/><path d="M12 3h1v1M13 3L8 8"/>`;
         if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
-        if (onPanelPopClick) mkIcon(ICON_EXTERNAL_CARD, "Popout panel/card to external window", onPanelPopClick);
         const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
         mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
     } else if (overlay) {
@@ -773,15 +745,7 @@ export const buildControls = (
             sendSync({ op: "toggle_swing", enable: c.isSwingActive });
         });
         
-        let canvasVisible = true;
-        const textEyeBtn = mk("Canvas", () => {
-            canvasVisible = !canvasVisible;
-            c.setCanvasVisibility(canvasVisible);
-            textEyeBtn.style.background = canvasVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
-        });
-
         if (onPopClick) mk("Pop", onPopClick);
-        if (onPanelPopClick) mk("PanelPop", onPanelPopClick);
         mk("Help", () => helpOverlay.toggle());
         if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
             mk("Panel", () => c.togglePanelMode());

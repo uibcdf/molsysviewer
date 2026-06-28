@@ -355,15 +355,10 @@ export default {
                 }
                 e.preventDefault();
                 e.stopPropagation();
-                const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]') as HTMLButtonElement;
-                if (eyeBtn) {
-                    eyeBtn.click();
-                } else {
-                    const textEyeBtn = Array.from(target.querySelectorAll('button')).find(b => b.textContent === "Canvas");
-                    if (textEyeBtn) {
-                        textEyeBtn.click();
-                    }
-                }
+                controllerPromise.then(c => {
+                    const isHidden = c.canvasHost.style.display === "none";
+                    c.setCanvasVisibility(isHidden);
+                });
             }
         });
         
@@ -398,7 +393,21 @@ export default {
                 const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
                 popupMgr.send("molsysviewer-sync-op", syncOp);
             }
-        }, undefined, { panelModeStyle, model });
+        }, undefined, { 
+            panelModeStyle, 
+            model,
+            onPanelPopClick: enablePopout ? () => {
+                controllerPromise.then(c => {
+                    if (c.canvasHost.style.display === "none") {
+                        c.setCanvasVisibility(true);
+                    }
+                    if (c.sharedShell) {
+                        c.sharedShell.setVisible(false);
+                    }
+                    popupMgr.open("panel");
+                });
+            } : undefined
+        });
 
         // 3. Initialize Popup Manager with Payload
         // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.
@@ -439,22 +448,7 @@ export default {
                     {
                         initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
                         initialFrameCount: trajInfo.frameCount,
-                    },
-                    enablePopout ? () => {
-                        // Force canvas to be visible in the host if it was hidden
-                        if (c.canvasHost.style.display === "none") {
-                            const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]') as HTMLButtonElement;
-                            if (eyeBtn) {
-                                eyeBtn.click();
-                            } else {
-                                c.setCanvasVisibility(true);
-                            }
-                        }
-                        if (c.sharedShell) {
-                            c.sharedShell.setVisible(false);
-                        }
-                        popupMgr.open("panel");
-                    } : undefined
+                    }
                 );
                 if (overlay) {
                     target.appendChild(overlay);

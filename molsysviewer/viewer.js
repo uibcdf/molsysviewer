@@ -146128,6 +146128,11 @@ var ViewerContextMenu = class {
         isSwing ? "Toggle Swing (Active \u2713)" : "Toggle Swing",
         "toggle_swing"
       ));
+      const isCanvasVisible = this.currentSceneState?.isCanvasVisible !== false;
+      this.scrollEl.appendChild(this.makeActionButton(
+        isCanvasVisible ? "Hide Canvas" : "Show Canvas",
+        "toggle_canvas_visibility"
+      ));
       const divPanels = document.createElement("div");
       Object.assign(divPanels.style, {
         marginTop: "6px",
@@ -149081,6 +149086,37 @@ var FloatingPanelShell = class {
       this.panel.style.opacity = String(states[nextIdx]);
     });
     this.headerElement.appendChild(opacityButton);
+    if (options.onPanelPopClick) {
+      const panelPopBtn = document.createElement("button");
+      panelPopBtn.type = "button";
+      panelPopBtn.title = "Popout panel to external window";
+      panelPopBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="7" rx="1"/><path d="M12 3h1v1M13 3L8 8"/></svg>`;
+      Object.assign(panelPopBtn.style, {
+        background: "transparent",
+        border: "none",
+        color: "rgba(255,255,255,0.45)",
+        cursor: "default",
+        padding: "4px",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "5px",
+        flexShrink: "0",
+        marginLeft: "4px"
+      });
+      panelPopBtn.addEventListener("mouseenter", () => {
+        panelPopBtn.style.color = "rgba(255,255,255,0.9)";
+      });
+      panelPopBtn.addEventListener("mouseleave", () => {
+        panelPopBtn.style.color = "rgba(255,255,255,0.45)";
+      });
+      panelPopBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        options.onPanelPopClick();
+      });
+      this.headerElement.appendChild(panelPopBtn);
+    }
     const minimizeButton = document.createElement("button");
     minimizeButton.type = "button";
     minimizeButton.title = "Minimize";
@@ -151348,7 +151384,8 @@ var MolSysViewerController = class _MolSysViewerController {
     if (floatingUnified) {
       sharedShell = new FloatingPanelShell(host, {
         title: "Navigate",
-        panelModeStyle: initOptions?.panelModeStyle
+        panelModeStyle: initOptions?.panelModeStyle,
+        onPanelPopClick: initOptions?.onPanelPopClick
       });
       if (initOptions?.isAmbient !== void 0) {
         sharedShell.setAmbient(initOptions.isAmbient);
@@ -151461,6 +151498,11 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       if (action === "clear_selection") {
         this.activeSelection.clear();
+        return;
+      }
+      if (action === "toggle_canvas_visibility") {
+        const isHidden = this.canvasHost.style.display === "none";
+        this.setCanvasVisibility(isHidden);
         return;
       }
       if (action === "reset_view") {
@@ -151693,7 +151735,8 @@ var MolSysViewerController = class _MolSysViewerController {
           isDarkMode: this.scene.isDarkMode,
           isNavigateExpanded: this.groupPanel.isExpanded(),
           isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-          currentViewerMode: this.model?.get("viewer_mode") || "classic"
+          currentViewerMode: this.model?.get("viewer_mode") || "classic",
+          isCanvasVisible: this.canvasHost.style.display !== "none"
         }
       );
     }, (ev) => {
@@ -154777,6 +154820,7 @@ var HelpOverlay = class {
     grid.appendChild(makeSection("Keyboard", [
       ["N", "Open / close Navigate"],
       ["W", "Open / close Workbench"],
+      ["V", "Toggle canvas visibility"],
       ["H", "Toggle this help"],
       ["Esc", "Close panel / cancel"]
     ]));
@@ -155471,36 +155515,9 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       overlay.appendChild(btn);
       return btn;
     };
-    const ICON_EYE = `<path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z"/><circle cx="8" cy="8" r="3"/>`;
-    let canvasVisible = true;
-    const eyeBtn = mkIcon(ICON_EYE, "Toggle canvas visibility", () => {
-      canvasVisible = !canvasVisible;
-      c8.setCanvasVisibility(canvasVisible);
-      updateEyeBtnStyle();
-    });
-    const updateEyeBtnStyle = () => {
-      if (canvasVisible) {
-        eyeBtn.style.color = "rgba(255, 255, 255, 0.75)";
-        eyeBtn.style.borderColor = "rgba(255, 255, 255, 0.15)";
-      } else {
-        eyeBtn.style.color = "rgba(239, 68, 68, 0.9)";
-        eyeBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";
-      }
-    };
-    eyeBtn.addEventListener("mouseenter", () => {
-      if (!canvasVisible) {
-        eyeBtn.style.color = "rgba(239, 68, 68, 1)";
-        eyeBtn.style.borderColor = "rgba(239, 68, 68, 0.6)";
-      }
-    });
-    eyeBtn.addEventListener("mouseleave", () => {
-      updateEyeBtnStyle();
-    });
     mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
     mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
-    const ICON_EXTERNAL_CARD = `<rect x="3" y="6" width="7" height="7" rx="1"/><path d="M12 3h1v1M13 3L8 8"/>`;
     if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
-    if (onPanelPopClick) mkIcon(ICON_EXTERNAL_CARD, "Popout panel/card to external window", onPanelPopClick);
     const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
     mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
   } else if (overlay) {
@@ -155527,14 +155544,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       await c8.toggleSwing();
       sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
     });
-    let canvasVisible = true;
-    const textEyeBtn = mk("Canvas", () => {
-      canvasVisible = !canvasVisible;
-      c8.setCanvasVisibility(canvasVisible);
-      textEyeBtn.style.background = canvasVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
-    });
     if (onPopClick) mk("Pop", onPopClick);
-    if (onPanelPopClick) mk("PanelPop", onPanelPopClick);
     mk("Help", () => helpOverlay.toggle());
     if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
       mk("Panel", () => c8.togglePanelMode());
@@ -155997,15 +156007,10 @@ var index_default = {
         }
         e.preventDefault();
         e.stopPropagation();
-        const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]');
-        if (eyeBtn) {
-          eyeBtn.click();
-        } else {
-          const textEyeBtn = Array.from(target.querySelectorAll("button")).find((b8) => b8.textContent === "Canvas");
-          if (textEyeBtn) {
-            textEyeBtn.click();
-          }
-        }
+        controllerPromise.then((c8) => {
+          const isHidden = c8.canvasHost.style.display === "none";
+          c8.setCanvasVisibility(isHidden);
+        });
       }
     });
     el.appendChild(target);
@@ -156031,7 +156036,21 @@ var index_default = {
         const syncOp = { op: "sync_section_position", tag: msg.tag, point: msg.point, normal: msg.normal };
         popupMgr.send("molsysviewer-sync-op", syncOp);
       }
-    }, void 0, { panelModeStyle, model });
+    }, void 0, {
+      panelModeStyle,
+      model,
+      onPanelPopClick: enablePopout ? () => {
+        controllerPromise.then((c8) => {
+          if (c8.canvasHost.style.display === "none") {
+            c8.setCanvasVisibility(true);
+          }
+          if (c8.sharedShell) {
+            c8.sharedShell.setVisible(false);
+          }
+          popupMgr.open("panel");
+        });
+      } : void 0
+    });
     const popupJsSource = model.get("popup_js_source");
     const esmSource = model.get("_esm");
     const viewerJsSource = popupJsSource || esmSource;
@@ -156063,21 +156082,7 @@ var index_default = {
           {
             initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
             initialFrameCount: trajInfo.frameCount
-          },
-          enablePopout ? () => {
-            if (c8.canvasHost.style.display === "none") {
-              const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]');
-              if (eyeBtn) {
-                eyeBtn.click();
-              } else {
-                c8.setCanvasVisibility(true);
-              }
-            }
-            if (c8.sharedShell) {
-              c8.sharedShell.setVisible(false);
-            }
-            popupMgr.open("panel");
-          } : void 0
+          }
         );
         if (overlay) {
           target.appendChild(overlay);
