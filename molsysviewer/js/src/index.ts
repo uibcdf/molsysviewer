@@ -427,6 +427,14 @@ export default {
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
+            c.onTogglePanelModeOverride = () => {
+                if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
+                    popupMgr.close("panel");
+                    return true;
+                }
+                return false;
+            };
+
             // Pre-seed the expected frame count from the initial message buffer so the
             // trajectory bar can appear immediately (avoids a brief "buttons first, bar later" flicker).
             const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
