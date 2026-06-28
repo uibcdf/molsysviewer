@@ -1,6 +1,8 @@
 export class PopupHostManager {
     private popoutWin: Window | null = null;
+    private panelWin: Window | null = null;
     public isReady = false;
+    public isPanelReady = false;
 
     private readonly viewerJsSource: string;
     private readonly viewerModuleUrl?: string;
@@ -14,13 +16,24 @@ export class PopupHostManager {
         this.viewerModuleUrl = viewer.moduleUrl;
     }
 
-    get isOpen() {
+    private controller?: any;
+
+    setController(controller: any) {
+        this.controller = controller;
+    }
+
+    get isCanvasOpen() {
         return this.popoutWin && !this.popoutWin.closed;
     }
 
-    async open() {
-        if (this.isOpen) {
-            this.close();
+    get isPanelOpen() {
+        return this.panelWin && !this.panelWin.closed;
+    }
+
+    async open(mode: "canvas" | "panel" = "canvas") {
+        const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
+        if (isOpen) {
+            this.close(mode);
             return;
         }
 
@@ -34,11 +47,29 @@ export class PopupHostManager {
             }
         }
 
-        this.popoutWin = window.open("", "_blank", "width=960,height=720");
-        if (!this.popoutWin) return;
+        const win = window.open("", "_blank", mode === "canvas" ? "width=960,height=720" : "width=450,height=800");
+        if (!win) return;
+
+        if (mode === "canvas") {
+            this.popoutWin = win;
+            this.isReady = false;
+        } else {
+            this.panelWin = win;
+            this.isPanelReady = false;
+        }
+
+        if (this.controller) {
+            (win as any).molsysviewer_init_options = {
+                viewerMode: this.controller.getViewerMode(),
+                controlsMode: this.controller.getControlsMode(),
+                panelModeStyle: this.controller.getPanelModeStyle(),
+                isAmbient: this.controller.sharedShell?.isAmbient,
+                isSplit: this.controller.sharedShell?.isSplit,
+                isPanelOnly: mode === "panel",
+            };
+        }
         
-        this.isReady = false;
-        const doc = this.popoutWin.document;
+        const doc = win.document;
         
         doc.open();
         doc.write(`
@@ -46,14 +77,13 @@ export class PopupHostManager {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MolSysViewer Popout</title>
+  <title>${mode === "canvas" ? "MolSysViewer Popout" : "MolSysViewer Panel"}</title>
   <style>
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f5f6f8; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; }
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; opacity: 0; transition: opacity 240ms ease; }
-    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #2b2f36; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
-    #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
+    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
+    #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
-    /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
     .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
     .molsysviewer-controls button,
     .molsysviewer-controls input,
@@ -71,7 +101,7 @@ export class PopupHostManager {
   ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
 </head>
 <body>
-  <div id="molsysviewer-loading"><div class="spinner"></div><div>Loading viewer…</div></div>
+  <div id="molsysviewer-loading"><div class="spinner"></div><div>Loading...</div></div>
   <div id="molsysviewer-pop"></div>
 </body>
 </html>
@@ -101,10 +131,8 @@ export class PopupHostManager {
                 if (!this.viewerJsSource) {
                     throw new Error("No viewer source code provided to PopupHostManager");
                 }
-                // Create Blob in Popup context
-                // NOTE: We create the Blob in the popup's window context to avoid cross-origin tainting for some browsers
-                const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
-                const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+                const popBlob = new win.Blob([this.viewerJsSource], { type: "text/javascript" });
+                const popBlobUrl = win.URL.createObjectURL(popBlob);
 
                 console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
 
@@ -134,28 +162,56 @@ export class PopupHostManager {
 
         // Monitor closure
         const interval = window.setInterval(() => {
-            if (!this.popoutWin || this.popoutWin.closed) {
-                this.popoutWin = null;
-                this.isReady = false;
-                window.clearInterval(interval);
+            if (mode === "canvas") {
+                if (!this.popoutWin || this.popoutWin.closed) {
+                    this.popoutWin = null;
+                    this.isReady = false;
+                    window.clearInterval(interval);
+                }
+            } else {
+                if (!this.panelWin || this.panelWin.closed) {
+                    this.panelWin = null;
+                    this.isPanelReady = false;
+                    window.clearInterval(interval);
+                    // Automatically restore host card when panel window is closed
+                    if (this.controller?.sharedShell) {
+                        this.controller.sharedShell.setVisible(true);
+                    }
+                }
             }
-        }, 2000);
+        }, 1000);
     }
 
-    close() {
-        if (this.popoutWin) {
-            this.popoutWin.close();
-            this.popoutWin = null;
-            this.isReady = false;
+    close(mode: "canvas" | "panel" = "canvas") {
+        if (mode === "canvas") {
+            if (this.popoutWin) {
+                this.popoutWin.close();
+                this.popoutWin = null;
+                this.isReady = false;
+            }
+        } else {
+            if (this.panelWin) {
+                this.panelWin.close();
+                this.panelWin = null;
+                this.isPanelReady = false;
+            }
         }
     }
 
     send(type: string, data: any) {
-        if (!this.isReady || !this.popoutWin || this.popoutWin.closed) return;
-        try {
-            this.popoutWin.postMessage({ type, data, from: "host" }, "*");
-        } catch (e) {
-            console.warn("[MolSysViewer Host] Popout message failed", e);
+        if (this.isReady && this.popoutWin && !this.popoutWin.closed) {
+            try {
+                this.popoutWin.postMessage({ type, data, from: "host" }, "*");
+            } catch (e) {
+                console.warn("[MolSysViewer Host] Popout message failed", e);
+            }
+        }
+        if (this.isPanelReady && this.panelWin && !this.panelWin.closed) {
+            try {
+                this.panelWin.postMessage({ type, data, from: "host" }, "*");
+            } catch (e) {
+                console.warn("[MolSysViewer Host] Panel message failed", e);
+            }
         }
     }
 }

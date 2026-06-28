@@ -357,9 +357,42 @@ class MolSysView(
         self.widget.controls_mode = c_mode_valid
         self.widget.panel_mode_style = p_style_valid
 
+    def set_dimensions(self, width: str | None = None, height: str | None = None) -> None:
+        """Set the dimensions of the viewer widget.
+
+        Parameters
+        ----------
+        width : str, optional
+            The CSS width of the widget (e.g., '100%', '800px').
+        height : str, optional
+            The CSS height of the widget (e.g., '600px', '80%').
+        """
+        if width is not None:
+            self.widget.layout.width = width
+        if height is not None:
+            self.widget.layout.height = height
+
+    def set_canvas_visibility(self, visible: bool) -> None:
+        """Set the visibility of the WebGL canvas.
+
+        Parameters
+        ----------
+        visible : bool
+            True to show the canvas, False to hide it.
+        """
+        self._send_to_frontend({"op": "set_canvas_visibility", "visible": bool(visible)})
+
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
-        if event == "ready":
+        if event == "widget_resize":
+            height = content.get("height")
+            width = content.get("width")
+            if height is not None:
+                self.widget.layout.height = f"{height}px"
+            if width is not None:
+                self.widget.layout.width = f"{width}px"
+            return
+        elif event == "ready":
             self._ready = True
             for msg in self._pending_messages:
                 self.widget.send(msg)
