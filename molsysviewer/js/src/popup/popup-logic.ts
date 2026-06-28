@@ -178,6 +178,8 @@ export const bootPopup = async (loadedModule?: any) => {
                 ctrl.sharedShell.setSplit(true);
                 ctrl.sharedShell.setVisible(true);
             }
+            const activePanel = initOptions.activePanel || "navigate";
+            void ctrl.handleMessage({ op: "set_panel_mode", panel: activePanel, expanded: true });
         }
 
         // Helper to wait for canvas3d to be ready (async init)
@@ -523,15 +525,7 @@ export const bootPopup = async (loadedModule?: any) => {
     traj.appendChild(label);
     
     if (initOptions.isPanelOnly) {
-        Object.assign(traj.style, {
-            position: "absolute",
-            bottom: "12px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: "100",
-            display: "flex",
-        });
-        container.appendChild(traj);
+        traj.style.display = "none";
     } else {
         overlay.appendChild(traj);
     }

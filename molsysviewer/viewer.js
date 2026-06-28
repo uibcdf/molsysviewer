@@ -151977,6 +151977,11 @@ var MolSysViewerController = class _MolSysViewerController {
   getPanelModeStyle() {
     return this.model ? this.model.get("panel_mode_style") || "drawer" : this.localPanelModeStyle;
   }
+  getActivePanel() {
+    if (this.groupPanel.isExpanded()) return "navigate";
+    if (this.workbenchPanel.isExpanded()) return "workbench";
+    return null;
+  }
   setViewerMode(mode) {
     if (this.model) {
       this.model.set("viewer_mode", mode);
@@ -154175,6 +154180,8 @@ var bootPopup = async (loadedModule) => {
         ctrl2.sharedShell.setSplit(true);
         ctrl2.sharedShell.setVisible(true);
       }
+      const activePanel = initOptions.activePanel || "navigate";
+      void ctrl2.handleMessage({ op: "set_panel_mode", panel: activePanel, expanded: true });
     }
     const waitForCanvas3d = async (retries = 50) => {
       for (let i = 0; i < retries; i++) {
@@ -154453,15 +154460,7 @@ var bootPopup = async (loadedModule) => {
   traj.appendChild(slider);
   traj.appendChild(label2);
   if (initOptions.isPanelOnly) {
-    Object.assign(traj.style, {
-      position: "absolute",
-      bottom: "12px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      zIndex: "100",
-      display: "flex"
-    });
-    container.appendChild(traj);
+    traj.style.display = "none";
   } else {
     overlay.appendChild(traj);
   }
@@ -154548,7 +154547,8 @@ var PopupHostManager = class {
         panelModeStyle: this.controller.getPanelModeStyle(),
         isAmbient: this.controller.sharedShell?.isAmbient,
         isSplit: this.controller.sharedShell?.isSplit,
-        isPanelOnly: mode === "panel"
+        isPanelOnly: mode === "panel",
+        activePanel: this.controller.getActivePanel() || "navigate"
       };
     }
     const doc = win.document;
