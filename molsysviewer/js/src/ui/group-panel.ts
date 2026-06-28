@@ -346,7 +346,7 @@ export class GroupPanel {
         const naturalVisible = Boolean(this.structure) && grouped.size > 0;
         this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
         this.updateBodyDisplay();
-        if (!this.visible && this.expanded) {
+        if (!this.sharedShell && !this.visible && this.expanded) {
             this.expanded = false;
         }
         if (!this.structure || grouped.size === 0) return;

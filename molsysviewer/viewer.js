@@ -149818,7 +149818,7 @@ var GroupPanel = class {
     const naturalVisible = Boolean(this.structure) && grouped.size > 0;
     this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
     this.updateBodyDisplay();
-    if (!this.visible && this.expanded) {
+    if (!this.sharedShell && !this.visible && this.expanded) {
       this.expanded = false;
     }
     if (!this.structure || grouped.size === 0) return;
@@ -150137,7 +150137,7 @@ var WorkbenchPanel = class {
   setVisible(visible) {
     this.visible = visible;
     this.updateBodyDisplay();
-    if (!visible && this.expanded) {
+    if (!this.sharedShell && !visible && this.expanded) {
       this.expanded = false;
       this.applyExpandedState();
     }
