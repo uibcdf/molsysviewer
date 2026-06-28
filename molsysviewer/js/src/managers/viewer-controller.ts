@@ -1410,33 +1410,26 @@ export class MolSysViewerController {
         return () => window.removeEventListener("keydown", onKeyDown, true);
     }
 
+    private panelOpenState = false;
+
     public onTogglePanelModeOverride?: () => boolean;
 
     public togglePanelMode(): void {
         if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
             return;
         }
-        if (this.sharedShell) {
-            const isOpened = this.sharedShell.isVisible() && 
-                             this.sharedShell.isExpanded() && 
-                             (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded());
-            if (isOpened) {
-                this.collapsePanels();
-            } else {
-                this.sharedShell.setVisible(true);
-                this.setPanelMode(undefined, true);
-            }
-            return;
-        }
-        const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
-        if (anyExpanded) {
+        if (this.panelOpenState) {
             this.collapsePanels();
         } else {
+            if (this.sharedShell) {
+                this.sharedShell.setVisible(true);
+            }
             this.setPanelMode(undefined, true);
         }
     }
 
     private collapsePanels(): void {
+        this.panelOpenState = false;
         this.syncingPanelExpansion = true;
         try {
             this.groupPanel.setExpanded(false);
@@ -1551,6 +1544,7 @@ export class MolSysViewerController {
         }
         if (!target) return;
 
+        this.panelOpenState = true;
         this.syncingPanelExpansion = true;
         try {
             this.groupPanel.setExpanded(target === "navigate");
