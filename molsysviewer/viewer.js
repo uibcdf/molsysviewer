@@ -156022,6 +156022,17 @@ var index_default = {
         c8.plugin.canvas3d?.requestResize();
       });
     });
+    const popupJsSource = model.get("popup_js_source");
+    const esmSource = model.get("_esm");
+    const viewerJsSource = popupJsSource || esmSource;
+    if (!viewerJsSource) {
+      console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
+    } else {
+      const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
+      console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
+    }
+    const popupMgr = new PopupHostManager(viewerJsSource || "");
+    const enablePopout = !!model.get("enable_popout");
     const panelModeStyle = model.get("panel_mode_style") || "drawer";
     const controllerPromise = MolSysViewerController.create(target, (msg) => {
       model.send(msg);
@@ -156051,17 +156062,6 @@ var index_default = {
         });
       } : void 0
     });
-    const popupJsSource = model.get("popup_js_source");
-    const esmSource = model.get("_esm");
-    const viewerJsSource = popupJsSource || esmSource;
-    if (!viewerJsSource) {
-      console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
-    } else {
-      const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
-      console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
-    }
-    const popupMgr = new PopupHostManager(viewerJsSource || "");
-    const enablePopout = !!model.get("enable_popout");
     controllerPromise.then((c8) => {
       const initialMessages = model.get("initial_messages");
       const trajInfo = parseInitialTrajectoryInfo(initialMessages);
