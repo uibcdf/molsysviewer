@@ -154544,7 +154544,7 @@ var PopupHostManager = class {
       win.molsysviewer_init_options = {
         viewerMode: this.controller.getViewerMode(),
         controlsMode: this.controller.getControlsMode(),
-        panelModeStyle: this.controller.getPanelModeStyle(),
+        panelModeStyle: mode === "panel" ? "split" : this.controller.getPanelModeStyle(),
         isAmbient: this.controller.sharedShell?.isAmbient,
         isSplit: this.controller.sharedShell?.isSplit,
         isPanelOnly: mode === "panel",
