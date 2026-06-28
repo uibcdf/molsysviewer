@@ -559,7 +559,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any }): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -779,7 +779,8 @@ export class MolSysViewerController {
         if (floatingUnified) {
             sharedShell = new FloatingPanelShell(host, { 
                 title: "Navigate", 
-                panelModeStyle: initOptions?.panelModeStyle 
+                panelModeStyle: initOptions?.panelModeStyle,
+                onPanelPopClick: initOptions?.onPanelPopClick,
             });
             if (initOptions?.isAmbient !== undefined) {
                 sharedShell.setAmbient(initOptions.isAmbient);
@@ -896,6 +897,11 @@ export class MolSysViewerController {
             }
             if (action === "clear_selection") {
                 this.activeSelection.clear();
+                return;
+            }
+            if (action === "toggle_canvas_visibility") {
+                const isHidden = this.canvasHost.style.display === "none";
+                this.setCanvasVisibility(isHidden);
                 return;
             }
             if (action === "reset_view") {
@@ -1140,6 +1146,7 @@ export class MolSysViewerController {
                     isNavigateExpanded: this.groupPanel.isExpanded(),
                     isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
                     currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                    isCanvasVisible: this.canvasHost.style.display !== "none",
                 }
             );
         }, (ev) => {

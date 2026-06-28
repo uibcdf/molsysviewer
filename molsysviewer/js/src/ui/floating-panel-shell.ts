@@ -2,6 +2,7 @@ type FloatingPanelShellOptions = {
     title: string;
     navButtonLabel?: string;
     panelModeStyle?: string;
+    onPanelPopClick?: () => void;
 };
 
 type WorkspaceOption = {
@@ -444,6 +445,34 @@ export class FloatingPanelShell {
             this.panel.style.opacity = String(states[nextIdx]);
         });
         this.headerElement.appendChild(opacityButton);
+
+        if (options.onPanelPopClick) {
+            const panelPopBtn = document.createElement("button");
+            panelPopBtn.type = "button";
+            panelPopBtn.title = "Popout panel to external window";
+            panelPopBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="7" rx="1"/><path d="M12 3h1v1M13 3L8 8"/></svg>`;
+            Object.assign(panelPopBtn.style, {
+                background: "transparent",
+                border: "none",
+                color: "rgba(255,255,255,0.45)",
+                cursor: "default",
+                padding: "4px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "5px",
+                flexShrink: "0",
+                marginLeft: "4px",
+            });
+            panelPopBtn.addEventListener("mouseenter", () => { panelPopBtn.style.color = "rgba(255,255,255,0.9)"; });
+            panelPopBtn.addEventListener("mouseleave", () => { panelPopBtn.style.color = "rgba(255,255,255,0.45)"; });
+            panelPopBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                options.onPanelPopClick!();
+            });
+            this.headerElement.appendChild(panelPopBtn);
+        }
 
         const minimizeButton = document.createElement("button");
         minimizeButton.type = "button";

@@ -43,7 +43,8 @@ export type ContextMenuAction =
     | "toggle_swing"
     | "open_navigate"
     | "open_workbench"
-    | "set_viewer_mode";
+    | "set_viewer_mode"
+    | "toggle_canvas_visibility";
 
 export type ContextActionDetails = {
     endpoint_policy?: "atom" | "centroid" | "representative_atom";
@@ -216,6 +217,7 @@ export class ViewerContextMenu {
             isNavigateExpanded?: boolean;
             isWorkbenchExpanded?: boolean;
             currentViewerMode?: string;
+            isCanvasVisible?: boolean;
         } | null,
     ): void {
         this.currentTarget = target;
@@ -286,6 +288,12 @@ export class ViewerContextMenu {
             this.scrollEl.appendChild(this.makeActionButton(
                 isSwing ? "Toggle Swing (Active ✓)" : "Toggle Swing",
                 "toggle_swing"
+            ));
+
+            const isCanvasVisible = this.currentSceneState?.isCanvasVisible !== false;
+            this.scrollEl.appendChild(this.makeActionButton(
+                isCanvasVisible ? "Hide Canvas" : "Show Canvas",
+                "toggle_canvas_visibility"
             ));
 
             // Divider for Panels
