@@ -66,6 +66,7 @@ export class PopupHostManager {
                 isAmbient: this.controller.sharedShell?.isAmbient,
                 isSplit: this.controller.sharedShell?.isSplit,
                 isPanelOnly: mode === "panel",
+                activePanel: this.controller.getActivePanel() || "navigate",
             };
         }
         

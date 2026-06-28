@@ -639,6 +639,12 @@ export class MolSysViewerController {
         return this.model ? (this.model.get("panel_mode_style") || "drawer") : this.localPanelModeStyle;
     }
 
+    getActivePanel(): "navigate" | "workbench" | null {
+        if (this.groupPanel.isExpanded()) return "navigate";
+        if (this.workbenchPanel.isExpanded()) return "workbench";
+        return null;
+    }
+
     setViewerMode(mode: string) {
         if (this.model) {
             this.model.set("viewer_mode", mode);
