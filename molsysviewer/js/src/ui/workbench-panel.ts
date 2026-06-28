@@ -302,7 +302,7 @@ export class WorkbenchPanel {
     setVisible(visible: boolean): void {
         this.visible = visible;
         this.updateBodyDisplay();
-        if (!visible && this.expanded) {
+        if (!this.sharedShell && !visible && this.expanded) {
             this.expanded = false;
             this.applyExpandedState();
         }
