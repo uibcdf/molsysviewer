@@ -1418,8 +1418,9 @@ export class MolSysViewerController {
         if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
             return;
         }
-        const isOpened = this.panelOpenState || 
-                         (this.sharedShell && this.sharedShell.isVisible() && this.sharedShell.isExpanded());
+        const isOpened = this.sharedShell 
+            ? this.sharedShell.isExpanded() 
+            : (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded());
         if (isOpened) {
             this.collapsePanels();
         } else {
@@ -1544,7 +1545,9 @@ export class MolSysViewerController {
                 target = "workbench";
             }
         }
-        if (!target) return;
+        if (!target) {
+            target = "navigate";
+        }
 
         this.panelOpenState = true;
         this.syncingPanelExpansion = true;
