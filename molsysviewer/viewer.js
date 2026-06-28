@@ -148755,10 +148755,13 @@ var FloatingPanelShell = class {
     this.workspaceMenuOpen = false;
     this.isSplit = false;
     this.isAmbient = false;
+    this.lastSplitState = false;
+    this.isCanvasHidden = false;
     const style = options.panelModeStyle || "floating";
     this.panelModeStyle = style;
     this.isAmbient = style === "ambient";
     this.isSplit = style === "split";
+    this.lastSplitState = this.isSplit;
     this.root = document.createElement("div");
     Object.assign(this.root.style, {
       position: "absolute",
@@ -149002,6 +149005,7 @@ var FloatingPanelShell = class {
       e.stopPropagation();
       this.isSplit = !this.isSplit;
       this.updateLayout();
+      this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
     });
     this.headerElement.appendChild(this.dockButton);
     this.lockButton = document.createElement("button");
@@ -149030,6 +149034,7 @@ var FloatingPanelShell = class {
       e.stopPropagation();
       this.isAmbient = !this.isAmbient;
       this.updateLayout();
+      this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
     });
     this.headerElement.appendChild(this.lockButton);
     const opacityButton = document.createElement("button");
@@ -149187,13 +149192,51 @@ var FloatingPanelShell = class {
   get toggleWidth() {
     return 0;
   }
+  setCanvasHidden(hidden) {
+    this.isCanvasHidden = hidden;
+    this.updateLayout();
+  }
+  setSplit(split) {
+    this.isSplit = split;
+    this.updateLayout();
+  }
+  setAmbient(ambient) {
+    this.isAmbient = ambient;
+    this.updateLayout();
+  }
+  clampPosition() {
+    if (this.isSplit) return;
+    const hostWidth = this.host.clientWidth;
+    const hostHeight = this.host.clientHeight;
+    if (!hostWidth || !hostHeight) return;
+    let currentWidth = parseFloat(this.panel.style.width) || this.panel.offsetWidth;
+    let currentHeight = parseFloat(this.panel.style.height) || this.panel.offsetHeight;
+    currentWidth = Math.min(currentWidth, hostWidth - 20);
+    currentHeight = Math.min(currentHeight, hostHeight - 20);
+    let currentLeft = parseFloat(this.panel.style.left) || 0;
+    let currentTop = parseFloat(this.panel.style.top) || 0;
+    currentLeft = Math.max(10, Math.min(currentLeft, hostWidth - currentWidth - 10));
+    currentTop = Math.max(10, Math.min(currentTop, hostHeight - currentHeight - 10));
+    this.panel.style.width = `${currentWidth}px`;
+    this.panel.style.height = `${currentHeight}px`;
+    this.panel.style.left = `${currentLeft}px`;
+    this.panel.style.top = `${currentTop}px`;
+  }
   updateLayout() {
     const isSplit2 = this.isSplit;
+    if (isSplit2 !== this.lastSplitState) {
+      if (isSplit2) {
+        this.isAmbient = true;
+      } else {
+        this.isAmbient = false;
+      }
+      this.lastSplitState = isSplit2;
+    }
     const isAmbient2 = this.isAmbient;
     Object.assign(this.root.style, {
       justifyContent: isSplit2 ? "flex-start" : "center",
-      pointerEvents: isAmbient2 || isSplit2 ? "none" : "auto",
-      background: isAmbient2 || isSplit2 ? "transparent" : "rgba(0,0,0,0.32)",
+      pointerEvents: isAmbient2 ? "none" : "auto",
+      background: isAmbient2 ? "transparent" : "rgba(0,0,0,0.32)",
       paddingLeft: isSplit2 ? "10px" : "0"
     });
     this.panel.style.position = "absolute";
@@ -149203,7 +149246,7 @@ var FloatingPanelShell = class {
       this.panel.style.webkitBackdropFilter = "";
       this.panel.style.left = "10px";
       this.panel.style.top = "10px";
-      this.panel.style.width = "50%";
+      this.panel.style.width = this.isCanvasHidden ? "calc(100% - 20px)" : "50%";
       Object.assign(this.panel.style, {
         height: "calc(100% - 20px)",
         borderRadius: "14px",
@@ -149216,18 +149259,16 @@ var FloatingPanelShell = class {
       this.panelResizeObserver?.observe(this.panel);
     } else {
       this.panelResizeObserver?.unobserve(this.panel);
-      if (!this.panel.style.width || this.panel.style.width === "50%") {
-        const hostWidth = this.host.clientWidth;
-        const hostHeight = this.host.clientHeight;
-        const panelWidth = Math.min(hostWidth * 0.75, 950);
-        const panelHeight = Math.min(hostHeight * 0.8, 780);
-        const left = Math.max(10, (hostWidth - panelWidth) / 2);
-        const top = Math.max(10, (hostHeight - panelHeight) / 2);
-        this.panel.style.left = `${left}px`;
-        this.panel.style.top = `${top}px`;
-        this.panel.style.width = `${panelWidth}px`;
-        this.panel.style.height = `${panelHeight}px`;
-      }
+      const hostWidth = this.host.clientWidth;
+      const hostHeight = this.host.clientHeight;
+      const panelWidth = Math.min(hostWidth * 0.75, 950);
+      const panelHeight = Math.min(hostHeight * 0.8, 780);
+      const left = Math.max(10, (hostWidth - panelWidth) / 2);
+      const top = Math.max(10, (hostHeight - panelHeight) / 2);
+      this.panel.style.left = `${left}px`;
+      this.panel.style.top = `${top}px`;
+      this.panel.style.width = `${panelWidth}px`;
+      this.panel.style.height = `${panelHeight}px`;
       Object.assign(this.panel.style, {
         borderRadius: "16px",
         border: "1px solid rgba(255,255,255,0.14)",
@@ -149241,12 +149282,12 @@ var FloatingPanelShell = class {
     }
     if (this.dockButton) {
       this.dockButton.title = isSplit2 ? "Float panel" : "Dock panel (Split)";
-      this.dockButton.innerHTML = isSplit2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="6" y1="2" x2="6" y2="14"/></svg>`;
+      this.dockButton.innerHTML = isSplit2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="14"/><line x1="4" y1="8" x2="12" y2="8"/></svg>`;
     }
     if (this.lockButton) {
       this.lockButton.title = isAmbient2 ? "Lock background" : "Unlock background (Ambient)";
       this.lockButton.innerHTML = isAmbient2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 6-2.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 7 0v3"/></svg>`;
-      this.lockButton.style.display = isSplit2 ? "none" : "inline-flex";
+      this.lockButton.style.display = "inline-flex";
     }
     this.onResize?.(this.getWidth());
   }
@@ -151217,7 +151258,19 @@ var MolSysViewerController = class _MolSysViewerController {
     this.lastMeasurementSummary = null;
     this.measurementTagCounter = 0;
     this.welcomeCard = null;
+    this.localViewerMode = "classic";
+    this.localControlsMode = "classic";
+    this.localPanelModeStyle = "drawer";
     this.model = initOptions?.model;
+    if (initOptions?.viewerMode) {
+      this.localViewerMode = initOptions.viewerMode;
+    }
+    if (initOptions?.controlsMode) {
+      this.localControlsMode = initOptions.controlsMode;
+    }
+    if (initOptions?.panelModeStyle) {
+      this.localPanelModeStyle = initOptions.panelModeStyle;
+    }
     this.canvasHost = canvasHost ?? (() => {
       const d5 = document.createElement("div");
       host.appendChild(d5);
@@ -151297,6 +151350,12 @@ var MolSysViewerController = class _MolSysViewerController {
         title: "Navigate",
         panelModeStyle: initOptions?.panelModeStyle
       });
+      if (initOptions?.isAmbient !== void 0) {
+        sharedShell.setAmbient(initOptions.isAmbient);
+      }
+      if (initOptions?.isSplit !== void 0) {
+        sharedShell.setSplit(initOptions.isSplit);
+      }
       sharedShell.toggleButton.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -151304,12 +151363,13 @@ var MolSysViewerController = class _MolSysViewerController {
       });
       sharedShell.setVisible(true);
       this.sharedShell = sharedShell;
-      if (initOptions?.panelModeStyle === "split") {
+      if (floatingUnified) {
         sharedShell.onResize = () => {
           this.updateCanvasInsets();
         };
         const ro = new ResizeObserver(() => {
           this.updateCanvasInsets();
+          sharedShell?.clampPosition();
         });
         ro.observe(host);
         this.splitResizeObserver = ro;
@@ -151864,6 +151924,46 @@ var MolSysViewerController = class _MolSysViewerController {
       notify?.({ event: "viewer_init_failed", reason: "webgl", message });
     }
     return new _MolSysViewerController(plugin, target, notify, canvasHost, options);
+  }
+  getViewerMode() {
+    return this.model ? this.model.get("viewer_mode") || "classic" : this.localViewerMode;
+  }
+  getControlsMode() {
+    return this.model ? this.model.get("controls_mode") || "classic" : this.localControlsMode;
+  }
+  getPanelModeStyle() {
+    return this.model ? this.model.get("panel_mode_style") || "drawer" : this.localPanelModeStyle;
+  }
+  setViewerMode(mode) {
+    if (this.model) {
+      this.model.set("viewer_mode", mode);
+      this.model.save_changes();
+    } else {
+      this.localViewerMode = mode;
+    }
+  }
+  setControlsMode(mode) {
+    if (this.model) {
+      this.model.set("controls_mode", mode);
+      this.model.save_changes();
+    } else {
+      this.localControlsMode = mode;
+    }
+  }
+  setPanelModeStyle(style) {
+    if (this.model) {
+      this.model.set("panel_mode_style", style);
+      this.model.save_changes();
+    } else {
+      this.localPanelModeStyle = style;
+    }
+  }
+  setCanvasVisibility(visible) {
+    if (this.canvasHost) {
+      this.canvasHost.style.display = visible ? "block" : "none";
+      this.sharedShell?.setCanvasHidden(!visible);
+      this.updateCanvasInsets();
+    }
   }
   // Getters for scene state delegated to scene handler
   get isSpinActive() {
@@ -152869,6 +152969,11 @@ var MolSysViewerController = class _MolSysViewerController {
               }
             }
           }
+          break;
+        }
+        case "set_canvas_visibility": {
+          const visible = msg.visible !== false;
+          this.setCanvasVisibility(visible);
           break;
         }
         default:
@@ -154012,6 +154117,7 @@ var bootPopup = async (loadedModule) => {
     }
   };
   const revealTimer = window.setTimeout(revealViewer, 2500);
+  const initOptions = window.molsysviewer_init_options || {};
   const popControllerPromise = (async () => {
     await new Promise((r) => setTimeout(r, 100));
     const ctrl2 = await MolSysViewerController2.create(container, (msg) => {
@@ -154019,7 +154125,14 @@ var bootPopup = async (loadedModule) => {
         sendToHost("molsysviewer-popup-interaction", msg);
       }
       sendToHost("molsysviewer-log-from-popout", msg);
-    });
+    }, void 0, initOptions);
+    if (initOptions.isPanelOnly) {
+      ctrl2.setCanvasVisibility(false);
+      if (ctrl2.sharedShell) {
+        ctrl2.sharedShell.setSplit(true);
+        ctrl2.sharedShell.setVisible(true);
+      }
+    }
     const waitForCanvas3d = async (retries = 50) => {
       for (let i = 0; i < retries; i++) {
         if (ctrl2.plugin?.canvas3d) return true;
@@ -154075,9 +154188,25 @@ var bootPopup = async (loadedModule) => {
           if (data.isSpinActive) await ctrl2.toggleSpin(true);
           if (data.isSwingActive) await ctrl2.toggleSwing(true);
           if (data.isDarkMode) await ctrl2.toggleBackground("dark");
+          if (data.viewerMode) ctrl2.setViewerMode(data.viewerMode);
+          if (data.controlsMode) ctrl2.setControlsMode(data.controlsMode);
+          if (data.panelModeStyle) ctrl2.setPanelModeStyle(data.panelModeStyle);
+          if (ctrl2.sharedShell) {
+            if (data.isAmbient !== void 0) ctrl2.sharedShell.setAmbient(data.isAmbient);
+            if (data.isSplit !== void 0) ctrl2.sharedShell.setSplit(data.isSplit);
+          }
           if (data.autohide !== void 0) updateAutohide(!!data.autohide);
           window.clearTimeout(revealTimer);
           revealViewer();
+          break;
+        case "molsysviewer-sync-ui":
+          if (data.viewerMode) ctrl2.setViewerMode(data.viewerMode);
+          if (data.controlsMode) ctrl2.setControlsMode(data.controlsMode);
+          if (data.panelModeStyle) ctrl2.setPanelModeStyle(data.panelModeStyle);
+          if (ctrl2.sharedShell) {
+            if (data.isAmbient !== void 0) ctrl2.sharedShell.setAmbient(data.isAmbient);
+            if (data.isSplit !== void 0) ctrl2.sharedShell.setSplit(data.isSplit);
+          }
           break;
         case "molsysviewer-sync-autohide":
           updateAutohide(!!data.enabled);
@@ -154128,6 +154257,7 @@ var bootPopup = async (loadedModule) => {
   overlay.style.flexWrap = "nowrap";
   overlay.style.transition = "opacity 150ms ease";
   const addBtn = (label3, handler) => {
+    if (initOptions.isPanelOnly) return;
     const b8 = makeBtn(label3, handler);
     b8.style.pointerEvents = "auto";
     overlay.appendChild(b8);
@@ -154181,12 +154311,22 @@ var bootPopup = async (loadedModule) => {
     await ctrl2.toggleSwing();
     sendToHost("molsysviewer-sync-op", { op: "toggle_swing", enable: ctrl2.isSwingActive });
   });
+  let isUiVisible = true;
+  const uiBtn = addBtn("UI", async () => {
+    const ctrl2 = await popControllerPromise;
+    isUiVisible = !isUiVisible;
+    ctrl2.sharedShell?.setVisible(isUiVisible);
+    uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
+  });
   addBtn("Pop", () => {
     try {
       window.close();
     } catch (e) {
     }
   });
+  if (initOptions.isPanelOnly) {
+    overlay.style.display = "none";
+  }
   container.appendChild(overlay);
   const traj = document.createElement("div");
   traj.style.display = "none";
@@ -154269,7 +154409,19 @@ var bootPopup = async (loadedModule) => {
   traj.appendChild(btnNext);
   traj.appendChild(slider);
   traj.appendChild(label2);
-  overlay.appendChild(traj);
+  if (initOptions.isPanelOnly) {
+    Object.assign(traj.style, {
+      position: "absolute",
+      bottom: "12px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      zIndex: "100",
+      display: "flex"
+    });
+    container.appendChild(traj);
+  } else {
+    overlay.appendChild(traj);
+  }
   popControllerPromise.then((c8) => {
     const applyState = (state) => {
       const frameCount = state.frameCount;
@@ -154295,14 +154447,16 @@ var bootPopup = async (loadedModule) => {
       applyState(initialState);
     }
   });
-  sendToHost("molsysviewer-pop-ready", null);
+  sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
 };
 
 // src/managers/popup-host.ts
 var PopupHostManager = class {
   constructor(viewer) {
     this.popoutWin = null;
+    this.panelWin = null;
     this.isReady = false;
+    this.isPanelReady = false;
     if (typeof viewer === "string") {
       this.viewerJsSource = viewer;
       return;
@@ -154310,12 +154464,19 @@ var PopupHostManager = class {
     this.viewerJsSource = viewer.source ?? "";
     this.viewerModuleUrl = viewer.moduleUrl;
   }
-  get isOpen() {
+  setController(controller) {
+    this.controller = controller;
+  }
+  get isCanvasOpen() {
     return this.popoutWin && !this.popoutWin.closed;
   }
-  async open() {
-    if (this.isOpen) {
-      this.close();
+  get isPanelOpen() {
+    return this.panelWin && !this.panelWin.closed;
+  }
+  async open(mode = "canvas") {
+    const isOpen = mode === "canvas" ? this.isCanvasOpen : this.isPanelOpen;
+    if (isOpen) {
+      this.close(mode);
       return;
     }
     let resolvedModuleUrl = null;
@@ -154328,24 +154489,39 @@ var PopupHostManager = class {
         resolvedModuleUrl = null;
       }
     }
-    this.popoutWin = window.open("", "_blank", "width=960,height=720");
-    if (!this.popoutWin) return;
-    this.isReady = false;
-    const doc = this.popoutWin.document;
+    const win = window.open("", "_blank", mode === "canvas" ? "width=960,height=720" : "width=450,height=800");
+    if (!win) return;
+    if (mode === "canvas") {
+      this.popoutWin = win;
+      this.isReady = false;
+    } else {
+      this.panelWin = win;
+      this.isPanelReady = false;
+    }
+    if (this.controller) {
+      win.molsysviewer_init_options = {
+        viewerMode: this.controller.getViewerMode(),
+        controlsMode: this.controller.getControlsMode(),
+        panelModeStyle: this.controller.getPanelModeStyle(),
+        isAmbient: this.controller.sharedShell?.isAmbient,
+        isSplit: this.controller.sharedShell?.isSplit,
+        isPanelOnly: mode === "panel"
+      };
+    }
+    const doc = win.document;
     doc.open();
     doc.write(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MolSysViewer Popout</title>
+  <title>${mode === "canvas" ? "MolSysViewer Popout" : "MolSysViewer Panel"}</title>
   <style>
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f5f6f8; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; }
     #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; opacity: 0; transition: opacity 240ms ease; }
-    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #2b2f36; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
-    #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(0,0,0,0.12); border-top-color: rgba(0,0,0,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
+    #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; }
+    #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
-    /* ... (styles kept same as before for brevity, assuming user wants robust logic) ... */
     .molsysviewer-controls { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
     .molsysviewer-controls button,
     .molsysviewer-controls input,
@@ -154363,7 +154539,7 @@ var PopupHostManager = class {
   ${resolvedModuleUrl ? `<link rel="modulepreload" href="${resolvedModuleUrl}">` : ""}
 </head>
 <body>
-  <div id="molsysviewer-loading"><div class="spinner"></div><div>Loading viewer\u2026</div></div>
+  <div id="molsysviewer-loading"><div class="spinner"></div><div>Loading...</div></div>
   <div id="molsysviewer-pop"></div>
 </body>
 </html>
@@ -154392,8 +154568,8 @@ var PopupHostManager = class {
         if (!this.viewerJsSource) {
           throw new Error("No viewer source code provided to PopupHostManager");
         }
-        const popBlob = new this.popoutWin.Blob([this.viewerJsSource], { type: "text/javascript" });
-        const popBlobUrl = this.popoutWin.URL.createObjectURL(popBlob);
+        const popBlob = new win.Blob([this.viewerJsSource], { type: "text/javascript" });
+        const popBlobUrl = win.URL.createObjectURL(popBlob);
         console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
         scriptEl.textContent = `
                     (async () => {
@@ -154418,26 +154594,53 @@ var PopupHostManager = class {
       console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
     }
     const interval = window.setInterval(() => {
-      if (!this.popoutWin || this.popoutWin.closed) {
+      if (mode === "canvas") {
+        if (!this.popoutWin || this.popoutWin.closed) {
+          this.popoutWin = null;
+          this.isReady = false;
+          window.clearInterval(interval);
+        }
+      } else {
+        if (!this.panelWin || this.panelWin.closed) {
+          this.panelWin = null;
+          this.isPanelReady = false;
+          window.clearInterval(interval);
+          if (this.controller?.sharedShell) {
+            this.controller.sharedShell.setVisible(true);
+          }
+        }
+      }
+    }, 1e3);
+  }
+  close(mode = "canvas") {
+    if (mode === "canvas") {
+      if (this.popoutWin) {
+        this.popoutWin.close();
         this.popoutWin = null;
         this.isReady = false;
-        window.clearInterval(interval);
       }
-    }, 2e3);
-  }
-  close() {
-    if (this.popoutWin) {
-      this.popoutWin.close();
-      this.popoutWin = null;
-      this.isReady = false;
+    } else {
+      if (this.panelWin) {
+        this.panelWin.close();
+        this.panelWin = null;
+        this.isPanelReady = false;
+      }
     }
   }
   send(type3, data) {
-    if (!this.isReady || !this.popoutWin || this.popoutWin.closed) return;
-    try {
-      this.popoutWin.postMessage({ type: type3, data, from: "host" }, "*");
-    } catch (e) {
-      console.warn("[MolSysViewer Host] Popout message failed", e);
+    if (this.isReady && this.popoutWin && !this.popoutWin.closed) {
+      try {
+        this.popoutWin.postMessage({ type: type3, data, from: "host" }, "*");
+      } catch (e) {
+        console.warn("[MolSysViewer Host] Popout message failed", e);
+      }
+    }
+    if (this.isPanelReady && this.panelWin && !this.panelWin.closed) {
+      try {
+        this.panelWin.postMessage({ type: type3, data, from: "host" }, "*");
+      } catch (e) {
+        console.warn("[MolSysViewer Host] Panel message failed", e);
+      }
     }
   }
 };
@@ -154949,7 +155152,7 @@ var makeNumberControl = (initial, onChange, title, minimal = false) => {
   wrapper.appendChild(spinner);
   return { wrapper, input };
 };
-var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
+var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPopClick) => {
   const controlsMode = model.get("controls_mode") || "classic";
   const isFocus = controlsMode === "cinema" || controlsMode === "focus";
   const isMinimal = controlsMode === "minimal" || isFocus;
@@ -155268,9 +155471,36 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
       overlay.appendChild(btn);
       return btn;
     };
+    const ICON_EYE = `<path d="M1 8s3-6 7-6 7 6 7 6-3 6-7 6-7-6-7-6z"/><circle cx="8" cy="8" r="3"/>`;
+    let canvasVisible = true;
+    const eyeBtn = mkIcon(ICON_EYE, "Toggle canvas visibility", () => {
+      canvasVisible = !canvasVisible;
+      c8.setCanvasVisibility(canvasVisible);
+      updateEyeBtnStyle();
+    });
+    const updateEyeBtnStyle = () => {
+      if (canvasVisible) {
+        eyeBtn.style.color = "rgba(255, 255, 255, 0.75)";
+        eyeBtn.style.borderColor = "rgba(255, 255, 255, 0.15)";
+      } else {
+        eyeBtn.style.color = "rgba(239, 68, 68, 0.9)";
+        eyeBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";
+      }
+    };
+    eyeBtn.addEventListener("mouseenter", () => {
+      if (!canvasVisible) {
+        eyeBtn.style.color = "rgba(239, 68, 68, 1)";
+        eyeBtn.style.borderColor = "rgba(239, 68, 68, 0.6)";
+      }
+    });
+    eyeBtn.addEventListener("mouseleave", () => {
+      updateEyeBtnStyle();
+    });
     mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
     mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
+    const ICON_EXTERNAL_CARD = `<rect x="3" y="6" width="7" height="7" rx="1"/><path d="M12 3h1v1M13 3L8 8"/>`;
     if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
+    if (onPanelPopClick) mkIcon(ICON_EXTERNAL_CARD, "Popout panel/card to external window", onPanelPopClick);
     const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
     mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
   } else if (overlay) {
@@ -155278,6 +155508,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
       const b8 = makeButton(label3, handler);
       b8.style.pointerEvents = "auto";
       overlay.appendChild(b8);
+      return b8;
     };
     mk("Reset", async () => {
       await c8.resetView();
@@ -155296,7 +155527,14 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts) => {
       await c8.toggleSwing();
       sendSync({ op: "toggle_swing", enable: c8.isSwingActive });
     });
+    let canvasVisible = true;
+    const textEyeBtn = mk("Canvas", () => {
+      canvasVisible = !canvasVisible;
+      c8.setCanvasVisibility(canvasVisible);
+      textEyeBtn.style.background = canvasVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
+    });
     if (onPopClick) mk("Pop", onPopClick);
+    if (onPanelPopClick) mk("PanelPop", onPanelPopClick);
     mk("Help", () => helpOverlay.toggle());
     if (panelModeStyle === "floating" || panelModeStyle === "floating-unified" || panelModeStyle === "integrated") {
       mk("Panel", () => c8.togglePanelMode());
@@ -155530,6 +155768,13 @@ async function bootDocsView(opts) {
     cursor: "default",
     overflow: "hidden"
   });
+  setupWidgetResizer(hostEl, target, (w, h) => {
+    hostEl.style.height = `${h}px`;
+    target.style.height = `${h}px`;
+    controllerPromise.then((c8) => {
+      c8.plugin.canvas3d?.requestResize();
+    });
+  });
   let isUserInteracting = false;
   let wheelTimeout = null;
   const onPointerDown = () => {
@@ -155651,6 +155896,59 @@ async function bootDocsView(opts) {
     }
   })();
 }
+function setupWidgetResizer(host, target, onResize) {
+  host.style.position = "relative";
+  const handle = document.createElement("div");
+  Object.assign(handle.style, {
+    position: "absolute",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    height: "8px",
+    cursor: "ns-resize",
+    background: "rgba(255, 255, 255, 0.04)",
+    borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+    zIndex: "1000",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background 150ms"
+  });
+  const dots = document.createElement("div");
+  Object.assign(dots.style, {
+    width: "24px",
+    height: "3px",
+    borderRadius: "1.5px",
+    background: "rgba(255, 255, 255, 0.2)",
+    transition: "background 150ms"
+  });
+  handle.appendChild(dots);
+  handle.addEventListener("mouseenter", () => {
+    handle.style.background = "rgba(255, 255, 255, 0.12)";
+    dots.style.background = "rgba(255, 255, 255, 0.5)";
+  });
+  handle.addEventListener("mouseleave", () => {
+    handle.style.background = "rgba(255, 255, 255, 0.04)";
+    dots.style.background = "rgba(255, 255, 255, 0.2)";
+  });
+  handle.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const startY = e.clientY;
+    const startHeight = host.clientHeight;
+    const onPointerMove = (moveEvent) => {
+      const deltaY = moveEvent.clientY - startY;
+      const newHeight = Math.max(300, startHeight + deltaY);
+      onResize(host.clientWidth, newHeight);
+    };
+    const onPointerUp = () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+  });
+  host.appendChild(handle);
+}
 var index_default = {
   render({ model, el }) {
     const debug = !!model.get("debug_js");
@@ -155690,7 +155988,35 @@ var index_default = {
     window.addEventListener("pointerup", onPointerUpOrCancel);
     window.addEventListener("pointercancel", onPointerUpOrCancel);
     target.addEventListener("wheel", onWheel, { passive: true });
+    target.tabIndex = 0;
+    target.addEventListener("keydown", (e) => {
+      if (e.key === "v" || e.key === "V") {
+        const active = document.activeElement;
+        if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]');
+        if (eyeBtn) {
+          eyeBtn.click();
+        } else {
+          const textEyeBtn = Array.from(target.querySelectorAll("button")).find((b8) => b8.textContent === "Canvas");
+          if (textEyeBtn) {
+            textEyeBtn.click();
+          }
+        }
+      }
+    });
     el.appendChild(target);
+    setupWidgetResizer(el, target, (w, h) => {
+      el.style.height = `${h}px`;
+      target.style.height = `${h}px`;
+      model.send({ event: "widget_resize", height: h, width: w });
+      controllerPromise.then((c8) => {
+        c8.plugin.canvas3d?.requestResize();
+      });
+    });
     const panelModeStyle = model.get("panel_mode_style") || "drawer";
     const controllerPromise = MolSysViewerController.create(target, (msg) => {
       model.send(msg);
@@ -155733,18 +156059,47 @@ var index_default = {
           model,
           (msg) => popupMgr.send("molsysviewer-sync-op", msg),
           target,
-          enablePopout ? () => popupMgr.open() : void 0,
+          enablePopout ? () => popupMgr.open("canvas") : void 0,
           {
             initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
             initialFrameCount: trajInfo.frameCount
-          }
+          },
+          enablePopout ? () => {
+            if (c8.canvasHost.style.display === "none") {
+              const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]');
+              if (eyeBtn) {
+                eyeBtn.click();
+              } else {
+                c8.setCanvasVisibility(true);
+              }
+            }
+            if (c8.sharedShell) {
+              c8.sharedShell.setVisible(false);
+            }
+            popupMgr.open("panel");
+          } : void 0
         );
         if (overlay) {
           target.appendChild(overlay);
         }
       };
       updateControls();
-      model.on("change:controls_mode", updateControls);
+      popupMgr.setController(c8);
+      model.on("change:controls_mode", () => {
+        updateControls();
+        popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
+      });
+      model.on("change:viewer_mode", () => {
+        popupMgr.send("molsysviewer-sync-ui", { viewerMode: model.get("viewer_mode") });
+      });
+      model.on("change:panel_mode_style", () => {
+        popupMgr.send("molsysviewer-sync-ui", { panelModeStyle: model.get("panel_mode_style") });
+      });
+      if (c8.sharedShell) {
+        c8.sharedShell.onLayoutChange = (state) => {
+          popupMgr.send("molsysviewer-sync-ui", state);
+        };
+      }
       if (c8.plugin.canvas3d) {
         let hostCameraSyncTimer = null;
         let cameraSnapshotTimer = null;
@@ -155804,7 +156159,28 @@ var index_default = {
               isSpinActive: controller.isSpinActive,
               isSwingActive: controller.isSwingActive,
               isDarkMode: controller.isDarkMode,
-              autohide: !!model.get("autohide_controls")
+              autohide: !!model.get("autohide_controls"),
+              viewerMode: controller.getViewerMode(),
+              controlsMode: controller.getControlsMode(),
+              panelModeStyle: controller.getPanelModeStyle(),
+              isAmbient: controller.sharedShell?.isAmbient,
+              isSplit: controller.sharedShell?.isSplit
+            });
+            break;
+          case "molsysviewer-panel-ready":
+            popupMgr.isPanelReady = true;
+            popupMgr.send("molsysviewer-initial-sync", {
+              messages: [...commandLog],
+              cameraSnapshot: controller.getCameraSnapshot(),
+              isSpinActive: controller.isSpinActive,
+              isSwingActive: controller.isSwingActive,
+              isDarkMode: controller.isDarkMode,
+              autohide: !!model.get("autohide_controls"),
+              viewerMode: controller.getViewerMode(),
+              controlsMode: controller.getControlsMode(),
+              panelModeStyle: controller.getPanelModeStyle(),
+              isAmbient: controller.sharedShell?.isAmbient,
+              isSplit: controller.sharedShell?.isSplit
             });
             break;
           case "molsysviewer-sync-op":

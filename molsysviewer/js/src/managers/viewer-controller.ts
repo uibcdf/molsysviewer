@@ -625,6 +625,53 @@ export class MolSysViewerController {
     private welcomeCard: HTMLDivElement | null = null;
     private readonly model?: any;
 
+    private localViewerMode = "classic";
+    private localControlsMode = "classic";
+    private localPanelModeStyle = "drawer";
+
+    getViewerMode(): string {
+        return this.model ? (this.model.get("viewer_mode") || "classic") : this.localViewerMode;
+    }
+    getControlsMode(): string {
+        return this.model ? (this.model.get("controls_mode") || "classic") : this.localControlsMode;
+    }
+    getPanelModeStyle(): string {
+        return this.model ? (this.model.get("panel_mode_style") || "drawer") : this.localPanelModeStyle;
+    }
+
+    setViewerMode(mode: string) {
+        if (this.model) {
+            this.model.set("viewer_mode", mode);
+            this.model.save_changes();
+        } else {
+            this.localViewerMode = mode;
+        }
+    }
+    setControlsMode(mode: string) {
+        if (this.model) {
+            this.model.set("controls_mode", mode);
+            this.model.save_changes();
+        } else {
+            this.localControlsMode = mode;
+        }
+    }
+    setPanelModeStyle(style: string) {
+        if (this.model) {
+            this.model.set("panel_mode_style", style);
+            this.model.save_changes();
+        } else {
+            this.localPanelModeStyle = style;
+        }
+    }
+
+    setCanvasVisibility(visible: boolean) {
+        if (this.canvasHost) {
+            this.canvasHost.style.display = visible ? "block" : "none";
+            this.sharedShell?.setCanvasHidden(!visible);
+            this.updateCanvasInsets();
+        }
+    }
+
     // Getters for scene state delegated to scene handler
     get isSpinActive() { return this.scene.isSpinActive; }
     get isSwingActive() { return this.scene.isSwingActive; }
@@ -635,8 +682,17 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string, model?: any }) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any }) {
         this.model = initOptions?.model;
+        if (initOptions?.viewerMode) {
+            this.localViewerMode = initOptions.viewerMode;
+        }
+        if (initOptions?.controlsMode) {
+            this.localControlsMode = initOptions.controlsMode;
+        }
+        if (initOptions?.panelModeStyle) {
+            this.localPanelModeStyle = initOptions.panelModeStyle;
+        }
         this.canvasHost = canvasHost ?? (() => { const d = document.createElement("div"); host.appendChild(d); return d; })();
         this.injectGlobalStyles();
         const emitInteractionEvent = (msg: any) => {
@@ -725,6 +781,12 @@ export class MolSysViewerController {
                 title: "Navigate", 
                 panelModeStyle: initOptions?.panelModeStyle 
             });
+            if (initOptions?.isAmbient !== undefined) {
+                sharedShell.setAmbient(initOptions.isAmbient);
+            }
+            if (initOptions?.isSplit !== undefined) {
+                sharedShell.setSplit(initOptions.isSplit);
+            }
             // Close button of the shared shell collapses both panels
             sharedShell.toggleButton.addEventListener("click", (event) => {
                 event.preventDefault();
@@ -734,13 +796,14 @@ export class MolSysViewerController {
             sharedShell.setVisible(true);
             this.sharedShell = sharedShell;
 
-            if (initOptions?.panelModeStyle === "split") {
+            if (floatingUnified) {
                 sharedShell.onResize = () => {
                     this.updateCanvasInsets();
                 };
 
                 const ro = new ResizeObserver(() => {
                     this.updateCanvasInsets();
+                    sharedShell?.clampPosition();
                 });
                 ro.observe(host);
                 this.splitResizeObserver = ro;
@@ -2177,6 +2240,12 @@ export class MolSysViewerController {
                             try { cb(content); } catch { /* ignore */ }
                         }
                     }
+                    break;
+                }
+
+                case "set_canvas_visibility": {
+                    const visible = (msg as any).visible !== false;
+                    this.setCanvasVisibility(visible);
                     break;
                 }
 

@@ -90,6 +90,14 @@ export async function bootDocsView(opts: {
         touchAction: "none", cursor: "default", overflow: "hidden"
     });
 
+    setupWidgetResizer(hostEl, target, (w, h) => {
+        hostEl.style.height = `${h}px`;
+        target.style.height = `${h}px`;
+        controllerPromise.then(c => {
+            c.plugin.canvas3d?.requestResize();
+        });
+    });
+
     // Track user interaction for camera sync logic
     let isUserInteracting = false;
     let wheelTimeout: ReturnType<typeof window.setTimeout> | null = null;
@@ -224,6 +232,72 @@ export async function bootDocsView(opts: {
     })();
 }
 
+function setupWidgetResizer(
+    host: HTMLElement,
+    target: HTMLElement,
+    onResize: (width: number, height: number) => void
+) {
+    host.style.position = "relative";
+    
+    const handle = document.createElement("div");
+    Object.assign(handle.style, {
+        position: "absolute",
+        left: "0",
+        right: "0",
+        bottom: "0",
+        height: "8px",
+        cursor: "ns-resize",
+        background: "rgba(255, 255, 255, 0.04)",
+        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+        zIndex: "1000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transition: "background 150ms"
+    });
+    
+    const dots = document.createElement("div");
+    Object.assign(dots.style, {
+        width: "24px",
+        height: "3px",
+        borderRadius: "1.5px",
+        background: "rgba(255, 255, 255, 0.2)",
+        transition: "background 150ms"
+    });
+    handle.appendChild(dots);
+
+    handle.addEventListener("mouseenter", () => {
+        handle.style.background = "rgba(255, 255, 255, 0.12)";
+        dots.style.background = "rgba(255, 255, 255, 0.5)";
+    });
+    handle.addEventListener("mouseleave", () => {
+        handle.style.background = "rgba(255, 255, 255, 0.04)";
+        dots.style.background = "rgba(255, 255, 255, 0.2)";
+    });
+
+    handle.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        const startY = e.clientY;
+        const startHeight = host.clientHeight;
+        
+        const onPointerMove = (moveEvent: PointerEvent) => {
+            const deltaY = moveEvent.clientY - startY;
+            const newHeight = Math.max(300, startHeight + deltaY);
+            onResize(host.clientWidth, newHeight);
+        };
+
+        const onPointerUp = () => {
+            window.removeEventListener("pointermove", onPointerMove);
+            window.removeEventListener("pointerup", onPointerUp);
+        };
+
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", onPointerUp);
+    });
+
+    host.appendChild(handle);
+}
+
 /**
  * NOTE FOR AUTOMATION AGENTS:
  * The generated bundle lives at ../viewer.js and should be rebuilt manually.
@@ -272,7 +346,38 @@ export default {
         window.addEventListener("pointercancel", onPointerUpOrCancel);
         target.addEventListener("wheel", onWheel, { passive: true }); // Make sure this line is not cut off
         
+        target.tabIndex = 0;
+        target.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key === "v" || e.key === "V") {
+                const active = document.activeElement;
+                if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]') as HTMLButtonElement;
+                if (eyeBtn) {
+                    eyeBtn.click();
+                } else {
+                    const textEyeBtn = Array.from(target.querySelectorAll('button')).find(b => b.textContent === "Canvas");
+                    if (textEyeBtn) {
+                        textEyeBtn.click();
+                    }
+                }
+            }
+        });
+        
         el.appendChild(target);
+
+        // Setup interactive resizing
+        setupWidgetResizer(el, target, (w, h) => {
+            el.style.height = `${h}px`;
+            target.style.height = `${h}px`;
+            model.send({ event: "widget_resize", height: h, width: w });
+            controllerPromise.then(c => {
+                c.plugin.canvas3d?.requestResize();
+            });
+        });
 
         // 2. Initialize Controller
         const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
@@ -330,18 +435,50 @@ export default {
                     model,
                     (msg) => popupMgr.send("molsysviewer-sync-op", msg),
                     target,
-                    enablePopout ? () => popupMgr.open() : undefined,
+                    enablePopout ? () => popupMgr.open("canvas") : undefined,
                     {
                         initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
                         initialFrameCount: trajInfo.frameCount,
-                    }
+                    },
+                    enablePopout ? () => {
+                        // Force canvas to be visible in the host if it was hidden
+                        if (c.canvasHost.style.display === "none") {
+                            const eyeBtn = target.querySelector('button[title="Toggle canvas visibility"]') as HTMLButtonElement;
+                            if (eyeBtn) {
+                                eyeBtn.click();
+                            } else {
+                                c.setCanvasVisibility(true);
+                            }
+                        }
+                        if (c.sharedShell) {
+                            c.sharedShell.setVisible(false);
+                        }
+                        popupMgr.open("panel");
+                    } : undefined
                 );
                 if (overlay) {
                     target.appendChild(overlay);
                 }
             };
             updateControls();
-            model.on("change:controls_mode", updateControls);
+            popupMgr.setController(c);
+
+            model.on("change:controls_mode", () => {
+                updateControls();
+                popupMgr.send("molsysviewer-sync-ui", { controlsMode: model.get("controls_mode") });
+            });
+            model.on("change:viewer_mode", () => {
+                popupMgr.send("molsysviewer-sync-ui", { viewerMode: model.get("viewer_mode") });
+            });
+            model.on("change:panel_mode_style", () => {
+                popupMgr.send("molsysviewer-sync-ui", { panelModeStyle: model.get("panel_mode_style") });
+            });
+
+            if (c.sharedShell) {
+                c.sharedShell.onLayoutChange = (state) => {
+                    popupMgr.send("molsysviewer-sync-ui", state);
+                };
+            }
 
             // 5. Setup Camera Sync (Host -> Popup)
             if (c.plugin.canvas3d) {
@@ -418,7 +555,30 @@ export default {
                             isSpinActive: controller.isSpinActive,
                             isSwingActive: controller.isSwingActive,
                             isDarkMode: controller.isDarkMode,
-                            autohide: !!model.get("autohide_controls")
+                            autohide: !!model.get("autohide_controls"),
+                            viewerMode: controller.getViewerMode(),
+                            controlsMode: controller.getControlsMode(),
+                            panelModeStyle: controller.getPanelModeStyle(),
+                            isAmbient: controller.sharedShell?.isAmbient,
+                            isSplit: controller.sharedShell?.isSplit,
+                        });
+                        break;
+
+                    case "molsysviewer-panel-ready":
+                        popupMgr.isPanelReady = true;
+                        // Sync initial state to panel popup
+                        popupMgr.send("molsysviewer-initial-sync", {
+                            messages: [...commandLog],
+                            cameraSnapshot: controller.getCameraSnapshot(),
+                            isSpinActive: controller.isSpinActive,
+                            isSwingActive: controller.isSwingActive,
+                            isDarkMode: controller.isDarkMode,
+                            autohide: !!model.get("autohide_controls"),
+                            viewerMode: controller.getViewerMode(),
+                            controlsMode: controller.getControlsMode(),
+                            panelModeStyle: controller.getPanelModeStyle(),
+                            isAmbient: controller.sharedShell?.isAmbient,
+                            isSplit: controller.sharedShell?.isSplit,
                         });
                         break;
 

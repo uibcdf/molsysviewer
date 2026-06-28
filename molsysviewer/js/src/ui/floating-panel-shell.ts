@@ -54,16 +54,62 @@ export class FloatingPanelShell {
     private readonly workspaceCurrentSubtitleElement: HTMLSpanElement;
     private readonly workspaceMenuElement: HTMLDivElement;
     private panelResizeObserver?: ResizeObserver;
-    private isSplit = false;
-    private isAmbient = false;
+    public isSplit = false;
+    public isAmbient = false;
+    private lastSplitState = false;
     private dockButton?: HTMLButtonElement;
     private lockButton?: HTMLButtonElement;
+
+    public onLayoutChange?: (state: { isSplit: boolean, isAmbient: boolean }) => void;
+    private isCanvasHidden = false;
+
+    public setCanvasHidden(hidden: boolean): void {
+        this.isCanvasHidden = hidden;
+        this.updateLayout();
+    }
+
+    public setSplit(split: boolean): void {
+        this.isSplit = split;
+        this.updateLayout();
+    }
+
+    public setAmbient(ambient: boolean): void {
+        this.isAmbient = ambient;
+        this.updateLayout();
+    }
+
+    public clampPosition(): void {
+        if (this.isSplit) return;
+        const hostWidth = this.host.clientWidth;
+        const hostHeight = this.host.clientHeight;
+        if (!hostWidth || !hostHeight) return;
+
+        let currentWidth = parseFloat(this.panel.style.width) || this.panel.offsetWidth;
+        let currentHeight = parseFloat(this.panel.style.height) || this.panel.offsetHeight;
+
+        // Clamp dimensions to host size
+        currentWidth = Math.min(currentWidth, hostWidth - 20);
+        currentHeight = Math.min(currentHeight, hostHeight - 20);
+
+        let currentLeft = parseFloat(this.panel.style.left) || 0;
+        let currentTop = parseFloat(this.panel.style.top) || 0;
+
+        // Clamp position so it doesn't go off-screen
+        currentLeft = Math.max(10, Math.min(currentLeft, hostWidth - currentWidth - 10));
+        currentTop = Math.max(10, Math.min(currentTop, hostHeight - currentHeight - 10));
+
+        this.panel.style.width = `${currentWidth}px`;
+        this.panel.style.height = `${currentHeight}px`;
+        this.panel.style.left = `${currentLeft}px`;
+        this.panel.style.top = `${currentTop}px`;
+    }
 
     constructor(private readonly host: HTMLElement, options: FloatingPanelShellOptions) {
         const style = options.panelModeStyle || "floating";
         this.panelModeStyle = style;
         this.isAmbient = style === "ambient";
         this.isSplit = style === "split";
+        this.lastSplitState = this.isSplit;
 
         // Backdrop overlay (fills the host, captures backdrop clicks)
         this.root = document.createElement("div");
@@ -328,6 +374,7 @@ export class FloatingPanelShell {
             e.stopPropagation();
             this.isSplit = !this.isSplit;
             this.updateLayout();
+            this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
         });
         this.headerElement.appendChild(this.dockButton);
 
@@ -353,6 +400,7 @@ export class FloatingPanelShell {
             e.stopPropagation();
             this.isAmbient = !this.isAmbient;
             this.updateLayout();
+            this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
         });
         this.headerElement.appendChild(this.lockButton);
 
@@ -507,13 +555,24 @@ export class FloatingPanelShell {
 
     private updateLayout(): void {
         const isSplit = this.isSplit;
+
+        // Detect transitions between split and float states
+        if (isSplit !== this.lastSplitState) {
+            if (isSplit) {
+                this.isAmbient = true; // Transitioning to split: always open the lock
+            } else {
+                this.isAmbient = false; // Transitioning back to float: always close the lock
+            }
+            this.lastSplitState = isSplit;
+        }
+
         const isAmbient = this.isAmbient;
 
         // 1. Update backdrop root styles
         Object.assign(this.root.style, {
             justifyContent: isSplit ? "flex-start" : "center",
-            pointerEvents: (isAmbient || isSplit) ? "none" : "auto",
-            background: (isAmbient || isSplit) ? "transparent" : "rgba(0,0,0,0.32)",
+            pointerEvents: isAmbient ? "none" : "auto",
+            background: isAmbient ? "transparent" : "rgba(0,0,0,0.32)",
             paddingLeft: isSplit ? "10px" : "0",
         });
 
@@ -527,7 +586,7 @@ export class FloatingPanelShell {
             
             this.panel.style.left = "10px";
             this.panel.style.top = "10px";
-            this.panel.style.width = "50%";
+            this.panel.style.width = this.isCanvasHidden ? "calc(100% - 20px)" : "50%";
             Object.assign(this.panel.style, {
                 height: "calc(100% - 20px)",
                 borderRadius: "14px",
@@ -541,20 +600,18 @@ export class FloatingPanelShell {
         } else {
             this.panelResizeObserver?.unobserve(this.panel);
             
-            // Center the panel if it's the initial render or transitioning back from split
-            if (!this.panel.style.width || this.panel.style.width === "50%") {
-                const hostWidth = this.host.clientWidth;
-                const hostHeight = this.host.clientHeight;
-                const panelWidth = Math.min(hostWidth * 0.75, 950);
-                const panelHeight = Math.min(hostHeight * 0.80, 780);
-                const left = Math.max(10, (hostWidth - panelWidth) / 2);
-                const top = Math.max(10, (hostHeight - panelHeight) / 2);
-                
-                this.panel.style.left = `${left}px`;
-                this.panel.style.top = `${top}px`;
-                this.panel.style.width = `${panelWidth}px`;
-                this.panel.style.height = `${panelHeight}px`;
-            }
+            // When returning to float, always reset to the original center position and original default dimensions
+            const hostWidth = this.host.clientWidth;
+            const hostHeight = this.host.clientHeight;
+            const panelWidth = Math.min(hostWidth * 0.75, 950);
+            const panelHeight = Math.min(hostHeight * 0.80, 780);
+            const left = Math.max(10, (hostWidth - panelWidth) / 2);
+            const top = Math.max(10, (hostHeight - panelHeight) / 2);
+            
+            this.panel.style.left = `${left}px`;
+            this.panel.style.top = `${top}px`;
+            this.panel.style.width = `${panelWidth}px`;
+            this.panel.style.height = `${panelHeight}px`;
             
             Object.assign(this.panel.style, {
                 borderRadius: "16px",
@@ -573,7 +630,7 @@ export class FloatingPanelShell {
             this.dockButton.title = isSplit ? "Float panel" : "Dock panel (Split)";
             this.dockButton.innerHTML = isSplit 
                 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` // Float layout (click to float)
-                : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="6" y1="2" x2="6" y2="14"/></svg>`; // Split layout (click to split)
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="14"/><line x1="4" y1="8" x2="12" y2="8"/></svg>`; // Rotated T layout (click to split)
         }
 
         if (this.lockButton) {
@@ -581,7 +638,7 @@ export class FloatingPanelShell {
             this.lockButton.innerHTML = isAmbient
                 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 6-2.5"/></svg>` // Open lock
                 : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 7 0v3"/></svg>`; // Closed lock
-            this.lockButton.style.display = isSplit ? "none" : "inline-flex";
+            this.lockButton.style.display = "inline-flex";
         }
 
         // Trigger callback to update canvas host left offset in real-time

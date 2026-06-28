@@ -156,6 +156,8 @@ export const bootPopup = async (loadedModule?: any) => {
 
     const revealTimer = window.setTimeout(revealViewer, 2500);
 
+    const initOptions = (window as any).molsysviewer_init_options || {};
+
     // Create a new instance of MolSysViewerController for the popout
     const popControllerPromise = (async () => {
         // Wait a tick to ensure DOM is ready
@@ -168,7 +170,15 @@ export const bootPopup = async (loadedModule?: any) => {
                 sendToHost("molsysviewer-popup-interaction", msg);
             }
             sendToHost("molsysviewer-log-from-popout", msg);
-        });
+        }, undefined, initOptions);
+
+        if (initOptions.isPanelOnly) {
+            ctrl.setCanvasVisibility(false);
+            if (ctrl.sharedShell) {
+                ctrl.sharedShell.setSplit(true);
+                ctrl.sharedShell.setVisible(true);
+            }
+        }
 
         // Helper to wait for canvas3d to be ready (async init)
         const waitForCanvas3d = async (retries = 50): Promise<boolean> => {
@@ -242,10 +252,29 @@ export const bootPopup = async (loadedModule?: any) => {
                     if (data.isSwingActive) await ctrl.toggleSwing(true);
                     if (data.isDarkMode) await ctrl.toggleBackground("dark");
                     
+                    // Sync UI state
+                    if (data.viewerMode) ctrl.setViewerMode(data.viewerMode);
+                    if (data.controlsMode) ctrl.setControlsMode(data.controlsMode);
+                    if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
+                    if (ctrl.sharedShell) {
+                        if (data.isAmbient !== undefined) ctrl.sharedShell.setAmbient(data.isAmbient);
+                        if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
+                    }
+
                     // Sync autohide state
                     if (data.autohide !== undefined) updateAutohide(!!data.autohide);
                     window.clearTimeout(revealTimer);
                     revealViewer();
+                    break;
+
+                case "molsysviewer-sync-ui":
+                    if (data.viewerMode) ctrl.setViewerMode(data.viewerMode);
+                    if (data.controlsMode) ctrl.setControlsMode(data.controlsMode);
+                    if (data.panelModeStyle) ctrl.setPanelModeStyle(data.panelModeStyle);
+                    if (ctrl.sharedShell) {
+                        if (data.isAmbient !== undefined) ctrl.sharedShell.setAmbient(data.isAmbient);
+                        if (data.isSplit !== undefined) ctrl.sharedShell.setSplit(data.isSplit);
+                    }
                     break;
 
                 case "molsysviewer-sync-autohide":
@@ -305,6 +334,7 @@ export const bootPopup = async (loadedModule?: any) => {
     overlay.style.transition = "opacity 150ms ease";
 
     const addBtn = (label: string, handler: () => void) => {
+        if (initOptions.isPanelOnly) return;
         const b = makeBtn(label, handler);
         b.style.pointerEvents = "auto";
         overlay.appendChild(b);
@@ -383,9 +413,19 @@ export const bootPopup = async (loadedModule?: any) => {
         await ctrl.toggleSwing();
         sendToHost("molsysviewer-sync-op", { op: "toggle_swing", enable: ctrl.isSwingActive });
     });
+    let isUiVisible = true;
+    const uiBtn = addBtn("UI", async () => {
+        const ctrl = await popControllerPromise;
+        isUiVisible = !isUiVisible;
+        ctrl.sharedShell?.setVisible(isUiVisible);
+        uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
+    });
     addBtn("Pop", () => {
         try { window.close(); } catch (e) {}
     });
+    if (initOptions.isPanelOnly) {
+        overlay.style.display = "none";
+    }
     container.appendChild(overlay);
 
     // ... (Trajectory controls creation) ...
@@ -481,7 +521,20 @@ export const bootPopup = async (loadedModule?: any) => {
     traj.appendChild(btnNext);
     traj.appendChild(slider);
     traj.appendChild(label);
-    overlay.appendChild(traj);
+    
+    if (initOptions.isPanelOnly) {
+        Object.assign(traj.style, {
+            position: "absolute",
+            bottom: "12px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: "100",
+            display: "flex",
+        });
+        container.appendChild(traj);
+    } else {
+        overlay.appendChild(traj);
+    }
 
     popControllerPromise.then(c => {
         const applyState = (state: any) => {
@@ -513,5 +566,5 @@ export const bootPopup = async (loadedModule?: any) => {
     });
 
     // Notify host
-    sendToHost("molsysviewer-pop-ready", null);
+    sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
 };
