@@ -151316,6 +151316,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.localControlsMode = "classic";
     this.localPanelModeStyle = "drawer";
     this.savedHostPanelState = null;
+    this.panelOpenState = false;
     this.model = initOptions?.model;
     this.isPanelOnly = !!initOptions?.isPanelOnly;
     if (initOptions?.viewerMode) {
@@ -152154,24 +152155,17 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
       return;
     }
-    if (this.sharedShell) {
-      const isOpened = this.sharedShell.isVisible() && this.sharedShell.isExpanded() && (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded());
-      if (isOpened) {
-        this.collapsePanels();
-      } else {
-        this.sharedShell.setVisible(true);
-        this.setPanelMode(void 0, true);
-      }
-      return;
-    }
-    const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
-    if (anyExpanded) {
+    if (this.panelOpenState) {
       this.collapsePanels();
     } else {
+      if (this.sharedShell) {
+        this.sharedShell.setVisible(true);
+      }
       this.setPanelMode(void 0, true);
     }
   }
   collapsePanels() {
+    this.panelOpenState = false;
     this.syncingPanelExpansion = true;
     try {
       this.groupPanel.setExpanded(false);
@@ -152263,6 +152257,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     }
     if (!target) return;
+    this.panelOpenState = true;
     this.syncingPanelExpansion = true;
     try {
       this.groupPanel.setExpanded(target === "navigate");
