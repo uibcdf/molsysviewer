@@ -844,7 +844,7 @@ export class MolSysViewerController {
             sharedShell.setVisible(true);
             this.sharedShell = sharedShell;
 
-            if (floatingUnified) {
+            if (floatingUnified && !this.isPanelOnly) {
                 sharedShell.onResize = () => {
                     this.updateCanvasInsets();
                 };

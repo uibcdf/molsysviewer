@@ -82,7 +82,7 @@ export class FloatingPanelShell {
     }
 
     public clampPosition(): void {
-        if (this.isSplit) return;
+        if (this.isPanelOnly || this.isSplit) return;
         const hostWidth = this.host.clientWidth;
         const hostHeight = this.host.clientHeight;
         if (!hostWidth || !hostHeight) return;
@@ -625,6 +625,8 @@ export class FloatingPanelShell {
             this.panel.style.width = "100%";
             Object.assign(this.panel.style, {
                 height: "100%",
+                minHeight: "0",
+                minWidth: "0",
                 borderRadius: "0",
                 border: "none",
                 boxShadow: "none",
@@ -640,7 +642,7 @@ export class FloatingPanelShell {
                 justifyContent: "flex-start",
                 pointerEvents: "auto",
                 background: "#121216",
-                paddingLeft: "0",
+                padding: "0",
             });
         } else if (isSplit) {
             this.headerElement.style.cursor = "default";

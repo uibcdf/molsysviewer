@@ -149246,7 +149246,7 @@ var FloatingPanelShell = class {
     this.updateLayout();
   }
   clampPosition() {
-    if (this.isSplit) return;
+    if (this.isPanelOnly || this.isSplit) return;
     const hostWidth = this.host.clientWidth;
     const hostHeight = this.host.clientHeight;
     if (!hostWidth || !hostHeight) return;
@@ -149290,6 +149290,8 @@ var FloatingPanelShell = class {
       this.panel.style.width = "100%";
       Object.assign(this.panel.style, {
         height: "100%",
+        minHeight: "0",
+        minWidth: "0",
         borderRadius: "0",
         border: "none",
         boxShadow: "none",
@@ -149304,7 +149306,7 @@ var FloatingPanelShell = class {
         justifyContent: "flex-start",
         pointerEvents: "auto",
         background: "#121216",
-        paddingLeft: "0"
+        padding: "0"
       });
     } else if (isSplit2) {
       this.headerElement.style.cursor = "default";
@@ -151435,7 +151437,7 @@ var MolSysViewerController = class _MolSysViewerController {
       });
       sharedShell.setVisible(true);
       this.sharedShell = sharedShell;
-      if (floatingUnified) {
+      if (floatingUnified && !this.isPanelOnly) {
         sharedShell.onResize = () => {
           this.updateCanvasInsets();
         };
