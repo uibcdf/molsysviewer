@@ -374,7 +374,22 @@ export default {
             });
         });
 
-        // 2. Initialize Controller
+        // 2. Initialize Popup Manager with Payload
+        // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.
+        const popupJsSource = model.get("popup_js_source");
+        const esmSource = model.get("_esm");
+        const viewerJsSource = popupJsSource || esmSource;
+        if (!viewerJsSource) {
+            console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
+        } else {
+            const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
+            console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
+        }
+
+        const popupMgr = new PopupHostManager(viewerJsSource || "");
+        const enablePopout = !!model.get("enable_popout");
+
+        // 3. Initialize Controller
         const panelModeStyle = (model.get("panel_mode_style") as string) || "drawer";
         const controllerPromise = MolSysViewerController.create(target, msg => {
             model.send(msg);
@@ -408,21 +423,6 @@ export default {
                 });
             } : undefined
         });
-
-        // 3. Initialize Popup Manager with Payload
-        // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.
-        const popupJsSource = model.get("popup_js_source");
-        const esmSource = model.get("_esm");
-        const viewerJsSource = popupJsSource || esmSource;
-        if (!viewerJsSource) {
-            console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
-        } else {
-            const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
-            console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
-        }
-
-        const popupMgr = new PopupHostManager(viewerJsSource || "");
-        const enablePopout = !!model.get("enable_popout");
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
