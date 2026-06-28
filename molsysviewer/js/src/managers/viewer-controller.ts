@@ -468,6 +468,7 @@ export class MolSysViewerController {
     private readonly sharedShell?: FloatingPanelShell;
     private splitResizeObserver?: ResizeObserver;
     private readonly canvasHost: HTMLDivElement;
+    private readonly isPanelOnly: boolean;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
     private canvasInsetFrom = { left: 0, right: 0 };
     private canvasInsetTo = { left: 0, right: 0 };
@@ -559,7 +560,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void }): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -688,8 +689,9 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any }) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean }) {
         this.model = initOptions?.model;
+        this.isPanelOnly = !!initOptions?.isPanelOnly;
         if (initOptions?.viewerMode) {
             this.localViewerMode = initOptions.viewerMode;
         }
@@ -700,6 +702,9 @@ export class MolSysViewerController {
             this.localPanelModeStyle = initOptions.panelModeStyle;
         }
         this.canvasHost = canvasHost ?? (() => { const d = document.createElement("div"); host.appendChild(d); return d; })();
+        if (this.isPanelOnly) {
+            this.canvasHost.style.display = "none";
+        }
         this.injectGlobalStyles();
         const emitInteractionEvent = (msg: any) => {
             if (msg?.event === "interaction_tool_state") {
@@ -788,11 +793,16 @@ export class MolSysViewerController {
                 panelModeStyle: initOptions?.panelModeStyle,
                 onPanelPopClick: initOptions?.onPanelPopClick,
             });
-            if (initOptions?.isAmbient !== undefined) {
-                sharedShell.setAmbient(initOptions.isAmbient);
-            }
-            if (initOptions?.isSplit !== undefined) {
-                sharedShell.setSplit(initOptions.isSplit);
+            if (this.isPanelOnly) {
+                sharedShell.setSplit(true);
+                sharedShell.setVisible(true);
+            } else {
+                if (initOptions?.isAmbient !== undefined) {
+                    sharedShell.setAmbient(initOptions.isAmbient);
+                }
+                if (initOptions?.isSplit !== undefined) {
+                    sharedShell.setSplit(initOptions.isSplit);
+                }
             }
             // Close button of the shared shell collapses both panels
             sharedShell.toggleButton.addEventListener("click", (event) => {
@@ -1464,7 +1474,7 @@ export class MolSysViewerController {
     }
 
     private setPanelMode(panel?: "navigate" | "workbench" | null, expanded?: boolean): void {
-        const shouldExpand = expanded !== false;
+        const shouldExpand = this.isPanelOnly ? true : (expanded !== false);
         if (!shouldExpand) {
             this.collapsePanels();
             return;

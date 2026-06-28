@@ -151298,6 +151298,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.localControlsMode = "classic";
     this.localPanelModeStyle = "drawer";
     this.model = initOptions?.model;
+    this.isPanelOnly = !!initOptions?.isPanelOnly;
     if (initOptions?.viewerMode) {
       this.localViewerMode = initOptions.viewerMode;
     }
@@ -151312,6 +151313,9 @@ var MolSysViewerController = class _MolSysViewerController {
       host.appendChild(d5);
       return d5;
     })();
+    if (this.isPanelOnly) {
+      this.canvasHost.style.display = "none";
+    }
     this.injectGlobalStyles();
     const emitInteractionEvent = (msg) => {
       if (msg?.event === "interaction_tool_state") {
@@ -151387,11 +151391,16 @@ var MolSysViewerController = class _MolSysViewerController {
         panelModeStyle: initOptions?.panelModeStyle,
         onPanelPopClick: initOptions?.onPanelPopClick
       });
-      if (initOptions?.isAmbient !== void 0) {
-        sharedShell.setAmbient(initOptions.isAmbient);
-      }
-      if (initOptions?.isSplit !== void 0) {
-        sharedShell.setSplit(initOptions.isSplit);
+      if (this.isPanelOnly) {
+        sharedShell.setSplit(true);
+        sharedShell.setVisible(true);
+      } else {
+        if (initOptions?.isAmbient !== void 0) {
+          sharedShell.setAmbient(initOptions.isAmbient);
+        }
+        if (initOptions?.isSplit !== void 0) {
+          sharedShell.setSplit(initOptions.isSplit);
+        }
       }
       sharedShell.toggleButton.addEventListener("click", (event) => {
         event.preventDefault();
@@ -152168,7 +152177,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.emitPanelModeState();
   }
   setPanelMode(panel, expanded) {
-    const shouldExpand = expanded !== false;
+    const shouldExpand = this.isPanelOnly ? true : expanded !== false;
     if (!shouldExpand) {
       this.collapsePanels();
       return;
