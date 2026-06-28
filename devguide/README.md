@@ -111,6 +111,9 @@ That principle should guide prioritization throughout the repository.
    - Strategic vision for high-fidelity rendering and Blender integration (post-1.0).
 38. [**Mol\* Color Strings**](molstar_color_strings.md)
    - Baseline record of named color strings that MolSysViewer treats as valid Mol\* color names.
+39. [**Standalone Performance and De-pythonization Roadmap**](standalone_performance_and_depythonization.md)
+   - Long-term strategy for addressing JIT/Numba latency and transitioning to Rust/WASM.
+
 
 ## Workbench Tutorials (Planned)
 
