@@ -561,4 +561,52 @@ export const bootPopup = async (loadedModule?: any) => {
 
     // Notify host
     sendToHost(initOptions.isPanelOnly ? "molsysviewer-panel-ready" : "molsysviewer-pop-ready", null);
+
+    // Diagnostic Overlay for panel debugging
+    try {
+        const diag = document.createElement("div");
+        Object.assign(diag.style, {
+            position: "absolute",
+            bottom: "0", left: "0", right: "0",
+            background: "rgba(18, 18, 22, 0.95)",
+            color: "#30d158",
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            fontSize: "11px",
+            lineHeight: "1.4",
+            padding: "12px",
+            zIndex: "999999",
+            maxHeight: "200px",
+            overflowY: "auto",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            pointerEvents: "auto",
+            boxShadow: "0 -4px 12px rgba(0,0,0,0.5)"
+        });
+        diag.innerHTML = "<strong style='color:#0a84ff;'>[MolSysViewer Diagnostic Log]</strong><br>";
+        container.appendChild(diag);
+
+        const logDiag = (msg: string) => {
+            diag.innerHTML += msg + "<br>";
+            diag.scrollTop = diag.scrollHeight;
+        };
+
+        logDiag("initOptions: " + JSON.stringify(initOptions));
+        logDiag("container: display=" + window.getComputedStyle(container).display + ", opacity=" + window.getComputedStyle(container).opacity + ", w=" + container.offsetWidth + ", h=" + container.offsetHeight);
+
+        window.setTimeout(() => {
+            try {
+                const children = container.querySelectorAll("*");
+                logDiag(`Descendants count (excluding diag): ${children.length - 1}`);
+                children.forEach((child, idx) => {
+                    const el = child as HTMLElement;
+                    if (el === diag || diag.contains(el)) return;
+                    const style = window.getComputedStyle(el);
+                    logDiag(`[${idx}] <strong>${el.tagName}</strong> (id=${el.id || 'none'}, class=${el.className || 'none'}): display=${style.display}, vis=${style.visibility}, w=${style.width}, h=${style.height}, offsetW=${el.offsetWidth}, offsetH=${el.offsetHeight}`);
+                });
+            } catch (e: any) {
+                logDiag("Error during DOM scan: " + e.message);
+            }
+        }, 3000);
+    } catch (e) {
+        console.error("Failed to create diagnostic overlay:", e);
+    }
 };
