@@ -380,6 +380,71 @@ export class FloatingPanelShell {
             this.updateLayout();
             this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
         });
+        this.lockButton = document.createElement("button");
+        this.lockButton.type = "button";
+        Object.assign(this.lockButton.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.45)",
+            cursor: "default",
+            padding: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5px",
+            flexShrink: "0",
+            marginLeft: "4px",
+        });
+        this.lockButton.addEventListener("mouseenter", () => { this.lockButton!.style.color = "rgba(255,255,255,0.9)"; });
+        this.lockButton.addEventListener("mouseleave", () => { this.lockButton!.style.color = "rgba(255,255,255,0.45)"; });
+        this.lockButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.isAmbient = !this.isAmbient;
+            this.updateLayout();
+            this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
+        });
+
+        const opacityButton = document.createElement("button");
+        opacityButton.type = "button";
+        opacityButton.title = "Toggle opacity";
+        opacityButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 2v12a6 6 0 0 0 0-12z" fill="currentColor"/></svg>`;
+        Object.assign(opacityButton.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.45)",
+            cursor: "default",
+            padding: "4px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "5px",
+            flexShrink: "0",
+            marginLeft: "4px",
+        });
+        opacityButton.addEventListener("mouseenter", () => { opacityButton.style.color = "rgba(255,255,255,0.9)"; });
+        opacityButton.addEventListener("mouseleave", () => { opacityButton.style.color = "rgba(255,255,255,0.45)"; });
+        opacityButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const states = [0.90, 0.70, 0.45];
+            const currentOpacity = parseFloat(this.panel.style.opacity) || states[0];
+            let idx = states.indexOf(currentOpacity);
+            if (idx === -1) {
+                let minDiff = Infinity;
+                idx = 0;
+                for (let i = 0; i < states.length; i++) {
+                    const diff = Math.abs(states[i] - currentOpacity);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        idx = i;
+                    }
+                }
+            }
+            const nextIdx = (idx + 1) % states.length;
+            this.panel.style.opacity = String(states[nextIdx]);
+        });
+
         if (!this.isPanelOnly) {
             this.headerElement.appendChild(this.dockButton);
             this.headerElement.appendChild(this.lockButton);
