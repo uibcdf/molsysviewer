@@ -696,7 +696,7 @@ export class FloatingPanelShell {
                 borderRadius: "14px",
                 border: "1px solid rgba(255,255,255,0.12)",
                 boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-                background: "rgba(18, 18, 22, 0.90)",
+                background: "rgba(18, 18, 22, 0.92)",
                 resize: "horizontal",
             });
             this.panelResizeObserver?.observe(this.panel);
@@ -708,9 +708,9 @@ export class FloatingPanelShell {
             
             Object.assign(this.panel.style, {
                 borderRadius: "16px",
-                border: "1px solid rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.12)",
                 boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-                background: "rgba(18, 18, 22, 0.90)",
+                background: "rgba(18, 18, 22, 0.92)",
                 backdropFilter: "blur(20px)",
                 webkitBackdropFilter: "blur(20px)",
                 resize: "both",

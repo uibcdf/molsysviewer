@@ -149349,7 +149349,7 @@ var FloatingPanelShell = class {
         borderRadius: "14px",
         border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-        background: "rgba(18, 18, 22, 0.90)",
+        background: "rgba(18, 18, 22, 0.92)",
         resize: "horizontal"
       });
       this.panelResizeObserver?.observe(this.panel);
@@ -149358,9 +149358,9 @@ var FloatingPanelShell = class {
       this.centerPanel();
       Object.assign(this.panel.style, {
         borderRadius: "16px",
-        border: "1px solid rgba(255,255,255,0.14)",
+        border: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-        background: "rgba(18, 18, 22, 0.90)",
+        background: "rgba(18, 18, 22, 0.92)",
         backdropFilter: "blur(20px)",
         webkitBackdropFilter: "blur(20px)",
         resize: "both"
@@ -155018,9 +155018,11 @@ var HelpOverlay = class {
     const card = document.createElement("div");
     Object.assign(card.style, {
       width: "min(640px, 88%)",
-      background: "rgba(18,18,22,0.95)",
+      maxHeight: "calc(100% - 80px)",
+      overflowY: "auto",
+      background: "rgba(18, 18, 22, 0.92)",
       borderRadius: "16px",
-      border: "1px solid rgba(255,255,255,0.14)",
+      border: "1px solid rgba(255, 255, 255, 0.12)",
       boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
       color: "#f4f4f5",
       fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
