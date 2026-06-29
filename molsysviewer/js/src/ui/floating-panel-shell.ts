@@ -107,6 +107,27 @@ export class FloatingPanelShell {
         this.panel.style.top = `${currentTop}px`;
     }
 
+    public centerPanel(): void {
+        if (this.isPanelOnly || this.isSplit) return;
+        const hostWidth = this.host.clientWidth;
+        const hostHeight = this.host.clientHeight;
+        if (!hostWidth || !hostHeight) return;
+
+        const isFullscreen = !!document.fullscreenElement;
+        const maxWidth = isFullscreen ? 1100 : 950;
+        const maxHeight = isFullscreen ? 850 : 780;
+
+        const panelWidth = Math.min(hostWidth * 0.75, maxWidth);
+        const panelHeight = Math.min(hostHeight * 0.80, maxHeight);
+        const left = Math.max(10, (hostWidth - panelWidth) / 2);
+        const top = Math.max(10, (hostHeight - panelHeight) / 2);
+
+        this.panel.style.left = `${left}px`;
+        this.panel.style.top = `${top}px`;
+        this.panel.style.width = `${panelWidth}px`;
+        this.panel.style.height = `${panelHeight}px`;
+    }
+
     constructor(private readonly host: HTMLElement, options: FloatingPanelShellOptions) {
         this.isPanelOnly = !!options.isPanelOnly;
         const style = options.panelModeStyle || "floating";
@@ -584,6 +605,13 @@ export class FloatingPanelShell {
             }
         });
 
+        const hostResizeObserver = new ResizeObserver(() => {
+            if (this.visible && this.expanded) {
+                this.centerPanel();
+            }
+        });
+        hostResizeObserver.observe(host);
+
         this.updateLayout();
 
         host.appendChild(this.root);
@@ -651,17 +679,7 @@ export class FloatingPanelShell {
             this.panelResizeObserver?.unobserve(this.panel);
             
             // When returning to float, always reset to the original center position and original default dimensions
-            const hostWidth = this.host.clientWidth;
-            const hostHeight = this.host.clientHeight;
-            const panelWidth = Math.min(hostWidth * 0.75, 950);
-            const panelHeight = Math.min(hostHeight * 0.80, 780);
-            const left = Math.max(10, (hostWidth - panelWidth) / 2);
-            const top = Math.max(10, (hostHeight - panelHeight) / 2);
-            
-            this.panel.style.left = `${left}px`;
-            this.panel.style.top = `${top}px`;
-            this.panel.style.width = `${panelWidth}px`;
-            this.panel.style.height = `${panelHeight}px`;
+            this.centerPanel();
             
             Object.assign(this.panel.style, {
                 borderRadius: "16px",
@@ -723,6 +741,8 @@ export class FloatingPanelShell {
         if (!visible) {
             this.workspaceMenuOpen = false;
             this.applyWorkspaceMenuState();
+        } else {
+            this.centerPanel();
         }
         this.scheduleDisplayUpdate();
     }
@@ -733,6 +753,9 @@ export class FloatingPanelShell {
 
     setExpanded(expanded: boolean): void {
         this.expanded = expanded;
+        if (expanded) {
+            this.centerPanel();
+        }
         this.scheduleDisplayUpdate();
     }
 
