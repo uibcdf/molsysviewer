@@ -317,6 +317,7 @@ export default {
         // 1. Setup DOM
         const target = document.createElement("div");
         target.tabIndex = 0;
+        target.classList.add("molsysviewer-host");
         Object.assign(target.style, {
             width: "100%", height: "100%", minHeight: "400px", position: "relative",
             touchAction: "none", cursor: "default", overflow: "hidden", outline: "none" // Default cursor, focus outline hidden
