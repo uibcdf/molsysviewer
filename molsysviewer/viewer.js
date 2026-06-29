@@ -155788,7 +155788,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       overlay.style.transform = "translateX(-50%)";
     }
   };
-  const ICON_EXIT_FULLSCREEN = `<polyline points="5,1 5,5 1,5"/><polyline points="11,5 11,1 15,5"/><polyline points="15,11 11,11 11,15"/><polyline points="1,11 5,11 5,15"/>`;
+  const ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
   const updateFullscreenButtonState = () => {
     const isFullscreen = !!document.fullscreenElement;
     if (fullscreenBtn) {
