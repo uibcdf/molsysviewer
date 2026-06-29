@@ -428,6 +428,26 @@ export default {
 
         // 4. Build UI Controls & Setup Sync
         controllerPromise.then(c => {
+            // Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer.
+            // This is a strictly local change traversing up only our widget's parent chain.
+            const removeOutputLimits = () => {
+                let parent = target.parentElement;
+                while (parent) {
+                    if (parent.classList.contains("jp-OutputArea-child") || 
+                        parent.classList.contains("jp-OutputArea-output") || 
+                        parent.classList.contains("jp-OutputArea") || 
+                        parent.classList.contains("output_subarea") ||
+                        parent.classList.contains("vscode-notebook-cell-output-container") ||
+                        parent.classList.contains("cell-output-ipywidget")) {
+                        parent.style.maxHeight = "none";
+                    }
+                    parent = parent.parentElement;
+                }
+            };
+            removeOutputLimits();
+            setTimeout(removeOutputLimits, 100);
+            setTimeout(removeOutputLimits, 500);
+
             c.onTogglePanelModeOverride = () => {
                 if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
                     popupMgr.close("panel");
