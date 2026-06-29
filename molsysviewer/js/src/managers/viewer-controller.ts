@@ -1037,8 +1037,7 @@ export class MolSysViewerController {
         this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
         this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
 
-        const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
-        if (canvas) {
+        if (this.canvasHost) {
             const handleCanvasContextMenu = (event: MouseEvent) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -1112,11 +1111,11 @@ export class MolSysViewerController {
                 );
             };
 
-            canvas.addEventListener("contextmenu", handleCanvasContextMenu as any, true);
+            this.canvasHost.addEventListener("contextmenu", handleCanvasContextMenu as any, true);
             const previousRelease = this.releaseContextMenuSuppression;
             this.releaseContextMenuSuppression = () => {
                 previousRelease?.();
-                canvas.removeEventListener("contextmenu", handleCanvasContextMenu as any, true);
+                this.canvasHost.removeEventListener("contextmenu", handleCanvasContextMenu as any, true);
             };
         }
 
