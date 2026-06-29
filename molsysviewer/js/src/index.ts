@@ -678,7 +678,6 @@ export default {
         // 7. Handle Python Messages
         (async () => {
             try {
-                model.send({ event: "ready" });
                 const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
                 if (Array.isArray(initialMessages) && initialMessages.length) {
                     for (const msg of initialMessages) {
@@ -688,6 +687,7 @@ export default {
                     }
                     await messageQueue;
                 }
+                model.send({ event: "ready" });
             } catch (err) {
                 console.error("[MolSysViewer] Init error:", err);
                 sendLog("error", "[MolSysViewer] Init error:", err);
