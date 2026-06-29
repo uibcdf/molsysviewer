@@ -621,9 +621,11 @@ export class FloatingPanelShell {
         const isSplit = this.isSplit;
 
         // Detect transitions between split and float states
+        let transitionedToSplit = false;
         if (isSplit !== this.lastSplitState) {
             if (isSplit) {
                 this.isAmbient = true; // Transitioning to split: always open the lock
+                transitionedToSplit = true;
             } else {
                 this.isAmbient = false; // Transitioning back to float: always close the lock
             }
@@ -681,8 +683,9 @@ export class FloatingPanelShell {
             this.panel.style.left = "10px";
             this.panel.style.top = "10px";
             
-            // Keep the user-resized width if it was already set and is valid, otherwise default to 50%
-            if (!this.panel.style.width || this.panel.style.width === "100%" || this.panel.style.width.indexOf("px") === -1) {
+            // Keep the user-resized width if it was already set and is valid, otherwise default to 50%.
+            // Always reset to 50% when transitioning from float to split.
+            if (transitionedToSplit || !this.panel.style.width || this.panel.style.width === "100%" || this.panel.style.width.indexOf("px") === -1) {
                 this.panel.style.width = "50%";
             }
             

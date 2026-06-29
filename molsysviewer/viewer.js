@@ -149288,9 +149288,11 @@ var FloatingPanelShell = class {
   }
   updateLayout() {
     const isSplit2 = this.isSplit;
+    let transitionedToSplit = false;
     if (isSplit2 !== this.lastSplitState) {
       if (isSplit2) {
         this.isAmbient = true;
+        transitionedToSplit = true;
       } else {
         this.isAmbient = false;
       }
@@ -149338,7 +149340,7 @@ var FloatingPanelShell = class {
       this.panel.style.webkitBackdropFilter = "";
       this.panel.style.left = "10px";
       this.panel.style.top = "10px";
-      if (!this.panel.style.width || this.panel.style.width === "100%" || this.panel.style.width.indexOf("px") === -1) {
+      if (transitionedToSplit || !this.panel.style.width || this.panel.style.width === "100%" || this.panel.style.width.indexOf("px") === -1) {
         this.panel.style.width = "50%";
       }
       Object.assign(this.panel.style, {
