@@ -670,6 +670,8 @@ export const buildControls = (
         overlay.appendChild(traj);
     }
 
+    let fullscreenBtn: HTMLButtonElement | null = null;
+
     if (controlsMode === "minimal" && overlay) {
         const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
         const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
@@ -715,7 +717,7 @@ export const buildControls = (
         };
 
         mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c.togglePanelMode());
-        mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
+        fullscreenBtn = mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c.toggleFullscreen());
         if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
         const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
         mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
@@ -731,7 +733,7 @@ export const buildControls = (
             await c.resetView();
             sendSync({ op: "reset_view" });
         });
-        mk("Full", () => c.toggleFullscreen());
+        fullscreenBtn = mk("Full", () => c.toggleFullscreen());
         mk("Bg", async () => {
             await c.toggleBackground();
             sendSync({ op: "toggle_background", mode: c.isDarkMode ? "dark" : "light" });
@@ -834,9 +836,32 @@ export const buildControls = (
         }
     };
 
+    const ICON_EXIT_FULLSCREEN = `<polyline points="5,1 5,5 1,5"/><polyline points="11,5 11,1 15,5"/><polyline points="15,11 11,11 11,15"/><polyline points="1,11 5,11 5,15"/>`;
+
+    const updateFullscreenButtonState = () => {
+        const isFullscreen = !!document.fullscreenElement;
+        if (fullscreenBtn) {
+            if (controlsMode === "minimal") {
+                const svg = fullscreenBtn.querySelector("svg");
+                if (svg) {
+                    // ICON_FULLSCREEN is: <polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>
+                    const path = isFullscreen ? ICON_EXIT_FULLSCREEN : `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+                    svg.innerHTML = path;
+                }
+                fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
+            } else {
+                fullscreenBtn.textContent = isFullscreen ? "Exit" : "Full";
+            }
+        }
+    };
+
     if (overlay) {
         placeOverlay();
-        document.addEventListener("fullscreenchange", placeOverlay);
+        updateFullscreenButtonState();
+        document.addEventListener("fullscreenchange", () => {
+            placeOverlay();
+            updateFullscreenButtonState();
+        });
         model.on("change:controls_position", placeOverlay);
         model.on("change:controls_position_fullscreen", placeOverlay);
 

@@ -3467,7 +3467,9 @@ export class MolSysViewerController {
     // Facades for external access (e.g. from Index or Popout)
     
     async resetView() { await this.scene.resetView(); }
-    async toggleFullscreen() { await this.scene.toggleFullscreen(true); } // default true for direct call
+    async toggleFullscreen(enable?: boolean) { 
+        await this.scene.toggleFullscreen(enable ?? !document.fullscreenElement); 
+    }
     async toggleBackground(mode?: "light" | "dark") { await this.scene.toggleBackground(mode); } // Pass mode directly (undefined triggers toggle)
     // Actually, direct calls from UI buttons might not pass msg. Scene handler handles boolean or msg.
     async toggleSpin(enable?: boolean) { await this.scene.toggleSpin(enable ?? !this.scene.isSpinActive); }

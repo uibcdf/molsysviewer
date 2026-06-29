@@ -149221,6 +149221,12 @@ var FloatingPanelShell = class {
         this.onResize?.(this.panel.offsetWidth);
       }
     });
+    const hostResizeObserver = new ResizeObserver(() => {
+      if (this.visible && this.expanded) {
+        this.centerPanel();
+      }
+    });
+    hostResizeObserver.observe(host);
     this.updateLayout();
     host.appendChild(this.root);
   }
@@ -149262,6 +149268,23 @@ var FloatingPanelShell = class {
     this.panel.style.height = `${currentHeight}px`;
     this.panel.style.left = `${currentLeft}px`;
     this.panel.style.top = `${currentTop}px`;
+  }
+  centerPanel() {
+    if (this.isPanelOnly || this.isSplit) return;
+    const hostWidth = this.host.clientWidth;
+    const hostHeight = this.host.clientHeight;
+    if (!hostWidth || !hostHeight) return;
+    const isFullscreen = !!document.fullscreenElement;
+    const maxWidth = isFullscreen ? 1100 : 950;
+    const maxHeight = isFullscreen ? 850 : 780;
+    const panelWidth = Math.min(hostWidth * 0.75, maxWidth);
+    const panelHeight = Math.min(hostHeight * 0.8, maxHeight);
+    const left = Math.max(10, (hostWidth - panelWidth) / 2);
+    const top = Math.max(10, (hostHeight - panelHeight) / 2);
+    this.panel.style.left = `${left}px`;
+    this.panel.style.top = `${top}px`;
+    this.panel.style.width = `${panelWidth}px`;
+    this.panel.style.height = `${panelHeight}px`;
   }
   updateLayout() {
     const isSplit2 = this.isSplit;
@@ -149313,16 +149336,7 @@ var FloatingPanelShell = class {
       this.panelResizeObserver?.observe(this.panel);
     } else {
       this.panelResizeObserver?.unobserve(this.panel);
-      const hostWidth = this.host.clientWidth;
-      const hostHeight = this.host.clientHeight;
-      const panelWidth = Math.min(hostWidth * 0.75, 950);
-      const panelHeight = Math.min(hostHeight * 0.8, 780);
-      const left = Math.max(10, (hostWidth - panelWidth) / 2);
-      const top = Math.max(10, (hostHeight - panelHeight) / 2);
-      this.panel.style.left = `${left}px`;
-      this.panel.style.top = `${top}px`;
-      this.panel.style.width = `${panelWidth}px`;
-      this.panel.style.height = `${panelHeight}px`;
+      this.centerPanel();
       Object.assign(this.panel.style, {
         borderRadius: "16px",
         border: "1px solid rgba(255,255,255,0.14)",
@@ -149369,6 +149383,8 @@ var FloatingPanelShell = class {
     if (!visible) {
       this.workspaceMenuOpen = false;
       this.applyWorkspaceMenuState();
+    } else {
+      this.centerPanel();
     }
     this.scheduleDisplayUpdate();
   }
@@ -149377,6 +149393,9 @@ var FloatingPanelShell = class {
   }
   setExpanded(expanded) {
     this.expanded = expanded;
+    if (expanded) {
+      this.centerPanel();
+    }
     this.scheduleDisplayUpdate();
   }
   setNavButtonLabel(label2) {
@@ -154060,10 +154079,9 @@ var MolSysViewerController = class _MolSysViewerController {
   async resetView() {
     await this.scene.resetView();
   }
-  async toggleFullscreen() {
-    await this.scene.toggleFullscreen(true);
+  async toggleFullscreen(enable) {
+    await this.scene.toggleFullscreen(enable ?? !document.fullscreenElement);
   }
-  // default true for direct call
   async toggleBackground(mode) {
     await this.scene.toggleBackground(mode);
   }
@@ -155619,6 +155637,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   } else if (overlay) {
     overlay.appendChild(traj);
   }
+  let fullscreenBtn = null;
   if (controlsMode === "minimal" && overlay) {
     const ICON_PANEL = `<rect x="2" y="2" width="12" height="12" rx="1.5"/><line x1="5.5" y1="2.5" x2="5.5" y2="13.5"/>`;
     const ICON_FULLSCREEN = `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
@@ -155662,7 +155681,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       return btn;
     };
     mkIcon(ICON_PANEL, "Panel mode (N / W)", () => c8.togglePanelMode());
-    mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
+    fullscreenBtn = mkIcon(ICON_FULLSCREEN, "Fullscreen", () => c8.toggleFullscreen());
     if (onPopClick) mkIcon(ICON_POPUP, "Open popup", onPopClick);
     const ICON_HELP = `<circle cx="8" cy="8" r="6"/><path d="M6.2,6.5a1.9,1.9,0,0,1,3.8,0c0,1.9-1.9,1.9-1.9,3" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12.8" x2="8" y2="12.8" stroke-width="2" stroke-linecap="round"/>`;
     mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
@@ -155677,7 +155696,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       await c8.resetView();
       sendSync({ op: "reset_view" });
     });
-    mk("Full", () => c8.toggleFullscreen());
+    fullscreenBtn = mk("Full", () => c8.toggleFullscreen());
     mk("Bg", async () => {
       await c8.toggleBackground();
       sendSync({ op: "toggle_background", mode: c8.isDarkMode ? "dark" : "light" });
@@ -155769,9 +155788,29 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       overlay.style.transform = "translateX(-50%)";
     }
   };
+  const ICON_EXIT_FULLSCREEN = `<polyline points="5,1 5,5 1,5"/><polyline points="11,5 11,1 15,5"/><polyline points="15,11 11,11 11,15"/><polyline points="1,11 5,11 5,15"/>`;
+  const updateFullscreenButtonState = () => {
+    const isFullscreen = !!document.fullscreenElement;
+    if (fullscreenBtn) {
+      if (controlsMode === "minimal") {
+        const svg = fullscreenBtn.querySelector("svg");
+        if (svg) {
+          const path = isFullscreen ? ICON_EXIT_FULLSCREEN : `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
+          svg.innerHTML = path;
+        }
+        fullscreenBtn.title = isFullscreen ? "Exit Fullscreen" : "Fullscreen";
+      } else {
+        fullscreenBtn.textContent = isFullscreen ? "Exit" : "Full";
+      }
+    }
+  };
   if (overlay) {
     placeOverlay();
-    document.addEventListener("fullscreenchange", placeOverlay);
+    updateFullscreenButtonState();
+    document.addEventListener("fullscreenchange", () => {
+      placeOverlay();
+      updateFullscreenButtonState();
+    });
     model.on("change:controls_position", placeOverlay);
     model.on("change:controls_position_fullscreen", placeOverlay);
     let autohide = !!model.get("autohide_controls");
