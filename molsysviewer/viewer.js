@@ -151704,11 +151704,11 @@ var MolSysViewerController = class _MolSysViewerController {
     }, (ev) => {
       this.lastContextLoci = ev?.current?.loci ?? null;
       const page = ev?.page;
-      const canvas_x = typeof page?.[0] === "number" ? page[0] : void 0;
-      const canvas_y = typeof page?.[1] === "number" ? page[1] : void 0;
+      const page_x = typeof page?.[0] === "number" ? page[0] : void 0;
+      const page_y = typeof page?.[1] === "number" ? page[1] : void 0;
       const canvasOffset = this.canvasHost.getBoundingClientRect();
-      const page_x = canvas_x !== void 0 ? canvas_x + canvasOffset.left : void 0;
-      const page_y = canvas_y !== void 0 ? canvas_y + canvasOffset.top : void 0;
+      const canvas_x = page_x !== void 0 ? page_x - canvasOffset.left : void 0;
+      const canvas_y = page_y !== void 0 ? page_y - canvasOffset.top : void 0;
       const tooltipTag = ev?.current?.repr?.props?.tooltip?.trim();
       if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
         const spec = this.annotations.getSpec(tooltipTag);
