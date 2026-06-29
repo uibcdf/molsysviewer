@@ -155010,6 +155010,13 @@ var injectStyles = () => {
     document.head.appendChild(el);
   }
   const css = `
+        /* Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer */
+        .jp-OutputArea-child:has(.molsysviewer-host),
+        .lm-Widget:has(.molsysviewer-host),
+        .vscode-notebook-cell-output-container:has(.molsysviewer-host) {
+            max-height: none !important;
+            height: auto !important;
+        }
         .molsysviewer-controls {
             font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         }
@@ -156046,6 +156053,7 @@ var index_default = {
     let messageQueue = Promise.resolve();
     const target = document.createElement("div");
     target.tabIndex = 0;
+    target.classList.add("molsysviewer-host");
     Object.assign(target.style, {
       width: "100%",
       height: "100%",
