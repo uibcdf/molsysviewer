@@ -66,6 +66,10 @@ export class FloatingPanelShell {
     public onLayoutChange?: (state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void;
     private isCanvasHidden = false;
 
+    get isExpanded(): boolean {
+        return this.expanded;
+    }
+
     public setCanvasHidden(hidden: boolean): void {
         this.isCanvasHidden = hidden;
         this.updateLayout();
