@@ -155010,12 +155010,6 @@ var injectStyles = () => {
     document.head.appendChild(el);
   }
   const css = `
-        /* Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer */
-        .jp-OutputArea-child:has(.molsysviewer-host),
-        .output_subarea:has(.molsysviewer-host),
-        .vscode-notebook-cell-output-container:has(.molsysviewer-host) {
-            max-height: none !important;
-        }
         .molsysviewer-controls {
             font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         }
@@ -156150,6 +156144,18 @@ var index_default = {
       } : void 0
     });
     controllerPromise.then((c8) => {
+      const removeOutputLimits = () => {
+        let parent = target.parentElement;
+        while (parent) {
+          if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
+            parent.style.maxHeight = "none";
+          }
+          parent = parent.parentElement;
+        }
+      };
+      removeOutputLimits();
+      setTimeout(removeOutputLimits, 100);
+      setTimeout(removeOutputLimits, 500);
       c8.onTogglePanelModeOverride = () => {
         if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
           popupMgr.close("panel");
