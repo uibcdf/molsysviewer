@@ -153809,7 +153809,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.showWelcomeCard();
     }
   }
-  showWelcomeCard() {
+  showWelcomeCardV0() {
     if (this.welcomeCard) return;
     const card = document.createElement("div");
     card.setAttribute("data-molsysviewer-welcome-card", "true");
@@ -153915,6 +153915,164 @@ var MolSysViewerController = class _MolSysViewerController {
     btn.onmouseout = () => {
       btn.style.transform = "none";
       btn.style.boxShadow = "0 4px 12px rgba(139, 92, 246, 0.3)";
+    };
+    btn.onclick = () => {
+      btn.style.opacity = "0.7";
+      btn.textContent = "Loading Crambin...";
+      void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
+    };
+    card.appendChild(btn);
+    if (!this.host.style.position || this.host.style.position === "static") {
+      this.host.style.position = "relative";
+    }
+    this.host.appendChild(card);
+    this.welcomeCard = card;
+  }
+  showWelcomeCard() {
+    if (this.welcomeCard) return;
+    let fontLink = document.getElementById("molsysviewer-font-varela");
+    if (!fontLink) {
+      fontLink = document.createElement("link");
+      fontLink.id = "molsysviewer-font-varela";
+      fontLink.rel = "stylesheet";
+      fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
+      document.head.appendChild(fontLink);
+    }
+    const card = document.createElement("div");
+    card.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card.style, {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "360px",
+      background: "rgba(18, 18, 22, 0.8)",
+      backdropFilter: "blur(16px)",
+      webkitBackdropFilter: "blur(16px)",
+      border: "1px solid rgba(206, 80, 39, 0.15)",
+      borderRadius: "16px",
+      padding: "24px",
+      color: "#f4f4f5",
+      fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(206, 80, 39, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+      zIndex: "100",
+      animation: "molsysviewer-fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+      display: "flex",
+      flexDirection: "column",
+      gap: "16px",
+      pointerEvents: "auto"
+    });
+    const svgContainer = document.createElement("div");
+    svgContainer.innerHTML = `
+        <svg width="80" height="40" viewBox="0 0 160 80" style="margin: 0 auto 4px auto; display: block;">
+          <defs>
+            <radialGradient id="rad-orange" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#ff8966" />
+              <stop offset="60%" stop-color="#ce5027" />
+              <stop offset="100%" stop-color="#7a2408" />
+            </radialGradient>
+            <radialGradient id="rad-yellow" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#fff07a" />
+              <stop offset="60%" stop-color="#ffcc00" />
+              <stop offset="100%" stop-color="#a68500" />
+            </radialGradient>
+            <radialGradient id="rad-blue" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#4f93db" />
+              <stop offset="60%" stop-color="#004082" />
+              <stop offset="100%" stop-color="#002147" />
+            </radialGradient>
+          </defs>
+          <circle cx="45" cy="50" r="24" fill="url(#rad-orange)" />
+          <circle cx="80" cy="30" r="24" fill="url(#rad-yellow)" />
+          <circle cx="115" cy="45" r="24" fill="url(#rad-blue)" />
+        </svg>`;
+    card.appendChild(svgContainer.firstElementChild);
+    const titleEl = document.createElement("div");
+    Object.assign(titleEl.style, {
+      fontSize: "20px",
+      fontWeight: "700",
+      background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
+      webkitBackgroundClip: "text",
+      webkitTextFillColor: "transparent",
+      letterSpacing: "-0.02em",
+      textAlign: "center",
+      fontFamily: "'Varela Round', system-ui, sans-serif"
+    });
+    titleEl.textContent = "MolSysViewer";
+    card.appendChild(titleEl);
+    const descEl = document.createElement("div");
+    Object.assign(descEl.style, {
+      fontSize: "12px",
+      lineHeight: "1.5",
+      color: "rgba(244, 244, 245, 0.7)",
+      textAlign: "center",
+      marginBottom: "4px",
+      fontFamily: "system-ui, -apple-system, sans-serif"
+      // Clean body text
+    });
+    descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
+    card.appendChild(descEl);
+    const codeBox = document.createElement("div");
+    Object.assign(codeBox.style, {
+      background: "rgba(0, 0, 0, 0.3)",
+      border: "1px solid rgba(255, 255, 255, 0.04)",
+      borderRadius: "8px",
+      padding: "12px",
+      fontFamily: "monospace",
+      fontSize: "11px",
+      color: "#ffcc00",
+      // Branded yellow for code accent
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px"
+    });
+    const guideTitle = document.createElement("span");
+    Object.assign(guideTitle.style, {
+      color: "rgba(244, 244, 245, 0.4)",
+      fontWeight: "600",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      marginBottom: "4px",
+      fontSize: "9px",
+      fontFamily: "system-ui, -apple-system, sans-serif"
+    });
+    guideTitle.textContent = "Jupyter Quick Start";
+    codeBox.appendChild(guideTitle);
+    const line1 = document.createElement("span");
+    line1.textContent = "import molsysviewer as msv";
+    codeBox.appendChild(line1);
+    const line2 = document.createElement("span");
+    line2.textContent = "view = msv.new_view('1CRN')";
+    line2.style.color = "#ff8966";
+    codeBox.appendChild(line2);
+    const line3 = document.createElement("span");
+    line3.textContent = "view.show()";
+    codeBox.appendChild(line3);
+    card.appendChild(codeBox);
+    const btn = document.createElement("button");
+    Object.assign(btn.style, {
+      background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
+      color: "#ffffff",
+      border: "none",
+      borderRadius: "8px",
+      padding: "10px 16px",
+      fontSize: "13px",
+      fontWeight: "600",
+      cursor: "pointer",
+      transition: "transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease",
+      textAlign: "center",
+      marginTop: "4px",
+      boxShadow: "0 4px 12px rgba(206, 80, 39, 0.25)",
+      fontFamily: "'Varela Round', system-ui, sans-serif"
+    });
+    btn.textContent = "Load Trial Structure (1CRN)";
+    btn.onmouseover = () => {
+      btn.style.transform = "scale(1.02)";
+      btn.style.boxShadow = "0 6px 16px rgba(206, 80, 39, 0.4)";
+    };
+    btn.onmouseout = () => {
+      btn.style.transform = "none";
+      btn.style.boxShadow = "0 4px 12px rgba(206, 80, 39, 0.25)";
     };
     btn.onclick = () => {
       btn.style.opacity = "0.7";
