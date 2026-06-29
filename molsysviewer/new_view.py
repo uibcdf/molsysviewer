@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import Any, Sequence, Union, Literal
+import warnings
 
 from smonitor import signal
 
@@ -48,6 +49,7 @@ def new_view(
     viewer_mode: str | None = None,
     controls_mode: str | None = None,
     panel_mode_style: str | None = None,
+    height: str = "480px",
 ) -> MolSysView:
     """Create and return a MolSysView, optionally loading a molecular system.
 
@@ -75,6 +77,7 @@ def new_view(
             viewer_mode=viewer_mode,
             controls_mode=controls_mode,
             panel_mode_style=panel_mode_style,
+            height=height,
         )
     if load_mode not in ("selection", "all"):
         raise ValueError("load_mode must be 'selection' or 'all'")
@@ -92,7 +95,6 @@ def new_view(
         )
         return view
 
-    view.whole.hide()
     view.load(
         molecular_system,
         selection="all",
@@ -100,6 +102,20 @@ def new_view(
         syntax=syntax,
         skip_digestion=True
     )
+    selected_atoms = None
+    select = getattr(view, "select", None)
+    if callable(select):
+        selected_atoms = list(select(selection=selection, syntax=syntax, skip_digestion=True))
+    if selected_atoms == []:
+        warnings.warn(
+            f"The selection query {selection!r} resolved to zero atoms. "
+            "Showing the whole molecular system instead to prevent an empty screen.",
+            UserWarning,
+            stacklevel=2,
+        )
+        return view
+
+    view.whole.hide()
     region = view.new_region(selection, tag="selection", syntax=syntax, skip_digestion=True)
     preset = getattr(view.whole, "_preset", None)
     representation = getattr(view.whole, "_representation", None)

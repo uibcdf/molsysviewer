@@ -176,6 +176,7 @@ class MolSysView(
         viewer_mode: str | None = None,
         controls_mode: str | None = None,
         panel_mode_style: str | None = None,
+        height: str = "480px",
     ) -> None:
         self.widget = MolSysViewerWidget()
         self._debug_js = bool(debug_js) if debug_js is not None else False
@@ -188,7 +189,7 @@ class MolSysView(
             self.widget.show_controls = True
 
         self.widget.layout.width = "100%"
-        self.widget.layout.height = "480px"  # adjust if you prefer a taller default
+        self.widget.layout.height = height
         self.widget.layout.min_height = "400px"
 
         self._already_shown = False
