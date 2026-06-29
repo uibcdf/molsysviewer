@@ -151276,7 +151276,9 @@ function suppressCanvasContextMenu(host, ...targets) {
     if (canMatchElement && target.closest("[data-molsysviewer-context-menu]")) return;
     if (!secondaryPressInsideHost && !isInsideHost(event)) return;
     event.preventDefault();
-    event.stopPropagation();
+    if (!targets.includes(target)) {
+      event.stopPropagation();
+    }
     secondaryPressInsideHost = false;
   };
   for (const target of [host, ...targets]) {

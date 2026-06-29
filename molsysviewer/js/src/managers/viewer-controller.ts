@@ -356,7 +356,11 @@ export function suppressCanvasContextMenu(host: ContextMenuHost, ...targets: Con
         if (canMatchElement && target.closest("[data-molsysviewer-context-menu]")) return;
         if (!secondaryPressInsideHost && !isInsideHost(event)) return;
         event.preventDefault();
-        event.stopPropagation();
+        // Only stop propagation if the target is not one of the registered canvas/viewport targets,
+        // allowing Mol* to receive the contextmenu events on its own canvas.
+        if (!targets.includes(target as any)) {
+            event.stopPropagation();
+        }
         secondaryPressInsideHost = false;
     };
 
