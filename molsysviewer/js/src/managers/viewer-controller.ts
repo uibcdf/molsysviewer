@@ -1047,13 +1047,14 @@ export class MolSysViewerController {
         }, (ev) => {
             this.lastContextLoci = ev?.current?.loci ?? null;
             const page = ev?.page;
-            // ev.page contains canvas-relative coordinates (clientX - canvasEl.rect.left).
-            // identify() expects canvas-relative; contextMenu.open expects viewport-relative.
-            const canvas_x = typeof page?.[0] === "number" ? page[0] : undefined;
-            const canvas_y = typeof page?.[1] === "number" ? page[1] : undefined;
+            // ev.page contains page-relative coordinates (clientX/clientY).
+            // page_x/y are used to position the menu (subtracting host offset inside context-menu.ts).
+            // canvas_x/y are obtained by subtracting the offset so identify() works in local canvas coords.
+            const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
+            const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
             const canvasOffset = this.canvasHost.getBoundingClientRect();
-            const page_x = canvas_x !== undefined ? canvas_x + canvasOffset.left : undefined;
-            const page_y = canvas_y !== undefined ? canvas_y + canvasOffset.top : undefined;
+            const canvas_x = page_x !== undefined ? page_x - canvasOffset.left : undefined;
+            const canvas_y = page_y !== undefined ? page_y - canvasOffset.top : undefined;
             // Detect annotation/measurement context: repr embeds its tag in props.tooltip
             const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
             if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
