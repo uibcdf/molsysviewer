@@ -155769,8 +155769,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     position: "absolute",
     width: "130px",
     height: "55px",
-    zIndex: "98",
-    // Just under the overlay (99)
+    zIndex: "9",
+    // Below the overlay (10) so buttons receive clicks
     background: "transparent",
     pointerEvents: "auto",
     display: "none"

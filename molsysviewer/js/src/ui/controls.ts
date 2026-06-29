@@ -806,13 +806,12 @@ export const buildControls = (
         applyTrajectoryState(initialState);
     }
 
-    // Create the invisible hotspot for corner-only hover detection
     const hotspot = document.createElement("div");
     Object.assign(hotspot.style, {
         position: "absolute",
         width: "130px",
         height: "55px",
-        zIndex: "98", // Just under the overlay (99)
+        zIndex: "9", // Below the overlay (10) so buttons receive clicks
         background: "transparent",
         pointerEvents: "auto",
         display: "none",
