@@ -836,7 +836,7 @@ export const buildControls = (
             else if (rawPos === "bottom-right") use = ["bottom", "right"];
         }
 
-        const gap = isFullscreen ? "24px" : "12px";
+        const gap = isFullscreen ? "36px" : "12px";
 
         // Position overlay
         overlay.style.top = use.includes("top") ? gap : "";
@@ -864,8 +864,8 @@ export const buildControls = (
 
         // Dynamic hotspot sizing to accommodate the gap and overlay size
         if (isFullscreen) {
-            hotspot.style.width = "180px";
-            hotspot.style.height = "75px";
+            hotspot.style.width = "200px";
+            hotspot.style.height = "85px";
         } else {
             hotspot.style.width = "130px";
             hotspot.style.height = "55px";
