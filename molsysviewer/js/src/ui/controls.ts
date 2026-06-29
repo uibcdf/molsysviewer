@@ -836,11 +836,13 @@ export const buildControls = (
             else if (rawPos === "bottom-right") use = ["bottom", "right"];
         }
 
+        const gap = isFullscreen ? "24px" : "12px";
+
         // Position overlay
-        overlay.style.top = use.includes("top") ? "12px" : "";
-        overlay.style.bottom = use.includes("bottom") ? "12px" : "";
-        overlay.style.left = use.includes("left") ? "12px" : "";
-        overlay.style.right = use.includes("right") ? "12px" : "";
+        overlay.style.top = use.includes("top") ? gap : "";
+        overlay.style.bottom = use.includes("bottom") ? gap : "";
+        overlay.style.left = use.includes("left") ? gap : "";
+        overlay.style.right = use.includes("right") ? gap : "";
         overlay.style.transform = "";
 
         if (use.includes("center")) {
@@ -858,6 +860,15 @@ export const buildControls = (
         if (use.includes("center")) {
             hotspot.style.left = "50%";
             hotspot.style.transform = "translateX(-50%)";
+        }
+
+        // Dynamic hotspot sizing to accommodate the gap and overlay size
+        if (isFullscreen) {
+            hotspot.style.width = "180px";
+            hotspot.style.height = "75px";
+        } else {
+            hotspot.style.width = "130px";
+            hotspot.style.height = "55px";
         }
     };
 
@@ -955,6 +966,13 @@ export const buildControls = (
         placeOverlay();
         updateFullscreenButtonState();
         document.addEventListener("fullscreenchange", () => {
+            const isFullscreen = !!document.fullscreenElement;
+            if (isFullscreen) {
+                const isDark = c.isDarkMode;
+                container.style.backgroundColor = isDark ? "#101010" : "#ffffff";
+            } else {
+                container.style.backgroundColor = "";
+            }
             placeOverlay();
             updateFullscreenButtonState();
             updateAutohideMode();
