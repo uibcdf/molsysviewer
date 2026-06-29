@@ -3351,6 +3351,31 @@ export class MolSysViewerController {
         };
         card.appendChild(btn);
 
+        const docsLink = document.createElement("a");
+        docsLink.href = "https://www.uibcdf.org/molsysviewer/";
+        docsLink.target = "_blank";
+        docsLink.rel = "noopener noreferrer";
+        docsLink.textContent = "Documentation & Guide ↗";
+        Object.assign(docsLink.style, {
+            color: "rgba(244, 244, 245, 0.5)",
+            fontSize: "11px",
+            textAlign: "center",
+            textDecoration: "none",
+            marginTop: "-4px", // Pull it slightly closer to the button for better grouping
+            transition: "color 0.2s ease",
+            fontFamily: "'Varela Round', system-ui, sans-serif",
+            display: "inline-block",
+            alignSelf: "center",
+            cursor: "pointer",
+        });
+        docsLink.onmouseover = () => {
+            docsLink.style.color = "#ffcc00";
+        };
+        docsLink.onmouseout = () => {
+            docsLink.style.color = "rgba(244, 244, 245, 0.5)";
+        };
+        card.appendChild(docsLink);
+
         if (!this.host.style.position || this.host.style.position === "static") {
             this.host.style.position = "relative";
         }
