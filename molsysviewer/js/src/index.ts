@@ -118,6 +118,8 @@ export async function bootDocsView(opts: {
 
     hostEl.appendChild(target);
 
+    const trajInfo = parseInitialTrajectoryInfo(commandLog);
+
     // Initialize Controller (no-op notify)
     const panelModeStyle = (ui.panel_mode_style as string) || "drawer";
     const controllerPromise = MolSysViewerController.create(target, () => {}, undefined, { 
@@ -144,7 +146,6 @@ export async function bootDocsView(opts: {
     controllerPromise.then(c => {
         // If initial messages include a MolSys payload, pre-seed the frame count so the
         // trajectory bar can appear immediately (avoids a brief "buttons first, bar later" flicker).
-        const trajInfo = parseInitialTrajectoryInfo(commandLog);
         if (trajInfo.frameCount !== undefined) {
             c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
         }
@@ -313,6 +314,9 @@ export default {
         const debug = !!model.get("debug_js");
         const sendLog = createLogger(model, debug);
 
+        const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
+        const trajInfo = parseInitialTrajectoryInfo(initialMessages);
+
         // Store commands from Python to replay them in the popout
         const commandLog: ViewerMessage[] = [];
         // Serialize message handling to preserve order when many messages arrive at once
@@ -470,8 +474,6 @@ export default {
 
             // Pre-seed the expected frame count from the initial message buffer so the
             // trajectory bar can appear immediately (avoids a brief "buttons first, bar later" flicker).
-            const initialMessages = model.get("initial_messages") as ViewerMessage[] | undefined;
-            const trajInfo = parseInitialTrajectoryInfo(initialMessages);
             if (trajInfo.frameCount !== undefined) {
                 c.trajectory.setExpectedFrameCount(trajInfo.frameCount);
             }

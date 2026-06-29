@@ -156090,6 +156090,7 @@ async function bootDocsView(opts) {
   window.addEventListener("pointercancel", onPointerUpOrCancel);
   target.addEventListener("wheel", onWheel, { passive: true });
   hostEl.appendChild(target);
+  const trajInfo = parseInitialTrajectoryInfo(commandLog);
   const panelModeStyle = ui.panel_mode_style || "drawer";
   const controllerPromise = MolSysViewerController.create(target, () => {
   }, void 0, {
@@ -156109,9 +156110,8 @@ async function bootDocsView(opts) {
     }
   };
   controllerPromise.then((c8) => {
-    const trajInfo2 = parseInitialTrajectoryInfo(commandLog);
-    if (trajInfo2.frameCount !== void 0) {
-      c8.trajectory.setExpectedFrameCount(trajInfo2.frameCount);
+    if (trajInfo.frameCount !== void 0) {
+      c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
     }
     const sendSync = (msg) => {
       if (!msg) return;
@@ -156125,8 +156125,8 @@ async function bootDocsView(opts) {
       target,
       enablePopout ? () => popupMgr.open() : void 0,
       {
-        initialHasTrajectory: trajInfo2.multipleStructures || (trajInfo2.frameCount ?? 0) > 1,
-        initialFrameCount: trajInfo2.frameCount
+        initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+        initialFrameCount: trajInfo.frameCount
       }
     );
     target.appendChild(overlay);
@@ -156251,6 +156251,8 @@ var index_default = {
   render({ model, el }) {
     const debug = !!model.get("debug_js");
     const sendLog = createLogger(model, debug);
+    const initialMessages = model.get("initial_messages");
+    const trajInfo = parseInitialTrajectoryInfo(initialMessages);
     const commandLog = [];
     let messageQueue = Promise.resolve();
     const target = document.createElement("div");
@@ -156378,10 +156380,8 @@ var index_default = {
         }
         return false;
       };
-      const initialMessages = model.get("initial_messages");
-      const trajInfo2 = parseInitialTrajectoryInfo(initialMessages);
-      if (trajInfo2.frameCount !== void 0) {
-        c8.trajectory.setExpectedFrameCount(trajInfo2.frameCount);
+      if (trajInfo.frameCount !== void 0) {
+        c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
       }
       let overlay = void 0;
       const updateControls = () => {
@@ -156395,8 +156395,8 @@ var index_default = {
           target,
           enablePopout ? () => popupMgr.open("canvas") : void 0,
           {
-            initialHasTrajectory: trajInfo2.multipleStructures || (trajInfo2.frameCount ?? 0) > 1,
-            initialFrameCount: trajInfo2.frameCount
+            initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
+            initialFrameCount: trajInfo.frameCount
           }
         );
         if (overlay) {
@@ -156548,9 +156548,9 @@ var index_default = {
     (async () => {
       try {
         model.send({ event: "ready" });
-        const initialMessages = model.get("initial_messages");
-        if (Array.isArray(initialMessages) && initialMessages.length) {
-          for (const msg of initialMessages) {
+        const initialMessages2 = model.get("initial_messages");
+        if (Array.isArray(initialMessages2) && initialMessages2.length) {
+          for (const msg of initialMessages2) {
             if (msg) {
               enqueueMessage(msg, { syncToPopup: false });
             }
