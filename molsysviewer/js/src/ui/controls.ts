@@ -900,7 +900,7 @@ export const buildControls = (
             const isHelpOpen = helpOverlay.isVisible();
             const isFloatingPanelOpen = !!c.sharedShell && 
                                         c.sharedShell.isVisible() && 
-                                        c.sharedShell.width > 0 && 
+                                        c.sharedShell.isExpanded && 
                                         (c.sharedShell.panelModeStyle === "floating" || c.sharedShell.panelModeStyle === "floating-unified");
             return isHelpOpen || isFloatingPanelOpen;
         };
