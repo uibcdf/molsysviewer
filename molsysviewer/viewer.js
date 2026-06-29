@@ -151691,8 +151691,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }, getCameraDirection);
     this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
     this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
-    const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
-    if (canvas) {
+    if (this.canvasHost) {
       const handleCanvasContextMenu = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -151761,11 +151760,11 @@ var MolSysViewerController = class _MolSysViewerController {
           }
         );
       };
-      canvas.addEventListener("contextmenu", handleCanvasContextMenu, true);
+      this.canvasHost.addEventListener("contextmenu", handleCanvasContextMenu, true);
       const previousRelease = this.releaseContextMenuSuppression;
       this.releaseContextMenuSuppression = () => {
         previousRelease?.();
-        canvas.removeEventListener("contextmenu", handleCanvasContextMenu, true);
+        this.canvasHost.removeEventListener("contextmenu", handleCanvasContextMenu, true);
       };
     }
     registerInteractionObservers(plugin, emitInteractionEvent, void 0, (ev) => {
