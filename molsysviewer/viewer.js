@@ -155937,7 +155937,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   if (overlay) {
     const shouldHideControls = () => {
       const isHelpOpen = helpOverlay.isVisible();
-      const isFloatingPanelOpen = !!c8.sharedShell && c8.sharedShell.isVisible() && c8.sharedShell.width > 0 && !c8.sharedShell.isSplit;
+      const isFloatingPanelOpen = !!c8.sharedShell && c8.sharedShell.isVisible() && c8.sharedShell.width > 0 && (c8.sharedShell.panelModeStyle === "floating" || c8.sharedShell.panelModeStyle === "floating-unified");
       return isHelpOpen || isFloatingPanelOpen;
     };
     const applyShow = (visible) => {
