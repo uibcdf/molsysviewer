@@ -560,7 +560,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean }): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean, hasInitialStructures?: boolean }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -714,7 +714,7 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean }) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean }) {
         this.model = initOptions?.model;
         this.isPanelOnly = !!initOptions?.isPanelOnly;
         if (initOptions?.viewerMode) {
@@ -1339,7 +1339,7 @@ export class MolSysViewerController {
 
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
-        this.updateWelcomeState();
+        this.updateWelcomeState(true);
     }
 
     dispose(): void {
@@ -1910,6 +1910,15 @@ export class MolSysViewerController {
         }
 
         try {
+            const isLoaderOp = msg.op === "load_structure_from_string" ||
+                               msg.op === "load_pdb_string" ||
+                               msg.op === "load_molsys_payload" ||
+                               msg.op === "load_structure_from_url" ||
+                               msg.op === "load_pdb_id";
+            if (isLoaderOp) {
+                this.hideWelcomeCard();
+            }
+
             if ((msg as any).op === "load_molsys_payload") {
                 const structures = (msg as any).payload?.structures;
                 if (Array.isArray(structures)) {
@@ -3175,11 +3184,14 @@ export class MolSysViewerController {
         document.head.appendChild(style);
     }
 
-    private updateWelcomeState(): void {
+    private updateWelcomeState(isInitPhase = false): void {
         const hasStructure = !!this.currentStructure || !!this.loadedStructure;
         if (hasStructure) {
             this.hideWelcomeCard();
         } else {
+            if (isInitPhase && this.initOptions?.hasInitialStructures) {
+                return;
+            }
             this.showWelcomeCard();
         }
     }

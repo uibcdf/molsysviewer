@@ -151293,6 +151293,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.plugin = plugin;
     this.host = host;
     this.notify = notify;
+    this.initOptions = initOptions;
     this.canvasInsetAnimFrame = null;
     this.canvasInsetFrom = { left: 0, right: 0 };
     this.canvasInsetTo = { left: 0, right: 0 };
@@ -151932,7 +151933,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.refreshNavigatePanel();
     this.refreshWorkbenchPanel();
-    this.updateWelcomeState();
+    this.updateWelcomeState(true);
   }
   registerAddonListener(addonName, eventName, cb2) {
     if (!this.addonListeners.has(addonName)) {
@@ -152602,6 +152603,10 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     try {
+      const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
+      if (isLoaderOp) {
+        this.hideWelcomeCard();
+      }
       if (msg.op === "load_molsys_payload") {
         const structures = msg.payload?.structures;
         if (Array.isArray(structures)) {
@@ -153820,11 +153825,14 @@ var MolSysViewerController = class _MolSysViewerController {
         `;
     document.head.appendChild(style);
   }
-  updateWelcomeState() {
+  updateWelcomeState(isInitPhase = false) {
     const hasStructure = !!this.currentStructure || !!this.loadedStructure;
     if (hasStructure) {
       this.hideWelcomeCard();
     } else {
+      if (isInitPhase && this.initOptions?.hasInitialStructures) {
+        return;
+      }
       this.showWelcomeCard();
     }
   }
@@ -156010,24 +156018,26 @@ function buildMeasurementOpFromInteractionEvent(event) {
 var parseInitialTrajectoryInfo = (msgs) => {
   let frameCount = void 0;
   let multipleStructures = false;
-  if (!Array.isArray(msgs)) return { frameCount, multipleStructures };
+  let hasStructures = false;
+  if (!Array.isArray(msgs)) return { frameCount, multipleStructures, hasStructures };
   for (const msg of msgs) {
     if (!msg || typeof msg !== "object") continue;
-    if (msg.op !== "load_molsys_payload") continue;
-    const payload = msg.payload;
-    const structures = payload?.structures;
-    if (Array.isArray(structures)) {
-      frameCount = structures.length;
-      multipleStructures = structures.length > 1;
+    if (msg.op === "load_molsys_payload") {
+      hasStructures = true;
+      const payload = msg.payload;
+      const structures = payload?.structures;
+      if (Array.isArray(structures)) {
+        frameCount = structures.length;
+        multipleStructures = structures.length > 1;
+      }
+      if (msg.multiple_structures === true) {
+        multipleStructures = true;
+      } else if (msg.multiple_structures === false && frameCount === void 0) {
+        multipleStructures = false;
+      }
     }
-    if (msg.multiple_structures === true) {
-      multipleStructures = true;
-    } else if (msg.multiple_structures === false && frameCount === void 0) {
-      multipleStructures = false;
-    }
-    break;
   }
-  return { frameCount, multipleStructures };
+  return { frameCount, multipleStructures, hasStructures };
 };
 async function bootDocsView(opts) {
   const debug = !!opts.ui?.debug_js;
@@ -156082,7 +156092,10 @@ async function bootDocsView(opts) {
   hostEl.appendChild(target);
   const panelModeStyle = ui.panel_mode_style || "drawer";
   const controllerPromise = MolSysViewerController.create(target, () => {
-  }, void 0, { panelModeStyle });
+  }, void 0, {
+    panelModeStyle,
+    hasInitialStructures: trajInfo.hasStructures
+  });
   const popupMgr = new PopupHostManager({
     moduleUrl: typeof opts.runtimeUrl === "string" ? opts.runtimeUrl : void 0,
     source: ""
@@ -156096,9 +156109,9 @@ async function bootDocsView(opts) {
     }
   };
   controllerPromise.then((c8) => {
-    const trajInfo = parseInitialTrajectoryInfo(commandLog);
-    if (trajInfo.frameCount !== void 0) {
-      c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+    const trajInfo2 = parseInitialTrajectoryInfo(commandLog);
+    if (trajInfo2.frameCount !== void 0) {
+      c8.trajectory.setExpectedFrameCount(trajInfo2.frameCount);
     }
     const sendSync = (msg) => {
       if (!msg) return;
@@ -156112,8 +156125,8 @@ async function bootDocsView(opts) {
       target,
       enablePopout ? () => popupMgr.open() : void 0,
       {
-        initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-        initialFrameCount: trajInfo.frameCount
+        initialHasTrajectory: trajInfo2.multipleStructures || (trajInfo2.frameCount ?? 0) > 1,
+        initialFrameCount: trajInfo2.frameCount
       }
     );
     target.appendChild(overlay);
@@ -156326,6 +156339,7 @@ var index_default = {
     }, void 0, {
       panelModeStyle,
       model,
+      hasInitialStructures: trajInfo.hasStructures,
       onPanelPopClick: enablePopout ? () => {
         controllerPromise.then((c8) => {
           c8.saveHostPanelState();
@@ -156365,9 +156379,9 @@ var index_default = {
         return false;
       };
       const initialMessages = model.get("initial_messages");
-      const trajInfo = parseInitialTrajectoryInfo(initialMessages);
-      if (trajInfo.frameCount !== void 0) {
-        c8.trajectory.setExpectedFrameCount(trajInfo.frameCount);
+      const trajInfo2 = parseInitialTrajectoryInfo(initialMessages);
+      if (trajInfo2.frameCount !== void 0) {
+        c8.trajectory.setExpectedFrameCount(trajInfo2.frameCount);
       }
       let overlay = void 0;
       const updateControls = () => {
@@ -156381,8 +156395,8 @@ var index_default = {
           target,
           enablePopout ? () => popupMgr.open("canvas") : void 0,
           {
-            initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
-            initialFrameCount: trajInfo.frameCount
+            initialHasTrajectory: trajInfo2.multipleStructures || (trajInfo2.frameCount ?? 0) > 1,
+            initialFrameCount: trajInfo2.frameCount
           }
         );
         if (overlay) {

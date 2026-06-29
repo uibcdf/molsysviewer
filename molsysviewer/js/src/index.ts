@@ -38,24 +38,26 @@ function buildMeasurementOpFromInteractionEvent(event: any): ViewerMessage | nul
 const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
     let frameCount: number | undefined = undefined;
     let multipleStructures = false;
-    if (!Array.isArray(msgs)) return { frameCount, multipleStructures };
+    let hasStructures = false;
+    if (!Array.isArray(msgs)) return { frameCount, multipleStructures, hasStructures };
     for (const msg of msgs) {
         if (!msg || typeof msg !== "object") continue;
-        if ((msg as any).op !== "load_molsys_payload") continue;
-        const payload = (msg as any).payload;
-        const structures = payload?.structures;
-        if (Array.isArray(structures)) {
-            frameCount = structures.length;
-            multipleStructures = structures.length > 1;
+        if ((msg as any).op === "load_molsys_payload") {
+            hasStructures = true;
+            const payload = (msg as any).payload;
+            const structures = payload?.structures;
+            if (Array.isArray(structures)) {
+                frameCount = structures.length;
+                multipleStructures = structures.length > 1;
+            }
+            if ((msg as any).multiple_structures === true) {
+                multipleStructures = true;
+            } else if ((msg as any).multiple_structures === false && frameCount === undefined) {
+                multipleStructures = false;
+            }
         }
-        if ((msg as any).multiple_structures === true) {
-            multipleStructures = true;
-        } else if ((msg as any).multiple_structures === false && frameCount === undefined) {
-            multipleStructures = false;
-        }
-        break;
     }
-    return { frameCount, multipleStructures };
+    return { frameCount, multipleStructures, hasStructures };
 };
 
 // Re-export bootPopup so it is available in the bundle's public interface
@@ -118,7 +120,10 @@ export async function bootDocsView(opts: {
 
     // Initialize Controller (no-op notify)
     const panelModeStyle = (ui.panel_mode_style as string) || "drawer";
-    const controllerPromise = MolSysViewerController.create(target, () => {}, undefined, { panelModeStyle });
+    const controllerPromise = MolSysViewerController.create(target, () => {}, undefined, { 
+        panelModeStyle,
+        hasInitialStructures: trajInfo.hasStructures,
+    });
 
     // Popup manager: prefer runtime URL (docs-light), otherwise disable popout.
     const popupMgr = new PopupHostManager({
@@ -413,6 +418,7 @@ export default {
         }, undefined, { 
             panelModeStyle, 
             model,
+            hasInitialStructures: trajInfo.hasStructures,
             onPanelPopClick: enablePopout ? () => {
                 controllerPromise.then(c => {
                     c.saveHostPanelState();
