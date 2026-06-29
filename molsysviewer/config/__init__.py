@@ -23,7 +23,7 @@ controls_mode: str = "classic"
 panel_mode_style: str = "drawer"
 
 # High-level viewer mode preset: "classic", "classic-floating", "zen", or "integrated".
-viewer_mode: str = "classic"
+viewer_mode: str = "integrated"
 
 from .user_presets import user_presets, load_user_presets
 from .project_config import load_project_config

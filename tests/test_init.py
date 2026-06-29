@@ -18,11 +18,11 @@ def test_viewer_modes_and_parameters_resolution():
     """Test that viewer_mode presets and explicit parameters are resolved correctly."""
     from molsysviewer.viewer.core import MolSysView
 
-    # 1. Default (classic)
+    # 1. Default (integrated)
     v = MolSysView()
-    assert v.widget.viewer_mode == "classic"
-    assert v.widget.controls_mode == "classic"
-    assert v.widget.panel_mode_style == "drawer"
+    assert v.widget.viewer_mode == "integrated"
+    assert v.widget.controls_mode == "minimal"
+    assert v.widget.panel_mode_style == "integrated"
 
     # 2. Zen mode preset
     v_zen = MolSysView(viewer_mode="zen")

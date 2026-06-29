@@ -626,12 +626,12 @@ export class MolSysViewerController {
     private welcomeCard: HTMLDivElement | null = null;
     private readonly model?: any;
 
-    private localViewerMode = "classic";
+    private localViewerMode = "integrated";
     private localControlsMode = "classic";
     private localPanelModeStyle = "drawer";
 
     getViewerMode(): string {
-        return this.model ? (this.model.get("viewer_mode") || "classic") : this.localViewerMode;
+        return this.model ? (this.model.get("viewer_mode") || "integrated") : this.localViewerMode;
     }
     getControlsMode(): string {
         return this.model ? (this.model.get("controls_mode") || "classic") : this.localControlsMode;
@@ -1075,7 +1075,7 @@ export class MolSysViewerController {
                         isDarkMode: this.scene.isDarkMode,
                         isNavigateExpanded: this.groupPanel.isExpanded(),
                         isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                        currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                        currentViewerMode: this.model?.get("viewer_mode") || "integrated",
                     }
                 );
                 return;
@@ -1111,7 +1111,7 @@ export class MolSysViewerController {
                         isDarkMode: this.scene.isDarkMode,
                         isNavigateExpanded: this.groupPanel.isExpanded(),
                         isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                        currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                        currentViewerMode: this.model?.get("viewer_mode") || "integrated",
                     }
                 );
                 return;
@@ -1195,7 +1195,7 @@ export class MolSysViewerController {
                     isDarkMode: this.scene.isDarkMode,
                     isNavigateExpanded: this.groupPanel.isExpanded(),
                     isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                    currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                    currentViewerMode: this.model?.get("viewer_mode") || "integrated",
                     isCanvasVisible: this.canvasHost.style.display !== "none",
                 }
             );
@@ -1696,7 +1696,7 @@ export class MolSysViewerController {
                 isDarkMode: this.scene.isDarkMode,
                 isNavigateExpanded: this.groupPanel.isExpanded(),
                 isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                currentViewerMode: this.model?.get("viewer_mode") || "integrated",
             }
         );
     }
@@ -1732,7 +1732,7 @@ export class MolSysViewerController {
                 isDarkMode: this.scene.isDarkMode,
                 isNavigateExpanded: this.groupPanel.isExpanded(),
                 isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                currentViewerMode: this.model?.get("viewer_mode") || "classic",
+                currentViewerMode: this.model?.get("viewer_mode") || "integrated",
             }
         );
     }
