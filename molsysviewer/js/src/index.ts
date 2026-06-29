@@ -431,7 +431,7 @@ export default {
             // Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer.
             // This is a strictly local change traversing up only our widget's parent chain.
             const removeOutputLimits = () => {
-                let parent = target.parentElement;
+                let parent: HTMLElement | null = target.parentElement;
                 while (parent) {
                     if (parent.classList.contains("jp-OutputArea-child") || 
                         parent.classList.contains("jp-OutputArea-output") || 
@@ -441,7 +441,12 @@ export default {
                         parent.classList.contains("cell-output-ipywidget")) {
                         parent.style.maxHeight = "none";
                     }
-                    parent = parent.parentElement;
+                    if (parent.parentElement) {
+                        parent = parent.parentElement;
+                    } else {
+                        const root = parent.getRootNode();
+                        parent = root instanceof ShadowRoot ? (root.host as HTMLElement) : null;
+                    }
                 }
             };
             removeOutputLimits();

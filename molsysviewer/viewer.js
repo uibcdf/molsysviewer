@@ -156150,7 +156150,12 @@ var index_default = {
           if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
             parent.style.maxHeight = "none";
           }
-          parent = parent.parentElement;
+          if (parent.parentElement) {
+            parent = parent.parentElement;
+          } else {
+            const root = parent.getRootNode();
+            parent = root instanceof ShadowRoot ? root.host : null;
+          }
         }
       };
       removeOutputLimits();
