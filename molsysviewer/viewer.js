@@ -156095,14 +156095,17 @@ var index_default = {
     });
     el.appendChild(target);
     let lastSetHeight = 480;
+    let extraHeight = -1;
+    let lastParentHeight = 0;
     setupWidgetResizer(el, target, (w, h) => {
       el.style.height = `${h}px`;
       target.style.height = `${h}px`;
-      if (el.parentElement) {
-        lastSetHeight = el.parentElement.clientHeight;
+      if (extraHeight !== -1) {
+        lastParentHeight = h + extraHeight;
       } else {
-        lastSetHeight = h;
+        lastParentHeight = h;
       }
+      lastSetHeight = h;
       model.send({ event: "widget_resize", height: h, width: w });
       controllerPromise.then((c8) => {
         c8.plugin.canvas3d?.requestResize();
@@ -156167,19 +156170,41 @@ var index_default = {
       removeOutputLimits();
       setTimeout(removeOutputLimits, 100);
       setTimeout(removeOutputLimits, 500);
-      const outputContainer = el.parentElement;
+      const getOutputContainer = () => {
+        let parent = target.parentElement;
+        let lastValidParent = null;
+        while (parent) {
+          if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
+            lastValidParent = parent;
+          }
+          if (parent.parentElement) {
+            parent = parent.parentElement;
+          } else {
+            const root = parent.getRootNode();
+            parent = root instanceof ShadowRoot ? root.host : null;
+          }
+        }
+        return lastValidParent || target.parentElement;
+      };
+      const outputContainer = getOutputContainer();
       if (outputContainer) {
-        lastSetHeight = outputContainer.clientHeight;
+        lastParentHeight = outputContainer.clientHeight;
         const resizeObserver = new ResizeObserver((entries3) => {
           for (const entry of entries3) {
             const parentHeight = Math.round(entry.contentRect.height);
             if (parentHeight <= 0) continue;
-            if (Math.abs(parentHeight - lastSetHeight) <= 2) {
+            if (extraHeight === -1) {
+              extraHeight = parentHeight - el.clientHeight;
+              lastParentHeight = parentHeight;
+            }
+            if (Math.abs(parentHeight - lastParentHeight) <= 2) {
               continue;
             }
-            lastSetHeight = parentHeight;
-            el.style.height = `${parentHeight}px`;
-            target.style.height = `${parentHeight}px`;
+            lastParentHeight = parentHeight;
+            const newWidgetHeight = Math.max(300, parentHeight - extraHeight);
+            lastSetHeight = newWidgetHeight;
+            el.style.height = `${newWidgetHeight}px`;
+            target.style.height = `${newWidgetHeight}px`;
             c8.plugin.canvas3d?.requestResize();
           }
         });

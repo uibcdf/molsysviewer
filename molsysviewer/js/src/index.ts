@@ -367,17 +367,20 @@ export default {
 
         // Setup interactive resizing
         let lastSetHeight = 480;
+        let extraHeight = -1; // Calculated dynamically on the first visible frame of the parent
+        let lastParentHeight = 0;
 
         setupWidgetResizer(el, target, (w, h) => {
             el.style.height = `${h}px`;
             target.style.height = `${h}px`;
             
-            // Update lastSetHeight to the parent's new height to prevent the observer from triggering
-            if (el.parentElement) {
-                lastSetHeight = el.parentElement.clientHeight;
+            // Update lastParentHeight to the parent's new height to prevent the observer from triggering
+            if (extraHeight !== -1) {
+                lastParentHeight = h + extraHeight;
             } else {
-                lastSetHeight = h;
+                lastParentHeight = h;
             }
+            lastSetHeight = h;
 
             model.send({ event: "widget_resize", height: h, width: w });
             controllerPromise.then(c => {
@@ -463,22 +466,55 @@ export default {
             setTimeout(removeOutputLimits, 100);
             setTimeout(removeOutputLimits, 500);
 
-            const outputContainer = el.parentElement;
+            // Bidirectional height synchronization: observe the output container
+            // and resize the widget if the container is resized by the user.
+            const getOutputContainer = (): HTMLElement | null => {
+                let parent: HTMLElement | null = target.parentElement;
+                let lastValidParent: HTMLElement | null = null;
+                while (parent) {
+                    if (parent.classList.contains("jp-OutputArea-child") || 
+                        parent.classList.contains("jp-OutputArea-output") || 
+                        parent.classList.contains("jp-OutputArea") || 
+                        parent.classList.contains("output_subarea") ||
+                        parent.classList.contains("vscode-notebook-cell-output-container") ||
+                        parent.classList.contains("cell-output-ipywidget")) {
+                        lastValidParent = parent;
+                    }
+                    if (parent.parentElement) {
+                        parent = parent.parentElement;
+                    } else {
+                        const root = parent.getRootNode();
+                        parent = root instanceof ShadowRoot ? (root.host as HTMLElement) : null;
+                    }
+                }
+                return lastValidParent || target.parentElement;
+            };
+
+            const outputContainer = getOutputContainer();
             if (outputContainer) {
-                lastSetHeight = outputContainer.clientHeight;
+                lastParentHeight = outputContainer.clientHeight;
                 const resizeObserver = new ResizeObserver(entries => {
                     for (const entry of entries) {
                         const parentHeight = Math.round(entry.contentRect.height);
                         if (parentHeight <= 0) continue;
 
+                        // Calculate extraHeight dynamically on the first visible frame
+                        if (extraHeight === -1) {
+                            extraHeight = parentHeight - el.clientHeight;
+                            lastParentHeight = parentHeight;
+                        }
+
                         // Guard to prevent infinite layout loops
-                        if (Math.abs(parentHeight - lastSetHeight) <= 2) {
+                        if (Math.abs(parentHeight - lastParentHeight) <= 2) {
                             continue;
                         }
 
-                        lastSetHeight = parentHeight;
-                        el.style.height = `${parentHeight}px`;
-                        target.style.height = `${parentHeight}px`;
+                        lastParentHeight = parentHeight;
+                        const newWidgetHeight = Math.max(300, parentHeight - extraHeight);
+                        lastSetHeight = newWidgetHeight;
+                        
+                        el.style.height = `${newWidgetHeight}px`;
+                        target.style.height = `${newWidgetHeight}px`;
                         c.plugin.canvas3d?.requestResize();
                     }
                 });
