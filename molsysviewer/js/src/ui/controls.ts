@@ -891,6 +891,11 @@ export const buildControls = (
     };
 
     if (overlay) {
+        let autohide = !!model.get("autohide_controls");
+        let isHovered = false;
+        let fadeTimeout: any = null;
+        const target = container;
+
         const shouldHideControls = () => {
             const isHelpOpen = helpOverlay.isVisible();
             const isFloatingPanelOpen = !!c.sharedShell && 

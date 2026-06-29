@@ -11,9 +11,9 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb2, mod) => function __require() {
   return mod || (0, cb2[__getOwnPropNames(cb2)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __export = (target2, all3) => {
+var __export = (target, all3) => {
   for (var name in all3)
-    __defProp(target2, name, { get: all3[name], enumerable: true });
+    __defProp(target, name, { get: all3[name], enumerable: true });
 };
 var __copyProps = (to, from2, except, desc) => {
   if (from2 && typeof from2 === "object" || typeof from2 === "function") {
@@ -23,12 +23,12 @@ var __copyProps = (to, from2, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target2) => (target2 = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
   // If the importer is in node compatibility mode or this is not an ESM
   // file that has been converted to a CommonJS file using a Babel-
   // compatible transform (i.e. "__esModule" has not been set), then set
   // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target2, "default", { value: mod, enumerable: true }) : target2,
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
 
@@ -49,12 +49,12 @@ var require_mutative_cjs_development = __commonJS({
       immutable: "immutable"
     };
     var internal2 = {};
-    function has8(target2, key2) {
-      return target2 instanceof Map ? target2.has(key2) : Object.prototype.hasOwnProperty.call(target2, key2);
+    function has8(target, key2) {
+      return target instanceof Map ? target.has(key2) : Object.prototype.hasOwnProperty.call(target, key2);
     }
-    function getDescriptor(target2, key2) {
-      if (key2 in target2) {
-        let prototype = Reflect.getPrototypeOf(target2);
+    function getDescriptor(target, key2) {
+      if (key2 in target) {
+        let prototype = Reflect.getPrototypeOf(target);
         while (prototype) {
           const descriptor = Reflect.getOwnPropertyDescriptor(prototype, key2);
           if (descriptor)
@@ -74,8 +74,8 @@ var require_mutative_cjs_development = __commonJS({
       var _a;
       return (_a = proxyDraft.copy) !== null && _a !== void 0 ? _a : proxyDraft.original;
     }
-    function isDraft(target2) {
-      return !!getProxyDraft(target2);
+    function isDraft(target) {
+      return !!getProxyDraft(target);
     }
     function getProxyDraft(value) {
       if (typeof value !== "object")
@@ -93,53 +93,53 @@ var require_mutative_cjs_development = __commonJS({
       let markResult;
       return Object.getPrototypeOf(value) === Object.prototype || Array.isArray(value) || value instanceof Map || value instanceof Set || !!(options === null || options === void 0 ? void 0 : options.mark) && ((markResult = options.mark(value, dataTypes)) === dataTypes.immutable || typeof markResult === "function");
     }
-    function getPath(target2, path = []) {
-      if (Object.hasOwnProperty.call(target2, "key")) {
-        const parentCopy = target2.parent.copy;
-        const proxyDraft = getProxyDraft(get11(parentCopy, target2.key));
-        if (proxyDraft !== null && (proxyDraft === null || proxyDraft === void 0 ? void 0 : proxyDraft.original) !== target2.original) {
+    function getPath(target, path = []) {
+      if (Object.hasOwnProperty.call(target, "key")) {
+        const parentCopy = target.parent.copy;
+        const proxyDraft = getProxyDraft(get11(parentCopy, target.key));
+        if (proxyDraft !== null && (proxyDraft === null || proxyDraft === void 0 ? void 0 : proxyDraft.original) !== target.original) {
           return null;
         }
-        const isSet2 = target2.parent.type === 3;
-        const key2 = isSet2 ? Array.from(target2.parent.setMap.keys()).indexOf(target2.key) : target2.key;
+        const isSet2 = target.parent.type === 3;
+        const key2 = isSet2 ? Array.from(target.parent.setMap.keys()).indexOf(target.key) : target.key;
         if (!(isSet2 && parentCopy.size > key2 || has8(parentCopy, key2)))
           return null;
         path.push(key2);
       }
-      if (target2.parent) {
-        return getPath(target2.parent, path);
+      if (target.parent) {
+        return getPath(target.parent, path);
       }
       path.reverse();
       try {
-        resolvePath(target2.copy, path);
+        resolvePath(target.copy, path);
       } catch (e) {
         return null;
       }
       return path;
     }
-    function getType2(target2) {
-      if (Array.isArray(target2))
+    function getType2(target) {
+      if (Array.isArray(target))
         return 1;
-      if (target2 instanceof Map)
+      if (target instanceof Map)
         return 2;
-      if (target2 instanceof Set)
+      if (target instanceof Set)
         return 3;
       return 0;
     }
-    function get11(target2, key2) {
-      return getType2(target2) === 2 ? target2.get(key2) : target2[key2];
+    function get11(target, key2) {
+      return getType2(target) === 2 ? target.get(key2) : target[key2];
     }
-    function set4(target2, key2, value) {
-      const type3 = getType2(target2);
+    function set4(target, key2, value) {
+      const type3 = getType2(target);
       if (type3 === 2) {
-        target2.set(key2, value);
+        target.set(key2, value);
       } else {
-        target2[key2] = value;
+        target[key2] = value;
       }
     }
-    function peek(target2, key2) {
-      const state = getProxyDraft(target2);
-      const source = state ? latest(state) : target2;
+    function peek(target, key2) {
+      const state = getProxyDraft(target);
+      const source = state ? latest(state) : target;
       return source[key2];
     }
     function isEqual(x, y) {
@@ -180,12 +180,12 @@ var require_mutative_cjs_development = __commonJS({
       }
       return base;
     }
-    function strictCopy(target2) {
-      const copy = Object.create(Object.getPrototypeOf(target2));
-      Reflect.ownKeys(target2).forEach((key2) => {
-        let desc = Reflect.getOwnPropertyDescriptor(target2, key2);
+    function strictCopy(target) {
+      const copy = Object.create(Object.getPrototypeOf(target));
+      Reflect.ownKeys(target).forEach((key2) => {
+        let desc = Reflect.getOwnPropertyDescriptor(target, key2);
         if (desc.enumerable && desc.configurable && desc.writable) {
-          copy[key2] = target2[key2];
+          copy[key2] = target[key2];
           return;
         }
         if (!desc.writable) {
@@ -197,7 +197,7 @@ var require_mutative_cjs_development = __commonJS({
             configurable: true,
             writable: true,
             enumerable: desc.enumerable,
-            value: target2[key2]
+            value: target[key2]
           };
         Reflect.defineProperty(copy, key2, desc);
       });
@@ -245,42 +245,42 @@ var require_mutative_cjs_development = __commonJS({
         throw new Error(`Please check mark() to ensure that it is a stable marker draftable function.`);
       }
     }
-    function ensureShallowCopy(target2) {
-      if (target2.copy)
+    function ensureShallowCopy(target) {
+      if (target.copy)
         return;
-      target2.copy = shallowCopy2(target2.original, target2.options);
+      target.copy = shallowCopy2(target.original, target.options);
     }
-    function deepClone2(target2) {
-      if (!isDraftable(target2))
-        return getValue(target2);
-      if (Array.isArray(target2))
-        return target2.map(deepClone2);
-      if (target2 instanceof Map) {
-        const iterable = Array.from(target2.entries()).map(([k, v4]) => [
+    function deepClone2(target) {
+      if (!isDraftable(target))
+        return getValue(target);
+      if (Array.isArray(target))
+        return target.map(deepClone2);
+      if (target instanceof Map) {
+        const iterable = Array.from(target.entries()).map(([k, v4]) => [
           k,
           deepClone2(v4)
         ]);
-        if (!isBaseMapInstance(target2)) {
-          const SubClass = Object.getPrototypeOf(target2).constructor;
+        if (!isBaseMapInstance(target)) {
+          const SubClass = Object.getPrototypeOf(target).constructor;
           return new SubClass(iterable);
         }
         return new Map(iterable);
       }
-      if (target2 instanceof Set) {
-        const iterable = Array.from(target2).map(deepClone2);
-        if (!isBaseSetInstance(target2)) {
-          const SubClass = Object.getPrototypeOf(target2).constructor;
+      if (target instanceof Set) {
+        const iterable = Array.from(target).map(deepClone2);
+        if (!isBaseSetInstance(target)) {
+          const SubClass = Object.getPrototypeOf(target).constructor;
           return new SubClass(iterable);
         }
         return new Set(iterable);
       }
-      const copy = Object.create(Object.getPrototypeOf(target2));
-      for (const key2 in target2)
-        copy[key2] = deepClone2(target2[key2]);
+      const copy = Object.create(Object.getPrototypeOf(target));
+      for (const key2 in target)
+        copy[key2] = deepClone2(target[key2]);
       return copy;
     }
-    function cloneIfNeeded(target2) {
-      return isDraft(target2) ? deepClone2(target2) : target2;
+    function cloneIfNeeded(target) {
+      return isDraft(target) ? deepClone2(target) : target;
     }
     function markChanged(proxyDraft) {
       var _a;
@@ -295,12 +295,12 @@ var require_mutative_cjs_development = __commonJS({
     function throwFrozenError() {
       throw new Error("Cannot modify frozen object");
     }
-    function deepFreeze(target2, subKey, updatedValues, stack, keys2) {
+    function deepFreeze(target, subKey, updatedValues, stack, keys2) {
       {
         updatedValues = updatedValues !== null && updatedValues !== void 0 ? updatedValues : /* @__PURE__ */ new WeakMap();
         stack = stack !== null && stack !== void 0 ? stack : [];
         keys2 = keys2 !== null && keys2 !== void 0 ? keys2 : [];
-        const value = updatedValues.has(target2) ? updatedValues.get(target2) : target2;
+        const value = updatedValues.has(target) ? updatedValues.get(target) : target;
         if (stack.length > 0) {
           const index = stack.indexOf(value);
           if (value && typeof value === "object" && index !== -1) {
@@ -322,40 +322,40 @@ var require_mutative_cjs_development = __commonJS({
           stack.push(value);
         }
       }
-      if (Object.isFrozen(target2) || isDraft(target2)) {
+      if (Object.isFrozen(target) || isDraft(target)) {
         {
           stack.pop();
           keys2.pop();
         }
         return;
       }
-      const type3 = getType2(target2);
+      const type3 = getType2(target);
       switch (type3) {
         case 2:
-          for (const [key2, value] of target2) {
+          for (const [key2, value] of target) {
             deepFreeze(key2, key2, updatedValues, stack, keys2);
             deepFreeze(value, key2, updatedValues, stack, keys2);
           }
-          target2.set = target2.clear = target2.delete = throwFrozenError;
+          target.set = target.clear = target.delete = throwFrozenError;
           break;
         case 3:
-          for (const value of target2) {
+          for (const value of target) {
             deepFreeze(value, value, updatedValues, stack, keys2);
           }
-          target2.add = target2.clear = target2.delete = throwFrozenError;
+          target.add = target.clear = target.delete = throwFrozenError;
           break;
         case 1:
-          Object.freeze(target2);
+          Object.freeze(target);
           let index = 0;
-          for (const value of target2) {
+          for (const value of target) {
             deepFreeze(value, index, updatedValues, stack, keys2);
             index += 1;
           }
           break;
         default:
-          Object.freeze(target2);
-          Object.keys(target2).forEach((name) => {
-            const value = target2[name];
+          Object.freeze(target);
+          Object.keys(target).forEach((name) => {
+            const value = target[name];
             deepFreeze(value, name, updatedValues, stack, keys2);
           });
       }
@@ -364,41 +364,41 @@ var require_mutative_cjs_development = __commonJS({
         keys2.pop();
       }
     }
-    function forEach3(target2, iter) {
-      const type3 = getType2(target2);
+    function forEach3(target, iter) {
+      const type3 = getType2(target);
       if (type3 === 0) {
-        Reflect.ownKeys(target2).forEach((key2) => {
-          iter(key2, target2[key2], target2);
+        Reflect.ownKeys(target).forEach((key2) => {
+          iter(key2, target[key2], target);
         });
       } else if (type3 === 1) {
         let index = 0;
-        for (const entry of target2) {
-          iter(index, entry, target2);
+        for (const entry of target) {
+          iter(index, entry, target);
           index += 1;
         }
       } else {
-        target2.forEach((entry, index) => iter(index, entry, target2));
+        target.forEach((entry, index) => iter(index, entry, target));
       }
     }
-    function handleValue(target2, handledSet, options) {
-      if (isDraft(target2) || !isDraftable(target2, options) || handledSet.has(target2) || Object.isFrozen(target2))
+    function handleValue(target, handledSet, options) {
+      if (isDraft(target) || !isDraftable(target, options) || handledSet.has(target) || Object.isFrozen(target))
         return;
-      const isSet2 = target2 instanceof Set;
+      const isSet2 = target instanceof Set;
       const setMap = isSet2 ? /* @__PURE__ */ new Map() : void 0;
-      handledSet.add(target2);
-      forEach3(target2, (key2, value) => {
+      handledSet.add(target);
+      forEach3(target, (key2, value) => {
         var _a;
         if (isDraft(value)) {
           const proxyDraft = getProxyDraft(value);
           ensureShallowCopy(proxyDraft);
           const updatedValue = ((_a = proxyDraft.assignedMap) === null || _a === void 0 ? void 0 : _a.size) || proxyDraft.operated ? proxyDraft.copy : proxyDraft.original;
-          set4(isSet2 ? setMap : target2, key2, updatedValue);
+          set4(isSet2 ? setMap : target, key2, updatedValue);
         } else {
           handleValue(value, handledSet, options);
         }
       });
       if (setMap) {
-        const set5 = target2;
+        const set5 = target;
         const values2 = Array.from(set5);
         set5.clear();
         values2.forEach((value) => {
@@ -412,27 +412,27 @@ var require_mutative_cjs_development = __commonJS({
         handleValue(get11(copy, key2), proxyDraft.finalities.handledSet, proxyDraft.options);
       }
     }
-    function finalizeSetValue(target2) {
-      if (target2.type === 3 && target2.copy) {
-        target2.copy.clear();
-        target2.setMap.forEach((value) => {
-          target2.copy.add(getValue(value));
+    function finalizeSetValue(target) {
+      if (target.type === 3 && target.copy) {
+        target.copy.clear();
+        target.setMap.forEach((value) => {
+          target.copy.add(getValue(value));
         });
       }
     }
-    function finalizePatches(target2, generatePatches2, patches, inversePatches) {
-      const shouldFinalize = target2.operated && target2.assignedMap && target2.assignedMap.size > 0 && !target2.finalized;
+    function finalizePatches(target, generatePatches2, patches, inversePatches) {
+      const shouldFinalize = target.operated && target.assignedMap && target.assignedMap.size > 0 && !target.finalized;
       if (shouldFinalize) {
         if (patches && inversePatches) {
-          const basePath = getPath(target2);
+          const basePath = getPath(target);
           if (basePath) {
-            generatePatches2(target2, basePath, patches, inversePatches);
+            generatePatches2(target, basePath, patches, inversePatches);
           }
         }
-        target2.finalized = true;
+        target.finalized = true;
       }
     }
-    function markFinalization(target2, key2, value, generatePatches2) {
+    function markFinalization(target, key2, value, generatePatches2) {
       const proxyDraft = getProxyDraft(value);
       if (proxyDraft) {
         if (!proxyDraft.callbacks) {
@@ -440,32 +440,32 @@ var require_mutative_cjs_development = __commonJS({
         }
         proxyDraft.callbacks.push((patches, inversePatches) => {
           var _a;
-          const copy = target2.type === 3 ? target2.setMap : target2.copy;
+          const copy = target.type === 3 ? target.setMap : target.copy;
           if (isEqual(get11(copy, key2), value)) {
             let updatedValue = proxyDraft.original;
             if (proxyDraft.copy) {
               updatedValue = proxyDraft.copy;
             }
-            finalizeSetValue(target2);
-            finalizePatches(target2, generatePatches2, patches, inversePatches);
-            if (target2.options.enableAutoFreeze) {
-              target2.options.updatedValues = (_a = target2.options.updatedValues) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new WeakMap();
-              target2.options.updatedValues.set(updatedValue, proxyDraft.original);
+            finalizeSetValue(target);
+            finalizePatches(target, generatePatches2, patches, inversePatches);
+            if (target.options.enableAutoFreeze) {
+              target.options.updatedValues = (_a = target.options.updatedValues) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new WeakMap();
+              target.options.updatedValues.set(updatedValue, proxyDraft.original);
             }
             set4(copy, key2, updatedValue);
           }
         });
-        if (target2.options.enableAutoFreeze) {
-          if (proxyDraft.finalities !== target2.finalities) {
-            target2.options.enableAutoFreeze = false;
+        if (target.options.enableAutoFreeze) {
+          if (proxyDraft.finalities !== target.finalities) {
+            target.options.enableAutoFreeze = false;
           }
         }
       }
-      if (isDraftable(value, target2.options)) {
-        target2.finalities.draft.push(() => {
-          const copy = target2.type === 3 ? target2.setMap : target2.copy;
+      if (isDraftable(value, target.options)) {
+        target.finalities.draft.push(() => {
+          const copy = target.type === 3 ? target.setMap : target.copy;
           if (isEqual(get11(copy, key2), value)) {
-            finalizeAssigned(target2, key2);
+            finalizeAssigned(target, key2);
           }
         });
       }
@@ -615,14 +615,14 @@ var require_mutative_cjs_development = __commonJS({
         return latest(getProxyDraft(this)).has(key2);
       },
       set(key2, value) {
-        const target2 = getProxyDraft(this);
-        const source = latest(target2);
+        const target = getProxyDraft(this);
+        const source = latest(target);
         if (!source.has(key2) || !isEqual(source.get(key2), value)) {
-          ensureShallowCopy(target2);
-          markChanged(target2);
-          target2.assignedMap.set(key2, true);
-          target2.copy.set(key2, value);
-          markFinalization(target2, key2, value, generatePatches);
+          ensureShallowCopy(target);
+          markChanged(target);
+          target.assignedMap.set(key2, true);
+          target.copy.set(key2, value);
+          markFinalization(target, key2, value, generatePatches);
         }
         return this;
       },
@@ -630,61 +630,61 @@ var require_mutative_cjs_development = __commonJS({
         if (!this.has(key2)) {
           return false;
         }
-        const target2 = getProxyDraft(this);
-        ensureShallowCopy(target2);
-        markChanged(target2);
-        if (target2.original.has(key2)) {
-          target2.assignedMap.set(key2, false);
+        const target = getProxyDraft(this);
+        ensureShallowCopy(target);
+        markChanged(target);
+        if (target.original.has(key2)) {
+          target.assignedMap.set(key2, false);
         } else {
-          target2.assignedMap.delete(key2);
+          target.assignedMap.delete(key2);
         }
-        target2.copy.delete(key2);
+        target.copy.delete(key2);
         return true;
       },
       clear() {
-        const target2 = getProxyDraft(this);
+        const target = getProxyDraft(this);
         if (!this.size)
           return;
-        ensureShallowCopy(target2);
-        markChanged(target2);
-        target2.assignedMap = /* @__PURE__ */ new Map();
-        for (const [key2] of target2.original) {
-          target2.assignedMap.set(key2, false);
+        ensureShallowCopy(target);
+        markChanged(target);
+        target.assignedMap = /* @__PURE__ */ new Map();
+        for (const [key2] of target.original) {
+          target.assignedMap.set(key2, false);
         }
-        target2.copy.clear();
+        target.copy.clear();
       },
       forEach(callback, thisArg) {
-        const target2 = getProxyDraft(this);
-        latest(target2).forEach((_value, _key) => {
+        const target = getProxyDraft(this);
+        latest(target).forEach((_value, _key) => {
           callback.call(thisArg, this.get(_key), _key, this);
         });
       },
       get(key2) {
         var _a, _b;
-        const target2 = getProxyDraft(this);
-        const value = latest(target2).get(key2);
-        const mutable = ((_b = (_a = target2.options).mark) === null || _b === void 0 ? void 0 : _b.call(_a, value, dataTypes)) === dataTypes.mutable;
-        if (target2.options.strict) {
-          checkReadable(value, target2.options, mutable);
+        const target = getProxyDraft(this);
+        const value = latest(target).get(key2);
+        const mutable = ((_b = (_a = target.options).mark) === null || _b === void 0 ? void 0 : _b.call(_a, value, dataTypes)) === dataTypes.mutable;
+        if (target.options.strict) {
+          checkReadable(value, target.options, mutable);
         }
         if (mutable) {
           return value;
         }
-        if (target2.finalized || !isDraftable(value, target2.options)) {
+        if (target.finalized || !isDraftable(value, target.options)) {
           return value;
         }
-        if (value !== target2.original.get(key2)) {
+        if (value !== target.original.get(key2)) {
           return value;
         }
         const draft = internal2.createDraft({
           original: value,
-          parentDraft: target2,
+          parentDraft: target,
           key: key2,
-          finalities: target2.finalities,
-          options: target2.options
+          finalities: target.finalities,
+          options: target.options
         });
-        ensureShallowCopy(target2);
-        target2.copy.set(key2, draft);
+        ensureShallowCopy(target);
+        target.copy.set(key2, draft);
         return draft;
       },
       keys() {
@@ -727,27 +727,27 @@ var require_mutative_cjs_development = __commonJS({
       }
     };
     var mapHandlerKeys = Reflect.ownKeys(mapHandler);
-    var getNextIterator = (target2, iterator2, { isValuesIterator }) => () => {
+    var getNextIterator = (target, iterator2, { isValuesIterator }) => () => {
       var _a, _b;
       const result2 = iterator2.next();
       if (result2.done)
         return result2;
       const key2 = result2.value;
-      let value = target2.setMap.get(key2);
+      let value = target.setMap.get(key2);
       const currentDraft = getProxyDraft(value);
-      const mutable = ((_b = (_a = target2.options).mark) === null || _b === void 0 ? void 0 : _b.call(_a, value, dataTypes)) === dataTypes.mutable;
-      if (target2.options.strict) {
-        checkReadable(key2, target2.options, mutable);
+      const mutable = ((_b = (_a = target.options).mark) === null || _b === void 0 ? void 0 : _b.call(_a, value, dataTypes)) === dataTypes.mutable;
+      if (target.options.strict) {
+        checkReadable(key2, target.options, mutable);
       }
-      if (!mutable && !currentDraft && isDraftable(key2, target2.options) && !target2.finalized && target2.original.has(key2)) {
+      if (!mutable && !currentDraft && isDraftable(key2, target.options) && !target.finalized && target.original.has(key2)) {
         const proxy = internal2.createDraft({
           original: key2,
-          parentDraft: target2,
+          parentDraft: target,
           key: key2,
-          finalities: target2.finalities,
-          options: target2.options
+          finalities: target.finalities,
+          options: target.options
         });
-        target2.setMap.set(key2, proxy);
+        target.setMap.set(key2, proxy);
         value = proxy;
       } else if (currentDraft) {
         value = currentDraft.proxy;
@@ -759,27 +759,27 @@ var require_mutative_cjs_development = __commonJS({
     };
     var setHandler = {
       get size() {
-        const target2 = getProxyDraft(this);
-        return target2.setMap.size;
+        const target = getProxyDraft(this);
+        return target.setMap.size;
       },
       has(value) {
-        const target2 = getProxyDraft(this);
-        if (target2.setMap.has(value))
+        const target = getProxyDraft(this);
+        if (target.setMap.has(value))
           return true;
-        ensureShallowCopy(target2);
+        ensureShallowCopy(target);
         const valueProxyDraft = getProxyDraft(value);
-        if (valueProxyDraft && target2.setMap.has(valueProxyDraft.original))
+        if (valueProxyDraft && target.setMap.has(valueProxyDraft.original))
           return true;
         return false;
       },
       add(value) {
-        const target2 = getProxyDraft(this);
+        const target = getProxyDraft(this);
         if (!this.has(value)) {
-          ensureShallowCopy(target2);
-          markChanged(target2);
-          target2.assignedMap.set(value, true);
-          target2.setMap.set(value, value);
-          markFinalization(target2, value, value, generatePatches);
+          ensureShallowCopy(target);
+          markChanged(target);
+          target.assignedMap.set(value, true);
+          target.setMap.set(value, value);
+          markFinalization(target, value, value, generatePatches);
         }
         return this;
       },
@@ -787,48 +787,48 @@ var require_mutative_cjs_development = __commonJS({
         if (!this.has(value)) {
           return false;
         }
-        const target2 = getProxyDraft(this);
-        ensureShallowCopy(target2);
-        markChanged(target2);
+        const target = getProxyDraft(this);
+        ensureShallowCopy(target);
+        markChanged(target);
         const valueProxyDraft = getProxyDraft(value);
-        if (valueProxyDraft && target2.setMap.has(valueProxyDraft.original)) {
-          target2.assignedMap.set(valueProxyDraft.original, false);
-          return target2.setMap.delete(valueProxyDraft.original);
+        if (valueProxyDraft && target.setMap.has(valueProxyDraft.original)) {
+          target.assignedMap.set(valueProxyDraft.original, false);
+          return target.setMap.delete(valueProxyDraft.original);
         }
-        if (!valueProxyDraft && target2.setMap.has(value)) {
-          target2.assignedMap.set(value, false);
+        if (!valueProxyDraft && target.setMap.has(value)) {
+          target.assignedMap.set(value, false);
         } else {
-          target2.assignedMap.delete(value);
+          target.assignedMap.delete(value);
         }
-        return target2.setMap.delete(value);
+        return target.setMap.delete(value);
       },
       clear() {
         if (!this.size)
           return;
-        const target2 = getProxyDraft(this);
-        ensureShallowCopy(target2);
-        markChanged(target2);
-        for (const value of target2.original) {
-          target2.assignedMap.set(value, false);
+        const target = getProxyDraft(this);
+        ensureShallowCopy(target);
+        markChanged(target);
+        for (const value of target.original) {
+          target.assignedMap.set(value, false);
         }
-        target2.setMap.clear();
+        target.setMap.clear();
       },
       values() {
-        const target2 = getProxyDraft(this);
-        ensureShallowCopy(target2);
-        const iterator2 = target2.setMap.keys();
+        const target = getProxyDraft(this);
+        ensureShallowCopy(target);
+        const iterator2 = target.setMap.keys();
         return {
           [Symbol.iterator]: () => this.values(),
-          next: getNextIterator(target2, iterator2, { isValuesIterator: true })
+          next: getNextIterator(target, iterator2, { isValuesIterator: true })
         };
       },
       entries() {
-        const target2 = getProxyDraft(this);
-        ensureShallowCopy(target2);
-        const iterator2 = target2.setMap.keys();
+        const target = getProxyDraft(this);
+        ensureShallowCopy(target);
+        const iterator2 = target.setMap.keys();
         return {
           [Symbol.iterator]: () => this.entries(),
-          next: getNextIterator(target2, iterator2, {
+          next: getNextIterator(target, iterator2, {
             isValuesIterator: false
           })
         };
@@ -875,131 +875,131 @@ var require_mutative_cjs_development = __commonJS({
     }
     var setHandlerKeys = Reflect.ownKeys(setHandler);
     var proxyHandler = {
-      get(target2, key2, receiver) {
+      get(target, key2, receiver) {
         var _a, _b;
-        const copy = (_a = target2.copy) === null || _a === void 0 ? void 0 : _a[key2];
-        if (copy && target2.finalities.draftsCache.has(copy)) {
+        const copy = (_a = target.copy) === null || _a === void 0 ? void 0 : _a[key2];
+        if (copy && target.finalities.draftsCache.has(copy)) {
           return copy;
         }
         if (key2 === PROXY_DRAFT)
-          return target2;
+          return target;
         let markResult;
-        if (target2.options.mark) {
-          const value2 = key2 === "size" && (target2.original instanceof Map || target2.original instanceof Set) ? Reflect.get(target2.original, key2) : Reflect.get(target2.original, key2, receiver);
-          markResult = target2.options.mark(value2, dataTypes);
+        if (target.options.mark) {
+          const value2 = key2 === "size" && (target.original instanceof Map || target.original instanceof Set) ? Reflect.get(target.original, key2) : Reflect.get(target.original, key2, receiver);
+          markResult = target.options.mark(value2, dataTypes);
           if (markResult === dataTypes.mutable) {
-            if (target2.options.strict) {
-              checkReadable(value2, target2.options, true);
+            if (target.options.strict) {
+              checkReadable(value2, target.options, true);
             }
             return value2;
           }
         }
-        const source = latest(target2);
+        const source = latest(target);
         if (source instanceof Map && mapHandlerKeys.includes(key2)) {
           if (key2 === "size") {
-            return Object.getOwnPropertyDescriptor(mapHandler, "size").get.call(target2.proxy);
+            return Object.getOwnPropertyDescriptor(mapHandler, "size").get.call(target.proxy);
           }
           const handle = mapHandler[key2];
-          return handle.bind(target2.proxy);
+          return handle.bind(target.proxy);
         }
         if (source instanceof Set && setHandlerKeys.includes(key2)) {
           if (key2 === "size") {
-            return Object.getOwnPropertyDescriptor(setHandler, "size").get.call(target2.proxy);
+            return Object.getOwnPropertyDescriptor(setHandler, "size").get.call(target.proxy);
           }
           const handle = setHandler[key2];
-          return handle.bind(target2.proxy);
+          return handle.bind(target.proxy);
         }
         if (!has8(source, key2)) {
           const desc = getDescriptor(source, key2);
           return desc ? `value` in desc ? desc.value : (
             // !case: support for getter
-            (_b = desc.get) === null || _b === void 0 ? void 0 : _b.call(target2.proxy)
+            (_b = desc.get) === null || _b === void 0 ? void 0 : _b.call(target.proxy)
           ) : void 0;
         }
         const value = source[key2];
-        if (target2.options.strict) {
-          checkReadable(value, target2.options);
+        if (target.options.strict) {
+          checkReadable(value, target.options);
         }
-        if (target2.finalized || !isDraftable(value, target2.options)) {
+        if (target.finalized || !isDraftable(value, target.options)) {
           return value;
         }
-        if (value === peek(target2.original, key2)) {
-          ensureShallowCopy(target2);
-          target2.copy[key2] = createDraft({
-            original: target2.original[key2],
-            parentDraft: target2,
-            key: target2.type === 1 ? Number(key2) : key2,
-            finalities: target2.finalities,
-            options: target2.options
+        if (value === peek(target.original, key2)) {
+          ensureShallowCopy(target);
+          target.copy[key2] = createDraft({
+            original: target.original[key2],
+            parentDraft: target,
+            key: target.type === 1 ? Number(key2) : key2,
+            finalities: target.finalities,
+            options: target.options
           });
           if (typeof markResult === "function") {
-            const subProxyDraft = getProxyDraft(target2.copy[key2]);
+            const subProxyDraft = getProxyDraft(target.copy[key2]);
             ensureShallowCopy(subProxyDraft);
             markChanged(subProxyDraft);
             return subProxyDraft.copy;
           }
-          return target2.copy[key2];
+          return target.copy[key2];
         }
         if (isDraft(value)) {
-          target2.finalities.draftsCache.add(value);
+          target.finalities.draftsCache.add(value);
         }
         return value;
       },
-      set(target2, key2, value) {
+      set(target, key2, value) {
         var _a;
-        if (target2.type === 3 || target2.type === 2) {
+        if (target.type === 3 || target.type === 2) {
           throw new Error(`Map/Set draft does not support any property assignment.`);
         }
         let _key;
-        if (target2.type === 1 && key2 !== "length" && !(Number.isInteger(_key = Number(key2)) && _key >= 0 && (key2 === 0 || _key === 0 || String(_key) === String(key2)))) {
+        if (target.type === 1 && key2 !== "length" && !(Number.isInteger(_key = Number(key2)) && _key >= 0 && (key2 === 0 || _key === 0 || String(_key) === String(key2)))) {
           throw new Error(`Only supports setting array indices and the 'length' property.`);
         }
-        const desc = getDescriptor(latest(target2), key2);
+        const desc = getDescriptor(latest(target), key2);
         if (desc === null || desc === void 0 ? void 0 : desc.set) {
-          desc.set.call(target2.proxy, value);
+          desc.set.call(target.proxy, value);
           return true;
         }
-        const current3 = peek(latest(target2), key2);
+        const current3 = peek(latest(target), key2);
         const currentProxyDraft = getProxyDraft(current3);
         if (currentProxyDraft && isEqual(currentProxyDraft.original, value)) {
-          target2.copy[key2] = value;
-          target2.assignedMap = (_a = target2.assignedMap) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new Map();
-          target2.assignedMap.set(key2, false);
+          target.copy[key2] = value;
+          target.assignedMap = (_a = target.assignedMap) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new Map();
+          target.assignedMap.set(key2, false);
           return true;
         }
-        if (isEqual(value, current3) && (value !== void 0 || has8(target2.original, key2)))
+        if (isEqual(value, current3) && (value !== void 0 || has8(target.original, key2)))
           return true;
-        ensureShallowCopy(target2);
-        markChanged(target2);
-        if (has8(target2.original, key2) && isEqual(value, target2.original[key2])) {
-          target2.assignedMap.delete(key2);
+        ensureShallowCopy(target);
+        markChanged(target);
+        if (has8(target.original, key2) && isEqual(value, target.original[key2])) {
+          target.assignedMap.delete(key2);
         } else {
-          target2.assignedMap.set(key2, true);
+          target.assignedMap.set(key2, true);
         }
-        target2.copy[key2] = value;
-        markFinalization(target2, key2, value, generatePatches);
+        target.copy[key2] = value;
+        markFinalization(target, key2, value, generatePatches);
         return true;
       },
-      has(target2, key2) {
-        return key2 in latest(target2);
+      has(target, key2) {
+        return key2 in latest(target);
       },
-      ownKeys(target2) {
-        return Reflect.ownKeys(latest(target2));
+      ownKeys(target) {
+        return Reflect.ownKeys(latest(target));
       },
-      getOwnPropertyDescriptor(target2, key2) {
-        const source = latest(target2);
+      getOwnPropertyDescriptor(target, key2) {
+        const source = latest(target);
         const descriptor = Reflect.getOwnPropertyDescriptor(source, key2);
         if (!descriptor)
           return descriptor;
         return {
           writable: true,
-          configurable: target2.type !== 1 || key2 !== "length",
+          configurable: target.type !== 1 || key2 !== "length",
           enumerable: descriptor.enumerable,
           value: source[key2]
         };
       },
-      getPrototypeOf(target2) {
-        return Reflect.getPrototypeOf(target2.original);
+      getPrototypeOf(target) {
+        return Reflect.getPrototypeOf(target.original);
       },
       setPrototypeOf() {
         throw new Error(`Cannot call 'setPrototypeOf()' on drafts`);
@@ -1007,21 +1007,21 @@ var require_mutative_cjs_development = __commonJS({
       defineProperty() {
         throw new Error(`Cannot call 'defineProperty()' on drafts`);
       },
-      deleteProperty(target2, key2) {
+      deleteProperty(target, key2) {
         var _a;
-        if (target2.type === 1) {
-          return proxyHandler.set.call(this, target2, key2, void 0, target2.proxy);
+        if (target.type === 1) {
+          return proxyHandler.set.call(this, target, key2, void 0, target.proxy);
         }
-        if (peek(target2.original, key2) !== void 0 || key2 in target2.original) {
-          ensureShallowCopy(target2);
-          markChanged(target2);
-          target2.assignedMap.set(key2, false);
+        if (peek(target.original, key2) !== void 0 || key2 in target.original) {
+          ensureShallowCopy(target);
+          markChanged(target);
+          target.assignedMap.set(key2, false);
         } else {
-          target2.assignedMap = (_a = target2.assignedMap) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new Map();
-          target2.assignedMap.delete(key2);
+          target.assignedMap = (_a = target.assignedMap) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new Map();
+          target.assignedMap.delete(key2);
         }
-        if (target2.copy)
-          delete target2.copy[key2];
+        if (target.copy)
+          delete target.copy[key2];
         return true;
       }
     };
@@ -1047,11 +1047,11 @@ var require_mutative_cjs_development = __commonJS({
       finalities.revoke.push(revoke);
       proxyDraft.proxy = proxy;
       if (parentDraft) {
-        const target2 = parentDraft;
-        target2.finalities.draft.push((patches, inversePatches) => {
+        const target = parentDraft;
+        target.finalities.draft.push((patches, inversePatches) => {
           var _a, _b;
           const oldProxyDraft = getProxyDraft(proxy);
-          let copy = target2.type === 3 ? target2.setMap : target2.copy;
+          let copy = target.type === 3 ? target.setMap : target.copy;
           const draft = get11(copy, key2);
           const proxyDraft2 = getProxyDraft(draft);
           if (proxyDraft2) {
@@ -1061,9 +1061,9 @@ var require_mutative_cjs_development = __commonJS({
             }
             finalizeSetValue(proxyDraft2);
             finalizePatches(proxyDraft2, generatePatches, patches, inversePatches);
-            if (target2.options.enableAutoFreeze) {
-              target2.options.updatedValues = (_a = target2.options.updatedValues) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new WeakMap();
-              target2.options.updatedValues.set(updatedValue, proxyDraft2.original);
+            if (target.options.enableAutoFreeze) {
+              target.options.updatedValues = (_a = target.options.updatedValues) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new WeakMap();
+              target.options.updatedValues.set(updatedValue, proxyDraft2.original);
             }
             set4(copy, key2, updatedValue);
           }
@@ -1072,10 +1072,10 @@ var require_mutative_cjs_development = __commonJS({
           });
         });
       } else {
-        const target2 = getProxyDraft(proxy);
-        target2.finalities.draft.push((patches, inversePatches) => {
-          finalizeSetValue(target2);
-          finalizePatches(target2, generatePatches, patches, inversePatches);
+        const target = getProxyDraft(proxy);
+        target.finalities.draft.push((patches, inversePatches) => {
+          finalizeSetValue(target);
+          finalizePatches(target, generatePatches, patches, inversePatches);
         });
       }
       return proxy;
@@ -1161,17 +1161,17 @@ var require_mutative_cjs_development = __commonJS({
         }
       }
     }
-    function getCurrent(target2) {
+    function getCurrent(target) {
       var _a;
-      const proxyDraft = getProxyDraft(target2);
-      if (!isDraftable(target2, proxyDraft === null || proxyDraft === void 0 ? void 0 : proxyDraft.options))
-        return target2;
-      const type3 = getType2(target2);
+      const proxyDraft = getProxyDraft(target);
+      if (!isDraftable(target, proxyDraft === null || proxyDraft === void 0 ? void 0 : proxyDraft.options))
+        return target;
+      const type3 = getType2(target);
       if (proxyDraft && !proxyDraft.operated)
         return proxyDraft.original;
       let currentValue;
       function ensureShallowCopy2() {
-        currentValue = type3 === 2 ? !isBaseMapInstance(target2) ? new (Object.getPrototypeOf(target2)).constructor(target2) : new Map(target2) : type3 === 3 ? Array.from(proxyDraft.setMap.values()) : shallowCopy2(target2, proxyDraft === null || proxyDraft === void 0 ? void 0 : proxyDraft.options);
+        currentValue = type3 === 2 ? !isBaseMapInstance(target) ? new (Object.getPrototypeOf(target)).constructor(target) : new Map(target) : type3 === 3 ? Array.from(proxyDraft.setMap.values()) : shallowCopy2(target, proxyDraft === null || proxyDraft === void 0 ? void 0 : proxyDraft.options);
       }
       if (proxyDraft) {
         proxyDraft.finalized = true;
@@ -1181,14 +1181,14 @@ var require_mutative_cjs_development = __commonJS({
           proxyDraft.finalized = false;
         }
       } else {
-        currentValue = target2;
+        currentValue = target;
       }
       forEach3(currentValue, (key2, value) => {
         if (proxyDraft && isEqual(get11(proxyDraft.original, key2), value))
           return;
         const newValue = getCurrent(value);
         if (newValue !== value) {
-          if (currentValue === target2)
+          if (currentValue === target)
             ensureShallowCopy2();
           set4(currentValue, key2, newValue);
         }
@@ -1199,11 +1199,11 @@ var require_mutative_cjs_development = __commonJS({
       }
       return currentValue;
     }
-    function current2(target2) {
-      if (!isDraft(target2)) {
-        throw new Error(`current() is only used for Draft, parameter: ${target2}`);
+    function current2(target) {
+      if (!isDraft(target)) {
+        throw new Error(`current() is only used for Draft, parameter: ${target}`);
       }
-      return getCurrent(target2);
+      return getCurrent(target);
     }
     var makeCreator = (arg) => {
       if (arg !== void 0 && Object.prototype.toString.call(arg) !== "[object Object]") {
@@ -1401,10 +1401,10 @@ var require_mutative_cjs_development = __commonJS({
       }
       return create3(state, mutate, Object.assign(Object.assign({}, applyOptions), { enablePatches: false }));
     }
-    function original(target2) {
-      const proxyDraft = getProxyDraft(target2);
+    function original(target) {
+      const proxyDraft = getProxyDraft(target);
       if (!proxyDraft) {
-        throw new Error(`original() is only used for a draft, parameter: ${target2}`);
+        throw new Error(`original() is only used for a draft, parameter: ${target}`);
       }
       return proxyDraft.original;
     }
@@ -10616,9 +10616,9 @@ function Mat4() {
     return out;
   }
   Mat42.lookAt = lookAt;
-  function targetTo(out, eye, target2, up3) {
+  function targetTo(out, eye, target, up3) {
     const eyex = eye[0], eyey = eye[1], eyez = eye[2], upx = up3[0], upy = up3[1], upz = up3[2];
-    let z0 = eyex - target2[0], z1 = eyey - target2[1], z2 = eyez - target2[2];
+    let z0 = eyex - target[0], z1 = eyey - target[1], z2 = eyez - target[2];
     let len = z0 * z0 + z1 * z1 + z2 * z2;
     if (len > 0) {
       len = 1 / Math.sqrt(len);
@@ -11360,8 +11360,8 @@ function Viewport() {
     return { ...viewport };
   }
   Viewport2.clone = clone;
-  function copy(target2, source) {
-    return Object.assign(target2, source);
+  function copy(target, source) {
+    return Object.assign(target, source);
   }
   Viewport2.copy = copy;
   function set4(viewport, x, y, width, height) {
@@ -11780,13 +11780,13 @@ var Mask;
       });
       return ofSet(set4);
     } else {
-      const target2 = new Uint8Array(max5 + 1);
+      const target = new Uint8Array(max5 + 1);
       against.forEach((i) => {
         if (!mask.has(i)) {
-          target2[i] = 1;
+          target[i] = 1;
         }
       });
-      return ofMask(target2, count3);
+      return ofMask(target, count3);
     }
   }
   Mask2.complement = complement2;
@@ -13519,12 +13519,12 @@ function splitKebabCase(str11) {
 function stringToWords(str11) {
   return capitalize(splitCamelCase(splitSnakeCase(splitKebabCase(str11))));
 }
-function substringStartsWith(str11, start4, end4, target2) {
-  const len = target2.length;
+function substringStartsWith(str11, start4, end4, target) {
+  const len = target.length;
   if (len > end4 - start4)
     return false;
   for (let i = 0; i < len; i++) {
-    if (str11.charCodeAt(start4 + i) !== target2.charCodeAt(i))
+    if (str11.charCodeAt(start4 + i) !== target.charCodeAt(i))
       return false;
   }
   return true;
@@ -14484,10 +14484,10 @@ function createArray(rowCount, params) {
   const { start: start4, end: end4 } = getArrayBounds(rowCount, params);
   return { array: new c8(end4 - start4), start: start4, end: end4 };
 }
-function fillArrayValues(value, target2, start4) {
-  for (let i = 0, _e = target2.length; i < _e; i++)
-    target2[i] = value(start4 + i);
-  return target2;
+function fillArrayValues(value, target, start4) {
+  for (let i = 0, _e = target.length; i < _e; i++)
+    target[i] = value(start4 + i);
+  return target;
 }
 function createAndFillArray(rowCount, value, params) {
   const { array: array2, start: start4 } = createArray(rowCount, params);
@@ -23096,10 +23096,10 @@ var Spacegroup;
   Spacegroup2.create = create3;
   const _ijkVec = Vec3();
   const _tempMat = Mat4();
-  function setOperatorMatrix(spacegroup, index, i, j, k, target2) {
+  function setOperatorMatrix(spacegroup, index, i, j, k, target) {
     Vec3.set(_ijkVec, i, j, k);
     Mat4.fromTranslation(_tempMat, _ijkVec);
-    return Mat4.mul(target2, Mat4.mul(target2, Mat4.mul(target2, spacegroup.cell.fromFractional, _tempMat), spacegroup.operators[index]), spacegroup.cell.toFractional);
+    return Mat4.mul(target, Mat4.mul(target, Mat4.mul(target, spacegroup.cell.fromFractional, _tempMat), spacegroup.operators[index]), spacegroup.cell.toFractional);
   }
   Spacegroup2.setOperatorMatrix = setOperatorMatrix;
   function getSymmetryOperator(spacegroup, spgrOp, i, j, k) {
@@ -23612,9 +23612,9 @@ function Ray3D() {
     return copy(Ray3D2(), r);
   }
   Ray3D2.clone = clone;
-  function targetTo(out, ray, target2) {
+  function targetTo(out, ray, target) {
     Vec3.copy(out.origin, ray.origin);
-    Vec3.normalize(out.direction, Vec3.sub(out.direction, target2, ray.origin));
+    Vec3.normalize(out.direction, Vec3.sub(out.direction, target, ray.origin));
     return out;
   }
   Ray3D2.targetTo = targetTo;
@@ -30459,11 +30459,11 @@ function getAttachment(gl, extensions, attachment) {
 function isImage(x) {
   return typeof HTMLImageElement !== "undefined" && x instanceof HTMLImageElement;
 }
-function isTexture2d(x, target2, gl) {
-  return target2 === gl.TEXTURE_2D;
+function isTexture2d(x, target, gl) {
+  return target === gl.TEXTURE_2D;
 }
-function isTexture3d(x, target2, gl) {
-  return target2 === gl.TEXTURE_3D;
+function isTexture3d(x, target, gl) {
+  return target === gl.TEXTURE_3D;
 }
 function getTexture(gl) {
   const texture = gl.createTexture();
@@ -30481,18 +30481,18 @@ function createTexture(gl, extensions, kind, _format, _type, _filter) {
   if (!extensions.depthTexture && _format === "depth") {
     throw new Error(`extension 'WEBGL_depth_texture' needed for 'depth' texture format`);
   }
-  const target2 = getTarget(gl, kind);
+  const target = getTarget(gl, kind);
   const filter5 = getFilter(gl, _filter);
   const format = getFormat(gl, _format, _type);
   const internalFormat = getInternalFormat(gl, _format, _type);
   const type3 = getType(gl, extensions, _type);
   function init() {
-    gl.bindTexture(target2, texture);
-    gl.texParameteri(target2, gl.TEXTURE_MAG_FILTER, filter5);
-    gl.texParameteri(target2, gl.TEXTURE_MIN_FILTER, filter5);
-    gl.texParameteri(target2, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(target2, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindTexture(target2, null);
+    gl.bindTexture(target, texture);
+    gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, filter5);
+    gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, filter5);
+    gl.texParameteri(target, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(target, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(target, null);
   }
   init();
   let width = 0, height = 0, depth = 0;
@@ -30500,27 +30500,27 @@ function createTexture(gl, extensions, kind, _format, _type, _filter) {
   let hasMipmap = false;
   let destroyed = false;
   function define(_width, _height, _depth) {
-    if (_width === 0 || _height === 0 || isWebGL2(gl) && target2 === gl.TEXTURE_3D && _depth === 0) {
+    if (_width === 0 || _height === 0 || isWebGL2(gl) && target === gl.TEXTURE_3D && _depth === 0) {
       throw new Error("empty textures are not allowed");
     }
     if (width === _width && height === _height && depth === (_depth || 0))
       return;
     width = _width, height = _height, depth = _depth || 0;
-    gl.bindTexture(target2, texture);
-    if (target2 === gl.TEXTURE_2D) {
-      gl.texImage2D(target2, 0, internalFormat, width, height, 0, format, type3, null);
-    } else if (isWebGL2(gl) && target2 === gl.TEXTURE_3D && depth !== void 0) {
-      gl.texImage3D(target2, 0, internalFormat, width, height, depth, 0, format, type3, null);
+    gl.bindTexture(target, texture);
+    if (target === gl.TEXTURE_2D) {
+      gl.texImage2D(target, 0, internalFormat, width, height, 0, format, type3, null);
+    } else if (isWebGL2(gl) && target === gl.TEXTURE_3D && depth !== void 0) {
+      gl.texImage3D(target, 0, internalFormat, width, height, depth, 0, format, type3, null);
     } else {
       throw new Error("unknown texture target");
     }
   }
-  define(1, 1, isWebGL2(gl) && target2 === gl.TEXTURE_3D ? 1 : 0);
+  define(1, 1, isWebGL2(gl) && target === gl.TEXTURE_3D ? 1 : 0);
   function load(data, sub = false) {
-    if (data.width === 0 || data.height === 0 || !isImage(data) && isWebGL2(gl) && isTexture3d(data, target2, gl) && data.depth === 0) {
+    if (data.width === 0 || data.height === 0 || !isImage(data) && isWebGL2(gl) && isTexture3d(data, target, gl) && data.depth === 0) {
       throw new Error("empty textures are not allowed");
     }
-    gl.bindTexture(target2, texture);
+    gl.bindTexture(target, texture);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
@@ -30529,40 +30529,40 @@ function createTexture(gl, extensions, kind, _format, _type, _filter) {
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, type3, data);
-    } else if (isTexture2d(data, target2, gl)) {
+    } else if (isTexture2d(data, target, gl)) {
       const _filter2 = data.filter ? getFilter(gl, data.filter) : filter5;
-      gl.texParameteri(target2, gl.TEXTURE_MAG_FILTER, _filter2);
-      gl.texParameteri(target2, gl.TEXTURE_MIN_FILTER, _filter2);
+      gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, _filter2);
+      gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, _filter2);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
       if (sub) {
-        gl.texSubImage2D(target2, 0, 0, 0, data.width, data.height, format, type3, data.array);
+        gl.texSubImage2D(target, 0, 0, 0, data.width, data.height, format, type3, data.array);
       } else {
         width = data.width, height = data.height;
-        gl.texImage2D(target2, 0, internalFormat, width, height, 0, format, type3, data.array);
+        gl.texImage2D(target, 0, internalFormat, width, height, 0, format, type3, data.array);
       }
-    } else if (isWebGL2(gl) && isTexture3d(data, target2, gl)) {
+    } else if (isWebGL2(gl) && isTexture3d(data, target, gl)) {
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       if (sub) {
-        gl.texSubImage3D(target2, 0, 0, 0, 0, data.width, data.height, data.depth, format, type3, data.array);
+        gl.texSubImage3D(target, 0, 0, 0, 0, data.width, data.height, data.depth, format, type3, data.array);
       } else {
         width = data.width, height = data.height, depth = data.depth;
-        gl.texImage3D(target2, 0, internalFormat, width, height, depth, 0, format, type3, data.array);
+        gl.texImage3D(target, 0, internalFormat, width, height, depth, 0, format, type3, data.array);
       }
     } else {
       throw new Error("unknown texture target");
     }
-    gl.bindTexture(target2, null);
+    gl.bindTexture(target, null);
     loadedData = data;
   }
   function mipmap() {
-    if (target2 !== gl.TEXTURE_2D) {
+    if (target !== gl.TEXTURE_2D) {
       throw new Error("mipmap only supported for 2d textures");
     }
     if (isWebGL2(gl) || isPowerOfTwo(width) && isPowerOfTwo(height)) {
-      gl.bindTexture(target2, texture);
-      gl.texParameteri(target2, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-      gl.generateMipmap(target2);
-      gl.bindTexture(target2, null);
+      gl.bindTexture(target, texture);
+      gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.generateMipmap(target);
+      gl.bindTexture(target, null);
       hasMipmap = true;
     } else {
       throw new Error("mipmap unsupported for non-power-of-two textures and webgl1");
@@ -30570,9 +30570,9 @@ function createTexture(gl, extensions, kind, _format, _type, _filter) {
   }
   function attachFramebuffer(framebuffer, attachment, layer) {
     framebuffer.bind();
-    if (target2 === gl.TEXTURE_2D) {
+    if (target === gl.TEXTURE_2D) {
       gl.framebufferTexture2D(gl.FRAMEBUFFER, getAttachment(gl, extensions, attachment), gl.TEXTURE_2D, texture, 0);
-    } else if (isWebGL2(gl) && target2 === gl.TEXTURE_3D) {
+    } else if (isWebGL2(gl) && target === gl.TEXTURE_3D) {
       if (layer === void 0)
         throw new Error("need `layer` to attach 3D texture");
       gl.framebufferTextureLayer(gl.FRAMEBUFFER, getAttachment(gl, extensions, attachment), texture, 0, layer);
@@ -30582,7 +30582,7 @@ function createTexture(gl, extensions, kind, _format, _type, _filter) {
   }
   return {
     id,
-    target: target2,
+    target,
     format,
     internalFormat,
     type: type3,
@@ -30596,18 +30596,18 @@ function createTexture(gl, extensions, kind, _format, _type, _filter) {
     mipmap,
     bind: (id2) => {
       gl.activeTexture(gl.TEXTURE0 + id2);
-      gl.bindTexture(target2, texture);
+      gl.bindTexture(target, texture);
     },
     unbind: (id2) => {
       gl.activeTexture(gl.TEXTURE0 + id2);
-      gl.bindTexture(target2, null);
+      gl.bindTexture(target, null);
     },
     attachFramebuffer,
     detachFramebuffer: (framebuffer, attachment) => {
       framebuffer.bind();
-      if (target2 === gl.TEXTURE_2D) {
+      if (target === gl.TEXTURE_2D) {
         gl.framebufferTexture2D(gl.FRAMEBUFFER, getAttachment(gl, extensions, attachment), gl.TEXTURE_2D, null, 0);
-      } else if (isWebGL2(gl) && target2 === gl.TEXTURE_3D) {
+      } else if (isWebGL2(gl) && target === gl.TEXTURE_3D) {
         gl.framebufferTextureLayer(gl.FRAMEBUFFER, getAttachment(gl, extensions, attachment), null, 0, 0);
       } else {
         throw new Error("unknown texture target");
@@ -30677,35 +30677,35 @@ function getCubeTarget(gl, side) {
   }
 }
 function createCubeTexture(gl, faces, mipmaps, onload) {
-  const target2 = gl.TEXTURE_CUBE_MAP;
+  const target = gl.TEXTURE_CUBE_MAP;
   const filter5 = gl.LINEAR;
   const internalFormat = gl.RGBA;
   const format = gl.RGBA;
   const type3 = gl.UNSIGNED_BYTE;
   let size4 = 0;
   let texture = gl.createTexture();
-  gl.bindTexture(target2, texture);
+  gl.bindTexture(target, texture);
   function load(cubeTarget, level, image, isReset) {
     if (size4 === 0)
       size4 = image.width;
-    gl.bindTexture(target2, texture);
+    gl.bindTexture(target, texture);
     gl.texImage2D(cubeTarget, level, internalFormat, size4, size4, 0, format, type3, null);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
     gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.bindTexture(target2, texture);
+    gl.bindTexture(target, texture);
     gl.texImage2D(cubeTarget, level, internalFormat, format, type3, image);
     loadedCount += 1;
     if (loadedCount === 6) {
       if (!destroyed) {
         if (mipmaps) {
-          gl.texParameteri(target2, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-          gl.generateMipmap(target2);
+          gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+          gl.generateMipmap(target);
         } else {
-          gl.texParameteri(target2, gl.TEXTURE_MIN_FILTER, filter5);
+          gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, filter5);
         }
-        gl.texParameteri(target2, gl.TEXTURE_MAG_FILTER, filter5);
+        gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, filter5);
       }
       if (!isReset)
         onload === null || onload === void 0 ? void 0 : onload(destroyed);
@@ -30739,7 +30739,7 @@ function createCubeTexture(gl, faces, mipmaps, onload) {
   let destroyed = false;
   return {
     id: getNextTextureId(),
-    target: target2,
+    target,
     format,
     internalFormat,
     type: type3,
@@ -30758,11 +30758,11 @@ function createCubeTexture(gl, faces, mipmaps, onload) {
     },
     bind: (id) => {
       gl.activeTexture(gl.TEXTURE0 + id);
-      gl.bindTexture(target2, texture);
+      gl.bindTexture(target, texture);
     },
     unbind: (id) => {
       gl.activeTexture(gl.TEXTURE0 + id);
-      gl.bindTexture(target2, null);
+      gl.bindTexture(target, null);
     },
     attachFramebuffer: () => {
     },
@@ -30770,7 +30770,7 @@ function createCubeTexture(gl, faces, mipmaps, onload) {
     },
     reset: () => {
       texture = getTexture(gl);
-      gl.bindTexture(target2, texture);
+      gl.bindTexture(target, texture);
       loadedCount = 0;
       for (const { cubeTarget, level, image } of facesData) {
         load(cubeTarget, level, image, true);
@@ -30790,10 +30790,10 @@ function isNullTexture(texture) {
 }
 function createNullTexture(gl) {
   var _a;
-  const target2 = (_a = gl === null || gl === void 0 ? void 0 : gl.TEXTURE_2D) !== null && _a !== void 0 ? _a : 3553;
+  const target = (_a = gl === null || gl === void 0 ? void 0 : gl.TEXTURE_2D) !== null && _a !== void 0 ? _a : 3553;
   return {
     id: getNextTextureId(),
-    target: target2,
+    target,
     format: NullTextureFormat,
     internalFormat: 0,
     type: 0,
@@ -30811,13 +30811,13 @@ function createNullTexture(gl) {
     bind: (id) => {
       if (gl) {
         gl.activeTexture(gl.TEXTURE0 + id);
-        gl.bindTexture(target2, null);
+        gl.bindTexture(target, null);
       }
     },
     unbind: (id) => {
       if (gl) {
         gl.activeTexture(gl.TEXTURE0 + id);
-        gl.bindTexture(target2, null);
+        gl.bindTexture(target, null);
       }
     },
     attachFramebuffer: () => {
@@ -39929,7 +39929,7 @@ var IntAdjacencyGraph;
   }
   IntAdjacencyGraph2.areVertexSetsConnected = areVertexSetsConnected;
 })(IntAdjacencyGraph || (IntAdjacencyGraph = {}));
-function areVertexSetsConnectedImpl(graph, frontier, target2, distance, visited) {
+function areVertexSetsConnectedImpl(graph, frontier, target, distance, visited) {
   const { b: neighbor, offset: offset3 } = graph;
   const newFrontier = [];
   for (let i = 0, il = frontier.length; i < il; ++i) {
@@ -39938,13 +39938,13 @@ function areVertexSetsConnectedImpl(graph, frontier, target2, distance, visited)
       const other = neighbor[j];
       if (visited.has(other))
         continue;
-      if (SortedArray.has(target2, other))
+      if (SortedArray.has(target, other))
         return true;
       visited.add(other);
       newFrontier[newFrontier.length] = other;
     }
   }
-  return distance > 1 ? areVertexSetsConnectedImpl(graph, newFrontier, target2, distance - 1, visited) : false;
+  return distance > 1 ? areVertexSetsConnectedImpl(graph, newFrontier, target, distance - 1, visited) : false;
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/common/property.js
@@ -42414,11 +42414,11 @@ function unaryOp(type3, description) {
 function binOp(type3, description) {
   return symbol(Arguments.List(type3, { nonEmpty: true }), type3, description);
 }
-function binRel(src, target2, description) {
+function binRel(src, target, description) {
   return symbol(Arguments.Dictionary({
     0: Argument(src),
     1: Argument(src)
-  }), target2, description);
+  }), target, description);
 }
 var TTargs = Arguments.Dictionary({
   0: Argument(Type.Num),
@@ -46387,11 +46387,11 @@ function addRing(state, a8, b8, isRingAtom) {
       break;
   }
   let leftOffset = 0, rightOffset = 0;
-  let found = false, target2 = 0;
+  let found = false, target = 0;
   current2 = b8;
   for (let t5 = 0; t5 < Constants.MaxDepth; t5++) {
     if (color[current2] === nc) {
-      target2 = current2;
+      target = current2;
       found = true;
       break;
     }
@@ -46406,7 +46406,7 @@ function addRing(state, a8, b8, isRingAtom) {
   current2 = a8;
   for (let t5 = 0; t5 < Constants.MaxDepth; t5++) {
     left[leftOffset++] = current2;
-    if (target2 === current2)
+    if (target === current2)
       break;
     current2 = pred[current2];
     if (current2 < 0)
@@ -49665,11 +49665,11 @@ function querySelection(selection, query2, inComplement = false) {
     const targetSel = selection(ctx);
     if (StructureSelection.structureCount(targetSel) === 0)
       return targetSel;
-    const target2 = inComplement ? structureSubtract(ctx.inputStructure, StructureSelection.unionStructure(targetSel)) : StructureSelection.unionStructure(targetSel);
-    if (target2.elementCount === 0)
+    const target = inComplement ? structureSubtract(ctx.inputStructure, StructureSelection.unionStructure(targetSel)) : StructureSelection.unionStructure(targetSel);
+    if (target.elementCount === 0)
       return StructureSelection.Empty(ctx.inputStructure);
     ctx.throwIfTimedOut();
-    ctx.pushInputStructure(target2);
+    ctx.pushInputStructure(target);
     const result2 = query2(ctx);
     ctx.popInputStructure();
     return StructureSelection.withInputStructure(result2, ctx.inputStructure);
@@ -51937,8 +51937,8 @@ function within(params) {
     }
   };
 }
-function withinMaxRadiusLookup({ queryCtx, selection, target: target2, maxRadius, invert }) {
-  const targetLookup = StructureSelection.unionStructure(target2).lookup3d;
+function withinMaxRadiusLookup({ queryCtx, selection, target, maxRadius, invert }) {
+  const targetLookup = StructureSelection.unionStructure(target).lookup3d;
   const ret = StructureSelection.LinearBuilder(queryCtx.inputStructure);
   const pos = Vec3.zero();
   StructureSelection.forEach(selection, (s, sI) => {
@@ -51967,8 +51967,8 @@ function withinMaxRadiusLookup({ queryCtx, selection, target: target2, maxRadius
   });
   return ret.getSelection();
 }
-function withinMaxRadius({ queryCtx, selection, target: target2, maxRadius, invert, elementRadius }) {
-  const targetStructure = StructureSelection.unionStructure(target2);
+function withinMaxRadius({ queryCtx, selection, target, maxRadius, invert, elementRadius }) {
+  const targetStructure = StructureSelection.unionStructure(target);
   const ret = StructureSelection.LinearBuilder(queryCtx.inputStructure);
   queryCtx.pushCurrentElement();
   StructureSelection.forEach(selection, (s, sI) => {
@@ -51983,8 +51983,8 @@ function withinMaxRadius({ queryCtx, selection, target: target2, maxRadius, inve
   queryCtx.popCurrentElement();
   return ret.getSelection();
 }
-function withinMinMaxRadius({ queryCtx, selection, target: target2, minRadius, maxRadius, invert, elementRadius }) {
-  const targetStructure = StructureSelection.unionStructure(target2);
+function withinMinMaxRadius({ queryCtx, selection, target, minRadius, maxRadius, invert, elementRadius }) {
+  const targetStructure = StructureSelection.unionStructure(target);
   const ret = StructureSelection.LinearBuilder(queryCtx.inputStructure);
   queryCtx.pushCurrentElement();
   StructureSelection.forEach(selection, (s, sI) => {
@@ -52000,7 +52000,7 @@ function withinMinMaxRadius({ queryCtx, selection, target: target2, minRadius, m
   return ret.getSelection();
 }
 function checkConnected(ctx, structure) {
-  const { queryCtx, input, target: target2, disjunct } = ctx;
+  const { queryCtx, input, target, disjunct } = ctx;
   const atomicBond = queryCtx.atomicBond;
   const interBonds = input.interUnitBonds;
   atomicBond.setStructure(input);
@@ -52021,7 +52021,7 @@ function checkConnected(ctx, structure) {
         atomicBond.b.element = inputUnit.elements[b8[l]];
         if (disjunct && SortedArray.has(unit2.elements, atomicBond.b.element))
           continue;
-        if (!target2.hasElement(atomicBond.b))
+        if (!target.hasElement(atomicBond.b))
           continue;
         atomicBond.aIndex = inputIndex;
         atomicBond.a.element = srcElements[i];
@@ -52041,7 +52041,7 @@ function checkConnected(ctx, structure) {
           const bond = bonds[bi];
           atomicBond.b.unit = bUnit;
           atomicBond.b.element = bElements[bond.indexB];
-          if (!target2.hasElement(atomicBond.b))
+          if (!target.hasElement(atomicBond.b))
             continue;
           if (disjunct && structure.hasElement(atomicBond.b))
             continue;
@@ -52060,9 +52060,9 @@ function checkConnected(ctx, structure) {
   }
   return false;
 }
-function isConnectedTo({ query: query2, target: target2, disjunct, invert, bondTest }) {
+function isConnectedTo({ query: query2, target, disjunct, invert, bondTest }) {
   return (ctx) => {
-    const targetSel = target2(ctx);
+    const targetSel = target(ctx);
     if (StructureSelection.isEmpty(targetSel))
       return targetSel;
     const selection = query2(ctx);
@@ -73645,17 +73645,17 @@ function addCellsVisitor(transform, _, { ctx, added, visited }) {
   ctx.cells.set(transform.ref, cell);
   added.push(cell);
 }
-function linkCells(target2, ctx) {
-  if (!target2.transform.dependsOn)
+function linkCells(target, ctx) {
+  if (!target.transform.dependsOn)
     return;
-  for (const ref of target2.transform.dependsOn) {
+  for (const ref of target.transform.dependsOn) {
     const t5 = ctx.tree.transforms.get(ref);
     if (!t5) {
       throw new Error(`Cannot depend on a non-existent transform.`);
     }
     const cell = ctx.cells.get(ref);
-    arraySetAdd(target2.dependencies.dependsOn, cell);
-    arraySetAdd(cell.dependencies.dependentBy, target2);
+    arraySetAdd(target.dependencies.dependsOn, cell);
+    arraySetAdd(cell.dependencies.dependentBy, target);
   }
 }
 function initCells(ctx, roots) {
@@ -74608,10 +74608,10 @@ var SimpleBuffer;
   }
   SimpleBuffer2.fromBuffer = fromBuffer;
   SimpleBuffer2.IsNativeEndianLittle = new Uint16Array(new Uint8Array([18, 52]).buffer)[0] === 13330;
-  function flipByteOrder2(source, target2, byteCount, elementByteSize, offset3) {
+  function flipByteOrder2(source, target, byteCount, elementByteSize, offset3) {
     for (let i = 0, n = byteCount; i < n; i += elementByteSize) {
       for (let j = 0; j < elementByteSize; j++) {
-        target2[offset3 + i + elementByteSize - j - 1] = source[offset3 + i + j];
+        target[offset3 + i + elementByteSize - j - 1] = source[offset3 + i + j];
       }
     }
   }
@@ -74624,12 +74624,12 @@ var SimpleBuffer;
     }
   }
   SimpleBuffer2.flipByteOrderInPlace2 = flipByteOrderInPlace2;
-  function ensureLittleEndian(source, target2, byteCount, elementByteSize, offset3) {
+  function ensureLittleEndian(source, target, byteCount, elementByteSize, offset3) {
     if (SimpleBuffer2.IsNativeEndianLittle)
       return;
     if (!byteCount || elementByteSize <= 1)
       return;
-    flipByteOrder2(source, target2, byteCount, elementByteSize, offset3);
+    flipByteOrder2(source, target, byteCount, elementByteSize, offset3);
   }
   SimpleBuffer2.ensureLittleEndian = ensureLittleEndian;
 })(SimpleBuffer || (SimpleBuffer = {}));
@@ -74924,7 +74924,7 @@ async function readDsn6Header(file) {
   const header2 = isBrix ? parseBrixHeader(brixStr) : parseDsn6Header(buffer, littleEndian);
   return { header: header2, littleEndian };
 }
-async function parseDsn6Values(header2, source, target2, littleEndian) {
+async function parseDsn6Values(header2, source, target, littleEndian) {
   if (!littleEndian) {
     SimpleBuffer.flipByteOrderInPlace2(source.buffer);
   }
@@ -74942,7 +74942,7 @@ async function parseDsn6Values(header2, source, target2, littleEndian) {
               const x = 8 * xx + i;
               if (x < xExtent && y < yExtent && z < zExtent) {
                 const idx = (x * yExtent + y) * zExtent + z;
-                target2[idx] = (source[offset3] - summand) / divisor;
+                target[idx] = (source[offset3] - summand) / divisor;
                 ++offset3;
               } else {
                 offset3 += 8 - i;
@@ -82335,10 +82335,10 @@ var operators2 = [
     name: "gap",
     type: postfix,
     rule: postfixOp(/GAP\s+([-+]?[0-9]*\.?[0-9]+)/i, 1).map((x) => parseFloat(x)),
-    map: (distance, target2) => {
+    map: (distance, target) => {
       return B9.struct.filter.within({
         "0": B9.struct.generator.all(),
-        target: target2,
+        target,
         "atom-radius": B9.acp("vdw"),
         "max-radius": distance,
         invert: true
@@ -82352,14 +82352,14 @@ var operators2 = [
     abbr: ["a."],
     type: postfix,
     rule: postfixOp(/(AROUND|a\.)\s+([-+]?[0-9]*\.?[0-9]+)/i, 2).map((x) => parseFloat(x)),
-    map: (radius, target2) => {
+    map: (radius, target) => {
       return B9.struct.modifier.exceptBy({
         "0": B9.struct.filter.within({
           "0": B9.struct.generator.all(),
-          target: target2,
+          target,
           "max-radius": radius
         }),
-        by: target2
+        by: target
       });
     }
   },
@@ -82381,10 +82381,10 @@ var operators2 = [
     abbr: ["w."],
     type: binaryLeft,
     rule: ofOp("WITHIN", "w."),
-    map: (radius, selection, target2) => {
+    map: (radius, selection, target) => {
       return B9.struct.filter.within({
         0: selection,
-        target: target2,
+        target,
         "max-radius": radius
       });
     }
@@ -82396,14 +82396,14 @@ var operators2 = [
     abbr: ["nto."],
     type: binaryLeft,
     rule: ofOp("NEAR_TO", "nto."),
-    map: (radius, selection, target2) => {
+    map: (radius, selection, target) => {
       return B9.struct.modifier.exceptBy({
         "0": B9.struct.filter.within({
           "0": selection,
-          target: target2,
+          target,
           "max-radius": radius
         }),
-        by: target2
+        by: target
       });
     }
   },
@@ -82414,15 +82414,15 @@ var operators2 = [
     abbr: ["be."],
     type: binaryLeft,
     rule: ofOp("BEYOND", "be."),
-    map: (radius, selection, target2) => {
+    map: (radius, selection, target) => {
       return B9.struct.modifier.exceptBy({
         "0": B9.struct.filter.within({
           "0": selection,
-          target: target2,
+          target,
           "max-radius": radius,
           invert: true
         }),
-        by: target2
+        by: target
       });
     }
   },
@@ -83298,10 +83298,10 @@ var operators3 = [
     name: "exwithin",
     type: prefix,
     rule: prefixOp(/EXWITHIN\s+([-+]?[0-9]*\.?[0-9]+)\s+OF/i, 1).map((x) => parseFloat(x)),
-    map: (radius, target2) => {
+    map: (radius, target) => {
       return B13.struct.modifier.exceptBy({
-        "0": B13.struct.modifier.includeSurroundings({ 0: target2, radius }),
-        by: target2
+        "0": B13.struct.modifier.includeSurroundings({ 0: target, radius }),
+        by: target
       });
     }
   },
@@ -97874,27 +97874,27 @@ var CameraTransitionManager = class _CameraTransitionManager {
   const _rotDist = Quat.identity();
   const _sourcePosition = Vec3();
   const _targetPosition = Vec3();
-  function defaultTransition(out, t5, source, target2) {
-    Camera.copySnapshot(out, target2);
-    Quat.slerp(_rotUp, Quat.Identity, Quat.rotationTo(_rotUp, source.up, target2.up), t5);
+  function defaultTransition(out, t5, source, target) {
+    Camera.copySnapshot(out, target);
+    Quat.slerp(_rotUp, Quat.Identity, Quat.rotationTo(_rotUp, source.up, target.up), t5);
     Vec3.transformQuat(out.up, source.up, _rotUp);
-    Vec3.lerp(out.target, source.target, target2.target, t5);
+    Vec3.lerp(out.target, source.target, target.target, t5);
     const distSource = Vec3.distance(source.target, source.position);
-    const distTarget = Vec3.distance(target2.target, target2.position);
+    const distTarget = Vec3.distance(target.target, target.position);
     const dist = lerp(distSource, distTarget, t5);
     Vec3.sub(_sourcePosition, source.position, source.target);
     Vec3.normalize(_sourcePosition, _sourcePosition);
-    Vec3.sub(_targetPosition, target2.position, target2.target);
+    Vec3.sub(_targetPosition, target.position, target.target);
     Vec3.normalize(_targetPosition, _targetPosition);
     Quat.rotationTo(_rotDist, _sourcePosition, _targetPosition);
     Quat.slerp(_rotDist, Quat.Identity, _rotDist, t5);
     Vec3.transformQuat(_sourcePosition, _sourcePosition, _rotDist);
     Vec3.scale(_sourcePosition, _sourcePosition, dist);
     Vec3.add(out.position, out.target, _sourcePosition);
-    out.radius = lerp(source.radius, target2.radius, t5);
-    out.radiusMax = lerp(source.radiusMax, target2.radiusMax, t5);
-    out.fov = lerp(source.fov, target2.fov, t5);
-    out.fog = lerp(source.fog, target2.fog, t5);
+    out.radius = lerp(source.radius, target.radius, t5);
+    out.radiusMax = lerp(source.radiusMax, target.radiusMax, t5);
+    out.fov = lerp(source.fov, target.fov, t5);
+    out.fog = lerp(source.fog, target.fog, t5);
   }
   CameraTransitionManager2.defaultTransition = defaultTransition;
 })(CameraTransitionManager || (CameraTransitionManager = {}));
@@ -97969,7 +97969,7 @@ var Camera = class _Camera {
   getTargetDistance(radius) {
     return Math.max(this.minTargetDistance / this.scale, _Camera.targetDistance(radius, this.state.mode, this.state.fov, this.viewport.width, this.viewport.height));
   }
-  getFocus(target2, radius, up3, dir, snapshot) {
+  getFocus(target, radius, up3, dir, snapshot) {
     var _a, _b;
     const r = Math.max(radius, 0.01);
     const targetDistance = this.getTargetDistance(r);
@@ -97977,45 +97977,45 @@ var Camera = class _Camera {
     if (dir)
       Vec3.matchDirection(this.deltaDirection, dir, this.deltaDirection);
     Vec3.setMagnitude(this.deltaDirection, this.deltaDirection, targetDistance);
-    Vec3.sub(this.newPosition, target2, this.deltaDirection);
+    Vec3.sub(this.newPosition, target, this.deltaDirection);
     const state = _Camera.copySnapshot(_Camera.createDefaultSnapshot(), this.state);
-    state.target = Vec3.clone(target2);
+    state.target = Vec3.clone(target);
     state.radius = r;
     state.position = Vec3.clone(this.newPosition);
     if (up3)
       Vec3.matchDirection(state.up, up3, state.up);
     return state;
   }
-  getCenter(target2, radius) {
+  getCenter(target, radius) {
     Vec3.sub(this.deltaDirection, this.target, this.position);
-    Vec3.sub(this.newPosition, target2, this.deltaDirection);
+    Vec3.sub(this.newPosition, target, this.deltaDirection);
     const state = _Camera.copySnapshot(_Camera.createDefaultSnapshot(), this.state);
-    state.target = Vec3.clone(target2);
+    state.target = Vec3.clone(target);
     state.position = Vec3.clone(this.newPosition);
     if (radius)
       state.radius = Math.max(radius, 0.01);
     return state;
   }
-  getInvariantFocus(target2, radius, up3, dir) {
+  getInvariantFocus(target, radius, up3, dir) {
     const r = Math.max(radius, 0.01);
     const targetDistance = this.getTargetDistance(r);
     Vec3.copy(this.deltaDirection, dir);
     Vec3.setMagnitude(this.deltaDirection, this.deltaDirection, targetDistance);
-    Vec3.sub(this.newPosition, target2, this.deltaDirection);
+    Vec3.sub(this.newPosition, target, this.deltaDirection);
     const state = _Camera.copySnapshot(_Camera.createDefaultSnapshot(), this.state);
-    state.target = Vec3.clone(target2);
+    state.target = Vec3.clone(target);
     state.radius = r;
     state.position = Vec3.clone(this.newPosition);
     Vec3.copy(state.up, up3);
     return state;
   }
-  focus(target2, radius, durationMs, up3, dir) {
+  focus(target, radius, durationMs, up3, dir) {
     if (radius > 0) {
-      this.setState(this.getFocus(target2, radius, up3, dir), durationMs);
+      this.setState(this.getFocus(target, radius, up3, dir), durationMs);
     }
   }
-  center(target2, durationMs) {
-    this.setState(this.getCenter(target2), durationMs);
+  center(target, durationMs) {
+    this.setState(this.getCenter(target), durationMs);
   }
   /** Transform point into 2D window coordinates. */
   project(out, point) {
@@ -99085,11 +99085,11 @@ var FxaaPass = class {
       this.renderable.update();
     }
   }
-  render(viewport, target2) {
+  render(viewport, target) {
     if (isTimingMode)
       this.webgl.timer.mark("FxaaPass.render");
-    if (target2) {
-      target2.bind();
+    if (target) {
+      target.bind();
     } else {
       this.webgl.bindDrawingBuffer();
     }
@@ -99634,7 +99634,7 @@ var SmaaPass = class {
       this.blendRenderable.update();
     }
   }
-  render(viewport, target2) {
+  render(viewport, target) {
     if (isTimingMode)
       this.webgl.timer.mark("SmaaPass.render");
     this.edgesTarget.bind();
@@ -99643,8 +99643,8 @@ var SmaaPass = class {
     this.weightsTarget.bind();
     this.updateState(viewport);
     this.weightsRenderable.render();
-    if (target2) {
-      target2.bind();
+    if (target) {
+      target.bind();
     } else {
       this.webgl.bindDrawingBuffer();
     }
@@ -100599,11 +100599,11 @@ var CasPass = class {
       this.renderable.update();
     }
   }
-  render(viewport, target2) {
+  render(viewport, target) {
     if (isTimingMode)
       this.webgl.timer.mark("CasPass.render");
-    if (target2) {
-      target2.bind();
+    if (target) {
+      target.bind();
     } else {
       this.webgl.bindDrawingBuffer();
     }
@@ -100838,11 +100838,11 @@ var DofPass = class {
       this.renderable.update();
     }
   }
-  render(viewport, target2) {
+  render(viewport, target) {
     if (isTimingMode)
       this.webgl.timer.mark("DofPass.render");
-    if (target2) {
-      target2.bind();
+    if (target) {
+      target.bind();
     } else {
       this.webgl.bindDrawingBuffer();
     }
@@ -101110,7 +101110,7 @@ var BloomPass = class {
     ValueCell.update(this.compositeRenderable.values.uBloomRadius, props.radius);
     ValueCell.update(this.compositeRenderable.values.uBloomStrength, props.strength);
   }
-  render(viewport, target2) {
+  render(viewport, target) {
     if (isTimingMode)
       this.webgl.timer.mark("BloomPass.render");
     const { gl, state } = this.webgl;
@@ -101147,8 +101147,8 @@ var BloomPass = class {
     this.compositeTarget.bind();
     this.compositeRenderable.update();
     this.compositeRenderable.render();
-    if (target2) {
-      target2.bind();
+    if (target) {
+      target.bind();
     } else {
       this.webgl.bindDrawingBuffer();
     }
@@ -102913,32 +102913,32 @@ var AntialiasingPass = class {
       this.cas.setSize(width, height);
     }
   }
-  _renderFxaa(camera, input, target2, props) {
+  _renderFxaa(camera, input, target, props) {
     if (props.antialiasing.name !== "fxaa")
       return;
     this.fxaa.update(input, props.antialiasing.params);
-    this.fxaa.render(camera.viewport, target2);
+    this.fxaa.render(camera.viewport, target);
   }
-  _renderSmaa(camera, input, target2, props) {
+  _renderSmaa(camera, input, target, props) {
     if (props.antialiasing.name !== "smaa")
       return;
     this.smaa.update(input, props.antialiasing.params);
-    this.smaa.render(camera.viewport, target2);
+    this.smaa.render(camera.viewport, target);
   }
-  _renderAntialiasing(camera, input, target2, props) {
+  _renderAntialiasing(camera, input, target, props) {
     if (props.antialiasing.name === "fxaa") {
-      this._renderFxaa(camera, input, target2, props);
+      this._renderFxaa(camera, input, target, props);
     } else if (props.antialiasing.name === "smaa") {
-      this._renderSmaa(camera, input, target2, props);
+      this._renderSmaa(camera, input, target, props);
     }
   }
-  _renderCas(camera, input, target2, props) {
+  _renderCas(camera, input, target, props) {
     if (props.sharpening.name !== "on")
       return;
     if (props.antialiasing.name !== "off")
       input = this.internalTarget.texture;
     this.cas.update(input, props.sharpening.params);
-    this.cas.render(camera.viewport, target2);
+    this.cas.render(camera.viewport, target);
   }
   render(camera, input, toDrawingBuffer, props) {
     if (props.antialiasing.name === "off" && props.sharpening.name === "off")
@@ -102947,14 +102947,14 @@ var AntialiasingPass = class {
       console.error('SMAA not supported, missing "HTMLImageElement"');
       return;
     }
-    const target2 = toDrawingBuffer === true ? void 0 : toDrawingBuffer === false ? this.target : toDrawingBuffer;
+    const target = toDrawingBuffer === true ? void 0 : toDrawingBuffer === false ? this.target : toDrawingBuffer;
     if (props.sharpening.name === "off") {
-      this._renderAntialiasing(camera, input, target2, props);
+      this._renderAntialiasing(camera, input, target, props);
     } else if (props.antialiasing.name === "off") {
-      this._renderCas(camera, input, target2, props);
+      this._renderCas(camera, input, target, props);
     } else {
       this._renderAntialiasing(camera, input, this.internalTarget, props);
-      this._renderCas(camera, input, target2, props);
+      this._renderCas(camera, input, target, props);
     }
   }
 };
@@ -104469,13 +104469,13 @@ var MarkingPass = class {
     ValueCell.updateIfChanged(overlayValues.uHighlightEdgeStrength, highlightEdgeStrength);
     ValueCell.updateIfChanged(overlayValues.uSelectEdgeStrength, selectEdgeStrength);
   }
-  render(viewport, target2) {
+  render(viewport, target) {
     if (isTimingMode)
       this.webgl.timer.mark("MarkingPass.render");
     this.edgesTarget.bind();
     this.setEdgeState(viewport);
     this.edge.render();
-    target2.bind();
+    target.bind();
     this.setOverlayState(viewport);
     this.overlay.render();
     if (isTimingMode)
@@ -104633,9 +104633,9 @@ var DrawPass = class {
     }
     const isPostprocessingEnabled = PostprocessingPass.isEnabled(postprocessingProps);
     if (scene.opacityAverage < 1) {
-      const target2 = isPostprocessingEnabled ? this.transparentColorTarget : this.colorTarget;
+      const target = isPostprocessingEnabled ? this.transparentColorTarget : this.colorTarget;
       if (isPostprocessingEnabled) {
-        target2.bind();
+        target.bind();
         renderer.clear(false, false, true);
       }
       const dpoitTextures = this.dpoit.bind();
@@ -104646,13 +104646,13 @@ var DrawPass = class {
         const dpoitTextures2 = this.dpoit.bindDualDepthPeeling();
         renderer.renderDpoitTransparent(scene.primitives, camera, this.depthTextureOpaque, dpoitTextures2);
         if (iterations > 1) {
-          target2.bind();
+          target.bind();
           this.dpoit.renderBlendBack();
         }
         if (isTimingMode)
           this.webgl.timer.markEnd("DpoitPass.layer");
       }
-      target2.bind();
+      target.bind();
       this.dpoit.render();
     }
     if (PostprocessingPass.isEnabled(postprocessingProps)) {
@@ -104679,14 +104679,14 @@ var DrawPass = class {
     }
     const isPostprocessingEnabled = PostprocessingPass.isEnabled(postprocessingProps);
     if (scene.opacityAverage < 1) {
-      const target2 = isPostprocessingEnabled ? this.transparentColorTarget : this.colorTarget;
+      const target = isPostprocessingEnabled ? this.transparentColorTarget : this.colorTarget;
       if (isPostprocessingEnabled) {
-        target2.bind();
+        target.bind();
         renderer.clear(false, false, true);
       }
       this.wboit.bind();
       renderer.renderWboitTransparent(scene.primitives, camera, this.depthTextureOpaque);
-      target2.bind();
+      target.bind();
       this.wboit.render();
     }
     if (PostprocessingPass.isEnabled(postprocessingProps)) {
@@ -104695,8 +104695,8 @@ var DrawPass = class {
     if (scene.volumes.renderables.length > 0) {
       this.wboit.bind();
       renderer.renderWboitTransparent(scene.volumes, camera, this.depthTextureOpaque);
-      const target2 = isPostprocessingEnabled ? this.postprocessing.target : this.colorTarget;
-      target2.bind();
+      const target = isPostprocessingEnabled ? this.postprocessing.target : this.colorTarget;
+      target.bind();
       this.wboit.render();
     }
   }
@@ -104763,20 +104763,20 @@ var DrawPass = class {
         }
       }
       if (scene.volumes.renderables.length > 0) {
-        const target2 = PostprocessingPass.isEnabled(postprocessingProps) ? this.postprocessing.target : this.colorTarget;
+        const target = PostprocessingPass.isEnabled(postprocessingProps) ? this.postprocessing.target : this.colorTarget;
         if (!this.packedDepth) {
-          this.depthTextureOpaque.detachFramebuffer(target2.framebuffer, "depth");
+          this.depthTextureOpaque.detachFramebuffer(target.framebuffer, "depth");
         } else {
-          (_e = this.colorTarget.depthRenderbuffer) === null || _e === void 0 ? void 0 : _e.detachFramebuffer(target2.framebuffer);
+          (_e = this.colorTarget.depthRenderbuffer) === null || _e === void 0 ? void 0 : _e.detachFramebuffer(target.framebuffer);
         }
-        target2.bind();
+        target.bind();
         renderer.renderVolume(scene.volumes, camera, this.depthTextureOpaque);
         if (!this.packedDepth) {
-          this.depthTextureOpaque.attachFramebuffer(target2.framebuffer, "depth");
+          this.depthTextureOpaque.attachFramebuffer(target.framebuffer, "depth");
         } else {
-          (_f = this.colorTarget.depthRenderbuffer) === null || _f === void 0 ? void 0 : _f.attachFramebuffer(target2.framebuffer);
+          (_f = this.colorTarget.depthRenderbuffer) === null || _f === void 0 ? void 0 : _f.attachFramebuffer(target.framebuffer);
         }
-        target2.bind();
+        target.bind();
       }
     } else if (scene.opacityAverage < 1) {
       renderer.renderBlendedTransparent(scene.primitives, camera);
@@ -104809,7 +104809,7 @@ var DrawPass = class {
     } else {
       this._renderBlended(renderer, camera, scene, !volumeRendering && !postprocessingEnabled && !antialiasingEnabled && toDrawingBuffer, transparentBackground, props.postprocessing);
     }
-    const target2 = postprocessingEnabled ? this.postprocessing.target : !toDrawingBuffer || volumeRendering || oitEnabled ? this.colorTarget : this.drawTarget;
+    const target = postprocessingEnabled ? this.postprocessing.target : !toDrawingBuffer || volumeRendering || oitEnabled ? this.colorTarget : this.drawTarget;
     if (markingEnabled && scene.markerAverage > 0) {
       const markingDepthTest = props.marking.ghostEdgeStrength < 1;
       if (markingDepthTest && scene.markerAverage !== 1) {
@@ -104821,9 +104821,9 @@ var DrawPass = class {
       renderer.clear(false, true);
       renderer.renderMarkingMask(scene.primitives, camera, markingDepthTest ? this.marking.depthTarget.texture : null);
       this.marking.update(props.marking);
-      this.marking.render(camera.viewport, target2);
+      this.marking.render(camera.viewport, target);
     } else {
-      target2.bind();
+      target.bind();
     }
     if (helper.debug.isEnabled) {
       helper.debug.syncVisibility();
@@ -108339,8 +108339,8 @@ function updateOrthoRayCamera(camera, ray, up3) {
   const r = Quat.fromUnitVec3(Quat(), direction, Vec3.negUnitZ);
   Quat.invert(r, r);
   const eye = Vec3.clone(ray.origin);
-  const target2 = Vec3.add(Vec3(), eye, direction);
-  Mat4.lookAt(camera.view, eye, target2, up3);
+  const target = Vec3.add(Vec3(), eye, direction);
+  Mat4.lookAt(camera.view, eye, target, up3);
 }
 
 // node_modules/molstar/lib/mol-canvas3d/canvas3d.js
@@ -108908,26 +108908,26 @@ var Canvas3D;
       if (animationFrameCB)
         _requestAnimationFrame(animationFrameCB);
     }
-    function identify(target2) {
+    function identify(target) {
       if (webgl.isContextLost)
         return void 0;
       shaderManager.finalize(["pick"], true);
-      if ("origin" in target2) {
-        return rayHelper.identify(target2, camera);
+      if ("origin" in target) {
+        return rayHelper.identify(target, camera);
       } else {
         const cam = p6.camera.stereo.name === "on" ? stereoCamera : camera;
-        return pickHelper.identify(target2[0], target2[1], cam);
+        return pickHelper.identify(target[0], target[1], cam);
       }
     }
-    function asyncIdentify(target2) {
+    function asyncIdentify(target) {
       if (webgl.isContextLost)
         return void 0;
       shaderManager.finalize(["pick"], true);
-      if ("origin" in target2) {
-        return rayHelper.asyncIdentify(target2, camera);
+      if ("origin" in target) {
+        return rayHelper.asyncIdentify(target, camera);
       } else {
         const cam = p6.camera.stereo.name === "on" ? stereoCamera : camera;
-        return pickHelper.asyncIdentify(target2[0], target2[1], cam);
+        return pickHelper.asyncIdentify(target[0], target[1], cam);
       }
     }
     function commit(isSynchronous = false) {
@@ -118812,16 +118812,16 @@ var StructureFocusRepresentationBehavior = class extends PluginBehavior.WithSubs
     const loci = element_exports.Loci.remap(sourceLoci, parent.obj.data);
     const residueLoci = element_exports.Loci.extendToWholeResidues(loci);
     const residueBundle = element_exports.Bundle.fromLoci(residueLoci);
-    const target2 = element_exports.Bundle.toExpression(residueBundle);
+    const target = element_exports.Bundle.toExpression(residueBundle);
     let surroundings2 = MolScriptBuilder.struct.modifier.includeSurroundings({
-      0: target2,
+      0: target,
       radius: this.params.expandRadius,
       "as-whole-residues": true
     });
     if (this.params.excludeTargetFromSurroundings) {
       surroundings2 = MolScriptBuilder.struct.modifier.exceptBy({
         0: surroundings2,
-        by: target2
+        by: target
       });
     }
     const { state, builder, refs } = this.ensureShape(parent);
@@ -120904,12 +120904,12 @@ function getFocusSnapshot(plugin, options) {
   var _a, _b;
   if (!plugin.canvas3d)
     return void 0;
-  const targetSpheres = (_a = options.targets) === null || _a === void 0 ? void 0 : _a.map((target2) => {
+  const targetSpheres = (_a = options.targets) === null || _a === void 0 ? void 0 : _a.map((target) => {
     var _a2, _b2, _c;
-    const bounding = target2.targetRef !== void 0 ? getCellBoundingSphere(plugin, target2.targetRef) : getPluginBoundingSphere(plugin);
+    const bounding = target.targetRef !== void 0 ? getCellBoundingSphere(plugin, target.targetRef) : getPluginBoundingSphere(plugin);
     if (!bounding)
       return void 0;
-    const radius = (_a2 = target2.radius) !== null && _a2 !== void 0 ? _a2 : bounding.radius * ((_b2 = target2.radiusFactor) !== null && _b2 !== void 0 ? _b2 : 1) + ((_c = target2.extraRadius) !== null && _c !== void 0 ? _c : 0);
+    const radius = (_a2 = target.radius) !== null && _a2 !== void 0 ? _a2 : bounding.radius * ((_b2 = target.radiusFactor) !== null && _b2 !== void 0 ? _b2 : 1) + ((_c = target.extraRadius) !== null && _c !== void 0 ? _c : 0);
     return Sphere3D.create(bounding.center, radius);
   }).filter((sphere) => sphere !== void 0);
   const mergedSphere = targetSpheres && targetSpheres.length > 0 ? boundingSphereOfSpheres(targetSpheres) : getPluginBoundingSphere(plugin);
@@ -120923,14 +120923,14 @@ function getFocusSnapshot(plugin, options) {
 var _tmpVec = Vec3();
 function snapshotFromSphereAndDirections(camera, options) {
   var _a, _b;
-  const target2 = options.center;
+  const target = options.center;
   const radius = Math.max(options.radius, 0.01);
   const direction = (_a = options.direction) !== null && _a !== void 0 ? _a : Vec3.sub(Vec3(), camera.target, camera.position);
   const up3 = Vec3.orthogonalize(Vec3(), direction, (_b = options.up) !== null && _b !== void 0 ? _b : camera.up);
   const distance = camera.getTargetDistance(radius);
   const deltaDirection = Vec3.setMagnitude(_tmpVec, direction, distance);
-  const position = Vec3.sub(Vec3(), target2, deltaDirection);
-  return { target: target2, position, up: up3, radius };
+  const position = Vec3.sub(Vec3(), target, deltaDirection);
+  return { target, position, up: up3, radius };
 }
 function getCellBoundingSphere(plugin, cellRef) {
   const spheres2 = collectCellBoundingSpheres([], plugin, cellRef);
@@ -123262,7 +123262,7 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
     }
     boxFromCameraTarget(snapshot, boundByBoundarySize) {
       var _a;
-      const target2 = snapshot.target;
+      const target = snapshot.target;
       const distance = this.cameraTargetDistance(snapshot);
       const top = Math.tan(0.5 * snapshot.fov) * distance;
       let radius = top;
@@ -123282,7 +123282,7 @@ var VolumeStreaming = class extends PluginStateObject.CreateBehavior({ name: "Vo
       } else {
         radiusX = radiusY = radiusZ = radius;
       }
-      return Box3D.create(Vec3.create(target2[0] - radiusX, target2[1] - radiusY, target2[2] - radiusZ), Vec3.create(target2[0] + radiusX, target2[1] + radiusY, target2[2] + radiusZ));
+      return Box3D.create(Vec3.create(target[0] - radiusX, target[1] - radiusY, target[2] - radiusZ), Vec3.create(target[0] + radiusX, target[1] + radiusY, target[2] + radiusZ));
     }
     decideDetail(box4, baseDetail) {
       const cellVolume = this.info.kind === "x-ray" ? Box3D.volume(this.data.structure.boundary.box) : this.info.header.spacegroup.size.reduce((a8, b8) => a8 * b8, 1);
@@ -123482,8 +123482,8 @@ function createOrUpdateRef(state, cell, ctor, ...args) {
 function isType(t5) {
   return (cell) => t5.is(cell.obj);
 }
-function isTypeRoot(t5, target2) {
-  return (cell, state) => !target2(state) && t5.is(cell.obj);
+function isTypeRoot(t5, target) {
+  return (cell, state) => !target(state) && t5.is(cell.obj);
 }
 function isTransformer(t5) {
   return (cell) => cell.transform.transformer === t5;
@@ -124211,8 +124211,8 @@ function createOrUpdateRefList2(state, cell, list3, ctor, ...args) {
   }
   return ref;
 }
-function isTypeRoot2(t5, target2) {
-  return (cell, state) => !target2(state) && t5.is(cell.obj);
+function isTypeRoot2(t5, target) {
+  return (cell, state) => !target(state) && t5.is(cell.obj);
 }
 function noop4() {
 }
@@ -125225,12 +125225,12 @@ function getIntraBondLoci(pickingId, structureGroup, id) {
       return element_exports.Loci(structure.target, [{ unit: unit2, indices: indices2 }]);
     } else {
       if (Unit.isAtomic(unit2)) {
-        const { target: target2 } = structure;
+        const { target } = structure;
         const iA = unit2.bonds.a[groupId];
         const iB = unit2.bonds.b[groupId];
-        return Bond.Loci(target2, [
-          Bond.Location(target2, unit2, iA, target2, unit2, iB),
-          Bond.Location(target2, unit2, iB, target2, unit2, iA)
+        return Bond.Loci(target, [
+          Bond.Location(target, unit2, iA, target, unit2, iB),
+          Bond.Location(target, unit2, iB, target, unit2, iA)
         ]);
       }
     }
@@ -125287,16 +125287,16 @@ function eachIntraBond(loci, structureGroup, apply, isMarking) {
 function getInterBondLoci(pickingId, structure, id) {
   const { objectId, groupId } = pickingId;
   if (id === objectId) {
-    const { target: target2 } = structure;
+    const { target } = structure;
     if (groupId === PickingId.Null) {
-      return Structure.Loci(target2);
+      return Structure.Loci(target);
     } else {
       const b8 = structure.interUnitBonds.edges[groupId];
       const uA = structure.unitMap.get(b8.unitA);
       const uB = structure.unitMap.get(b8.unitB);
-      return Bond.Loci(target2, [
-        Bond.Location(target2, uA, b8.indexA, target2, uB, b8.indexB),
-        Bond.Location(target2, uB, b8.indexB, target2, uA, b8.indexA)
+      return Bond.Loci(target, [
+        Bond.Location(target, uA, b8.indexA, target, uB, b8.indexB),
+        Bond.Location(target, uB, b8.indexB, target, uA, b8.indexA)
       ]);
     }
   }
@@ -127516,19 +127516,19 @@ var tmpDir4 = Vec3();
 var tmpVecA6 = Vec3();
 var tmpVecB6 = Vec3();
 var AtomicPolymerTraceIterator = class {
-  atomicPos(target2, index) {
+  atomicPos(target, index) {
     if (index !== -1) {
-      target2[0] = this.atomicConformation.x[index];
-      target2[1] = this.atomicConformation.y[index];
-      target2[2] = this.atomicConformation.z[index];
+      target[0] = this.atomicConformation.x[index];
+      target[1] = this.atomicConformation.y[index];
+      target[2] = this.atomicConformation.z[index];
     }
   }
-  pos(target2, residueIndex2, ss) {
+  pos(target, residueIndex2, ss) {
     const index = this.traceElementIndex[residueIndex2];
     if (this.helixOrientationCenters && isHelixSS(ss)) {
-      Vec3.fromArray(target2, this.helixOrientationCenters, residueIndex2 * 3);
+      Vec3.fromArray(target, this.helixOrientationCenters, residueIndex2 * 3);
     } else {
-      this.atomicPos(target2, index);
+      this.atomicPos(target, index);
     }
   }
   updateResidueSegmentRange(polymerSegment) {
@@ -127810,11 +127810,11 @@ var CoarsePolymerTraceIterator = class {
   getElementIndex(elementIndex) {
     return Math.min(Math.max(this.polymerSegment.start, elementIndex), this.polymerSegment.end - 1);
   }
-  pos(target2, elementIndex) {
+  pos(target, elementIndex) {
     const index = this.unit.elements[elementIndex];
-    target2[0] = this.conformation.x[index];
-    target2[1] = this.conformation.y[index];
-    target2[2] = this.conformation.z[index];
+    target[0] = this.conformation.x[index];
+    target[1] = this.conformation.y[index];
+    target[2] = this.conformation.z[index];
   }
   move() {
     if (this.state === CoarsePolymerTraceIteratorState.nextPolymer) {
@@ -138323,12 +138323,12 @@ var ErrorContext = class {
 
 // node_modules/molstar/lib/mol-plugin/container.js
 var PluginContainer = class {
-  mount(target2) {
+  mount(target) {
     var _a;
-    if (this.parent.parentElement !== target2) {
+    if (this.parent.parentElement !== target) {
       (_a = this.parent.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(this.parent);
     }
-    target2.appendChild(this.parent);
+    target.appendChild(this.parent);
   }
   unmount() {
     var _a;
@@ -138380,8 +138380,8 @@ var PluginContext = class {
   async initContainerAsync(options) {
     return this._initContainer(options);
   }
-  async mountAsync(target2, initOptions) {
-    return this._mount(target2, initOptions);
+  async mountAsync(target, initOptions) {
+    return this._mount(target, initOptions);
   }
   _initContainer(options) {
     var _a;
@@ -138401,13 +138401,13 @@ var PluginContext = class {
    * Mount the plugin into the target element (assumes the target has "relative"-like positioninig).
    * If initContainer wasn't called separately before, initOptions will be passed to it.
    */
-  _mount(target2, initOptions) {
+  _mount(target, initOptions) {
     var _a;
     if (this.disposed)
       throw new Error("Cannot mount a disposed context");
     if (!this._initContainer(initOptions))
       return false;
-    (_a = this.container) === null || _a === void 0 ? void 0 : _a.mount(target2);
+    (_a = this.container) === null || _a === void 0 ? void 0 : _a.mount(target);
     this.handleResize();
     return true;
   }
@@ -144161,12 +144161,12 @@ var SceneHandlers = class {
     const enable = typeof msg === "boolean" ? msg : msg.enable;
     const root = this.plugin.canvas3d?.props.parent;
     const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
-    const target2 = this.host ?? root?.parentElement ?? root ?? canvas?.parentElement ?? canvas ?? document.documentElement;
-    if (!target2 || !target2.requestFullscreen) return;
+    const target = this.host ?? root?.parentElement ?? root ?? canvas?.parentElement ?? canvas ?? document.documentElement;
+    if (!target || !target.requestFullscreen) return;
     const shouldEnable = enable ?? !document.fullscreenElement;
     try {
       if (shouldEnable) {
-        if (!document.fullscreenElement) await target2.requestFullscreen();
+        if (!document.fullscreenElement) await target.requestFullscreen();
       } else if (document.fullscreenElement) {
         await document.exitFullscreen();
       }
@@ -145382,12 +145382,12 @@ var StateHandlers = class {
     await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
     this.tagIndex.delete(tag);
   }
-  async handleShowHideGlobal(hide, target2 = "global") {
-    if (target2 === "global") {
+  async handleShowHideGlobal(hide, target = "global") {
+    if (target === "global") {
       this.requestedGlobalHidden = hide;
     }
     if (!this.callbacks.getStructure()) {
-      this.pendingGlobalOps.push({ hide, target: target2 });
+      this.pendingGlobalOps.push({ hide, target });
       return;
     }
     const refs = [];
@@ -145400,7 +145400,7 @@ var StateHandlers = class {
       regionReprRefs.add(ref);
       if (entry.hidden) hiddenRegionReprRefs.add(ref);
     }));
-    if (target2 === "global") {
+    if (target === "global") {
       this.globalReprs.forEach((ref) => {
         refs.push(ref);
         baselineRefs.push(ref);
@@ -145455,7 +145455,7 @@ var StateHandlers = class {
     }
     if (refs.length === 0) return;
     refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
-    if (target2 === "all" && !hide && this.requestedGlobalHidden) {
+    if (target === "all" && !hide && this.requestedGlobalHidden) {
       if (baselineRefs.length === 0) {
         await this.ensureDefaultGlobalRepresentation();
         this.globalReprs.forEach((ref) => baselineRefs.push(ref));
@@ -145974,15 +145974,15 @@ var MovieHandlers = class {
 };
 
 // src/ui/context-menu.ts
-function targetTitle(target2) {
-  if (target2.kind === "empty") return "Canvas";
-  if (target2.kind === "shape") return target2.shape_name?.trim() || target2.tag?.trim() || "Shape";
-  if (target2.kind === "measurement") return target2.measurement_name?.trim() || target2.tag?.trim() || "Measurement";
-  if (target2.kind === "annotation") return target2.text?.trim() || target2.tag?.trim() || "Annotation";
-  if (target2.group_name?.trim()) {
-    return target2.chain_name?.trim() ? `${target2.group_name.trim()} \xB7 chain ${target2.chain_name.trim()}` : target2.group_name.trim();
+function targetTitle(target) {
+  if (target.kind === "empty") return "Canvas";
+  if (target.kind === "shape") return target.shape_name?.trim() || target.tag?.trim() || "Shape";
+  if (target.kind === "measurement") return target.measurement_name?.trim() || target.tag?.trim() || "Measurement";
+  if (target.kind === "annotation") return target.text?.trim() || target.tag?.trim() || "Annotation";
+  if (target.group_name?.trim()) {
+    return target.chain_name?.trim() ? `${target.group_name.trim()} \xB7 chain ${target.chain_name.trim()}` : target.group_name.trim();
   }
-  const count3 = target2.atom_indices.length;
+  const count3 = target.atom_indices.length;
   return count3 === 1 ? "Element (1 atom)" : `Element (${count3} atoms)`;
 }
 function selectionTitle(selection) {
@@ -146062,8 +146062,8 @@ var ViewerContextMenu = class {
       document.head.appendChild(style);
     }
   }
-  open(target2, pageX, pageY, activeSelection, lastMeasurement, savedSelections, regions, addonActions, addonItems, sceneState) {
-    this.currentTarget = target2;
+  open(target, pageX, pageY, activeSelection, lastMeasurement, savedSelections, regions, addonActions, addonItems, sceneState) {
+    this.currentTarget = target;
     this.currentSelection = activeSelection ?? null;
     this.currentLastMeasurement = lastMeasurement ?? null;
     this.currentSavedSelections = Array.isArray(savedSelections) ? [...savedSelections] : [];
@@ -146076,7 +146076,7 @@ var ViewerContextMenu = class {
     this.scrollEl.replaceChildren();
     const header2 = document.createElement("div");
     header2.setAttribute("data-molsysviewer-context-menu-title", "true");
-    header2.textContent = targetTitle(target2);
+    header2.textContent = targetTitle(target);
     Object.assign(header2.style, {
       padding: "6px 8px 8px 8px",
       fontWeight: "600",
@@ -146084,7 +146084,7 @@ var ViewerContextMenu = class {
       marginBottom: "6px"
     });
     this.scrollEl.appendChild(header2);
-    if (target2.kind === "structure") {
+    if (target.kind === "structure") {
       this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
       this.scrollEl.appendChild(this.makeActionButton("Distance", "distance"));
       this.scrollEl.appendChild(this.makeActionButton("Distance (Representative Atom)", "distance", { endpoint_policy: "representative_atom" }));
@@ -146092,20 +146092,20 @@ var ViewerContextMenu = class {
       this.scrollEl.appendChild(this.makeActionButton("Angle (Representative Atom)", "angle", { endpoint_policy: "representative_atom" }));
       this.scrollEl.appendChild(this.makeActionButton("Dihedral", "dihedral"));
       this.scrollEl.appendChild(this.makeActionButton("Dihedral (Representative Atom)", "dihedral", { endpoint_policy: "representative_atom" }));
-    } else if (target2.kind === "shape") {
+    } else if (target.kind === "shape") {
       this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-      if (target2.tag?.trim()) {
+      if (target.tag?.trim()) {
         this.scrollEl.appendChild(this.makeActionButton("Delete Shape", "delete_shape"));
       }
-    } else if (target2.kind === "measurement") {
+    } else if (target.kind === "measurement") {
       this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-      if (target2.tag?.trim()) {
+      if (target.tag?.trim()) {
         this.scrollEl.appendChild(this.makeActionButton("Hide Measurement", "hide_measurement"));
         this.scrollEl.appendChild(this.makeActionButton("Delete Measurement", "delete_measurement"));
       }
-    } else if (target2.kind === "annotation") {
+    } else if (target.kind === "annotation") {
       this.scrollEl.appendChild(this.makeActionButton("Focus Target", "focus_target"));
-      if (target2.tag?.trim()) {
+      if (target.tag?.trim()) {
         this.scrollEl.appendChild(this.makeActionButton("Delete Annotation", "delete_annotation"));
       }
     } else {
@@ -146238,7 +146238,7 @@ var ViewerContextMenu = class {
       }
       this.scrollEl.appendChild(section);
     }
-    const matchingAddonActions = this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target2.kind));
+    const matchingAddonActions = this.currentAddonActions.filter((item2) => item2.target_kinds.includes(target.kind));
     if (matchingAddonActions.length > 0) {
       const section = document.createElement("div");
       Object.assign(section.style, {
@@ -146260,7 +146260,7 @@ var ViewerContextMenu = class {
       this.scrollEl.appendChild(section);
     }
     const matchingItems = this.currentAddonItems.filter(
-      (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target2.kind)
+      (it) => !it.target_kinds || it.target_kinds.length === 0 || it.target_kinds.includes(target.kind)
     );
     if (matchingItems.length > 0) {
       const byAddon = /* @__PURE__ */ new Map();
@@ -147633,12 +147633,12 @@ function signature(item2) {
   }
   return `${item2.source_kind}:${item2.element_level}:${item2.group_indices.join(",")}:${item2.chain_indices.join(",")}`;
 }
-function appendUnique(target2, seen, values2) {
+function appendUnique(target, seen, values2) {
   if (!Array.isArray(values2)) return;
   for (const value of values2) {
     if (seen.has(value)) continue;
     seen.add(value);
-    target2.push(value);
+    target.push(value);
   }
 }
 function buildPayload(items) {
@@ -147738,12 +147738,12 @@ var ActiveSelectionController = class {
     this.setItems([item2], shift2);
     this.anchorItem = item2;
   }
-  getRangeItems(anchor, target2) {
+  getRangeItems(anchor, target) {
     const anchorIdx = this.allAvailableItems.findIndex(
       (i) => i.chain_name === anchor.chain_name && i.group_indices[0] === anchor.group_indices[0]
     );
     const targetIdx = this.allAvailableItems.findIndex(
-      (i) => i.chain_name === target2.chain_name && i.group_indices[0] === target2.group_indices[0]
+      (i) => i.chain_name === target.chain_name && i.group_indices[0] === target.group_indices[0]
     );
     if (anchorIdx === -1 || targetIdx === -1) return [];
     const start4 = Math.min(anchorIdx, targetIdx);
@@ -147788,7 +147788,7 @@ var ActiveSelectionController = class {
       this.clear();
       return;
     }
-    const target2 = new Set(atomIndices);
+    const target = new Set(atomIndices);
     const lociElements = [];
     for (const unit2 of structure.units) {
       if (unit2.kind !== 0) continue;
@@ -147796,7 +147796,7 @@ var ActiveSelectionController = class {
       const elements = unit2.elements;
       const count3 = OrderedSet2.size(elements);
       for (let i = 0; i < count3; i++) {
-        if (target2.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+        if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
       }
       if (matched.length > 0) {
         lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
@@ -147827,7 +147827,7 @@ function selectionKey(item2) {
   return `${molPart}:${compPart}:${chainPart}:${groupPart}`;
 }
 function makeLociForItem(structure, item2) {
-  const target2 = new Set(item2.atom_indices);
+  const target = new Set(item2.atom_indices);
   const lociElements = [];
   for (const unit2 of structure.units) {
     if (!Unit.isAtomic(unit2)) continue;
@@ -147835,7 +147835,7 @@ function makeLociForItem(structure, item2) {
     const count3 = OrderedSet2.size(elements);
     const matched = [];
     for (let i = 0; i < count3; i++) {
-      if (target2.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+      if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
     }
     if (matched.length > 0) {
       lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
@@ -147941,8 +147941,8 @@ var GroupStrip = class {
       btn?.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
     }
   }
-  updateContextTarget(target2) {
-    this.currentContextTarget = target2;
+  updateContextTarget(target) {
+    this.currentContextTarget = target;
     this.render();
   }
   getCollapseState() {
@@ -149804,10 +149804,10 @@ var GroupPanel = class {
     this.regions = [...items];
     this.renderSummaries();
   }
-  updateContextTarget(target2) {
-    this.currentContextTarget = target2;
+  updateContextTarget(target) {
+    this.currentContextTarget = target;
     for (const strip of this.strips.values()) {
-      strip.updateContextTarget(target2);
+      strip.updateContextTarget(target);
     }
   }
   addLabelOverlay(msg) {
@@ -151251,8 +151251,8 @@ function suppressCanvasContextMenu(host, ...targets) {
   let secondaryPressInsideHost = false;
   const globalTarget = typeof window !== "undefined" ? window : void 0;
   const isInsideHost = (event) => {
-    const target2 = event.target;
-    if (target2 != null && host.contains(target2)) return true;
+    const target = event.target;
+    if (target != null && host.contains(target)) return true;
     const composedPath = event.composedPath;
     if (typeof composedPath === "function") {
       return composedPath.call(event).includes(host);
@@ -151269,25 +151269,25 @@ function suppressCanvasContextMenu(host, ...targets) {
     secondaryPressInsideHost = false;
   };
   const onContextMenu = (event) => {
-    const target2 = event.target;
-    const canMatchElement = typeof Element !== "undefined" && target2 instanceof Element;
-    if (canMatchElement && target2.closest("[data-molsysviewer-group-strip]")) return;
-    if (canMatchElement && target2.closest("[data-molsysviewer-context-menu]")) return;
+    const target = event.target;
+    const canMatchElement = typeof Element !== "undefined" && target instanceof Element;
+    if (canMatchElement && target.closest("[data-molsysviewer-group-strip]")) return;
+    if (canMatchElement && target.closest("[data-molsysviewer-context-menu]")) return;
     if (!secondaryPressInsideHost && !isInsideHost(event)) return;
     event.preventDefault();
     event.stopPropagation();
     secondaryPressInsideHost = false;
   };
-  for (const target2 of [host, ...targets]) {
-    target2.addEventListener("contextmenu", onContextMenu, true);
+  for (const target of [host, ...targets]) {
+    target.addEventListener("contextmenu", onContextMenu, true);
   }
   globalTarget?.addEventListener("pointerdown", onPointerDown, true);
   globalTarget?.addEventListener("pointerup", clearSecondaryPress, true);
   globalTarget?.addEventListener("pointercancel", clearSecondaryPress, true);
   globalTarget?.addEventListener("contextmenu", onContextMenu, true);
   return () => {
-    for (const target2 of [host, ...targets]) {
-      target2.removeEventListener?.("contextmenu", onContextMenu, true);
+    for (const target of [host, ...targets]) {
+      target.removeEventListener?.("contextmenu", onContextMenu, true);
     }
     globalTarget?.removeEventListener("pointerdown", onPointerDown, true);
     globalTarget?.removeEventListener("pointerup", clearSecondaryPress, true);
@@ -151558,8 +151558,8 @@ var MolSysViewerController = class _MolSysViewerController {
       });
     }, (item2, pageX, pageY) => {
       this.openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent);
-    }, (target2, pageX, pageY) => {
-      this.openContextMenuForAnnotation(target2, pageX, pageY, emitInteractionEvent);
+    }, (target, pageX, pageY) => {
+      this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
     }, (tag) => {
       const saved = this.savedSelections.find((item2) => item2.tag === tag);
       if (!saved) return;
@@ -151589,9 +151589,9 @@ var MolSysViewerController = class _MolSysViewerController {
       const len = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
       return [dx / len, dy / len, dz / len];
     };
-    this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target2, details) => {
+    this.contextMenu = new ViewerContextMenu(host, emitInteractionEvent, (action, target, details) => {
       if (action === "focus_target") {
-        this.focusTarget(target2);
+        this.focusTarget(target);
         return;
       }
       if (action === "focus_region") {
@@ -152045,7 +152045,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     }
   }
-  static showInitFailureOverlay(target2, message) {
+  static showInitFailureOverlay(target, message) {
     const overlay = document.createElement("div");
     overlay.setAttribute("data-molsysviewer-error", "webgl");
     Object.assign(overlay.style, {
@@ -152065,9 +152065,9 @@ var MolSysViewerController = class _MolSysViewerController {
       pointerEvents: "none"
     });
     overlay.textContent = message;
-    target2.appendChild(overlay);
+    target.appendChild(overlay);
   }
-  static async create(target2, notify, existingCanvas, options) {
+  static async create(target, notify, existingCanvas, options) {
     const canvasHost = document.createElement("div");
     Object.assign(canvasHost.style, {
       position: "absolute",
@@ -152076,7 +152076,7 @@ var MolSysViewerController = class _MolSysViewerController {
       right: "0",
       bottom: "0"
     });
-    target2.appendChild(canvasHost);
+    target.appendChild(canvasHost);
     const canvas = existingCanvas ?? document.createElement("canvas");
     if (!existingCanvas) {
       canvas.style.width = "100%";
@@ -152100,10 +152100,10 @@ var MolSysViewerController = class _MolSysViewerController {
     if (!ok) {
       const message = "WebGL unavailable / GPU driver mismatch. Mol* viewer failed to initialize.";
       console.error("[MolSysViewer] Failed to init Mol* viewer");
-      _MolSysViewerController.showInitFailureOverlay(target2, message);
+      _MolSysViewerController.showInitFailureOverlay(target, message);
       notify?.({ event: "viewer_init_failed", reason: "webgl", message });
     }
-    return new _MolSysViewerController(plugin, target2, notify, canvasHost, options);
+    return new _MolSysViewerController(plugin, target, notify, canvasHost, options);
   }
   getViewerMode() {
     return this.model ? this.model.get("viewer_mode") || "integrated" : this.localViewerMode;
@@ -152339,35 +152339,35 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     const requested = this.currentWorkspace === "core" ? panel ?? this.lastCorePanelMode : "workbench";
-    let target2 = null;
+    let target = null;
     if (this.isPanelOnly) {
-      target2 = requested === "workbench" ? "workbench" : "navigate";
+      target = requested === "workbench" ? "workbench" : "navigate";
     } else {
       if (requested === "navigate" && this.groupPanel.isVisible()) {
-        target2 = "navigate";
+        target = "navigate";
       } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
-        target2 = "workbench";
+        target = "workbench";
       } else if (this.groupPanel.isVisible()) {
-        target2 = "navigate";
+        target = "navigate";
       } else if (this.workbenchPanel.isVisible()) {
-        target2 = "workbench";
+        target = "workbench";
       }
     }
-    if (!target2) {
-      target2 = "navigate";
+    if (!target) {
+      target = "navigate";
     }
     this.panelOpenState = true;
     this.syncingPanelExpansion = true;
     try {
-      this.groupPanel.setExpanded(target2 === "navigate");
-      this.workbenchPanel.setExpanded(target2 === "workbench");
+      this.groupPanel.setExpanded(target === "navigate");
+      this.workbenchPanel.setExpanded(target === "workbench");
       if (this.sharedShell) {
         this.sharedShell.setVisible(true);
         this.sharedShell.setExpanded(true);
       }
-      this.lastPanelMode = target2;
+      this.lastPanelMode = target;
       if (this.currentWorkspace === "core") {
-        this.lastCorePanelMode = target2;
+        this.lastCorePanelMode = target;
       }
     } finally {
       this.syncingPanelExpansion = false;
@@ -152498,9 +152498,9 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     );
   }
-  openContextMenuForAnnotation(target2, pageX, pageY, emitInteractionEvent) {
+  openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent) {
     const payload = {
-      ...target2,
+      ...target,
       page_x: pageX,
       page_y: pageY
     };
@@ -152535,8 +152535,8 @@ var MolSysViewerController = class _MolSysViewerController {
     if (!loci) return;
     this.plugin.managers.camera.focusLoci(loci);
   }
-  focusTarget(target2) {
-    const atomIndices = Array.isArray(target2.atom_indices) ? target2.atom_indices : [];
+  focusTarget(target) {
+    const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
     if (atomIndices.length === 0) return;
     const loci = this.atomIndicesToLoci(atomIndices);
     if (!loci) return;
@@ -152583,8 +152583,8 @@ var MolSysViewerController = class _MolSysViewerController {
       page_y: payload.page_y
     };
   }
-  getRelevantRegionSummaries(target2) {
-    const atomIndices = Array.isArray(target2.atom_indices) ? target2.atom_indices : [];
+  getRelevantRegionSummaries(target) {
+    const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
     if (atomIndices.length === 0) return [];
     const targetSet = new Set(atomIndices);
     return this.state.getRegionSummaries().filter((region) => region.atom_indices.some((idx) => targetSet.has(idx)));
@@ -152629,7 +152629,7 @@ var MolSysViewerController = class _MolSysViewerController {
   atomIndicesToLoci(atomIndices) {
     const structure = this.getStructureData();
     if (!structure) return null;
-    const target2 = new Set(atomIndices);
+    const target = new Set(atomIndices);
     const lociElements = [];
     for (const unit2 of structure.units) {
       if (!Unit.isAtomic(unit2)) continue;
@@ -152637,7 +152637,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const count3 = OrderedSet2.size(elements);
       const matched = [];
       for (let i = 0; i < count3; i++) {
-        if (target2.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+        if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
       }
       if (matched.length > 0) {
         lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
@@ -154575,9 +154575,9 @@ var bootPopup = async (loadedModule) => {
     b8.style.pointerEvents = "auto";
     overlay.appendChild(b8);
   };
-  let autohide2 = false;
+  let autohide = false;
   const applyShow = (visible) => {
-    if (autohide2) {
+    if (autohide) {
       overlay.style.opacity = visible ? "1" : "0";
       overlay.style.pointerEvents = visible ? "auto" : "none";
     } else {
@@ -154588,9 +154588,9 @@ var bootPopup = async (loadedModule) => {
   const onEnter = () => applyShow(true);
   const onLeave = () => applyShow(false);
   const updateAutohide = (enabled) => {
-    if (enabled === autohide2) return;
-    autohide2 = enabled;
-    if (autohide2) {
+    if (enabled === autohide) return;
+    autohide = enabled;
+    if (autohide) {
       container?.addEventListener("pointerenter", onEnter);
       container?.addEventListener("pointerleave", onLeave);
       applyShow(false);
@@ -155935,6 +155935,10 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     }
   };
   if (overlay) {
+    let autohide = !!model.get("autohide_controls");
+    let isHovered = false;
+    let fadeTimeout = null;
+    const target = container;
     const shouldHideControls = () => {
       const isHelpOpen = helpOverlay.isVisible();
       const isFloatingPanelOpen = !!c8.sharedShell && c8.sharedShell.isVisible() && c8.sharedShell.width > 0 && (c8.sharedShell.panelModeStyle === "floating" || c8.sharedShell.panelModeStyle === "floating-unified");
@@ -156163,8 +156167,8 @@ async function bootDocsView(opts) {
   };
   const hostEl = opts.el;
   hostEl.innerHTML = "";
-  const target2 = document.createElement("div");
-  Object.assign(target2.style, {
+  const target = document.createElement("div");
+  Object.assign(target.style, {
     width: "100%",
     height: "100%",
     minHeight: "300px",
@@ -156173,9 +156177,9 @@ async function bootDocsView(opts) {
     cursor: "default",
     overflow: "hidden"
   });
-  setupWidgetResizer(hostEl, target2, (w, h) => {
+  setupWidgetResizer(hostEl, target, (w, h) => {
     hostEl.style.height = `${h}px`;
-    target2.style.height = `${h}px`;
+    target.style.height = `${h}px`;
     controllerPromise.then((c8) => {
       c8.plugin.canvas3d?.requestResize();
     });
@@ -156195,14 +156199,14 @@ async function bootDocsView(opts) {
       isUserInteracting = false;
     }, 200);
   };
-  target2.addEventListener("pointerdown", onPointerDown);
+  target.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("pointerup", onPointerUpOrCancel);
   window.addEventListener("pointercancel", onPointerUpOrCancel);
-  target2.addEventListener("wheel", onWheel, { passive: true });
-  hostEl.appendChild(target2);
+  target.addEventListener("wheel", onWheel, { passive: true });
+  hostEl.appendChild(target);
   const trajInfo = parseInitialTrajectoryInfo(commandLog);
   const panelModeStyle = ui.panel_mode_style || "drawer";
-  const controllerPromise = MolSysViewerController.create(target2, () => {
+  const controllerPromise = MolSysViewerController.create(target, () => {
   }, void 0, {
     panelModeStyle,
     hasInitialStructures: trajInfo.hasStructures
@@ -156232,14 +156236,14 @@ async function bootDocsView(opts) {
       c8,
       model,
       sendSync,
-      target2,
+      target,
       enablePopout ? () => popupMgr.open() : void 0,
       {
         initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
         initialFrameCount: trajInfo.frameCount
       }
     );
-    target2.appendChild(overlay);
+    target.appendChild(overlay);
     if (c8.plugin.canvas3d) {
       let hostCameraSyncTimer = null;
       const c3d = c8.plugin.canvas3d;
@@ -156304,7 +156308,7 @@ async function bootDocsView(opts) {
     }
   })();
 }
-function setupWidgetResizer(host, target2, onResize) {
+function setupWidgetResizer(host, target, onResize) {
   host.style.position = "relative";
   const handle = document.createElement("div");
   Object.assign(handle.style, {
@@ -156365,10 +156369,10 @@ var index_default = {
     const trajInfo = parseInitialTrajectoryInfo(initialMessages);
     const commandLog = [];
     let messageQueue = Promise.resolve();
-    const target2 = document.createElement("div");
-    target2.tabIndex = 0;
-    target2.classList.add("molsysviewer-host");
-    Object.assign(target2.style, {
+    const target = document.createElement("div");
+    target.tabIndex = 0;
+    target.classList.add("molsysviewer-host");
+    Object.assign(target.style, {
       width: "100%",
       height: "100%",
       minHeight: "300px",
@@ -156379,7 +156383,7 @@ var index_default = {
       outline: "none"
       // Default cursor, focus outline hidden
     });
-    const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target2);
+    const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
     let isUserInteracting = false;
     let wheelTimeout = null;
     const onPointerDown = () => {
@@ -156395,12 +156399,12 @@ var index_default = {
         isUserInteracting = false;
       }, 200);
     };
-    target2.addEventListener("pointerdown", onPointerDown);
+    target.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointerup", onPointerUpOrCancel);
     window.addEventListener("pointercancel", onPointerUpOrCancel);
-    target2.addEventListener("wheel", onWheel, { passive: true });
-    target2.tabIndex = 0;
-    target2.addEventListener("keydown", (e) => {
+    target.addEventListener("wheel", onWheel, { passive: true });
+    target.tabIndex = 0;
+    target.addEventListener("keydown", (e) => {
       if (e.key === "v" || e.key === "V") {
         const active = document.activeElement;
         if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.hasAttribute("contenteditable"))) {
@@ -156414,10 +156418,10 @@ var index_default = {
         });
       }
     });
-    el.appendChild(target2);
-    setupWidgetResizer(el, target2, (w, h) => {
+    el.appendChild(target);
+    setupWidgetResizer(el, target, (w, h) => {
       el.style.height = `${h}px`;
-      target2.style.height = `${h}px`;
+      target.style.height = `${h}px`;
       model.send({ event: "widget_resize", height: h, width: w });
       controllerPromise.then((c8) => {
         c8.plugin.canvas3d?.requestResize();
@@ -156435,7 +156439,7 @@ var index_default = {
     const popupMgr = new PopupHostManager(viewerJsSource || "");
     const enablePopout = !!model.get("enable_popout");
     const panelModeStyle = model.get("panel_mode_style") || "drawer";
-    const controllerPromise = MolSysViewerController.create(target2, (msg) => {
+    const controllerPromise = MolSysViewerController.create(target, (msg) => {
       model.send(msg);
       if (msg?.event === "interaction_measurement_created") {
         const op4 = buildMeasurementOpFromInteractionEvent(msg);
@@ -156467,7 +156471,7 @@ var index_default = {
     });
     controllerPromise.then((c8) => {
       const removeOutputLimits = () => {
-        let parent = target2.parentElement;
+        let parent = target.parentElement;
         while (parent) {
           if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
             parent.style.maxHeight = "none";
@@ -156502,7 +156506,7 @@ var index_default = {
           c8,
           model,
           (msg) => popupMgr.send("molsysviewer-sync-op", msg),
-          target2,
+          target,
           enablePopout ? () => popupMgr.open("canvas") : void 0,
           {
             initialHasTrajectory: trajInfo.multipleStructures || (trajInfo.frameCount ?? 0) > 1,
@@ -156510,7 +156514,7 @@ var index_default = {
           }
         );
         if (overlay) {
-          target2.appendChild(overlay);
+          target.appendChild(overlay);
         }
       };
       updateControls();
@@ -156721,8 +156725,8 @@ var index_default = {
       window.removeEventListener("message", messageHandler);
       window.removeEventListener("pointerup", onPointerUpOrCancel);
       window.removeEventListener("pointercancel", onPointerUpOrCancel);
-      target2.removeEventListener("pointerdown", onPointerDown);
-      target2.removeEventListener("wheel", onWheel);
+      target.removeEventListener("pointerdown", onPointerDown);
+      target.removeEventListener("wheel", onWheel);
       releaseNotebookContextMenuSuppression();
       model.off("msg:custom", onCustomMsg);
       controllerPromise.then((c8) => {
