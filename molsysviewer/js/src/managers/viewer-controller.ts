@@ -324,7 +324,7 @@ type ContextMenuSuppressTarget = Pick<HTMLElement, "addEventListener" | "removeE
 
 type ContextMenuHost = ContextMenuSuppressTarget & Pick<HTMLElement, "contains">;
 
-export function suppressCanvasContextMenu(host: ContextMenuHost, ...targets: ContextMenuSuppressTarget[]): () => void {
+export function suppressCanvasContextMenu(host: ContextMenuHost, canvasHost: HTMLElement): () => void {
     let secondaryPressInsideHost = false;
     const globalTarget = typeof window !== "undefined" ? window : undefined;
 
@@ -356,26 +356,23 @@ export function suppressCanvasContextMenu(host: ContextMenuHost, ...targets: Con
         if (canMatchElement && target.closest("[data-molsysviewer-context-menu]")) return;
         if (!secondaryPressInsideHost && !isInsideHost(event)) return;
         event.preventDefault();
-        // Only stop propagation if the target is not one of the registered canvas/viewport targets,
-        // allowing Mol* to receive the contextmenu events on its own canvas.
-        if (!targets.includes(target as any)) {
+        // Only stop propagation if the target is not inside the canvasHost,
+        // allowing the canvas itself to receive its own contextmenu events.
+        const isInsideCanvas = target && typeof canvasHost.contains === "function" && canvasHost.contains(target as Node);
+        if (!isInsideCanvas) {
             event.stopPropagation();
         }
         secondaryPressInsideHost = false;
     };
 
-    for (const target of [host, ...targets]) {
-        target.addEventListener("contextmenu", onContextMenu, true);
-    }
+    host.addEventListener("contextmenu", onContextMenu, true);
     globalTarget?.addEventListener("pointerdown", onPointerDown, true);
     globalTarget?.addEventListener("pointerup", clearSecondaryPress, true);
     globalTarget?.addEventListener("pointercancel", clearSecondaryPress, true);
     globalTarget?.addEventListener("contextmenu", onContextMenu, true);
 
     return () => {
-        for (const target of [host, ...targets]) {
-            target.removeEventListener?.("contextmenu", onContextMenu, true);
-        }
+        host.removeEventListener("contextmenu", onContextMenu, true);
         globalTarget?.removeEventListener("pointerdown", onPointerDown, true);
         globalTarget?.removeEventListener("pointerup", clearSecondaryPress, true);
         globalTarget?.removeEventListener("pointercancel", clearSecondaryPress, true);
@@ -417,7 +414,6 @@ export function registerInteractionObservers(
 ): void {
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
-    const contextMenu = plugin?.behaviors?.interaction?.contextMenu;
     if (typeof hover?.subscribe === "function") {
         hover.subscribe((ev: any) => {
             onHover?.(ev);
@@ -443,14 +439,6 @@ export function registerInteractionObservers(
             } else {
                 notify?.(normalizeInteractionEvent("click", ev));
             }
-        });
-    }
-    if (typeof contextMenu?.subscribe === "function") {
-        contextMenu.subscribe((ev: any) => {
-            const payload = normalizeContextInteractionEvent(ev);
-            notify?.(payload);
-            onSecondaryClick?.(ev);
-            openContextMenu?.(payload);
         });
     }
 }
@@ -1046,186 +1034,99 @@ export class MolSysViewerController {
             this.workbenchContext = null;
             this.refreshWorkbenchPanel();
         }, getCameraDirection);
+        this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
+        this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
+
         const canvas = this.plugin.canvas3d?.props?.canvas ?? this.plugin.canvas3d?.getCanvas?.();
         if (canvas) {
-            this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, canvas as HTMLElement);
+            const handleCanvasContextMenu = (event: MouseEvent) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const hoverEv = this.plugin.behaviors.interaction.hover.value;
+                let payload: ContextInteractionPayload;
+
+                if (hoverEv && hoverEv.current && hoverEv.current.loci) {
+                    const tooltipTag = (hoverEv.current.repr as any)?.props?.tooltip?.trim();
+                    if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
+                        const spec = this.annotations.getSpec(tooltipTag);
+                        payload = {
+                            event: "interaction_context_menu",
+                            kind: "annotation",
+                            atom_indices: spec?.atom_indices ?? [],
+                            tag: tooltipTag,
+                            text: spec?.text,
+                            page_x: event.clientX,
+                            page_y: event.clientY,
+                        };
+                    } else if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
+                        const spec = this.measurements.getSpec(tooltipTag);
+                        payload = {
+                            event: "interaction_context_menu",
+                            kind: "measurement",
+                            atom_indices: spec?.atom_indices ?? [],
+                            tag: tooltipTag,
+                            measurement_name: spec?.kind,
+                            page_x: event.clientX,
+                            page_y: event.clientY,
+                        };
+                    } else {
+                        payload = normalizeContextPayloadFromLoci(hoverEv.current.loci, event.clientX, event.clientY);
+                        payload = this.normalizeManagedContextPayload(payload);
+                    }
+                    this.lastContextLoci = hoverEv.current.loci;
+                } else {
+                    payload = {
+                        event: "interaction_context_menu",
+                        kind: "empty",
+                        page_x: event.clientX,
+                        page_y: event.clientY,
+                    };
+                    this.lastContextLoci = null;
+                }
+
+                this.lastContextPayload = payload;
+                this.groupPanel.updateContextTarget(payload);
+                this.syncWorkbenchContextFromPayload(payload);
+                emitInteractionEvent(payload);
+
+                this.contextMenu.open(
+                    payload,
+                    event.clientX,
+                    event.clientY,
+                    this.currentActiveSelection,
+                    this.lastMeasurementSummary,
+                    this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+                    this.getRelevantRegionSummaries(payload),
+                    this.addonContextActions,
+                    this.addonContextItems,
+                    {
+                        isSpinActive: this.scene.isSpinActive,
+                        isSwingActive: this.scene.isSwingActive,
+                        isDarkMode: this.scene.isDarkMode,
+                        isNavigateExpanded: this.groupPanel.isExpanded(),
+                        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                        currentViewerMode: this.model?.get("viewer_mode") || "integrated",
+                        isCanvasVisible: this.canvasHost.style.display !== "none",
+                    }
+                );
+            };
+
+            canvas.addEventListener("contextmenu", handleCanvasContextMenu as any, true);
+            const previousRelease = this.releaseContextMenuSuppression;
+            this.releaseContextMenuSuppression = () => {
+                previousRelease?.();
+                canvas.removeEventListener("contextmenu", handleCanvasContextMenu as any, true);
+            };
         }
-        this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
+
         registerInteractionObservers(plugin, emitInteractionEvent, undefined, (ev) => {
             if (!this.measurementTools.isActive()) {
                 this.activeSelection.handlePrimaryClick(ev);
                 this.handlePotentialDoubleClickFocus(ev);
             }
             this.measurementTools.handlePrimaryClick(ev?.current?.loci);
-        }, (ev) => {
-            this.lastContextLoci = ev?.current?.loci ?? null;
-            const page = ev?.page;
-            // ev.page contains page-relative coordinates (clientX/clientY).
-            // page_x/y are used to position the menu (subtracting host offset inside context-menu.ts).
-            // canvas_x/y are obtained by subtracting the offset so identify() works in local canvas coords.
-            const page_x = typeof page?.[0] === "number" ? page[0] : (typeof ev?.event?.clientX === "number" ? ev.event.clientX : undefined);
-            const page_y = typeof page?.[1] === "number" ? page[1] : (typeof ev?.event?.clientY === "number" ? ev.event.clientY : undefined);
-            const canvasOffset = this.canvasHost.getBoundingClientRect();
-            const canvas_x = page_x !== undefined ? page_x - canvasOffset.left : undefined;
-            const canvas_y = page_y !== undefined ? page_y - canvasOffset.top : undefined;
-            // Detect annotation/measurement context: repr embeds its tag in props.tooltip
-            const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
-            if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
-                const spec = this.annotations.getSpec(tooltipTag);
-                const annPayload: ContextInteractionPayload = {
-                    event: "interaction_context_menu",
-                    kind: "annotation",
-                    atom_indices: spec?.atom_indices ?? [],
-                    tag: tooltipTag,
-                    text: spec?.text,
-                    page_x,
-                    page_y,
-                };
-                this.lastContextPayload = annPayload;
-                this.groupPanel.updateContextTarget(annPayload);
-                this.syncWorkbenchContextFromPayload(annPayload);
-                emitInteractionEvent(annPayload);
-                this.contextMenu.open(
-                    annPayload,
-                    page_x ?? 0,
-                    page_y ?? 0,
-                    this.currentActiveSelection,
-                    this.lastMeasurementSummary,
-                    this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
-                    this.getRelevantRegionSummaries(annPayload),
-                    this.addonContextActions,
-                    this.addonContextItems,
-                    {
-                        isSpinActive: this.scene.isSpinActive,
-                        isSwingActive: this.scene.isSwingActive,
-                        isDarkMode: this.scene.isDarkMode,
-                        isNavigateExpanded: this.groupPanel.isExpanded(),
-                        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                        currentViewerMode: this.model?.get("viewer_mode") || "integrated",
-                    }
-                );
-                return;
-            }
-            if (tooltipTag && this.measurements.hasTag(tooltipTag)) {
-                const spec = this.measurements.getSpec(tooltipTag);
-                const measPayload: ContextInteractionPayload = {
-                    event: "interaction_context_menu",
-                    kind: "measurement",
-                    atom_indices: spec?.atom_indices ?? [],
-                    tag: tooltipTag,
-                    measurement_name: spec?.kind,
-                    page_x,
-                    page_y,
-                };
-                this.lastContextPayload = measPayload;
-                this.groupPanel.updateContextTarget(measPayload);
-                this.syncWorkbenchContextFromPayload(measPayload);
-                emitInteractionEvent(measPayload);
-                this.contextMenu.open(
-                    measPayload,
-                    page_x ?? 0,
-                    page_y ?? 0,
-                    this.currentActiveSelection,
-                    this.lastMeasurementSummary,
-                    this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
-                    this.getRelevantRegionSummaries(measPayload),
-                    this.addonContextActions,
-                    this.addonContextItems,
-                    {
-                        isSpinActive: this.scene.isSpinActive,
-                        isSwingActive: this.scene.isSwingActive,
-                        isDarkMode: this.scene.isDarkMode,
-                        isNavigateExpanded: this.groupPanel.isExpanded(),
-                        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                        currentViewerMode: this.model?.get("viewer_mode") || "integrated",
-                    }
-                );
-                return;
-            }
-            let payload = normalizeContextInteractionEvent(ev, this.lastHoverLoci);
-            payload = this.normalizeManagedContextPayload(payload);
-            if (canvas_x !== undefined && canvas_y !== undefined) {
-                const pickData = this.plugin.canvas3d?.identify?.([canvas_x, canvas_y] as any);
-                const pickedLoci = pickData ? this.plugin.canvas3d?.getLoci?.(pickData.id)?.loci : null;
-                if (pickedLoci) {
-                    payload = normalizeContextPayloadFromLoci(pickedLoci, page_x, page_y);
-                    payload = this.normalizeManagedContextPayload(payload);
-                }
-            }
-            if (payload.kind === "empty" && this.lastHoverPayload && this.lastHoverPayload.kind !== "empty") {
-                if (this.lastHoverPayload.kind === "structure") {
-                    payload = {
-                        event: "interaction_context_menu",
-                        kind: "structure",
-                        atom_indices: this.lastHoverPayload.atom_indices,
-                        group_indices: this.lastHoverPayload.group_indices,
-                        chain_indices: this.lastHoverPayload.chain_indices,
-                        entity_indices: this.lastHoverPayload.entity_indices,
-                        group_name: this.lastHoverPayload.group_name,
-                        chain_name: this.lastHoverPayload.chain_name,
-                        entity_name: this.lastHoverPayload.entity_name,
-                        page_x: payload.page_x,
-                        page_y: payload.page_y,
-                    };
-                } else if (this.lastHoverPayload.kind === "shape") {
-                    payload = {
-                        event: "interaction_context_menu",
-                        kind: "shape",
-                        atom_indices: this.lastHoverPayload.atom_indices,
-                        tag: this.lastHoverPayload.tag,
-                        shape_name: this.lastHoverPayload.shape_name,
-                        page_x: payload.page_x,
-                        page_y: payload.page_y,
-                    };
-                } else if (this.lastHoverPayload.kind === "measurement") {
-                    payload = {
-                        event: "interaction_context_menu",
-                        kind: "measurement",
-                        atom_indices: this.lastHoverPayload.atom_indices,
-                        tag: this.lastHoverPayload.tag,
-                        measurement_name: this.lastHoverPayload.measurement_name,
-                        page_x: payload.page_x,
-                        page_y: payload.page_y,
-                    };
-                } else if (this.lastHoverPayload.kind === "annotation") {
-                    payload = {
-                        event: "interaction_context_menu",
-                        kind: "annotation",
-                        atom_indices: this.lastHoverPayload.atom_indices,
-                        tag: this.lastHoverPayload.tag,
-                        text: this.lastHoverPayload.text,
-                        page_x: payload.page_x,
-                        page_y: payload.page_y,
-                    };
-                }
-            }
-            const pageX = page_x ?? payload.page_x ?? 0;
-            const pageY = page_y ?? payload.page_y ?? 0;
-            this.lastContextPayload = payload;
-            this.groupPanel.updateContextTarget(payload);
-            this.syncWorkbenchContextFromPayload(payload);
-            emitInteractionEvent(payload);
-            this.contextMenu.open(
-                payload,
-                pageX,
-                pageY,
-                this.currentActiveSelection,
-                this.lastMeasurementSummary,
-                this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
-                this.getRelevantRegionSummaries(payload),
-                this.addonContextActions,
-                this.addonContextItems,
-                {
-                    isSpinActive: this.scene.isSpinActive,
-                    isSwingActive: this.scene.isSwingActive,
-                    isDarkMode: this.scene.isDarkMode,
-                    isNavigateExpanded: this.groupPanel.isExpanded(),
-                    isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
-                    currentViewerMode: this.model?.get("viewer_mode") || "integrated",
-                    isCanvasVisible: this.canvasHost.style.display !== "none",
-                }
-            );
-        }, (ev) => {
+        }, undefined, (ev) => {
             this.lastHoverLoci = ev?.current?.loci ?? null;
             const tooltipTag = (ev?.current?.repr as any)?.props?.tooltip?.trim();
             if (tooltipTag && this.annotations.hasTag(tooltipTag)) {
