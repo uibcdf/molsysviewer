@@ -32,6 +32,8 @@ class DummyView:
         self.whole = DummyWhole()
         self.load_calls: list[dict] = []
         self.new_region_calls: list[dict] = []
+        self.select_calls: list[dict] = []
+        self.select_result = [0]
         self.region = DummyRegion()
 
     def load(self, molecular_system, *, selection="all", structure_indices="all", syntax="MolSysMT", skip_digestion=False, **_kwargs) -> None:
@@ -44,6 +46,10 @@ class DummyView:
                 "skip_digestion": skip_digestion,
             }
         )
+
+    def select(self, selection="all", *, syntax="MolSysMT", skip_digestion=False, **_kwargs):
+        self.select_calls.append({"selection": selection, "syntax": syntax, "skip_digestion": skip_digestion})
+        return list(self.select_result)
 
     def new_region(self, selection, *, tag=None, syntax="MolSysMT", skip_digestion=False, **_kwargs):
         self.new_region_calls.append({"selection": selection, "tag": tag, "syntax": syntax, "skip_digestion": skip_digestion})
@@ -100,6 +106,36 @@ def test_new_view_all_mode_loads_all_and_creates_selection_region():
         {"representation": None, "preset": "auto", "params": {"skip_digestion": True}}
     ]
 
+
+
+def test_new_view_all_mode_warns_and_keeps_whole_visible_for_empty_selection():
+    view = DummyView()
+    view.select_result = []
+
+    with pytest.warns(UserWarning, match="resolved to zero atoms"):
+        result = new_view(
+            "system",
+            selection="missing ligand",
+            load_mode="all",
+            view=view,
+        )
+
+    assert result is view
+    assert view.whole.hidden is False
+    assert view.load_calls == [
+        {
+            "molecular_system": "system",
+            "selection": "all",
+            "structure_indices": "all",
+            "syntax": "MolSysMT",
+            "skip_digestion": True,
+        }
+    ]
+    assert view.select_calls == [
+        {"selection": "missing ligand", "syntax": "MolSysMT", "skip_digestion": True}
+    ]
+    assert view.new_region_calls == []
+    assert view.region.repr_calls == []
 
 def test_new_view_all_mode_inherits_whole_preset():
     view = DummyView()

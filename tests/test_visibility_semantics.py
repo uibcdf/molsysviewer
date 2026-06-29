@@ -81,3 +81,26 @@ def test_show_all_resets_partial_atom_visibility_without_clearing_hidden_region_
     assert not any(msg.get("op") == "show_region" and msg.get("tag") == "frag" for msg in view._message_history)
     visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")
     assert visibility_msg["options"]["visible_atom_indices"] == list(range(22))
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        lambda view: view.hide(selection="all", structure_indices=[0], skip_digestion=True),
+        lambda view: view.show(selection="all", structure_indices=[0], skip_digestion=True),
+        lambda view: view.isolate(selection="all", structure_indices=[0], skip_digestion=True),
+        lambda view: view.focus_with_fade(selection="all", structure_indices=[0], skip_digestion=True),
+    ],
+)
+def test_visibility_rejects_per_structure_visibility_until_supported(operation):
+    view = demo["chicken_villin_HP35"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    mask_before = None if view.atom_mask is None else view.atom_mask.copy()
+    history_len = len(view._message_history)  # noqa: SLF001
+
+    with pytest.raises(NotImplementedError, match="Per-structure visibility is not supported"):
+        operation(view)
+
+    assert len(view._message_history) == history_len  # noqa: SLF001
+    if mask_before is not None:
+        assert view.atom_mask is not None
+        assert view.atom_mask.tolist() == mask_before.tolist()

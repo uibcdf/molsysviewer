@@ -165,6 +165,56 @@ test("state handler clears orphan default global representations before applying
     assert.deepStrictEqual(Array.from(globalReprs), ["new-global-repr"]);
 });
 
+
+test("state handler replaces prior explicit global representation on subsequent global representation", async () => {
+    const removed: string[] = [];
+    const structureRef = "structure-ref";
+    const createdRefs = ["first-global-repr", "second-global-repr"];
+    const plugin: any = {
+        managers: {
+            structure: {
+                hierarchy: {
+                    current: { structures: [{ representations: [], components: [] }] },
+                },
+            },
+        },
+        builders: {
+            structure: {
+                representation: {
+                    async applyPreset(_ref: any, _preset: any, _params: any) {
+                        return { representations: { main: { ref: createdRefs.shift() } } };
+                    },
+                },
+            },
+        },
+        state: {
+            data: {
+                cells: new Map(),
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({ units: [] }) as any,
+        getLoadedStructure: () => ({ structure: structureRef } as any),
+        getCurrentStructureRef: () => structureRef as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    plugin.state.data.cells.has = (ref: string) => ref === "first-global-repr" || ref === "second-global-repr";
+    (handler as any).removeStateObject = async (ref?: string) => {
+        if (ref) removed.push(ref);
+    };
+    (handler as any).handleShowHideGlobal = async () => {};
+
+    await handler.setGlobalRepresentation({ op: "set_global_representation", preset: "auto", params: {} } as any);
+    await handler.setGlobalRepresentation({ op: "set_global_representation", preset: "polymer-cartoon", params: {} } as any);
+
+    assert.deepStrictEqual(removed, ["first-global-repr"]);
+    const globalReprs = (handler as any).globalReprs as Set<string>;
+    assert.deepStrictEqual(Array.from(globalReprs), ["second-global-repr"]);
+});
+
 test("state handler captures initial global representations on structure load", async () => {
     const plugin: any = {
         managers: {

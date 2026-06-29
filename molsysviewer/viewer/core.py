@@ -190,7 +190,7 @@ class MolSysView(
 
         self.widget.layout.width = "100%"
         self.widget.layout.height = height
-        self.widget.layout.min_height = "400px"
+        self.widget.layout.min_height = "300px"
 
         self._already_shown = False
 
@@ -1828,7 +1828,7 @@ class MolSysView(
   <title>{title}</title>
   <style>
     html, body {{ margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }}
-    #molsysviewer-root {{ width: 100%; height: 100%; min-height: 400px; position: relative; }}
+    #molsysviewer-root {{ width: 100%; height: 100%; min-height: 300px; position: relative; }}
   </style>
 </head>
 <body>

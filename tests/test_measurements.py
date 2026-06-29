@@ -1,6 +1,7 @@
 import pytest
 
 from molsysviewer import MolSysView
+from molsysviewer import pyunitwizard as puw
 
 
 def test_interactive_measurement_is_registered_automatically():
@@ -101,6 +102,43 @@ def test_measurements_info_reports_centroid_endpoint_policy_for_multi_atom_picks
         }
     ]
 
+
+
+def test_measurement_series_preserves_all_coordinate_frames(monkeypatch):
+    view = MolSysView()
+    view._molsys = object()  # noqa: SLF001
+
+    coordinates_by_atom = {
+        0: [[[0.0, 0.0, 0.0]], [[0.0, 0.0, 0.0]]],
+        1: [[[0.1, 0.0, 0.0]], [[0.2, 0.0, 0.0]]],
+    }
+
+    def fake_get(_molsys, *, selection, coordinates=False, **_kwargs):
+        atoms = [int(item) for item in selection]
+        if coordinates:
+            frames = []
+            for frame_index in range(2):
+                frames.append([coordinates_by_atom[atom][frame_index][0] for atom in atoms])
+            return {"coordinates": frames}
+        return {
+            "atom_name": [f"A{atom}" for atom in atoms],
+            "group_name": ["RES" for _atom in atoms],
+            "group_type": ["other" for _atom in atoms],
+        }
+
+    monkeypatch.setattr("molsysviewer.measurements.msm.get", fake_get)
+
+    view.measurements.add_distance([0], [1], tag="d01")
+
+    record = view.measurements.records()[0]
+    assert record["options"]["value"] == pytest.approx(1.0)
+    assert record["options"]["value_series"] == pytest.approx([1.0, 2.0])
+    assert puw.get_value(view.measurements.info("d01")[0]["value"], to_unit="angstrom") == pytest.approx(1.0)
+
+    view.player.go_to_structure(1)
+
+    assert puw.get_value(view.measurements.info("d01")[0]["value"], to_unit="angstrom") == pytest.approx(2.0)
+    assert puw.get_value(view.measurements.series("d01"), to_unit="angstrom").tolist() == pytest.approx([1.0, 2.0])
 
 def test_measurements_manager_supports_registry_access_and_duplicate_tag_guard():
     view = MolSysView()
