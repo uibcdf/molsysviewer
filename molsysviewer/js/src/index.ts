@@ -366,22 +366,10 @@ export default {
         el.appendChild(target);
 
         // Setup interactive resizing
-        let lastSetHeight = 480;
-        let extraHeight = -1; // Calculated dynamically on the first visible frame of the parent
-        let lastParentHeight = 0;
-
         setupWidgetResizer(el, target, (w, h) => {
             el.style.height = `${h}px`;
             target.style.height = `${h}px`;
             
-            // Update lastParentHeight to the parent's new height to prevent the observer from triggering
-            if (extraHeight !== -1) {
-                lastParentHeight = h + extraHeight;
-            } else {
-                lastParentHeight = h;
-            }
-            lastSetHeight = h;
-
             model.send({ event: "widget_resize", height: h, width: w });
             controllerPromise.then(c => {
                 c.plugin.canvas3d?.requestResize();
@@ -465,82 +453,6 @@ export default {
             removeOutputLimits();
             setTimeout(removeOutputLimits, 100);
             setTimeout(removeOutputLimits, 500);
-
-            // Bidirectional height synchronization: observe the output container
-            // and resize the widget if the container is resized by the user.
-            const getOutputContainer = (): HTMLElement | null => {
-                let parent: HTMLElement | null = target.parentElement;
-                let lastValidParent: HTMLElement | null = null;
-                while (parent) {
-                    if (parent.classList.contains("jp-OutputArea-child") || 
-                        parent.classList.contains("jp-OutputArea-output") || 
-                        parent.classList.contains("jp-OutputArea") || 
-                        parent.classList.contains("output_subarea") ||
-                        parent.classList.contains("vscode-notebook-cell-output-container") ||
-                        parent.classList.contains("cell-output-ipywidget")) {
-                        lastValidParent = parent;
-                    }
-                    if (parent.parentElement) {
-                        parent = parent.parentElement;
-                    } else {
-                        const root = parent.getRootNode();
-                        parent = root instanceof ShadowRoot ? (root.host as HTMLElement) : null;
-                    }
-                }
-                return lastValidParent || target.parentElement;
-            };
-
-            const outputContainer = getOutputContainer();
-            if (outputContainer) {
-                const syncHeightsTo100 = (enable: boolean) => {
-                    let curr: HTMLElement | null = target;
-                    while (curr && curr !== outputContainer) {
-                        curr.style.height = enable ? "100%" : `${lastSetHeight}px`;
-                        curr = curr.parentElement;
-                    }
-                };
-
-                const isAncestorResized = (): boolean => {
-                    let curr: HTMLElement | null = outputContainer;
-                    while (curr) {
-                        if (curr.style.height && curr.style.height !== "auto" && curr.style.height !== "100%") {
-                            return true;
-                        }
-                        if (curr.classList.contains("jp-Cell") || curr.classList.contains("vscode-notebook-cell-output-container")) {
-                            break;
-                        }
-                        curr = curr.parentElement;
-                    }
-                    return false;
-                };
-
-                const resizeObserver = new ResizeObserver(entries => {
-                    for (const entry of entries) {
-                        const parentHeight = Math.round(entry.contentRect.height);
-                        if (parentHeight <= 0) continue;
-
-                        const isResized = isAncestorResized();
-
-                        // Calculate extraHeight dynamically on the first visible frame where el has a height and is not resized
-                        if (extraHeight === -1 && el.clientHeight > 0 && !isResized) {
-                            extraHeight = parentHeight - el.clientHeight;
-                            lastParentHeight = parentHeight;
-                        }
-
-                        if (isResized) {
-                            syncHeightsTo100(true);
-                            if (extraHeight !== -1) {
-                                lastSetHeight = Math.max(300, parentHeight - extraHeight);
-                            }
-                        } else {
-                            syncHeightsTo100(false);
-                        }
-
-                        c.plugin.canvas3d?.requestResize();
-                    }
-                });
-                resizeObserver.observe(outputContainer);
-            }
 
             c.onTogglePanelModeOverride = () => {
                 if (popupMgr.panelWin && !popupMgr.panelWin.closed) {

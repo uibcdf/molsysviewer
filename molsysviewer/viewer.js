@@ -156094,18 +156094,9 @@ var index_default = {
       }
     });
     el.appendChild(target);
-    let lastSetHeight = 480;
-    let extraHeight = -1;
-    let lastParentHeight = 0;
     setupWidgetResizer(el, target, (w, h) => {
       el.style.height = `${h}px`;
       target.style.height = `${h}px`;
-      if (extraHeight !== -1) {
-        lastParentHeight = h + extraHeight;
-      } else {
-        lastParentHeight = h;
-      }
-      lastSetHeight = h;
       model.send({ event: "widget_resize", height: h, width: w });
       controllerPromise.then((c8) => {
         c8.plugin.canvas3d?.requestResize();
@@ -156170,66 +156161,6 @@ var index_default = {
       removeOutputLimits();
       setTimeout(removeOutputLimits, 100);
       setTimeout(removeOutputLimits, 500);
-      const getOutputContainer = () => {
-        let parent = target.parentElement;
-        let lastValidParent = null;
-        while (parent) {
-          if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
-            lastValidParent = parent;
-          }
-          if (parent.parentElement) {
-            parent = parent.parentElement;
-          } else {
-            const root = parent.getRootNode();
-            parent = root instanceof ShadowRoot ? root.host : null;
-          }
-        }
-        return lastValidParent || target.parentElement;
-      };
-      const outputContainer = getOutputContainer();
-      if (outputContainer) {
-        const syncHeightsTo100 = (enable) => {
-          let curr = target;
-          while (curr && curr !== outputContainer) {
-            curr.style.height = enable ? "100%" : `${lastSetHeight}px`;
-            curr = curr.parentElement;
-          }
-        };
-        const isAncestorResized = () => {
-          let curr = outputContainer;
-          while (curr) {
-            if (curr.style.height && curr.style.height !== "auto" && curr.style.height !== "100%") {
-              return true;
-            }
-            if (curr.classList.contains("jp-Cell") || curr.classList.contains("vscode-notebook-cell-output-container")) {
-              break;
-            }
-            curr = curr.parentElement;
-          }
-          return false;
-        };
-        const resizeObserver = new ResizeObserver((entries3) => {
-          for (const entry of entries3) {
-            const parentHeight = Math.round(entry.contentRect.height);
-            if (parentHeight <= 0) continue;
-            const isResized = isAncestorResized();
-            if (extraHeight === -1 && el.clientHeight > 0 && !isResized) {
-              extraHeight = parentHeight - el.clientHeight;
-              lastParentHeight = parentHeight;
-            }
-            if (isResized) {
-              syncHeightsTo100(true);
-              if (extraHeight !== -1) {
-                lastSetHeight = Math.max(300, parentHeight - extraHeight);
-              }
-            } else {
-              syncHeightsTo100(false);
-            }
-            c8.plugin.canvas3d?.requestResize();
-          }
-        });
-        resizeObserver.observe(outputContainer);
-      }
       c8.onTogglePanelModeOverride = () => {
         if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
           popupMgr.close("panel");
