@@ -154953,48 +154953,141 @@ var PopupHostManager = class {
 };
 
 // src/ui/help-overlay.ts
+function injectHelpStyles() {
+  const styleId = "molsysviewer-help-styles";
+  if (document.getElementById(styleId)) return;
+  const style = document.createElement("style");
+  style.id = styleId;
+  style.textContent = `
+        .molsysviewer-help-card {
+            width: min(640px, 88%);
+            max-height: calc(100% - 80px);
+            overflow-y: auto;
+            background: rgba(18, 18, 22, 0.92);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+            color: #f4f4f5;
+            font-family: "IBM Plex Sans", system-ui, sans-serif;
+            font-size: 13px;
+            padding: 20px 24px 24px;
+            box-sizing: border-box;
+            transition: all 150ms cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .molsysviewer-help-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .molsysviewer-help-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .molsysviewer-help-close {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.45);
+            cursor: default;
+            padding: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            transition: color 120ms ease;
+        }
+        .molsysviewer-help-close:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .molsysviewer-help-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+        .molsysviewer-help-section-title {
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            opacity: 0.45;
+            margin-bottom: 10px;
+        }
+        .molsysviewer-help-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .molsysviewer-help-key {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 2px 7px;
+            font-size: 11px;
+            font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.6;
+        }
+        .molsysviewer-help-desc {
+            opacity: 0.75;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        /* Short container responsive overrides */
+        .molsysviewer-help-short .molsysviewer-help-card {
+            max-height: calc(100% - 32px);
+            padding: 12px 20px 14px;
+            font-size: 11.5px;
+            border-radius: 12px;
+        }
+        .molsysviewer-help-short .molsysviewer-help-header {
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+        }
+        .molsysviewer-help-short .molsysviewer-help-title {
+            font-size: 12px;
+        }
+        .molsysviewer-help-short .molsysviewer-help-grid {
+            gap: 16px;
+        }
+        .molsysviewer-help-short .molsysviewer-help-section-title {
+            font-size: 9.5px;
+            margin-bottom: 4px;
+        }
+        .molsysviewer-help-short .molsysviewer-help-row {
+            padding: 3px 0;
+        }
+        .molsysviewer-help-short .molsysviewer-help-key {
+            padding: 1px 5px;
+            font-size: 9.5px;
+            border-radius: 4px;
+        }
+        .molsysviewer-help-short .molsysviewer-help-desc {
+            font-size: 10.5px;
+        }
+    `;
+  document.head.appendChild(style);
+}
 function makeSection(heading, rows) {
   const section = document.createElement("div");
   const h = document.createElement("div");
+  h.className = "molsysviewer-help-section-title";
   h.textContent = heading;
-  Object.assign(h.style, {
-    fontWeight: "600",
-    fontSize: "11px",
-    textTransform: "uppercase",
-    letterSpacing: "0.07em",
-    opacity: "0.45",
-    marginBottom: "10px"
-  });
   section.appendChild(h);
   for (const [key2, desc] of rows) {
     const row = document.createElement("div");
-    Object.assign(row.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      gap: "12px",
-      padding: "5px 0",
-      borderBottom: "1px solid rgba(255,255,255,0.06)"
-    });
+    row.className = "molsysviewer-help-row";
     const keyEl = document.createElement("span");
+    keyEl.className = "molsysviewer-help-key";
     keyEl.textContent = key2;
-    Object.assign(keyEl.style, {
-      background: "rgba(255,255,255,0.1)",
-      borderRadius: "5px",
-      padding: "2px 7px",
-      fontSize: "11px",
-      fontFamily: '"IBM Plex Mono", "SFMono-Regular", monospace',
-      whiteSpace: "nowrap",
-      flexShrink: "0",
-      lineHeight: "1.6"
-    });
     const descEl = document.createElement("span");
+    descEl.className = "molsysviewer-help-desc";
     descEl.textContent = desc;
-    Object.assign(descEl.style, {
-      opacity: "0.75",
-      textAlign: "right",
-      fontSize: "12px"
-    });
     row.appendChild(keyEl);
     row.appendChild(descEl);
     section.appendChild(row);
@@ -155005,6 +155098,7 @@ var HelpOverlay = class {
   constructor(host) {
     this.host = host;
     this.visible = false;
+    injectHelpStyles();
     this.root = document.createElement("div");
     Object.assign(this.root.style, {
       position: "absolute",
@@ -155016,63 +155110,23 @@ var HelpOverlay = class {
       pointerEvents: "auto"
     });
     const card = document.createElement("div");
-    Object.assign(card.style, {
-      width: "min(640px, 88%)",
-      maxHeight: "calc(100% - 80px)",
-      overflowY: "auto",
-      background: "rgba(18, 18, 22, 0.92)",
-      borderRadius: "16px",
-      border: "1px solid rgba(255, 255, 255, 0.12)",
-      boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
-      color: "#f4f4f5",
-      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
-      fontSize: "13px",
-      padding: "20px 24px 24px",
-      boxSizing: "border-box"
-    });
+    card.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
-    Object.assign(header2.style, {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: "18px",
-      paddingBottom: "12px",
-      borderBottom: "1px solid rgba(255,255,255,0.1)"
-    });
+    header2.className = "molsysviewer-help-header";
     const title = document.createElement("span");
+    title.className = "molsysviewer-help-title";
     title.textContent = "Canvas Quick Reference";
-    Object.assign(title.style, { fontWeight: "600", fontSize: "14px" });
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
     closeBtn.title = "Close (H or Esc)";
+    closeBtn.className = "molsysviewer-help-close";
     closeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>`;
-    Object.assign(closeBtn.style, {
-      background: "transparent",
-      border: "none",
-      color: "rgba(255,255,255,0.45)",
-      cursor: "default",
-      padding: "4px",
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: "5px"
-    });
-    closeBtn.addEventListener("mouseenter", () => {
-      closeBtn.style.color = "rgba(255,255,255,0.9)";
-    });
-    closeBtn.addEventListener("mouseleave", () => {
-      closeBtn.style.color = "rgba(255,255,255,0.45)";
-    });
     closeBtn.addEventListener("click", () => this.hide());
     header2.appendChild(title);
     header2.appendChild(closeBtn);
     card.appendChild(header2);
     const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: "28px"
-    });
+    grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", [
       ["Left drag", "Rotate"],
       ["Right drag", "Pan"],
@@ -155104,6 +155158,8 @@ var HelpOverlay = class {
     this.visible = true;
     this.root.style.display = "flex";
     this.onVisibilityChange?.(true);
+    const isShort = this.host.clientHeight < 480;
+    this.root.classList.toggle("molsysviewer-help-short", isShort);
     const onKey = (ev) => {
       if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
       if (!this.host.contains(ev.target)) return;
