@@ -10,11 +10,20 @@ from .._private.arg_digestion import digest
 from .._private.variables import is_all
 
 
+def _ensure_structure_visibility_supported(structure_indices: Any) -> None:
+    if is_all(structure_indices):
+        return
+    raise NotImplementedError(
+        "Per-structure visibility is not supported yet; pass structure_indices=\"all\"."
+    )
+
+
 class VisibilityMixin:
     @signal(tags=["visibility"])
     @digest()
     def hide(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
         """Hide atoms matching the given selection (MolSysMT syntax by default)."""
+        _ensure_structure_visibility_supported(structure_indices)
         if self.atom_mask is None or self._molsys is None:
             return
 
@@ -32,10 +41,13 @@ class VisibilityMixin:
 
     @signal(tags=["visibility"])
     @digest()
-    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None):
+    def show(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", *, force: bool = False, skip_digestion: bool = False, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None, height: str | None = None):
         """Show the widget (first call or if `force=True`) and optionally adjust visibility or change viewer modes."""
+        _ensure_structure_visibility_supported(structure_indices)
         if viewer_mode is not None or controls_mode is not None or panel_mode_style is not None:
             self._apply_view_modes(viewer_mode=viewer_mode, controls_mode=controls_mode, panel_mode_style=panel_mode_style)
+        if height is not None:
+            self.widget.layout.height = height
 
         # (1) Apply visibility changes if a system is loaded
         if self._molsys is not None and self.atom_mask is not None:
@@ -65,6 +77,7 @@ class VisibilityMixin:
     @digest()
     def isolate(self, selection: str | Any = "all", structure_indices: str | Any = "all", syntax: str = "MolSysMT", skip_digestion: bool = False):
         """Show only the atoms in `selection`; hide everything else (reset if selection == 'all')."""
+        _ensure_structure_visibility_supported(structure_indices)
         if self.atom_mask is None or self._molsys is None:
             return
 
@@ -91,6 +104,7 @@ class VisibilityMixin:
         clipping plane). ``selection`` may be a MolSysMT expression or an explicit
         list of atom indices. Pass ``selection='all'`` or ``fade<=0`` to clear.
         """
+        _ensure_structure_visibility_supported(structure_indices)
         if self._molsys is None:
             return
 
