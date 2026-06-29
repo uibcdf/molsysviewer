@@ -366,12 +366,19 @@ export default {
         el.appendChild(target);
 
         // Setup interactive resizing
-        let lastSetHeight = parseFloat(el.style.height) || el.clientHeight || 480;
+        let lastSetHeight = 480;
 
         setupWidgetResizer(el, target, (w, h) => {
             el.style.height = `${h}px`;
             target.style.height = `${h}px`;
-            lastSetHeight = h;
+            
+            // Update lastSetHeight to the parent's new height to prevent the observer from triggering
+            if (el.parentElement) {
+                lastSetHeight = el.parentElement.clientHeight;
+            } else {
+                lastSetHeight = h;
+            }
+
             model.send({ event: "widget_resize", height: h, width: w });
             controllerPromise.then(c => {
                 c.plugin.canvas3d?.requestResize();
@@ -458,6 +465,7 @@ export default {
 
             const outputContainer = el.parentElement;
             if (outputContainer) {
+                lastSetHeight = outputContainer.clientHeight;
                 const resizeObserver = new ResizeObserver(entries => {
                     for (const entry of entries) {
                         const parentHeight = Math.round(entry.contentRect.height);

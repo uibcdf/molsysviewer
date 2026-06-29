@@ -156094,11 +156094,15 @@ var index_default = {
       }
     });
     el.appendChild(target);
-    let lastSetHeight = parseFloat(el.style.height) || el.clientHeight || 480;
+    let lastSetHeight = 480;
     setupWidgetResizer(el, target, (w, h) => {
       el.style.height = `${h}px`;
       target.style.height = `${h}px`;
-      lastSetHeight = h;
+      if (el.parentElement) {
+        lastSetHeight = el.parentElement.clientHeight;
+      } else {
+        lastSetHeight = h;
+      }
       model.send({ event: "widget_resize", height: h, width: w });
       controllerPromise.then((c8) => {
         c8.plugin.canvas3d?.requestResize();
@@ -156165,6 +156169,7 @@ var index_default = {
       setTimeout(removeOutputLimits, 500);
       const outputContainer = el.parentElement;
       if (outputContainer) {
+        lastSetHeight = outputContainer.clientHeight;
         const resizeObserver = new ResizeObserver((entries3) => {
           for (const entry of entries3) {
             const parentHeight = Math.round(entry.contentRect.height);
