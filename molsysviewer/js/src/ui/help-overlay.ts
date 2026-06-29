@@ -9,7 +9,7 @@ function injectHelpStyles(): void {
     style.textContent = `
         .molsysviewer-help-card {
             width: min(640px, 88%);
-            max-height: calc(100% - 80px);
+            height: min(480px, calc(100% - 40px));
             overflow-y: auto;
             background: rgba(18, 18, 22, 0.92);
             border-radius: 16px;
@@ -22,6 +22,22 @@ function injectHelpStyles(): void {
             box-sizing: border-box;
             transition: all 150ms cubic-bezier(0.25, 0.8, 0.25, 1);
         }
+        
+        /* Custom elegant scrollbar for the help card */
+        .molsysviewer-help-card::-webkit-scrollbar {
+            width: 4px;
+        }
+        .molsysviewer-help-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .molsysviewer-help-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+        }
+        .molsysviewer-help-card::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .molsysviewer-help-header {
             display: flex;
             align-items: center;
@@ -84,39 +100,6 @@ function injectHelpStyles(): void {
             opacity: 0.75;
             text-align: right;
             font-size: 12px;
-        }
-
-        /* Short container responsive overrides */
-        .molsysviewer-help-short .molsysviewer-help-card {
-            max-height: calc(100% - 32px);
-            padding: 12px 20px 14px;
-            font-size: 11.5px;
-            border-radius: 12px;
-        }
-        .molsysviewer-help-short .molsysviewer-help-header {
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-        }
-        .molsysviewer-help-short .molsysviewer-help-title {
-            font-size: 12px;
-        }
-        .molsysviewer-help-short .molsysviewer-help-grid {
-            gap: 16px;
-        }
-        .molsysviewer-help-short .molsysviewer-help-section-title {
-            font-size: 9.5px;
-            margin-bottom: 4px;
-        }
-        .molsysviewer-help-short .molsysviewer-help-row {
-            padding: 3px 0;
-        }
-        .molsysviewer-help-short .molsysviewer-help-key {
-            padding: 1px 5px;
-            font-size: 9.5px;
-            border-radius: 4px;
-        }
-        .molsysviewer-help-short .molsysviewer-help-desc {
-            font-size: 10.5px;
         }
     `;
     document.head.appendChild(style);
@@ -235,10 +218,6 @@ export class HelpOverlay {
         this.visible = true;
         this.root.style.display = "flex";
         this.onVisibilityChange?.(true);
-
-        // Detect if the container is short and toggle the class
-        const isShort = this.host.clientHeight < 480;
-        this.root.classList.toggle("molsysviewer-help-short", isShort);
 
         const onKey = (ev: KeyboardEvent) => {
             if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
