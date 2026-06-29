@@ -151313,6 +151313,7 @@ function resolveTooltipPayload(interactionKind, ev, annotations, measurements) {
 function registerInteractionObservers(plugin, notify, openContextMenu, onPrimaryClick, onSecondaryClick, onHover, notifyHover, notifyClick) {
   const hover = plugin?.behaviors?.interaction?.hover;
   const click2 = plugin?.behaviors?.interaction?.click;
+  const contextMenu = plugin?.behaviors?.interaction?.contextMenu;
   if (typeof hover?.subscribe === "function") {
     hover.subscribe((ev) => {
       onHover?.(ev);
@@ -151338,6 +151339,14 @@ function registerInteractionObservers(plugin, notify, openContextMenu, onPrimary
       } else {
         notify?.(normalizeInteractionEvent("click", ev));
       }
+    });
+  }
+  if (typeof contextMenu?.subscribe === "function") {
+    contextMenu.subscribe((ev) => {
+      const payload = normalizeContextInteractionEvent(ev);
+      notify?.(payload);
+      onSecondaryClick?.(ev);
+      openContextMenu?.(payload);
     });
   }
 }
