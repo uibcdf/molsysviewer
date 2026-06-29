@@ -152155,7 +152155,7 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
       return;
     }
-    const isOpened = this.sharedShell ? this.sharedShell.isExpanded() : this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
+    const isOpened = this.sharedShell ? this.sharedShell.isVisible() && this.sharedShell.isExpanded() : this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
     if (isOpened) {
       this.collapsePanels();
     } else {
@@ -152265,7 +152265,10 @@ var MolSysViewerController = class _MolSysViewerController {
     try {
       this.groupPanel.setExpanded(target === "navigate");
       this.workbenchPanel.setExpanded(target === "workbench");
-      this.sharedShell?.setExpanded(true);
+      if (this.sharedShell) {
+        this.sharedShell.setVisible(true);
+        this.sharedShell.setExpanded(true);
+      }
       this.lastPanelMode = target;
       if (this.currentWorkspace === "core") {
         this.lastCorePanelMode = target;
