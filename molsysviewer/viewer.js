@@ -153907,18 +153907,46 @@ var MolSysViewerController = class _MolSysViewerController {
       flexDirection: "column",
       gap: "4px"
     });
+    const codeHeader = document.createElement("div");
+    Object.assign(codeHeader.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "6px",
+      fontSize: "9px",
+      fontFamily: "system-ui, -apple-system, sans-serif",
+      userSelect: "none"
+    });
     const guideTitle = document.createElement("span");
     Object.assign(guideTitle.style, {
       color: "rgba(244, 244, 245, 0.4)",
       fontWeight: "600",
       textTransform: "uppercase",
-      letterSpacing: "0.05em",
-      marginBottom: "4px",
-      fontSize: "9px",
-      fontFamily: "system-ui, -apple-system, sans-serif"
+      letterSpacing: "0.05em"
     });
     guideTitle.textContent = "Jupyter Quick Start";
-    codeBox.appendChild(guideTitle);
+    codeHeader.appendChild(guideTitle);
+    const docsLink = document.createElement("a");
+    docsLink.href = "https://www.uibcdf.org/molsysviewer/";
+    docsLink.target = "_blank";
+    docsLink.rel = "noopener noreferrer";
+    docsLink.textContent = "Docs \u2197";
+    Object.assign(docsLink.style, {
+      color: "rgba(255, 204, 0, 0.6)",
+      // Muted branded yellow
+      fontWeight: "600",
+      textDecoration: "none",
+      transition: "color 0.2s ease",
+      cursor: "pointer"
+    });
+    docsLink.onmouseover = () => {
+      docsLink.style.color = "#ffcc00";
+    };
+    docsLink.onmouseout = () => {
+      docsLink.style.color = "rgba(255, 204, 0, 0.6)";
+    };
+    codeHeader.appendChild(docsLink);
+    codeBox.appendChild(codeHeader);
     const line1 = document.createElement("span");
     line1.textContent = "import molsysviewer as msv";
     codeBox.appendChild(line1);
@@ -153961,31 +153989,6 @@ var MolSysViewerController = class _MolSysViewerController {
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
     };
     card.appendChild(btn);
-    const docsLink = document.createElement("a");
-    docsLink.href = "https://www.uibcdf.org/molsysviewer/";
-    docsLink.target = "_blank";
-    docsLink.rel = "noopener noreferrer";
-    docsLink.textContent = "Documentation & Guide \u2197";
-    Object.assign(docsLink.style, {
-      color: "rgba(244, 244, 245, 0.5)",
-      fontSize: "11px",
-      textAlign: "center",
-      textDecoration: "none",
-      marginTop: "-4px",
-      // Pull it slightly closer to the button for better grouping
-      transition: "color 0.2s ease",
-      fontFamily: "'Varela Round', system-ui, sans-serif",
-      display: "inline-block",
-      alignSelf: "center",
-      cursor: "pointer"
-    });
-    docsLink.onmouseover = () => {
-      docsLink.style.color = "#ffcc00";
-    };
-    docsLink.onmouseout = () => {
-      docsLink.style.color = "rgba(244, 244, 245, 0.5)";
-    };
-    card.appendChild(docsLink);
     if (!this.host.style.position || this.host.style.position === "static") {
       this.host.style.position = "relative";
     }
