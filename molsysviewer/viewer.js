@@ -155790,10 +155790,11 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       else if (rawPos === "bottom-center") use = ["bottom", "center"];
       else if (rawPos === "bottom-right") use = ["bottom", "right"];
     }
-    overlay.style.top = use.includes("top") ? "12px" : "";
-    overlay.style.bottom = use.includes("bottom") ? "12px" : "";
-    overlay.style.left = use.includes("left") ? "12px" : "";
-    overlay.style.right = use.includes("right") ? "12px" : "";
+    const gap = isFullscreen ? "24px" : "12px";
+    overlay.style.top = use.includes("top") ? gap : "";
+    overlay.style.bottom = use.includes("bottom") ? gap : "";
+    overlay.style.left = use.includes("left") ? gap : "";
+    overlay.style.right = use.includes("right") ? gap : "";
     overlay.style.transform = "";
     if (use.includes("center")) {
       overlay.style.left = "50%";
@@ -155807,6 +155808,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     if (use.includes("center")) {
       hotspot.style.left = "50%";
       hotspot.style.transform = "translateX(-50%)";
+    }
+    if (isFullscreen) {
+      hotspot.style.width = "180px";
+      hotspot.style.height = "75px";
+    } else {
+      hotspot.style.width = "130px";
+      hotspot.style.height = "55px";
     }
   };
   const ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
@@ -155890,6 +155898,13 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     placeOverlay();
     updateFullscreenButtonState();
     document.addEventListener("fullscreenchange", () => {
+      const isFullscreen = !!document.fullscreenElement;
+      if (isFullscreen) {
+        const isDark = c8.isDarkMode;
+        container.style.backgroundColor = isDark ? "#101010" : "#ffffff";
+      } else {
+        container.style.backgroundColor = "";
+      }
       placeOverlay();
       updateFullscreenButtonState();
       updateAutohideMode();
