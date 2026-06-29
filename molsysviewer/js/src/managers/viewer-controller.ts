@@ -311,8 +311,8 @@ export function normalizeInteractionEvent(kind: InteractionKind, ev: any): Inter
 export function normalizeContextInteractionEvent(ev: any, fallbackLoci?: any): ContextInteractionPayload {
     const loci = ev?.current?.loci ?? fallbackLoci;
     const page = ev?.page;
-    const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
-    const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
+    const page_x = typeof page?.[0] === "number" ? page[0] : (typeof ev?.event?.clientX === "number" ? ev.event.clientX : undefined);
+    const page_y = typeof page?.[1] === "number" ? page[1] : (typeof ev?.event?.clientY === "number" ? ev.event.clientY : undefined);
     return normalizeContextPayloadFromLoci(loci, page_x, page_y);
 }
 
@@ -1063,8 +1063,8 @@ export class MolSysViewerController {
             // ev.page contains page-relative coordinates (clientX/clientY).
             // page_x/y are used to position the menu (subtracting host offset inside context-menu.ts).
             // canvas_x/y are obtained by subtracting the offset so identify() works in local canvas coords.
-            const page_x = typeof page?.[0] === "number" ? page[0] : undefined;
-            const page_y = typeof page?.[1] === "number" ? page[1] : undefined;
+            const page_x = typeof page?.[0] === "number" ? page[0] : (typeof ev?.event?.clientX === "number" ? ev.event.clientX : undefined);
+            const page_y = typeof page?.[1] === "number" ? page[1] : (typeof ev?.event?.clientY === "number" ? ev.event.clientY : undefined);
             const canvasOffset = this.canvasHost.getBoundingClientRect();
             const canvas_x = page_x !== undefined ? page_x - canvasOffset.left : undefined;
             const canvas_y = page_y !== undefined ? page_y - canvasOffset.top : undefined;

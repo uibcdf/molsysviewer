@@ -151241,8 +151241,8 @@ function normalizeInteractionEvent(kind, ev) {
 function normalizeContextInteractionEvent(ev, fallbackLoci) {
   const loci = ev?.current?.loci ?? fallbackLoci;
   const page = ev?.page;
-  const page_x = typeof page?.[0] === "number" ? page[0] : void 0;
-  const page_y = typeof page?.[1] === "number" ? page[1] : void 0;
+  const page_x = typeof page?.[0] === "number" ? page[0] : typeof ev?.event?.clientX === "number" ? ev.event.clientX : void 0;
+  const page_y = typeof page?.[1] === "number" ? page[1] : typeof ev?.event?.clientY === "number" ? ev.event.clientY : void 0;
   return normalizeContextPayloadFromLoci(loci, page_x, page_y);
 }
 function isSecondaryButton(ev) {
@@ -151715,8 +151715,8 @@ var MolSysViewerController = class _MolSysViewerController {
     }, (ev) => {
       this.lastContextLoci = ev?.current?.loci ?? null;
       const page = ev?.page;
-      const page_x = typeof page?.[0] === "number" ? page[0] : void 0;
-      const page_y = typeof page?.[1] === "number" ? page[1] : void 0;
+      const page_x = typeof page?.[0] === "number" ? page[0] : typeof ev?.event?.clientX === "number" ? ev.event.clientX : void 0;
+      const page_y = typeof page?.[1] === "number" ? page[1] : typeof ev?.event?.clientY === "number" ? ev.event.clientY : void 0;
       const canvasOffset = this.canvasHost.getBoundingClientRect();
       const canvas_x = page_x !== void 0 ? page_x - canvasOffset.left : void 0;
       const canvas_y = page_y !== void 0 ? page_y - canvasOffset.top : void 0;
