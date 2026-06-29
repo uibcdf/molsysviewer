@@ -156193,9 +156193,12 @@ var index_default = {
           for (const entry of entries3) {
             const parentHeight = Math.round(entry.contentRect.height);
             if (parentHeight <= 0) continue;
-            if (extraHeight === -1) {
+            if (extraHeight === -1 && el.clientHeight > 0) {
               extraHeight = parentHeight - el.clientHeight;
               lastParentHeight = parentHeight;
+            }
+            if (extraHeight === -1) {
+              continue;
             }
             if (Math.abs(parentHeight - lastParentHeight) <= 2) {
               continue;

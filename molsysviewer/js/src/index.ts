@@ -498,10 +498,15 @@ export default {
                         const parentHeight = Math.round(entry.contentRect.height);
                         if (parentHeight <= 0) continue;
 
-                        // Calculate extraHeight dynamically on the first visible frame
-                        if (extraHeight === -1) {
+                        // Calculate extraHeight dynamically on the first visible frame where el has a height
+                        if (extraHeight === -1 && el.clientHeight > 0) {
                             extraHeight = parentHeight - el.clientHeight;
                             lastParentHeight = parentHeight;
+                        }
+
+                        // If extraHeight is not yet calculated, we cannot sync
+                        if (extraHeight === -1) {
+                            continue;
                         }
 
                         // Guard to prevent infinite layout loops
