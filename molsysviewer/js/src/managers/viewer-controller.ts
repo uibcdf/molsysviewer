@@ -413,6 +413,7 @@ export function registerInteractionObservers(
 ): void {
     const hover = plugin?.behaviors?.interaction?.hover;
     const click = plugin?.behaviors?.interaction?.click;
+    const contextMenu = plugin?.behaviors?.interaction?.contextMenu;
     if (typeof hover?.subscribe === "function") {
         hover.subscribe((ev: any) => {
             onHover?.(ev);
@@ -438,6 +439,14 @@ export function registerInteractionObservers(
             } else {
                 notify?.(normalizeInteractionEvent("click", ev));
             }
+        });
+    }
+    if (typeof contextMenu?.subscribe === "function") {
+        contextMenu.subscribe((ev: any) => {
+            const payload = normalizeContextInteractionEvent(ev);
+            notify?.(payload);
+            onSecondaryClick?.(ev);
+            openContextMenu?.(payload);
         });
     }
 }
