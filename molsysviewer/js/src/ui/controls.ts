@@ -78,10 +78,9 @@ const injectStyles = () => {
     const css = `
         /* Auto-expand Jupyter/VS Code cell output area to prevent scrolling of molsysviewer */
         .jp-OutputArea-child:has(.molsysviewer-host),
-        .lm-Widget:has(.molsysviewer-host),
+        .output_subarea:has(.molsysviewer-host),
         .vscode-notebook-cell-output-container:has(.molsysviewer-host) {
             max-height: none !important;
-            height: auto !important;
         }
         .molsysviewer-controls {
             font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
