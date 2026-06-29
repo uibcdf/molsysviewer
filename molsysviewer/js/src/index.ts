@@ -515,6 +515,7 @@ export default {
             if (c.sharedShell) {
                 c.sharedShell.onLayoutChange = (state) => {
                     popupMgr.send("molsysviewer-sync-ui", state);
+                    c.triggerLayoutChange(state);
                 };
             }
 
