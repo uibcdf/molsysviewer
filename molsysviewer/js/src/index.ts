@@ -86,7 +86,7 @@ export async function bootDocsView(opts: {
     hostEl.innerHTML = "";
     const target = document.createElement("div");
     Object.assign(target.style, {
-        width: "100%", height: "100%", minHeight: "400px", position: "relative",
+        width: "100%", height: "100%", minHeight: "300px", position: "relative",
         touchAction: "none", cursor: "default", overflow: "hidden"
     });
 
@@ -319,7 +319,7 @@ export default {
         target.tabIndex = 0;
         target.classList.add("molsysviewer-host");
         Object.assign(target.style, {
-            width: "100%", height: "100%", minHeight: "400px", position: "relative",
+            width: "100%", height: "100%", minHeight: "300px", position: "relative",
             touchAction: "none", cursor: "default", overflow: "hidden", outline: "none" // Default cursor, focus outline hidden
         });
         const releaseNotebookContextMenuSuppression = suppressCanvasContextMenu(el, target);
@@ -492,34 +492,50 @@ export default {
 
             const outputContainer = getOutputContainer();
             if (outputContainer) {
-                lastParentHeight = outputContainer.clientHeight;
+                const syncHeightsTo100 = (enable: boolean) => {
+                    let curr: HTMLElement | null = target;
+                    while (curr && curr !== outputContainer) {
+                        curr.style.height = enable ? "100%" : `${lastSetHeight}px`;
+                        curr = curr.parentElement;
+                    }
+                };
+
+                const isAncestorResized = (): boolean => {
+                    let curr: HTMLElement | null = outputContainer;
+                    while (curr) {
+                        if (curr.style.height && curr.style.height !== "auto" && curr.style.height !== "100%") {
+                            return true;
+                        }
+                        if (curr.classList.contains("jp-Cell") || curr.classList.contains("vscode-notebook-cell-output-container")) {
+                            break;
+                        }
+                        curr = curr.parentElement;
+                    }
+                    return false;
+                };
+
                 const resizeObserver = new ResizeObserver(entries => {
                     for (const entry of entries) {
                         const parentHeight = Math.round(entry.contentRect.height);
                         if (parentHeight <= 0) continue;
 
-                        // Calculate extraHeight dynamically on the first visible frame where el has a height
-                        if (extraHeight === -1 && el.clientHeight > 0) {
+                        const isResized = isAncestorResized();
+
+                        // Calculate extraHeight dynamically on the first visible frame where el has a height and is not resized
+                        if (extraHeight === -1 && el.clientHeight > 0 && !isResized) {
                             extraHeight = parentHeight - el.clientHeight;
                             lastParentHeight = parentHeight;
                         }
 
-                        // If extraHeight is not yet calculated, we cannot sync
-                        if (extraHeight === -1) {
-                            continue;
+                        if (isResized) {
+                            syncHeightsTo100(true);
+                            if (extraHeight !== -1) {
+                                lastSetHeight = Math.max(300, parentHeight - extraHeight);
+                            }
+                        } else {
+                            syncHeightsTo100(false);
                         }
 
-                        // Guard to prevent infinite layout loops
-                        if (Math.abs(parentHeight - lastParentHeight) <= 2) {
-                            continue;
-                        }
-
-                        lastParentHeight = parentHeight;
-                        const newWidgetHeight = Math.max(300, parentHeight - extraHeight);
-                        lastSetHeight = newWidgetHeight;
-                        
-                        el.style.height = `${newWidgetHeight}px`;
-                        target.style.height = `${newWidgetHeight}px`;
                         c.plugin.canvas3d?.requestResize();
                     }
                 });
