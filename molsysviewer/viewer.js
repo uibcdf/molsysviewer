@@ -149333,6 +149333,22 @@ var FloatingPanelShell = class {
       });
     } else if (isSplit2) {
       this.headerElement.style.cursor = "default";
+      this.panel.style.transform = "";
+      this.panel.style.backdropFilter = "";
+      this.panel.style.webkitBackdropFilter = "";
+      this.panel.style.left = "10px";
+      this.panel.style.top = "10px";
+      if (!this.panel.style.width || this.panel.style.width === "100%" || this.panel.style.width.indexOf("px") === -1) {
+        this.panel.style.width = "50%";
+      }
+      Object.assign(this.panel.style, {
+        height: "calc(100% - 20px)",
+        borderRadius: "14px",
+        border: "1px solid rgba(255,255,255,0.12)",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+        background: "rgba(18, 18, 22, 0.90)",
+        resize: "horizontal"
+      });
       this.panelResizeObserver?.observe(this.panel);
     } else {
       this.panelResizeObserver?.unobserve(this.panel);
@@ -150726,6 +150742,32 @@ var WorkbenchPanel = class {
     );
     this.applySectionExpandedState("addons");
   }
+  setAddonDiagnostics(items) {
+    const section = this.sections.get("addons");
+    const rows = Array.from(section.list.children);
+    const failures = Array.isArray(items) ? items : [];
+    for (const failure of failures) {
+      const source = failure.source || "unknown source";
+      const reason = failure.reason || "unknown error";
+      const title = failure.kind === "lifecycle" ? `Lifecycle failed: ${source}` : `Discovery failed: ${source}`;
+      const row = this.createItemRow({
+        key: `addon-failure:${source}`,
+        title,
+        subtitle: reason
+      });
+      row.setAttribute("data-molsysviewer-workbench-addon-discovery-failure", source);
+      if (failure.traceback) row.title = failure.traceback;
+      rows.push(row);
+    }
+    if (rows.length === 0) {
+      section.list.replaceChildren();
+      section.empty.style.display = "block";
+    } else {
+      section.empty.style.display = "none";
+      section.list.replaceChildren(...rows);
+    }
+    this.applySectionExpandedState("addons");
+  }
   setAddonWorkbenchSections(items) {
     const nextKeys = /* @__PURE__ */ new Set();
     for (const item2 of items) {
@@ -151316,6 +151358,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.workbenchAddonSections = [];
     this.addonContextActions = [];
     this.addonContextItems = [];
+    this.addonDiagnostics = [];
     this.workbenchActive = null;
     this.workbenchContext = null;
     this.syncingPanelExpansion = false;
@@ -152928,6 +152971,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.workbenchAddons = this.buildAddonRuntimeSummary(msg);
           this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg);
           this.addonContextActions = this.buildAddonContextActionSummary(msg);
+          this.addonDiagnostics = this.buildAddonDiagnosticSummary(msg);
           this.addonRuntimeInitialized = true;
           if (prevWorkspaceIds !== null) {
             const newWorkspaces = this.getWorkspaceOptions().filter((item2) => !prevWorkspaceIds.has(item2.id));
@@ -153574,6 +153618,7 @@ var MolSysViewerController = class _MolSysViewerController {
         active: this.currentWorkspace !== "core" && this.workspaceBelongsToAddon(this.currentWorkspace, item2.name)
       }))
     );
+    this.workbenchPanel.setAddonDiagnostics(this.addonDiagnostics);
     this.workbenchPanel.setAddonWorkbenchSections([]);
   }
   buildAddonWorkspaceSummary(msg) {
@@ -153649,6 +153694,19 @@ var MolSysViewerController = class _MolSysViewerController {
       target_kinds: Array.isArray(item2.target_kinds) ? item2.target_kinds.filter((value) => typeof value === "string") : [],
       group: typeof item2.group === "string" ? item2.group : void 0
     })).sort((left, right) => `${left.addon}:${left.id}`.localeCompare(`${right.addon}:${right.id}`));
+  }
+  buildAddonDiagnosticSummary(msg) {
+    const discoveryFailures = Array.isArray(msg?.discovery_failures) ? msg.discovery_failures : [];
+    const lifecycleFailures = Array.isArray(msg?.lifecycle_failures) ? msg.lifecycle_failures : [];
+    return [
+      ...discoveryFailures.map((item2) => ({ ...item2, kind: typeof item2?.kind === "string" ? item2.kind : "discovery" })),
+      ...lifecycleFailures.map((item2) => ({ ...item2, kind: typeof item2?.kind === "string" ? item2.kind : "lifecycle" }))
+    ].filter((item2) => typeof item2?.source === "string" && typeof item2?.reason === "string").map((item2) => ({
+      kind: typeof item2?.kind === "string" ? item2.kind : void 0,
+      source: item2.source,
+      reason: item2.reason,
+      traceback: typeof item2?.traceback === "string" ? item2.traceback : void 0
+    })).sort((left, right) => left.source.localeCompare(right.source));
   }
   refreshNavigatePanel() {
     this.groupPanel.setSavedSelections(this.savedSelections);
@@ -153738,7 +153796,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
     const newPanel = panels.find((item2) => item2.id === panelId);
-    const newKey = `${workspaceId}:${panelId}`;
+    const newKey = `${newPanel.addon}:${panelId}`;
     if (newPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
       this.notify?.({ event: "panel_navigate", addon: newPanel.addon, panel: panelId });
     } else if (!newPanel?.widget_class) {
@@ -154055,7 +154113,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const selectedPanelId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
       if (selectedPanelId) {
         const selectedPanel = this.getWorkspacePanels(this.currentWorkspace).find((item2) => item2.id === selectedPanelId);
-        const newKey = `${this.currentWorkspace}:${selectedPanelId}`;
+        const newKey = `${selectedPanel.addon}:${selectedPanelId}`;
         if (selectedPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
           this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
         }
