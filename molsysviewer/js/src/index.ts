@@ -366,9 +366,12 @@ export default {
         el.appendChild(target);
 
         // Setup interactive resizing
+        let lastSetHeight = parseFloat(el.style.height) || el.clientHeight || 480;
+
         setupWidgetResizer(el, target, (w, h) => {
             el.style.height = `${h}px`;
             target.style.height = `${h}px`;
+            lastSetHeight = h;
             model.send({ event: "widget_resize", height: h, width: w });
             controllerPromise.then(c => {
                 c.plugin.canvas3d?.requestResize();
@@ -452,6 +455,51 @@ export default {
             removeOutputLimits();
             setTimeout(removeOutputLimits, 100);
             setTimeout(removeOutputLimits, 500);
+
+            // Bidirectional height synchronization: observe the output container
+            // and resize the widget if the container is resized by the user.
+            const getOutputContainer = (): HTMLElement | null => {
+                let parent: HTMLElement | null = target.parentElement;
+                let lastValidParent: HTMLElement | null = null;
+                while (parent) {
+                    if (parent.classList.contains("jp-OutputArea-child") || 
+                        parent.classList.contains("jp-OutputArea-output") || 
+                        parent.classList.contains("jp-OutputArea") || 
+                        parent.classList.contains("output_subarea") ||
+                        parent.classList.contains("vscode-notebook-cell-output-container") ||
+                        parent.classList.contains("cell-output-ipywidget")) {
+                        lastValidParent = parent;
+                    }
+                    if (parent.parentElement) {
+                        parent = parent.parentElement;
+                    } else {
+                        const root = parent.getRootNode();
+                        parent = root instanceof ShadowRoot ? (root.host as HTMLElement) : null;
+                    }
+                }
+                return lastValidParent || target.parentElement;
+            };
+
+            const outputContainer = getOutputContainer();
+            if (outputContainer) {
+                const resizeObserver = new ResizeObserver(entries => {
+                    for (const entry of entries) {
+                        const parentHeight = Math.round(entry.contentRect.height);
+                        if (parentHeight <= 0) continue;
+
+                        // Guard to prevent infinite layout loops
+                        if (Math.abs(parentHeight - lastSetHeight) <= 2) {
+                            continue;
+                        }
+
+                        lastSetHeight = parentHeight;
+                        el.style.height = `${parentHeight}px`;
+                        target.style.height = `${parentHeight}px`;
+                        c.plugin.canvas3d?.requestResize();
+                    }
+                });
+                resizeObserver.observe(outputContainer);
+            }
 
             c.onTogglePanelModeOverride = () => {
                 if (popupMgr.panelWin && !popupMgr.panelWin.closed) {

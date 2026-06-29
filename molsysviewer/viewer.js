@@ -156094,9 +156094,11 @@ var index_default = {
       }
     });
     el.appendChild(target);
+    let lastSetHeight = parseFloat(el.style.height) || el.clientHeight || 480;
     setupWidgetResizer(el, target, (w, h) => {
       el.style.height = `${h}px`;
       target.style.height = `${h}px`;
+      lastSetHeight = h;
       model.send({ event: "widget_resize", height: h, width: w });
       controllerPromise.then((c8) => {
         c8.plugin.canvas3d?.requestResize();
@@ -156161,6 +156163,39 @@ var index_default = {
       removeOutputLimits();
       setTimeout(removeOutputLimits, 100);
       setTimeout(removeOutputLimits, 500);
+      const getOutputContainer = () => {
+        let parent = target.parentElement;
+        let lastValidParent = null;
+        while (parent) {
+          if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
+            lastValidParent = parent;
+          }
+          if (parent.parentElement) {
+            parent = parent.parentElement;
+          } else {
+            const root = parent.getRootNode();
+            parent = root instanceof ShadowRoot ? root.host : null;
+          }
+        }
+        return lastValidParent || target.parentElement;
+      };
+      const outputContainer = getOutputContainer();
+      if (outputContainer) {
+        const resizeObserver = new ResizeObserver((entries3) => {
+          for (const entry of entries3) {
+            const parentHeight = Math.round(entry.contentRect.height);
+            if (parentHeight <= 0) continue;
+            if (Math.abs(parentHeight - lastSetHeight) <= 2) {
+              continue;
+            }
+            lastSetHeight = parentHeight;
+            el.style.height = `${parentHeight}px`;
+            target.style.height = `${parentHeight}px`;
+            c8.plugin.canvas3d?.requestResize();
+          }
+        });
+        resizeObserver.observe(outputContainer);
+      }
       c8.onTogglePanelModeOverride = () => {
         if (popupMgr.panelWin && !popupMgr.panelWin.closed) {
           popupMgr.close("panel");
