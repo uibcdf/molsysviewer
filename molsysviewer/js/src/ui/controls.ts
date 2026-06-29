@@ -884,6 +884,7 @@ export const buildControls = (
         let autohide = !!model.get("autohide_controls");
         let isHovered = false;
         let fadeTimeout: any = null;
+        const target = container;
 
         const applyShow = (visible: boolean) => {
             if (!hasSeenState) return;
@@ -897,6 +898,9 @@ export const buildControls = (
 
         const triggerTemporaryShow = () => {
             if (!autohide) return;
+            const isFullscreen = !!document.fullscreenElement;
+            if (!isFullscreen) return;
+
             if (fadeTimeout) clearTimeout(fadeTimeout);
             applyShow(true);
             fadeTimeout = setTimeout(() => {
@@ -906,45 +910,74 @@ export const buildControls = (
             }, 1500);
         };
 
-        placeOverlay();
-        updateFullscreenButtonState();
-        document.addEventListener("fullscreenchange", () => {
-            placeOverlay();
-            updateFullscreenButtonState();
-            triggerTemporaryShow();
-        });
-        model.on("change:controls_position", placeOverlay);
-        model.on("change:controls_position_fullscreen", placeOverlay);
+        const onEnterWhole = () => {
+            applyShow(true);
+        };
 
-        const onEnter = () => {
+        const onLeaveWhole = () => {
+            applyShow(false);
+        };
+
+        const onEnterHotspot = () => {
             isHovered = true;
             if (fadeTimeout) clearTimeout(fadeTimeout);
             applyShow(true);
         };
 
-        const onLeave = () => {
+        const onLeaveHotspot = () => {
             isHovered = false;
             applyShow(false);
         };
 
-        const enableAutohide = () => {
-            hotspot.style.display = "block";
-            overlay!.style.transition = "opacity 250ms ease-in-out";
+        const updateAutohideMode = () => {
+            if (!autohide) return;
+            const isFullscreen = !!document.fullscreenElement;
             
-            hotspot.addEventListener("pointerenter", onEnter);
-            hotspot.addEventListener("pointerleave", onLeave);
-            overlay!.addEventListener("pointerenter", onEnter);
-            overlay!.addEventListener("pointerleave", onLeave);
+            target.removeEventListener("pointerenter", onEnterWhole);
+            target.removeEventListener("pointerleave", onLeaveWhole);
+            hotspot.removeEventListener("pointerenter", onEnterHotspot);
+            hotspot.removeEventListener("pointerleave", onLeaveHotspot);
+            overlay!.removeEventListener("pointerenter", onEnterHotspot);
+            overlay!.removeEventListener("pointerleave", onLeaveHotspot);
 
+            if (isFullscreen) {
+                hotspot.style.display = "block";
+                hotspot.addEventListener("pointerenter", onEnterHotspot);
+                hotspot.addEventListener("pointerleave", onLeaveHotspot);
+                overlay!.addEventListener("pointerenter", onEnterHotspot);
+                overlay!.addEventListener("pointerleave", onLeaveHotspot);
+            } else {
+                hotspot.style.display = "none";
+                target.addEventListener("pointerenter", onEnterWhole);
+                target.addEventListener("pointerleave", onLeaveWhole);
+            }
+        };
+
+        placeOverlay();
+        updateFullscreenButtonState();
+        document.addEventListener("fullscreenchange", () => {
+            placeOverlay();
+            updateFullscreenButtonState();
+            updateAutohideMode();
+            triggerTemporaryShow();
+        });
+        model.on("change:controls_position", placeOverlay);
+        model.on("change:controls_position_fullscreen", placeOverlay);
+
+        const enableAutohide = () => {
+            overlay!.style.transition = "opacity 250ms ease-in-out";
+            updateAutohideMode();
             triggerTemporaryShow();
         };
 
         const disableAutohide = () => {
             hotspot.style.display = "none";
-            hotspot.removeEventListener("pointerenter", onEnter);
-            hotspot.removeEventListener("pointerleave", onLeave);
-            overlay!.removeEventListener("pointerenter", onEnter);
-            overlay!.removeEventListener("pointerleave", onLeave);
+            target.removeEventListener("pointerenter", onEnterWhole);
+            target.removeEventListener("pointerleave", onLeaveWhole);
+            hotspot.removeEventListener("pointerenter", onEnterHotspot);
+            hotspot.removeEventListener("pointerleave", onLeaveHotspot);
+            overlay!.removeEventListener("pointerenter", onEnterHotspot);
+            overlay!.removeEventListener("pointerleave", onLeaveHotspot);
             
             overlay!.style.opacity = "1";
             overlay!.style.pointerEvents = "auto";
@@ -967,8 +1000,6 @@ export const buildControls = (
             }
         });
     }
-
-
 
     return overlay;
 };
