@@ -156163,23 +156163,7 @@ var index_default = {
       removeOutputLimits();
       setTimeout(removeOutputLimits, 100);
       setTimeout(removeOutputLimits, 500);
-      const getOutputContainer = () => {
-        let parent = target.parentElement;
-        let lastValidParent = null;
-        while (parent) {
-          if (parent.classList.contains("jp-OutputArea-child") || parent.classList.contains("jp-OutputArea-output") || parent.classList.contains("jp-OutputArea") || parent.classList.contains("output_subarea") || parent.classList.contains("vscode-notebook-cell-output-container") || parent.classList.contains("cell-output-ipywidget")) {
-            lastValidParent = parent;
-          }
-          if (parent.parentElement) {
-            parent = parent.parentElement;
-          } else {
-            const root = parent.getRootNode();
-            parent = root instanceof ShadowRoot ? root.host : null;
-          }
-        }
-        return lastValidParent || target.parentElement;
-      };
-      const outputContainer = getOutputContainer();
+      const outputContainer = el.parentElement;
       if (outputContainer) {
         const resizeObserver = new ResizeObserver((entries3) => {
           for (const entry of entries3) {
