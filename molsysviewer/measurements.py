@@ -180,6 +180,7 @@ class MeasurementsManager:
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
         value: float | None = None,
+        value_series: list[float] | None = None,
         style: dict | None = None,
     ) -> dict:
         policy = self._normalize_endpoint_policy(endpoint_policy)
@@ -195,6 +196,8 @@ class MeasurementsManager:
         }
         if value is not None:
             options["value"] = float(value)
+        if value_series is not None:
+            options["value_series"] = [float(item) for item in value_series]
         if style:
             options["style"] = dict(style)
         return {
@@ -212,11 +215,19 @@ class MeasurementsManager:
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
         value: float | None = None,
+        value_series: list[float] | None = None,
         style: dict | None = None,
     ) -> Layer:
         layer = self._ensure_layer(tag, layer_tag=layer_tag)
         msg = self._build_measurement_message(
-            op, picks_atom_indices, tag, layer_tag=getattr(layer, "layer_tag", tag), endpoint_policy=endpoint_policy, value=value, style=style,
+            op,
+            picks_atom_indices,
+            tag,
+            layer_tag=getattr(layer, "layer_tag", tag),
+            endpoint_policy=endpoint_policy,
+            value=value,
+            value_series=value_series,
+            style=style,
         )
         self._view._record_measurement_message(msg)  # noqa: SLF001
         self._view._last_measurement_created_event = {  # noqa: SLF001
@@ -236,7 +247,7 @@ class MeasurementsManager:
         }
         return layer
 
-    def _endpoint_position_nm(self, pick: list[int], ea_indices: list[int], policy: str) -> "np.ndarray | None":
+    def _endpoint_positions_nm(self, pick: list[int], ea_indices: list[int], policy: str) -> "np.ndarray | None":
         molsys = self._view._molsys  # noqa: SLF001
         if molsys is None:
             return None
@@ -253,10 +264,68 @@ class MeasurementsManager:
             coords = result.get("coordinates")
             if coords is None:
                 return None
-            arr = np.asarray(coords)  # (n_structures, n_atoms, 3) in nm
-            return arr[0].mean(axis=0)  # centroid of selected atoms, shape (3,)
+            arr = np.asarray(coords, dtype=float)
+            if arr.ndim == 2:
+                arr = arr[np.newaxis, :, :]
+            if arr.ndim != 3 or arr.shape[-1] != 3:
+                return None
+            return arr.mean(axis=1)
         except Exception:
             return None
+
+    def _compute_measurement_series(
+        self,
+        op: str,
+        picks_atom_indices: list[list[int]],
+        endpoint_atom_indices: list[list[int]],
+        endpoint_policy: str,
+    ) -> "np.ndarray | None":
+        positions = []
+        for i, pick in enumerate(picks_atom_indices):
+            ea = endpoint_atom_indices[i] if i < len(endpoint_atom_indices) else []
+            pos = self._endpoint_positions_nm(pick, ea, endpoint_policy)
+            if pos is None:
+                return None
+            positions.append(pos)
+
+        try:
+            frame_count = min(pos.shape[0] for pos in positions)
+            if frame_count == 0:
+                return None
+            positions = [pos[:frame_count] for pos in positions]
+            if op == "add_distance_measurement" and len(positions) == 2:
+                return np.linalg.norm(positions[1] - positions[0], axis=1) * 10.0  # nm -> Å
+            if op == "add_angle_measurement" and len(positions) == 3:
+                v1 = positions[0] - positions[1]
+                v2 = positions[2] - positions[1]
+                n1 = np.linalg.norm(v1, axis=1)
+                n2 = np.linalg.norm(v2, axis=1)
+                denom = n1 * n2
+                if np.any(denom == 0):
+                    return None
+                cosines = np.einsum("ij,ij->i", v1, v2) / denom
+                return np.degrees(np.arccos(np.clip(cosines, -1.0, 1.0)))
+            if op == "add_dihedral_measurement" and len(positions) == 4:
+                values = []
+                for p0, p1, p2, p3 in zip(*positions):
+                    b1 = p1 - p0
+                    b2 = p2 - p1
+                    b3 = p3 - p2
+                    n1 = np.cross(b1, b2)
+                    n2 = np.cross(b2, b3)
+                    nn1, nn2 = np.linalg.norm(n1), np.linalg.norm(n2)
+                    if nn1 == 0 or nn2 == 0:
+                        return None
+                    n1 /= nn1
+                    n2 /= nn2
+                    m1 = np.cross(n1, b2 / (np.linalg.norm(b2) or 1))
+                    x = np.dot(n1, n2)
+                    y = np.dot(m1, n2)
+                    values.append(float(np.degrees(np.arctan2(y, x))))
+                return np.asarray(values, dtype=float)
+        except Exception:
+            return None
+        return None
 
     def _compute_measurement_value(
         self,
@@ -265,42 +334,21 @@ class MeasurementsManager:
         endpoint_atom_indices: list[list[int]],
         endpoint_policy: str,
     ) -> float | None:
-        positions = []
-        for i, pick in enumerate(picks_atom_indices):
-            ea = endpoint_atom_indices[i] if i < len(endpoint_atom_indices) else []
-            pos = self._endpoint_position_nm(pick, ea, endpoint_policy)
-            if pos is None:
-                return None
-            positions.append(pos)
-
-        try:
-            if op == "add_distance_measurement" and len(positions) == 2:
-                return float(np.linalg.norm(positions[1] - positions[0]) * 10)  # nm → Å
-            if op == "add_angle_measurement" and len(positions) == 3:
-                v1 = positions[0] - positions[1]
-                v2 = positions[2] - positions[1]
-                n1, n2 = np.linalg.norm(v1), np.linalg.norm(v2)
-                if n1 == 0 or n2 == 0:
-                    return None
-                return float(np.degrees(np.arccos(np.clip(np.dot(v1, v2) / (n1 * n2), -1.0, 1.0))))
-            if op == "add_dihedral_measurement" and len(positions) == 4:
-                b1 = positions[1] - positions[0]
-                b2 = positions[2] - positions[1]
-                b3 = positions[3] - positions[2]
-                n1 = np.cross(b1, b2)
-                n2 = np.cross(b2, b3)
-                nn1, nn2 = np.linalg.norm(n1), np.linalg.norm(n2)
-                if nn1 == 0 or nn2 == 0:
-                    return None
-                n1 /= nn1
-                n2 /= nn2
-                m1 = np.cross(n1, b2 / (np.linalg.norm(b2) or 1))
-                x = np.dot(n1, n2)
-                y = np.dot(m1, n2)
-                return float(np.degrees(np.arctan2(y, x)))
-        except Exception:
+        series = self._compute_measurement_series(op, picks_atom_indices, endpoint_atom_indices, endpoint_policy)
+        if series is None or len(series) == 0:
             return None
-        return None
+        return float(series[0])
+
+    def _active_series_index(self, series_length: int) -> int:
+        if series_length <= 1:
+            return 0
+        index = int(getattr(self._view, "_current_structure_index", 0))
+        mapper = getattr(self._view, "_index_mapper", None)
+        if mapper is not None:
+            mapped = mapper.to_local_structure(index)
+            if mapped is not None:
+                index = int(mapped)
+        return min(max(index, 0), series_length - 1)
 
     def _send_measurement(
         self,
@@ -311,13 +359,26 @@ class MeasurementsManager:
         layer_tag: str | None = None,
         endpoint_policy: str | None = None,
         value: float | None = None,
+        value_series: list[float] | None = None,
         style: dict | None = None,
     ) -> Layer:
-        if value is None:
+        if value is None and value_series is None:
             policy = self._normalize_endpoint_policy(endpoint_policy)
             _, _, ea_indices = self._resolve_endpoint_metadata(picks_atom_indices, policy)
-            value = self._compute_measurement_value(op, picks_atom_indices, ea_indices, policy)
-        layer = self._record_measurement(op, picks_atom_indices, tag, layer_tag=layer_tag, endpoint_policy=endpoint_policy, value=value, style=style)
+            series = self._compute_measurement_series(op, picks_atom_indices, ea_indices, policy)
+            if series is not None and len(series) > 0:
+                value = float(series[0])
+                value_series = [float(item) for item in series]
+        layer = self._record_measurement(
+            op,
+            picks_atom_indices,
+            tag,
+            layer_tag=layer_tag,
+            endpoint_policy=endpoint_policy,
+            value=value,
+            value_series=value_series,
+            style=style,
+        )
         self._view._send(
             self._build_measurement_message(
                 op,
@@ -326,6 +387,7 @@ class MeasurementsManager:
                 layer_tag=getattr(layer, "layer_tag", tag),
                 endpoint_policy=endpoint_policy,
                 value=value,
+                value_series=value_series,
                 style=style,
             )
         )  # noqa: SLF001
@@ -442,7 +504,12 @@ class MeasurementsManager:
             endpoint_policy = record.get("options", {}).get("endpoint_policy", self._endpoint_policy_default)
             endpoint_labels = record.get("options", {}).get("endpoint_labels", [])
             endpoint_atom_indices = record.get("options", {}).get("endpoint_atom_indices", [])
-            raw_value = record.get("options", {}).get("value")
+            options = record.get("options") if isinstance(record.get("options"), dict) else {}
+            raw_series = options.get("value_series")
+            raw_value = options.get("value")
+            if isinstance(raw_series, list) and len(raw_series) > 0:
+                active_index = self._active_series_index(len(raw_series))
+                raw_value = raw_series[active_index]
             if raw_value is not None:
                 v = float(raw_value)
                 unit = "angstrom" if kind == "distance" else "degrees"
@@ -467,6 +534,36 @@ class MeasurementsManager:
                 }
             )
         return items
+
+    def series(self, tag: str):
+        """Return the stored or recomputed measurement time series for *tag*."""
+        record = next((item for item in self._view._measurement_history if item.get("tag") == tag), None)  # noqa: SLF001
+        if record is None:
+            raise ValueError(f"No measurement layer found for tag {tag!r}.")
+        op = record.get("op")
+        kind = {
+            "add_distance_measurement": "distance",
+            "add_angle_measurement": "angle",
+            "add_dihedral_measurement": "dihedral",
+        }.get(op, "measurement")
+        unit = "angstrom" if kind == "distance" else "degrees"
+        options = record.get("options") if isinstance(record.get("options"), dict) else {}
+        raw_series = options.get("value_series")
+        if isinstance(raw_series, list) and len(raw_series) > 0:
+            return puw.standardize(puw.quantity([float(item) for item in raw_series], unit))
+        raw_value = options.get("value")
+        if raw_value is not None:
+            return puw.standardize(puw.quantity([float(raw_value)], unit))
+
+        picks = options.get("picks_atom_indices")
+        endpoint_atom_indices = options.get("endpoint_atom_indices")
+        endpoint_policy = options.get("endpoint_policy", self._endpoint_policy_default)
+        if not isinstance(picks, list) or not isinstance(endpoint_atom_indices, list) or not isinstance(endpoint_policy, str):
+            return None
+        series = self._compute_measurement_series(op, picks, endpoint_atom_indices, endpoint_policy)
+        if series is None or len(series) == 0:
+            return None
+        return puw.standardize(puw.quantity([float(item) for item in series], unit))
 
     @signal(tags=["measurement"])
     @digest()

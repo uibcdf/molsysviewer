@@ -280,6 +280,8 @@ class Layer(LayerHandle):
                 member.set_tag(new_tag, skip_digestion=True)
                 return
         super().set_tag(new_tag, skip_digestion=True)
+        for member in members:
+            member.layer_tag = self.tag
 
     def show(self, skip_digestion: bool = False) -> None:
         self._hidden = False

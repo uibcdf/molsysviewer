@@ -120,6 +120,43 @@ def test_shapes_manager_supports_explicit_shared_layer_tag():
     assert set(view._layers["cluster"].members.keys()) == {"foo", "bar"}
 
 
+def test_shared_shape_layer_retag_rewrites_history_and_live_members():
+    view = MolSysView()
+    first = view.shapes.add_sphere(
+        center=puw.quantity([1, 2, 3], "nm"),
+        radius=puw.quantity(5, "nm"),
+        tag="foo",
+        layer_tag="cluster",
+    )
+    second = view.shapes.add_sphere(
+        center=puw.quantity([4, 5, 6], "nm"),
+        radius=puw.quantity(2, "nm"),
+        tag="bar",
+        layer_tag="cluster",
+    )
+
+    view.layers["cluster"].set_tag("active_site")
+
+    assert first.layer_tag == "active_site"
+    assert second.layer_tag == "active_site"
+    assert "cluster" not in view.layers
+    assert set(view.layers["active_site"].shapes.keys()) == {"foo", "bar"}
+
+    shape_layer_tags = [
+        msg["options"].get("layer_tag")
+        for msg in view._shape_history  # noqa: SLF001
+        if msg.get("op") == "add_sphere"
+    ]
+    assert shape_layer_tags == ["active_site", "active_site"]
+
+    replay_layer_tags = [
+        msg["options"].get("layer_tag")
+        for msg in view._message_history  # noqa: SLF001
+        if msg.get("op") == "add_sphere"
+    ]
+    assert replay_layer_tags == ["active_site", "active_site"]
+
+
 def test_shapes_manager_can_move_shape_between_layers():
     view = MolSysView()
     layer = view.shapes.add_sphere(

@@ -13,6 +13,26 @@ class HistoryMixin:
                 return opt_tag
         return None
 
+    def _rewrite_history_layer_tag(self, history: list[dict], old_tag: str, new_tag: str) -> list[dict]:
+        rewritten: list[dict] = []
+        for item in history:
+            options = item.get("options")
+            if not isinstance(options, dict) or options.get("layer_tag") != old_tag:
+                rewritten.append(item)
+                continue
+            updated = dict(item)
+            updated_options = dict(options)
+            updated_options["layer_tag"] = new_tag
+            updated["options"] = updated_options
+            rewritten.append(updated)
+        return rewritten
+
+    def _rewrite_scene_layer_histories(self, old_tag: str, new_tag: str) -> None:
+        self._shape_history = self._rewrite_history_layer_tag(self._shape_history, old_tag, new_tag)
+        self._annotation_history = self._rewrite_history_layer_tag(self._annotation_history, old_tag, new_tag)
+        self._measurement_history = self._rewrite_history_layer_tag(self._measurement_history, old_tag, new_tag)
+        self._message_history = self._rewrite_history_layer_tag(self._message_history, old_tag, new_tag)
+
     _REGION_OPS = frozenset({
         "create_region", "set_region_representation",
         "show_region", "hide_region", "delete_region",
@@ -53,6 +73,7 @@ class HistoryMixin:
             new_tag = msg.get("new_tag")
             if not isinstance(old_tag, str) or not isinstance(new_tag, str):
                 return
+            self._rewrite_scene_layer_histories(old_tag, new_tag)
             rewritten: list[dict] = []
             for item in self._shape_history:
                 tag = self._tag_from_message(item)
@@ -111,6 +132,7 @@ class HistoryMixin:
             new_tag = msg.get("new_tag")
             if not isinstance(old_tag, str) or not isinstance(new_tag, str):
                 return
+            self._rewrite_scene_layer_histories(old_tag, new_tag)
             rewritten: list[dict] = []
             for item in self._annotation_history:
                 tag = self._tag_from_message(item)
@@ -178,6 +200,7 @@ class HistoryMixin:
             new_tag = msg.get("new_tag")
             if not isinstance(old_tag, str) or not isinstance(new_tag, str):
                 return
+            self._rewrite_scene_layer_histories(old_tag, new_tag)
             rewritten: list[dict] = []
             for item in self._measurement_history:
                 tag = self._tag_from_message(item)

@@ -143,7 +143,7 @@ def _serialize_molsys_payload(
     if n_atoms == 0 or not structures:
         return None
 
-    def _column(values, fallback, cast):
+    def _column(values, fallback, cast, *, dtype=None):
         if values is None:
             return [fallback(i) for i in range(n_atoms)]
         try:
@@ -152,6 +152,23 @@ def _serialize_molsys_payload(
             return [fallback(i) for i in range(n_atoms)]
         if array.ndim == 0 or array.shape[0] != n_atoms:
             return [fallback(i) for i in range(n_atoms)]
+
+        if dtype is not None:
+            try:
+                if dtype is int and np.issubdtype(array.dtype, np.floating) and not bool(np.isfinite(array).all()):
+                    raise ValueError("integer column contains non-finite values")
+                converted = array.astype(dtype, copy=False)
+                if np.issubdtype(converted.dtype, np.floating):
+                    finite = np.isfinite(converted)
+                    if not bool(finite.all()):
+                        out = converted.tolist()
+                        for i in np.flatnonzero(~finite):
+                            out[int(i)] = fallback(int(i))
+                        return out
+                return converted.tolist()
+            except Exception:
+                pass
+
         out: list[Any] = []
         for i, v in enumerate(array.tolist()):
             try:
@@ -163,21 +180,21 @@ def _serialize_molsys_payload(
             out.append(val)
         return out
 
-    atom_id = _column(atom_ids, lambda i: i + 1, int)
-    atom_name = _column(atoms_block.get("atom_name"), lambda i: f"A{i+1}", str)
-    residue_id = _column(atoms_block.get("group_id"), lambda _i: 1, int)
-    residue_name = _column(atoms_block.get("group_name"), lambda _i: "RES", str)
-    chain_id = _column(atoms_block.get("chain_id"), lambda _i: "A", str)
-    entity_id = _column(atoms_block.get("entity_id"), lambda _i: "1", str)
-    element_symbol = _column(atoms_block.get("element_symbol"), lambda _i: "C", str)
-    formal_charge = _column(atoms_block.get("formal_charge"), lambda _i: 0, int)
+    atom_id = _column(atom_ids, lambda i: i + 1, int, dtype=int)
+    atom_name = _column(atoms_block.get("atom_name"), lambda i: f"A{i+1}", str, dtype=str)
+    residue_id = _column(atoms_block.get("group_id"), lambda _i: 1, int, dtype=int)
+    residue_name = _column(atoms_block.get("group_name"), lambda _i: "RES", str, dtype=str)
+    chain_id = _column(atoms_block.get("chain_id"), lambda _i: "A", str, dtype=str)
+    entity_id = _column(atoms_block.get("entity_id"), lambda _i: "1", str, dtype=str)
+    element_symbol = _column(atoms_block.get("element_symbol"), lambda _i: "C", str, dtype=str)
+    formal_charge = _column(atoms_block.get("formal_charge"), lambda _i: 0, int, dtype=int)
 
     # Hierarchy metadata from MolSysMT
-    mol_id = _column(molecule_indices, lambda _i: 0, int)
-    mol_name = _column(molecule_names, lambda _i: "Molecule", str)
-    comp_id = _column(component_indices, lambda _i: 0, int)
-    comp_name = _column(component_names, lambda _i: "Component", str)
-    group_type = _column(group_types, lambda _i: "", str)
+    mol_id = _column(molecule_indices, lambda _i: 0, int, dtype=int)
+    mol_name = _column(molecule_names, lambda _i: "Molecule", str, dtype=str)
+    comp_id = _column(component_indices, lambda _i: 0, int, dtype=int)
+    comp_name = _column(component_names, lambda _i: "Component", str, dtype=str)
+    group_type = _column(group_types, lambda _i: "", str, dtype=str)
 
     structures_payload = _extract_structures(structures, n_atoms)
     if not structures_payload:

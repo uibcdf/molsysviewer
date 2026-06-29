@@ -348,6 +348,7 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
     module.__spec__ = ModuleSpec(module.__name__, None)
     sys.modules[module.__name__] = module
     monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt", "molsysviewer_missing"))
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {})
     try:
         discovered = addons.discover()
         assert [item.name for item in discovered] == ["topomt"]
@@ -356,6 +357,34 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
     finally:
         sys.modules.pop(module.__name__, None)
         addons.clear()
+
+
+
+def test_addons_registry_discovers_entry_point_addons(monkeypatch):
+    addons.clear()
+    module = ModuleType("molsysviewer_epaddon")
+    module.addon = AddonSpec(
+        name="ep-addon",
+        package="molsysviewer-epaddon",
+        panels=(AddonPanelSpec(id="ep", title="Entry Point", entry="ep.panel"),),
+    )
+
+    class FakeEntryPoint:
+        name = "ep-addon"
+        value = "molsysviewer_epaddon"
+
+        def load(self):
+            return module
+
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ())
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {"molsysviewer.addons": [FakeEntryPoint()]})
+
+    discovered = addons.discover()
+
+    assert [item.name for item in discovered] == ["ep-addon"]
+    assert addons.records()[0]["module"] == "molsysviewer_epaddon"
+    assert addons.discovery_failures() == []
+    addons.clear()
 
 
 def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch):
@@ -371,6 +400,7 @@ def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch
     module.__spec__ = ModuleSpec(module.__name__, None)
     sys.modules[module.__name__] = module
     monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt",))
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {})
 
     manager = smonitor.get_manager()
     before_warnings = manager.report().get("warnings_total", 0)
@@ -383,6 +413,31 @@ def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch
     finally:
         sys.modules.pop(module.__name__, None)
         addons.clear()
+
+
+
+def test_addons_registry_records_entry_point_discovery_failures(monkeypatch):
+    addons.clear()
+
+    class BrokenEntryPoint:
+        name = "broken-addon"
+        value = "molsysviewer_broken:get_addon"
+
+        def load(self):
+            raise RuntimeError("broken entry point")
+
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ())
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {"molsysviewer.addons": [BrokenEntryPoint()]})
+
+    discovered = addons.discover()
+
+    assert discovered == []
+    failures = addons.discovery_failures()
+    assert len(failures) == 1
+    assert failures[0]["source"] == "entry-point:broken-addon"
+    assert failures[0]["reason"] == "broken entry point"
+    assert "RuntimeError: broken entry point" in failures[0]["traceback"]
+    addons.clear()
 
 
 def test_view_addons_refresh_context_items_from_active_selection_hook():

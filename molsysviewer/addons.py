@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from importlib import import_module
+from importlib.metadata import entry_points as metadata_entry_points
 from importlib.util import find_spec
+import traceback
 from types import ModuleType
 from collections.abc import Callable
 from typing import Any
@@ -380,6 +382,24 @@ KNOWN_ADDON_MODULES: tuple[str, ...] = (
     "molsysviewer_pharmacophoremt",
     "molsysviewer_elasnetmt",
 )
+ADDON_ENTRY_POINT_GROUP = "molsysviewer.addons"
+
+
+def _addon_entry_points() -> list[Any]:
+    try:
+        eps = metadata_entry_points()
+        if hasattr(eps, "select"):
+            return list(eps.select(group=ADDON_ENTRY_POINT_GROUP))
+        return list(eps.get(ADDON_ENTRY_POINT_GROUP, ()))
+    except Exception:
+        return []
+
+
+def _entry_point_module_name(entry_point: Any) -> str | None:
+    value = getattr(entry_point, "value", None)
+    if not isinstance(value, str) or value.strip() == "":
+        return None
+    return value.split(":", 1)[0].strip() or None
 
 
 @dataclass(frozen=True)
@@ -611,6 +631,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._enabled: set[str] = set()
         self._module_sources: dict[str, str] = {}
         self._lifecycles: dict[str, AddonLifecycleSpec] = {}
+        self._discovery_failures: dict[str, dict[str, str]] = {}
         self._project_enabled_defaults: set[str] = set()
         self._project_disabled_defaults: set[str] = set()
 
@@ -651,23 +672,59 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._module_sources[addon.name] = getattr(imported, "__name__", addon.name)
         return addon
 
+    def _record_discovery_failure(self, source: str, exc: Exception) -> None:
+        self._discovery_failures[source] = {
+            "source": source,
+            "reason": str(exc),
+            "traceback": traceback.format_exc(),
+        }
+        emit_from_catalog(
+            CATALOG["addon_load_failed"],
+            package_root=PACKAGE_ROOT,
+            meta=META,
+            extra={"module": source, "reason": str(exc)},
+        )
+
     @signal(tags=["addon"])
     def discover(self, modules: tuple[str, ...] | list[str] | None = None) -> list[AddonSpec]:
         discovered: list[AddonSpec] = []
-        module_names = KNOWN_ADDON_MODULES if modules is None else tuple(modules)
-        for module_name in module_names:
-            if find_spec(module_name) is None:
+        sources: list[tuple[str, str | None, Any | None]] = []
+        if modules is None:
+            seen: set[str] = set()
+            for entry_point in _addon_entry_points():
+                source = getattr(entry_point, "name", None) or getattr(entry_point, "value", "<entry point>")
+                module_name = _entry_point_module_name(entry_point)
+                key = f"entry-point:{source}"
+                if key in seen:
+                    continue
+                seen.add(key)
+                sources.append((key, module_name, entry_point))
+            for module_name in KNOWN_ADDON_MODULES:
+                if module_name in seen:
+                    continue
+                seen.add(module_name)
+                sources.append((module_name, module_name, None))
+        else:
+            sources = [(str(module_name), str(module_name), None) for module_name in modules]
+
+        for source, module_name, entry_point in sources:
+            if entry_point is None and module_name is not None and find_spec(module_name) is None:
                 continue
             try:
-                addon = self.register_module(module_name)
+                if entry_point is not None and hasattr(entry_point, "load"):
+                    loaded = entry_point.load()
+                    if isinstance(loaded, ModuleType):
+                        addon = self.register_module(loaded)
+                    else:
+                        addon = self.register(_coerce_addon_spec(loaded, source))
+                        if module_name is not None:
+                            self._module_sources[addon.name] = module_name
+                else:
+                    addon = self.register_module(module_name or source)
             except Exception as exc:
-                emit_from_catalog(
-                    CATALOG["addon_load_failed"],
-                    package_root=PACKAGE_ROOT,
-                    meta=META,
-                    extra={"module": module_name, "reason": str(exc)},
-                )
+                self._record_discovery_failure(source, exc)
                 continue
+            self._discovery_failures.pop(source, None)
             discovered.append(addon)
         return discovered
 
@@ -706,6 +763,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         self._enabled.clear()
         self._module_sources.clear()
         self._lifecycles.clear()
+        self._discovery_failures.clear()
         self._project_enabled_defaults.clear()
         self._project_disabled_defaults.clear()
 
@@ -739,6 +797,11 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     @digest()
     def known_modules(self, skip_digestion: bool = False) -> list[str]:
         return list(KNOWN_ADDON_MODULES)
+
+    @signal(tags=["addon"])
+    @digest()
+    def discovery_failures(self, skip_digestion: bool = False) -> list[dict[str, str]]:
+        return [dict(item) for _, item in sorted(self._discovery_failures.items())]
 
     @signal(tags=["addon"])
     @digest()

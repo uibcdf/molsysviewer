@@ -98,3 +98,36 @@ def test_molsysmt_loaded_structures_subselection():
     }
     view._handle_frontend_event(event)
     assert view.player.index == 2
+
+def test_index_mapper_reports_dropped_unmapped_indices():
+    molsys = msm.convert(demo["dialanine"]._molsys, to_form="molsysmt.MolSys")
+    mapper = IndexMapper(molsys, selection="atom_index >= 10")
+
+    with pytest.warns(RuntimeWarning, match="IndexMapper dropped"):
+        mapped = mapper.to_local_atoms([10, 999, 15])
+
+    assert mapped == [0, 5]
+    assert mapper.last_dropped_indices["to_local_atoms"] == [999]
+
+    with pytest.warns(RuntimeWarning, match="IndexMapper dropped"):
+        structures = mapper.to_local_structures([0, 999])
+
+    assert structures == [0]
+    assert mapper.last_dropped_indices["to_local_structures"] == [999]
+
+
+def test_index_mapper_degraded_identity_fallback_is_observable(monkeypatch):
+    molsys = msm.convert(demo["dialanine"]._molsys, to_form="molsysmt.MolSys")
+
+    def fail_select(*_args, **_kwargs):
+        raise RuntimeError("forced select failure")
+
+    monkeypatch.setattr("molsysviewer.viewer.index_mapper.msm.select", fail_select)
+
+    with pytest.warns(RuntimeWarning, match="msm.select failed"):
+        mapper = IndexMapper(molsys, selection="atom_index >= 10")
+
+    assert mapper.degraded is True
+    assert mapper.degraded_reason is not None
+    assert "forced select failure" in mapper.degraded_reason
+    assert mapper.original_atoms == list(range(msm.get(molsys, element="system", n_atoms=True)))

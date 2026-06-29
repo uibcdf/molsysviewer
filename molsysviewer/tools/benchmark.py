@@ -111,9 +111,10 @@ def benchmark_serialization(iterations: int = 100) -> dict[str, dict[str, float]
     # High-frequency coordinates payload (500 atoms)
     coords_list = [[1.234, -5.678, 12.345] for _ in range(500)]
     coords_payload = {
-        "op": "update_coordinates",
+        "op": "partial_coordinates_update",
         "coordinates": coords_list,
-        "structure_indices": 0,
+        "atom_indices": list(range(500)),
+        "transaction_id": "benchmark-serialization",
     }
     
     results = {}

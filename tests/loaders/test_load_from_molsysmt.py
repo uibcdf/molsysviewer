@@ -1,6 +1,7 @@
 import math
 
 from molsysviewer.loaders import load_from_molsysmt
+from molsysviewer.loaders.load_molsysmt import _serialize_molsys_payload
 
 
 class DummyView:
@@ -94,6 +95,47 @@ def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
     ]
     assert payload["bonds"] == {"indexA": [0], "indexB": [0], "order": [1]}
 
+
+
+def test_serialize_molsys_payload_column_fast_path_preserves_fallbacks():
+    viewer_json = {
+        "atoms": {
+            "atom_id": [1, 2, 3],
+            "atom_name": ["N", "CA", "C"],
+            "group_id": [10.0, float("nan"), 12.0],
+            "group_name": ["ALA"],
+            "chain_id": ["A", "A", "A"],
+            "entity_id": [1, 1, 1],
+            "element_symbol": ["N", "C", "C"],
+            "formal_charge": [0, 1, -1],
+        },
+        "structures": [{"coordinates": [[0.0, 0.0, 0.0], [0.1, 0.0, 0.0], [0.2, 0.0, 0.0]]}],
+    }
+
+    payload = _serialize_molsys_payload(
+        viewer_json,
+        molecule_indices=[0, 0, 1],
+        component_indices=[0, 1, 1],
+        molecule_names=["Protein", "Protein", "Ligand"],
+        component_names=["Backbone"],
+        group_types=["amino acid", "amino acid", "other"],
+    )
+
+    assert payload is not None
+    atoms = payload["atoms"]
+    assert atoms["atom_id"] == [1, 2, 3]
+    assert atoms["atom_name"] == ["N", "CA", "C"]
+    assert atoms["residue_id"] == [10, 1, 12]
+    assert atoms["residue_name"] == ["RES", "RES", "RES"]
+    assert atoms["chain_id"] == ["A", "A", "A"]
+    assert atoms["entity_id"] == ["1", "1", "1"]
+    assert atoms["element_symbol"] == ["N", "C", "C"]
+    assert atoms["formal_charge"] == [0, 1, -1]
+    assert atoms["molecule_id"] == [0, 0, 1]
+    assert atoms["molecule_name"] == ["Protein", "Protein", "Ligand"]
+    assert atoms["component_id"] == [0, 1, 1]
+    assert atoms["component_name"] == ["Component", "Component", "Component"]
+    assert atoms["group_type"] == ["amino acid", "amino acid", "other"]
 
 def test_load_from_molsysmt_creates_view_when_missing(monkeypatch):
     class DummyMolSys:
