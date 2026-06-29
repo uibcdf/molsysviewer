@@ -149011,7 +149011,6 @@ var FloatingPanelShell = class {
       e.stopPropagation();
       this.isSplit = !this.isSplit;
       this.updateLayout();
-      this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
     });
     this.lockButton = document.createElement("button");
     this.lockButton.type = "button";
@@ -149039,7 +149038,6 @@ var FloatingPanelShell = class {
       e.stopPropagation();
       this.isAmbient = !this.isAmbient;
       this.updateLayout();
-      this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
     });
     const opacityButton = document.createElement("button");
     opacityButton.type = "button";
@@ -155944,7 +155942,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     const target = container;
     const shouldHideControls = () => {
       const isHelpOpen = helpOverlay.isVisible();
-      const isFloatingPanelOpen = !!c8.sharedShell && c8.sharedShell.isVisible() && c8.sharedShell.isExpanded && (c8.sharedShell.panelModeStyle === "floating" || c8.sharedShell.panelModeStyle === "floating-unified");
+      const isFloatingPanelOpen = !!c8.sharedShell && c8.sharedShell.isVisible() && c8.sharedShell.isExpanded && !c8.sharedShell.isSplit && !c8.sharedShell.isAmbient;
       return isHelpOpen || isFloatingPanelOpen;
     };
     const applyShow = (visible) => {

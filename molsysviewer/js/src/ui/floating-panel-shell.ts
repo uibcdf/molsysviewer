@@ -403,7 +403,6 @@ export class FloatingPanelShell {
             e.stopPropagation();
             this.isSplit = !this.isSplit;
             this.updateLayout();
-            this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
         });
         this.lockButton = document.createElement("button");
         this.lockButton.type = "button";
@@ -427,7 +426,6 @@ export class FloatingPanelShell {
             e.stopPropagation();
             this.isAmbient = !this.isAmbient;
             this.updateLayout();
-            this.onLayoutChange?.({ isSplit: this.isSplit, isAmbient: this.isAmbient });
         });
 
         const opacityButton = document.createElement("button");

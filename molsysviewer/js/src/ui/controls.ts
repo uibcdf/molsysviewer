@@ -901,7 +901,8 @@ export const buildControls = (
             const isFloatingPanelOpen = !!c.sharedShell && 
                                         c.sharedShell.isVisible() && 
                                         c.sharedShell.isExpanded && 
-                                        (c.sharedShell.panelModeStyle === "floating" || c.sharedShell.panelModeStyle === "floating-unified");
+                                        !c.sharedShell.isSplit && 
+                                        !c.sharedShell.isAmbient;
             return isHelpOpen || isFloatingPanelOpen;
         };
 
