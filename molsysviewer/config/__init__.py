@@ -14,7 +14,7 @@ autohide_controls: bool = True
 controls_position = ["top", "right"]
 
 # Overlay position when fullscreen is active.
-controls_position_fullscreen = ["bottom", "right"]
+controls_position_fullscreen = ["top", "right"]
 
 # Controls surface style: "classic" (text buttons) or "minimal" (3-icon cluster).
 controls_mode: str = "classic"

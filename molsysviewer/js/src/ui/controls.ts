@@ -806,6 +806,19 @@ export const buildControls = (
         applyTrajectoryState(initialState);
     }
 
+    // Create the invisible hotspot for corner-only hover detection
+    const hotspot = document.createElement("div");
+    Object.assign(hotspot.style, {
+        position: "absolute",
+        width: "130px",
+        height: "55px",
+        zIndex: "98", // Just under the overlay (99)
+        background: "transparent",
+        pointerEvents: "auto",
+        display: "none",
+    });
+    container.appendChild(hotspot);
+
     const placeOverlay = () => {
         if (!overlay) return;
         const isFullscreen = !!document.fullscreenElement;
@@ -824,6 +837,7 @@ export const buildControls = (
             else if (rawPos === "bottom-right") use = ["bottom", "right"];
         }
 
+        // Position overlay
         overlay.style.top = use.includes("top") ? "12px" : "";
         overlay.style.bottom = use.includes("bottom") ? "12px" : "";
         overlay.style.left = use.includes("left") ? "12px" : "";
@@ -833,6 +847,18 @@ export const buildControls = (
         if (use.includes("center")) {
             overlay.style.left = "50%";
             overlay.style.transform = "translateX(-50%)";
+        }
+
+        // Position hotspot to match the active corner
+        hotspot.style.top = use.includes("top") ? "0" : "";
+        hotspot.style.bottom = use.includes("bottom") ? "0" : "";
+        hotspot.style.left = use.includes("left") ? "0" : "";
+        hotspot.style.right = use.includes("right") ? "0" : "";
+        hotspot.style.transform = "";
+
+        if (use.includes("center")) {
+            hotspot.style.left = "50%";
+            hotspot.style.transform = "translateX(-50%)";
         }
     };
 
@@ -844,7 +870,6 @@ export const buildControls = (
             if (controlsMode === "minimal") {
                 const svg = fullscreenBtn.querySelector("svg");
                 if (svg) {
-                    // ICON_FULLSCREEN is: <polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>
                     const path = isFullscreen ? ICON_EXIT_FULLSCREEN : `<polyline points="2,5 2,2 5,2"/><polyline points="11,2 14,2 14,5"/><polyline points="14,11 14,14 11,14"/><polyline points="5,14 2,14 2,11"/>`;
                     svg.innerHTML = path;
                 }
@@ -856,17 +881,9 @@ export const buildControls = (
     };
 
     if (overlay) {
-        placeOverlay();
-        updateFullscreenButtonState();
-        document.addEventListener("fullscreenchange", () => {
-            placeOverlay();
-            updateFullscreenButtonState();
-        });
-        model.on("change:controls_position", placeOverlay);
-        model.on("change:controls_position_fullscreen", placeOverlay);
-
         let autohide = !!model.get("autohide_controls");
-        const target = container;
+        let isHovered = false;
+        let fadeTimeout: any = null;
 
         const applyShow = (visible: boolean) => {
             if (!hasSeenState) return;
@@ -877,18 +894,58 @@ export const buildControls = (
                 overlay!.style.display = visible ? "flex" : "none";
             }
         };
-        const onEnter = () => applyShow(!!model.get("show_controls"));
-        const onLeave = () => applyShow(false);
+
+        const triggerTemporaryShow = () => {
+            if (!autohide) return;
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            applyShow(true);
+            fadeTimeout = setTimeout(() => {
+                if (!isHovered) {
+                    applyShow(false);
+                }
+            }, 1500);
+        };
+
+        placeOverlay();
+        updateFullscreenButtonState();
+        document.addEventListener("fullscreenchange", () => {
+            placeOverlay();
+            updateFullscreenButtonState();
+            triggerTemporaryShow();
+        });
+        model.on("change:controls_position", placeOverlay);
+        model.on("change:controls_position_fullscreen", placeOverlay);
+
+        const onEnter = () => {
+            isHovered = true;
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            applyShow(true);
+        };
+
+        const onLeave = () => {
+            isHovered = false;
+            applyShow(false);
+        };
 
         const enableAutohide = () => {
-            overlay!.style.transition = "opacity 150ms ease";
-            applyShow(!!model.get("show_controls"));
-            target.addEventListener("pointerenter", onEnter);
-            target.addEventListener("pointerleave", onLeave);
+            hotspot.style.display = "block";
+            overlay!.style.transition = "opacity 250ms ease-in-out";
+            
+            hotspot.addEventListener("pointerenter", onEnter);
+            hotspot.addEventListener("pointerleave", onLeave);
+            overlay!.addEventListener("pointerenter", onEnter);
+            overlay!.addEventListener("pointerleave", onLeave);
+
+            triggerTemporaryShow();
         };
+
         const disableAutohide = () => {
-            target.removeEventListener("pointerenter", onEnter);
-            target.removeEventListener("pointerleave", onLeave);
+            hotspot.style.display = "none";
+            hotspot.removeEventListener("pointerenter", onEnter);
+            hotspot.removeEventListener("pointerleave", onLeave);
+            overlay!.removeEventListener("pointerenter", onEnter);
+            overlay!.removeEventListener("pointerleave", onLeave);
+            
             overlay!.style.opacity = "1";
             overlay!.style.pointerEvents = "auto";
             applyShow(!!model.get("show_controls"));

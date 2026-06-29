@@ -155764,6 +155764,18 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   if (initialState.hasTrajectory || initialState.expectedFrameCount !== void 0) {
     applyTrajectoryState(initialState);
   }
+  const hotspot = document.createElement("div");
+  Object.assign(hotspot.style, {
+    position: "absolute",
+    width: "130px",
+    height: "55px",
+    zIndex: "98",
+    // Just under the overlay (99)
+    background: "transparent",
+    pointerEvents: "auto",
+    display: "none"
+  });
+  container.appendChild(hotspot);
   const placeOverlay = () => {
     if (!overlay) return;
     const isFullscreen = !!document.fullscreenElement;
@@ -155787,6 +155799,15 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
       overlay.style.left = "50%";
       overlay.style.transform = "translateX(-50%)";
     }
+    hotspot.style.top = use.includes("top") ? "0" : "";
+    hotspot.style.bottom = use.includes("bottom") ? "0" : "";
+    hotspot.style.left = use.includes("left") ? "0" : "";
+    hotspot.style.right = use.includes("right") ? "0" : "";
+    hotspot.style.transform = "";
+    if (use.includes("center")) {
+      hotspot.style.left = "50%";
+      hotspot.style.transform = "translateX(-50%)";
+    }
   };
   const ICON_EXIT_FULLSCREEN = `<polyline points="5,2 5,5 2,5"/><polyline points="11,2 11,5 14,5"/><polyline points="14,11 11,11 11,14"/><polyline points="2,11 5,11 5,14"/>`;
   const updateFullscreenButtonState = () => {
@@ -155805,16 +155826,9 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     }
   };
   if (overlay) {
-    placeOverlay();
-    updateFullscreenButtonState();
-    document.addEventListener("fullscreenchange", () => {
-      placeOverlay();
-      updateFullscreenButtonState();
-    });
-    model.on("change:controls_position", placeOverlay);
-    model.on("change:controls_position_fullscreen", placeOverlay);
     let autohide = !!model.get("autohide_controls");
-    const target = container;
+    let isHovered = false;
+    let fadeTimeout = null;
     const applyShow = (visible) => {
       if (!hasSeenState) return;
       if (autohide) {
@@ -155824,17 +155838,49 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
         overlay.style.display = visible ? "flex" : "none";
       }
     };
-    const onEnter = () => applyShow(!!model.get("show_controls"));
-    const onLeave = () => applyShow(false);
+    const triggerTemporaryShow = () => {
+      if (!autohide) return;
+      if (fadeTimeout) clearTimeout(fadeTimeout);
+      applyShow(true);
+      fadeTimeout = setTimeout(() => {
+        if (!isHovered) {
+          applyShow(false);
+        }
+      }, 1500);
+    };
+    placeOverlay();
+    updateFullscreenButtonState();
+    document.addEventListener("fullscreenchange", () => {
+      placeOverlay();
+      updateFullscreenButtonState();
+      triggerTemporaryShow();
+    });
+    model.on("change:controls_position", placeOverlay);
+    model.on("change:controls_position_fullscreen", placeOverlay);
+    const onEnter = () => {
+      isHovered = true;
+      if (fadeTimeout) clearTimeout(fadeTimeout);
+      applyShow(true);
+    };
+    const onLeave = () => {
+      isHovered = false;
+      applyShow(false);
+    };
     const enableAutohide = () => {
-      overlay.style.transition = "opacity 150ms ease";
-      applyShow(!!model.get("show_controls"));
-      target.addEventListener("pointerenter", onEnter);
-      target.addEventListener("pointerleave", onLeave);
+      hotspot.style.display = "block";
+      overlay.style.transition = "opacity 250ms ease-in-out";
+      hotspot.addEventListener("pointerenter", onEnter);
+      hotspot.addEventListener("pointerleave", onLeave);
+      overlay.addEventListener("pointerenter", onEnter);
+      overlay.addEventListener("pointerleave", onLeave);
+      triggerTemporaryShow();
     };
     const disableAutohide = () => {
-      target.removeEventListener("pointerenter", onEnter);
-      target.removeEventListener("pointerleave", onLeave);
+      hotspot.style.display = "none";
+      hotspot.removeEventListener("pointerenter", onEnter);
+      hotspot.removeEventListener("pointerleave", onLeave);
+      overlay.removeEventListener("pointerenter", onEnter);
+      overlay.removeEventListener("pointerleave", onLeave);
       overlay.style.opacity = "1";
       overlay.style.pointerEvents = "auto";
       applyShow(!!model.get("show_controls"));
