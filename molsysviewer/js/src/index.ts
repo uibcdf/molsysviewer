@@ -456,31 +456,7 @@ export default {
             setTimeout(removeOutputLimits, 100);
             setTimeout(removeOutputLimits, 500);
 
-            // Bidirectional height synchronization: observe the output container
-            // and resize the widget if the container is resized by the user.
-            const getOutputContainer = (): HTMLElement | null => {
-                let parent: HTMLElement | null = target.parentElement;
-                let lastValidParent: HTMLElement | null = null;
-                while (parent) {
-                    if (parent.classList.contains("jp-OutputArea-child") || 
-                        parent.classList.contains("jp-OutputArea-output") || 
-                        parent.classList.contains("jp-OutputArea") || 
-                        parent.classList.contains("output_subarea") ||
-                        parent.classList.contains("vscode-notebook-cell-output-container") ||
-                        parent.classList.contains("cell-output-ipywidget")) {
-                        lastValidParent = parent;
-                    }
-                    if (parent.parentElement) {
-                        parent = parent.parentElement;
-                    } else {
-                        const root = parent.getRootNode();
-                        parent = root instanceof ShadowRoot ? (root.host as HTMLElement) : null;
-                    }
-                }
-                return lastValidParent || target.parentElement;
-            };
-
-            const outputContainer = getOutputContainer();
+            const outputContainer = el.parentElement;
             if (outputContainer) {
                 const resizeObserver = new ResizeObserver(entries => {
                     for (const entry of entries) {
