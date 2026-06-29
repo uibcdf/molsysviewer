@@ -395,8 +395,8 @@ class MolSysView(
             return
         elif event == "ready":
             self._ready = True
-            for msg in self._pending_messages:
-                self.widget.send(msg)
+            # Clear pending messages since they were already synced and processed
+            # via initial_messages trait on startup.
             self._pending_messages.clear()
         elif event == "region_ack":
             tag = content.get("tag")

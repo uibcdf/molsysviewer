@@ -156547,7 +156547,6 @@ var index_default = {
     };
     (async () => {
       try {
-        model.send({ event: "ready" });
         const initialMessages2 = model.get("initial_messages");
         if (Array.isArray(initialMessages2) && initialMessages2.length) {
           for (const msg of initialMessages2) {
@@ -156557,6 +156556,7 @@ var index_default = {
           }
           await messageQueue;
         }
+        model.send({ event: "ready" });
       } catch (err) {
         console.error("[MolSysViewer] Init error:", err);
         sendLog("error", "[MolSysViewer] Init error:", err);

@@ -273,6 +273,7 @@ class HistoryMixin:
             self.widget.send(msg)
         else:
             self._pending_messages.append(msg)
+            self.widget.initial_messages = list(self._pending_messages)
 
     def _send_runtime_only(self, msg: dict) -> None:
         if self._ready:
@@ -284,6 +285,7 @@ class HistoryMixin:
             self.widget.send(msg)
         else:
             self._pending_messages.append(msg)
+            self.widget.initial_messages = list(self._pending_messages)
 
     def _get_shape_message(self, tag: str) -> dict | None:
         for msg in reversed(self._shape_history):
