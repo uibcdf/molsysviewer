@@ -154640,7 +154640,7 @@ var PopupHostManager = class {
   <title>${mode === "canvas" ? "MolSysViewer Popout" : "MolSysViewer Panel"}</title>
   <style>
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #121216; }
-    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 400px; }
+    #molsysviewer-pop { position: relative; width: 100%; height: 100%; min-height: 300px; }
     #molsysviewer-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; letter-spacing: 0.2px; background: #121216; z-index: 1000; transition: opacity 240ms ease; }
     #molsysviewer-loading .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid rgba(255,255,255,0.12); border-top-color: rgba(255,255,255,0.45); animation: molsysviewer-spin 0.9s linear infinite; }
     @keyframes molsysviewer-spin { to { transform: rotate(360deg); } }
@@ -155851,7 +155851,7 @@ async function bootDocsView(opts) {
   Object.assign(target.style, {
     width: "100%",
     height: "100%",
-    minHeight: "400px",
+    minHeight: "300px",
     position: "relative",
     touchAction: "none",
     cursor: "default",
@@ -156050,7 +156050,7 @@ var index_default = {
     Object.assign(target.style, {
       width: "100%",
       height: "100%",
-      minHeight: "400px",
+      minHeight: "300px",
       position: "relative",
       touchAction: "none",
       cursor: "default",
@@ -156188,26 +156188,43 @@ var index_default = {
       };
       const outputContainer = getOutputContainer();
       if (outputContainer) {
-        lastParentHeight = outputContainer.clientHeight;
+        const syncHeightsTo100 = (enable) => {
+          let curr = target;
+          while (curr && curr !== outputContainer) {
+            curr.style.height = enable ? "100%" : `${lastSetHeight}px`;
+            curr = curr.parentElement;
+          }
+        };
+        const isAncestorResized = () => {
+          let curr = outputContainer;
+          while (curr) {
+            if (curr.style.height && curr.style.height !== "auto" && curr.style.height !== "100%") {
+              return true;
+            }
+            if (curr.classList.contains("jp-Cell") || curr.classList.contains("vscode-notebook-cell-output-container")) {
+              break;
+            }
+            curr = curr.parentElement;
+          }
+          return false;
+        };
         const resizeObserver = new ResizeObserver((entries3) => {
           for (const entry of entries3) {
             const parentHeight = Math.round(entry.contentRect.height);
             if (parentHeight <= 0) continue;
-            if (extraHeight === -1 && el.clientHeight > 0) {
+            const isResized = isAncestorResized();
+            if (extraHeight === -1 && el.clientHeight > 0 && !isResized) {
               extraHeight = parentHeight - el.clientHeight;
               lastParentHeight = parentHeight;
             }
-            if (extraHeight === -1) {
-              continue;
+            if (isResized) {
+              syncHeightsTo100(true);
+              if (extraHeight !== -1) {
+                lastSetHeight = Math.max(300, parentHeight - extraHeight);
+              }
+            } else {
+              syncHeightsTo100(false);
             }
-            if (Math.abs(parentHeight - lastParentHeight) <= 2) {
-              continue;
-            }
-            lastParentHeight = parentHeight;
-            const newWidgetHeight = Math.max(300, parentHeight - extraHeight);
-            lastSetHeight = newWidgetHeight;
-            el.style.height = `${newWidgetHeight}px`;
-            target.style.height = `${newWidgetHeight}px`;
             c8.plugin.canvas3d?.requestResize();
           }
         });
