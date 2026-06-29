@@ -63,7 +63,7 @@ export class FloatingPanelShell {
     private dockButton?: HTMLButtonElement;
     private lockButton?: HTMLButtonElement;
 
-    public onLayoutChange?: (state: { isSplit: boolean, isAmbient: boolean }) => void;
+    public onLayoutChange?: (state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void;
     private isCanvasHidden = false;
 
     public setCanvasHidden(hidden: boolean): void {
@@ -733,6 +733,12 @@ export class FloatingPanelShell {
         }
 
         // Trigger callback to update canvas host left offset in real-time
+        this.onLayoutChange?.({ 
+            isSplit: this.isSplit, 
+            isAmbient: this.isAmbient, 
+            visible: this.visible, 
+            expanded: this.expanded 
+        });
         this.onResize?.(this.getWidth());
     }
 
@@ -768,6 +774,12 @@ export class FloatingPanelShell {
             this.centerPanel();
         }
         this.scheduleDisplayUpdate();
+        this.onLayoutChange?.({ 
+            isSplit: this.isSplit, 
+            isAmbient: this.isAmbient, 
+            visible: this.visible, 
+            expanded: this.expanded 
+        });
     }
 
     isVisible(): boolean {
@@ -780,6 +792,12 @@ export class FloatingPanelShell {
             this.centerPanel();
         }
         this.scheduleDisplayUpdate();
+        this.onLayoutChange?.({ 
+            isSplit: this.isSplit, 
+            isAmbient: this.isAmbient, 
+            visible: this.visible, 
+            expanded: this.expanded 
+        });
     }
 
     setNavButtonLabel(label?: string): void {

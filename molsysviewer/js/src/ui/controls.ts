@@ -891,25 +891,31 @@ export const buildControls = (
     };
 
     if (overlay) {
-        let autohide = !!model.get("autohide_controls");
-        let isHovered = false;
-        let fadeTimeout: any = null;
-        const target = container;
+        const shouldHideControls = () => {
+            const isHelpOpen = helpOverlay.isVisible();
+            const isFloatingPanelOpen = !!c.sharedShell && 
+                                        c.sharedShell.isVisible() && 
+                                        c.sharedShell.width > 0 && 
+                                        !c.sharedShell.isSplit;
+            return isHelpOpen || isFloatingPanelOpen;
+        };
 
         const applyShow = (visible: boolean) => {
             if (!hasSeenState) return;
+            const forceHide = shouldHideControls();
             if (autohide) {
-                overlay!.style.opacity = visible ? "1" : "0";
-                overlay!.style.pointerEvents = visible ? "auto" : "none";
+                overlay!.style.opacity = (visible && !forceHide) ? "1" : "0";
+                overlay!.style.pointerEvents = (visible && !forceHide) ? "auto" : "none";
             } else {
-                overlay!.style.display = visible ? "flex" : "none";
+                overlay!.style.display = (visible && !forceHide) ? "flex" : "none";
             }
         };
 
         const triggerTemporaryShow = () => {
             if (!autohide) return;
             const isFullscreen = !!document.fullscreenElement;
-            if (!isFullscreen) return;
+            const isSplit = c.sharedShell?.isSplit;
+            if (!isFullscreen && !isSplit) return;
 
             if (fadeTimeout) clearTimeout(fadeTimeout);
             applyShow(true);
@@ -921,10 +927,12 @@ export const buildControls = (
         };
 
         const onEnterWhole = () => {
+            isHovered = true;
             applyShow(true);
         };
 
         const onLeaveWhole = () => {
+            isHovered = false;
             applyShow(false);
         };
 
@@ -942,6 +950,8 @@ export const buildControls = (
         const updateAutohideMode = () => {
             if (!autohide) return;
             const isFullscreen = !!document.fullscreenElement;
+            const isSplit = c.sharedShell?.isSplit;
+            const useCornerHotspot = isFullscreen || isSplit;
             
             target.removeEventListener("pointerenter", onEnterWhole);
             target.removeEventListener("pointerleave", onLeaveWhole);
@@ -950,7 +960,7 @@ export const buildControls = (
             overlay!.removeEventListener("pointerenter", onEnterHotspot);
             overlay!.removeEventListener("pointerleave", onLeaveHotspot);
 
-            if (isFullscreen) {
+            if (useCornerHotspot) {
                 hotspot.style.display = "block";
                 hotspot.addEventListener("pointerenter", onEnterHotspot);
                 hotspot.addEventListener("pointerleave", onLeaveHotspot);
@@ -980,6 +990,18 @@ export const buildControls = (
         });
         model.on("change:controls_position", placeOverlay);
         model.on("change:controls_position_fullscreen", placeOverlay);
+
+        helpOverlay.onVisibilityChange = () => {
+            applyShow(autohide ? isHovered : !!model.get("show_controls"));
+        };
+
+        c.registerLayoutChangeListener((state) => {
+            updateAutohideMode();
+            if (state.isSplit && state.visible && state.expanded) {
+                triggerTemporaryShow();
+            }
+            applyShow(autohide ? isHovered : !!model.get("show_controls"));
+        });
 
         const enableAutohide = () => {
             overlay!.style.transition = "opacity 250ms ease-in-out";

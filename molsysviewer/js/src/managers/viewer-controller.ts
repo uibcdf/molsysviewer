@@ -76,6 +76,7 @@ type AddonWorkbenchSectionRuntime = {
 };
 type AddonContextActionRuntime = { addon: string; id: string; title: string; target_kinds: string[]; group?: string };
 type AddonContextItemRuntime = { addon: string; id: string; title: string; group?: string; order?: number; enabled?: boolean; target_kinds?: string[]; payload?: any };
+type AddonDiagnosticRuntime = { kind?: string; source: string; reason: string; traceback?: string };
 
 type InteractionPayload =
     | { event: "interaction_hover" | "interaction_click"; kind: "empty" }
@@ -493,6 +494,7 @@ export class MolSysViewerController {
     private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
     private addonContextItems: AddonContextItemRuntime[] = [];
+    private addonDiagnostics: AddonDiagnosticRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
@@ -524,6 +526,16 @@ export class MolSysViewerController {
         const idx = callbacks.indexOf(cb);
         if (idx >= 0) {
             callbacks.splice(idx, 1);
+        }
+    }
+
+    private readonly layoutChangeListeners: Array<(state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void> = [];
+    public registerLayoutChangeListener(cb: (state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) => void) {
+        this.layoutChangeListeners.push(cb);
+    }
+    public triggerLayoutChange(state: { isSplit: boolean, isAmbient: boolean, visible: boolean, expanded: boolean }) {
+        for (const cb of this.layoutChangeListeners) {
+            try { cb(state); } catch (e) { console.error("Error in layout change listener", e); }
         }
     }
 
@@ -2138,6 +2150,7 @@ export class MolSysViewerController {
                     this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
                     this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg as any);
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
+                    this.addonDiagnostics = this.buildAddonDiagnosticSummary(msg as any);
                     this.addonRuntimeInitialized = true;
                     if (prevWorkspaceIds !== null) {
                         const newWorkspaces = this.getWorkspaceOptions().filter((item) => !prevWorkspaceIds.has(item.id));
@@ -2874,6 +2887,7 @@ export class MolSysViewerController {
                 active: this.currentWorkspace !== "core" && this.workspaceBelongsToAddon(this.currentWorkspace, item.name),
             }))
         );
+        this.workbenchPanel.setAddonDiagnostics(this.addonDiagnostics);
         this.workbenchPanel.setAddonWorkbenchSections([]);
     }
 
@@ -2993,6 +3007,23 @@ export class MolSysViewerController {
             .sort((left, right) => `${left.addon}:${left.id}`.localeCompare(`${right.addon}:${right.id}`));
     }
 
+    private buildAddonDiagnosticSummary(msg: any): AddonDiagnosticRuntime[] {
+        const discoveryFailures = Array.isArray(msg?.discovery_failures) ? msg.discovery_failures : [];
+        const lifecycleFailures = Array.isArray(msg?.lifecycle_failures) ? msg.lifecycle_failures : [];
+        return [
+            ...discoveryFailures.map((item: any) => ({ ...item, kind: typeof item?.kind === "string" ? item.kind : "discovery" })),
+            ...lifecycleFailures.map((item: any) => ({ ...item, kind: typeof item?.kind === "string" ? item.kind : "lifecycle" })),
+        ]
+            .filter((item: any) => typeof item?.source === "string" && typeof item?.reason === "string")
+            .map((item: any) => ({
+                kind: typeof item?.kind === "string" ? item.kind as string : undefined,
+                source: item.source as string,
+                reason: item.reason as string,
+                traceback: typeof item?.traceback === "string" ? item.traceback as string : undefined,
+            }))
+            .sort((left, right) => left.source.localeCompare(right.source));
+    }
+
     private refreshNavigatePanel(): void {
         this.groupPanel.setSavedSelections(this.savedSelections);
         this.groupPanel.setRegions(
@@ -3092,7 +3123,7 @@ export class MolSysViewerController {
 
         // Mount new widget panel if it has one
         const newPanel = panels.find((item) => item.id === panelId);
-        const newKey = `${workspaceId}:${panelId}`;
+        const newKey = `${newPanel.addon}:${panelId}`;
         if (newPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
             this.notify?.({ event: "panel_navigate", addon: newPanel.addon, panel: panelId });
         } else if (!newPanel?.widget_class) {
@@ -3439,7 +3470,7 @@ export class MolSysViewerController {
             const selectedPanelId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
             if (selectedPanelId) {
                 const selectedPanel = this.getWorkspacePanels(this.currentWorkspace).find((item) => item.id === selectedPanelId);
-                const newKey = `${this.currentWorkspace}:${selectedPanelId}`;
+                const newKey = `${selectedPanel.addon}:${selectedPanelId}`;
                 if (selectedPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
                     this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
                 }

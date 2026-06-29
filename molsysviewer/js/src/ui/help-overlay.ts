@@ -162,6 +162,8 @@ export class HelpOverlay {
         this.host.appendChild(this.root);
     }
 
+    public onVisibilityChange?: (visible: boolean) => void;
+
     toggle(): void {
         this.visible ? this.hide() : this.show();
     }
@@ -169,6 +171,7 @@ export class HelpOverlay {
     show(): void {
         this.visible = true;
         this.root.style.display = "flex";
+        this.onVisibilityChange?.(true);
 
         const onKey = (ev: KeyboardEvent) => {
             if ((ev.target as HTMLElement)?.closest?.("input, textarea, [contenteditable]")) return;
@@ -185,6 +188,7 @@ export class HelpOverlay {
     hide(): void {
         this.visible = false;
         this.root.style.display = "none";
+        this.onVisibilityChange?.(false);
         this.releaseKeyHandler?.();
         this.releaseKeyHandler = undefined;
     }
