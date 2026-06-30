@@ -41,7 +41,8 @@ export class TrajectoryHandlers {
             console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: no structure loaded");
             return;
         }
-        const cell = this.plugin.state.data.cells.get(loaded.structure);
+        const structureRef = StateObjectRef.resolveRef(loaded.structure);
+        const cell = structureRef ? this.plugin.state.data.cells.get(structureRef) : undefined;
         if (!cell || !cell.obj) {
             console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure node not found");
             return;
@@ -152,7 +153,10 @@ export class TrajectoryHandlers {
         }, intervalMs);
 
         if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
-        this.trajectoryPoll = setInterval(() => this.context.notifyTrajectoryState(), 200);
+        this.trajectoryPoll = setInterval(() => {
+            this.context.notifyTrajectoryState();
+            this.notifyPlaybackFrameChanged(true);
+        }, 200);
         this.updateTrajectoryState();
     }
 
@@ -203,6 +207,14 @@ export class TrajectoryHandlers {
         for (const cb of this.trajectoryListeners) cb(state);
     }
 
+    private notifyPlaybackFrameChanged(isPlaying: boolean) {
+        this.context.notify?.({
+            event: "trajectory_frame_changed",
+            frame: this.getCurrentFrameIndex(),
+            is_playing: isPlaying,
+        });
+    }
+
     private updateTrajectoryState() {
         this.context.notifyTrajectoryState();
         this.notifyListeners();
@@ -220,7 +232,8 @@ export class TrajectoryHandlers {
     private getFrameCount(): number {
         const trajRef = this.getTrajectoryRef();
         if (!trajRef) return 0;
-        const cell = this.plugin.state.data.cells.get(trajRef);
+        const resolvedTrajRef = StateObjectRef.resolveRef(trajRef);
+        const cell = resolvedTrajRef ? this.plugin.state.data.cells.get(resolvedTrajRef) : undefined;
         const traj = cell?.obj?.data as any;
         return traj?.frameCount ?? 0;
     }

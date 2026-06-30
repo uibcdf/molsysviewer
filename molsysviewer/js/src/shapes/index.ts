@@ -8,8 +8,16 @@ import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
 import { Task, RuntimeContext } from "molstar/lib/mol-task";
 
 import { Color } from "molstar/lib/mol-util/color";
+import { ColorListEntry } from "molstar/lib/mol-util/color/color";
 import { ColorNames } from "molstar/lib/mol-util/color/names";
+import { ColorListName } from "molstar/lib/mol-util/color/lists";
 import { ColorScale } from "molstar/lib/mol-util/color/scale";
+
+// Payload color maps arrive as a named Mol* scheme or a raw Color[] list. Mol*
+// validates names at runtime (unknown names fall back gracefully), so this only
+// asserts the boundary type without changing behavior.
+const asColorListOrName = (value: string | number[]): ColorListName | ColorListEntry[] =>
+    value as ColorListName | ColorListEntry[];
 
 import { Vec3 } from "molstar/lib/mol-math/linear-algebra";
 import { Mat4 } from "molstar/lib/mol-math/linear-algebra/3d/mat4";
@@ -143,7 +151,7 @@ export const TransparentSphere3D = MSVTransform({
     from: SO.Root,
     to: SO.Shape.Representation3D,
     params: {
-        center: PD.Vec3(Vec3.create(0, 0, 0), { isEssential: true }),
+        center: PD.Vec3(Vec3.create(0, 0, 0), undefined, { isEssential: true }),
         radius: PD.Numeric(1, { min: 0.01, max: 1000, step: 0.01 }, { isEssential: true }),
         color: PD.Color(ColorNames.green, { isEssential: true }),
         alpha: PD.Numeric(0.4, { min: 0, max: 1, step: 0.01 }, { isEssential: true }),
@@ -375,9 +383,9 @@ function buildPocketBlobColors(count: number, values?: number[], colorMap?: numb
 
     const min = Math.min(...values);
     const max = Math.max(...values);
-    const domain = min === max ? [min, min + 1] : [min, max];
+    const domain: [number, number] = min === max ? [min, min + 1] : [min, max];
     const palette = Array.isArray(colorMap) && colorMap.length > 0 ? colorMap : undefined;
-    const scale = ColorScale.create({ domain, listOrName: palette ?? "rainbow", minLabel: "min", maxLabel: "max" });
+    const scale = ColorScale.create({ domain, listOrName: asColorListOrName(palette ?? "rainbow"), minLabel: "min", maxLabel: "max" });
 
     values.forEach((v, idx) => {
         colors.set(idx, scale.color(v));
@@ -498,11 +506,11 @@ function getPocketBlobWireframeShape(
 const PocketBlobVisuals = {
     mesh: (
         _ctx: RepresentationContext,
-        _getParams: RepresentationParamsGetter<PocketBlobData, PocketBlobParams>
+        _getParams: RepresentationParamsGetter<PocketBlobData, any>
     ) => ShapeRepresentation(getPocketBlobMeshShape, Mesh.Utils),
     wireframe: (
         _ctx: RepresentationContext,
-        _getParams: RepresentationParamsGetter<PocketBlobData, PocketBlobParams>
+        _getParams: RepresentationParamsGetter<PocketBlobData, any>
     ) => ShapeRepresentation(getPocketBlobWireframeShape, Lines.Utils),
 };
 
@@ -586,11 +594,11 @@ function preparePocketBlobData(options: PocketBlobOptions): PreparedPocketBlobDa
         ? options.iso_colors
         : undefined;
 
-    const colorScale = !isoColors ? ColorScale.create({ domain: [Math.min(...levels), Math.max(...levels)], listOrName: options.color_map ?? "turbo" }) : undefined;
+    const colorScale = !isoColors ? ColorScale.create({ domain: [Math.min(...levels), Math.max(...levels)], listOrName: asColorListOrName(options.color_map ?? "turbo") }) : undefined;
 
     const results: PreparedPocketBlobData[] = [];
     levels.forEach((level, idx) => {
-        const isoColor = isoColors ? isoColors[idx] : colorScale?.color(level);
+        const isoColor = isoColors ? Color(isoColors[idx]) : colorScale?.color(level);
         const regionColors = isoColor !== undefined
             ? new Map<number, Color>(Array.from({ length: field.count }, (_v, i) => [i, isoColor]))
             : buildPocketBlobColors(field.count, options.values, options.color_map);
@@ -809,8 +817,8 @@ function buildChannelSegments(options: ChannelTubeOptions): { segments: ChannelS
     if (colorMode === "solvent" && solventDistances && solventDistances.length === radiiList.length) {
         const min = Math.min(...solventDistances);
         const max = Math.max(...solventDistances);
-        const domain = min === max ? [min, min + 1] : [min, max];
-        distanceScale = ColorScale.create({ domain, listOrName: colorMap ?? "turbo" });
+        const domain: [number, number] = min === max ? [min, min + 1] : [min, max];
+        distanceScale = ColorScale.create({ domain, listOrName: asColorListOrName(colorMap ?? "turbo") });
     }
 
     for (let i = 0; i < points.length - 1; i++) {
@@ -821,7 +829,7 @@ function buildChannelSegments(options: ChannelTubeOptions): { segments: ChannelS
         let color = ColorNames.skyblue;
         if (colorMode === "segment") {
             if (colors && colors.length) {
-                color = colors[i % colors.length];
+                color = Color(colors[i % colors.length]);
             } else {
                 color = palette[i % palette.length];
             }
@@ -1173,8 +1181,8 @@ function buildRingSegments(options: RingsOptions): { segments: ChannelSegment[];
     if (options.color_by && values && values.length === n) {
         const min = Math.min(...values);
         const max = Math.max(...values);
-        const domain = min === max ? [min, min + 1] : [min, max];
-        valueScale = ColorScale.create({ domain, listOrName: colorMap ?? "turbo" });
+        const domain: [number, number] = min === max ? [min, min + 1] : [min, max];
+        valueScale = ColorScale.create({ domain, listOrName: asColorListOrName(colorMap ?? "turbo") });
     }
 
     const segments: ChannelSegment[] = [];
@@ -1225,6 +1233,8 @@ export async function addRingsFromPython(
         segments: built.segments,
         alpha: options.alpha ?? 1.0,
         name: options.name ?? "Rings",
+        tubeStyle: "smooth",
+        tubeAspectRatio: 1.0,
     };
     const props: ChannelTubeProps = {
         ...PD.getDefaultValues(ChannelTubeParams),
@@ -1357,7 +1367,7 @@ function buildEllipsoidSpecs(
 
     let scaleLookup: ColorScale | undefined;
     if (colorMode === "anisotropy") {
-        scaleLookup = ColorScale.create({ domain: [0, 1], listOrName: colorMap ?? "turbo" });
+        scaleLookup = ColorScale.create({ domain: [0, 1], listOrName: asColorListOrName(colorMap ?? "turbo") });
     }
 
     for (let i = 0; i < n; i++) {
@@ -1379,7 +1389,7 @@ function buildEllipsoidSpecs(
         } else if (principal) {
             axes = [1, 0.2, 0.2];
             dirA = normalizeVec(principal as any);
-            dirB = Vec3.orthogonal(Vec3(), dirA);
+            dirB = Vec3.orthogonalDirection(Vec3(), dirA);
         } else if (tensor && tensor.length === 3) {
             axes = [
                 Math.abs(tensor[0][0]),
@@ -1402,11 +1412,11 @@ function buildEllipsoidSpecs(
         const anisotropy = anisotropyValue(axes);
         let color = ColorNames.orange;
         if (colorMode === "fixed" && colors && colors.length) {
-            color = colors[i % colors.length];
+            color = Color(colors[i % colors.length]);
         } else if (colorMode === "anisotropy" && scaleLookup) {
             color = scaleLookup.color(values?.[i] ?? anisotropy);
         } else if (colors && colors.length) {
-            color = colors[i % colors.length];
+            color = Color(colors[i % colors.length]);
         }
 
         const [fallbackA, fallbackB] = fallbackDirs();
@@ -2030,7 +2040,7 @@ function buildUnitLookup(structure: Structure) {
 
 function getChainId(unit: Unit, elementIndex: ElementIndex) {
     if (!Unit.isAtomic(unit)) return undefined;
-    const chainIndex = unit.getChainIndex(elementIndex);
+    const chainIndex = unit.chainIndex[elementIndex];
     return unit.model.atomicHierarchy.chains.label_asym_id.value(chainIndex);
 }
 
@@ -3663,12 +3673,12 @@ function prepareDisplacementVectorData(
 
     const minValue = Math.min(...colorValues);
     const maxValue = Math.max(...colorValues);
-    const domain = minValue === maxValue ? [minValue, minValue + 1] : [minValue, maxValue];
+    const domain: [number, number] = minValue === maxValue ? [minValue, minValue + 1] : [minValue, maxValue];
     const paletteInput = options.palette ?? options.color_map;
     const palette = paletteInput && Array.isArray(paletteInput) && paletteInput.length === 0
         ? undefined
         : paletteInput;
-    const scale = ColorScale.create({ domain, listOrName: palette ?? "turbo", minLabel: "min", maxLabel: "max" });
+    const scale = ColorScale.create({ domain, listOrName: asColorListOrName(palette ?? "turbo"), minLabel: "min", maxLabel: "max" });
 
     arrows.forEach((arrow, idx) => {
         arrow.color = scale.color(colorValues[idx]);

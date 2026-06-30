@@ -22,7 +22,7 @@ import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { MovieHandlers } from "./handlers/movie-handlers";
-import { LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
+import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { LegendOverlay } from "../ui/legend-overlay";
@@ -142,6 +142,15 @@ type ContextInteractionPayload =
         page_y?: number;
     };
 
+/** Flatten a raw payload value (an array of index arrays) into a deduped number[]. */
+function flattenToNumberIndices(source: unknown): number[] {
+    const arr: unknown[] = Array.isArray(source) ? source : [];
+    return Array.from(new Set(
+        arr.flatMap((item: unknown) => (Array.isArray(item) ? item : []))
+            .filter((value: unknown): value is number => typeof value === "number")
+    ));
+}
+
 function normalizeToElementLoci(loci: any): any {
     if (StructureElement.Loci.is(loci)) return loci;
     try {
@@ -184,7 +193,7 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
         try {
             const groupIdx = OrderedSet.getAt(loci.groups[0].ids, 0);
             if (typeof shape.getLabel === "function") {
-                shapeName = shape.getLabel(groupIdx);
+                shapeName = shape.getLabel(groupIdx, 0);
             }
             // Prefer the picked group's own atoms (face/edge/tetra) when the shape
             // exposes them, so a pick selects only that simplex, not the whole shape.
@@ -232,7 +241,7 @@ function extractAtomMetadata(loci: any) {
     const chainId = chains.label_asym_id.value(chainIndex);
     const atomName = atoms.label_atom_id.value(atomIndex);
     const elementSymbol = atoms.type_symbol.value(atomIndex);
-    const atomId = atoms.id.value(atomIndex).toString();
+    const atomId = model.atomicConformation.atomId.value(atomIndex).toString();
     
     return {
         atom_index: atomIndex,
@@ -467,9 +476,9 @@ export class MolSysViewerController {
     private readonly legendOverlay: LegendOverlay;
     private readonly groupPanel: GroupPanel;
     private readonly workbenchPanel: WorkbenchPanel;
-    private readonly sharedShell?: FloatingPanelShell;
+    public readonly sharedShell?: FloatingPanelShell;
     private splitResizeObserver?: ResizeObserver;
-    private readonly canvasHost: HTMLDivElement;
+    public readonly canvasHost: HTMLDivElement;
     private readonly isPanelOnly: boolean;
     private canvasInsetAnimFrame: ReturnType<typeof requestAnimationFrame> | null = null;
     private canvasInsetFrom = { left: 0, right: 0 };
@@ -497,7 +506,7 @@ export class MolSysViewerController {
     private addonContextItems: AddonContextItemRuntime[] = [];
     private addonDiagnostics: AddonDiagnosticRuntime[] = [];
     private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
-    private workbenchContext: { section: "annotations" | "shapes"; tag: string } | null = null;
+    private workbenchContext: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
     private lastPanelMode: "navigate" | "workbench" = "navigate";
     private lastCorePanelMode: "navigate" | "workbench" = "navigate";
@@ -782,28 +791,20 @@ export class MolSysViewerController {
                 structure,
             );
             const value = this.measurements.computeMeasurementValue(picks_atom_indices, measurementOptions, structure);
-            const msg = {
-                op: action === "distance"
-                    ? "add_distance_measurement"
-                    : action === "angle"
-                        ? "add_angle_measurement"
-                        : "add_dihedral_measurement",
+            const options = {
                 tag,
-                options: {
-                    tag,
-                    picks_atom_indices,
-                    endpoint_policy: measurementOptions.endpoint_policy,
-                    endpoint_kinds: measurementOptions.endpoint_kinds,
-                    endpoint_labels: measurementOptions.endpoint_labels,
-                    endpoint_atom_indices: measurementOptions.endpoint_atom_indices,
-                },
-            } as const;
+                picks_atom_indices,
+                endpoint_policy: measurementOptions.endpoint_policy,
+                endpoint_kinds: measurementOptions.endpoint_kinds,
+                endpoint_labels: measurementOptions.endpoint_labels,
+                endpoint_atom_indices: measurementOptions.endpoint_atom_indices,
+            };
             if (action === "distance") {
-                await this.measurements.addDistance(msg);
+                await this.measurements.addDistance({ op: "add_distance_measurement", tag, options });
             } else if (action === "angle") {
-                await this.measurements.addAngle(msg);
+                await this.measurements.addAngle({ op: "add_angle_measurement", tag, options });
             } else {
-                await this.measurements.addDihedral(msg);
+                await this.measurements.addDihedral({ op: "add_dihedral_measurement", tag, options });
             }
             return {
                 tag,
@@ -896,7 +897,9 @@ export class MolSysViewerController {
         }, (item, pageX, pageY) => {
             this.openContextMenuForItem(item, pageX, pageY, emitInteractionEvent);
         }, (target, pageX, pageY) => {
-            this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
+            if (target.kind === "annotation") {
+                this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
+            }
         }, (tag) => {
             const saved = this.savedSelections.find((item) => item.tag === tag);
             if (!saved) return;
@@ -1026,6 +1029,7 @@ export class MolSysViewerController {
                 || action === "create_region_from_selection"
                 || action === "create_section_from_selection"
                 || action === "add_label_from_selection"
+                || action === "addon_context_action"
             ) {
                 return;
             }
@@ -1215,10 +1219,10 @@ export class MolSysViewerController {
                 this.groupPanel.clearAnnotationOverlays();
             },
             getComponents: () => this.getComponents(),
-            clearShapesByTag: (tag) => {
-                this.state.clearShapesByTag(tag);
+            clearShapesByTag: async (tag) => {
+                await this.state.clearShapesByTag(tag);
                 this.groupPanel.clearAnnotationOverlaysByTag(tag);
-                this.annotations.clearLabelByTag(tag);
+                if (tag) await this.annotations.clearLabelByTag(tag);
             },
             registerShapeRef: (ref, tag) => this.state.registerShapeRef(ref, tag),
             removeLoadedStructure: () => this.removeLoadedStructure(),
@@ -1671,8 +1675,8 @@ export class MolSysViewerController {
         this.plugin.managers.camera.focusLoci(loci);
     }
 
-    private focusTarget(target: { atom_indices?: number[] }): void {
-        const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+    private focusTarget(target: ContextMenuTarget | { atom_indices?: number[] }): void {
+        const atomIndices = "atom_indices" in target && Array.isArray(target.atom_indices) ? target.atom_indices : [];
         if (atomIndices.length === 0) return;
         const loci = this.atomIndicesToLoci(atomIndices);
         if (!loci) return;
@@ -1723,8 +1727,8 @@ export class MolSysViewerController {
         };
     }
 
-    private getRelevantRegionSummaries(target: { atom_indices?: number[] }): RegionSummary[] {
-        const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+    private getRelevantRegionSummaries(target: ContextInteractionPayload | { atom_indices?: number[] }): RegionSummary[] {
+        const atomIndices = "atom_indices" in target && Array.isArray(target.atom_indices) ? target.atom_indices : [];
         if (atomIndices.length === 0) return [];
         const targetSet = new Set(atomIndices);
         return this.state
@@ -1736,7 +1740,7 @@ export class MolSysViewerController {
         const tag = typeof msg?.tag === "string" ? msg.tag : null;
         if (!tag) return;
         const atomIndices = Array.isArray(msg?.atom_indices)
-            ? msg.atom_indices.filter((value: unknown) => typeof value === "number")
+            ? msg.atom_indices.filter((value: unknown): value is number => typeof value === "number")
             : [];
         const atomCount = atomIndices.length;
         const next = this.savedSelections.filter((item) => item.tag !== tag);
@@ -2323,10 +2327,11 @@ export class MolSysViewerController {
             this.loadedStructure.data,
         ];
         for (const ref of refs) {
-            if (ref) {
+            const resolved = StateObjectRef.resolveRef(ref);
+            if (resolved) {
                 await PluginCommands.State.RemoveObject(this.plugin, {
                     state: this.plugin.state.data,
-                    ref,
+                    ref: resolved,
                     removeParentGhosts: true,
                 });
             }
@@ -2386,7 +2391,7 @@ export class MolSysViewerController {
             const text = (msg as any).options?.text;
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : [];
             if (typeof tag === "string" && typeof text === "string" && text.trim()) {
                 this.workbenchAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
@@ -2400,7 +2405,7 @@ export class MolSysViewerController {
             if (!existing || typeof tag !== "string") return;
             const nextText = (msg as any).options?.text;
             const nextAtomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : existing.atomIndices;
             this.workbenchAnnotations.set(tag, {
                 text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
@@ -2415,10 +2420,7 @@ export class MolSysViewerController {
             const tag = (msg as any).tag ?? (msg as any).options?.tag;
             const picksArray = Array.isArray((msg as any).options?.picks_atom_indices) ? (msg as any).options.picks_atom_indices : [];
             const picks = picksArray.length;
-            const atomIndices = Array.from(new Set(
-                picksArray.flatMap((item: unknown) => Array.isArray(item) ? item : [])
-                    .filter((value: unknown) => typeof value === "number")
-            ));
+            const atomIndices = flattenToNumberIndices(picksArray);
             const kind = op === "add_distance_measurement" ? "distance" : op === "add_angle_measurement" ? "angle" : "dihedral";
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             if (typeof tag === "string") {
@@ -2440,10 +2442,7 @@ export class MolSysViewerController {
             const tag = (msg as any).options?.tag;
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             const atomPairs = Array.isArray((msg as any).options?.atom_pairs) ? (msg as any).options.atom_pairs : [];
-            const atomIndices = Array.from(new Set(
-                atomPairs.flatMap((item: unknown) => Array.isArray(item) ? item : [])
-                    .filter((value: unknown) => typeof value === "number")
-            ));
+            const atomIndices = flattenToNumberIndices(atomPairs);
             if (typeof tag === "string") {
                 upsertWorkbenchShape(tag, "Links", "links", layerTag, atomIndices);
             }
@@ -2458,10 +2457,7 @@ export class MolSysViewerController {
                 : Array.isArray((msg as any).options?.atomTriplets)
                     ? (msg as any).options.atomTriplets
                     : [];
-            const atomIndices = Array.from(new Set(
-                atomTriplets.flatMap((item: unknown) => Array.isArray(item) ? item : [])
-                    .filter((value: unknown) => typeof value === "number")
-            ));
+            const atomIndices = flattenToNumberIndices(atomTriplets);
             if (typeof tag === "string") {
                 upsertWorkbenchShape(tag, "Triangle Faces", "triangle_faces", layerTag, atomIndices);
             }
@@ -2485,10 +2481,7 @@ export class MolSysViewerController {
                 : Array.isArray((msg as any).options?.atomQuads)
                     ? (msg as any).options.atomQuads
                     : [];
-            const atomIndices = Array.from(new Set(
-                atomQuads.flatMap((item: unknown) => Array.isArray(item) ? item : [])
-                    .filter((value: unknown) => typeof value === "number")
-            ));
+            const atomIndices = flattenToNumberIndices(atomQuads);
             if (typeof tag === "string") {
                 upsertWorkbenchShape(tag, "Tetrahedra", "tetrahedra", layerTag, atomIndices);
             }
@@ -2499,7 +2492,7 @@ export class MolSysViewerController {
             const tag = (msg as any).options?.tag;
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : [];
             if (typeof tag === "string") {
                 upsertWorkbenchShape(tag, "Anisotropy Ellipsoids", "anisotropy_ellipsoids", layerTag, atomIndices);
@@ -2520,7 +2513,7 @@ export class MolSysViewerController {
             const tag = (msg as any).options?.tag;
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : [];
             if (typeof tag === "string") {
                 upsertWorkbenchShape(tag, "Displacement Vectors", "displacement_vectors", layerTag, atomIndices);
@@ -2541,7 +2534,7 @@ export class MolSysViewerController {
             const tag = (msg as any).options?.tag;
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             const atomIndices = Array.isArray((msg as any).options?.atom_indices)
-                ? (msg as any).options.atom_indices.filter((value: unknown) => typeof value === "number")
+                ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : [];
             if (typeof tag === "string") {
                 upsertWorkbenchShape(tag, "Pocket Surface", "pocket_surface", layerTag, atomIndices);
@@ -2563,7 +2556,7 @@ export class MolSysViewerController {
                 const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : undefined;
                 const layerTag = typeof meta.layer_tag === "string" && meta.layer_tag.trim() ? meta.layer_tag.trim() : undefined;
                 const atomIndices = Array.isArray(meta.atom_indices)
-                    ? meta.atom_indices.filter((value: unknown) => typeof value === "number")
+                    ? meta.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                     : [];
                 this.workbenchShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
             }
@@ -2806,7 +2799,7 @@ export class MolSysViewerController {
     }
 
     private buildAddonWorkspaceSummary(msg: any): WorkspaceRuntime[] {
-        const specs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
+        const specs: any[] = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         return specs
             .filter((item: any) => typeof item?.id === "string" && typeof item?.title === "string")
             .map((item: any) => ({
@@ -2818,7 +2811,7 @@ export class MolSysViewerController {
     }
 
     private buildAddonPanelSummary(msg: any): AddonPanelRuntime[] {
-        const specs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
+        const specs: any[] = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
         const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         const workspaceByAddon = new Map<string, string>();
         for (const item of workspaceSpecs) {
@@ -2847,7 +2840,7 @@ export class MolSysViewerController {
     }
 
     private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
-        const names = Array.isArray(msg?.addons)
+        const names: string[] = Array.isArray(msg?.addons)
             ? msg.addons.filter((value: unknown): value is string => typeof value === "string")
             : [];
         const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
@@ -2879,7 +2872,7 @@ export class MolSysViewerController {
     }
 
     private buildAddonWorkbenchSectionSummary(msg: any): AddonWorkbenchSectionRuntime[] {
-        const specs = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+        const specs: any[] = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
         const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         const workspaceByAddon = new Map<string, string>();
         for (const item of workspaceSpecs) {
@@ -2906,7 +2899,7 @@ export class MolSysViewerController {
     }
 
     private buildAddonContextActionSummary(msg: any): AddonContextActionRuntime[] {
-        const specs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
+        const specs: any[] = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
         return specs
             .filter((item: any) => typeof item?.addon === "string" && typeof item?.id === "string" && typeof item?.title === "string")
             .map((item: any) => ({
@@ -3037,7 +3030,7 @@ export class MolSysViewerController {
 
         // Mount new widget panel if it has one
         const newPanel = panels.find((item) => item.id === panelId);
-        const newKey = `${newPanel.addon}:${panelId}`;
+        const newKey = `${newPanel?.addon}:${panelId}`;
         if (newPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
             this.notify?.({ event: "panel_navigate", addon: newPanel.addon, panel: panelId });
         } else if (!newPanel?.widget_class) {
@@ -3384,7 +3377,7 @@ export class MolSysViewerController {
             const selectedPanelId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
             if (selectedPanelId) {
                 const selectedPanel = this.getWorkspacePanels(this.currentWorkspace).find((item) => item.id === selectedPanelId);
-                const newKey = `${selectedPanel.addon}:${selectedPanelId}`;
+                const newKey = `${selectedPanel?.addon}:${selectedPanelId}`;
                 if (selectedPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
                     this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
                 }

@@ -1,6 +1,6 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
-import { StateObjectRef } from "molstar/lib/mol-state";
+import { StateObjectRef, StateTransform } from "molstar/lib/mol-state";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
@@ -42,7 +42,7 @@ type MeasurementEndpointPolicy = "atom" | "centroid" | "representative_atom";
 
 type MeasurementOptionsSummary = {
     endpoint_policy: MeasurementEndpointPolicy;
-    endpoint_kinds: string[];
+    endpoint_kinds: MeasurementEndpointPolicy[];
     endpoint_labels: string[];
     endpoint_atom_indices: number[][];
 };
@@ -60,8 +60,8 @@ export interface MeasurementCallbacks {
 }
 
 export class MeasurementHandlers {
-    private readonly measurementRefs = new Set<StateObjectRef>();
-    private readonly refsByTag = new Map<string, Set<StateObjectRef>>();
+    private readonly measurementRefs = new Set<StateTransform.Ref>();
+    private readonly refsByTag = new Map<string, Set<StateTransform.Ref>>();
     private readonly specsByTag = new Map<string, MeasurementMessage>();
     /** Maps layer_tag → Set of measurement tags that belong to it. */
     private readonly layerTagIndex = new Map<string, Set<string>>();
@@ -305,17 +305,23 @@ export class MeasurementHandlers {
 
         if (!added) return;
         if (added.selection?.ref) {
-            this.measurementRefs.add(added.selection.ref);
-            const refs = this.refsByTag.get(tag) ?? new Set<StateObjectRef>();
-            refs.add(added.selection.ref);
-            this.refsByTag.set(tag, refs);
+            const selectionRef = StateObjectRef.resolveRef(added.selection.ref);
+            if (selectionRef) {
+                this.measurementRefs.add(selectionRef);
+                const refs = this.refsByTag.get(tag) ?? new Set<StateTransform.Ref>();
+                refs.add(selectionRef);
+                this.refsByTag.set(tag, refs);
+            }
             this.callbacks.registerRef(added.selection.ref, tag);
         }
         if (added.representation?.ref) {
-            this.measurementRefs.add(added.representation.ref);
-            const refs = this.refsByTag.get(tag) ?? new Set<StateObjectRef>();
-            refs.add(added.representation.ref);
-            this.refsByTag.set(tag, refs);
+            const representationRef = StateObjectRef.resolveRef(added.representation.ref);
+            if (representationRef) {
+                this.measurementRefs.add(representationRef);
+                const refs = this.refsByTag.get(tag) ?? new Set<StateTransform.Ref>();
+                refs.add(representationRef);
+                this.refsByTag.set(tag, refs);
+            }
             this.callbacks.registerRef(added.representation.ref, tag);
         }
     }
@@ -358,7 +364,7 @@ export class MeasurementHandlers {
         picks: number[][],
         endpointPolicy: MeasurementEndpointPolicy,
     ): MeasurementOptionsSummary {
-        const endpoint_kinds: string[] = [];
+        const endpoint_kinds: MeasurementEndpointPolicy[] = [];
         const endpoint_labels: string[] = [];
         const endpoint_atom_indices: number[][] = [];
         for (const rawPick of picks) {

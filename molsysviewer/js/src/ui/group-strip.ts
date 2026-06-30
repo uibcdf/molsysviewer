@@ -2,7 +2,7 @@ import { StructureElement, Structure, Unit } from "molstar/lib/mol-model/structu
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 
-import { ActiveSelectionItem, ActiveSelectionPayload } from "../managers/active-selection";
+import { ActiveSelectionItem, ActiveSelectionPayload, GroupSelectionItem } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 
@@ -56,7 +56,7 @@ export class GroupStrip {
     private readonly section: HTMLDivElement;
     private readonly title: HTMLDivElement;
     private readonly row: HTMLDivElement;
-    private groupItems: ActiveSelectionItem[] = [];
+    private groupItems: GroupSelectionItem[] = [];
     private selectedElementKeys = new Set<string>();
     private selectedAnnotationKeys = new Set<string>();
     private structure?: Structure;
@@ -129,7 +129,7 @@ export class GroupStrip {
         this.host.appendChild(this.root);
     }
 
-    setData(structure: Structure | undefined, items: ActiveSelectionItem[]): void {
+    setData(structure: Structure | undefined, items: GroupSelectionItem[]): void {
         this.structure = structure;
         this.groupItems = items;
         if (!structure) this.annotationRecords.clear();
@@ -248,7 +248,7 @@ export class GroupStrip {
         if (!this.structure || this.groupItems.length === 0) return;
 
         // Group items hierarchically: Molecule -> Component -> Residues
-        const hierarchy = new Map<number, Map<number, ActiveSelectionItem[]>>();
+        const hierarchy = new Map<number, Map<number, GroupSelectionItem[]>>();
         const moleculeNames = new Map<number, string>();
         const componentNames = new Map<number, string>();
 

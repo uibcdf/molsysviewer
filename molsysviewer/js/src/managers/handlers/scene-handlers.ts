@@ -69,12 +69,9 @@ export class SceneHandlers {
 
     async toggleFullscreen(msg: ToggleFullscreenMessage | boolean) {
         const enable = typeof msg === 'boolean' ? msg : msg.enable;
-        const root = this.plugin.canvas3d?.props.parent;
-        const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
+        const canvas = this.plugin.canvas3dContext?.canvas;
         const target =
             this.host ??
-            root?.parentElement ??
-            root ??
             canvas?.parentElement ??
             canvas ??
             document.documentElement;
@@ -110,11 +107,15 @@ export class SceneHandlers {
                 this.savedDarkRenderer = {
                     ...renderer,
                     backgroundColor: 0x101010,
-                    lightColor: 0xffffff,
                     ambientColor: 0xffffff,
                     exposure: renderer.exposure ?? 1,
-                    lightIntensity: renderer.lightIntensity ?? 1,
                     ambientIntensity: renderer.ambientIntensity ?? 1,
+                    // Dark mode uses a white key light. Mol* models directional lights
+                    // in renderer.light[]; recolor the primary light to white.
+                    light: (Array.isArray(renderer.light) && renderer.light.length > 0
+                        ? renderer.light
+                        : [{ inclination: 150, azimuth: 320, color: 0xffffff, intensity: 1 }]
+                    ).map((l, i) => (i === 0 ? { ...l, color: 0xffffff } : l)),
                 };
             }
             if (!this.savedDarkCamera) {
@@ -676,9 +677,13 @@ export class SceneHandlers {
         if (!canvas3d) return;
         const renderer = { ...(canvas3d.props?.renderer ?? {}) } as any;
         if (msg.ambient !== undefined) renderer.ambientIntensity = msg.ambient;
-        if (msg.diffuse !== undefined) renderer.lightIntensity = msg.diffuse;
-        // Mol* has no separate specular channel — apply to lightIntensity if only specular is given.
-        if (msg.specular !== undefined && msg.diffuse === undefined) renderer.lightIntensity = msg.specular;
+        // Mol* models directional light intensity per-light in renderer.light[].
+        // diffuse maps to the primary light's intensity; specular is a fallback
+        // because Mol* has no separate specular channel.
+        const lightIntensity = msg.diffuse ?? msg.specular;
+        if (lightIntensity !== undefined && Array.isArray(renderer.light) && renderer.light.length > 0) {
+            renderer.light = renderer.light.map((l: any, i: number) => (i === 0 ? { ...l, intensity: lightIntensity } : l));
+        }
         canvas3d.setProps({ renderer } as any);
     }
 
@@ -687,7 +692,7 @@ export class SceneHandlers {
         if (!canvas3d) return;
         const clipping: any = { ...(canvas3d.props?.cameraClipping ?? {}) };
         if (msg.near !== undefined) clipping.radius = msg.near;
-        if (msg.far !== undefined) clipping.far = msg.far > 0;
+        if (msg.far !== undefined) clipping.far = msg.far;
         if (msg.min_near !== undefined) clipping.minNear = msg.min_near;
         canvas3d.setProps({ cameraClipping: clipping } as any);
     }

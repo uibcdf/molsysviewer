@@ -9,7 +9,7 @@ import { Table } from "molstar/lib/mol-data/db/table";
 import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
 import { BasicSchema, createBasic } from "molstar/lib/mol-model-formats/structure/basic/schema";
 import { Topology } from "molstar/lib/mol-model/structure/topology";
-import { Coordinates } from "molstar/lib/mol-model/structure/coordinates";
+import { Coordinates, Frame } from "molstar/lib/mol-model/structure/coordinates";
 import { Model } from "molstar/lib/mol-model/structure/model";
 import { Trajectory } from "molstar/lib/mol-model/structure/trajectory";
 import { Cell } from "molstar/lib/mol-math/geometry/spacegroup/cell";
@@ -33,6 +33,8 @@ export interface MolSysAtomPayload {
     atom_id: number[];
     atom_name?: string[];
     element_symbol?: string[];
+    // MolSysSuite group_* arrives here as residue_* because this payload is
+    // immediately materialized as Mol*/mmCIF atom_site residue columns.
     residue_id?: number[];
     residue_name?: string[];
     group_type?: string[];
@@ -83,8 +85,8 @@ const InsertMolSysTrajectory = PluginStateTransform.BuiltIn({
     from: SO.Root,
     to: SO.Molecule.Trajectory,
     params: {
-        trajectory: PD.Value<Trajectory>(void 0),
-        props: PD.Value<{ label?: string; description?: string }>(void 0),
+        trajectory: PD.Value<Trajectory | undefined>(void 0),
+        props: PD.Value<{ label: string; description?: string } | undefined>(void 0),
     },
 })({
     apply({ params }) {
@@ -106,8 +108,6 @@ export async function loadStructureFromString(
     const raw = await plugin.builders.data.rawData({
         data,
         label: label ?? "Structure from string",
-        // Optional extension; helps some parsers.
-        ext: format,
     });
 
     // parseTrajectory needs the format name: "pdb", "mmcif", etc.
@@ -347,7 +347,7 @@ function ensureNumericArray(values: number[] | undefined, length: number, fallba
     return output;
 }
 
-function createFrameFromStructure(structure: MolSysStructurePayload, atomCount: number, index: number): Coordinates.Frame {
+function createFrameFromStructure(structure: MolSysStructurePayload, atomCount: number, index: number): Frame {
     const { x, y, z } = splitPositions(structure, atomCount);
 
     let cell: Cell | undefined = void 0;

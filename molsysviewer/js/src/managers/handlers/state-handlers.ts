@@ -1,6 +1,6 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
-import { StateObjectRef, StateObjectSelector } from "molstar/lib/mol-state";
+import { StateObjectRef, StateObjectSelector, StateTransform } from "molstar/lib/mol-state";
 import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
@@ -45,7 +45,7 @@ import {
 
 interface RegionEntry {
     component?: StateObjectRef;
-    representations: StateObjectRef[];
+    representations: StateTransform.Ref[];
     atomIndices: number[];
     selection?: string;
     hidden?: boolean;
@@ -71,8 +71,8 @@ export interface StateCallbacks {
 export class StateHandlers {
     private readonly regionIndex = new Map<string, RegionEntry>();
     private readonly layerMeta = new Map<string, { kind?: string; meta?: Record<string, unknown> }>();
-    private readonly tagIndex = new Map<string, Set<StateObjectRef>>();
-    private readonly globalReprs = new Set<StateObjectRef>();
+    private readonly tagIndex = new Map<string, Set<StateTransform.Ref>>();
+    private readonly globalReprs = new Set<StateTransform.Ref>();
     private readonly pendingGlobalOps: Array<{ hide: boolean; target: "global" | "all" }> = [];
     private readonly pendingLayerVisibility = new Map<string, boolean>();
     private readonly pendingRegions: CreateRegionMessage[] = [];
@@ -174,20 +174,21 @@ export class StateHandlers {
     }
 
     registerTaggedRef(ref?: StateObjectRef, tag?: string, kind: string = "shape") {
-        if (!ref) return;
+        const resolvedRef = StateObjectRef.resolveRef(ref);
+        if (!resolvedRef) return;
         if (!tag) return;
         if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, new Set());
-        this.tagIndex.get(tag)!.add(ref);
-        
+        this.tagIndex.get(tag)!.add(resolvedRef);
+
         if (!this.layerMeta.has(tag)) {
             this.layerMeta.set(tag, { kind, meta: {} });
             this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
         }
-        
+
         if (this.pendingLayerVisibility.has(tag)) {
             const hide = this.pendingLayerVisibility.get(tag)!;
             this.pendingLayerVisibility.delete(tag);
-            setSubtreeVisibility(this.plugin.state.data, ref, hide);
+            setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
         }
     }
 
@@ -598,7 +599,7 @@ export class StateHandlers {
             }
             for (const rule of rules) {
                 const atomIndices = Array.isArray(rule?.atom_indices)
-                    ? rule.atom_indices.map(i => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter(i => Number.isFinite(i))
+                    ? rule.atom_indices.map((i: number | string) => (typeof i === "number" ? Math.trunc(i) : Number(i))).filter((i: number) => Number.isFinite(i))
                     : [];
                 if (atomIndices.length === 0) continue;
                 
@@ -627,10 +628,10 @@ export class StateHandlers {
                         {
                             type: reprType as any,
                             typeParams: (rule?.params ?? {}) as any,
-                            ...(structuralColor.color ? { color: structuralColor.color } : {}),
-                            ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}),
-                            ...(structuralSize.size ? { size: structuralSize.size } : {}),
-                            ...(structuralSize.sizeParams ? { sizeParams: structuralSize.sizeParams } : {}),
+                            ...(structuralColor.color ? { color: structuralColor.color as any } : {}),
+                            ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams as any } : {}),
+                            ...(structuralSize.size ? { size: structuralSize.size as any } : {}),
+                            ...(structuralSize.sizeParams ? { sizeParams: structuralSize.sizeParams as any } : {}),
                         },
                         { tag: "global" }
                     );
@@ -800,8 +801,8 @@ export class StateHandlers {
             this.pendingGlobalOps.push({ hide, target });
             return;
         }
-        const refs: StateObjectRef[] = [];
-        const baselineRefs: StateObjectRef[] = [];
+        const refs: StateTransform.Ref[] = [];
+        const baselineRefs: StateTransform.Ref[] = [];
         const hierarchy = this.plugin.managers.structure.hierarchy.current;
         const structures = hierarchy?.structures ?? [];
 
@@ -818,12 +819,6 @@ export class StateHandlers {
                 baselineRefs.push(ref);
             });
             structures.forEach(s => {
-                (s.representations ?? []).forEach(r => {
-                    if (!regionReprRefs.has(r.cell.transform.ref)) {
-                        refs.push(r.cell.transform.ref);
-                        baselineRefs.push(r.cell.transform.ref);
-                    }
-                });
                 (s.components ?? []).forEach(c =>
                     (c.representations ?? []).forEach(r => {
                         if (!regionReprRefs.has(r.cell.transform.ref)) {
@@ -842,10 +837,6 @@ export class StateHandlers {
             }
         } else {
             structures.forEach(s => {
-                (s.representations ?? []).forEach(r => {
-                    if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
-                    refs.push(r.cell.transform.ref);
-                });
                 (s.components ?? []).forEach(c => (c.representations ?? []).forEach(r => {
                     if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
                     refs.push(r.cell.transform.ref);
@@ -856,9 +847,6 @@ export class StateHandlers {
             
             this.globalReprs.forEach(ref => baselineRefs.push(ref));
             structures.forEach(s => {
-                (s.representations ?? []).forEach(r => {
-                    if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
-                });
                 (s.components ?? []).forEach(c =>
                     (c.representations ?? []).forEach(r => {
                         if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
@@ -938,8 +926,8 @@ export class StateHandlers {
         }
     }
 
-    private collectBaselineGlobalRepresentationRefs(): StateObjectRef[] {
-        const refs = new Set<StateObjectRef>();
+    private collectBaselineGlobalRepresentationRefs(): StateTransform.Ref[] {
+        const refs = new Set<StateTransform.Ref>();
         const hierarchy = this.plugin.managers.structure.hierarchy.current;
         const structures = hierarchy?.structures ?? [];
 
@@ -950,10 +938,6 @@ export class StateHandlers {
 
         this.globalReprs.forEach(ref => refs.add(ref));
         structures.forEach(s => {
-            (s.representations ?? []).forEach(r => {
-                const ref = r.cell.transform.ref;
-                if (!regionReprRefs.has(ref)) refs.add(ref);
-            });
             (s.components ?? []).forEach(c =>
                 (c.representations ?? []).forEach(r => {
                     const ref = r.cell.transform.ref;
@@ -1005,7 +989,7 @@ export class StateHandlers {
     }
 
     private collectRefsFromPreset(result?: { representations?: { [name: string]: StateObjectSelector | undefined } }) {
-        const refs: StateObjectRef[] = [];
+        const refs: StateTransform.Ref[] = [];
         if (!result?.representations) return refs;
         Object.values(result.representations).forEach(sel => {
             if (sel?.ref) refs.push(sel.ref);
@@ -1014,11 +998,12 @@ export class StateHandlers {
     }
 
     private async removeStateObject(ref?: StateObjectRef) {
-        if (!ref) return;
-        if (!this.plugin.state.data.cells.has(ref)) return;
+        const resolvedRef = StateObjectRef.resolveRef(ref);
+        if (!resolvedRef) return;
+        if (!this.plugin.state.data.cells.has(resolvedRef)) return;
         await PluginCommands.State.RemoveObject(this.plugin, {
             state: this.plugin.state.data,
-            ref,
+            ref: resolvedRef,
             removeParentGhosts: true,
         });
     }

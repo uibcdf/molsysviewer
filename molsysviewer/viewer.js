@@ -140085,9 +140085,7 @@ async function loadStructureFromString(plugin, data, format = "pdb", label2, opt
   await recyclePreviousNode(plugin, options?.previous);
   const raw = await plugin.builders.data.rawData({
     data,
-    label: label2 ?? "Structure from string",
-    // Optional extension; helps some parsers.
-    ext: format
+    label: label2 ?? "Structure from string"
   });
   const trajectory = await plugin.builders.structure.parseTrajectory(raw, format);
   const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
@@ -140446,17 +140444,23 @@ var AnnotationHandlers = class {
     });
     if (!added) return;
     if (added.selection?.ref) {
-      this.labelRefs.add(added.selection.ref);
-      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
-      refs.add(added.selection.ref);
-      this.refsByTag.set(tag, refs);
+      const selectionRef = StateObjectRef.resolveRef(added.selection.ref);
+      if (selectionRef) {
+        this.labelRefs.add(selectionRef);
+        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        refs.add(selectionRef);
+        this.refsByTag.set(tag, refs);
+      }
       this.callbacks.registerRef(added.selection.ref, tag);
     }
     if (added.representation?.ref) {
-      this.labelRefs.add(added.representation.ref);
-      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
-      refs.add(added.representation.ref);
-      this.refsByTag.set(tag, refs);
+      const representationRef = StateObjectRef.resolveRef(added.representation.ref);
+      if (representationRef) {
+        this.labelRefs.add(representationRef);
+        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        refs.add(representationRef);
+        this.refsByTag.set(tag, refs);
+      }
       this.callbacks.registerRef(added.representation.ref, tag);
     }
   }
@@ -140796,17 +140800,23 @@ var MeasurementHandlers = class {
     }
     if (!added) return;
     if (added.selection?.ref) {
-      this.measurementRefs.add(added.selection.ref);
-      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
-      refs.add(added.selection.ref);
-      this.refsByTag.set(tag, refs);
+      const selectionRef = StateObjectRef.resolveRef(added.selection.ref);
+      if (selectionRef) {
+        this.measurementRefs.add(selectionRef);
+        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        refs.add(selectionRef);
+        this.refsByTag.set(tag, refs);
+      }
       this.callbacks.registerRef(added.selection.ref, tag);
     }
     if (added.representation?.ref) {
-      this.measurementRefs.add(added.representation.ref);
-      const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
-      refs.add(added.representation.ref);
-      this.refsByTag.set(tag, refs);
+      const representationRef = StateObjectRef.resolveRef(added.representation.ref);
+      if (representationRef) {
+        this.measurementRefs.add(representationRef);
+        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        refs.add(representationRef);
+        this.refsByTag.set(tag, refs);
+      }
       this.callbacks.registerRef(added.representation.ref, tag);
     }
   }
@@ -140953,6 +140963,7 @@ var MeasurementHandlers = class {
 };
 
 // src/shapes/index.ts
+var asColorListOrName = (value) => value;
 var MSVTransform = Transformer.builderFactory("molsysviewer");
 var TransparentSphereParams = {
   ...Mesh.Params
@@ -141008,7 +141019,7 @@ var TransparentSphere3D = MSVTransform({
   from: PluginStateObject.Root,
   to: PluginStateObject.Shape.Representation3D,
   params: {
-    center: ParamDefinition.Vec3(Vec3.create(0, 0, 0), { isEssential: true }),
+    center: ParamDefinition.Vec3(Vec3.create(0, 0, 0), void 0, { isEssential: true }),
     radius: ParamDefinition.Numeric(1, { min: 0.01, max: 1e3, step: 0.01 }, { isEssential: true }),
     color: ParamDefinition.Color(ColorNames.green, { isEssential: true }),
     alpha: ParamDefinition.Numeric(0.4, { min: 0, max: 1, step: 0.01 }, { isEssential: true })
@@ -141165,7 +141176,7 @@ function buildPocketBlobColors(count3, values2, colorMap) {
   const max5 = Math.max(...values2);
   const domain = min5 === max5 ? [min5, min5 + 1] : [min5, max5];
   const palette = Array.isArray(colorMap) && colorMap.length > 0 ? colorMap : void 0;
-  const scale = ColorScale.create({ domain, listOrName: palette ?? "rainbow", minLabel: "min", maxLabel: "max" });
+  const scale = ColorScale.create({ domain, listOrName: asColorListOrName(palette ?? "rainbow"), minLabel: "min", maxLabel: "max" });
   values2.forEach((v4, idx) => {
     colors.set(idx, scale.color(v4));
   });
@@ -141316,10 +141327,10 @@ function preparePocketBlobData(options) {
   const baseAlpha = options.alpha ?? 0.5;
   const isoAlphas = options.iso_alphas && options.iso_alphas.length === levels.length ? options.iso_alphas : new Array(levels.length).fill(baseAlpha);
   const isoColors = options.iso_colors && options.iso_colors.length === levels.length ? options.iso_colors : void 0;
-  const colorScale = !isoColors ? ColorScale.create({ domain: [Math.min(...levels), Math.max(...levels)], listOrName: options.color_map ?? "turbo" }) : void 0;
+  const colorScale = !isoColors ? ColorScale.create({ domain: [Math.min(...levels), Math.max(...levels)], listOrName: asColorListOrName(options.color_map ?? "turbo") }) : void 0;
   const results = [];
   levels.forEach((level, idx) => {
-    const isoColor = isoColors ? isoColors[idx] : colorScale?.color(level);
+    const isoColor = isoColors ? Color(isoColors[idx]) : colorScale?.color(level);
     const regionColors = isoColor !== void 0 ? new Map(Array.from({ length: field.count }, (_v, i) => [i, isoColor])) : buildPocketBlobColors(field.count, options.values, options.color_map);
     const marchingCubesParams = {
       isoLevel: level,
@@ -141459,7 +141470,7 @@ function buildChannelSegments(options) {
     const min5 = Math.min(...solventDistances);
     const max5 = Math.max(...solventDistances);
     const domain = min5 === max5 ? [min5, min5 + 1] : [min5, max5];
-    distanceScale = ColorScale.create({ domain, listOrName: colorMap ?? "turbo" });
+    distanceScale = ColorScale.create({ domain, listOrName: asColorListOrName(colorMap ?? "turbo") });
   }
   for (let i = 0; i < points3.length - 1; i++) {
     const start4 = points3[i];
@@ -141468,7 +141479,7 @@ function buildChannelSegments(options) {
     let color = ColorNames.skyblue;
     if (colorMode === "segment") {
       if (colors && colors.length) {
-        color = colors[i % colors.length];
+        color = Color(colors[i % colors.length]);
       } else {
         color = palette[i % palette.length];
       }
@@ -141741,7 +141752,7 @@ function buildRingSegments(options) {
     const min5 = Math.min(...values2);
     const max5 = Math.max(...values2);
     const domain = min5 === max5 ? [min5, min5 + 1] : [min5, max5];
-    valueScale = ColorScale.create({ domain, listOrName: colorMap ?? "turbo" });
+    valueScale = ColorScale.create({ domain, listOrName: asColorListOrName(colorMap ?? "turbo") });
   }
   const segments2 = [];
   for (let i = 0; i < n; i++) {
@@ -141783,7 +141794,9 @@ async function addRingsFromPython(plugin, options) {
   const data = {
     segments: built.segments,
     alpha: options.alpha ?? 1,
-    name: options.name ?? "Rings"
+    name: options.name ?? "Rings",
+    tubeStyle: "smooth",
+    tubeAspectRatio: 1
   };
   const props = {
     ...ParamDefinition.getDefaultValues(ChannelTubeParams),
@@ -141858,7 +141871,7 @@ function buildEllipsoidSpecs(plugin, options) {
   const colorMap = options.palette ?? options.color_map;
   let scaleLookup;
   if (colorMode === "anisotropy") {
-    scaleLookup = ColorScale.create({ domain: [0, 1], listOrName: colorMap ?? "turbo" });
+    scaleLookup = ColorScale.create({ domain: [0, 1], listOrName: asColorListOrName(colorMap ?? "turbo") });
   }
   for (let i = 0; i < n; i++) {
     const center2 = centers[i];
@@ -141876,7 +141889,7 @@ function buildEllipsoidSpecs(plugin, options) {
     } else if (principal) {
       axes = [1, 0.2, 0.2];
       dirA = normalizeVec(principal);
-      dirB = Vec3.orthogonal(Vec3(), dirA);
+      dirB = Vec3.orthogonalDirection(Vec3(), dirA);
     } else if (tensor && tensor.length === 3) {
       axes = [
         Math.abs(tensor[0][0]),
@@ -141897,11 +141910,11 @@ function buildEllipsoidSpecs(plugin, options) {
     const anisotropy = anisotropyValue(axes);
     let color = ColorNames.orange;
     if (colorMode === "fixed" && colors && colors.length) {
-      color = colors[i % colors.length];
+      color = Color(colors[i % colors.length]);
     } else if (colorMode === "anisotropy" && scaleLookup) {
       color = scaleLookup.color(values2?.[i] ?? anisotropy);
     } else if (colors && colors.length) {
-      color = colors[i % colors.length];
+      color = Color(colors[i % colors.length]);
     }
     const [fallbackA, fallbackB] = fallbackDirs();
     specs.push({
@@ -142310,7 +142323,7 @@ function buildUnitLookup(structure) {
 }
 function getChainId2(unit2, elementIndex) {
   if (!Unit.isAtomic(unit2)) return void 0;
-  const chainIndex2 = unit2.getChainIndex(elementIndex);
+  const chainIndex2 = unit2.chainIndex[elementIndex];
   return unit2.model.atomicHierarchy.chains.label_asym_id.value(chainIndex2);
 }
 function buildLinksFromCoordinates(options) {
@@ -143435,7 +143448,7 @@ function prepareDisplacementVectorData(plugin, options) {
   const domain = minValue === maxValue ? [minValue, minValue + 1] : [minValue, maxValue];
   const paletteInput = options.palette ?? options.color_map;
   const palette = paletteInput && Array.isArray(paletteInput) && paletteInput.length === 0 ? void 0 : paletteInput;
-  const scale = ColorScale.create({ domain, listOrName: palette ?? "turbo", minLabel: "min", maxLabel: "max" });
+  const scale = ColorScale.create({ domain, listOrName: asColorListOrName(palette ?? "turbo"), minLabel: "min", maxLabel: "max" });
   arrows.forEach((arrow, idx) => {
     arrow.color = scale.color(colorValues[idx]);
   });
@@ -143481,7 +143494,7 @@ function getPocketSurfaceName(atomCount2) {
 function getColor(colors, defaultColor) {
   return (groupId) => colors.get(groupId) ?? defaultColor;
 }
-function createPocketSurfaceShape(data, props, shape) {
+function createPocketSurfaceShape(_ctx, data, props, shape) {
   const name = data.name;
   return Shape.create(name, data, data.mesh, getColor(data.colors, Color(ColorNames.grey)), () => 1, () => name, shape?.transforms);
 }
@@ -143519,7 +143532,7 @@ function createSubsetFromAtomIndices(structure, atomIndices) {
     }
   }
   if (lociElements.length === 0) return void 0;
-  return element_exports.toStructure(element_exports.Loci(structure, lociElements));
+  return element_exports.Loci.toStructure(element_exports.Loci(structure, lociElements));
 }
 function buildClipPlanes(structure, options) {
   const clipObjects = [];
@@ -144159,9 +144172,8 @@ var SceneHandlers = class {
   }
   async toggleFullscreen(msg) {
     const enable = typeof msg === "boolean" ? msg : msg.enable;
-    const root = this.plugin.canvas3d?.props.parent;
-    const canvas = this.plugin.canvas3d?.props.canvas ?? this.plugin.canvas3d?.getCanvas?.();
-    const target = this.host ?? root?.parentElement ?? root ?? canvas?.parentElement ?? canvas ?? document.documentElement;
+    const canvas = this.plugin.canvas3dContext?.canvas;
+    const target = this.host ?? canvas?.parentElement ?? canvas ?? document.documentElement;
     if (!target || !target.requestFullscreen) return;
     const shouldEnable = enable ?? !document.fullscreenElement;
     try {
@@ -144188,11 +144200,12 @@ var SceneHandlers = class {
         this.savedDarkRenderer = {
           ...renderer,
           backgroundColor: 1052688,
-          lightColor: 16777215,
           ambientColor: 16777215,
           exposure: renderer.exposure ?? 1,
-          lightIntensity: renderer.lightIntensity ?? 1,
-          ambientIntensity: renderer.ambientIntensity ?? 1
+          ambientIntensity: renderer.ambientIntensity ?? 1,
+          // Dark mode uses a white key light. Mol* models directional lights
+          // in renderer.light[]; recolor the primary light to white.
+          light: (Array.isArray(renderer.light) && renderer.light.length > 0 ? renderer.light : [{ inclination: 150, azimuth: 320, color: 16777215, intensity: 1 }]).map((l, i) => i === 0 ? { ...l, color: 16777215 } : l)
         };
       }
       if (!this.savedDarkCamera) {
@@ -144675,8 +144688,10 @@ var SceneHandlers = class {
     if (!canvas3d) return;
     const renderer = { ...canvas3d.props?.renderer ?? {} };
     if (msg.ambient !== void 0) renderer.ambientIntensity = msg.ambient;
-    if (msg.diffuse !== void 0) renderer.lightIntensity = msg.diffuse;
-    if (msg.specular !== void 0 && msg.diffuse === void 0) renderer.lightIntensity = msg.specular;
+    const lightIntensity = msg.diffuse ?? msg.specular;
+    if (lightIntensity !== void 0 && Array.isArray(renderer.light) && renderer.light.length > 0) {
+      renderer.light = renderer.light.map((l, i) => i === 0 ? { ...l, intensity: lightIntensity } : l);
+    }
     canvas3d.setProps({ renderer });
   }
   async setClipPlanes(msg) {
@@ -144684,7 +144699,7 @@ var SceneHandlers = class {
     if (!canvas3d) return;
     const clipping = { ...canvas3d.props?.cameraClipping ?? {} };
     if (msg.near !== void 0) clipping.radius = msg.near;
-    if (msg.far !== void 0) clipping.far = msg.far > 0;
+    if (msg.far !== void 0) clipping.far = msg.far;
     if (msg.min_near !== void 0) clipping.minNear = msg.min_near;
     canvas3d.setProps({ cameraClipping: clipping });
   }
@@ -144864,10 +144879,11 @@ var StateHandlers = class {
     return next;
   }
   registerTaggedRef(ref, tag, kind = "shape") {
-    if (!ref) return;
+    const resolvedRef = StateObjectRef.resolveRef(ref);
+    if (!resolvedRef) return;
     if (!tag) return;
     if (!this.tagIndex.has(tag)) this.tagIndex.set(tag, /* @__PURE__ */ new Set());
-    this.tagIndex.get(tag).add(ref);
+    this.tagIndex.get(tag).add(resolvedRef);
     if (!this.layerMeta.has(tag)) {
       this.layerMeta.set(tag, { kind, meta: {} });
       this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
@@ -144875,7 +144891,7 @@ var StateHandlers = class {
     if (this.pendingLayerVisibility.has(tag)) {
       const hide = this.pendingLayerVisibility.get(tag);
       this.pendingLayerVisibility.delete(tag);
-      setSubtreeVisibility(this.plugin.state.data, ref, hide);
+      setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
     }
   }
   registerShapeRef(ref, tag) {
@@ -145406,12 +145422,6 @@ var StateHandlers = class {
         baselineRefs.push(ref);
       });
       structures.forEach((s) => {
-        (s.representations ?? []).forEach((r) => {
-          if (!regionReprRefs.has(r.cell.transform.ref)) {
-            refs.push(r.cell.transform.ref);
-            baselineRefs.push(r.cell.transform.ref);
-          }
-        });
         (s.components ?? []).forEach(
           (c8) => (c8.representations ?? []).forEach((r) => {
             if (!regionReprRefs.has(r.cell.transform.ref)) {
@@ -145430,10 +145440,6 @@ var StateHandlers = class {
       }
     } else {
       structures.forEach((s) => {
-        (s.representations ?? []).forEach((r) => {
-          if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
-          refs.push(r.cell.transform.ref);
-        });
         (s.components ?? []).forEach((c8) => (c8.representations ?? []).forEach((r) => {
           if (hiddenRegionReprRefs.has(r.cell.transform.ref)) return;
           refs.push(r.cell.transform.ref);
@@ -145443,9 +145449,6 @@ var StateHandlers = class {
       this.tagIndex.forEach((set4) => set4.forEach((ref) => refs.push(ref)));
       this.globalReprs.forEach((ref) => baselineRefs.push(ref));
       structures.forEach((s) => {
-        (s.representations ?? []).forEach((r) => {
-          if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
-        });
         (s.components ?? []).forEach(
           (c8) => (c8.representations ?? []).forEach((r) => {
             if (!regionReprRefs.has(r.cell.transform.ref)) baselineRefs.push(r.cell.transform.ref);
@@ -145528,10 +145531,6 @@ var StateHandlers = class {
     }));
     this.globalReprs.forEach((ref) => refs.add(ref));
     structures.forEach((s) => {
-      (s.representations ?? []).forEach((r) => {
-        const ref = r.cell.transform.ref;
-        if (!regionReprRefs.has(ref)) refs.add(ref);
-      });
       (s.components ?? []).forEach(
         (c8) => (c8.representations ?? []).forEach((r) => {
           const ref = r.cell.transform.ref;
@@ -145580,11 +145579,12 @@ var StateHandlers = class {
     return refs;
   }
   async removeStateObject(ref) {
-    if (!ref) return;
-    if (!this.plugin.state.data.cells.has(ref)) return;
+    const resolvedRef = StateObjectRef.resolveRef(ref);
+    if (!resolvedRef) return;
+    if (!this.plugin.state.data.cells.has(resolvedRef)) return;
     await PluginCommands.State.RemoveObject(this.plugin, {
       state: this.plugin.state.data,
-      ref,
+      ref: resolvedRef,
       removeParentGhosts: true
     });
   }
@@ -145623,7 +145623,8 @@ var TrajectoryHandlers = class {
       console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: no structure loaded");
       return;
     }
-    const cell = this.plugin.state.data.cells.get(loaded.structure);
+    const structureRef = StateObjectRef.resolveRef(loaded.structure);
+    const cell = structureRef ? this.plugin.state.data.cells.get(structureRef) : void 0;
     if (!cell || !cell.obj) {
       console.warn("[TrajectoryHandlers] partialCoordinatesUpdate ignored: structure node not found");
       return;
@@ -145720,7 +145721,10 @@ var TrajectoryHandlers = class {
       void this.stepTrajectory(delta2);
     }, intervalMs);
     if (this.trajectoryPoll) clearInterval(this.trajectoryPoll);
-    this.trajectoryPoll = setInterval(() => this.context.notifyTrajectoryState(), 200);
+    this.trajectoryPoll = setInterval(() => {
+      this.context.notifyTrajectoryState();
+      this.notifyPlaybackFrameChanged(true);
+    }, 200);
     this.updateTrajectoryState();
   }
   async stopTrajectoryPlayback() {
@@ -145762,6 +145766,13 @@ var TrajectoryHandlers = class {
     const state = this.getTrajectoryState();
     for (const cb2 of this.trajectoryListeners) cb2(state);
   }
+  notifyPlaybackFrameChanged(isPlaying) {
+    this.context.notify?.({
+      event: "trajectory_frame_changed",
+      frame: this.getCurrentFrameIndex(),
+      is_playing: isPlaying
+    });
+  }
   updateTrajectoryState() {
     this.context.notifyTrajectoryState();
     this.notifyListeners();
@@ -145776,7 +145787,8 @@ var TrajectoryHandlers = class {
   getFrameCount() {
     const trajRef = this.getTrajectoryRef();
     if (!trajRef) return 0;
-    const cell = this.plugin.state.data.cells.get(trajRef);
+    const resolvedTrajRef = StateObjectRef.resolveRef(trajRef);
+    const cell = resolvedTrajRef ? this.plugin.state.data.cells.get(resolvedTrajRef) : void 0;
     const traj = cell?.obj?.data;
     return traj?.frameCount ?? 0;
   }
@@ -146166,7 +146178,7 @@ var ViewerContextMenu = class {
         fontWeight: "600"
       });
       this.scrollEl.appendChild(modeHeader);
-      const modes = ["classic", "classic-floating", "zen", "integrated", "ambient", "focus", "split"];
+      const modes = ["classic", "integrated", "cinema"];
       for (const mode of modes) {
         const label2 = mode + (activeMode === mode ? " (Active \u2713)" : "");
         this.scrollEl.appendChild(this.makeActionButton(label2, "set_viewer_mode", { text: mode }));
@@ -147580,7 +147592,7 @@ function lociToShapeItems(rawLoci) {
     try {
       const groupIdx = OrderedSet2.getAt(rawLoci.groups[0].ids, 0);
       if (typeof shape.getLabel === "function") {
-        shapeName = shape.getLabel(groupIdx);
+        shapeName = shape.getLabel(groupIdx, 0);
       }
       const perGroup = data.__groupAtoms;
       if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
@@ -147703,7 +147715,10 @@ var ActiveSelectionController = class {
   handlePrimaryClick(ev) {
     const shift2 = !!ev?.modifiers?.shift;
     const alt = !!ev?.modifiers?.alt;
-    const pickedItems = lociToGroupItems(ev?.current?.loci).concat(lociToShapeItems(ev?.current?.loci));
+    const pickedItems = [
+      ...lociToGroupItems(ev?.current?.loci),
+      ...lociToShapeItems(ev?.current?.loci)
+    ];
     if (pickedItems.length === 0) {
       if (!shift2) {
         this.clear();
@@ -149158,11 +149173,11 @@ var FloatingPanelShell = class {
         minimizeButton.title = "Restore";
         minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
       } else {
-        this.panel.style.height = originalHeight || (isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-        this.panel.style.minHeight = originalMinHeight || (isSplit ? "0" : "420px");
+        this.panel.style.height = originalHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
+        this.panel.style.minHeight = originalMinHeight || (this.isSplit ? "0" : "420px");
         this.content.style.display = "flex";
-        this.root.style.background = isAmbient || isSplit ? "transparent" : "rgba(0,0,0,0.32)";
-        this.root.style.pointerEvents = isAmbient || isSplit ? "none" : "auto";
+        this.root.style.background = this.isAmbient || this.isSplit ? "transparent" : "rgba(0,0,0,0.32)";
+        this.root.style.pointerEvents = this.isAmbient || this.isSplit ? "none" : "auto";
         minimizeButton.title = "Minimize";
         minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
       }
@@ -149288,29 +149303,29 @@ var FloatingPanelShell = class {
     this.panel.style.height = `${panelHeight}px`;
   }
   updateLayout() {
-    const isSplit2 = this.isSplit;
+    const isSplit = this.isSplit;
     let transitionedToSplit = false;
-    if (isSplit2 !== this.lastSplitState) {
-      if (isSplit2) {
+    if (isSplit !== this.lastSplitState) {
+      if (isSplit) {
         this.isAmbient = true;
         transitionedToSplit = true;
       } else {
         this.isAmbient = false;
       }
-      this.lastSplitState = isSplit2;
+      this.lastSplitState = isSplit;
     }
-    const isAmbient2 = this.isAmbient;
+    const isAmbient = this.isAmbient;
     Object.assign(this.root.style, {
-      justifyContent: isSplit2 ? "flex-start" : "center",
-      pointerEvents: isAmbient2 ? "none" : "auto",
-      background: isAmbient2 ? "transparent" : "rgba(0,0,0,0.32)",
-      paddingLeft: isSplit2 ? "10px" : "0"
+      justifyContent: isSplit ? "flex-start" : "center",
+      pointerEvents: isAmbient ? "none" : "auto",
+      background: isAmbient ? "transparent" : "rgba(0,0,0,0.32)",
+      paddingLeft: isSplit ? "10px" : "0"
     });
     this.panel.style.position = "absolute";
     if (this.isPanelOnly) {
       this.panel.style.transform = "";
       this.panel.style.backdropFilter = "";
-      this.panel.style.webkitBackdropFilter = "";
+      this.panel.style.setProperty("-webkit-backdrop-filter", "");
       this.panel.style.left = "0";
       this.panel.style.top = "0";
       this.panel.style.width = "100%";
@@ -149334,11 +149349,11 @@ var FloatingPanelShell = class {
         background: "#121216",
         padding: "0"
       });
-    } else if (isSplit2) {
+    } else if (isSplit) {
       this.headerElement.style.cursor = "default";
       this.panel.style.transform = "";
       this.panel.style.backdropFilter = "";
-      this.panel.style.webkitBackdropFilter = "";
+      this.panel.style.setProperty("-webkit-backdrop-filter", "");
       this.panel.style.left = "10px";
       this.panel.style.top = "10px";
       if (transitionedToSplit || !this.panel.style.width || this.panel.style.width === "100%" || this.panel.style.width.indexOf("px") === -1) {
@@ -149368,12 +149383,12 @@ var FloatingPanelShell = class {
       this.headerElement.style.cursor = "move";
     }
     if (this.dockButton) {
-      this.dockButton.title = isSplit2 ? "Float panel" : "Dock panel (Split)";
-      this.dockButton.innerHTML = isSplit2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="14"/><line x1="4" y1="8" x2="12" y2="8"/></svg>`;
+      this.dockButton.title = isSplit ? "Float panel" : "Dock panel (Split)";
+      this.dockButton.innerHTML = isSplit ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><rect x="5" y="5" width="6" height="6" rx="0.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="14"/><line x1="4" y1="8" x2="12" y2="8"/></svg>`;
     }
     if (this.lockButton) {
-      this.lockButton.title = isAmbient2 ? "Lock background" : "Unlock background (Ambient)";
-      this.lockButton.innerHTML = isAmbient2 ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 6-2.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 7 0v3"/></svg>`;
+      this.lockButton.title = isAmbient ? "Lock background" : "Unlock background (Ambient)";
+      this.lockButton.innerHTML = isAmbient ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 6-2.5"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M4.5 7V4a3.5 3.5 0 0 1 7 0v3"/></svg>`;
       this.lockButton.style.display = "inline-flex";
     }
     this.onLayoutChange?.({
@@ -149847,7 +149862,7 @@ var GroupPanel = class {
     }
   }
   focusItem(item2) {
-    const chainName = item2.chain_name ?? "?";
+    const chainName = item2.source_kind === "element" ? item2.chain_name ?? "?" : "?";
     return this.strips.get(chainName)?.focusItem(item2) ?? null;
   }
   dispose() {
@@ -150771,7 +150786,7 @@ var WorkbenchPanel = class {
       const source = failure.source || "unknown source";
       const reason = failure.reason || "unknown error";
       const title = failure.kind === "lifecycle" ? `Lifecycle failed: ${source}` : `Discovery failed: ${source}`;
-      const row = this.createItemRow({
+      const row = this.makeRow({
         key: `addon-failure:${source}`,
         title,
         subtitle: reason
@@ -151089,6 +151104,12 @@ var HoverTooltip = class {
 };
 
 // src/managers/viewer-controller.ts
+function flattenToNumberIndices(source) {
+  const arr = Array.isArray(source) ? source : [];
+  return Array.from(new Set(
+    arr.flatMap((item2) => Array.isArray(item2) ? item2 : []).filter((value) => typeof value === "number")
+  ));
+}
 function normalizeToElementLoci3(loci) {
   if (element_exports.Loci.is(loci)) return loci;
   try {
@@ -151126,7 +151147,7 @@ function shapeTargetFromLoci(loci) {
     try {
       const groupIdx = OrderedSet2.getAt(loci.groups[0].ids, 0);
       if (typeof shape.getLabel === "function") {
-        shapeName = shape.getLabel(groupIdx);
+        shapeName = shape.getLabel(groupIdx, 0);
       }
       const perGroup = sourceData.__groupAtoms;
       if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
@@ -151166,7 +151187,7 @@ function extractAtomMetadata(loci) {
   const chainId = chains2.label_asym_id.value(chainIndex2);
   const atomName = atoms2.label_atom_id.value(atomIndex);
   const elementSymbol = atoms2.type_symbol.value(atomIndex);
-  const atomId2 = atoms2.id.value(atomIndex).toString();
+  const atomId2 = model.atomicConformation.atomId.value(atomIndex).toString();
   return {
     atom_index: atomIndex,
     atom_id: atomId2,
@@ -151458,24 +151479,20 @@ var MolSysViewerController = class _MolSysViewerController {
         structure
       );
       const value = this.measurements.computeMeasurementValue(picks_atom_indices, measurementOptions, structure);
-      const msg = {
-        op: action === "distance" ? "add_distance_measurement" : action === "angle" ? "add_angle_measurement" : "add_dihedral_measurement",
+      const options = {
         tag,
-        options: {
-          tag,
-          picks_atom_indices,
-          endpoint_policy: measurementOptions.endpoint_policy,
-          endpoint_kinds: measurementOptions.endpoint_kinds,
-          endpoint_labels: measurementOptions.endpoint_labels,
-          endpoint_atom_indices: measurementOptions.endpoint_atom_indices
-        }
+        picks_atom_indices,
+        endpoint_policy: measurementOptions.endpoint_policy,
+        endpoint_kinds: measurementOptions.endpoint_kinds,
+        endpoint_labels: measurementOptions.endpoint_labels,
+        endpoint_atom_indices: measurementOptions.endpoint_atom_indices
       };
       if (action === "distance") {
-        await this.measurements.addDistance(msg);
+        await this.measurements.addDistance({ op: "add_distance_measurement", tag, options });
       } else if (action === "angle") {
-        await this.measurements.addAngle(msg);
+        await this.measurements.addAngle({ op: "add_angle_measurement", tag, options });
       } else {
-        await this.measurements.addDihedral(msg);
+        await this.measurements.addDihedral({ op: "add_dihedral_measurement", tag, options });
       }
       return {
         tag,
@@ -151559,7 +151576,9 @@ var MolSysViewerController = class _MolSysViewerController {
     }, (item2, pageX, pageY) => {
       this.openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent);
     }, (target, pageX, pageY) => {
-      this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
+      if (target.kind === "annotation") {
+        this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
+      }
     }, (tag) => {
       const saved = this.savedSelections.find((item2) => item2.tag === tag);
       if (!saved) return;
@@ -151681,7 +151700,7 @@ var MolSysViewerController = class _MolSysViewerController {
         this.notify?.({ event: "interaction_context_action", action, tag, new_tag });
         return;
       }
-      if (action === "delete_annotation" || action === "delete_shape" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection") {
+      if (action === "delete_annotation" || action === "delete_shape" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "addon_context_action") {
         return;
       }
       this.startMeasurementTool(action, details?.endpoint_policy);
@@ -151858,10 +151877,10 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.clearAnnotationOverlays();
       },
       getComponents: () => this.getComponents(),
-      clearShapesByTag: (tag) => {
-        this.state.clearShapesByTag(tag);
+      clearShapesByTag: async (tag) => {
+        await this.state.clearShapesByTag(tag);
         this.groupPanel.clearAnnotationOverlaysByTag(tag);
-        this.annotations.clearLabelByTag(tag);
+        if (tag) await this.annotations.clearLabelByTag(tag);
       },
       registerShapeRef: (ref, tag) => this.state.registerShapeRef(ref, tag),
       removeLoadedStructure: () => this.removeLoadedStructure(),
@@ -152445,7 +152464,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.plugin.managers.camera.focusLoci(loci);
   }
   focusTarget(target) {
-    const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+    const atomIndices = "atom_indices" in target && Array.isArray(target.atom_indices) ? target.atom_indices : [];
     if (atomIndices.length === 0) return;
     const loci = this.atomIndicesToLoci(atomIndices);
     if (!loci) return;
@@ -152493,7 +152512,7 @@ var MolSysViewerController = class _MolSysViewerController {
     };
   }
   getRelevantRegionSummaries(target) {
-    const atomIndices = Array.isArray(target.atom_indices) ? target.atom_indices : [];
+    const atomIndices = "atom_indices" in target && Array.isArray(target.atom_indices) ? target.atom_indices : [];
     if (atomIndices.length === 0) return [];
     const targetSet = new Set(atomIndices);
     return this.state.getRegionSummaries().filter((region) => region.atom_indices.some((idx) => targetSet.has(idx)));
@@ -153167,10 +153186,11 @@ var MolSysViewerController = class _MolSysViewerController {
       this.loadedStructure.data
     ];
     for (const ref of refs) {
-      if (ref) {
+      const resolved = StateObjectRef.resolveRef(ref);
+      if (resolved) {
         await PluginCommands.State.RemoveObject(this.plugin, {
           state: this.plugin.state.data,
-          ref,
+          ref: resolved,
           removeParentGhosts: true
         });
       }
@@ -153242,9 +153262,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const tag = msg.tag ?? msg.options?.tag;
       const picksArray = Array.isArray(msg.options?.picks_atom_indices) ? msg.options.picks_atom_indices : [];
       const picks = picksArray.length;
-      const atomIndices = Array.from(new Set(
-        picksArray.flatMap((item2) => Array.isArray(item2) ? item2 : []).filter((value) => typeof value === "number")
-      ));
+      const atomIndices = flattenToNumberIndices(picksArray);
       const kind = op4 === "add_distance_measurement" ? "distance" : op4 === "add_angle_measurement" ? "angle" : "dihedral";
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       if (typeof tag === "string") {
@@ -153264,9 +153282,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const tag = msg.options?.tag;
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       const atomPairs = Array.isArray(msg.options?.atom_pairs) ? msg.options.atom_pairs : [];
-      const atomIndices = Array.from(new Set(
-        atomPairs.flatMap((item2) => Array.isArray(item2) ? item2 : []).filter((value) => typeof value === "number")
-      ));
+      const atomIndices = flattenToNumberIndices(atomPairs);
       if (typeof tag === "string") {
         upsertWorkbenchShape(tag, "Links", "links", layerTag, atomIndices);
       }
@@ -153276,9 +153292,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const tag = msg.options?.tag;
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       const atomTriplets = Array.isArray(msg.options?.atom_triplets) ? msg.options.atom_triplets : Array.isArray(msg.options?.atomTriplets) ? msg.options.atomTriplets : [];
-      const atomIndices = Array.from(new Set(
-        atomTriplets.flatMap((item2) => Array.isArray(item2) ? item2 : []).filter((value) => typeof value === "number")
-      ));
+      const atomIndices = flattenToNumberIndices(atomTriplets);
       if (typeof tag === "string") {
         upsertWorkbenchShape(tag, "Triangle Faces", "triangle_faces", layerTag, atomIndices);
       }
@@ -153296,9 +153310,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const tag = msg.options?.tag;
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       const atomQuads = Array.isArray(msg.options?.atom_quads) ? msg.options.atom_quads : Array.isArray(msg.options?.atomQuads) ? msg.options.atomQuads : [];
-      const atomIndices = Array.from(new Set(
-        atomQuads.flatMap((item2) => Array.isArray(item2) ? item2 : []).filter((value) => typeof value === "number")
-      ));
+      const atomIndices = flattenToNumberIndices(atomQuads);
       if (typeof tag === "string") {
         upsertWorkbenchShape(tag, "Tetrahedra", "tetrahedra", layerTag, atomIndices);
       }
@@ -153738,7 +153750,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
     const newPanel = panels.find((item2) => item2.id === panelId);
-    const newKey = `${newPanel.addon}:${panelId}`;
+    const newKey = `${newPanel?.addon}:${panelId}`;
     if (newPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
       this.notify?.({ event: "panel_navigate", addon: newPanel.addon, panel: panelId });
     } else if (!newPanel?.widget_class) {
@@ -154055,7 +154067,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const selectedPanelId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
       if (selectedPanelId) {
         const selectedPanel = this.getWorkspacePanels(this.currentWorkspace).find((item2) => item2.id === selectedPanelId);
-        const newKey = `${selectedPanel.addon}:${selectedPanelId}`;
+        const newKey = `${selectedPanel?.addon}:${selectedPanelId}`;
         if (selectedPanel?.widget_class && this.activePanelWidgetKey !== newKey) {
           this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
         }
@@ -154479,10 +154491,11 @@ var bootPopup = async (loadedModule) => {
   overlay.style.flexWrap = "nowrap";
   overlay.style.transition = "opacity 150ms ease";
   const addBtn = (label3, handler) => {
-    if (initOptions.isPanelOnly) return;
+    if (initOptions.isPanelOnly) return void 0;
     const b8 = makeBtn(label3, handler);
     b8.style.pointerEvents = "auto";
     overlay.appendChild(b8);
+    return b8;
   };
   let autohide = false;
   const applyShow = (visible) => {
@@ -154538,7 +154551,7 @@ var bootPopup = async (loadedModule) => {
     const ctrl2 = await popControllerPromise;
     isUiVisible = !isUiVisible;
     ctrl2.sharedShell?.setVisible(isUiVisible);
-    uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
+    if (uiBtn) uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
   });
   addBtn("Pop", () => {
     try {
@@ -154549,7 +154562,7 @@ var bootPopup = async (loadedModule) => {
   if (initOptions.isPanelOnly) {
     overlay.style.display = "none";
   }
-  container.appendChild(overlay);
+  container?.appendChild(overlay);
   const traj = document.createElement("div");
   traj.style.display = "none";
   traj.style.alignItems = "center";
@@ -154783,8 +154796,9 @@ var PopupHostManager = class {
         if (!this.viewerJsSource) {
           throw new Error("No viewer source code provided to PopupHostManager");
         }
-        const popBlob = new win.Blob([this.viewerJsSource], { type: "text/javascript" });
-        const popBlobUrl = win.URL.createObjectURL(popBlob);
+        const popWin = win;
+        const popBlob = new popWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+        const popBlobUrl = popWin.URL.createObjectURL(popBlob);
         console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
         scriptEl.textContent = `
                     (async () => {
@@ -155411,8 +155425,8 @@ var makeNumberControl = (initial, onChange, title, minimal = false) => {
 };
 var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPopClick) => {
   const controlsMode = model.get("controls_mode") || "classic";
-  const isFocus = controlsMode === "cinema" || controlsMode === "focus";
-  const isMinimal = controlsMode === "minimal" || isFocus;
+  const isCinema = controlsMode === "cinema";
+  const isMinimal = controlsMode === "minimal" || isCinema;
   const helpOverlay = new HelpOverlay(container);
   const onHelpKey = (ev) => {
     if (ev.target?.closest?.("input, textarea, [contenteditable]")) return;
@@ -155424,7 +155438,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     }
   };
   window.addEventListener("keydown", onHelpKey, true);
-  if (isFocus) {
+  if (isCinema) {
     const toast = document.createElement("div");
     toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
     Object.assign(toast.style, {
@@ -155456,7 +155470,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   }
   injectStyles();
   let overlay;
-  if (!isFocus) {
+  if (!isCinema) {
     overlay = document.createElement("div");
     overlay.className = "molsysviewer-controls";
     overlay.style.position = "absolute";
@@ -155595,7 +155609,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     if (btnPrev) traj.appendChild(btnPrev);
     traj.appendChild(btnPlayPause);
     if (btnNext) traj.appendChild(btnNext);
-    if (isFocus) {
+    if (isCinema) {
       stepControl = makeNumberControl(1, (n) => {
         currentStep = n;
         const state = c8.trajectory.getTrajectoryState();
@@ -155636,7 +155650,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     traj.appendChild(stepControl.wrapper);
     traj.appendChild(fpsControl.wrapper);
   }
-  if (isFocus) {
+  if (isCinema) {
     Object.assign(traj.style, {
       position: "absolute",
       bottom: "12px",
@@ -155905,8 +155919,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     const triggerTemporaryShow = () => {
       if (!autohide) return;
       const isFullscreen = !!document.fullscreenElement;
-      const isSplit2 = c8.sharedShell?.isSplit;
-      if (!isFullscreen && !isSplit2) return;
+      const isSplit = c8.sharedShell?.isSplit;
+      if (!isFullscreen && !isSplit) return;
       if (fadeTimeout) clearTimeout(fadeTimeout);
       applyShow(true);
       fadeTimeout = setTimeout(() => {
@@ -155935,8 +155949,8 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     const updateAutohideMode = () => {
       if (!autohide) return;
       const isFullscreen = !!document.fullscreenElement;
-      const isSplit2 = c8.sharedShell?.isSplit;
-      const useCornerHotspot = isFullscreen || isSplit2;
+      const isSplit = c8.sharedShell?.isSplit;
+      const useCornerHotspot = isFullscreen || isSplit;
       target.removeEventListener("pointerenter", onEnterWhole);
       target.removeEventListener("pointerleave", onLeaveWhole);
       hotspot.removeEventListener("pointerenter", onEnterHotspot);
@@ -156191,7 +156205,7 @@ async function bootDocsView(opts) {
         initialFrameCount: trajInfo.frameCount
       }
     );
-    target.appendChild(overlay);
+    if (overlay) target.appendChild(overlay);
     if (c8.plugin.canvas3d) {
       let hostCameraSyncTimer = null;
       const c3d = c8.plugin.canvas3d;
@@ -156512,9 +156526,9 @@ var index_default = {
         if (c3d.didDraw) {
           c3d.didDraw.subscribe(onCameraFrame);
           console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
-        } else if (c3d.camera.events?.changed) {
-          c3d.camera.events.changed.subscribe(onCameraFrame);
-          console.log("[MolSysViewer] Host: Sync via camera.events.changed (fallback).");
+        } else if (c3d.camera.stateChanged) {
+          c3d.camera.stateChanged.subscribe(onCameraFrame);
+          console.log("[MolSysViewer] Host: Sync via camera.stateChanged (fallback).");
         } else {
           console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
         }

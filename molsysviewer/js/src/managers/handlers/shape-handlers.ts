@@ -43,7 +43,7 @@ import {
     AddTriangleFacesMessage,
 } from "../../messages/viewer-messages";
 
-type RegisterRefCallback = (ref: StateObjectRef, tag?: string) => void;
+type RegisterRefCallback = (ref: StateObjectRef | undefined, tag?: string) => void;
 
 export interface ShapeHandlersContext {
     clearByTag: (tag: string) => Promise<void>;

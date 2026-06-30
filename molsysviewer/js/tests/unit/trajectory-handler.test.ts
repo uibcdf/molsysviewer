@@ -100,3 +100,28 @@ test("partialCoordinatesUpdate updates model atomicConformation and sends transa
     assert.strictEqual(notifications[0].event, "trajectory_frame_rendered");
     assert.strictEqual(notifications[0].transaction_id, "tx-123");
 });
+
+test("trajectory handler emits throttled frame changes while playback is active", () => {
+    const trajRef = "traj-ref";
+    const plugin: any = makeTrajectoryPluginMock();
+    plugin.state.data.cells = {
+        get(ref: any) {
+            if (ref === trajRef) return { obj: { data: { frameCount: 5 } } };
+            return null;
+        },
+    };
+    plugin.state.data.selectQ = () => [{ transform: { parent: trajRef, params: { modelIndex: 3 } } }];
+
+    const notifications: any[] = [];
+    const handler = new TrajectoryHandlers(plugin, {
+        getLoadedStructure: () => ({ trajectory: trajRef as any, structure: "struct-ref" as any }),
+        notifyTrajectoryState: () => {},
+        notify: (msg) => notifications.push(msg),
+    });
+
+    (handler as any).notifyPlaybackFrameChanged(true);
+
+    assert.deepStrictEqual(notifications, [
+        { event: "trajectory_frame_changed", frame: 3, is_playing: true },
+    ]);
+});
