@@ -115,6 +115,124 @@ class Region:
         aset = set(a)
         return sorted({ii for ii in b if ii in aset})
 
+    def _require_atom_indices(self) -> tuple[int, ...]:
+        if self.atom_indices is None:
+            raise ValueError(f"Boolean region composition requires known atom_indices for region {self.tag!r}.")
+        return tuple(int(index) for index in self.atom_indices)
+
+    def _coerce_region_operand(self, other: Any) -> tuple[str, tuple[int, ...]]:
+        if isinstance(other, Region):
+            return other.tag, other._require_atom_indices()
+        try:
+            indices = tuple(int(index) for index in other)
+        except TypeError as exc:
+            raise TypeError("Boolean region composition expects another Region or an iterable of atom indices.") from exc
+        return "indices", indices
+
+    def _new_boolean_region(
+        self,
+        *,
+        operation: str,
+        other: Any,
+        atom_indices: list[int],
+        tag: str | None,
+        representation: str | None,
+        repr_params: dict[str, Any],
+    ) -> "Region":
+        other_tag, _ = self._coerce_region_operand(other)
+        base_tag = tag or self._view._unique_region_tag(f"{self.tag}_{operation}_{other_tag}")  # noqa: SLF001
+        if not atom_indices:
+            raise ValueError(f"Boolean region composition produced an empty region for {base_tag!r}.")
+        return self._view.new_region(  # noqa: SLF001
+            atom_indices=atom_indices,
+            tag=base_tag,
+            representation=representation,
+            skip_digestion=True,
+            **repr_params,
+        )
+
+    def difference(
+        self,
+        other: Any,
+        *,
+        tag: str | None = None,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> "Region":
+        """Create a region with atoms from this region excluding atoms from *other*."""
+        lhs = self._require_atom_indices()
+        _, rhs = self._coerce_region_operand(other)
+        rhs_set = set(rhs)
+        atom_indices = [index for index in lhs if index not in rhs_set]
+        return self._new_boolean_region(
+            operation="minus",
+            other=other,
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            repr_params=repr_params,
+        )
+
+    def intersection(
+        self,
+        other: Any,
+        *,
+        tag: str | None = None,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> "Region":
+        """Create a region with atoms common to this region and *other*."""
+        lhs = self._require_atom_indices()
+        _, rhs = self._coerce_region_operand(other)
+        rhs_set = set(rhs)
+        atom_indices = [index for index in lhs if index in rhs_set]
+        return self._new_boolean_region(
+            operation="and",
+            other=other,
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            repr_params=repr_params,
+        )
+
+    def union(
+        self,
+        other: Any,
+        *,
+        tag: str | None = None,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> "Region":
+        """Create a region containing atoms from this region and *other*."""
+        lhs = self._require_atom_indices()
+        _, rhs = self._coerce_region_operand(other)
+        seen: set[int] = set()
+        atom_indices: list[int] = []
+        for index in (*lhs, *rhs):
+            if index not in seen:
+                seen.add(index)
+                atom_indices.append(index)
+        return self._new_boolean_region(
+            operation="or",
+            other=other,
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            repr_params=repr_params,
+        )
+
+    def __sub__(self, other: Any) -> "Region":
+        return self.difference(other)
+
+    def __and__(self, other: Any) -> "Region":
+        return self.intersection(other)
+
+    def __or__(self, other: Any) -> "Region":
+        return self.union(other)
+
     def _send(self, op: str, **payload: Any) -> None:
         if not self._active:
             return
@@ -504,6 +622,15 @@ class Region:
         normalized_preset = self._view._normalize_representation_preset(preset)  # noqa: SLF001
         user_preset_payload = self._view._resolve_user_preset(normalized_preset)  # noqa: SLF001
         normalized = None if normalized_preset else self._view._normalize_representation_type(representation)  # noqa: SLF001
+        if self.atom_indices is not None:
+            has_visual = normalized is not None or normalized_preset is not None or user_preset_payload is not None or bool(params)
+            if has_visual:
+                self._view._warn_region_visual_overlap(  # noqa: SLF001
+                    self.tag,
+                    list(self.atom_indices),
+                    exclude_tag=self.tag,
+                    stacklevel=3,
+                )
         self.representation = normalized
         self.preset = normalized_preset
         self.repr_params = params or {}

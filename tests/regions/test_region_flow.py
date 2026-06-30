@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from importlib.resources import files
+import warnings
+
+import pytest
 
 import molsysmt as msm  # noqa: F401
 import molsysviewer as viewer
@@ -45,3 +48,70 @@ def test_region_scoped_indices_bond_subset():
 
     assert isinstance(bond_indices, list)
     assert len(bond_indices) > 0
+
+
+
+def _empty_view():
+    view = viewer.MolSysView()
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+    return view
+
+
+def test_region_boolean_composition_from_atom_indices():
+    view = _empty_view()
+    left = view.new_region(atom_indices=[0, 1, 2], tag="left", skip_digestion=True)
+    right = view.new_region(atom_indices=[2, 3], tag="right", skip_digestion=True)
+
+    difference = left.difference(right, tag="left-minus-right")
+    intersection = left & right
+    union = left.union(right, tag="left-or-right")
+
+    assert difference.atom_indices == (0, 1)
+    assert intersection.atom_indices == (2,)
+    assert union.atom_indices == (0, 1, 2, 3)
+    assert "left_and_right" in view.regions
+    assert any(
+        msg.get("op") == "create_region"
+        and msg.get("tag") == "left-minus-right"
+        and msg.get("atom_indices") == [0, 1]
+        for msg in view._message_history  # noqa: SLF001
+    )
+
+
+def test_region_boolean_composition_rejects_empty_result():
+    view = _empty_view()
+    left = view.new_region(atom_indices=[0, 1], tag="left", skip_digestion=True)
+    right = view.new_region(atom_indices=[2, 3], tag="right", skip_digestion=True)
+
+    with pytest.raises(ValueError, match="empty region"):
+        left.intersection(right)
+
+
+def test_region_overlap_warning_when_visualizing_overlap():
+    view = _empty_view()
+    view.new_region(atom_indices=[0, 1, 2], tag="first", representation="line", skip_digestion=True)
+    second = view.new_region(atom_indices=[2, 3], tag="second", skip_digestion=True)
+
+    with pytest.warns(UserWarning, match="overlaps visible represented region"):
+        second.set_representation("ball-and-stick", skip_digestion=True)
+
+
+def test_region_overlap_warning_when_creating_visual_overlap():
+    view = _empty_view()
+    view.new_region(atom_indices=[0, 1, 2], tag="first", representation="line", skip_digestion=True)
+
+    with pytest.warns(UserWarning, match="overlaps visible represented region"):
+        view.new_region(atom_indices=[2, 3], tag="second", representation="ball-and-stick", skip_digestion=True)
+
+
+def test_region_overlap_warning_ignores_logical_and_hidden_regions():
+    view = _empty_view()
+    view.new_region(atom_indices=[0, 1], tag="logical", skip_digestion=True)
+    hidden = view.new_region(atom_indices=[1, 2], tag="hidden", representation="line", skip_digestion=True)
+    hidden.hide(skip_digestion=True)
+
+    with warnings.catch_warnings(record=True) as record:
+        warnings.simplefilter("always")
+        view.new_region(atom_indices=[1, 2, 3], tag="visible", representation="line", skip_digestion=True)
+
+    assert record == []

@@ -36,6 +36,19 @@ from .addons import (
 )
 from .styles import Style
 from .figures import FigureSpec
+from .geometry import (
+    MESH_LOCAL,
+    MOLECULAR_SYSTEM,
+    VIEWER_LOCAL,
+    EntityRef,
+    PointGeometry,
+    SphereGeometry,
+    SegmentGeometry,
+    TetrahedraGeometry,
+    IndexedTriangleGeometry,
+    IndexedEdgeGeometry,
+    entity_ref_payload,
+)
 from .viewer import MolSysView, ViewerInfo
 from .colors import (
     ColorRegistry,
@@ -90,6 +103,17 @@ __all__ = [
     "addons",
     "Style",
     "FigureSpec",
+    "entity_ref_payload",
+    "IndexedEdgeGeometry",
+    "IndexedTriangleGeometry",
+    "TetrahedraGeometry",
+    "SegmentGeometry",
+    "SphereGeometry",
+    "PointGeometry",
+    "EntityRef",
+    "VIEWER_LOCAL",
+    "MOLECULAR_SYSTEM",
+    "MESH_LOCAL",
     "colors",
     "normalize_color",
     "normalize_colors",

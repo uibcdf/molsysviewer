@@ -546,3 +546,53 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
         19,
         20,
     ]
+
+def test_remove_rebuild_remaps_dynamic_shape_frame_indices():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.shapes.add_sphere(
+        structures_atom_indices=[[0, 1], [2, 3]],
+        tag="moving-site",
+        skip_digestion=True,
+    )
+    view.shapes.links.add_hbonds(
+        structures=[[[0, 1], [2, 3]], None],
+        tag="moving-hbonds",
+        skip_digestion=True,
+    )
+
+    view.remove(selection=[0], skip_digestion=True)
+
+    sphere_msg = next(
+        msg
+        for msg in view._shape_history  # noqa: SLF001
+        if msg.get("op") == "add_sphere" and msg.get("options", {}).get("tag") == "moving-site"
+    )
+    assert sphere_msg["options"]["structures_atom_indices"] == [[0], [1, 2]]
+
+    hbonds_msg = next(
+        msg
+        for msg in view._shape_history  # noqa: SLF001
+        if msg.get("op") == "add_hbonds" and msg.get("options", {}).get("tag") == "moving-hbonds"
+    )
+    assert hbonds_msg["options"]["structures_atom_pairs"] == [[[1, 2]], None]
+
+
+def test_remove_rebuild_drops_dynamic_shape_when_all_frames_are_orphaned():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.shapes.add_sphere(
+        structures_atom_indices=[[0], None],
+        tag="orphan-site",
+        skip_digestion=True,
+    )
+
+    view.remove(selection=[0], skip_digestion=True)
+
+    assert not any(
+        msg.get("op") == "add_sphere" and msg.get("options", {}).get("tag") == "orphan-site"
+        for msg in view._shape_history  # noqa: SLF001
+    )
+    assert "orphan-site" not in view._scene_objects  # noqa: SLF001

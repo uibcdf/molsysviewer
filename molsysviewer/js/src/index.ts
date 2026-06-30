@@ -385,19 +385,50 @@ export default {
             });
         });
 
-        // 2. Initialize Popup Manager with Payload
-        // Prefer explicit popup_js_source (for legacy/overrides), but fall back to the widget's ESM source.
-        const popupJsSource = model.get("popup_js_source");
+        // 2. Initialize Popup Manager. The popup source is resolved lazily so the
+        // notebook state does not need a second synced copy of the AnyWidget bundle.
+        const legacyPopupJsSource = model.get("popup_js_source");
         const esmSource = model.get("_esm");
-        const viewerJsSource = popupJsSource || esmSource;
-        if (!viewerJsSource) {
-            console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
-        } else {
-            const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
-            console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
-        }
+        const esmLooksLikeFullRuntime =
+            typeof esmSource === "string" &&
+            esmSource.includes("bootPopup") &&
+            esmSource.includes("MolSysViewerController");
+        const cachedWidgetRuntime = (globalThis as any).__molsysviewer_anywidget_runtime__;
+        let popupJsSourceCache =
+            typeof legacyPopupJsSource === "string" && legacyPopupJsSource
+                ? legacyPopupJsSource
+                : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source
+                    ? cachedWidgetRuntime.source
+                    : esmLooksLikeFullRuntime
+                        ? esmSource
+                        : "";
+        let pendingPopupSource: Promise<string> | null = null;
+        let resolvePendingPopupSource: ((source: string) => void) | null = null;
+        let rejectPendingPopupSource: ((reason?: unknown) => void) | null = null;
+        let popupSourceTimer: ReturnType<typeof window.setTimeout> | null = null;
 
-        const popupMgr = new PopupHostManager(viewerJsSource || "");
+        const requestPopupSource = (): Promise<string> => {
+            if (popupJsSourceCache) return Promise.resolve(popupJsSourceCache);
+            if (pendingPopupSource) return pendingPopupSource;
+            pendingPopupSource = new Promise<string>((resolve, reject) => {
+                resolvePendingPopupSource = resolve;
+                rejectPendingPopupSource = reject;
+                popupSourceTimer = window.setTimeout(() => {
+                    reject(new Error("Timed out waiting for MolSysViewer popup source"));
+                    pendingPopupSource = null;
+                    resolvePendingPopupSource = null;
+                    rejectPendingPopupSource = null;
+                    popupSourceTimer = null;
+                }, 10000);
+                model.send({ event: "request_popup_source" });
+            });
+            return pendingPopupSource;
+        };
+
+        const popupMgr = new PopupHostManager({
+            source: popupJsSourceCache || undefined,
+            sourceProvider: requestPopupSource,
+        });
         const enablePopout = !!model.get("enable_popout");
 
         // 3. Initialize Controller
@@ -699,6 +730,23 @@ export default {
         sendLog("info", "[MolSysViewer] widget render init");
 
         const onCustomMsg = (msg: ViewerMessage) => {
+            if (msg && (msg as any).op === "popup_source") {
+                const source = typeof (msg as any).source === "string" ? (msg as any).source : "";
+                if (popupSourceTimer) {
+                    window.clearTimeout(popupSourceTimer);
+                    popupSourceTimer = null;
+                }
+                pendingPopupSource = null;
+                if (source) {
+                    popupJsSourceCache = source;
+                    resolvePendingPopupSource?.(source);
+                } else {
+                    rejectPendingPopupSource?.(new Error("MolSysViewer popup source response was empty"));
+                }
+                resolvePendingPopupSource = null;
+                rejectPendingPopupSource = null;
+                return;
+            }
             if (msg && (msg as any).op === "request_camera_snapshot") {
                 controllerPromise.then(c => {
                     const snapshot = c.getCameraSnapshot();
@@ -710,7 +758,7 @@ export default {
             }
             if (msg && (msg as any).op === "request_image_export") {
                 controllerPromise.then(async c => {
-                    const data_uri = await c.getImageDataUri({
+                    const imageExportResult = await c.getImageDataUri({
                         width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
                         height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
                         scale: typeof (msg as any).scale === "number" ? (msg as any).scale : undefined,
@@ -721,10 +769,21 @@ export default {
                                 ? (msg as any).camera_snapshot
                                 : undefined,
                     });
-                    if (typeof data_uri === "string" && data_uri) {
+                    if (typeof imageExportResult === "string" && imageExportResult) {
                         model.send({
                             event: "image_export",
-                            data_uri,
+                            data_uri: imageExportResult,
+                            scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
+                            transparent: !!(msg as any).transparent,
+                            preset: typeof (msg as any).preset === "string" ? (msg as any).preset : "current",
+                            width: typeof (msg as any).width === "number" ? (msg as any).width : undefined,
+                            height: typeof (msg as any).height === "number" ? (msg as any).height : undefined,
+                            format: "png",
+                        });
+                    } else if (imageExportResult && typeof imageExportResult === "object" && (imageExportResult as any).success === false) {
+                        model.send({
+                            event: "image_export",
+                            ...imageExportResult,
                             scale: typeof (msg as any).scale === "number" ? (msg as any).scale : 1,
                             transparent: !!(msg as any).transparent,
                             preset: typeof (msg as any).preset === "string" ? (msg as any).preset : "current",
@@ -760,6 +819,15 @@ export default {
 
             // 2. Remove model listeners
             model.off("msg:custom", onCustomMsg);
+
+            if (popupSourceTimer) {
+                window.clearTimeout(popupSourceTimer);
+                popupSourceTimer = null;
+            }
+            rejectPendingPopupSource?.(new Error("MolSysViewer widget disposed while waiting for popup source"));
+            pendingPopupSource = null;
+            resolvePendingPopupSource = null;
+            rejectPendingPopupSource = null;
 
             // 3. Dispose Mol* plugin to free WebGL context
             controllerPromise.then(c => {

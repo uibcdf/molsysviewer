@@ -48,7 +48,18 @@ type RegisterRefCallback = (ref: StateObjectRef | undefined, tag?: string) => vo
 export interface ShapeHandlersContext {
     clearByTag: (tag: string) => Promise<void>;
     subscribeToTrajectoryState?: (cb: (frame: number) => void) => () => void;
+    notifyShapeRenderStatus?: (status: TrajectoryShapeRenderStatus) => void;
 }
+
+export type TrajectoryShapeRenderStatus = {
+    tag: string;
+    op: string;
+    frame: number;
+    status: "rendered" | "missing-frame-data" | "missing-structure" | "empty-selection" | "invalid-indices" | "render-error";
+    requested_atoms?: number;
+    used_atoms?: number;
+    reason?: string;
+};
 
 type TrajectoryShapeEntry = {
     op: string;
@@ -61,6 +72,7 @@ export class ShapeHandlers {
     private trajectoryUnsub?: () => void;
     private currentFrame = 0;
     private frameUpdateInProgress = false;
+    private readonly lastRenderStatus = new Map<string, TrajectoryShapeRenderStatus>();
 
     constructor(
         private plugin: PluginContext,
@@ -83,6 +95,31 @@ export class ShapeHandlers {
         this.ensureTrajectorySubscription();
     }
 
+    private makeStatus(
+        tag: string,
+        op: string,
+        frame: number,
+        status: TrajectoryShapeRenderStatus["status"],
+        details: Partial<Omit<TrajectoryShapeRenderStatus, "tag" | "op" | "frame" | "status">> = {}
+    ): TrajectoryShapeRenderStatus {
+        return { tag, op, frame, status, ...details };
+    }
+
+    private emitRenderStatus(status: TrajectoryShapeRenderStatus) {
+        const previous = this.lastRenderStatus.get(status.tag);
+        if (
+            previous &&
+            previous.status === status.status &&
+            previous.requested_atoms === status.requested_atoms &&
+            previous.used_atoms === status.used_atoms &&
+            previous.reason === status.reason
+        ) {
+            return;
+        }
+        this.lastRenderStatus.set(status.tag, status);
+        this.context?.notifyShapeRenderStatus?.(status);
+    }
+
     private async applyFrame(frame: number) {
         if (this.frameUpdateInProgress) return;
         this.frameUpdateInProgress = true;
@@ -90,8 +127,16 @@ export class ShapeHandlers {
             for (const [tag, entry] of this.trajectoryShapes) {
                 const fc = entry.framesCoords[frame] ?? null;
                 await this.context!.clearByTag(tag);
-                if (fc !== null) {
-                    await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc);
+                if (fc === null) {
+                    this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
+                    continue;
+                }
+                try {
+                    const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
+                    if (status) this.emitRenderStatus(status);
+                } catch (err) {
+                    const reason = err instanceof Error ? err.message : String(err);
+                    this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
                 }
             }
         } finally {
@@ -99,20 +144,38 @@ export class ShapeHandlers {
         }
     }
 
-    private async renderTrajectoryFrame(tag: string, op: string, baseOptions: any, frameCoords: any) {
+    private async renderTrajectoryFrame(
+        tag: string,
+        op: string,
+        baseOptions: any,
+        frameCoords: any,
+        frame: number = this.currentFrame
+    ): Promise<TrajectoryShapeRenderStatus> {
         if (op === "add_sphere_from_atoms") {
+            const requested = Array.isArray(frameCoords) ? frameCoords.length : 0;
             const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
             const structure = structureRef?.cell.obj?.data as Structure | undefined;
-            const center = structure ? computeCentroidFromAtoms(structure, frameCoords) : null;
-            if (center !== null) {
-                const ref = await addTransparentSphereFromPython(this.plugin, {
-                    center,
-                    radius: baseOptions.radius ?? 10,
-                    color: baseOptions.color ?? 0x00ff00,
-                    alpha: baseOptions.alpha ?? 0.4,
-                });
-                this.registerRef(ref, tag);
+            if (!structure) {
+                return this.makeStatus(tag, op, frame, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
             }
+            const centroid = computeCentroidFromAtoms(structure, frameCoords);
+            if (!centroid.ok) {
+                return this.makeStatus(tag, op, frame, centroid.reason, {
+                    requested_atoms: centroid.requested,
+                    used_atoms: centroid.used,
+                });
+            }
+            const ref = await addTransparentSphereFromPython(this.plugin, {
+                center: centroid.center,
+                radius: baseOptions.radius ?? 10,
+                color: baseOptions.color ?? 0x00ff00,
+                alpha: baseOptions.alpha ?? 0.4,
+            });
+            this.registerRef(ref, tag);
+            return this.makeStatus(tag, op, frame, "rendered", {
+                requested_atoms: centroid.requested,
+                used_atoms: centroid.used,
+            });
         } else if (op === "add_sphere") {
             const ref = await addTransparentSphereFromPython(this.plugin, {
                 center: frameCoords as [number, number, number],
@@ -132,9 +195,17 @@ export class ShapeHandlers {
             const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: frameCoords });
             this.registerRef(ref as any, tag);
         } else if (op === "add_hbonds") {
+            const requested = Array.isArray(frameCoords) ? frameCoords.length * 2 : 0;
+            const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+            const structure = structureRef?.cell.obj?.data as Structure | undefined;
+            if (!structure) {
+                return this.makeStatus(tag, op, frame, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
+            }
             const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, mode: "atom-indices", atom_pairs: frameCoords });
             this.registerRef(ref as any, tag);
+            return this.makeStatus(tag, op, frame, "rendered", { requested_atoms: requested, used_atoms: requested });
         }
+        return this.makeStatus(tag, op, frame, "rendered");
     }
 
     async addSphere(msg: AddSphereMessage) {
@@ -149,15 +220,31 @@ export class ShapeHandlers {
             if (fc !== null) {
                 const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
                 const structure = structureRef?.cell.obj?.data as Structure | undefined;
-                const center = structure ? computeCentroidFromAtoms(structure, fc) : null;
-                if (center !== null) {
-                    const ref = await addTransparentSphereFromPython(this.plugin, {
-                        center,
-                        radius: options.radius ?? 10,
-                        color: options.color ?? 0x00ff00,
-                        alpha: options.alpha ?? 0.4,
-                    });
-                    this.registerRef(ref, tag);
+                if (structure) {
+                    const centroid = computeCentroidFromAtoms(structure, fc);
+                    if (centroid.ok) {
+                        const ref = await addTransparentSphereFromPython(this.plugin, {
+                            center: centroid.center,
+                            radius: options.radius ?? 10,
+                            color: options.color ?? 0x00ff00,
+                            alpha: options.alpha ?? 0.4,
+                        });
+                        this.registerRef(ref, tag);
+                        this.emitRenderStatus(this.makeStatus(tag!, "add_sphere_from_atoms", this.currentFrame, "rendered", {
+                            requested_atoms: centroid.requested,
+                            used_atoms: centroid.used,
+                        }));
+                    } else {
+                        this.emitRenderStatus(this.makeStatus(tag!, "add_sphere_from_atoms", this.currentFrame, centroid.reason, {
+                            requested_atoms: centroid.requested,
+                            used_atoms: centroid.used,
+                        }));
+                    }
+                } else {
+                    this.emitRenderStatus(this.makeStatus(tag!, "add_sphere_from_atoms", this.currentFrame, "missing-structure", {
+                        requested_atoms: Array.isArray(fc) ? fc.length : 0,
+                        used_atoms: 0,
+                    }));
                 }
             }
             return;
@@ -176,6 +263,7 @@ export class ShapeHandlers {
                     alpha: options.alpha ?? 0.4,
                 });
                 this.registerRef(ref, tag);
+                this.emitRenderStatus(this.makeStatus(tag!, "add_sphere", this.currentFrame, "rendered"));
             }
             return;
         }
@@ -185,11 +273,11 @@ export class ShapeHandlers {
             const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
             const structure = structureRef?.cell.obj?.data as Structure | undefined;
             const resolvedCenter = structure ? computeCentroidFromAtoms(structure, options.atom_indices) : null;
-            if (resolvedCenter === null) {
+            if (resolvedCenter === null || !resolvedCenter.ok) {
                 console.warn("[MolSysViewer] addSphere: could not compute centroid for atom_indices");
                 return;
             }
-            center = resolvedCenter;
+            center = resolvedCenter.center;
         }
         
         const ref = await addTransparentSphereFromPython(this.plugin, {

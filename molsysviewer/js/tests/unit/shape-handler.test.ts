@@ -229,6 +229,45 @@ test("frame subscription fires same frame index does not trigger re-render", asy
     assert.strictEqual(cleared.length, 0, "no clear should happen when frame index does not change");
 });
 
+test("shape render status is emitted only when effective status changes", async () => {
+    const plugin: any = {};
+    const statuses: any[] = [];
+    let subscriptionCallback: ((frame: number) => void) | null = null;
+    const context: ShapeHandlersContext = {
+        clearByTag: async () => void 0,
+        subscribeToTrajectoryState: (cb) => {
+            subscriptionCallback = cb;
+            return () => void 0;
+        },
+        notifyShapeRenderStatus: (status) => { statuses.push(status); },
+    };
+
+    const handler = new ShapeHandlers(plugin, () => void 0, context);
+    (handler as any).renderTrajectoryFrame = async (tag: string, op: string, _base: any, _coords: any, frame: number) => ({
+        tag,
+        op,
+        frame,
+        status: "rendered",
+    });
+
+    await handler.addSphere({
+        op: "add_sphere",
+        tag: "s",
+        options: { tag: "s", structures_coords: [null, [1, 1, 1], [2, 2, 2], null] } as any,
+    });
+
+    subscriptionCallback!(1);
+    await new Promise((res) => setTimeout(res, 10));
+    subscriptionCallback!(2);
+    await new Promise((res) => setTimeout(res, 10));
+    subscriptionCallback!(3);
+    await new Promise((res) => setTimeout(res, 10));
+
+    assert.deepStrictEqual(statuses.map((s) => s.status), ["rendered", "missing-frame-data"]);
+    assert.strictEqual(statuses[0].frame, 1);
+    assert.strictEqual(statuses[1].frame, 3);
+});
+
 // ---------------------------------------------------------------------------
 // Single subscription guarantee
 // ---------------------------------------------------------------------------

@@ -2138,8 +2138,13 @@ function buildLinksFromAtoms(structure: Structure, options: NetworkLinkOptions):
     return specs;
 }
 
-export function computeCentroidFromAtoms(structure: Structure, atomIndices: number[]): [number, number, number] | null {
-    if (atomIndices.length === 0) return null;
+export type AtomCentroidResult =
+    | { ok: true; center: [number, number, number]; requested: number; used: number }
+    | { ok: false; reason: "empty-selection" | "invalid-indices"; requested: number; used: 0 };
+
+export function computeCentroidFromAtoms(structure: Structure, atomIndices: number[]): AtomCentroidResult {
+    const requested = atomIndices.length;
+    if (requested === 0) return { ok: false, reason: "empty-selection", requested, used: 0 };
     const lookup = buildUnitLookup(structure);
     const pos = Vec3();
     let sumX = 0, sumY = 0, sumZ = 0;
@@ -2154,8 +2159,8 @@ export function computeCentroidFromAtoms(structure: Structure, atomIndices: numb
             count++;
         }
     }
-    if (count === 0) return null;
-    return [sumX / count, sumY / count, sumZ / count];
+    if (count === 0) return { ok: false, reason: "invalid-indices", requested, used: 0 };
+    return { ok: true, center: [sumX / count, sumY / count, sumZ / count], requested, used: count };
 }
 
 export async function addNetworkLinksFromPython(plugin: PluginContext, options: NetworkLinkOptions) {
@@ -2230,6 +2235,7 @@ interface TriangleFaceSpec {
 interface TriangleFacesData {
     triangles: TriangleFaceSpec[];
     alpha: number;
+    entity_refs?: unknown[];
     name: string;
     edges?: {
         enabled: boolean;
@@ -2353,6 +2359,11 @@ function getTriangleFacesShape(
         return Color(ColorNames.gray);
     };
     const getSize = () => 1;
+    const groupEntityRefs: unknown[] = [];
+    for (let i = 0; i < triCount; i++) {
+        groupEntityRefs[i] = data.entity_refs?.[i];
+    }
+    (data as any).__groupEntityRefs = groupEntityRefs;
     const getLabel = (groupId: number) => {
         if (groupId < triCount) {
             return data.triangles[groupId].label ?? `Triangle ${groupId}`;
@@ -2479,6 +2490,7 @@ export interface TriangleFacesOptions {
     alpha?: number;
     alphas?: number[];
     labels?: string | string[];
+    entity_refs?: unknown[];
     draw_edges?: boolean;
     edge_radius?: number;
     edge_color?: number;
@@ -2634,6 +2646,7 @@ function prepareTriangleFacesData(plugin: PluginContext, options: TriangleFacesO
     return {
         triangles,
         alpha,
+        entity_refs: Array.isArray(options.entity_refs) ? options.entity_refs : undefined,
         name,
         edges: edgesConfig,
         normals: normalsConfig,
@@ -2699,6 +2712,7 @@ interface FaceMetaEntry {
     owner_id?: number | string;
     neighbor_id?: number | string;
     color?: number;
+    entity_ref?: unknown;
 }
 
 interface TetrahedraData {
@@ -2714,7 +2728,7 @@ interface TetrahedraData {
     faceMeta?: Map<string, FaceMetaEntry>;
     // Optional per-edge metadata keyed by sorted atom-pair "a,b", for wireframe
     // edge labels (edge id).
-    edgeMeta?: Map<string, { edge_id?: number | string }>;
+    edgeMeta?: Map<string, { edge_id?: number | string; entity_ref?: unknown }>;
     edges?: {
         enabled: boolean;
         radius: number;
@@ -2728,6 +2742,7 @@ interface TetrahedraData {
     };
     tag?: string;
     atom_indices?: number[];
+    entity_refs?: unknown[];
 }
 
 const TetrahedraParams = {
@@ -3049,25 +3064,33 @@ function getTetrahedraShape(
     // (face -> its 3, edge -> its 2, tetra -> its 4) instead of the whole shape.
     // Read by shapeTargetFromLoci; only present on the atom_quads path.
     const groupAtoms: (number[] | undefined)[] = [];
+    const groupEntityRefs: unknown[] = [];
     for (let g = 0; g < faceGroupCount; g++) {
-        const tetraIndex = facesPickable ? faces[g].tetraIndex : g;
+        const face = faces[g];
+        const tetraIndex = facesPickable ? face.tetraIndex : g;
         groupAtoms[g] = facesPickable
-            ? (faces[g].vertexAtoms ? [...faces[g].vertexAtoms!] : undefined)
+            ? (face.vertexAtoms ? [...face.vertexAtoms!] : undefined)
             : (data.tetrahedra[tetraIndex]?.atomIndices ? [...data.tetrahedra[tetraIndex].atomIndices!] : undefined);
+        const faceEntityRef = facesPickable && face.atomKey ? data.faceMeta?.get(face.atomKey)?.entity_ref : undefined;
+        groupEntityRefs[g] = faceEntityRef ?? data.entity_refs?.[tetraIndex];
     }
     let decorBase = faceGroupCount;
     if (normalsEnabled) {
         for (let k = 0; k < faceCount; k++) {
             groupAtoms[decorBase + k] = faces[k].vertexAtoms ? [...faces[k].vertexAtoms!] : undefined;
+            groupEntityRefs[decorBase + k] = faces[k].atomKey ? data.faceMeta?.get(faces[k].atomKey)?.entity_ref : undefined;
         }
         decorBase += faceCount;
     }
     if (edgesEnabled) {
         for (let k = 0; k < edgeCount; k++) {
             groupAtoms[decorBase + k] = edgeList[k].atoms ? [...edgeList[k].atoms!] : undefined;
+            const key = edgeList[k].atoms ? edgeList[k].atoms!.slice().sort((x, y) => x - y).join(",") : undefined;
+            groupEntityRefs[decorBase + k] = key ? data.edgeMeta?.get(key)?.entity_ref : undefined;
         }
     }
     (data as any).__groupAtoms = groupAtoms;
+    (data as any).__groupEntityRefs = groupEntityRefs;
 
     return Shape.create(data.name, data, mesh, getColor, getSize, getLabel);
 }
@@ -3154,8 +3177,10 @@ export interface TetrahedraOptions {
         owner_id?: number | string;
         neighbor_id?: number | string;
         color?: number;
+        entity_ref?: unknown;
     }>;
-    edge_meta?: Array<{ atoms: number[]; edge_id?: number | string }>;
+    edge_meta?: Array<{ atoms: number[]; edge_id?: number | string; entity_ref?: unknown }>;
+    entity_refs?: unknown[];
     draw_edges?: boolean;
     edge_radius?: number;
     edge_color?: number;
@@ -3318,17 +3343,18 @@ function prepareTetrahedraData(plugin: PluginContext, options: TetrahedraOptions
                 owner_id: entry.owner_id,
                 neighbor_id: entry.neighbor_id,
                 color: typeof (entry as any).color === "number" ? (entry as any).color : undefined,
+                entity_ref: (entry as any).entity_ref,
             });
         }
     }
 
-    let edgeMeta: Map<string, { edge_id?: number | string }> | undefined;
+    let edgeMeta: Map<string, { edge_id?: number | string; entity_ref?: unknown }> | undefined;
     if (Array.isArray(options.edge_meta) && options.edge_meta.length > 0) {
-        edgeMeta = new Map<string, { edge_id?: number | string }>();
+        edgeMeta = new Map<string, { edge_id?: number | string; entity_ref?: unknown }>();
         for (const entry of options.edge_meta) {
             if (!entry || !Array.isArray(entry.atoms) || entry.atoms.length !== 2) continue;
             const key = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
-            edgeMeta.set(key, { edge_id: entry.edge_id });
+            edgeMeta.set(key, { edge_id: entry.edge_id, entity_ref: (entry as any).entity_ref });
         }
     }
 
@@ -3344,6 +3370,7 @@ function prepareTetrahedraData(plugin: PluginContext, options: TetrahedraOptions
         normals: normalsConfig,
         tag: options.tag,
         atom_indices: atomIndices,
+        entity_refs: Array.isArray(options.entity_refs) ? options.entity_refs : undefined,
     };
 }
 

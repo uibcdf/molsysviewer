@@ -5,6 +5,7 @@ import { PopupHostManager } from "../../src/managers/popup-host";
 
 function makePopupWindow() {
     const appended: any[] = [];
+    const blobs: any[] = [];
     const doc = {
         html: "",
         open() {},
@@ -32,6 +33,7 @@ function makePopupWindow() {
             constructor(parts: any[], options: any) {
                 this.parts = parts;
                 this.options = options;
+                blobs.push(this);
             }
         },
         URL: {
@@ -47,8 +49,44 @@ function makePopupWindow() {
         },
     };
 
-    return { popup, appended, doc };
+    return { popup, appended, doc, blobs };
 }
+
+test("popup host resolves source provider only when opening", async () => {
+    const previousWindow = (globalThis as any).window;
+    const { popup, appended, blobs } = makePopupWindow();
+    const order: string[] = [];
+
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab" },
+        open: () => {
+            order.push("open");
+            return popup;
+        },
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+
+    try {
+        const manager = new PopupHostManager({
+            sourceProvider: async () => {
+                order.push("provider");
+                return "export const lazy = true;";
+            },
+        });
+
+        assert.deepStrictEqual(order, []);
+        await manager.open();
+
+        assert.deepStrictEqual(order, ["open", "provider"]);
+        assert.strictEqual(blobs.length, 1);
+        assert.deepStrictEqual(blobs[0].parts, ["export const lazy = true;"]);
+        assert.strictEqual(appended.length, 1);
+        assert.match(appended[0].textContent, /blob:popup-runtime/);
+    } finally {
+        (globalThis as any).window = previousWindow;
+    }
+});
 
 test("popup host resolves moduleUrl and injects module bootstrap", async () => {
     const previousWindow = (globalThis as any).window;

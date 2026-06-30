@@ -5,6 +5,7 @@ import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 import {
     createMolSysViewerPluginSpec,
     normalizeContextInteractionEvent,
+    MolSysViewerController,
     normalizeInteractionEvent,
     registerInteractionObservers,
     resolveTooltipPayload,
@@ -36,6 +37,34 @@ test("normalizeInteractionEvent extracts shape metadata from shape loci", () => 
         atom_indices: [8, 9],
         shape_name: "Pocket Blob",
         tag: "pocket",
+    });
+});
+
+test("normalizeInteractionEvent preserves shape group entity refs", () => {
+    const entityRef = { kind: "topomt.face", id: 7, atoms: [8, 9, 10] };
+    assert.deepStrictEqual(normalizeInteractionEvent("click", {
+        current: {
+            loci: {
+                kind: "group-loci",
+                groups: [{ ids: [1] }],
+                shape: {
+                    name: "Topo Face",
+                    sourceData: {
+                        tag: "faces",
+                        atom_indices: [8, 9, 10, 11],
+                        __groupAtoms: [[8, 9, 11], [8, 9, 10]],
+                        __groupEntityRefs: [{ kind: "topomt.face", id: 6 }, entityRef],
+                    },
+                },
+            },
+        },
+    }), {
+        event: "interaction_click",
+        kind: "shape",
+        atom_indices: [8, 9, 10],
+        shape_name: "Topo Face",
+        tag: "faces",
+        entity_ref: entityRef,
     });
 });
 
@@ -102,6 +131,37 @@ test("normalizeContextInteractionEvent captures shape context targets", () => {
     });
 });
 
+test("normalizeContextInteractionEvent preserves shape group entity refs", () => {
+    const entityRef = { kind: "topomt.edge", id: "e-1", atoms: [8, 9] };
+    assert.deepStrictEqual(normalizeContextInteractionEvent({
+        current: {
+            loci: {
+                kind: "group-loci",
+                groups: [{ ids: [0] }],
+                shape: {
+                    name: "Topo Edge",
+                    sourceData: {
+                        tag: "edges",
+                        atom_indices: [8, 9, 10],
+                        __groupAtoms: [[8, 9]],
+                        __groupEntityRefs: [entityRef],
+                    },
+                },
+            },
+        },
+        page: [120, 240],
+    }), {
+        event: "interaction_context_menu",
+        kind: "shape",
+        atom_indices: [8, 9],
+        shape_name: "Topo Edge",
+        tag: "edges",
+        entity_ref: entityRef,
+        page_x: 120,
+        page_y: 240,
+    });
+});
+
 test("registerInteractionObservers forwards hover and click notifications", () => {
     const notifications: any[] = [];
     const menuEvents: any[] = [];
@@ -147,6 +207,64 @@ test("registerInteractionObservers forwards hover and click notifications", () =
     ]);
     assert.deepStrictEqual(menuEvents, [
         { event: "interaction_context_menu", kind: "structure", atom_indices: [7], page_x: 50, page_y: 60 },
+    ]);
+});
+
+test("MolSysViewerController rejects image export above WebGL limits before screenshot allocation", async () => {
+    let screenshotCalled = false;
+    const gl: any = {
+        drawingBufferWidth: 800,
+        drawingBufferHeight: 600,
+        MAX_RENDERBUFFER_SIZE: 0x84E8,
+        MAX_VIEWPORT_DIMS: 0x0D3A,
+        getParameter(param: number) {
+            if (param === this.MAX_RENDERBUFFER_SIZE) return 4096;
+            if (param === this.MAX_VIEWPORT_DIMS) return [4096, 4096];
+            return undefined;
+        },
+    };
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    controller.plugin = {
+        canvas3d: { webgl: { gl } },
+        helpers: {
+            viewportScreenshot: {
+                values: {},
+                behaviors: { values: { next() { screenshotCalled = true; } } },
+                async getImageDataUri() { screenshotCalled = true; return "data:image/png;base64,ok"; },
+            },
+        },
+    };
+
+    const result = await controller.getImageDataUri({ width: 3000, height: 2000, scale: 2, transparent: true });
+
+    assert.strictEqual(screenshotCalled, false);
+    assert.deepStrictEqual(result, {
+        success: false,
+        error_type: "GPU_LIMIT_EXCEEDED",
+        message: "Requested image export size 6000x4000px exceeds WebGL GPU limits (MAX_RENDERBUFFER_SIZE=4096, MAX_VIEWPORT_DIMS=4096x4096). Reduce width, height, or scale.",
+        requested_width: 6000,
+        requested_height: 4000,
+        max_renderbuffer_size: 4096,
+        max_viewport_width: 4096,
+        max_viewport_height: 4096,
+    });
+});
+
+test("MolSysViewerController debounces hover notifications to Python", async () => {
+    const notifications: any[] = [];
+    const controller: any = Object.create(MolSysViewerController.prototype);
+    controller.notify = (msg: any) => notifications.push(msg);
+    controller.pendingHoverPayload = null;
+    controller.hoverDebounceTimer = null;
+    controller.hoverDebounceMs = 10;
+
+    controller.emitDebouncedHover({ event: "interaction_hover", kind: "structure", atom_indices: [1] });
+    controller.emitDebouncedHover({ event: "interaction_hover", kind: "structure", atom_indices: [2] });
+
+    assert.deepStrictEqual(notifications, []);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    assert.deepStrictEqual(notifications, [
+        { event: "interaction_hover", kind: "structure", atom_indices: [2] },
     ]);
 });
 

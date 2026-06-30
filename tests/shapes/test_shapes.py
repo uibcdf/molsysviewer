@@ -349,6 +349,41 @@ def test_triangle_face_shape_supports_rich_mutators_and_replay_state():
     assert exported[0]["options"]["layer_tag"] == "surfaces"
 
 
+
+def test_triangle_face_shape_preserves_entity_refs_in_payload():
+    view = MolSysView()
+    entity_refs = [
+        {"kind": "topomt.face", "id": "f-1", "atoms": [0, 1, 2]},
+        {"kind": "topomt.face", "id": "f-2", "atoms": [3, 4, 5]},
+    ]
+
+    view.shapes.add_triangle_faces(
+        vertices=puw.quantity(
+            [
+                [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
+                [[0.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0]],
+            ],
+            "nm",
+        ),
+        entity_refs=entity_refs,
+        tag="triangles_refs",
+    )
+
+    assert view._shape_history[0]["options"]["entity_refs"] == entity_refs  # noqa: SLF001
+
+    with pytest.raises(ValueError, match="Expected 2 entity_refs"):
+        view.shapes.add_triangle_faces(
+            vertices=puw.quantity(
+                [
+                    [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
+                    [[0.0, 0.0, 1.0], [1.0, 0.0, 1.0], [0.0, 1.0, 1.0]],
+                ],
+                "nm",
+            ),
+            entity_refs=[{"kind": "topomt.face", "id": "f-1"}],
+        )
+
+
 def test_channel_tube_shape_supports_rich_mutators_and_replay_state():
     view = MolSysView()
     layer = view.shapes.add_channel_tube(
@@ -448,6 +483,53 @@ def test_tetrahedra_shape_supports_rich_mutators_and_replay_state():
     assert exported[0]["options"]["alphas"] == 0.9
     assert exported[0]["options"]["colors"] == [0xCCCCCC, 0xDDDDDD]
     assert exported[0]["options"]["layer_tag"] == "polyhedra"
+
+
+
+def test_tetrahedra_shape_preserves_entity_refs_and_face_edge_refs_in_payload():
+    view = MolSysView()
+    entity_refs = [{"kind": "topomt.tetra", "id": 1}]
+    face_meta = [{"atoms": [0, 1, 2], "face_id": "f-1", "entity_ref": {"kind": "topomt.face", "id": "f-1"}}]
+    edge_meta = [{"atoms": [0, 1], "edge_id": "e-1", "entity_ref": {"kind": "topomt.edge", "id": "e-1"}}]
+
+    view.shapes.add_tetrahedra(
+        tetra_coords=puw.quantity(
+            [
+                [
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
+            ],
+            "nm",
+        ),
+        entity_refs=entity_refs,
+        face_meta=face_meta,
+        edge_meta=edge_meta,
+        tag="tetra_refs",
+    )
+
+    options = view._shape_history[0]["options"]  # noqa: SLF001
+    assert options["entity_refs"] == entity_refs
+    assert options["face_meta"] == face_meta
+    assert options["edge_meta"] == edge_meta
+
+    with pytest.raises(ValueError, match="Expected 1 entity_refs"):
+        view.shapes.add_tetrahedra(
+            tetra_coords=puw.quantity(
+                [
+                    [
+                        [0.0, 0.0, 0.0],
+                        [1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0],
+                    ],
+                ],
+                "nm",
+            ),
+            entity_refs=[],
+        )
 
 
 def test_anisotropy_shape_supports_rich_mutators_and_replay_state():

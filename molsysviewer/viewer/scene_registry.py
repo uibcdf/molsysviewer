@@ -16,6 +16,9 @@ class SceneRegistryMixin:
         self._layers[new_tag] = layer
 
     def _unregister_scene_object(self, tag: str) -> None:
+        status = getattr(self, "_shape_render_status", None)
+        if isinstance(status, dict):
+            status.pop(tag, None)
         obj = self._scene_objects.pop(tag, None)
         if obj is None:
             return
