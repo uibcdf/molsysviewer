@@ -143,6 +143,7 @@ export class ViewerContextMenu {
         isDarkMode?: boolean;
         isNavigateExpanded?: boolean;
         isWorkbenchExpanded?: boolean;
+        isCanvasVisible?: boolean;
         currentViewerMode?: string;
     } | null = null;
 
@@ -335,7 +336,7 @@ export class ViewerContextMenu {
             });
             this.scrollEl.appendChild(modeHeader);
 
-            const modes = ["classic", "classic-floating", "zen", "integrated", "ambient", "focus", "split"];
+            const modes = ["classic", "integrated", "cinema"];
             for (const mode of modes) {
                 const label = mode + (activeMode === mode ? " (Active ✓)" : "");
                 this.scrollEl.appendChild(this.makeActionButton(label, "set_viewer_mode", { text: mode }));

@@ -15,7 +15,9 @@ from depdigest import dep_digest
 
 from .._pyunitwizard import puw
 from .._private.arg_digestion import digest
+from .._private.arg_digestion.argument.viewer_mode import digest_viewer_mode
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from .._private.smonitor_emit import emit_suppressed_exception
 from .._private.variables import is_all
 from ..widget import MolSysViewerWidget
 from ..loaders import load_from_molsysmt as _load_from_molsysmt
@@ -218,6 +220,8 @@ class MolSysView(
         self._measurement_history: list[dict] = []
         self._section_history: list[dict] = []
         self._selection_history: list[dict] = []
+        self._scene_look: dict[str, dict] = {}
+        self._player_state: dict[str, Any] = {}
         self._last_label: str | None = None
         self._empty = True
         self._load_blocks: list[dict[str, Any]] = []
@@ -303,16 +307,15 @@ class MolSysView(
 
     def _apply_view_modes(self, viewer_mode: str | None = None, controls_mode: str | None = None, panel_mode_style: str | None = None) -> None:
 
-        # Resolve viewer_mode, controls_mode, and panel_mode_style presets
+        # Resolve viewer_mode, controls_mode, and panel_mode_style presets.
+        # viewer_mode is intentionally limited to three high-level presets. The
+        # ambient/split layouts that older presets exposed are still reachable
+        # at runtime through panel_mode_style and the floating panel lock/dock
+        # buttons; they are fused into "integrated", not separate viewer modes.
         presets = {
             "classic": ("classic", "drawer"),
-            "classic-floating": ("classic", "floating"),
-            "zen": ("minimal", "floating"),
             "integrated": ("minimal", "integrated"),
-            "ambient": ("minimal", "ambient"),
             "cinema": ("cinema", "integrated"),
-            "focus": ("cinema", "integrated"), # Map legacy focus to cinema
-            "split": ("minimal", "split"),
         }
 
         # Retrieve values from config, falling back to defaults if not present
@@ -320,7 +323,11 @@ class MolSysView(
         cfg_controls_mode = getattr(config, "controls_mode", "classic")
         cfg_panel_mode_style = getattr(config, "panel_mode_style", "drawer")
 
-        # 1. Resolve viewer_mode
+        # 1. Resolve viewer_mode. An explicitly requested viewer_mode is validated
+        # strictly (removed presets raise instead of silently coercing); a stale or
+        # unknown config value falls back to "classic" defensively.
+        if viewer_mode is not None:
+            viewer_mode = digest_viewer_mode(viewer_mode)
         v_mode = viewer_mode if viewer_mode is not None else cfg_viewer_mode
         if v_mode not in presets:
             v_mode = "classic"
@@ -717,8 +724,12 @@ class MolSysView(
                     enriched["entity_indices"] = entity_indices
                     enriched["count_groups"] = len(group_indices)
                     enriched["count_atoms"] = len(orig_atoms)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    emit_suppressed_exception(
+                        "MolSysView._handle_frontend_event.active_selection_metadata",
+                        exc,
+                        context={"event": event},
+                    )
             else:
                 if "count_atoms" in content:
                     enriched["count_atoms"] = len(orig_atoms)
@@ -728,8 +739,12 @@ class MolSysView(
             if addons is not None and hasattr(addons, "refresh_context_items"):
                 try:
                     addons.refresh_context_items(enriched)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    emit_suppressed_exception(
+                        "MolSysView._handle_frontend_event.addon_context_refresh",
+                        exc,
+                        context={"event": event},
+                    )
         elif event == "interaction_tool_state":
             self._last_tool_state_event = dict(content)
         elif event == "interaction_measurement_created":
@@ -748,7 +763,8 @@ class MolSysView(
                 if mapped is not None:
                     orig_frame = mapped
             self._current_structure_index = int(orig_frame)
-            self.player._is_playing = False  # noqa: SLF001  # keep Python flag in sync
+            self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
+            self.player._store_state()  # noqa: SLF001
             if self._box_record is not None:
                 self.show_box(
                     color=self._box_record["color"],
@@ -1049,10 +1065,15 @@ class MolSysView(
                 self.atom_mask[keep] = True
 
         if atom_index_map is not None:
-            for region in self._regions.values():
+            for tag, region in list(self._regions.items()):
                 if region.atom_indices is None:
                     continue
-                region.atom_indices = tuple(self._remap_indices(list(region.atom_indices), atom_index_map))
+                remapped_atom_indices = self._remap_indices(list(region.atom_indices), atom_index_map)
+                if len(remapped_atom_indices) == 0:
+                    region._active = False  # noqa: SLF001
+                    self._unregister_region(tag)
+                    continue
+                region.atom_indices = tuple(remapped_atom_indices)
 
         # Rebuild the message history to reflect the new state (important for HTML exports).
         self._message_history = []
@@ -1104,6 +1125,9 @@ class MolSysView(
         for msg in self._shape_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
             if remapped is None:
+                tag = self._tag_from_message(msg)
+                if tag is not None:
+                    self._unregister_scene_object(tag)
                 continue
             new_shape_history.append(remapped)
             self._send_replay(remapped)
@@ -1113,6 +1137,9 @@ class MolSysView(
         for msg in self._annotation_history:
             remapped = self._remap_shape_message(msg, atom_index_map)
             if remapped is None:
+                tag = self._tag_from_message(msg)
+                if tag is not None:
+                    self._unregister_scene_object(tag)
                 continue
             new_annotation_history.append(remapped)
             self._send_replay(remapped)
@@ -1122,10 +1149,21 @@ class MolSysView(
         for msg in self._measurement_history:
             remapped = self._remap_measurement_message(msg, atom_index_map)
             if remapped is None:
+                tag = self._tag_from_message(msg)
+                if tag is not None:
+                    self._unregister_scene_object(tag)
                 continue
             new_measurement_history.append(remapped)
             self._send_replay(remapped)
         self._measurement_history = new_measurement_history
+
+        if atom_index_map is not None:
+            remapped_scene_look: dict[str, dict] = {}
+            for key, msg in self._scene_look.items():
+                remapped = self._remap_scene_look_message(msg, atom_index_map)
+                if remapped is not None:
+                    remapped_scene_look[key] = remapped
+            self._scene_look = remapped_scene_look
 
         rewritten_selections: list[dict] = []
         for msg in self._selection_history:
@@ -1141,7 +1179,43 @@ class MolSysView(
             if any(record.get("tag") == tag for record in self._selection_history)
         }
 
+        for msg in self._scene_look.values():
+            self._send_replay(dict(msg))
+
+        for msg in self._player_replay_messages():
+            self._send_replay(msg)
+
         self._update_visibility_in_frontend()
+
+    def _local_structure_index_for_player(self) -> int:
+        index = int(self._current_structure_index)
+        if self._index_mapper is not None:
+            mapped = self._index_mapper.to_local_structure(index)
+            if mapped is not None:
+                return int(mapped)
+        return index
+
+    def _player_replay_messages(self) -> list[dict]:
+        messages: list[dict] = []
+        if self._current_structure_index != 0:
+            messages.append(
+                {
+                    "op": "set_trajectory_frame",
+                    "index": self._local_structure_index_for_player(),
+                }
+            )
+        if self._player_state:
+            playback = {
+                "op": "set_trajectory_playback",
+                "fps": int(self._player_state.get("fps", 30)),
+                "mode": str(self._player_state.get("mode", "loop")),
+                "direction": str(self._player_state.get("direction", "forward")),
+                "step": int(self._player_state.get("step", 1)),
+            }
+            if self._player_state.get("is_playing"):
+                playback["action"] = "play"
+            messages.append(playback)
+        return messages
 
     def _reset_load_blocks(self) -> None:
         self._load_blocks = []
