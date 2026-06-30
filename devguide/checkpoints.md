@@ -38,6 +38,16 @@ remaining work depends on the upstream MolSysMT contract for SDF/MOL2 bond
 order, aromaticity/type, partial charge, molecule/component metadata, and custom
 SDF property blocks.
 
+### Recently closed: SMonitor signal passthrough robustness
+
+`smonitor_signal_decorator_leak.md` was implemented and removed. The reusable
+fix lives upstream in `../smonitor`: `@smonitor.signal` now preserves wrapped
+function signatures and return values while isolating instrumentation failures in
+`extra_factory`, event emission, profiling/slow-signal finalization, and frame
+push/pop. MolSysViewer added regression coverage for real fluent API paths
+(`view.shapes.add_sphere(...).set_color(...)` and region representation updates)
+with SMonitor enabled and disabled.
+
 ### Recently closed: frontend backend-error acknowledgments
 
 `silent_exception_desync.md` was implemented and removed. Interactive frontend
@@ -128,7 +138,7 @@ and `structures_atom_pairs`, preserving live frames as remapped indices and
 dropping fully orphaned dynamic shapes.
 
 `devguide/pending_proposals/` now holds an extensive robustness/quality backlog
-(12 files). It mixes earlier visualization/addon proposals with a recent
+(11 files). It mixes earlier visualization/addon proposals with a recent
 code-review pass focused on consistency, conceptual gaps, maintainability, and
 performance. Highlights from that review (not yet implemented):
 
