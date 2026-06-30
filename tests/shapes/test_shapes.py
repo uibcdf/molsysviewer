@@ -3,6 +3,7 @@ import pyunitwizard as puw
 import molsysviewer._pyunitwizard  # noqa: F401 — configures puw
 
 from molsysviewer import MolSysView
+from molsysviewer.layers import Shape, _bounding_sphere_nm
 from molsysviewer.shapes import ShapesManager, SphereShapes
 
 
@@ -22,6 +23,36 @@ class DummyView:
     def _next_shape_tag(self):
         self._layer_counter += 1
         return f"shape-{self._layer_counter}"
+
+
+
+def test_bounding_sphere_empty_points_returns_scene_fallback():
+    center, radius = _bounding_sphere_nm([])
+
+    assert center == [0.0, 0.0, 0.0]
+    assert radius == 4.0
+
+
+def test_empty_shape_focus_warns_and_zooms_scene_center():
+    view = MolSysView()
+    shape = Shape(view, "empty")
+    view._scene_objects["empty"] = shape  # noqa: SLF001
+    view._shape_history.append(  # noqa: SLF001
+        {
+            "op": "add_channel_tube",
+            "options": {"tag": "empty", "layer_tag": "empty", "centers": []},
+        }
+    )
+
+    with pytest.warns(UserWarning, match="empty shape .empty."):
+        shape.focus(duration_ms=0, extra_radius=0.5)
+
+    assert view._message_history[-1] == {  # noqa: SLF001
+        "op": "zoom_to_position",
+        "center": [0.0, 0.0, 0.0],
+        "radius": 45.0,
+        "duration_ms": 0,
+    }
 
 
 def test_shapes_exports_and_delegation(monkeypatch):

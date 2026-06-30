@@ -260,3 +260,16 @@ def test_trajectory_frame_rendered_transaction_ack():
     fail = view.wait_for_transaction("tx-nonexistent", timeout_s=0.01)
     assert fail is False
 
+def test_trajectory_frame_changed_syncs_player_index_and_play_state():
+    view = MolSysView()
+
+    view._handle_frontend_event({"event": "trajectory_frame_changed", "frame": 4, "is_playing": True})  # noqa: SLF001
+    assert view.player.index == 4
+    assert view.player.is_playing is True
+    assert view._player_state["is_playing"] is True  # noqa: SLF001
+
+    view._handle_frontend_event({"event": "trajectory_frame_changed", "frame": 7})  # noqa: SLF001
+    assert view.player.index == 7
+    assert view.player.is_playing is False
+    assert view._player_state["is_playing"] is False  # noqa: SLF001
+

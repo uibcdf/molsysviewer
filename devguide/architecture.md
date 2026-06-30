@@ -8,6 +8,7 @@ We use `anywidget` to embed Mol* inside Jupyter environments.
 
 - **State Management**: Python is the source of truth for the loaded molecular system, regions, layers, live-edit state, and exportable message history.
 - **Messaging**: communication is asynchronous and operation-based (`op`). Python sends commands like `load_molsys_payload`, `set_region_representation`, `update_visibility`, or shape ops.
+- **MolSys payload vocabulary**: `residue_id` / `residue_name` are intentional in the Python → TypeScript payload. The TS loader materializes them as Mol*/mmCIF `atom_site` columns (`label_seq_id`, `auth_seq_id`, `label_comp_id`, `auth_comp_id`). This is only a wire-boundary translation from MolSysSuite `group_id` / `group_name`; public Python APIs and interaction payloads keep the `group_*` vocabulary.
 - **Latency Handling**: if the frontend is not ready, messages are queued in `MolSysView._pending_messages` and flushed upon the `ready` event.
 - **Replayability**: Python keeps `_message_history` and `_shape_history` so standalone HTML exports, popup bootstrap, and rebuild flows can replay externally visible state.
 

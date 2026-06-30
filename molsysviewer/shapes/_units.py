@@ -7,7 +7,12 @@ nanometers (e.g. already-digested internal values); PyUnitWizard quantities keep
 their own unit and are converted from it.
 """
 
+import numpy as np
+
 from molsysviewer import pyunitwizard as puw
+
+
+_NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
 
 def to_wire_angstroms(value):
@@ -19,5 +24,6 @@ def to_wire_angstroms(value):
     if value is None:
         return None
     if not puw.is_quantity(value):
-        value = puw.quantity(value, "nm")
+        converted = np.asarray(value, dtype=float) * _NM_TO_ANGSTROM
+        return float(converted) if converted.ndim == 0 else converted
     return puw.get_value(value, to_unit="angstroms")

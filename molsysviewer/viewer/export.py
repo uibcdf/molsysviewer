@@ -18,6 +18,17 @@ class ExportMixin:
                 continue
             messages.append(self._with_export_layer_tag(msg))
             existing_measurements.add(key)
+        existing_scene_look = {
+            self._SCENE_LOOK_KEYS.get(msg.get("op"))
+            for msg in messages
+            if msg.get("op") in self._SCENE_LOOK_KEYS
+        }
+        for key, msg in self._scene_look.items():
+            if key not in existing_scene_look:
+                messages.append(dict(msg))
+                existing_scene_look.add(key)
+        for msg in self._player_replay_messages():
+            messages.append(msg)
         if self._current_figure_spec:
             messages.append(dict(self._current_figure_spec))
         summary_message = self._build_addon_runtime_summary_message()

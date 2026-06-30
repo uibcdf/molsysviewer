@@ -22,11 +22,20 @@ Guidelines
 
 When loading MolSysMT-native systems, Python sends a stable payload:
 
+- top-level `atoms` object
 - top-level `structures` list
 - each structure:
   - `coordinates` in Å
   - optional `box` as three vectors in Å
   - optional `time`
+
+Atom vocabulary at this boundary deliberately follows the Mol*/mmCIF builder where needed.
+In particular, MolSysSuite `group_id` / `group_name` are serialized as `residue_id` /
+`residue_name` because TypeScript maps them to `atom_site.label_seq_id`,
+`atom_site.auth_seq_id`, `atom_site.label_comp_id`, and `atom_site.auth_comp_id`.
+This is a wire-format translation only: Python APIs and JS interaction events keep using
+MolSysSuite `group_*` vocabulary. Do not rename these payload fields to `group_*` without
+changing the Mol* atom_site construction contract.
 
 Do not reintroduce legacy names such as `positions` or `frames`.
 

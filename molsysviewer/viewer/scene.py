@@ -17,6 +17,8 @@ from .signals import (
     camera_snapshot_extra as _camera_snapshot_extra,
 )
 
+_NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
+
 
 class SceneMixin:
     _BOX_TAG = "__msv_box"
@@ -49,7 +51,7 @@ class SceneMixin:
             box_nm = box_nm[sidx]  # shape (3, 3)
 
         # Convert nm → Å
-        box_a = box_nm * 10.0  # (3, 3) in Å
+        box_a = box_nm * _NM_TO_ANGSTROM  # (3, 3) in Å
         a, b, c = box_a[0], box_a[1], box_a[2]
 
         # Build 8 vertices
@@ -381,7 +383,7 @@ class SceneMixin:
         coords_arr = np.atleast_2d(coords_nm)
         if coords_arr.ndim == 3:
             coords_arr = coords_arr[0]
-        coords_ang = (coords_arr * 10.0).tolist()
+        coords_ang = (coords_arr * _NM_TO_ANGSTROM).tolist()
 
         remapped_indices = list(atom_indices)
         if self._index_mapper is not None:
@@ -424,6 +426,9 @@ class SceneMixin:
         self._measurement_history.clear()
         self._section_history.clear()
         self._selection_history.clear()
+        self._scene_look.clear()
+        self._player_state.clear()
+        self.player._reset_state()  # noqa: SLF001
         self._last_label = None
         self._current_figure_spec = None
         self._current_structure_index = 0

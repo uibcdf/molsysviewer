@@ -30,3 +30,23 @@ def message_from_catalog(
         return message or (default_message or "")
     except Exception:
         return default_message or ""
+
+
+def emit_suppressed_exception(
+    location: str,
+    exc: BaseException,
+    *,
+    context: Optional[Dict[str, Any]] = None,
+) -> str:
+    extra: Dict[str, Any] = {
+        "location": str(location),
+        "exception_type": type(exc).__name__,
+        "reason": str(exc),
+    }
+    if context:
+        extra.update(context)
+    return message_from_catalog(
+        "suppressed_exception",
+        extra=extra,
+        default_message=f"Recovered from suppressed exception in {location}: {exc}.",
+    )

@@ -371,6 +371,33 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     assert visibility_msg["options"]["visible_atom_indices"] == list(range(21))
 
 
+
+def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.new_region(atom_indices=[0], tag="orphan-region", skip_digestion=True)
+    view.shapes.add_pocket_surface(atom_indices=[0], tag="orphan-shape", skip_digestion=True)
+    view.annotations.add_annotation(text="orphan", atom_indices=[0], tag="orphan-label", skip_digestion=True)
+    view.measurements.add_distance([0], [1], tag="orphan-distance", skip_digestion=True)
+
+    view.remove(selection=[0], skip_digestion=True)
+
+    assert "orphan-region" not in list(view.regions)
+    assert "orphan-shape" not in view.shapes.tags(skip_digestion=True)
+    assert "orphan-label" not in view.annotations.tags
+    assert "orphan-distance" not in view.measurements.tags(skip_digestion=True)
+    assert "orphan-shape" not in view._scene_objects  # noqa: SLF001
+    assert "orphan-label" not in view._scene_objects  # noqa: SLF001
+    assert "orphan-distance" not in view._scene_objects  # noqa: SLF001
+
+    assert not any(msg.get("tag") == "orphan-region" for msg in view._message_history)  # noqa: SLF001
+    assert not any(
+        msg.get("options", {}).get("tag") in {"orphan-shape", "orphan-label", "orphan-distance"}
+        for msg in view._message_history  # noqa: SLF001
+    )
+
+
 def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
     monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
 

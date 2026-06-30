@@ -7,10 +7,13 @@ import molsysmt as msm
 from smonitor import signal
 
 from ._private.arg_digestion import digest
+from ._private.smonitor_emit import emit_suppressed_exception
 from .layers import Layer, Measurement
 from . import pyunitwizard as puw
 
 _MEASUREMENT_POLICIES = {"atom", "centroid", "representative_atom"}
+_NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
+
 _REPRESENTATIVE_DEFAULTS = {
     "protein": "CA",
     "nucleic": "P",
@@ -98,7 +101,12 @@ class MeasurementsManager:
                 group_type=True,
                 skip_digestion=True,
             )
-        except Exception:
+        except Exception as exc:
+            emit_suppressed_exception(
+                "MeasurementsManager._atom_metadata_for_pick",
+                exc,
+                context={"atom_indices": repr(atom_indices)},
+            )
             return {"atom_name": [], "group_name": [], "group_type": []}
         atom_names = list(values.get("atom_name", []) or [])
         group_names = list(values.get("group_name", []) or [])
@@ -270,7 +278,12 @@ class MeasurementsManager:
             if arr.ndim != 3 or arr.shape[-1] != 3:
                 return None
             return arr.mean(axis=1)
-        except Exception:
+        except Exception as exc:
+            emit_suppressed_exception(
+                "MeasurementsManager._endpoint_positions_nm",
+                exc,
+                context={"pick": repr(pick), "endpoint_atom_indices": repr(ea_indices), "policy": policy},
+            )
             return None
 
     def _compute_measurement_series(
@@ -294,7 +307,7 @@ class MeasurementsManager:
                 return None
             positions = [pos[:frame_count] for pos in positions]
             if op == "add_distance_measurement" and len(positions) == 2:
-                return np.linalg.norm(positions[1] - positions[0], axis=1) * 10.0  # nm -> Å
+                return np.linalg.norm(positions[1] - positions[0], axis=1) * _NM_TO_ANGSTROM  # nm -> Å
             if op == "add_angle_measurement" and len(positions) == 3:
                 v1 = positions[0] - positions[1]
                 v2 = positions[2] - positions[1]
@@ -323,7 +336,12 @@ class MeasurementsManager:
                     y = np.dot(m1, n2)
                     values.append(float(np.degrees(np.arctan2(y, x))))
                 return np.asarray(values, dtype=float)
-        except Exception:
+        except Exception as exc:
+            emit_suppressed_exception(
+                "MeasurementsManager._compute_measurement_series",
+                exc,
+                context={"op": op, "endpoint_policy": endpoint_policy},
+            )
             return None
         return None
 

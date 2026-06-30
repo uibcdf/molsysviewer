@@ -4,6 +4,8 @@ __name__ = "molsysviewer.viewer.core"
 
 from typing import Any
 
+from .._private.smonitor_emit import emit_suppressed_exception
+
 
 class StateMixin:
     def export_state(self) -> dict:
@@ -76,8 +78,12 @@ class StateMixin:
             for tag in list(self._regions):
                 try:
                     self._regions[tag].delete(skip_digestion=True)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    emit_suppressed_exception(
+                        "StateMixin.import_state.clear_region",
+                        exc,
+                        context={"tag": tag},
+                    )
 
         for msg in state.get("annotations", []):
             if isinstance(msg, dict) and msg.get("op") == "add_label":
@@ -102,8 +108,12 @@ class StateMixin:
                 if tag and isinstance(atom_indices, list) and len(atom_indices) > 0:
                     try:
                         self.new_region(atom_indices=atom_indices, tag=tag, skip_digestion=True)
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        emit_suppressed_exception(
+                            "StateMixin.import_state.restore_region",
+                            exc,
+                            context={"tag": tag, "atom_count": len(atom_indices)},
+                        )
 
 
 StateMixin.__module__ = "molsysviewer.viewer"
@@ -111,6 +121,10 @@ for _name, _value in StateMixin.__dict__.items():
     if callable(_value):
         try:
             _value.__module__ = "molsysviewer.viewer"
-        except Exception:
-            pass
+        except Exception as exc:
+            emit_suppressed_exception(
+                "StateMixin.__module_assignment__",
+                exc,
+                context={"callable": _name},
+            )
 

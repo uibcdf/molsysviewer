@@ -11,6 +11,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "anywidget>=0.9.15",
+  "packaging>=23",
   "smonitor",
   "traitlets>=5",
 ]

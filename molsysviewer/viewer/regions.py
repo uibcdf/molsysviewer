@@ -10,6 +10,7 @@ from smonitor import signal
 from depdigest import dep_digest
 
 from .._private.arg_digestion import digest
+from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
 from .representations import normalize_representation_type
 from .presets import normalize_representation_preset, resolve_user_preset
@@ -63,7 +64,12 @@ class RegionsMixin:
                 string=template,
                 skip_digestion=True,
             )
-        except Exception:
+        except Exception as exc:
+            emit_suppressed_exception(
+                "RegionsMixin._label_for_split_region",
+                exc,
+                context={"element": element, "item_index": item_index},
+            )
             return None
         if isinstance(label, str) and label.strip():
             return label
@@ -107,7 +113,12 @@ class RegionsMixin:
         for atom_index, item_index in zip(atom_indices, raw_indices):
             try:
                 normalized_index = int(item_index)
-            except Exception:
+            except Exception as exc:
+                emit_suppressed_exception(
+                    "RegionsMixin._split_into_regions.index_normalization",
+                    exc,
+                    context={"element": element_label, "value": repr(item_index)},
+                )
                 continue
             bucket = buckets.setdefault(normalized_index, {"atom_indices": []})
             bucket["atom_indices"].append(int(atom_index))
@@ -362,6 +373,10 @@ for _name, _value in RegionsMixin.__dict__.items():
     if callable(_value):
         try:
             _value.__module__ = "molsysviewer.viewer"
-        except Exception:
-            pass
+        except Exception as exc:
+            emit_suppressed_exception(
+                "RegionsMixin.__module_assignment__",
+                exc,
+                context={"callable": _name},
+            )
 
