@@ -8,11 +8,23 @@ class FakeElement {
     public readonly children: FakeElement[] = [];
     public textContent = "";
     public parentElement: FakeElement | null = null;
+    public readonly attributes: Record<string, string> = {};
+
+    setAttribute(name: string, value: string) {
+        this.attributes[name] = value;
+    }
 
     appendChild(child: FakeElement) {
         child.parentElement = this;
         this.children.push(child);
         return child;
+    }
+
+    remove() {
+        if (!this.parentElement) return;
+        const index = this.parentElement.children.indexOf(this);
+        if (index >= 0) this.parentElement.children.splice(index, 1);
+        this.parentElement = null;
     }
 }
 
@@ -80,6 +92,32 @@ test("addon panel render cleanup runs before widget host unmount", async () => {
         assert.deepStrictEqual(events, ["cleanup", "unmount"]);
     } finally {
         delete (globalThis as any).__msvAddonCleanupEvents;
+        restore();
+    }
+});
+
+
+test("backend error ack shows a frontend toast", async () => {
+    const restore = installFakeDom();
+    try {
+        const controller: any = Object.create(MolSysViewerController.prototype);
+        const host = new FakeElement();
+        controller.host = host;
+        controller.applyWorkbenchMessage = () => {};
+        controller.refreshNavigatePanel = () => {};
+        controller.refreshWorkbenchPanel = () => {};
+        controller.syncStripOverlaysForMessage = () => {};
+
+        await controller.handleMessage({
+            op: "backend_error_occurred",
+            error_type: "ValueError",
+            error_message: "No region found with tag 'missing'.",
+        });
+
+        assert.strictEqual(host.children.length, 1);
+        assert.strictEqual(host.children[0].attributes["data-molsysviewer-toast"], "true");
+        assert.strictEqual(host.children[0].textContent, "ValueError: No region found with tag 'missing'.");
+    } finally {
         restore();
     }
 });

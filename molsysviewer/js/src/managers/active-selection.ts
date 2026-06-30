@@ -42,6 +42,7 @@ export type ActiveSelectionItem = {
     chain_indices: number[];
     molecule_indices?: number[];
     entity_indices: number[];
+    entity_ref?: unknown;
 };
 
 /**
@@ -279,6 +280,7 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
     // the shape exposes them (face -> its 3, edge -> 2, tetra -> 4) so clicking a
     // sub-element selects only that simplex, not the entire shape.
     let atomIndices = arrayOfNumbers(data.atom_indices);
+    let entityRef: unknown = undefined;
     if (ShapeGroup.isLoci(rawLoci) && rawLoci.groups.length > 0) {
         try {
             const groupIdx = OrderedSet.getAt(rawLoci.groups[0].ids, 0);
@@ -288,6 +290,12 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
             const perGroup = (data as any).__groupAtoms;
             if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
                 atomIndices = arrayOfNumbers(perGroup[groupIdx]);
+            }
+            const perGroupEntityRefs = (data as any).__groupEntityRefs;
+            if (Array.isArray(perGroupEntityRefs) && perGroupEntityRefs[groupIdx] !== undefined) {
+                entityRef = perGroupEntityRefs[groupIdx];
+            } else if (Array.isArray((data as any).entity_refs) && (data as any).entity_refs[groupIdx] !== undefined) {
+                entityRef = (data as any).entity_refs[groupIdx];
             }
         } catch (e) {
             console.warn("[MolSysViewer] Error getting shape group label:", e);
@@ -303,6 +311,7 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
         group_indices: arrayOfNumbers(data.group_indices),
         chain_indices: arrayOfNumbers(data.chain_indices),
         entity_indices: arrayOfNumbers(data.entity_indices),
+        ...(entityRef !== undefined ? { entity_ref: entityRef } : {}),
     };
     // Keep the picked loci alongside the item for persistent shape-group
     // highlighting (consumed by syncVisualSelection). Non-enumerable so it does

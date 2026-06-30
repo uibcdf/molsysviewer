@@ -5,12 +5,13 @@ import json
 import re
 import time
 import inspect
+import warnings
 from typing import Any, Dict, Mapping, Sequence
 
 import molsysmt as msm
 import numpy as np
 from smonitor import signal
-from smonitor.integrations import emit_from_catalog
+from smonitor.integrations import context_extra, emit_from_catalog
 from depdigest import dep_digest
 
 from .._pyunitwizard import puw
@@ -215,6 +216,7 @@ class MolSysView(
         self._last_tool_state_event: dict | None = None
         self._last_measurement_created_event: dict | None = None
         self._last_panel_mode_state_event: dict | None = None
+        self._shape_render_status: dict[str, dict] = {}
         self._shape_history: list[dict] = []
         self._annotation_history: list[dict] = []
         self._measurement_history: list[dict] = []
@@ -390,6 +392,59 @@ class MolSysView(
         """
         self._send_to_frontend({"op": "set_canvas_visibility", "visible": bool(visible)})
 
+    def _send_backend_error_ack(self, content: Mapping[str, Any], exc: Exception) -> None:
+        event = content.get("event")
+        action = content.get("action")
+        error_payload = {
+            "op": "backend_error_occurred",
+            "trigger_event": event,
+            "action": action,
+            "error_type": type(exc).__name__,
+            "error_message": str(exc),
+        }
+        try:
+            emit_from_catalog(
+                CATALOG["frontend_action_failed"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+                extra=context_extra(
+                    caller="molsysviewer.viewer._handle_frontend_event",
+                    operation="frontend-interaction-action",
+                    failure_class="frontend_backend_desync",
+                    last_failure_reason=str(exc),
+                    cause_exception_type=type(exc).__name__,
+                    incident_kind="frontend_action_failed",
+                    severity="error",
+                    priority="normal",
+                    diagnostic_confidence="high",
+                    recommended_action="surface-error-to-user-and-preserve-python-state",
+                    next_step="inspect-backend_error_occurred-payload",
+                    retryable=False,
+                    support_needed=False,
+                    evidence={
+                        "event": event,
+                        "action": action,
+                        "tag": content.get("tag"),
+                        "payload_keys": sorted(str(key) for key in content.keys()),
+                    },
+                    extra={
+                        "event": event,
+                        "action": action,
+                        "error_type": type(exc).__name__,
+                        "error_message": str(exc),
+                    },
+                ),
+            )
+        except Exception as smonitor_exc:
+            warnings.warn(
+                "SMonitor failed while reporting frontend action error "
+                f"{type(exc).__name__}: {exc!s}; SMonitor error: "
+                f"{type(smonitor_exc).__name__}: {smonitor_exc!s}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        self._send_runtime_only(error_payload)
+
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
         if event == "widget_resize":
@@ -405,6 +460,10 @@ class MolSysView(
             # Clear pending messages since they were already synced and processed
             # via initial_messages trait on startup.
             self._pending_messages.clear()
+        elif event == "request_widget_runtime_source":
+            self._send_runtime_only({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
+        elif event == "request_popup_source":
+            self._send_runtime_only({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "region_ack":
             tag = content.get("tag")
             if tag and tag in self._regions:
@@ -467,134 +526,138 @@ class MolSysView(
             for cb in list(self._context_callbacks):
                 cb(self._last_context_event)
         elif event == "interaction_context_action":
-            self._last_context_action_event = dict(content)
-            action = content.get("action")
-            if action == "addon_context_action":
-                addon = content.get("addon")
-                addon_action_id = content.get("addon_action_id")
-                if not isinstance(addon, str) or addon.strip() == "":
-                    raise ValueError("addon_context_action requires non-empty addon.")
-                if not isinstance(addon_action_id, str) or addon_action_id.strip() == "":
-                    raise ValueError("addon_context_action requires non-empty addon_action_id.")
-                self.addons.handle_context_action(
-                    addon.strip(),
-                    addon_action_id.strip(),
-                    dict(content),
-                    skip_digestion=True,
-                )
-                self._sync_addons_runtime()
+            try:
+                self._last_context_action_event = dict(content)
+                action = content.get("action")
+                if action == "addon_context_action":
+                    addon = content.get("addon")
+                    addon_action_id = content.get("addon_action_id")
+                    if not isinstance(addon, str) or addon.strip() == "":
+                        raise ValueError("addon_context_action requires non-empty addon.")
+                    if not isinstance(addon_action_id, str) or addon_action_id.strip() == "":
+                        raise ValueError("addon_context_action requires non-empty addon_action_id.")
+                    self.addons.handle_context_action(
+                        addon.strip(),
+                        addon_action_id.strip(),
+                        dict(content),
+                        skip_digestion=True,
+                    )
+                    self._sync_addons_runtime()
+                    return
+                if action == "create_region_from_selection":
+                    raw_tag = content.get("tag")
+                    region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+                    self.new_region_from_active_selection(tag=region_tag, skip_digestion=True)
+                elif action == "toggle_region_visibility":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("toggle_region_visibility requires non-empty tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    if region.hidden:
+                        region.show(skip_digestion=True)
+                    else:
+                        region.hide(skip_digestion=True)
+                elif action == "delete_region":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_region requires non-empty tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    region.delete(skip_digestion=True)
+                elif action == "rename_region":
+                    tag = content.get("tag")
+                    new_tag = content.get("new_tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("rename_region requires non-empty tag.")
+                    if not isinstance(new_tag, str) or new_tag.strip() == "":
+                        raise ValueError("rename_region requires non-empty new_tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    region.rename(new_tag.strip(), skip_digestion=True)
+                elif action == "create_section_from_selection":
+                    atom_indices = list(self.active_selection.atom_indices)
+                    if len(atom_indices) == 0:
+                        raise ValueError("create_section_from_selection requires a non-empty active selection.")
+                    coords = self._molsys.structures.get_coordinates(
+                        indices=atom_indices,
+                        structure_indices=[0],
+                        skip_digestion=True,
+                    )
+                    # coords shape: (1, n_atoms, 3) in nm
+                    arr = puw.get_value(coords)
+                    centroid = arr[0].mean(axis=0).tolist()
+                    raw_fwd = content.get("camera_forward")
+                    if isinstance(raw_fwd, (list, tuple)) and len(raw_fwd) == 3:
+                        normal = [float(v) for v in raw_fwd]
+                    else:
+                        normal = [0.0, 0.0, -1.0]
+                    n = np.array(normal, dtype=float)
+                    length = float(np.linalg.norm(n))
+                    if length > 1e-8:
+                        n = n / length
+                    normal = n.tolist()
+                    self.scene.add_section(point=centroid, normal=normal)
+                elif action == "remove_selection":
+                    atom_indices = list(self.active_selection.atom_indices)
+                    if len(atom_indices) == 0:
+                        raise ValueError("remove_selection requires a non-empty active selection.")
+                    self.remove(selection=atom_indices, skip_digestion=True)
+                    self.active_selection.clear(skip_digestion=True)
+                elif action == "activate_selection":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("activate_selection requires non-empty tag.")
+                    self.selections.activate(tag.strip(), skip_digestion=True)
+                elif action == "save_selection":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("save_selection requires non-empty tag.")
+                    self.active_selection.save(tag=tag.strip(), skip_digestion=True)
+                elif action == "add_label_from_selection":
+                    text = content.get("text")
+                    if not isinstance(text, str) or text.strip() == "":
+                        raise ValueError("add_label_from_selection requires non-empty text.")
+                    raw_style = content.get("label_style")
+                    label_style = dict(raw_style) if isinstance(raw_style, dict) else None
+                    self.annotations.add_label_from_active_selection(
+                        text=text.strip(), label_style=label_style, skip_digestion=True
+                    )
+                elif action == "delete_annotation":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_annotation requires non-empty tag.")
+                    self.annotations.delete(tag.strip(), skip_digestion=True)
+                elif action == "delete_shape":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_shape requires non-empty tag.")
+                    layer = self._layers.get(tag.strip())
+                    if layer is None:
+                        raise ValueError(f"No layer found for shape tag {tag!r}.")
+                    layer.delete(skip_digestion=True)
+                elif action == "delete_measurement":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_measurement requires non-empty tag.")
+                    layer = self._layers.get(tag.strip())
+                    if layer is None:
+                        raise ValueError(f"No layer found for measurement tag {tag!r}.")
+                    layer.delete(skip_digestion=True)
+                elif action == "hide_measurement":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("hide_measurement requires non-empty tag.")
+                    layer = self._layers.get(tag.strip())
+                    if layer is None:
+                        raise ValueError(f"No layer found for measurement tag {tag!r}.")
+                    layer.hide(skip_digestion=True)
+            except Exception as exc:
+                self._send_backend_error_ack(content, exc)
                 return
-            if action == "create_region_from_selection":
-                raw_tag = content.get("tag")
-                region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
-                self.new_region_from_active_selection(tag=region_tag, skip_digestion=True)
-            elif action == "toggle_region_visibility":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("toggle_region_visibility requires non-empty tag.")
-                region = self._regions.get(tag.strip())
-                if region is None:
-                    raise ValueError(f"No region found with tag {tag!r}.")
-                if region.hidden:
-                    region.show(skip_digestion=True)
-                else:
-                    region.hide(skip_digestion=True)
-            elif action == "delete_region":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("delete_region requires non-empty tag.")
-                region = self._regions.get(tag.strip())
-                if region is None:
-                    raise ValueError(f"No region found with tag {tag!r}.")
-                region.delete(skip_digestion=True)
-            elif action == "rename_region":
-                tag = content.get("tag")
-                new_tag = content.get("new_tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("rename_region requires non-empty tag.")
-                if not isinstance(new_tag, str) or new_tag.strip() == "":
-                    raise ValueError("rename_region requires non-empty new_tag.")
-                region = self._regions.get(tag.strip())
-                if region is None:
-                    raise ValueError(f"No region found with tag {tag!r}.")
-                region.rename(new_tag.strip(), skip_digestion=True)
-            elif action == "create_section_from_selection":
-                atom_indices = list(self.active_selection.atom_indices)
-                if len(atom_indices) == 0:
-                    raise ValueError("create_section_from_selection requires a non-empty active selection.")
-                coords = self._molsys.structures.get_coordinates(
-                    indices=atom_indices,
-                    structure_indices=[0],
-                    skip_digestion=True,
-                )
-                # coords shape: (1, n_atoms, 3) in nm
-                arr = puw.get_value(coords)
-                centroid = arr[0].mean(axis=0).tolist()
-                raw_fwd = content.get("camera_forward")
-                if isinstance(raw_fwd, (list, tuple)) and len(raw_fwd) == 3:
-                    normal = [float(v) for v in raw_fwd]
-                else:
-                    normal = [0.0, 0.0, -1.0]
-                n = np.array(normal, dtype=float)
-                length = float(np.linalg.norm(n))
-                if length > 1e-8:
-                    n = n / length
-                normal = n.tolist()
-                self.scene.add_section(point=centroid, normal=normal)
-            elif action == "remove_selection":
-                atom_indices = list(self.active_selection.atom_indices)
-                if len(atom_indices) == 0:
-                    raise ValueError("remove_selection requires a non-empty active selection.")
-                self.remove(selection=atom_indices, skip_digestion=True)
-                self.active_selection.clear(skip_digestion=True)
-            elif action == "activate_selection":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("activate_selection requires non-empty tag.")
-                self.selections.activate(tag.strip(), skip_digestion=True)
-            elif action == "save_selection":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("save_selection requires non-empty tag.")
-                self.active_selection.save(tag=tag.strip(), skip_digestion=True)
-            elif action == "add_label_from_selection":
-                text = content.get("text")
-                if not isinstance(text, str) or text.strip() == "":
-                    raise ValueError("add_label_from_selection requires non-empty text.")
-                raw_style = content.get("label_style")
-                label_style = dict(raw_style) if isinstance(raw_style, dict) else None
-                self.annotations.add_label_from_active_selection(
-                    text=text.strip(), label_style=label_style, skip_digestion=True
-                )
-            elif action == "delete_annotation":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("delete_annotation requires non-empty tag.")
-                self.annotations.delete(tag.strip(), skip_digestion=True)
-            elif action == "delete_shape":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("delete_shape requires non-empty tag.")
-                layer = self._layers.get(tag.strip())
-                if layer is None:
-                    raise ValueError(f"No layer found for shape tag {tag!r}.")
-                layer.delete(skip_digestion=True)
-            elif action == "delete_measurement":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("delete_measurement requires non-empty tag.")
-                layer = self._layers.get(tag.strip())
-                if layer is None:
-                    raise ValueError(f"No layer found for measurement tag {tag!r}.")
-                layer.delete(skip_digestion=True)
-            elif action == "hide_measurement":
-                tag = content.get("tag")
-                if not isinstance(tag, str) or tag.strip() == "":
-                    raise ValueError("hide_measurement requires non-empty tag.")
-                layer = self._layers.get(tag.strip())
-                if layer is None:
-                    raise ValueError(f"No layer found for measurement tag {tag!r}.")
-                layer.hide(skip_digestion=True)
         elif event == "section_moved":
             tag = content.get("tag")
             raw_point = content.get("point")
@@ -747,6 +810,10 @@ class MolSysView(
                     )
         elif event == "interaction_tool_state":
             self._last_tool_state_event = dict(content)
+        elif event == "shape_render_status":
+            tag = content.get("tag")
+            if isinstance(tag, str) and tag:
+                self._shape_render_status[tag] = dict(content)
         elif event == "interaction_measurement_created":
             self.measurements._register_interactive_measurement(dict(content))  # noqa: SLF001
         elif event == "trajectory_frame_rendered":
@@ -941,6 +1008,44 @@ class MolSysView(
                 out.append([a, b])
         return out
 
+    def _remap_frame_atom_indices(self, frames: Any, atom_index_map: dict[int, int] | None) -> list[list[int] | None] | None:
+        if atom_index_map is None:
+            return frames if isinstance(frames, list) else None
+        if not isinstance(frames, list):
+            return None
+        remapped_frames: list[list[int] | None] = []
+        any_live = False
+        for frame_indices in frames:
+            if frame_indices is None:
+                remapped_frames.append(None)
+                continue
+            remapped = self._remap_indices(frame_indices, atom_index_map)
+            if remapped:
+                any_live = True
+                remapped_frames.append(remapped)
+            else:
+                remapped_frames.append(None)
+        return remapped_frames if any_live else None
+
+    def _remap_frame_atom_pairs(self, frames: Any, atom_index_map: dict[int, int] | None) -> list[list[list[int]] | None] | None:
+        if atom_index_map is None:
+            return frames if isinstance(frames, list) else None
+        if not isinstance(frames, list):
+            return None
+        remapped_frames: list[list[list[int]] | None] = []
+        any_live = False
+        for frame_pairs in frames:
+            if frame_pairs is None:
+                remapped_frames.append(None)
+                continue
+            remapped = self._remap_atom_pairs(frame_pairs, atom_index_map)
+            if remapped:
+                any_live = True
+                remapped_frames.append(remapped)
+            else:
+                remapped_frames.append(None)
+        return remapped_frames if any_live else None
+
     def _remap_shape_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
         if atom_index_map is None:
             return msg
@@ -961,10 +1066,22 @@ class MolSysView(
             if not options["atom_indices"]:
                 return None
 
+        if "structures_atom_indices" in options:
+            frames = self._remap_frame_atom_indices(options.get("structures_atom_indices"), atom_index_map)
+            if frames is None:
+                return None
+            options["structures_atom_indices"] = frames
+
         if "atom_pairs" in options:
             options["atom_pairs"] = self._remap_atom_pairs(options.get("atom_pairs"), atom_index_map)
             if options["atom_pairs"] == []:
                 return None
+
+        if "structures_atom_pairs" in options:
+            frames = self._remap_frame_atom_pairs(options.get("structures_atom_pairs"), atom_index_map)
+            if frames is None:
+                return None
+            options["structures_atom_pairs"] = frames
 
         if "mouth_atom_indices" in options:
             mouths = options.get("mouth_atom_indices")
@@ -1696,6 +1813,12 @@ class MolSysView(
             )
             return
 
+        if event.get("success") is False or event.get("error_type"):
+            message = event.get("message")
+            if not isinstance(message, str) or not message:
+                message = "Frontend image export failed."
+            raise ValueError(message)
+
         data_uri = event.get("data_uri")
         if not isinstance(data_uri, str) or not data_uri.startswith("data:image/png;base64,"):
             raise RuntimeError("Frontend image export did not return a PNG data URI.")
@@ -1792,9 +1915,9 @@ class MolSysView(
         # the live widget trait in notebooks.
         widget_state["show_controls"] = bool(include_controls)
         widget_state["layout"] = f"IPY_MODEL_{self.widget.layout.model_id}"
-        # Avoid duplicating the full viewer bundle in exports: the widget already
-        # carries its ESM source under `_esm`. The popout can fall back to `_esm`
-        # when `popup_js_source` is empty.
+        # Standalone exports have no live Python backend to answer the bootstrap
+        # runtime request, so inline the full runtime only in exported HTML.
+        widget_state["_esm"] = MolSysViewerWidget._viewer_js_source
         if "popup_js_source" in widget_state:
             widget_state["popup_js_source"] = ""
         widget_state["enable_popout"] = bool(include_popout)

@@ -1,19 +1,31 @@
+type PopupSourceProvider = () => string | Promise<string>;
+
 export class PopupHostManager {
     private popoutWin: Window | null = null;
     public panelWin: Window | null = null;
     public isReady = false;
     public isPanelReady = false;
 
-    private readonly viewerJsSource: string;
+    private viewerJsSource: string;
     private readonly viewerModuleUrl?: string;
+    private readonly viewerSourceProvider?: PopupSourceProvider;
 
-    constructor(viewer: string | { source?: string; moduleUrl?: string }) {
+    constructor(viewer: string | { source?: string; moduleUrl?: string; sourceProvider?: PopupSourceProvider }) {
         if (typeof viewer === "string") {
             this.viewerJsSource = viewer;
             return;
         }
         this.viewerJsSource = viewer.source ?? "";
         this.viewerModuleUrl = viewer.moduleUrl;
+        this.viewerSourceProvider = viewer.sourceProvider;
+    }
+
+    private async resolveViewerJsSource(): Promise<string> {
+        if (this.viewerJsSource) return this.viewerJsSource;
+        if (!this.viewerSourceProvider) return "";
+        const source = await this.viewerSourceProvider();
+        this.viewerJsSource = source || "";
+        return this.viewerJsSource;
     }
 
     private controller?: any;
@@ -129,11 +141,12 @@ export class PopupHostManager {
                     })();
                 `;
             } else {
-                if (!this.viewerJsSource) {
+                const viewerJsSource = await this.resolveViewerJsSource();
+                if (!viewerJsSource) {
                     throw new Error("No viewer source code provided to PopupHostManager");
                 }
                 const popWin = win as Window & typeof globalThis;
-                const popBlob = new popWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+                const popBlob = new popWin.Blob([viewerJsSource], { type: "text/javascript" });
                 const popBlobUrl = popWin.URL.createObjectURL(popBlob);
 
                 console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);

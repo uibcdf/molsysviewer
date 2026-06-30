@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from molsysviewer import FigureSpec, MolSysView
 
 
@@ -435,6 +437,24 @@ def test_frontend_image_export_event_is_recorded():
     view._handle_frontend_event(event)  # noqa: SLF001
 
     assert view._last_image_export_event == event  # noqa: SLF001
+
+
+
+def test_export_image_frontend_gpu_limit_error_raises_valueerror(monkeypatch, tmp_path: Path):
+    view = MolSysView(debug_js=True)
+
+    def fake_request(**_kwargs):
+        return {
+            "event": "image_export",
+            "success": False,
+            "error_type": "GPU_LIMIT_EXCEEDED",
+            "message": "Requested image export size 6000x4000px exceeds WebGL GPU limits.",
+        }
+
+    monkeypatch.setattr(view, "_request_image_export", fake_request)
+
+    with pytest.raises(ValueError, match="6000x4000px exceeds WebGL GPU limits"):
+        view.export.image(str(tmp_path / "too-large.png"), width_px=3000, height_px=2000, scale=2.0)
 
 
 def test_set_figure_spec_sends_correct_op():

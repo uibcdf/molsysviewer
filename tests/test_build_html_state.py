@@ -4,6 +4,7 @@ import re
 import pytest
 
 from molsysviewer import MolSysView
+from molsysviewer.widget import MolSysViewerWidget
 
 
 def _extract_state_json(html: str) -> dict:
@@ -175,3 +176,17 @@ def test_build_html_respects_popout_flag_in_export_state(monkeypatch):
     assert widget_state["enable_popout"] is False
     if "popup_js_source" in widget_state:
         assert widget_state["popup_js_source"] == ""
+
+
+def test_build_html_inlines_full_runtime_for_standalone(monkeypatch):
+    view = MolSysView(debug_js=True)
+    view.widget.send = lambda _msg: None  # type: ignore
+
+    monkeypatch.setattr(view, "_load_anywidget_bundle", lambda: "")
+    monkeypatch.setattr(MolSysViewerWidget, "_viewer_js_source", "export default { render() {} };")
+
+    html = view._build_standalone_html("Test", include_controls=True)
+    state = _extract_state_json(html)
+    widget_state = state["state"][view.widget.model_id]["state"]
+
+    assert widget_state["_esm"] == "export default { render() {} };"

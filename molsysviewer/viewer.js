@@ -142400,7 +142400,8 @@ function buildLinksFromAtoms(structure, options) {
   return specs;
 }
 function computeCentroidFromAtoms(structure, atomIndices) {
-  if (atomIndices.length === 0) return null;
+  const requested = atomIndices.length;
+  if (requested === 0) return { ok: false, reason: "empty-selection", requested, used: 0 };
   const lookup = buildUnitLookup(structure);
   const pos = Vec3();
   let sumX = 0, sumY = 0, sumZ = 0;
@@ -142415,8 +142416,8 @@ function computeCentroidFromAtoms(structure, atomIndices) {
       count3++;
     }
   }
-  if (count3 === 0) return null;
-  return [sumX / count3, sumY / count3, sumZ / count3];
+  if (count3 === 0) return { ok: false, reason: "invalid-indices", requested, used: 0 };
+  return { ok: true, center: [sumX / count3, sumY / count3, sumZ / count3], requested, used: count3 };
 }
 async function addNetworkLinksFromPython(plugin, options) {
   const mode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
@@ -142556,6 +142557,11 @@ function getTriangleFacesShape(_ctx, data, _props, shape) {
     return Color(ColorNames.gray);
   };
   const getSize = () => 1;
+  const groupEntityRefs = [];
+  for (let i = 0; i < triCount; i++) {
+    groupEntityRefs[i] = data.entity_refs?.[i];
+  }
+  data.__groupEntityRefs = groupEntityRefs;
   const getLabel = (groupId) => {
     if (groupId < triCount) {
       return data.triangles[groupId].label ?? `Triangle ${groupId}`;
@@ -142756,6 +142762,7 @@ function prepareTriangleFacesData(plugin, options) {
   return {
     triangles,
     alpha,
+    entity_refs: Array.isArray(options.entity_refs) ? options.entity_refs : void 0,
     name,
     edges: edgesConfig,
     normals: normalsConfig
@@ -143021,23 +143028,31 @@ function getTetrahedraShape(_ctx, data, _props, shape) {
     return `Decoration ${groupId}`;
   };
   const groupAtoms = [];
+  const groupEntityRefs = [];
   for (let g = 0; g < faceGroupCount; g++) {
-    const tetraIndex = facesPickable ? faces[g].tetraIndex : g;
-    groupAtoms[g] = facesPickable ? faces[g].vertexAtoms ? [...faces[g].vertexAtoms] : void 0 : data.tetrahedra[tetraIndex]?.atomIndices ? [...data.tetrahedra[tetraIndex].atomIndices] : void 0;
+    const face = faces[g];
+    const tetraIndex = facesPickable ? face.tetraIndex : g;
+    groupAtoms[g] = facesPickable ? face.vertexAtoms ? [...face.vertexAtoms] : void 0 : data.tetrahedra[tetraIndex]?.atomIndices ? [...data.tetrahedra[tetraIndex].atomIndices] : void 0;
+    const faceEntityRef = facesPickable && face.atomKey ? data.faceMeta?.get(face.atomKey)?.entity_ref : void 0;
+    groupEntityRefs[g] = faceEntityRef ?? data.entity_refs?.[tetraIndex];
   }
   let decorBase = faceGroupCount;
   if (normalsEnabled) {
     for (let k = 0; k < faceCount; k++) {
       groupAtoms[decorBase + k] = faces[k].vertexAtoms ? [...faces[k].vertexAtoms] : void 0;
+      groupEntityRefs[decorBase + k] = faces[k].atomKey ? data.faceMeta?.get(faces[k].atomKey)?.entity_ref : void 0;
     }
     decorBase += faceCount;
   }
   if (edgesEnabled) {
     for (let k = 0; k < edgeCount; k++) {
       groupAtoms[decorBase + k] = edgeList[k].atoms ? [...edgeList[k].atoms] : void 0;
+      const key2 = edgeList[k].atoms ? edgeList[k].atoms.slice().sort((x, y) => x - y).join(",") : void 0;
+      groupEntityRefs[decorBase + k] = key2 ? data.edgeMeta?.get(key2)?.entity_ref : void 0;
     }
   }
   data.__groupAtoms = groupAtoms;
+  data.__groupEntityRefs = groupEntityRefs;
   return Shape.create(data.name, data, mesh, getColor2, getSize, getLabel);
 }
 var TetrahedraVisuals = {
@@ -143209,7 +143224,8 @@ function prepareTetrahedraData(plugin, options) {
         permeability: entry.permeability,
         owner_id: entry.owner_id,
         neighbor_id: entry.neighbor_id,
-        color: typeof entry.color === "number" ? entry.color : void 0
+        color: typeof entry.color === "number" ? entry.color : void 0,
+        entity_ref: entry.entity_ref
       });
     }
   }
@@ -143219,7 +143235,7 @@ function prepareTetrahedraData(plugin, options) {
     for (const entry of options.edge_meta) {
       if (!entry || !Array.isArray(entry.atoms) || entry.atoms.length !== 2) continue;
       const key2 = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
-      edgeMeta.set(key2, { edge_id: entry.edge_id });
+      edgeMeta.set(key2, { edge_id: entry.edge_id, entity_ref: entry.entity_ref });
     }
   }
   return {
@@ -143233,7 +143249,8 @@ function prepareTetrahedraData(plugin, options) {
     edges: edgesConfig,
     normals: normalsConfig,
     tag: options.tag,
-    atom_indices: atomIndices
+    atom_indices: atomIndices,
+    entity_refs: Array.isArray(options.entity_refs) ? options.entity_refs : void 0
   };
 }
 async function addTetrahedraFromPython(plugin, options) {
@@ -143754,6 +143771,7 @@ var ShapeHandlers = class {
     this.trajectoryShapes = /* @__PURE__ */ new Map();
     this.currentFrame = 0;
     this.frameUpdateInProgress = false;
+    this.lastRenderStatus = /* @__PURE__ */ new Map();
   }
   ensureTrajectorySubscription() {
     if (this.trajectoryUnsub || !this.context?.subscribeToTrajectoryState) return;
@@ -143768,6 +143786,17 @@ var ShapeHandlers = class {
     this.trajectoryShapes.set(tag, { op: op4, baseOptions, framesCoords });
     this.ensureTrajectorySubscription();
   }
+  makeStatus(tag, op4, frame, status, details = {}) {
+    return { tag, op: op4, frame, status, ...details };
+  }
+  emitRenderStatus(status) {
+    const previous = this.lastRenderStatus.get(status.tag);
+    if (previous && previous.status === status.status && previous.requested_atoms === status.requested_atoms && previous.used_atoms === status.used_atoms && previous.reason === status.reason) {
+      return;
+    }
+    this.lastRenderStatus.set(status.tag, status);
+    this.context?.notifyShapeRenderStatus?.(status);
+  }
   async applyFrame(frame) {
     if (this.frameUpdateInProgress) return;
     this.frameUpdateInProgress = true;
@@ -143775,28 +143804,48 @@ var ShapeHandlers = class {
       for (const [tag, entry] of this.trajectoryShapes) {
         const fc = entry.framesCoords[frame] ?? null;
         await this.context.clearByTag(tag);
-        if (fc !== null) {
-          await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc);
+        if (fc === null) {
+          this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
+          continue;
+        }
+        try {
+          const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
+          if (status) this.emitRenderStatus(status);
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : String(err);
+          this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
         }
       }
     } finally {
       this.frameUpdateInProgress = false;
     }
   }
-  async renderTrajectoryFrame(tag, op4, baseOptions, frameCoords) {
+  async renderTrajectoryFrame(tag, op4, baseOptions, frameCoords, frame = this.currentFrame) {
     if (op4 === "add_sphere_from_atoms") {
+      const requested = Array.isArray(frameCoords) ? frameCoords.length : 0;
       const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
       const structure = structureRef?.cell.obj?.data;
-      const center2 = structure ? computeCentroidFromAtoms(structure, frameCoords) : null;
-      if (center2 !== null) {
-        const ref = await addTransparentSphereFromPython(this.plugin, {
-          center: center2,
-          radius: baseOptions.radius ?? 10,
-          color: baseOptions.color ?? 65280,
-          alpha: baseOptions.alpha ?? 0.4
-        });
-        this.registerRef(ref, tag);
+      if (!structure) {
+        return this.makeStatus(tag, op4, frame, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
       }
+      const centroid2 = computeCentroidFromAtoms(structure, frameCoords);
+      if (!centroid2.ok) {
+        return this.makeStatus(tag, op4, frame, centroid2.reason, {
+          requested_atoms: centroid2.requested,
+          used_atoms: centroid2.used
+        });
+      }
+      const ref = await addTransparentSphereFromPython(this.plugin, {
+        center: centroid2.center,
+        radius: baseOptions.radius ?? 10,
+        color: baseOptions.color ?? 65280,
+        alpha: baseOptions.alpha ?? 0.4
+      });
+      this.registerRef(ref, tag);
+      return this.makeStatus(tag, op4, frame, "rendered", {
+        requested_atoms: centroid2.requested,
+        used_atoms: centroid2.used
+      });
     } else if (op4 === "add_sphere") {
       const ref = await addTransparentSphereFromPython(this.plugin, {
         center: frameCoords,
@@ -143816,9 +143865,17 @@ var ShapeHandlers = class {
       const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: frameCoords });
       this.registerRef(ref, tag);
     } else if (op4 === "add_hbonds") {
+      const requested = Array.isArray(frameCoords) ? frameCoords.length * 2 : 0;
+      const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
+      const structure = structureRef?.cell.obj?.data;
+      if (!structure) {
+        return this.makeStatus(tag, op4, frame, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
+      }
       const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, mode: "atom-indices", atom_pairs: frameCoords });
       this.registerRef(ref, tag);
+      return this.makeStatus(tag, op4, frame, "rendered", { requested_atoms: requested, used_atoms: requested });
     }
+    return this.makeStatus(tag, op4, frame, "rendered");
   }
   async addSphere(msg) {
     const options = msg.options ?? {};
@@ -143831,15 +143888,31 @@ var ShapeHandlers = class {
       if (fc !== null) {
         const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
         const structure = structureRef?.cell.obj?.data;
-        const center3 = structure ? computeCentroidFromAtoms(structure, fc) : null;
-        if (center3 !== null) {
-          const ref2 = await addTransparentSphereFromPython(this.plugin, {
-            center: center3,
-            radius: options.radius ?? 10,
-            color: options.color ?? 65280,
-            alpha: options.alpha ?? 0.4
-          });
-          this.registerRef(ref2, tag);
+        if (structure) {
+          const centroid2 = computeCentroidFromAtoms(structure, fc);
+          if (centroid2.ok) {
+            const ref2 = await addTransparentSphereFromPython(this.plugin, {
+              center: centroid2.center,
+              radius: options.radius ?? 10,
+              color: options.color ?? 65280,
+              alpha: options.alpha ?? 0.4
+            });
+            this.registerRef(ref2, tag);
+            this.emitRenderStatus(this.makeStatus(tag, "add_sphere_from_atoms", this.currentFrame, "rendered", {
+              requested_atoms: centroid2.requested,
+              used_atoms: centroid2.used
+            }));
+          } else {
+            this.emitRenderStatus(this.makeStatus(tag, "add_sphere_from_atoms", this.currentFrame, centroid2.reason, {
+              requested_atoms: centroid2.requested,
+              used_atoms: centroid2.used
+            }));
+          }
+        } else {
+          this.emitRenderStatus(this.makeStatus(tag, "add_sphere_from_atoms", this.currentFrame, "missing-structure", {
+            requested_atoms: Array.isArray(fc) ? fc.length : 0,
+            used_atoms: 0
+          }));
         }
       }
       return;
@@ -143857,6 +143930,7 @@ var ShapeHandlers = class {
           alpha: options.alpha ?? 0.4
         });
         this.registerRef(ref2, tag);
+        this.emitRenderStatus(this.makeStatus(tag, "add_sphere", this.currentFrame, "rendered"));
       }
       return;
     }
@@ -143865,11 +143939,11 @@ var ShapeHandlers = class {
       const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
       const structure = structureRef?.cell.obj?.data;
       const resolvedCenter = structure ? computeCentroidFromAtoms(structure, options.atom_indices) : null;
-      if (resolvedCenter === null) {
+      if (resolvedCenter === null || !resolvedCenter.ok) {
         console.warn("[MolSysViewer] addSphere: could not compute centroid for atom_indices");
         return;
       }
-      center2 = resolvedCenter;
+      center2 = resolvedCenter.center;
     }
     const ref = await addTransparentSphereFromPython(this.plugin, {
       center: center2,
@@ -147588,6 +147662,7 @@ function lociToShapeItems(rawLoci) {
   const data = shape.sourceData ?? {};
   let shapeName = shape.name;
   let atomIndices = arrayOfNumbers(data.atom_indices);
+  let entityRef = void 0;
   if (ShapeGroup.isLoci(rawLoci) && rawLoci.groups.length > 0) {
     try {
       const groupIdx = OrderedSet2.getAt(rawLoci.groups[0].ids, 0);
@@ -147597,6 +147672,12 @@ function lociToShapeItems(rawLoci) {
       const perGroup = data.__groupAtoms;
       if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
         atomIndices = arrayOfNumbers(perGroup[groupIdx]);
+      }
+      const perGroupEntityRefs = data.__groupEntityRefs;
+      if (Array.isArray(perGroupEntityRefs) && perGroupEntityRefs[groupIdx] !== void 0) {
+        entityRef = perGroupEntityRefs[groupIdx];
+      } else if (Array.isArray(data.entity_refs) && data.entity_refs[groupIdx] !== void 0) {
+        entityRef = data.entity_refs[groupIdx];
       }
     } catch (e) {
       console.warn("[MolSysViewer] Error getting shape group label:", e);
@@ -147610,7 +147691,8 @@ function lociToShapeItems(rawLoci) {
     atom_indices: atomIndices,
     group_indices: arrayOfNumbers(data.group_indices),
     chain_indices: arrayOfNumbers(data.chain_indices),
-    entity_indices: arrayOfNumbers(data.entity_indices)
+    entity_indices: arrayOfNumbers(data.entity_indices),
+    ...entityRef !== void 0 ? { entity_ref: entityRef } : {}
   };
   if (rawLoci) {
     Object.defineProperty(item2, "_loci", { value: rawLoci, enumerable: false, configurable: true });
@@ -151143,6 +151225,7 @@ function shapeTargetFromLoci(loci) {
   const atomIndices = Array.isArray(sourceData.atom_indices) ? sourceData.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
   let shapeName = shape.name;
   let groupAtoms = null;
+  let entityRef = void 0;
   if (ShapeGroup.isLoci(loci) && loci.groups.length > 0) {
     try {
       const groupIdx = OrderedSet2.getAt(loci.groups[0].ids, 0);
@@ -151153,6 +151236,12 @@ function shapeTargetFromLoci(loci) {
       if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
         groupAtoms = perGroup[groupIdx].map((i) => Math.trunc(Number(i))).filter((i) => Number.isFinite(i));
       }
+      const perGroupEntityRefs = sourceData.__groupEntityRefs;
+      if (Array.isArray(perGroupEntityRefs) && perGroupEntityRefs[groupIdx] !== void 0) {
+        entityRef = perGroupEntityRefs[groupIdx];
+      } else if (Array.isArray(sourceData.entity_refs) && sourceData.entity_refs[groupIdx] !== void 0) {
+        entityRef = sourceData.entity_refs[groupIdx];
+      }
     } catch (e) {
       console.warn("[MolSysViewer] Error getting shape group label:", e);
     }
@@ -151160,7 +151249,8 @@ function shapeTargetFromLoci(loci) {
   return {
     atom_indices: groupAtoms ?? atomIndices,
     tag: typeof sourceData.tag === "string" ? sourceData.tag : void 0,
-    shape_name: shapeName
+    shape_name: shapeName,
+    ...entityRef !== void 0 ? { entity_ref: entityRef } : {}
   };
 }
 function extractAtomMetadata(loci) {
@@ -151386,6 +151476,9 @@ var MolSysViewerController = class _MolSysViewerController {
     this.lastContextPayload = null;
     this.lastHoverLoci = null;
     this.lastHoverPayload = null;
+    this.pendingHoverPayload = null;
+    this.hoverDebounceTimer = null;
+    this.hoverDebounceMs = 60;
     this.lastPrimaryGroupClick = null;
     this.savedSelections = [];
     this.workbenchAnnotations = /* @__PURE__ */ new Map();
@@ -151818,11 +151911,8 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     }, (ev) => {
       const resolved = resolveTooltipPayload("hover", ev, this.annotations, this.measurements);
-      if (resolved) {
-        emitInteractionEvent(resolved);
-      } else {
-        emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev)));
-      }
+      const payload = resolved ? resolved : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+      this.emitDebouncedHover(payload);
     }, (ev) => {
       const resolved = resolveTooltipPayload("click", ev, this.annotations, this.measurements);
       if (resolved) {
@@ -151857,7 +151947,11 @@ var MolSysViewerController = class _MolSysViewerController {
         subscribeToTrajectoryState: (cb2) => this.trajectory.onTrajectoryState(
           (state) => cb2(state.currentFrame),
           { immediate: false }
-        )
+        ),
+        notifyShapeRenderStatus: (status) => this.notify?.({
+          event: "shape_render_status",
+          ...status
+        })
       }
     );
     this.annotations = new AnnotationHandlers(plugin, {
@@ -151972,6 +152066,16 @@ var MolSysViewerController = class _MolSysViewerController {
         }
       }
     }
+  }
+  emitDebouncedHover(payload) {
+    this.pendingHoverPayload = payload;
+    if (this.hoverDebounceTimer !== null) clearTimeout(this.hoverDebounceTimer);
+    this.hoverDebounceTimer = setTimeout(() => {
+      this.hoverDebounceTimer = null;
+      const latest = this.pendingHoverPayload;
+      this.pendingHoverPayload = null;
+      if (latest) this.notify?.(latest);
+    }, this.hoverDebounceMs);
   }
   static showInitFailureOverlay(target, message) {
     const overlay = document.createElement("div");
@@ -153127,6 +153231,12 @@ var MolSysViewerController = class _MolSysViewerController {
           }
           break;
         }
+        case "backend_error_occurred": {
+          const errorType = typeof msg.error_type === "string" ? msg.error_type : "BackendError";
+          const errorMessage = typeof msg.error_message === "string" ? msg.error_message : "Backend action failed.";
+          this.showToast(`${errorType}: ${errorMessage}`, 6e3);
+          break;
+        }
         case "set_canvas_visibility": {
           const visible = msg.visible !== false;
           this.setCanvasVisibility(visible);
@@ -154145,6 +154255,31 @@ var MolSysViewerController = class _MolSysViewerController {
     const targetHeight = useCustomResolution ? height : viewportHeight;
     const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
     const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
+    const gl = this.plugin.canvas3d?.webgl?.gl;
+    if (gl) {
+      const maxRenderbufferSize = Number(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
+      const viewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+      const maxViewportWidth = viewportDims ? Number(viewportDims[0]) : Number.NaN;
+      const maxViewportHeight = viewportDims ? Number(viewportDims[1]) : Number.NaN;
+      const exceedsRenderbuffer = Number.isFinite(maxRenderbufferSize) && (scaledWidth > maxRenderbufferSize || scaledHeight > maxRenderbufferSize);
+      const exceedsViewport = Number.isFinite(maxViewportWidth) && Number.isFinite(maxViewportHeight) && (scaledWidth > maxViewportWidth || scaledHeight > maxViewportHeight);
+      if (exceedsRenderbuffer || exceedsViewport) {
+        const limits = [
+          Number.isFinite(maxRenderbufferSize) ? "MAX_RENDERBUFFER_SIZE=" + maxRenderbufferSize : void 0,
+          Number.isFinite(maxViewportWidth) && Number.isFinite(maxViewportHeight) ? "MAX_VIEWPORT_DIMS=" + maxViewportWidth + "x" + maxViewportHeight : void 0
+        ].filter(Boolean).join(", ");
+        return {
+          success: false,
+          error_type: "GPU_LIMIT_EXCEEDED",
+          message: "Requested image export size " + scaledWidth + "x" + scaledHeight + "px exceeds WebGL GPU limits" + (limits ? " (" + limits + ")" : "") + ". Reduce width, height, or scale.",
+          requested_width: scaledWidth,
+          requested_height: scaledHeight,
+          max_renderbuffer_size: Number.isFinite(maxRenderbufferSize) ? maxRenderbufferSize : void 0,
+          max_viewport_width: Number.isFinite(maxViewportWidth) ? maxViewportWidth : void 0,
+          max_viewport_height: Number.isFinite(maxViewportHeight) ? maxViewportHeight : void 0
+        };
+      }
+    }
     const currentSnapshot = options?.cameraSnapshot ? this.getCameraSnapshot() : void 0;
     const preset = typeof options?.preset === "string" ? options.preset : "current";
     const targetBackgroundMode = !options?.transparent && preset === "publication-light" ? "light" : !options?.transparent && preset === "publication-dark" ? "dark" : void 0;
@@ -154690,6 +154825,14 @@ var PopupHostManager = class {
     }
     this.viewerJsSource = viewer.source ?? "";
     this.viewerModuleUrl = viewer.moduleUrl;
+    this.viewerSourceProvider = viewer.sourceProvider;
+  }
+  async resolveViewerJsSource() {
+    if (this.viewerJsSource) return this.viewerJsSource;
+    if (!this.viewerSourceProvider) return "";
+    const source = await this.viewerSourceProvider();
+    this.viewerJsSource = source || "";
+    return this.viewerJsSource;
   }
   setController(controller) {
     this.controller = controller;
@@ -154793,11 +154936,12 @@ var PopupHostManager = class {
                     })();
                 `;
       } else {
-        if (!this.viewerJsSource) {
+        const viewerJsSource = await this.resolveViewerJsSource();
+        if (!viewerJsSource) {
           throw new Error("No viewer source code provided to PopupHostManager");
         }
         const popWin = win;
-        const popBlob = new popWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+        const popBlob = new popWin.Blob([viewerJsSource], { type: "text/javascript" });
         const popBlobUrl = popWin.URL.createObjectURL(popBlob);
         console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
         scriptEl.textContent = `
@@ -156389,16 +156533,36 @@ var index_default = {
         c8.plugin.canvas3d?.requestResize();
       });
     });
-    const popupJsSource = model.get("popup_js_source");
+    const legacyPopupJsSource = model.get("popup_js_source");
     const esmSource = model.get("_esm");
-    const viewerJsSource = popupJsSource || esmSource;
-    if (!viewerJsSource) {
-      console.warn("[MolSysViewer] No viewer JS source found in model ('popup_js_source' or '_esm'). Popout will be disabled.");
-    } else {
-      const sourceKind = popupJsSource ? "popup_js_source" : "_esm";
-      console.log(`[MolSysViewer] Popout source: ${sourceKind} (length=${viewerJsSource.length})`);
-    }
-    const popupMgr = new PopupHostManager(viewerJsSource || "");
+    const esmLooksLikeFullRuntime = typeof esmSource === "string" && esmSource.includes("bootPopup") && esmSource.includes("MolSysViewerController");
+    const cachedWidgetRuntime = globalThis.__molsysviewer_anywidget_runtime__;
+    let popupJsSourceCache = typeof legacyPopupJsSource === "string" && legacyPopupJsSource ? legacyPopupJsSource : typeof cachedWidgetRuntime?.source === "string" && cachedWidgetRuntime.source ? cachedWidgetRuntime.source : esmLooksLikeFullRuntime ? esmSource : "";
+    let pendingPopupSource = null;
+    let resolvePendingPopupSource = null;
+    let rejectPendingPopupSource = null;
+    let popupSourceTimer = null;
+    const requestPopupSource = () => {
+      if (popupJsSourceCache) return Promise.resolve(popupJsSourceCache);
+      if (pendingPopupSource) return pendingPopupSource;
+      pendingPopupSource = new Promise((resolve, reject) => {
+        resolvePendingPopupSource = resolve;
+        rejectPendingPopupSource = reject;
+        popupSourceTimer = window.setTimeout(() => {
+          reject(new Error("Timed out waiting for MolSysViewer popup source"));
+          pendingPopupSource = null;
+          resolvePendingPopupSource = null;
+          rejectPendingPopupSource = null;
+          popupSourceTimer = null;
+        }, 1e4);
+        model.send({ event: "request_popup_source" });
+      });
+      return pendingPopupSource;
+    };
+    const popupMgr = new PopupHostManager({
+      source: popupJsSourceCache || void 0,
+      sourceProvider: requestPopupSource
+    });
     const enablePopout = !!model.get("enable_popout");
     const panelModeStyle = model.get("panel_mode_style") || "drawer";
     const controllerPromise = MolSysViewerController.create(target, (msg) => {
@@ -156642,6 +156806,23 @@ var index_default = {
     console.log("[MolSysViewer] widget render init");
     sendLog("info", "[MolSysViewer] widget render init");
     const onCustomMsg = (msg) => {
+      if (msg && msg.op === "popup_source") {
+        const source = typeof msg.source === "string" ? msg.source : "";
+        if (popupSourceTimer) {
+          window.clearTimeout(popupSourceTimer);
+          popupSourceTimer = null;
+        }
+        pendingPopupSource = null;
+        if (source) {
+          popupJsSourceCache = source;
+          resolvePendingPopupSource?.(source);
+        } else {
+          rejectPendingPopupSource?.(new Error("MolSysViewer popup source response was empty"));
+        }
+        resolvePendingPopupSource = null;
+        rejectPendingPopupSource = null;
+        return;
+      }
       if (msg && msg.op === "request_camera_snapshot") {
         controllerPromise.then((c8) => {
           const snapshot = c8.getCameraSnapshot();
@@ -156653,7 +156834,7 @@ var index_default = {
       }
       if (msg && msg.op === "request_image_export") {
         controllerPromise.then(async (c8) => {
-          const data_uri = await c8.getImageDataUri({
+          const imageExportResult = await c8.getImageDataUri({
             width: typeof msg.width === "number" ? msg.width : void 0,
             height: typeof msg.height === "number" ? msg.height : void 0,
             scale: typeof msg.scale === "number" ? msg.scale : void 0,
@@ -156661,10 +156842,21 @@ var index_default = {
             preset: typeof msg.preset === "string" ? msg.preset : void 0,
             cameraSnapshot: msg.camera_snapshot && typeof msg.camera_snapshot === "object" ? msg.camera_snapshot : void 0
           });
-          if (typeof data_uri === "string" && data_uri) {
+          if (typeof imageExportResult === "string" && imageExportResult) {
             model.send({
               event: "image_export",
-              data_uri,
+              data_uri: imageExportResult,
+              scale: typeof msg.scale === "number" ? msg.scale : 1,
+              transparent: !!msg.transparent,
+              preset: typeof msg.preset === "string" ? msg.preset : "current",
+              width: typeof msg.width === "number" ? msg.width : void 0,
+              height: typeof msg.height === "number" ? msg.height : void 0,
+              format: "png"
+            });
+          } else if (imageExportResult && typeof imageExportResult === "object" && imageExportResult.success === false) {
+            model.send({
+              event: "image_export",
+              ...imageExportResult,
               scale: typeof msg.scale === "number" ? msg.scale : 1,
               transparent: !!msg.transparent,
               preset: typeof msg.preset === "string" ? msg.preset : "current",
@@ -156691,6 +156883,14 @@ var index_default = {
       target.removeEventListener("wheel", onWheel);
       releaseNotebookContextMenuSuppression();
       model.off("msg:custom", onCustomMsg);
+      if (popupSourceTimer) {
+        window.clearTimeout(popupSourceTimer);
+        popupSourceTimer = null;
+      }
+      rejectPendingPopupSource?.(new Error("MolSysViewer widget disposed while waiting for popup source"));
+      pendingPopupSource = null;
+      resolvePendingPopupSource = null;
+      rejectPendingPopupSource = null;
       controllerPromise.then((c8) => {
         try {
           c8.dispose();

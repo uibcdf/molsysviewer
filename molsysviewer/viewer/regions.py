@@ -3,6 +3,7 @@ from __future__ import annotations
 __name__ = "molsysviewer.viewer.core"
 
 import re
+import warnings
 from typing import Any, Mapping
 
 import molsysmt as msm
@@ -167,6 +168,55 @@ class RegionsMixin:
 
     def _unregister_region(self, tag: str) -> None:
         self._regions.pop(tag, None)
+
+    def _region_has_visible_representation(self, region: Region) -> bool:
+        return (
+            bool(getattr(region, "_active", False))
+            and not bool(getattr(region, "_hidden", False))
+            and (
+                region.representation is not None
+                or region.preset is not None
+                or bool(region.repr_params)
+            )
+        )
+
+    def _overlapping_visual_region_tags(
+        self,
+        atom_indices: list[int] | tuple[int, ...],
+        *,
+        exclude_tag: str | None = None,
+    ) -> list[str]:
+        atom_set = {int(index) for index in atom_indices}
+        if not atom_set:
+            return []
+        overlaps: list[str] = []
+        for tag, region in self._regions.items():
+            if tag == exclude_tag or not self._region_has_visible_representation(region):
+                continue
+            if region.atom_indices is None:
+                continue
+            if atom_set.isdisjoint(region.atom_indices) is False:
+                overlaps.append(tag)
+        return overlaps
+
+    def _warn_region_visual_overlap(
+        self,
+        tag: str,
+        atom_indices: list[int] | tuple[int, ...],
+        *,
+        exclude_tag: str | None = None,
+        stacklevel: int = 3,
+    ) -> None:
+        overlaps = self._overlapping_visual_region_tags(atom_indices, exclude_tag=exclude_tag)
+        if not overlaps:
+            return
+        warnings.warn(
+            f"Region {tag!r} overlaps visible represented region(s) {', '.join(overlaps)}. "
+            "Overlapping region representations can produce z-fighting; use "
+            "difference(), intersection(), or union() to compose non-overlapping regions.",
+            UserWarning,
+            stacklevel=stacklevel,
+        )
 
     def _resolve_user_preset(self, preset: str | None):
         return resolve_user_preset(self, preset)

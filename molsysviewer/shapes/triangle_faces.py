@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from typing import Iterable, Sequence
 
 from smonitor import signal
@@ -100,6 +102,20 @@ class TriangleFaces:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+
+    @staticmethod
+    def _normalize_entity_refs(entity_refs, n: int):
+        if entity_refs is None:
+            return None
+        refs = list(entity_refs)
+        if len(refs) != n:
+            raise ValueError(f"Expected {n} entity_refs, got {len(refs)}")
+        try:
+            json.dumps(refs)
+        except TypeError as exc:
+            raise TypeError("entity_refs must be JSON-serializable") from exc
+        return refs
+
     @signal(tags=["shape", "triangle"])
     @digest()
     def add_triangle_faces(
@@ -112,6 +128,7 @@ class TriangleFaces:
         alpha: float = 1.0,
         alphas: float | Sequence[float] | None = None,
         labels: Sequence[str] | str | None = None,
+        entity_refs: Iterable[dict] | None = None,
         draw_edges: bool | None = None,
         edge_radius: float | None = None,
         edge_color: int | None = None,
@@ -154,6 +171,7 @@ class TriangleFaces:
             if alphas is not None
             else None
         )
+        entity_refs_list = self._normalize_entity_refs(entity_refs, n)
 
         options: dict = {"alpha": float(alpha)}
 
@@ -167,6 +185,8 @@ class TriangleFaces:
             options["alphas"] = alphas_list
         if labels_list is not None:
             options["labels"] = labels_list
+        if entity_refs_list is not None:
+            options["entity_refs"] = entity_refs_list
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:

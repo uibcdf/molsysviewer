@@ -101,7 +101,7 @@ type InteractionPayload =
             element: string;
         };
     }
-    | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string }
+    | { event: "interaction_hover" | "interaction_click"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown }
     | { event: "interaction_hover" | "interaction_click"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string }
     | { event: "interaction_hover" | "interaction_click"; kind: "annotation"; atom_indices: number[]; tag: string; text?: string };
 
@@ -130,7 +130,7 @@ type ContextInteractionPayload =
             element: string;
         };
     }
-    | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; page_x?: number; page_y?: number }
+    | { event: "interaction_context_menu"; kind: "shape"; atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown; page_x?: number; page_y?: number }
     | { event: "interaction_context_menu"; kind: "measurement"; atom_indices: number[]; tag?: string; measurement_name?: string; page_x?: number; page_y?: number }
     | {
         event: "interaction_context_menu";
@@ -179,7 +179,7 @@ function lociToAtomIndices(loci: any): number[] {
     return atomIndices;
 }
 
-function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string; shape_name?: string } | null {
+function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string; shape_name?: string; entity_ref?: unknown } | null {
     const shape = ShapeGroup.isLoci(loci) ? loci.shape : Shape.isLoci(loci) ? loci.shape : null;
     if (!shape) return null;
     const sourceData = (shape.sourceData ?? {}) as Record<string, unknown>;
@@ -189,6 +189,7 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
 
     let shapeName = shape.name;
     let groupAtoms: number[] | null = null;
+    let entityRef: unknown = undefined;
     if (ShapeGroup.isLoci(loci) && loci.groups.length > 0) {
         try {
             const groupIdx = OrderedSet.getAt(loci.groups[0].ids, 0);
@@ -201,6 +202,12 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
             if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
                 groupAtoms = perGroup[groupIdx].map((i: any) => Math.trunc(Number(i))).filter((i: number) => Number.isFinite(i));
             }
+            const perGroupEntityRefs = (sourceData as any).__groupEntityRefs;
+            if (Array.isArray(perGroupEntityRefs) && perGroupEntityRefs[groupIdx] !== undefined) {
+                entityRef = perGroupEntityRefs[groupIdx];
+            } else if (Array.isArray((sourceData as any).entity_refs) && (sourceData as any).entity_refs[groupIdx] !== undefined) {
+                entityRef = (sourceData as any).entity_refs[groupIdx];
+            }
         } catch (e) {
             console.warn("[MolSysViewer] Error getting shape group label:", e);
         }
@@ -210,6 +217,7 @@ function shapeTargetFromLoci(loci: any): { atom_indices: number[]; tag?: string;
         atom_indices: groupAtoms ?? atomIndices,
         tag: typeof sourceData.tag === "string" ? sourceData.tag : undefined,
         shape_name: shapeName,
+        ...(entityRef !== undefined ? { entity_ref: entityRef } : {}),
     };
 }
 
@@ -491,6 +499,9 @@ export class MolSysViewerController {
     private lastContextPayload: ContextInteractionPayload | null = null;
     private lastHoverLoci: any = null;
     private lastHoverPayload: InteractionPayload | null = null;
+    private pendingHoverPayload: InteractionPayload | null = null;
+    private hoverDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+    private readonly hoverDebounceMs = 60;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
     private readonly workbenchAnnotations = new Map<string, { text: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
@@ -559,6 +570,17 @@ export class MolSysViewerController {
             }
         }
     }
+    private emitDebouncedHover(payload: InteractionPayload) {
+        this.pendingHoverPayload = payload;
+        if (this.hoverDebounceTimer !== null) clearTimeout(this.hoverDebounceTimer);
+        this.hoverDebounceTimer = setTimeout(() => {
+            this.hoverDebounceTimer = null;
+            const latest = this.pendingHoverPayload;
+            this.pendingHoverPayload = null;
+            if (latest) this.notify?.(latest);
+        }, this.hoverDebounceMs);
+    }
+
     private static showInitFailureOverlay(target: HTMLElement, message: string) {
         const overlay = document.createElement("div");
         overlay.setAttribute("data-molsysviewer-error", "webgl");
@@ -1155,11 +1177,10 @@ export class MolSysViewerController {
             }
         }, (ev) => {
             const resolved = resolveTooltipPayload("hover", ev, this.annotations, this.measurements);
-            if (resolved) {
-                emitInteractionEvent(resolved);
-            } else {
-                emitInteractionEvent(this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev)));
-            }
+            const payload = resolved
+                ? resolved
+                : this.normalizeManagedInteractionPayload(normalizeInteractionEvent("hover", ev));
+            this.emitDebouncedHover(payload);
         }, (ev) => {
             const resolved = resolveTooltipPayload("click", ev, this.annotations, this.measurements);
             if (resolved) {
@@ -1200,6 +1221,10 @@ export class MolSysViewerController {
                         (state) => cb(state.currentFrame),
                         { immediate: false },
                     ),
+                notifyShapeRenderStatus: (status) => this.notify?.({
+                    event: "shape_render_status",
+                    ...status,
+                }),
             },
         );
         this.annotations = new AnnotationHandlers(plugin, {
@@ -2258,6 +2283,13 @@ export class MolSysViewerController {
                             try { cb(content); } catch { /* ignore */ }
                         }
                     }
+                    break;
+                }
+
+                case "backend_error_occurred": {
+                    const errorType = typeof (msg as any).error_type === "string" ? (msg as any).error_type : "BackendError";
+                    const errorMessage = typeof (msg as any).error_message === "string" ? (msg as any).error_message : "Backend action failed.";
+                    this.showToast(`${errorType}: ${errorMessage}`, 6000);
                     break;
                 }
 
@@ -3445,7 +3477,7 @@ export class MolSysViewerController {
         transparent?: boolean;
         preset?: string;
         cameraSnapshot?: Camera.Snapshot;
-    }): Promise<string | undefined> {
+    }): Promise<string | { success: false; error_type: string; message: string; requested_width: number; requested_height: number; max_renderbuffer_size?: number; max_viewport_width?: number; max_viewport_height?: number } | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
         if (!helper) return void 0;
 
@@ -3460,6 +3492,33 @@ export class MolSysViewerController {
         const targetHeight = useCustomResolution ? height : viewportHeight;
         const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
         const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
+        const gl = this.plugin.canvas3d?.webgl?.gl as WebGLRenderingContext | WebGL2RenderingContext | undefined;
+        if (gl) {
+            const maxRenderbufferSize = Number(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
+            const viewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS) as ArrayLike<number> | undefined;
+            const maxViewportWidth = viewportDims ? Number(viewportDims[0]) : Number.NaN;
+            const maxViewportHeight = viewportDims ? Number(viewportDims[1]) : Number.NaN;
+            const exceedsRenderbuffer = Number.isFinite(maxRenderbufferSize)
+                && (scaledWidth > maxRenderbufferSize || scaledHeight > maxRenderbufferSize);
+            const exceedsViewport = Number.isFinite(maxViewportWidth) && Number.isFinite(maxViewportHeight)
+                && (scaledWidth > maxViewportWidth || scaledHeight > maxViewportHeight);
+            if (exceedsRenderbuffer || exceedsViewport) {
+                const limits = [
+                    Number.isFinite(maxRenderbufferSize) ? "MAX_RENDERBUFFER_SIZE=" + maxRenderbufferSize : undefined,
+                    Number.isFinite(maxViewportWidth) && Number.isFinite(maxViewportHeight) ? "MAX_VIEWPORT_DIMS=" + maxViewportWidth + "x" + maxViewportHeight : undefined,
+                ].filter(Boolean).join(", ");
+                return {
+                    success: false,
+                    error_type: "GPU_LIMIT_EXCEEDED",
+                    message: "Requested image export size " + scaledWidth + "x" + scaledHeight + "px exceeds WebGL GPU limits" + (limits ? " (" + limits + ")" : "") + ". Reduce width, height, or scale.",
+                    requested_width: scaledWidth,
+                    requested_height: scaledHeight,
+                    max_renderbuffer_size: Number.isFinite(maxRenderbufferSize) ? maxRenderbufferSize : undefined,
+                    max_viewport_width: Number.isFinite(maxViewportWidth) ? maxViewportWidth : undefined,
+                    max_viewport_height: Number.isFinite(maxViewportHeight) ? maxViewportHeight : undefined,
+                };
+            }
+        }
         const currentSnapshot = options?.cameraSnapshot ? this.getCameraSnapshot() : void 0;
         const preset = typeof options?.preset === "string" ? options.preset : "current";
         const targetBackgroundMode =

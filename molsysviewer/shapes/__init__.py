@@ -92,6 +92,21 @@ class ShapesManager:
 
     @signal(tags=["shape", "query"])
     @digest()
+    def render_status(self, tag: str | None = None, skip_digestion: bool = False):
+        """Return runtime render diagnostics for dynamic shapes.
+
+        These diagnostics are reported by the frontend while trajectory-bound
+        shapes are resolved. They are runtime-only and are not part of the
+        reproducible scene history used for rebuilds or exports.
+        """
+        statuses = getattr(self._view, "_shape_render_status", {})
+        if tag is not None:
+            status = statuses.get(tag)
+            return None if status is None else dict(status)
+        return {key: dict(value) for key, value in statuses.items()}
+
+    @signal(tags=["shape", "query"])
+    @digest()
     def info(self, tag: str | None = None, skip_digestion: bool = False) -> list[dict]:
         """Return a summary of all shapes (or a single shape by tag).
 

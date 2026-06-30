@@ -148,7 +148,10 @@ class SphereShapes:
         if atom_indices is not None:
             options["atom_indices"] = [int(i) for i in atom_indices]
         if structures_atom_indices is not None:
-            options["structures_atom_indices"] = [[int(i) for i in f] for f in structures_atom_indices]
+            options["structures_atom_indices"] = [
+                None if f is None else [int(i) for i in f]
+                for f in structures_atom_indices
+            ]
 
         if structure_centers is not None:
             fc_arr = np.asarray(to_wire_angstroms(structure_centers), dtype=float)

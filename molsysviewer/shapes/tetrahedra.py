@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from typing import Iterable, Sequence
 
 from smonitor import signal
@@ -66,6 +68,20 @@ class Tetrahedra:
             return [cast(seq[0])] * n
         return [cast(v) for v in seq]
 
+
+    @staticmethod
+    def _normalize_entity_refs(entity_refs, n: int):
+        if entity_refs is None:
+            return None
+        refs = list(entity_refs)
+        if len(refs) != n:
+            raise ValueError(f"Expected {n} entity_refs, got {len(refs)}")
+        try:
+            json.dumps(refs)
+        except TypeError as exc:
+            raise TypeError("entity_refs must be JSON-serializable") from exc
+        return refs
+
     @signal(tags=["shape", "tetrahedra"])
     @digest()
     def add_tetrahedra(
@@ -76,6 +92,7 @@ class Tetrahedra:
         colors: int | Sequence[int] = 0xFF8800,
         alphas: float | Sequence[float] = 0.6,
         labels: Sequence[str] | str | None = None,
+        entity_refs: Iterable[dict] | None = None,
         exterior_only: bool = True,
         draw_faces: bool | None = None,
         faces_pickable: bool | None = None,
@@ -110,6 +127,7 @@ class Tetrahedra:
         colors_list = self._normalize_optional_list(colors, n, normalize_color)
         alphas_list = self._normalize_optional_list(alphas, n, float)
         labels_list = self._normalize_optional_list(labels, n, str)
+        entity_refs_list = self._normalize_entity_refs(entity_refs, n)
 
         options: dict = {"exterior_only": bool(exterior_only)}
 
@@ -133,6 +151,8 @@ class Tetrahedra:
             options["alphas"] = alphas_list
         if labels_list is not None:
             options["labels"] = labels_list
+        if entity_refs_list is not None:
+            options["entity_refs"] = entity_refs_list
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:

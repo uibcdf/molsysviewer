@@ -28,8 +28,107 @@ With Phase D (unit consistency, TopoMT integration, and high-performance WebGL c
 
 ### Pending proposals and bugs: current state
 
+### Reviewed: chemical metadata SDF/MOL2 downstream integration
+
+`chemical_metadata_loss_sdf_pdb.md` remains pending, but its local scope was
+cleaned up. MolSysViewer already transports `formal_charge` from ViewerJSON into
+the TS payload and materializes it as Mol*/mmCIF `atom_site.pdbx_formal_charge`,
+and `bonds.order` is already part of the payload when MolSysMT provides it. The
+remaining work depends on the upstream MolSysMT contract for SDF/MOL2 bond
+order, aromaticity/type, partial charge, molecule/component metadata, and custom
+SDF property blocks.
+
+### Recently closed: frontend backend-error acknowledgments
+
+`silent_exception_desync.md` was implemented and removed. Interactive frontend
+actions now catch backend exceptions in the `interaction_context_action` path,
+emit a catalog-driven SMonitor diagnostic (`frontend_action_failed`) with
+`context_extra(...)` fields for event/action/error/evidence, and send a
+runtime-only `backend_error_occurred` message back to the frontend. The ack does
+not enter reproducible message history. The TypeScript controller handles the
+ack with a non-blocking toast so users see the backend failure instead of a
+silent browser/kernel desynchronization.
+
+### Recently closed: generic geometry payloads and final-boundary adapters
+
+`generic_geometry_payloads_and_entity_refs.md` was implemented and removed. The
+host now exposes viewer-neutral immutable payloads in `molsysviewer.geometry`
+for points, spheres, segments, indexed triangles, indexed edges, and tetrahedra,
+with mandatory units, JSON-serializable entity references, and explicit atom
+index-space metadata. `molsysviewer.shape_adapters` provides final-boundary
+adapters that normalize units with PyUnitWizard and call existing shape APIs with
+`skip_digestion=True`, preserving indexed primitive references for triangle and
+tetrahedron picking payloads while keeping existing shape APIs compatible.
+
+### Closed as already implemented: shape visibility and layer group API
+
+`shape_visibility_and_layer_group_api.md` was reviewed and removed as already
+satisfied by the current scene-object/layer model. Shapes register public
+`layer_tag` membership through `register_shape_layer(...)`, `view.layers` exposes
+non-structural visual groups, `Layer` provides `show()`, `hide()`, `delete()`,
+`set_tag()`, `attach()`, `detach()`, and `info()`, and the frontend workbench
+handles `show_layer`, `hide_layer`, `delete_layer`, and `set_layer_tag` messages
+for inspectable overlay management. Existing shape APIs remain compatible and
+addons can use `layer_tag` without reaching into private viewer attributes.
+
+### Recently closed: region boolean composition and overlap warnings
+
+`region_superposition_z_fighting.md` was implemented and removed. `Region` now
+supports boolean composition through `difference()` / `-`, `intersection()` /
+`&`, and `union()` / `|`, returning normal reproducible `Region` objects backed
+by `new_region(...)` create messages. Visualizing a region now warns with a
+`UserWarning` when its atoms overlap another active visible represented region,
+while logical-only and hidden regions are ignored.
+
+### Recently closed: Jupyter AnyWidget runtime bootstrap
+
+`jupyter_websocket_redundancy_overflow.md` was implemented and removed.
+`MolSysViewerWidget._esm` is now a small bootstrap (~2.3 KB in the current
+build) instead of the full generated `viewer.js` runtime (~5.9 MB). The
+bootstrap requests `widget_runtime_source` once at render time, imports it
+from a Blob URL, and caches the loaded module/source on `globalThis` so
+additional widgets in the same frontend page reuse the already-loaded runtime
+instead of resending the bundle. Popout source delivery remains runtime-only
+through `request_popup_source` / `popup_source`, and standalone HTML
+exports explicitly inline the full runtime because they have no live Python
+backend to answer the bootstrap request.
+
+### Recently closed: image export GPU allocation preflight
+
+`image_export_canvas_allocation_failure.md` and the duplicate `image_export_gpu_limits.md` were implemented/covered and removed.
+Frontend image export now checks the requested scaled resolution against WebGL
+`MAX_RENDERBUFFER_SIZE` and `MAX_VIEWPORT_DIMS` before asking the Mol*
+viewport screenshot helper to allocate the export target. Requests above hardware
+limits return an immediate `image_export` failure event with
+`GPU_LIMIT_EXCEEDED`, requested dimensions, detected limits, and a clear
+reduction recommendation. Python converts that frontend failure into a
+`ValueError` instead of waiting for timeout or reporting a generic missing
+PNG URI.
+
+### Recently closed: high-frequency hover event saturation
+
+`high_frequency_event_saturation.md` was implemented and removed. The current
+frontend has no Python-bound camera-moved event path, and trajectory playback
+frame notifications were already throttled. The remaining high-frequency path
+was hover: Mol* hover events still update local frontend state immediately, but
+Python/AnyWidget hover notifications are now debounced in
+`MolSysViewerController` with a 60 ms tail, so rapid cursor crossings
+collapse to the final inspected target without starving local JS add-ons or UI
+state.
+
+### Recently closed: dynamic shape render diagnostics
+
+`dynamic_shapes_topology_changes.md` was implemented and removed. Dynamic
+trajectory-bound shapes now report runtime-only render diagnostics via
+`shape_render_status`, exposed in Python through `view.shapes.render_status(...)`
+without entering reproducible message/shape history. Frontend status events are
+emitted only on effective state transitions to avoid playback-channel
+saturation. Rebuild remapping now handles per-frame `structures_atom_indices`
+and `structures_atom_pairs`, preserving live frames as remapped indices and
+dropping fully orphaned dynamic shapes.
+
 `devguide/pending_proposals/` now holds an extensive robustness/quality backlog
-(21 files). It mixes earlier visualization/addon proposals with a recent
+(12 files). It mixes earlier visualization/addon proposals with a recent
 code-review pass focused on consistency, conceptual gaps, maintainability, and
 performance. Highlights from that review (not yet implemented):
 
