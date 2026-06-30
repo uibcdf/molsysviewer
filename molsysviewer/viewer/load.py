@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-__name__ = "molsysviewer.viewer.core"
 
 import re
 from typing import Any, Mapping
