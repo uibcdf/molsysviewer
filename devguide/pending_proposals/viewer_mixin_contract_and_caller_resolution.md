@@ -1,5 +1,34 @@
 # Propuesta de Mejora: Formalizar el Contrato del Paquete `viewer/` (Estado de Mixins y Resolución de Caller)
 
+## Estado de resolución
+
+> **Deuda 2 (resolución de caller): RESUELTA de raíz, por la vía principista.**
+> En vez de falsear `__name__` por archivo, se mejoró la herramienta compartida:
+> `@signal` (smonitor) y `@digest` (argdigest) ahora resuelven el módulo lógico
+> desde la **clase ligada** (`type(self).__module__`) para métodos, vía un helper
+> `_resolve_owner_module(fn, args)`. Para `MolSysView` eso da `molsysviewer.viewer`
+> por construcción. Se eliminaron los **8 spoofs** `__name__ = "molsysviewer.viewer.core"`
+> y se unificó la convención de claves de señal/caller a `molsysviewer.viewer.<método>`
+> (antes smonitor reportaba el outlier `...core...`). La **fragilidad desaparece por
+> construcción**: ya no hay línea per-archivo que olvidar al añadir un mixin.
+> `normalize_viewer_caller` se mantiene (mecanismo preferido por la propuesta; ahora
+> es no-op para el viewer pero sigue cubriendo callers cross-namespace `molsysmt.*`).
+> Cambio cross-repo verificado: suites de smonitor, argdigest y molsysviewer (498) en verde.
+>
+> **Deuda 1 (contrato tipado de mixins): DIFERIDA POR DISEÑO.**
+> No se implementa el `Protocol` inline (Option A) porque **contradice el principio
+> "Zero-Intrusion Typing" documentado en argdigest** (no inflar `.py` con anotaciones).
+> La vía alineada con el ecosistema es `.pyi` stubs generados por la herramienta
+> planeada `argdigest build-stubs` (pendiente, no implementada) y consumidos por
+> Pyright/mypy — coincide con el action-item 1.0.0 de molsysmt para `basic/`.
+> Dado que (a) argdigest ya valida la API pública en runtime, (b) la suite de tests
+> cubre buena parte de la corrección interna, y (c) el payoff del typing estático aquí
+> es DX/autocompletado más que corrección, el valor marginal **no justifica la maquinaria
+> ahora**. Se retoma post-1.0 ligada a `build-stubs`. (Prerrequisito real descubierto al
+> auditar: los digesters actuales **no tienen tipos machine-readable** —los expresan en
+> docstrings en prosa—, así que `build-stubs` exige primero dar a cada digester un
+> contrato de tipos estructurado `accepts`/`returns`.)
+
 ## 1. Contexto y Diagnóstico
 
 `MolSysView` (`molsysviewer/viewer/core.py`) se compone de **11 mixins**:

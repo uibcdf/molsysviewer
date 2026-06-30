@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-__name__ = "molsysviewer.viewer.core"
 
 from typing import Any
 
