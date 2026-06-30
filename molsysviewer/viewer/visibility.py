@@ -7,6 +7,7 @@ from typing import Any
 import molsysmt as msm
 from smonitor import signal
 from .._private.arg_digestion import digest
+from .._private.smonitor_emit import emit_suppressed_exception
 from .._private.variables import is_all
 
 
@@ -129,6 +130,10 @@ for _name, _value in VisibilityMixin.__dict__.items():
     if callable(_value):
         try:
             _value.__module__ = "molsysviewer.viewer"
-        except Exception:
-            pass
+        except Exception as exc:
+            emit_suppressed_exception(
+                "VisibilityMixin.__module_assignment__",
+                exc,
+                context={"callable": _name},
+            )
 

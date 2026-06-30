@@ -9,11 +9,14 @@ import numpy as np
 import math
 from smonitor.integrations import emit_from_catalog
 
+from .._pyunitwizard import puw
 from .._private.arg_digestion import digest
 from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 
 if TYPE_CHECKING:
     from ..viewer import MolSysView
+
+_NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
 
 def ensure_view(view: "MolSysView" | None = None) -> "MolSysView":
@@ -182,6 +185,11 @@ def _serialize_molsys_payload(
 
     atom_id = _column(atom_ids, lambda i: i + 1, int, dtype=int)
     atom_name = _column(atoms_block.get("atom_name"), lambda i: f"A{i+1}", str, dtype=str)
+    # MolSysSuite exposes residues as group_*; the JS/Mol* boundary uses
+    # residue_* because these fields are written into mmCIF atom_site columns
+    # label_comp_id/auth_comp_id and label_seq_id/auth_seq_id. Keep this
+    # translation local to the wire payload; Python APIs and JS interaction
+    # events continue to expose group_* vocabulary.
     residue_id = _column(atoms_block.get("group_id"), lambda _i: 1, int, dtype=int)
     residue_name = _column(atoms_block.get("group_name"), lambda _i: "RES", str, dtype=str)
     chain_id = _column(atoms_block.get("chain_id"), lambda _i: "A", str, dtype=str)
@@ -269,7 +277,7 @@ def _positions_to_angstroms(positions: Any, n_atoms: int) -> list[list[float]] |
     if array.shape != (n_atoms, 3):
         return None
 
-    array = array * 10.0
+    array = array * _NM_TO_ANGSTROM
     if not np.isfinite(array).all():
         return None
     return array.tolist()
@@ -296,7 +304,7 @@ def _box_vectors(box: Any) -> list[list[float]] | None:
     if v0.shape != (3,) or v1.shape != (3,) or v2.shape != (3,):
         return None
 
-    vectors = np.vstack([v0, v1, v2]) * 10.0  # nm -> Å
+    vectors = np.vstack([v0, v1, v2]) * _NM_TO_ANGSTROM  # nm -> Å
 
     norms = np.linalg.norm(vectors, axis=1)
     if np.any(norms < 1e-6):

@@ -358,6 +358,8 @@ class PanelModeMixin:
         export_helper_specs = self._enrich_export_helper_specs(
             self.addons.export_helper_specs(skip_digestion=True)
         )
+        discovery_failures = self.addons.discovery_failures(skip_digestion=True)
+        lifecycle_failures = self.addons.lifecycle_failures(skip_digestion=True)
         return {
             "op": "set_addon_runtime_summary",
             "addons": addon_names,
@@ -366,6 +368,8 @@ class PanelModeMixin:
             "workbench_sections": workbench_sections,
             "context_action_specs": context_action_specs,
             "export_helper_specs": export_helper_specs,
+            "discovery_failures": discovery_failures,
+            "lifecycle_failures": lifecycle_failures,
         }
 
     def _sync_addons_runtime(self) -> None:

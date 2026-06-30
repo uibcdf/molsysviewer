@@ -6,6 +6,8 @@ import warnings
 import numpy as np
 import molsysmt as msm
 
+from .._private.smonitor_emit import emit_suppressed_exception
+
 class IndexMapper:
     """Helper class to map between original/global indices and local viewer-loaded indices."""
 
@@ -34,10 +36,20 @@ class IndexMapper:
         except Exception as exc:
             self.degraded = True
             self.degraded_reason = f"msm.select failed while building atom index map: {exc}"
+            emit_suppressed_exception(
+                "IndexMapper.__init__.select",
+                exc,
+                context={"selection": repr(selection), "syntax": syntax},
+            )
             warnings.warn(self.degraded_reason, RuntimeWarning, stacklevel=2)
             try:
                 n_atoms = int(msm.get(molecular_system, element="system", n_atoms=True))
-            except Exception:
+            except Exception as fallback_exc:
+                emit_suppressed_exception(
+                    "IndexMapper.__init__.n_atoms_fallback",
+                    fallback_exc,
+                    context={"selection": repr(selection), "syntax": syntax},
+                )
                 n_atoms = 1
             self.original_atoms = list(range(n_atoms))
 
@@ -47,10 +59,20 @@ class IndexMapper:
         if structure_indices is None or (isinstance(structure_indices, str) and structure_indices == "all"):
             try:
                 n_structures = int(msm.get(molecular_system, element="system", n_structures=True))
-            except Exception:
+            except Exception as system_exc:
+                emit_suppressed_exception(
+                    "IndexMapper.__init__.n_structures_system",
+                    system_exc,
+                    context={"structure_indices": repr(structure_indices)},
+                )
                 try:
                     n_structures = int(msm.get(molecular_system, element="structure", n_structures=True))
-                except Exception:
+                except Exception as structure_exc:
+                    emit_suppressed_exception(
+                        "IndexMapper.__init__.n_structures_structure",
+                        structure_exc,
+                        context={"structure_indices": repr(structure_indices)},
+                    )
                     n_structures = 1
             self.original_structures = list(range(n_structures))
         else:

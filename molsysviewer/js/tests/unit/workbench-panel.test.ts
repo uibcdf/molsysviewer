@@ -167,6 +167,57 @@ test("WorkbenchPanel populates sections and scene summary", () => {
     }
 });
 
+test("WorkbenchPanel renders addon discovery failures", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new WorkbenchPanel(host);
+
+        panel.setVisible(true);
+        panel.setAddons([]);
+        panel.setAddonDiagnostics([
+            {
+                kind: "discovery",
+                source: "entry-point:broken-addon",
+                reason: "broken entry point",
+                traceback: "Traceback details",
+            },
+            {
+                kind: "lifecycle",
+                source: "lifecycle:broken-addon.on_enable",
+                reason: "enable exploded",
+                traceback: "Lifecycle traceback",
+            },
+        ]);
+
+        const root = host.children[0];
+        const failure = findFirstByAttribute(
+            root,
+            "data-molsysviewer-workbench-addon-discovery-failure",
+            "entry-point:broken-addon",
+        );
+
+        assert.ok(failure);
+        assert.strictEqual(findFirstText(failure), "Discovery failed: entry-point:broken-addon");
+        assert.strictEqual(failure.children[1]?.textContent, "broken entry point");
+        assert.strictEqual(failure.title, "Traceback details");
+
+        const lifecycleFailure = findFirstByAttribute(
+            root,
+            "data-molsysviewer-workbench-addon-discovery-failure",
+            "lifecycle:broken-addon.on_enable",
+        );
+        assert.ok(lifecycleFailure);
+        assert.strictEqual(findFirstText(lifecycleFailure), "Lifecycle failed: lifecycle:broken-addon.on_enable");
+        assert.strictEqual(lifecycleFailure.children[1]?.textContent, "enable exploded");
+        assert.strictEqual(lifecycleFailure.title, "Lifecycle traceback");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("WorkbenchPanel renders dynamic addon workbench sections", () => {
     const restore = installFakeDom();
     try {

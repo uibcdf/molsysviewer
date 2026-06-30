@@ -1,49 +1,63 @@
-# Propuesta de Mejora: Preservación de Metadatos Químicos (SDF/MOL2 a Mol*)
+# Propuesta pendiente: Integracion downstream de metadatos quimicos SDF/MOL2
 
-## 1. Contexto y Diagnóstico
+**Estado:** pendiente, bloqueada parcialmente por MolSysMT
+**Dependencia upstream:** `../molsysmt/devguide/pending_proposals/chemical_metadata_preservation_sdf_mol2.md`
 
-MolSysViewer está diseñado para interactuar con sistemas moleculares que van desde macromoléculas biológicas (proteínas, ácidos nucleicos) hasta pequeños ligandos orgánicos y fármacos. Cuando se carga una molécula pequeña en formato de archivo químico estándar (como **SDF** o **MOL2**), la topología se parsea en Python a través del ecosistema MolSysMT.
+## Contexto
 
-El problema conceptual de visualización radica en la **frontera de transferencia de formatos hacia el frontend**:
-1. El motor de visualización Mol* está históricamente optimizado para formatos macromoleculares (MMCIF, PDB).
-2. Para simplificar el canal de transmisión de datos, MolSysViewer convierte el sistema de moléculas pequeñas en Python en un bloque de texto en **formato PDB sintético** y lo envía al frontend para que Mol* lo renderice.
-3. El formato PDB es intrínsecamente limitado y **carece de soporte para metadatos químicos críticos**: no puede almacenar órdenes de enlace complejos (dobles enlaces, enlaces aromáticos o triples), cargas formales de los átomos, ni metadatos y propiedades personalizadas asociadas al archivo SDF (ej. campos de texto del SDF).
-4. Como consecuencia directa, Mol* renderiza el ligando orgánico utilizando **enlaces sencillos genéricos** en la escena 3D, y se pierden por completo las propiedades químicas del archivo original para inspección interactiva.
+MolSysViewer debe visualizar ligandos y moleculas pequenas sin degradar ordenes
+de enlace, aromaticidad, cargas ni propiedades SDF/MOL2. La solucion general no
+debe implementarse como percepcion quimica local del viewer: pertenece a
+MolSysMT, porque la preservacion de esos datos es un contrato de conversion de
+formas quimicas (`file:sdf`, `file:mol2`, `rdkit.Mol`, `molsysmt.MolSys`,
+`molsysmt.ViewerJSON`) reutilizable por todo el ecosistema.
 
----
+La propuesta upstream en MolSysMT debe definir y validar que la conversion desde
+SDF/MOL2 a `molsysmt.MolSys` y `molsysmt.ViewerJSON` conserva:
 
-## 2. Impacto Científico y de Experiencia de Usuario
+- orden de enlace, incluyendo aromaticidad;
+- cargas formales siguiendo el contrato de datos mecanicos de MolSysMT;
+- propiedades SDF por molecula/componente;
+- limites de molecula en archivos multi-ligando;
+- acceso estable mediante `msm.get` o un accessor documentado.
 
-1. **Baja Fidelidad Científica**: Para los químicos medicinales y computacionales, visualizar una molécula con órdenes de enlace incorrectos (por ejemplo, ver un anillo de benceno representado con enlaces sencillos sin deslocalización aromática, o un grupo carbonilo sin su doble enlace $C=O$) es científicamente inaceptable y dificulta la inspección rápida de complementariedades geométricas y electrónicas en el sitio activo.
-2. **Pérdida de Contexto de Docking**: Al visualizar resultados de cribado virtual (virtual screening), los científicos pierden el acceso visual a metadatos clave almacenados en el archivo SDF (como puntuaciones de docking, energías de interacción o identificadores de base de datos del ligando), los cuales deberían poder mostrarse de forma interactiva al cruzar el cursor sobre la molécula o en los paneles de add-on.
+## Estado actual en MolSysViewer
 
----
+La parte TypeScript ya tiene un camino generico de carga cruda:
+`load_structure_from_string` acepta `format` y llama a Mol* con
+`parseTrajectory(raw, format)`. Esto permite usar el parser nativo de Mol* para
+formatos como `sdf` si el frontend recibe la cadena cruda.
 
-## 3. Propuestas de Solución (Alternativas de Diseño)
+El camino normal de `view.load(...)`, sin embargo, es MolSysMT -> ViewerJSON ->
+payload MolSysViewer. Ese camino debe esperar a que MolSysMT preserve y exponga
+los metadatos quimicos necesarios. MolSysViewer no debe inferir aromaticidad,
+ordenes de enlace o cargas desde coordenadas si MolSysMT ya es la fuente de la
+estructura.
 
-### Propuesta: Transmisión y Carga Nativa de Formato SDF/MOL2 en Mol*
+## Trabajo pendiente en MolSysViewer
 
-Se propone rediseñar el cargador y canal de datos de ligandos químicos en el visualizador:
+Cuando MolSysMT exponga el contrato upstream:
 
-1. **Utilizar el Lector SDF Nativo de Mol***:
-   Mol* cuenta con un parser nativo extremadamente robusto para archivos en formato SDF (formatos químicos estructurados). En lugar de forzar la conversión asimétrica "SDF -> PDB sintético -> Mol*" en Python, el cargador de MolSysViewer en Python debe empaquetar y enviar el archivo SDF **en su formato crudo nativo** como una cadena de texto (o codificado en base64 si es necesario) hacia el frontend.
-   
-2. **Habilitar el Bloque de Inicialización SDF en JS**:
-   Modificar el cargador en `viewer-controller.ts` para que, al detectar que la estructura es una molécula pequeña o proviene de un formato químico, invoque al cargador nativo de SDF de Mol*:
-   ```typescript
-   // En el frontend de JS, inicializar usando el parser de SDF de Mol*
-   const data = await this.plugin.builders.data.rawData({ data: sdfText });
-   const trajectory = await this.plugin.builders.structure.parseTrajectory(data, 'sdf');
-   ```
-   * Mol* calculará y dibujará de forma nativa la geometría tridimensional respetando con precisión absoluta los órdenes de enlace dobles, triples y aromáticos descritos en la tabla de conectividad del SDF.
+1. Extender `_serialize_molsys_payload(...)` para transportar los campos
+   quimicos nuevos desde `ViewerJSON` al payload TS, sin renombrados ambiguos.
+2. Extender `MolSysPayload` y el loader TS para materializar ordenes de enlace,
+   tipos/aromaticidad y cargas en las estructuras Mol* cuando vengan por el
+   payload MolSysMT.
+3. Enriquecer eventos de hover/click y add-ons con las propiedades SDF/MOL2
+   transportadas por MolSysMT.
+4. Anadir pruebas Python y TS que verifiquen que MolSysViewer no descarta esos
+   campos al serializar, cargar y exportar/reconstruir la escena.
+5. Mantener o exponer explicitamente, si se decide necesario, un camino de carga
+   cruda `format="sdf"`/`format="mol2"` para casos donde el usuario quiera que
+   Mol* parsee el archivo original directamente.
 
-3. **Exponer Propiedades del SDF en los Eventos de Interacción**:
-   El lector nativo de Mol* extraerá las propiedades del archivo SDF y las adjuntará al modelo. El normalizador de eventos en `viewer-controller.ts` podrá entonces capturar estos metadatos y enriquecer los payloads de interacción (hover, click) con la información química y de docking, enviándola directamente a los paneles de add-on y de vuelta a Python.
+## Criterios de cierre local
 
----
+Esta propuesta se puede cerrar en MolSysViewer cuando:
 
-## 4. Criterios de Aceptación
-
-1. Los ligandos orgánicos y moléculas pequeñas cargados en formato SDF o MOL2 deben renderizarse en el lienzo 3D de MolSysViewer respetando fielmente los órdenes de enlace correctos (dobles, triples y aromáticos) de la estructura.
-2. El usuario debe poder inspeccionar y consultar los metadatos y propiedades personalizadas del archivo SDF a través de las APIs de interacción en Python y en los add-ons laterales.
-3. Se deben incorporar pruebas de visualización y regresión que convaliden que la carga de formatos químicos no destruye la información de conectividad fina ni los órdenes de enlace moleculares.
+- MolSysMT tenga pruebas verdes para SDF/MOL2 -> MolSys -> ViewerJSON con
+  preservacion quimica;
+- MolSysViewer consuma esos campos desde ViewerJSON/payload sin perdida;
+- los eventos de interaccion expongan las propiedades quimicas relevantes;
+- existan pruebas de regresion que cubran al menos un SDF y un MOL2 con ordenes
+  de enlace no triviales y propiedades personalizadas.

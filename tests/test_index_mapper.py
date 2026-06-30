@@ -117,16 +117,22 @@ def test_index_mapper_reports_dropped_unmapped_indices():
 
 
 def test_index_mapper_degraded_identity_fallback_is_observable(monkeypatch):
+    import smonitor
+
     molsys = msm.convert(demo["dialanine"]._molsys, to_form="molsysmt.MolSys")
 
     def fail_select(*_args, **_kwargs):
         raise RuntimeError("forced select failure")
 
     monkeypatch.setattr("molsysviewer.viewer.index_mapper.msm.select", fail_select)
+    manager = smonitor.get_manager()
+    before_warnings = manager.report().get("warnings_total", 0)
 
     with pytest.warns(RuntimeWarning, match="msm.select failed"):
         mapper = IndexMapper(molsys, selection="atom_index >= 10")
 
+    after_warnings = manager.report().get("warnings_total", 0)
+    assert after_warnings == before_warnings + 1
     assert mapper.degraded is True
     assert mapper.degraded_reason is not None
     assert "forced select failure" in mapper.degraded_reason

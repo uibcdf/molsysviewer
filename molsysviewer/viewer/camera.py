@@ -204,7 +204,7 @@ class CameraManager:
             self.focus_region(
                 view._regions[tag],  # noqa: SLF001
                 duration_ms=duration_ms,
-                extra_radius=f"{extra_radius * 10.0} angstroms",
+                extra_radius=f"{quantity_value_in_unit(extra_radius, 'angstroms')} angstroms",
                 skip_digestion=True,
             )
             return

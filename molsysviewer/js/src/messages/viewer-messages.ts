@@ -25,6 +25,8 @@ export type AddSphereMessage = {
         tag?: string;
         layer_tag?: string;
         structures_coords?: Array<[number, number, number] | null>;
+        atom_indices?: number[];
+        structures_atom_indices?: number[][];
     };
 };
 
@@ -555,6 +557,18 @@ export type SetAddonRuntimeSummaryMessage = {
         formats?: string[];
         order?: number;
         meta?: Record<string, unknown>;
+    }>;
+    discovery_failures?: Array<{
+        kind?: string;
+        source?: string;
+        reason?: string;
+        traceback?: string;
+    }>;
+    lifecycle_failures?: Array<{
+        kind?: string;
+        source?: string;
+        reason?: string;
+        traceback?: string;
     }>;
 };
 

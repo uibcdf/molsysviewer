@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 import molsysmt as msm
 from smonitor import signal
 from ._private.arg_digestion import digest
+from ._private.smonitor_emit import emit_suppressed_exception
 from .colors import expand_values_to_atoms, normalize_color
 
 
@@ -60,7 +61,12 @@ class Region:
                 for b in bonds or []:
                     try:
                         scoped.append(int(b))
-                    except Exception:
+                    except Exception as exc:
+                        emit_suppressed_exception(
+                            "Region._scoped_indices_for_element.bond_index",
+                            exc,
+                            context={"tag": self.tag, "value": repr(b)},
+                        )
                         continue
             return sorted(set(scoped))
 
@@ -92,7 +98,12 @@ class Region:
                 if value is None:
                     continue
                 scoped.append(int(value))
-            except Exception:
+            except Exception as exc:
+                emit_suppressed_exception(
+                    "Region._scoped_indices_for_element.hierarchy_index",
+                    exc,
+                    context={"tag": self.tag, "element": element, "value": repr(value)},
+                )
                 continue
         return sorted(set(scoped))
 

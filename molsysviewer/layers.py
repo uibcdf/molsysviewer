@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import warnings
 from typing import Any, Dict, Optional
 
 from smonitor import signal
@@ -9,7 +10,7 @@ from ._private.arg_digestion import digest
 from . import pyunitwizard as puw
 
 
-_NM_TO_ANGSTROM = 10.0
+_NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
 
 def _extract_shape_points_nm(options: dict, op: str) -> list[list[float]]:
@@ -93,6 +94,8 @@ def _extract_shape_points_nm(options: dict, op: str) -> list[list[float]]:
 def _bounding_sphere_nm(points: list[list[float]]) -> tuple[list[float], float]:
     """Return (centroid, radius) in nm for a list of 3D points."""
     n = len(points)
+    if n == 0:
+        return [0.0, 0.0, 0.0], 4.0
     cx = sum(p[0] for p in points) / n
     cy = sum(p[1] for p in points) / n
     cz = sum(p[2] for p in points) / n
@@ -866,11 +869,13 @@ class Shape(SceneObject):
         options = msg.get("options") if isinstance(msg.get("options"), dict) else {}
         points = _extract_shape_points_nm(options, op)
         if not points:
-            raise ValueError(
-                f"Cannot focus shape {self.tag!r}: no geometric coordinates found in message (op={op!r})."
+            warnings.warn(
+                f"Attempted to focus camera on empty shape {self.tag!r}; focusing on scene center instead.",
+                UserWarning,
+                stacklevel=2,
             )
         center_nm, radius_nm = _bounding_sphere_nm(points)
-        radius_nm += float(extra_radius)
+        radius_nm = max(radius_nm + float(extra_radius), 0.5)
         # Convert nm → Å (scene coordinates match atomic coordinates which are in Å)
         center_ang = [v * _NM_TO_ANGSTROM for v in center_nm]
         radius_ang = radius_nm * _NM_TO_ANGSTROM

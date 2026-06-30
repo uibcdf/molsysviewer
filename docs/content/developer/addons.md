@@ -106,18 +106,21 @@ workspace selector UI has not been built yet.
 
 The current discovery strategy is deliberately conservative.
 
-MolSysViewer maintains a small list of known add-on module names and can try to
-discover them with:
+By default, `molsysviewer.addons.discover()` loads add-ons exposed through the
+standard Python entry point group `molsysviewer.addons`. This avoids importing
+large scientific add-on stacks just because `molsysviewer` was imported.
+
+Legacy add-ons that have not yet published entry points can still be discovered
+from the maintained fallback module list by opting in explicitly:
 
 ```python
 import molsysviewer
 
-molsysviewer.addons.discover()
+molsysviewer.addons.discover(include_known_modules=True)
 ```
 
-Missing known modules are ignored without error.
-
-You can inspect the maintained known-module list with:
+Missing known modules are ignored without error. You can inspect the maintained
+known-module list with:
 
 ```python
 molsysviewer.addons.known_modules()
@@ -226,6 +229,17 @@ The module should expose one of:
 
 and that object/factory must resolve to an `AddonSpec`.
 
+`AddonSpec` metadata should include stable package/version information when the
+add-on is distributed separately. Add-ons may also declare a MolSysViewer runtime
+requirement with `requires_molsysviewer`, using standard Python version
+specifiers such as `">=0.14,<1"`. Registration rejects incompatible add-ons
+before mutating the registry.
+
+Registry namespaces are strict. Registering two add-ons with the same
+`AddonSpec.name` raises `ValueError`, and add-on workspace IDs must also be
+globally unique because workspaces are selected by ID in the viewer runtime.
+Panel IDs and context-action IDs remain scoped by add-on.
+
 The bundled reference template follows exactly that rule.
 
 Recommended lifecycle exports, when needed:
@@ -314,7 +328,10 @@ MolSysViewer now also supports a deliberately small per-view lifecycle:
 
 This lifecycle is Python-side and view-local.
 It is intended for light runtime wiring when an add-on becomes active in a
-specific view.
+specific view. Lifecycle callback exceptions are isolated: MolSysViewer records
+the failure, keeps the viewer running, and exposes the diagnostic in the
+Workbench Add-ons section. If `on_enable(view)` fails, that add-on is left
+disabled for the affected view so runtime state remains coherent.
 
 You can provide it explicitly:
 
@@ -364,6 +381,33 @@ with a structured payload containing, for example:
 
 This keeps the first real add-on runtime behavior explicit and testable without
 opening arbitrary frontend execution.
+
+### Frontend panel cleanup
+
+An add-on panel ESM `render({ model, el })` function may return a cleanup
+function. MolSysViewer calls it before removing the panel element when the user
+navigates away or another add-on panel is mounted. Use this for timers, charts,
+secondary canvases, subscriptions, or other browser resources:
+
+```javascript
+export function render({ model, el }) {
+    const interval = window.setInterval(() => {
+        model.send({ type: "action", id: "heartbeat" });
+    }, 1000);
+
+    return () => {
+        window.clearInterval(interval);
+    };
+}
+```
+
+### Panel state isolation
+
+`AddonPanelWidget.state` and `AddonPanelWidget.set_state(...)` are scoped to
+the add-on that created that widget instance. The namespace is bound when the
+panel widget is resolved, so background work can safely update its own panel
+state even if the user navigates to a different add-on panel before the update
+finishes.
 
 ## View-local behavior
 

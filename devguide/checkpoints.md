@@ -29,15 +29,10 @@ With Phase D (unit consistency, TopoMT integration, and high-performance WebGL c
 ### Pending proposals and bugs: current state
 
 `devguide/pending_proposals/` now holds an extensive robustness/quality backlog
-(36 files). It mixes earlier visualization/addon proposals with a recent
+(21 files). It mixes earlier visualization/addon proposals with a recent
 code-review pass focused on consistency, conceptual gaps, maintainability, and
 performance. Highlights from that review (not yet implemented):
 
-* `scene_look_state_reconstruction.md` — scene look (background, lighting, fog,
-  clip planes, legend, focus-fade) is dropped on rebuild because
-  `_rebuild_view_from_current_molsys` reconstructs from an explicit category
-  enumeration that omits the scene-look category. Generalizes and subsumes
-  `background_color_replay_omission.md` / `background_color_persistence_gap.md`.
 * `viewer_mixin_contract_and_caller_resolution.md` — the 11 `MolSysView` mixins
   share ~33 untyped attributes/methods with no Protocol/base, and the ArgDigest
   caller resolution is double-bookkept (`__name__` spoof in 8 mixins +
@@ -46,10 +41,6 @@ performance. Highlights from that review (not yet implemented):
   loops on the load hot path; vectorizable fast path.
 * `visibility_diff_updates.md` — `update_visibility` resends the full visible
   index list on every visibility op.
-* `silent_except_swallowing_diagnostics.md` — ~198 silent `except` handlers in
-  state-affecting paths; instrument via smonitor / narrow types.
-* `payload_residue_vocabulary_consistency.md` — confirm/document the
-  `group_* → residue_*` remap at the Mol*/mmCIF payload boundary.
 
 `devguide/pending_bugs/` holds 0 files.
 
@@ -3601,3 +3592,99 @@ El roadmap de la Phase E se enfocó en la simplificación de los modos de visual
 - Alineación y centrado de la molécula automáticos reactivos al cambio de docking ✓
 - Coherencia y unificación de opacidades y color base de cristal en ambos estados del candado ✓
 
+## 2026-06-29 — PyUnitWizard conversion factor for nm -> angstrom wire boundaries
+
+- Replaced Python-side literal `10.0` conversions at MolSysViewer nm -> Mol* angstrom boundaries with `pyunitwizard.conversion_factor("nm", "angstroms")`, following the TopoMT pattern.
+- Covered MolSysMT payload serialization, simulation boxes, partial coordinate updates, measurement distance series, shape wire helpers, and shape/object focus radius conversion.
+- This does not close `pending_proposals/units_friction_nm_vs_angstroms.md`: bare numeric visual API values are still interpreted as nm; the pending UX decision is whether to warn or make the default configurable.
+
+## 2026-06-29 — Add-on discovery import side-effect hardening
+
+- `addons.discover()` now loads only `molsysviewer.addons` entry points by default; legacy `KNOWN_ADDON_MODULES` fallback discovery is opt-in via `include_known_modules=True`.
+- This prevents importing MolSysViewer from importing heavy add-on stacks such as TopoMT and inheriting their import-time global warning/logging side effects.
+- Coordinated with TopoMT/SMonitor fixes for `BUG_global_warning_formatter_hijacked_by_imported_addons.md`.
+
+## 2026-06-29 — Add-on discovery diagnostics exposed in Workbench
+
+- `set_addon_runtime_summary` now carries `discovery_failures` from the view-local add-on manager, preserving `source`, `reason`, and `traceback` for failed entry point loads.
+- The Workbench Add-ons section renders non-blocking diagnostic rows for discovery failures while leaving the viewer and successfully loaded add-ons operational.
+- Covered by `tests/test_addons.py` and `npm run test:js`.
+
+## 2026-06-29 — Add-on lifecycle exception isolation
+
+- Wrapped `on_enable`, `on_disable`, and `on_context_action` callbacks so add-on exceptions no longer propagate into user cells or leave the viewer half-synchronized.
+- `on_enable` failures disable that add-on for the affected view and all lifecycle failures are stored as view-local diagnostics with `source`, `reason`, and `traceback`.
+- Lifecycle diagnostics are emitted through SMonitor and surfaced in the Workbench Add-ons section alongside discovery diagnostics.
+- Covered by `tests/test_addons.py`, `tests/test_export_messages_e2e.py`, and `npm run test:js`.
+
+## 2026-06-29 — Add-on panel state namespace isolation
+
+- `AddonPanelWidget.state` and `set_state(...)` now use the widget instance bound `_addon_name` instead of `view._active_panel_widget`.
+- `ViewAddonsManager.resolve_panel_widget(...)` binds `_addon_name` when instantiating panel widgets, so background updates cannot write into whichever add-on panel is currently active.
+- Covered by `tests/test_addons.py` with two live add-on panel widgets writing under simulated panel navigation changes.
+
+## 2026-06-29 — Add-on compatibility and namespace collision validation
+
+- Added `AddonSpec.requires_molsysviewer` with standard Python version specifier validation and early rejection when the installed MolSysViewer version is incompatible.
+- `GlobalAddonsRegistry.register(...)` now rejects duplicate add-on namespaces and duplicate global workspace IDs before mutating registry state.
+- Added `packaging>=23` as an explicit runtime dependency for PEP 440/specifier handling.
+- Covered by `tests/test_addons.py` plus an import smoke check for the new requirement metadata.
+
+## 2026-06-29 — Add-on frontend panel cleanup contract
+
+- Confirmed and documented the add-on ESM `render({ model, el }) => cleanup` contract: returned cleanup functions run before the panel DOM host is unmounted.
+- Added a focused JS unit test for cleanup ordering without starting Mol*.
+- Fixed add-on panel active-key comparisons to use the actual mounted key (`addon:panel`) instead of `workspace:panel`, avoiding unnecessary remounts when workspace IDs differ from add-on names.
+
+## 2026-06-30 — Suppressed exception diagnostics in state paths
+
+- Added a shared `emit_suppressed_exception(...)` SMonitor diagnostic for recovered internal exceptions that previously disappeared silently.
+- Instrumented the prioritized state paths in `IndexMapper`, visibility/module binding, region splitting/scoping, measurement metadata/series fallbacks, state import restoration, and active-selection context refresh.
+- Extended the IndexMapper degraded fallback test to assert that an injected failure increments the observable SMonitor warning count.
+
+## 2026-06-30 — Index mapper rebuild orphan cleanup
+
+- Closed `pending_proposals/index_mapper_out_of_sync.md`: public edit APIs already rebuild and remap the viewer state through `add`, `remove`, `set`, and `append_structures`.
+- Tightened atom-removal rebuild cleanup so regions, shapes, annotations, and measurements whose atom anchors disappear are removed from Python registries and replay histories instead of lingering as empty/stale objects.
+- Added a regression covering fully orphaned region, shape, annotation, and measurement records after `remove(...)`.
+
+## 2026-06-30 — Annotation anchor remap proposal closed
+
+- Closed `pending_proposals/annotation_index_orphan_topology.md` as fully resolved by the rebuild remapping path.
+- Existing rebuild persistence coverage verifies surviving annotation anchors are remapped after atom removal.
+- The orphan cleanup regression added in the previous round verifies annotations whose anchors are fully removed are dropped from replay history and Python registries.
+
+## 2026-06-30 — Scene look state survives rebuild/export
+
+- Closed `pending_proposals/scene_look_state_reconstruction.md` and the subsumed background-color proposals.
+- Added `_scene_look` as the persistent backend state for scene look channels: background, fog, lighting, clip planes, legend, and focus-fade.
+- Rebuild now remaps or drops focus-fade atom targets and replays all surviving scene-look messages before the visibility refresh.
+- Export now re-injects any scene-look channel missing from the cleaned message history.
+- Added regression coverage for look preservation through `remove(...)` and HTML export message generation.
+
+## 2026-06-30 — Player state survives rebuild/export
+
+- Closed `pending_proposals/player_state_persistence_gap.md`.
+- Added a backend `_player_state` snapshot driven by `PlayerManager` mutators for fps, step, mode, direction, and active playback state.
+- Rebuild and export now replay the current trajectory frame plus canonical `set_trajectory_playback` state, including autoplay when the player was active.
+- Added regression coverage for 10 FPS ping-pong export/rebuild and paused custom settings without autoplay.
+
+## 2026-06-30 — Trajectory player frame sync
+
+- Closed `pending_proposals/trajectory_player_sync_desync.md`.
+- The frontend now emits throttled `trajectory_frame_changed` events every 200 ms while browser playback is active, carrying `is_playing: true` to avoid confusing live pulses with stop events.
+- Python now updates `view.player.index` and preserves `view.player.is_playing` from those events; final stop events without `is_playing` keep the existing exact pause semantics.
+- Covered with JS trajectory-handler and Python frontend-event regression tests.
+
+## 2026-06-30 — Empty shape focus fallback
+
+- Closed `pending_proposals/bounding_sphere_empty_sequence_crash.md`.
+- `_bounding_sphere_nm([])` now returns a deterministic scene-center fallback instead of raising divide-by-zero or empty-sequence errors.
+- `Shape.focus()` now warns and zooms to the scene-center fallback when a shape has no geometric points, instead of aborting the user cell.
+- Added focused regressions for the geometry helper and the public shape focus path.
+
+## 2026-06-30 — Payload group-to-residue vocabulary documented
+
+- Closed `pending_proposals/payload_residue_vocabulary_consistency.md` as an intentional boundary translation.
+- Documented that Python/MolSysSuite `group_id` and `group_name` are serialized as payload `residue_id` and `residue_name` only because the TypeScript loader materializes them into Mol*/mmCIF `atom_site` residue columns.
+- Added comments at both the Python serializer and TypeScript payload interface, and recorded the contract in developer protocol docs.

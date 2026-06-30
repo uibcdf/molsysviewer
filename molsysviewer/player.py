@@ -35,6 +35,34 @@ class PlayerManager:
         self._direction: str = "forward"
         self._is_playing: bool = False
 
+    def _playback_message(self, *, action: str | None = None) -> dict:
+        msg = {
+            "op": "set_trajectory_playback",
+            "fps": self._fps,
+            "mode": self._mode,
+            "direction": self._direction,
+            "step": self._step_size,
+        }
+        if action is not None:
+            msg["action"] = action
+        return msg
+
+    def _store_state(self) -> None:
+        self._view._player_state = {  # noqa: SLF001
+            "fps": self._fps,
+            "mode": self._mode,
+            "direction": self._direction,
+            "step": self._step_size,
+            "is_playing": self._is_playing,
+        }
+
+    def _reset_state(self) -> None:
+        self._fps = 30
+        self._step_size = 1
+        self._mode = "loop"
+        self._direction = "forward"
+        self._is_playing = False
+
     # ── Read-only state ────────────────────────────────────────────────────
 
     @property
@@ -217,15 +245,9 @@ class PlayerManager:
         if step_size is not None:
             self._step_size = int(step_size)
 
-        self._view._send({  # noqa: SLF001
-            "op": "set_trajectory_playback",
-            "action": "play",
-            "fps": self._fps,
-            "mode": self._mode,
-            "direction": self._direction,
-            "step": self._step_size,
-        })
         self._is_playing = True
+        self._store_state()
+        self._view._send(self._playback_message(action="play"))  # noqa: SLF001
 
     @signal(tags=["structures"])
     @digest()
@@ -233,6 +255,7 @@ class PlayerManager:
         """Pause playback."""
         self._view._send({"op": "set_trajectory_playback", "action": "stop"})  # noqa: SLF001
         self._is_playing = False
+        self._store_state()
 
     # ── Setters ────────────────────────────────────────────────────────────
 
@@ -244,6 +267,7 @@ class PlayerManager:
         If playback is active the new rate takes effect immediately.
         """
         self._fps = int(fps)
+        self._store_state()
         self._view._send({"op": "set_trajectory_playback", "fps": self._fps})  # noqa: SLF001
 
     @signal(tags=["structures"])
@@ -255,18 +279,21 @@ class PlayerManager:
         value to take effect.
         """
         self._step_size = int(step_size)
+        self._store_state()
 
     @signal(tags=["structures"])
     @digest()
     def set_mode(self, mode: str, skip_digestion: bool = False) -> None:
         """Set the playback mode (``"loop"``, ``"once"``, ``"ping-pong"``)."""
         self._mode = str(mode)
+        self._store_state()
 
     @signal(tags=["structures"])
     @digest()
     def set_direction(self, direction: str, skip_digestion: bool = False) -> None:
         """Set the playback direction (``"forward"`` or ``"backward"``)."""
         self._direction = str(direction)
+        self._store_state()
 
 
 __all__ = ["PlayerManager"]

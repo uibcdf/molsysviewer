@@ -63,6 +63,115 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
     assert post_hide_count == pre_hide_count, "view.hide() must not re-emit hide_region for already-hidden region"
 
 
+
+
+def test_scene_look_state_survives_rebuild_and_export():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.scene.set_background("#ffffff")
+    view.scene.set_fog(enabled=True, intensity=0.35)
+    view.scene.set_lighting(ambient=0.25, diffuse=0.75)
+    view.scene.set_clip_planes(near=8.0, far=60.0)
+    view.scene.set_legend([{"label": "site", "color": 0x0072B2}], position="bottom-left")
+    view.focus_with_fade([2, 3], fade=0.7, skip_digestion=True)
+
+    view.remove(selection=[0], skip_digestion=True)
+
+    by_op = {msg.get("op"): msg for msg in view._message_history}  # noqa: SLF001
+    assert by_op["set_background_color"]["color"] == 0xFFFFFF
+    assert by_op["set_fog"] == {"op": "set_fog", "enable": True, "intensity": 0.35}
+    assert by_op["set_lighting"]["ambient"] == 0.25
+    assert by_op["set_lighting"]["diffuse"] == 0.75
+    assert by_op["set_clip_planes"]["near"] == 8.0
+    assert by_op["set_clip_planes"]["far"] == 60.0
+    assert by_op["set_legend"]["options"]["position"] == "bottom-left"
+    assert by_op["set_focus_fade"]["options"] == {"focus_atom_indices": [1, 2], "fade": 0.7}
+
+    exported_by_op = {msg.get("op"): msg for msg in view._build_export_messages()}  # noqa: SLF001
+    for op in [
+        "set_background_color",
+        "set_fog",
+        "set_lighting",
+        "set_clip_planes",
+        "set_legend",
+        "set_focus_fade",
+    ]:
+        assert op in exported_by_op
+    assert exported_by_op["set_focus_fade"]["options"]["focus_atom_indices"] == [1, 2]
+
+
+def test_scene_focus_fade_is_dropped_when_focus_atoms_are_removed():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.focus_with_fade([0], fade=0.7, skip_digestion=True)
+    view.remove(selection=[0], skip_digestion=True)
+
+    assert "focus_fade" not in view._scene_look  # noqa: SLF001
+    assert not any(msg.get("op") == "set_focus_fade" for msg in view._message_history)  # noqa: SLF001
+
+
+def test_player_state_survives_rebuild_and_export():
+    view = demo["pentalanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.player.go_to_structure(2, skip_digestion=True)
+    view.player.play(fps=10, mode="ping-pong", direction="backward", step_size=2, skip_digestion=True)
+
+    view.remove(selection="atom_index < 2", skip_digestion=True)
+
+    frame_msg = next(
+        msg for msg in view._message_history  # noqa: SLF001
+        if msg.get("op") == "set_trajectory_frame"
+    )
+    assert frame_msg["index"] == 2
+
+    playback_msg = next(
+        msg for msg in reversed(view._message_history)  # noqa: SLF001
+        if msg.get("op") == "set_trajectory_playback"
+    )
+    assert playback_msg == {
+        "op": "set_trajectory_playback",
+        "action": "play",
+        "fps": 10,
+        "mode": "ping-pong",
+        "direction": "backward",
+        "step": 2,
+    }
+
+    exported_playback = next(
+        msg for msg in reversed(view._build_export_messages())  # noqa: SLF001
+        if msg.get("op") == "set_trajectory_playback"
+    )
+    assert exported_playback["fps"] == 10
+    assert exported_playback["mode"] == "ping-pong"
+    assert exported_playback["direction"] == "backward"
+    assert exported_playback["step"] == 2
+    assert exported_playback["action"] == "play"
+
+
+def test_player_settings_export_without_autoplay_when_paused():
+    view = demo["pentalanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.player.set_fps(10, skip_digestion=True)
+    view.player.set_mode("ping-pong", skip_digestion=True)
+    view.player.set_step_size(3, skip_digestion=True)
+
+    exported_playback = next(
+        msg for msg in reversed(view._build_export_messages())  # noqa: SLF001
+        if msg.get("op") == "set_trajectory_playback"
+    )
+    assert exported_playback == {
+        "op": "set_trajectory_playback",
+        "fps": 10,
+        "mode": "ping-pong",
+        "direction": "forward",
+        "step": 3,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Annotation layer-tag retag survives rebuild
 # ---------------------------------------------------------------------------

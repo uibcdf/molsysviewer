@@ -38,6 +38,13 @@ type AddonWorkbenchSectionSummary = {
     itemSubtitle?: string;
 };
 
+type AddonDiagnosticSummary = {
+    kind?: string;
+    source: string;
+    reason: string;
+    traceback?: string;
+};
+
 type WorkspaceOption = {
     id: string;
     title: string;
@@ -921,6 +928,35 @@ export class WorkbenchPanel {
                 ].filter(Boolean).join(" · "),
             })),
         );
+        this.applySectionExpandedState("addons");
+    }
+
+    setAddonDiagnostics(items: AddonDiagnosticSummary[]): void {
+        const section = this.sections.get("addons")!;
+        const rows = Array.from(section.list.children) as HTMLElement[];
+        const failures = Array.isArray(items) ? items : [];
+        for (const failure of failures) {
+            const source = failure.source || "unknown source";
+            const reason = failure.reason || "unknown error";
+            const title = failure.kind === "lifecycle"
+                ? `Lifecycle failed: ${source}`
+                : `Discovery failed: ${source}`;
+            const row = this.makeRow({
+                key: `addon-failure:${source}`,
+                title,
+                subtitle: reason,
+            });
+            row.setAttribute("data-molsysviewer-workbench-addon-discovery-failure", source);
+            if (failure.traceback) row.title = failure.traceback;
+            rows.push(row);
+        }
+        if (rows.length === 0) {
+            section.list.replaceChildren();
+            section.empty.style.display = "block";
+        } else {
+            section.empty.style.display = "none";
+            section.list.replaceChildren(...rows);
+        }
         this.applySectionExpandedState("addons");
     }
 

@@ -158,6 +158,86 @@ def test_global_addons_registry_supports_complete_fake_addon():
     assert addons.tool_mode_specs()[0]["id"] == "pocket-pick"
 
 
+
+def test_addons_registry_rejects_incompatible_molsysviewer_requirement():
+    addons.clear()
+    try:
+        addon = AddonSpec(name="future-addon", requires_molsysviewer=">=999.0.0")
+        try:
+            addons.register(addon)
+        except ValueError as exc:
+            message = str(exc)
+        else:
+            raise AssertionError("Expected incompatible add-on requirement to be rejected.")
+
+        assert "future-addon" in message
+        assert "requires MolSysViewer >=999.0.0" in message
+        assert addons.available() == []
+    finally:
+        addons.clear()
+
+
+def test_addon_spec_rejects_invalid_molsysviewer_requirement():
+    try:
+        AddonSpec(name="bad-requirement", requires_molsysviewer="not a specifier")
+    except ValueError as exc:
+        assert "requires_molsysviewer" in str(exc)
+    else:
+        raise AssertionError("Expected invalid requires_molsysviewer specifier to be rejected.")
+
+
+def test_addons_registry_rejects_duplicate_addon_namespace():
+    addons.clear()
+    first = AddonSpec(name="topomt", package="first")
+    second = AddonSpec(name="topomt", package="second")
+    try:
+        addons.register(first)
+        try:
+            addons.register(second)
+        except ValueError as exc:
+            message = str(exc)
+        else:
+            raise AssertionError("Expected duplicate add-on namespace to be rejected.")
+
+        assert message == "Add-on namespace 'topomt' is already registered."
+        assert addons.records()[0]["package"] == "first"
+    finally:
+        addons.clear()
+
+
+def test_addons_registry_rejects_duplicate_workspace_id():
+    addons.clear()
+    try:
+        addons.register(
+            AddonSpec(
+                name="first",
+                workspaces=(AddonWorkspaceSpec(id="shared", title="First"),),
+            )
+        )
+        try:
+            addons.register(
+                AddonSpec(
+                    name="second",
+                    workspaces=(AddonWorkspaceSpec(id="shared", title="Second"),),
+                )
+            )
+        except ValueError as exc:
+            message = str(exc)
+        else:
+            raise AssertionError("Expected duplicate add-on workspace id to be rejected.")
+
+        assert message == "Add-on workspace id 'shared' from 'second' is already registered by 'first'."
+        assert addons.available() == ["first"]
+    finally:
+        addons.clear()
+
+
+def test_addon_spec_info_includes_molsysviewer_requirement():
+    addon = AddonSpec(name="compatible-addon", requires_molsysviewer=">=0.1")
+
+    assert addon.info()["requires_molsysviewer"] == ">=0.1"
+
+
 def test_view_addons_expose_lazy_state_namespace_and_manager_proxy():
     addons.clear()
 
@@ -350,7 +430,7 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
     monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt", "molsysviewer_missing"))
     monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {})
     try:
-        discovered = addons.discover()
+        discovered = addons.discover(include_known_modules=True)
         assert [item.name for item in discovered] == ["topomt"]
         assert addons.known_modules() == ["molsysviewer_topomt", "molsysviewer_missing"]
         assert addons.records()[0]["module"] == "molsysviewer_topomt"
@@ -358,6 +438,27 @@ def test_addons_registry_can_discover_known_modules(monkeypatch):
         sys.modules.pop(module.__name__, None)
         addons.clear()
 
+
+def test_addons_registry_does_not_import_known_modules_by_default(monkeypatch):
+    addons.clear()
+    module = ModuleType("molsysviewer_topomt")
+
+    def _get_addon():
+        return AddonSpec(name="topomt", package="molsysviewer-topomt")
+
+    from importlib.machinery import ModuleSpec
+    module.get_addon = _get_addon
+    module.__spec__ = ModuleSpec(module.__name__, None)
+    sys.modules[module.__name__] = module
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ("molsysviewer_topomt",))
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {})
+    try:
+        discovered = addons.discover()
+        assert discovered == []
+        assert addons.available() == []
+    finally:
+        sys.modules.pop(module.__name__, None)
+        addons.clear()
 
 
 def test_addons_registry_discovers_entry_point_addons(monkeypatch):
@@ -406,7 +507,7 @@ def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch
     before_warnings = manager.report().get("warnings_total", 0)
 
     try:
-        discovered = addons.discover()
+        discovered = addons.discover(include_known_modules=True)
         assert len(discovered) == 0
         after_warnings = manager.report().get("warnings_total", 0)
         assert after_warnings == before_warnings + 1
@@ -438,6 +539,35 @@ def test_addons_registry_records_entry_point_discovery_failures(monkeypatch):
     assert failures[0]["reason"] == "broken entry point"
     assert "RuntimeError: broken entry point" in failures[0]["traceback"]
     addons.clear()
+
+
+
+def test_view_addons_runtime_summary_includes_discovery_failures(monkeypatch):
+    addons.clear()
+
+    class BrokenEntryPoint:
+        name = "broken-addon"
+        value = "molsysviewer_broken:get_addon"
+
+        def load(self):
+            raise RuntimeError("broken entry point")
+
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {"molsysviewer.addons": [BrokenEntryPoint()]})
+    addons.discover()
+
+    view = MolSysView()
+    sent: list[dict] = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+    try:
+        assert view.addons.discovery_failures()[0]["source"] == "entry-point:broken-addon"
+
+        view._sync_addons_runtime()  # noqa: SLF001
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["discovery_failures"][0]["source"] == "entry-point:broken-addon"
+        assert addon_msg["discovery_failures"][0]["reason"] == "broken entry point"
+    finally:
+        addons.clear()
 
 
 def test_view_addons_refresh_context_items_from_active_selection_hook():
@@ -743,6 +873,106 @@ def test_view_addons_run_lifecycle_hooks_on_init_toggle_and_reset():
     assert events == ["enable", "disable", "enable"]
     assert another_view.addons.enabled() == []
     addons.clear()
+
+
+
+def test_view_addons_lifecycle_on_enable_failure_isolated_and_reported():
+    addons.clear()
+
+    def _on_enable(_view):
+        raise RuntimeError("enable exploded")
+
+    addons.register(
+        AddonSpec(
+            name="broken-lifecycle",
+            panels=(AddonPanelSpec(id="broken", title="Broken", entry="broken.panel"),),
+        ),
+        lifecycle=addons_module.AddonLifecycleSpec(on_enable=_on_enable),
+    )
+
+    view = MolSysView()
+    sent: list[dict] = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
+    try:
+        assert view.addons.is_enabled("broken-lifecycle") is False
+        failures = view.addons.lifecycle_failures()
+        assert failures[0]["source"] == "lifecycle:broken-lifecycle.on_enable"
+        assert failures[0]["reason"] == "enable exploded"
+        assert "RuntimeError: enable exploded" in failures[0]["traceback"]
+
+        view._sync_addons_runtime()  # noqa: SLF001
+        addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
+        assert addon_msg["addons"] == []
+        assert addon_msg["lifecycle_failures"][0]["source"] == "lifecycle:broken-lifecycle.on_enable"
+    finally:
+        addons.clear()
+
+
+def test_view_addons_lifecycle_on_disable_failure_isolated_and_reported():
+    addons.clear()
+
+    def _on_disable(_view):
+        raise RuntimeError("disable exploded")
+
+    addons.register(
+        AddonSpec(name="broken-disable"),
+        lifecycle=addons_module.AddonLifecycleSpec(on_disable=_on_disable),
+    )
+
+    view = MolSysView()
+    try:
+        view.addons.disable("broken-disable")
+        assert view.addons.is_enabled("broken-disable") is False
+        failures = view.addons.lifecycle_failures()
+        assert failures[0]["source"] == "lifecycle:broken-disable.on_disable"
+        assert failures[0]["reason"] == "disable exploded"
+    finally:
+        addons.clear()
+
+
+def test_view_addons_context_action_failure_isolated_and_reported():
+    addons.clear()
+
+    def _on_context_action(_view, _action_id, _payload):
+        raise RuntimeError("context exploded")
+
+    addons.register(
+        AddonSpec(
+            name="broken-context",
+            context_actions=(
+                AddonContextActionSpec(
+                    id="focus-pocket",
+                    title="Focus Pocket",
+                    entry="broken.context.focus_pocket",
+                    target_kinds=("structure",),
+                ),
+            ),
+        ),
+        lifecycle=addons_module.AddonLifecycleSpec(on_context_action=_on_context_action),
+    )
+
+    view = MolSysView()
+    try:
+        handled = view.addons.handle_context_action(
+            "broken-context",
+            "focus-pocket",
+            {
+                "event": "interaction_context_action",
+                "action": "addon_context_action",
+                "addon": "broken-context",
+                "addon_action_id": "focus-pocket",
+                "context": {"kind": "structure", "atom_indices": [0]},
+            },
+        )
+
+        assert handled is False
+        assert view.addons.is_enabled("broken-context") is True
+        failures = view.addons.lifecycle_failures()
+        assert failures[0]["source"] == "lifecycle:broken-context.on_context_action:focus-pocket"
+        assert failures[0]["reason"] == "context exploded"
+    finally:
+        addons.clear()
 
 
 def test_view_addons_handle_context_action_through_lifecycle():
@@ -1137,6 +1367,62 @@ def test_resolve_panel_widget_returns_none_when_no_widget_class():
         addons.clear()
 
 
+def test_addon_panel_widget_state_is_bound_to_widget_addon_namespace():
+    import types
+    addons.clear()
+    module = types.ModuleType("_test_state_panel_mod")
+
+    class _PanelA(AddonPanelWidget):
+        _esm = "export function render() {}"
+
+    class _PanelB(AddonPanelWidget):
+        _esm = "export function render() {}"
+
+    module._PanelA = _PanelA
+    module._PanelB = _PanelB
+    sys.modules[module.__name__] = module
+
+    try:
+        addons.register(
+            AddonSpec(
+                name="addon-a",
+                panels=(AddonPanelSpec(id="main", title="A", widget_class="_test_state_panel_mod._PanelA"),),
+            )
+        )
+        addons.register(
+            AddonSpec(
+                name="addon-b",
+                panels=(AddonPanelSpec(id="main", title="B", widget_class="_test_state_panel_mod._PanelB"),),
+            )
+        )
+        view = types.SimpleNamespace(
+            widget=types.SimpleNamespace(addon_states={}),
+            _active_panel_widget=None,
+        )
+        from molsysviewer.addons import ViewAddonsManager
+        mgr = ViewAddonsManager(view, addons)
+        panel_a = mgr.resolve_panel_widget("addon-a", "main")
+        panel_b = mgr.resolve_panel_widget("addon-b", "main")
+
+        view._active_panel_widget = ("addon-b", "main", panel_b)
+        panel_a.set_state({"progress": 0.5})
+        assert view.widget.addon_states == {"addon-a": {"progress": 0.5}}
+        assert panel_a.state == {"progress": 0.5}
+        assert panel_b.state == {}
+
+        view._active_panel_widget = None
+        panel_b.set_state({"progress": 1.0})
+        assert view.widget.addon_states == {
+            "addon-a": {"progress": 0.5},
+            "addon-b": {"progress": 1.0},
+        }
+        assert panel_a._addon_name == "addon-a"
+        assert panel_b._addon_name == "addon-b"
+    finally:
+        addons.clear()
+        sys.modules.pop(module.__name__, None)
+
+
 def test_resolve_panel_widget_returns_instance():
     import types
     addons.clear()
@@ -1169,6 +1455,7 @@ def test_resolve_panel_widget_returns_instance():
         widget = mgr.resolve_panel_widget("panel-addon", "main")
         assert isinstance(widget, AddonPanelWidget)
         assert widget._view is view
+        assert widget._addon_name == "panel-addon"
     finally:
         addons.clear()
         sys.modules.pop(module.__name__, None)

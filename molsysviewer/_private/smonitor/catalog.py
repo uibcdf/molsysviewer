@@ -109,6 +109,12 @@ CATALOG = {
         "category": "addon",
         "level": "WARNING",
     },
+    "addon_lifecycle_failed": {
+        "code": "MOLSYSVIEWER-ADDON-LIFECYCLE-FAILED",
+        "source": "molsysviewer.addons",
+        "category": "addon",
+        "level": "WARNING",
+    },
     "payload_invalid_coordinates": {
         "code": "MOLSYSVIEWER-PAYLOAD-INVALID-COORDINATES",
         "source": "molsysviewer.loaders.molsysmt",
@@ -132,6 +138,12 @@ CATALOG = {
         "source": "molsysviewer.loaders.molsysmt",
         "category": "payload",
         "level": "DEBUG",
+    },
+    "suppressed_exception": {
+        "code": "MOLSYSVIEWER-SUPPRESSED-EXCEPTION",
+        "source": "molsysviewer.state",
+        "category": "diagnostic",
+        "level": "WARNING",
     },
 }
 

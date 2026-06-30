@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from importlib import import_module
 from importlib.metadata import entry_points as metadata_entry_points
 from importlib.util import find_spec
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
 import traceback
 from types import ModuleType
 from collections.abc import Callable
@@ -17,6 +19,7 @@ from smonitor.integrations import emit_from_catalog
 from ._private.arg_digestion import digest
 from .config.project_config import load_project_config
 from ._private.smonitor import CATALOG, PACKAGE_ROOT, META
+from ._version import __version__ as MOLSYSVIEWER_VERSION
 
 
 class AddonPanelWidget(anywidget.AnyWidget):
@@ -33,6 +36,7 @@ class AddonPanelWidget(anywidget.AnyWidget):
     def __init__(self, view: Any = None, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._view = view
+        self._addon_name: str | None = None
         self.on_msg(self._route_frontend_message)
 
     def _route_frontend_message(self, widget: Any, content: Any, buffers: Any) -> None:
@@ -81,24 +85,23 @@ class AddonPanelWidget(anywidget.AnyWidget):
 
     @property
     def state(self) -> dict[str, Any]:
-        """Get the synchronized state dictionary for this addon."""
-        if self._view is not None and hasattr(self._view.widget, "addon_states"):
-            states = self._view.widget.addon_states or {}
-            if self._view._active_panel_widget is not None:
-                addon_name, _, _ = self._view._active_panel_widget
-                return states.get(addon_name, {})
-        return {}
+        """Get this panel instance state dictionary."""
+        addon_name = self._addon_name
+        if addon_name is None or self._view is None or not hasattr(self._view.widget, "addon_states"):
+            return {}
+        states = self._view.widget.addon_states or {}
+        return dict(states.get(addon_name, {}))
 
     def set_state(self, updates: dict[str, Any]) -> None:
-        """Update the synchronized state for this addon."""
-        if self._view is not None and hasattr(self._view.widget, "addon_states"):
-            if self._view._active_panel_widget is not None:
-                addon_name, _, _ = self._view._active_panel_widget
-                states = dict(self._view.widget.addon_states or {})
-                addon_state = dict(states.get(addon_name, {}))
-                addon_state.update(updates)
-                states[addon_name] = addon_state
-                self._view.widget.addon_states = states
+        """Update this panel instance state dictionary."""
+        addon_name = self._addon_name
+        if addon_name is None or self._view is None or not hasattr(self._view.widget, "addon_states"):
+            return
+        states = dict(self._view.widget.addon_states or {})
+        addon_state = dict(states.get(addon_name, {}))
+        addon_state.update(updates)
+        states[addon_name] = addon_state
+        self._view.widget.addon_states = states
 
     def handle_action(self, view: Any, action_id: str, payload: dict[str, Any]) -> None:
         """Override to handle panel actions sent from JS."""
@@ -509,6 +512,7 @@ class AddonSpec:
     name: str
     package: str | None = None
     version: str | None = None
+    requires_molsysviewer: str | None = None
     description: str | None = None
     workspaces: tuple[AddonWorkspaceSpec, ...] = field(default_factory=tuple)
     panels: tuple[AddonPanelSpec, ...] = field(default_factory=tuple)
@@ -530,6 +534,13 @@ class AddonSpec:
             object.__setattr__(self, "package", _ensure_non_empty_text(self.package, "AddonSpec.package"))
         if self.version is not None:
             object.__setattr__(self, "version", _ensure_non_empty_text(self.version, "AddonSpec.version"))
+        if self.requires_molsysviewer is not None:
+            requirement = _ensure_non_empty_text(self.requires_molsysviewer, "AddonSpec.requires_molsysviewer")
+            try:
+                SpecifierSet(requirement)
+            except InvalidSpecifier as exc:
+                raise ValueError(f"AddonSpec.requires_molsysviewer is not a valid version specifier: {requirement!r}.") from exc
+            object.__setattr__(self, "requires_molsysviewer", requirement)
         if self.description is not None:
             object.__setattr__(self, "description", self.description.strip())
         object.__setattr__(self, "workspaces", tuple(self.workspaces))
@@ -555,6 +566,7 @@ class AddonSpec:
             "name": self.name,
             "package": self.package,
             "version": self.version,
+            "requires_molsysviewer": self.requires_molsysviewer,
             "description": self.description,
             "workspaces": [item.info() for item in self.workspaces],
             "panels": [item.info() for item in self.panels],
@@ -638,6 +650,34 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     def _iter_effective_addons(self) -> list[tuple[str, AddonSpec]]:
         return [(name, self._registry[name]) for name in self.enabled(skip_digestion=True)]
 
+    def _validate_addon_registration(self, addon: AddonSpec) -> None:
+        existing = self._registry.get(addon.name)
+        if existing is not None and existing is not addon:
+            raise ValueError(f"Add-on namespace {addon.name!r} is already registered.")
+
+        requirement = addon.requires_molsysviewer
+        if requirement is not None:
+            specifier = SpecifierSet(requirement)
+            current = Version(MOLSYSVIEWER_VERSION)
+            if current not in specifier:
+                raise ValueError(
+                    f"Add-on {addon.name!r} requires MolSysViewer {requirement}, "
+                    f"but the installed version is {MOLSYSVIEWER_VERSION}."
+                )
+
+        existing_workspace_ids = {
+            workspace.id: name
+            for name, registered in self._registry.items()
+            for workspace in registered.workspaces
+            if name != addon.name
+        }
+        for workspace in addon.workspaces:
+            owner = existing_workspace_ids.get(workspace.id)
+            if owner is not None:
+                raise ValueError(
+                    f"Add-on workspace id {workspace.id!r} from {addon.name!r} is already registered by {owner!r}."
+                )
+
     @signal(tags=["addon"])
     def register(
         self,
@@ -647,6 +687,7 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
     ) -> AddonSpec:
         if not isinstance(addon, AddonSpec):
             raise ValueError("addons.register(...) requires an AddonSpec instance.")
+        self._validate_addon_registration(addon)
         self._registry[addon.name] = addon
         if addon.name in self._project_disabled_defaults:
             self._enabled.discard(addon.name)
@@ -686,7 +727,12 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         )
 
     @signal(tags=["addon"])
-    def discover(self, modules: tuple[str, ...] | list[str] | None = None) -> list[AddonSpec]:
+    def discover(
+        self,
+        modules: tuple[str, ...] | list[str] | None = None,
+        *,
+        include_known_modules: bool = False,
+    ) -> list[AddonSpec]:
         discovered: list[AddonSpec] = []
         sources: list[tuple[str, str | None, Any | None]] = []
         if modules is None:
@@ -699,11 +745,12 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                     continue
                 seen.add(key)
                 sources.append((key, module_name, entry_point))
-            for module_name in KNOWN_ADDON_MODULES:
-                if module_name in seen:
-                    continue
-                seen.add(module_name)
-                sources.append((module_name, module_name, None))
+            if include_known_modules:
+                for module_name in KNOWN_ADDON_MODULES:
+                    if module_name in seen:
+                        continue
+                    seen.add(module_name)
+                    sources.append((module_name, module_name, None))
         else:
             sources = [(str(module_name), str(module_name), None) for module_name in modules]
 
@@ -911,6 +958,7 @@ class ViewAddonsManager(_AddonAggregationMixin):
         self._enabled_overrides: set[str] = set()
         self._disabled_overrides: set[str] = set()
         self._active_runtime: set[str] = set()
+        self._lifecycle_failures: dict[str, dict[str, str]] = {}
         self._notify_view_runtime = False
         # Per-view per-addon public state namespaces (lazy, accessed as
         # ``view.addons.<addon_name>``). Created via the add-on's ``state_factory``
@@ -990,12 +1038,36 @@ class ViewAddonsManager(_AddonAggregationMixin):
             if (addon := self._host.get(name, skip_digestion=True)) is not None
         ]
 
+    def _record_lifecycle_failure(self, name: str, hook: str, exc: Exception, *, notify: bool = True) -> None:
+        source = f"lifecycle:{name}.{hook}"
+        self._lifecycle_failures[source] = {
+            "kind": "lifecycle",
+            "source": source,
+            "reason": str(exc),
+            "traceback": traceback.format_exc(),
+        }
+        emit_from_catalog(
+            CATALOG["addon_lifecycle_failed"],
+            package_root=PACKAGE_ROOT,
+            meta=META,
+            extra={"addon": name, "hook": hook, "reason": str(exc)},
+        )
+        if notify:
+            self._notify_runtime_summary()
+
     def _activate_addon(self, name: str) -> None:
         if name in self._active_runtime:
             return
         lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
         if lifecycle is not None and lifecycle.on_enable is not None:
-            lifecycle.on_enable(self._view)
+            try:
+                lifecycle.on_enable(self._view)
+            except Exception as exc:
+                self._enabled_overrides.discard(name)
+                self._disabled_overrides.add(name)
+                self._record_lifecycle_failure(name, "on_enable", exc, notify=False)
+                return
+        self._lifecycle_failures.pop(f"lifecycle:{name}.on_enable", None)
         self._active_runtime.add(name)
 
     def _deactivate_addon(self, name: str) -> None:
@@ -1003,7 +1075,10 @@ class ViewAddonsManager(_AddonAggregationMixin):
             return
         lifecycle = self._host.lifecycle_for(name, skip_digestion=True)
         if lifecycle is not None and lifecycle.on_disable is not None:
-            lifecycle.on_disable(self._view)
+            try:
+                lifecycle.on_disable(self._view)
+            except Exception as exc:
+                self._record_lifecycle_failure(name, "on_disable", exc, notify=False)
         self._active_runtime.discard(name)
 
     def _sync_runtime(self) -> None:
@@ -1090,6 +1165,16 @@ class ViewAddonsManager(_AddonAggregationMixin):
             records.append(record)
         return records
 
+    @signal(tags=["addon"])
+    @digest()
+    def discovery_failures(self, skip_digestion: bool = False) -> list[dict[str, str]]:
+        return self._host.discovery_failures(skip_digestion=True)
+
+    @signal(tags=["addon"])
+    @digest()
+    def lifecycle_failures(self, skip_digestion: bool = False) -> list[dict[str, str]]:
+        return [dict(item) for _, item in sorted(self._lifecycle_failures.items())]
+
     @signal(tags=["addon", "context"])
     @digest()
     def handle_context_action(
@@ -1105,7 +1190,12 @@ class ViewAddonsManager(_AddonAggregationMixin):
         handler = lifecycle.on_context_action if lifecycle is not None else None
         if handler is None:
             return False
-        handler(self._view, action_id, dict(payload))
+        try:
+            handler(self._view, action_id, dict(payload))
+        except Exception as exc:
+            self._record_lifecycle_failure(addon, f"on_context_action:{action_id}", exc)
+            return False
+        self._lifecycle_failures.pop(f"lifecycle:{addon}.on_context_action:{action_id}", None)
         return True
 
     def refresh_context_items(self, selection: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1180,7 +1270,9 @@ class ViewAddonsManager(_AddonAggregationMixin):
             raise TypeError(
                 f"{dotted!r} must be a subclass of AddonPanelWidget."
             )
-        return cls(view=self._view)
+        widget = cls(view=self._view)
+        widget._addon_name = addon_name
+        return widget
 
 
 addons = GlobalAddonsRegistry()

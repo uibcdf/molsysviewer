@@ -2,6 +2,16 @@ from __future__ import annotations
 
 
 class HistoryMixin:
+    _SCENE_LOOK_KEYS = {
+        "toggle_background": "background",
+        "set_background_color": "background",
+        "set_fog": "fog",
+        "set_lighting": "lighting",
+        "set_clip_planes": "clip_planes",
+        "set_legend": "legend",
+        "set_focus_fade": "focus_fade",
+    }
+
     def _tag_from_message(self, msg: dict) -> str | None:
         tag = msg.get("tag")
         if isinstance(tag, str) and tag:
@@ -263,12 +273,36 @@ class HistoryMixin:
 
         self._selection_history.append(dict(msg))
 
+    def _record_scene_look_message(self, msg: dict) -> None:
+        key = self._SCENE_LOOK_KEYS.get(msg.get("op"))
+        if key is not None:
+            self._scene_look[key] = dict(msg)
+
+    def _remap_scene_look_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
+        if atom_index_map is None or msg.get("op") != "set_focus_fade":
+            return dict(msg)
+        options = msg.get("options")
+        if not isinstance(options, dict):
+            return dict(msg)
+        focus_atom_indices = options.get("focus_atom_indices")
+        if focus_atom_indices is None:
+            return dict(msg)
+        remapped = self._remap_indices(focus_atom_indices, atom_index_map)
+        if not remapped:
+            return None
+        updated = dict(msg)
+        updated_options = dict(options)
+        updated_options["focus_atom_indices"] = remapped
+        updated["options"] = updated_options
+        return updated
+
     def _send(self, msg: dict) -> None:
         self._message_history.append(msg)
         self._record_shape_message(msg)
         self._record_annotation_message(msg)
         self._record_measurement_message(msg)
         self._record_selection_message(msg)
+        self._record_scene_look_message(msg)
         if self._ready:
             self.widget.send(msg)
         else:
