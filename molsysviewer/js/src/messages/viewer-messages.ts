@@ -241,6 +241,17 @@ export type UpdateVisibilityMessage = {
     op: "update_visibility";
     options?: {
         visible_atom_indices?: number[];
+        version?: number;
+    };
+};
+
+export type UpdateVisibilityDeltaMessage = {
+    op: "update_visibility_delta";
+    options?: {
+        base_version: number;
+        version: number;
+        shown?: number[];
+        hidden?: number[];
     };
 };
 
@@ -701,6 +712,7 @@ export type ViewerMessage =
     LoadStructureFromUrlMessage |
     LoadPdbIdMessage |
     UpdateVisibilityMessage |
+    UpdateVisibilityDeltaMessage |
     SetFocusFadeMessage |
     ClearSceneMessage |
     ClearAllMessage |

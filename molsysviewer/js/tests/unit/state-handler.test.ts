@@ -3,6 +3,46 @@ import test from "node:test";
 
 import { StateHandlers } from "../../src/managers/handlers/state-handlers";
 
+test("visibility delta applies on matching version and self-heals on drift", async () => {
+    const notifications: any[] = [];
+    const plugin: any = { state: { data: {} } };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (msg: any) => notifications.push(msg),
+    });
+    const resyncCount = () => notifications.filter((n) => n?.event === "request_visibility_resync").length;
+
+    // Full sync establishes the version baseline (version 1).
+    await handler.updateVisibility({ op: "update_visibility", options: { visible_atom_indices: [0, 1, 2], version: 1 } });
+
+    // A delta on top of the held version applies and advances the version to 2.
+    await handler.updateVisibilityDelta({ op: "update_visibility_delta", options: { base_version: 1, version: 2, shown: [3], hidden: [0] } });
+    assert.strictEqual(resyncCount(), 0);
+
+    // Re-sending the stale delta (base_version 1) no longer matches: drift detected,
+    // a resync is requested rather than applying blindly.
+    await handler.updateVisibilityDelta({ op: "update_visibility_delta", options: { base_version: 1, version: 2, shown: [3], hidden: [0] } });
+    assert.strictEqual(resyncCount(), 1);
+
+    // A delta against the current version (2) applies cleanly again.
+    await handler.updateVisibilityDelta({ op: "update_visibility_delta", options: { base_version: 2, version: 3, shown: [4], hidden: [] } });
+    assert.strictEqual(resyncCount(), 1);
+
+    // A delta arriving before any full state also asks for a resync.
+    const fresh = new StateHandlers(plugin, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (msg: any) => notifications.push(msg),
+    });
+    await fresh.updateVisibilityDelta({ op: "update_visibility_delta", options: { base_version: 0, version: 1, shown: [1], hidden: [] } });
+    assert.strictEqual(notifications.filter((n) => n?.event === "request_visibility_resync").length, 2);
+});
+
 test("state handler emits layer ack and keeps metadata through retag", async () => {
     const notifications: any[] = [];
     const plugin: any = { state: { data: {} } };
