@@ -362,8 +362,8 @@ export const buildControls = (
     onPanelPopClick?: () => void
 ) => {
     const controlsMode = (model.get("controls_mode") as string) || "classic";
-    const isFocus = controlsMode === "cinema" || controlsMode === "focus";
-    const isMinimal = controlsMode === "minimal" || isFocus;
+    const isCinema = controlsMode === "cinema";
+    const isMinimal = controlsMode === "minimal" || isCinema;
 
     const helpOverlay = new HelpOverlay(container);
 
@@ -378,7 +378,7 @@ export const buildControls = (
     };
     window.addEventListener("keydown", onHelpKey, true);
 
-    if (isFocus) {
+    if (isCinema) {
         // Render a subtle, elegant, self-dismissing helper toast for accessibility
         const toast = document.createElement("div");
         toast.textContent = "Cinema Mode active. Press N/W for panels, H for help.";
@@ -414,7 +414,7 @@ export const buildControls = (
     injectStyles();
 
     let overlay: HTMLDivElement | undefined;
-    if (!isFocus) {
+    if (!isCinema) {
         overlay = document.createElement("div");
         overlay.className = "molsysviewer-controls";
         overlay.style.position = "absolute";
@@ -568,7 +568,7 @@ export const buildControls = (
         traj.appendChild(btnPlayPause);
         if (btnNext) traj.appendChild(btnNext);
 
-        if (isFocus) {
+        if (isCinema) {
             stepControl = makeNumberControl(1, n => {
                 currentStep = n;
                 const state = c.trajectory.getTrajectoryState();
@@ -614,7 +614,7 @@ export const buildControls = (
         traj.appendChild(fpsControl.wrapper);
     }
 
-    if (isFocus) {
+    if (isCinema) {
         Object.assign(traj.style, {
             position: "absolute",
             bottom: "12px",

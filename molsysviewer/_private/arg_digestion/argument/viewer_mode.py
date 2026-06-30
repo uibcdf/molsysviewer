@@ -6,6 +6,6 @@ def digest_viewer_mode(viewer_mode, caller=None):
         return None
     if isinstance(viewer_mode, str):
         val = viewer_mode.strip().lower()
-        if val in {"classic", "classic-floating", "zen", "integrated", "ambient", "cinema", "focus", "split"}:
+        if val in {"classic", "integrated", "cinema"}:
             return val
     raise ArgumentError("viewer_mode", value=viewer_mode, caller=caller, message="Invalid viewer_mode preset")

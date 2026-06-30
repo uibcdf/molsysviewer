@@ -22,7 +22,7 @@ controls_mode: str = "classic"
 # Panel container architecture: "drawer" (side drawers) or "floating" (centered overlay).
 panel_mode_style: str = "drawer"
 
-# High-level viewer mode preset: "classic", "classic-floating", "zen", or "integrated".
+# High-level viewer mode preset: "classic", "integrated", or "cinema".
 viewer_mode: str = "integrated"
 
 from .user_presets import user_presets, load_user_presets
