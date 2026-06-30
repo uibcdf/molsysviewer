@@ -1,6 +1,6 @@
 export class PopupHostManager {
     private popoutWin: Window | null = null;
-    private panelWin: Window | null = null;
+    public panelWin: Window | null = null;
     public isReady = false;
     public isPanelReady = false;
 
@@ -132,8 +132,9 @@ export class PopupHostManager {
                 if (!this.viewerJsSource) {
                     throw new Error("No viewer source code provided to PopupHostManager");
                 }
-                const popBlob = new win.Blob([this.viewerJsSource], { type: "text/javascript" });
-                const popBlobUrl = win.URL.createObjectURL(popBlob);
+                const popWin = win as Window & typeof globalThis;
+                const popBlob = new popWin.Blob([this.viewerJsSource], { type: "text/javascript" });
+                const popBlobUrl = popWin.URL.createObjectURL(popBlob);
 
                 console.log("[MolSysViewer Host] Injected viewer source to popup as:", popBlobUrl);
 

@@ -1,6 +1,6 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
-import { StateObjectRef } from "molstar/lib/mol-state";
+import { StateObjectRef, StateTransform } from "molstar/lib/mol-state";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
@@ -34,8 +34,8 @@ export interface AnnotationCallbacks {
 }
 
 export class AnnotationHandlers {
-    private readonly labelRefs = new Set<StateObjectRef>();
-    private readonly refsByTag = new Map<string, Set<StateObjectRef>>();
+    private readonly labelRefs = new Set<StateTransform.Ref>();
+    private readonly refsByTag = new Map<string, Set<StateTransform.Ref>>();
     private readonly specsByTag = new Map<string, { text: string; atom_indices: number[]; tag: string; layer_tag?: string; style?: LabelStyle }>();
     /** Maps layer_tag → Set of annotation tags that belong to it. */
     private readonly layerTagIndex = new Map<string, Set<string>>();
@@ -82,17 +82,23 @@ export class AnnotationHandlers {
         if (!added) return;
 
         if (added.selection?.ref) {
-            this.labelRefs.add(added.selection.ref);
-            const refs = this.refsByTag.get(tag) ?? new Set<StateObjectRef>();
-            refs.add(added.selection.ref);
-            this.refsByTag.set(tag, refs);
+            const selectionRef = StateObjectRef.resolveRef(added.selection.ref);
+            if (selectionRef) {
+                this.labelRefs.add(selectionRef);
+                const refs = this.refsByTag.get(tag) ?? new Set<StateTransform.Ref>();
+                refs.add(selectionRef);
+                this.refsByTag.set(tag, refs);
+            }
             this.callbacks.registerRef(added.selection.ref, tag);
         }
         if (added.representation?.ref) {
-            this.labelRefs.add(added.representation.ref);
-            const refs = this.refsByTag.get(tag) ?? new Set<StateObjectRef>();
-            refs.add(added.representation.ref);
-            this.refsByTag.set(tag, refs);
+            const representationRef = StateObjectRef.resolveRef(added.representation.ref);
+            if (representationRef) {
+                this.labelRefs.add(representationRef);
+                const refs = this.refsByTag.get(tag) ?? new Set<StateTransform.Ref>();
+                refs.add(representationRef);
+                this.refsByTag.set(tag, refs);
+            }
             this.callbacks.registerRef(added.representation.ref, tag);
         }
     }

@@ -44,6 +44,13 @@ export type ActiveSelectionItem = {
     entity_indices: number[];
 };
 
+/**
+ * The `"element"` variant of {@link ActiveSelectionItem}. The group strip/panel
+ * builders only ever produce element items, so the `*_name` fields are
+ * legitimately accessible on their results.
+ */
+export type GroupSelectionItem = Extract<ActiveSelectionItem, { source_kind: "element" }>;
+
 export type ActiveSelectionPayload = {
     event: "interaction_active_selection_changed";
     source_kind: "empty" | "element" | "annotation" | "shape" | "mixed";
@@ -62,7 +69,7 @@ export type ActiveSelectionPayload = {
     count_annotations: number;
 };
 
-export function buildGroupItemsFromStructure(structure: Structure): ActiveSelectionItem[] {
+export function buildGroupItemsFromStructure(structure: Structure): GroupSelectionItem[] {
     // Find the first atomic unit to access the shared model/hierarchy.
     const firstAtomicUnit = structure.units.find((unit) => unit.kind === 0);
     if (!firstAtomicUnit) return [];
@@ -83,7 +90,7 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
     const residues = hierarchy.residues;
     const chains = hierarchy.chains;
     const modelIndex = hierarchy.index;
-    const items: ActiveSelectionItem[] = [];
+    const items: GroupSelectionItem[] = [];
 
     // Safe access to custom hierarchy columns
     const molIdCol = (atomSite as any)?.molsys_molecule_id || (atomSite as any)?.molecule_id;
@@ -133,7 +140,7 @@ export function buildGroupItemsFromStructure(structure: Structure): ActiveSelect
         const compIndex = getValue(compIdCol, start);
         const compName = getValue(compNameCol, start);
 
-        const item: ActiveSelectionItem = {
+        const item: GroupSelectionItem = {
             source_kind: "element",
             element_level: "group",
             atom_indices: atomIndices,
@@ -164,11 +171,11 @@ function normalizeToElementLoci(rawLoci: any): any {
     }
 }
 
-export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
+export function lociToGroupItems(rawLoci: any): GroupSelectionItem[] {
     const loci = normalizeToElementLoci(rawLoci);
     if (!StructureElement.Loci.is(loci)) return [];
 
-    const items: ActiveSelectionItem[] = [];
+    const items: GroupSelectionItem[] = [];
     const seen = new Set<string>();
 
     for (const lociElement of loci.elements) {
@@ -233,7 +240,7 @@ export function lociToGroupItems(rawLoci: any): ActiveSelectionItem[] {
             const compIndex = getValue(compIdCol, atomIndex);
             const compName = getValue(compNameCol, atomIndex);
 
-            const item: ActiveSelectionItem = {
+            const item: GroupSelectionItem = {
                 source_kind: "element",
                 element_level: "group",
                 atom_indices: atomIndices,
@@ -276,7 +283,7 @@ function lociToShapeItems(rawLoci: any): ActiveSelectionItem[] {
         try {
             const groupIdx = OrderedSet.getAt(rawLoci.groups[0].ids, 0);
             if (typeof shape.getLabel === "function") {
-                shapeName = shape.getLabel(groupIdx);
+                shapeName = shape.getLabel(groupIdx, 0);
             }
             const perGroup = (data as any).__groupAtoms;
             if (Array.isArray(perGroup) && Array.isArray(perGroup[groupIdx])) {
@@ -401,7 +408,7 @@ function buildPayload(items: ActiveSelectionItem[]): ActiveSelectionPayload {
 
 export class ActiveSelectionController {
     private items: ActiveSelectionItem[] = [];
-    private allAvailableItems: ActiveSelectionItem[] = [];
+    private allAvailableItems: GroupSelectionItem[] = [];
     private anchorItem: ActiveSelectionItem | null = null;
 
     // The original in-memory items (with their non-enumerable shape ``_loci`` refs)
@@ -414,14 +421,17 @@ export class ActiveSelectionController {
 
     constructor(private readonly notify?: (msg: any) => void) {}
 
-    setAllAvailableItems(items: ActiveSelectionItem[]): void {
+    setAllAvailableItems(items: GroupSelectionItem[]): void {
         this.allAvailableItems = items;
     }
 
     handlePrimaryClick(ev: any): void {
         const shift = !!ev?.modifiers?.shift;
         const alt = !!ev?.modifiers?.alt;
-        const pickedItems = lociToGroupItems(ev?.current?.loci).concat(lociToShapeItems(ev?.current?.loci));
+        const pickedItems: ActiveSelectionItem[] = [
+            ...lociToGroupItems(ev?.current?.loci),
+            ...lociToShapeItems(ev?.current?.loci),
+        ];
         
         if (pickedItems.length === 0) {
             if (!shift) {
@@ -467,7 +477,7 @@ export class ActiveSelectionController {
         this.anchorItem = item;
     }
 
-    private getRangeItems(anchor: ActiveSelectionItem, target: ActiveSelectionItem): ActiveSelectionItem[] {
+    private getRangeItems(anchor: GroupSelectionItem, target: GroupSelectionItem): GroupSelectionItem[] {
         // Find indices in allAvailableItems based on group index and chain name
         const anchorIdx = this.allAvailableItems.findIndex(i => 
             i.chain_name === anchor.chain_name && i.group_indices[0] === anchor.group_indices[0]

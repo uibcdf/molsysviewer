@@ -6,12 +6,15 @@ import { StateObjectRef, StateTransformer } from "molstar/lib/mol-state";
 import { Task } from "molstar/lib/mol-task";
 import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
 import { Color } from "molstar/lib/mol-util/color";
+import { ColorListEntry } from "molstar/lib/mol-util/color/color";
+import { ColorListName } from "molstar/lib/mol-util/color/lists";
 import { ColorScale } from "molstar/lib/mol-util/color/scale";
 import { ColorNames } from "molstar/lib/mol-util/color/names";
 import { Vec3, Mat4 } from "molstar/lib/mol-math/linear-algebra";
 import { Mesh } from "molstar/lib/mol-geo/geometry/mesh/mesh";
 import { Shape } from "molstar/lib/mol-model/shape";
 import { ShapeRepresentation } from "molstar/lib/mol-repr/shape/representation";
+import { RuntimeContext } from "molstar/lib/mol-task";
 import {
     Representation,
     RepresentationContext,
@@ -72,7 +75,7 @@ function getColor(colors: Map<number, Color>, defaultColor: Color) {
     return (groupId: number) => colors.get(groupId) ?? defaultColor;
 }
 
-function createPocketSurfaceShape(data: PocketSurfaceData, props: PocketSurfaceProps, shape?: Shape<Mesh>) {
+function createPocketSurfaceShape(_ctx: RuntimeContext, data: PocketSurfaceData, props: PocketSurfaceProps, shape?: Shape<Mesh>) {
     const name = data.name;
     return Shape.create(name, data, data.mesh, getColor(data.colors, Color(ColorNames.grey)), () => 1, () => name, shape?.transforms);
 }
@@ -116,16 +119,16 @@ function createSubsetFromAtomIndices(structure: Structure, atomIndices: number[]
             if (wanted.has(element)) match.push(i);
         }
         if (match.length) {
-            lociElements.push({ unit, indices: SortedArray.ofSortedArray(match) as OrderedSet });
+            lociElements.push({ unit, indices: SortedArray.ofSortedArray(match) as StructureElement.Loci["elements"][0]["indices"] });
         }
     }
 
     if (lociElements.length === 0) return undefined;
-    return StructureElement.toStructure(StructureElement.Loci(structure, lociElements));
+    return StructureElement.Loci.toStructure(StructureElement.Loci(structure, lociElements));
 }
 
 function buildClipPlanes(structure: Structure, options: PocketSurfaceOptions) {
-    const clipObjects: Clip.Params["objects"] = [];
+    const clipObjects: Clip.Props["objects"] = [];
 
     const mouthList = normalizeMouths(options.mouth_atom_indices);
     if (mouthList.length === 0 && options.clip_plane) {
@@ -234,9 +237,9 @@ function buildColorMap(atomIndices: number[], scalars?: number[], colorMap?: num
 
     const min = Math.min(...scalars);
     const max = Math.max(...scalars);
-    const domain = min === max ? [min, min + 1] : [min, max];
+    const domain: [number, number] = min === max ? [min, min + 1] : [min, max];
     const palette = Array.isArray(colorMap) && colorMap.length > 0 ? colorMap : undefined;
-    const scale = ColorScale.create({ domain, listOrName: palette ?? "rainbow", minLabel: "min", maxLabel: "max" });
+    const scale = ColorScale.create({ domain, listOrName: (palette ?? "rainbow") as ColorListName | ColorListEntry[], minLabel: "min", maxLabel: "max" });
 
     atomIndices.forEach((id, idx) => {
         colors.set(id, scale.color(scalars[idx]));

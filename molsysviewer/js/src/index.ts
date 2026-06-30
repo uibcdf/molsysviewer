@@ -166,7 +166,7 @@ export async function bootDocsView(opts: {
                 initialFrameCount: trajInfo.frameCount,
             }
         );
-        target.appendChild(overlay);
+        if (overlay) target.appendChild(overlay);
 
         // Camera sync (Host -> Popup)
         if (c.plugin.canvas3d) {
@@ -556,9 +556,9 @@ export default {
                 if (c3d.didDraw) {
                     c3d.didDraw.subscribe(onCameraFrame);
                     console.log("[MolSysViewer] Host: Sync via didDraw (interactive camera movements).");
-                } else if (c3d.camera.events?.changed) {
-                    c3d.camera.events.changed.subscribe(onCameraFrame);
-                    console.log("[MolSysViewer] Host: Sync via camera.events.changed (fallback).");
+                } else if (c3d.camera.stateChanged) {
+                    c3d.camera.stateChanged.subscribe(onCameraFrame);
+                    console.log("[MolSysViewer] Host: Sync via camera.stateChanged (fallback).");
                 } else {
                     console.warn("[MolSysViewer] Host: No suitable camera event found for sync.");
                 }

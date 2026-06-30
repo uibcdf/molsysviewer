@@ -1,6 +1,6 @@
 import { Structure } from "molstar/lib/mol-model/structure";
 
-import { ActiveSelectionItem, ActiveSelectionPayload, buildGroupItemsFromStructure } from "../managers/active-selection";
+import { ActiveSelectionItem, ActiveSelectionPayload, GroupSelectionItem, buildGroupItemsFromStructure } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 import { GroupStrip } from "./group-strip";
@@ -295,7 +295,7 @@ export class GroupPanel {
     }
 
     focusItem(item: ActiveSelectionItem) {
-        const chainName = item.chain_name ?? "?";
+        const chainName = item.source_kind === "element" ? (item.chain_name ?? "?") : "?";
         return this.strips.get(chainName)?.focusItem(item) ?? null;
     }
 
@@ -327,7 +327,7 @@ export class GroupPanel {
 
     private render(): void {
         this.captureCollapseState();
-        const grouped = new Map<string, ActiveSelectionItem[]>();
+        const grouped = new Map<string, GroupSelectionItem[]>();
         const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
         for (const item of items) {
             const chain = item.chain_name ?? "?";

@@ -114,8 +114,9 @@ test("state handler clears orphan default global representations before applying
                     current: {
                         structures: [
                             {
-                                representations: [{ cell: { transform: { ref: "default-repr" } } }],
-                                components: [],
+                                components: [
+                                    { representations: [{ cell: { transform: { ref: "default-repr" } } }] },
+                                ],
                             },
                         ],
                     },
@@ -223,8 +224,9 @@ test("state handler captures initial global representations on structure load", 
                     current: {
                         structures: [
                             {
-                                representations: [{ cell: { transform: { ref: "default-repr" } } }],
-                                components: [],
+                                components: [
+                                    { representations: [{ cell: { transform: { ref: "default-repr" } } }] },
+                                ],
                             },
                         ],
                     },

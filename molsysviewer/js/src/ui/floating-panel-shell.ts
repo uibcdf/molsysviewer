@@ -47,7 +47,7 @@ export class FloatingPanelShell {
     private visible = false;
     private expanded = false;
     private displayUpdatePending = false;
-    private minimized = false;
+    public minimized = false;
     private onSelectPanel?: (panelId: string) => void;
     private onSelectWorkspace?: (workspaceId: string) => void;
     private workspaceMenuOpen = false;
@@ -539,11 +539,11 @@ export class FloatingPanelShell {
                 minimizeButton.title = "Restore";
                 minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>`;
             } else {
-                this.panel.style.height = originalHeight || (isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
-                this.panel.style.minHeight = originalMinHeight || (isSplit ? "0" : "420px");
+                this.panel.style.height = originalHeight || (this.isSplit ? "calc(100% - 20px)" : "min(68%, 700px)");
+                this.panel.style.minHeight = originalMinHeight || (this.isSplit ? "0" : "420px");
                 this.content.style.display = "flex";
-                this.root.style.background = (isAmbient || isSplit) ? "transparent" : "rgba(0,0,0,0.32)";
-                this.root.style.pointerEvents = (isAmbient || isSplit) ? "none" : "auto";
+                this.root.style.background = (this.isAmbient || this.isSplit) ? "transparent" : "rgba(0,0,0,0.32)";
+                this.root.style.pointerEvents = (this.isAmbient || this.isSplit) ? "none" : "auto";
                 minimizeButton.title = "Minimize";
                 minimizeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>`;
             }
@@ -650,7 +650,7 @@ export class FloatingPanelShell {
         if (this.isPanelOnly) {
             this.panel.style.transform = "";
             this.panel.style.backdropFilter = "";
-            this.panel.style.webkitBackdropFilter = "";
+            this.panel.style.setProperty("-webkit-backdrop-filter", "");
             
             this.panel.style.left = "0";
             this.panel.style.top = "0";
@@ -680,7 +680,7 @@ export class FloatingPanelShell {
             this.headerElement.style.cursor = "default";
             this.panel.style.transform = "";
             this.panel.style.backdropFilter = "";
-            this.panel.style.webkitBackdropFilter = "";
+            this.panel.style.setProperty("-webkit-backdrop-filter", "");
             
             this.panel.style.left = "10px";
             this.panel.style.top = "10px";

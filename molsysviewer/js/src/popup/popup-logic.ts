@@ -335,11 +335,12 @@ export const bootPopup = async (loadedModule?: any) => {
     // Add transition for smooth autohide
     overlay.style.transition = "opacity 150ms ease";
 
-    const addBtn = (label: string, handler: () => void) => {
-        if (initOptions.isPanelOnly) return;
+    const addBtn = (label: string, handler: () => void): HTMLButtonElement | undefined => {
+        if (initOptions.isPanelOnly) return undefined;
         const b = makeBtn(label, handler);
         b.style.pointerEvents = "auto";
         overlay.appendChild(b);
+        return b;
     };
 
     // ... (Button definitions remain same) ...
@@ -420,7 +421,7 @@ export const bootPopup = async (loadedModule?: any) => {
         const ctrl = await popControllerPromise;
         isUiVisible = !isUiVisible;
         ctrl.sharedShell?.setVisible(isUiVisible);
-        uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
+        if (uiBtn) uiBtn.style.background = isUiVisible ? "rgba(0,0,0,0.5)" : "rgba(239,68,68,0.6)";
     });
     addBtn("Pop", () => {
         try { window.close(); } catch (e) {}
@@ -428,7 +429,7 @@ export const bootPopup = async (loadedModule?: any) => {
     if (initOptions.isPanelOnly) {
         overlay.style.display = "none";
     }
-    container.appendChild(overlay);
+    container?.appendChild(overlay);
 
     // ... (Trajectory controls creation) ...
 
