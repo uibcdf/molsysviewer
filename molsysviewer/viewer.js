@@ -143040,7 +143040,8 @@ function getTetrahedraShape(_ctx, data, _props, shape) {
   if (normalsEnabled) {
     for (let k = 0; k < faceCount; k++) {
       groupAtoms[decorBase + k] = faces[k].vertexAtoms ? [...faces[k].vertexAtoms] : void 0;
-      groupEntityRefs[decorBase + k] = faces[k].atomKey ? data.faceMeta?.get(faces[k].atomKey)?.entity_ref : void 0;
+      const atomKey = faces[k].atomKey;
+      groupEntityRefs[decorBase + k] = atomKey ? data.faceMeta?.get(atomKey)?.entity_ref : void 0;
     }
     decorBase += faceCount;
   }
@@ -152043,7 +152044,10 @@ var MolSysViewerController = class _MolSysViewerController {
       setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
       setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
       getCameraSnapshot: () => this.getCameraSnapshot(),
-      getImageDataUri: (options) => this.getImageDataUri(options),
+      getImageDataUri: async (options) => {
+        const result2 = await this.getImageDataUri(options);
+        return typeof result2 === "string" ? result2 : void 0;
+      },
       showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
       hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
       notify: (msg) => this.notify?.(msg)
@@ -156607,7 +156611,7 @@ var index_default = {
       pendingPopupSource = new Promise((resolve, reject) => {
         resolvePendingPopupSource = resolve;
         rejectPendingPopupSource = reject;
-        popupSourceTimer = window.setTimeout(() => {
+        popupSourceTimer = setTimeout(() => {
           reject(new Error("Timed out waiting for MolSysViewer popup source"));
           pendingPopupSource = null;
           resolvePendingPopupSource = null;

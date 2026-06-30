@@ -413,7 +413,7 @@ export default {
             pendingPopupSource = new Promise<string>((resolve, reject) => {
                 resolvePendingPopupSource = resolve;
                 rejectPendingPopupSource = reject;
-                popupSourceTimer = window.setTimeout(() => {
+                popupSourceTimer = setTimeout(() => {
                     reject(new Error("Timed out waiting for MolSysViewer popup source"));
                     pendingPopupSource = null;
                     resolvePendingPopupSource = null;

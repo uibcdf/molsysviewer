@@ -1276,7 +1276,10 @@ export class MolSysViewerController {
             setTrajectoryFrame: (index) => this.trajectory.setTrajectoryFrame(index),
             setCameraSnapshot: (snap, durationMs) => this.setCameraSnapshot(snap, durationMs),
             getCameraSnapshot: () => this.getCameraSnapshot(),
-            getImageDataUri: (options) => this.getImageDataUri(options),
+            getImageDataUri: async (options) => {
+                const result = await this.getImageDataUri(options);
+                return typeof result === "string" ? result : undefined;
+            },
             showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag }),
             hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag }),
             notify: (msg) => this.notify?.(msg),

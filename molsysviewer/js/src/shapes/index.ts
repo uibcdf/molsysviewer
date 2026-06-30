@@ -3078,7 +3078,8 @@ function getTetrahedraShape(
     if (normalsEnabled) {
         for (let k = 0; k < faceCount; k++) {
             groupAtoms[decorBase + k] = faces[k].vertexAtoms ? [...faces[k].vertexAtoms!] : undefined;
-            groupEntityRefs[decorBase + k] = faces[k].atomKey ? data.faceMeta?.get(faces[k].atomKey)?.entity_ref : undefined;
+            const atomKey = faces[k].atomKey;
+            groupEntityRefs[decorBase + k] = atomKey ? data.faceMeta?.get(atomKey)?.entity_ref : undefined;
         }
         decorBase += faceCount;
     }
