@@ -214,6 +214,7 @@ class MolSysView(
         self._context_callbacks: list = []
         self._last_active_selection_event: dict | None = None
         self._last_tool_state_event: dict | None = None
+        self._webgl_context_lost: bool = False
         self._last_measurement_created_event: dict | None = None
         self._last_panel_mode_state_event: dict | None = None
         self._shape_render_status: dict[str, dict] = {}
@@ -525,6 +526,23 @@ class MolSysView(
             self._last_context_event = self._enrich_interaction_payload(dict(content))
             for cb in list(self._context_callbacks):
                 cb(self._last_context_event)
+        elif event == "webgl_context_lost":
+            # The browser dropped the WebGL context (GPU crash, sleep/wake, driver
+            # reset). Mol* restores the scene from its retained state on recovery;
+            # here we only surface a queryable state and a diagnostic signal.
+            self._webgl_context_lost = True
+            emit_from_catalog(
+                CATALOG["webgl_context_lost"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+            )
+        elif event == "webgl_context_restored":
+            self._webgl_context_lost = False
+            emit_from_catalog(
+                CATALOG["webgl_context_restored"],
+                package_root=PACKAGE_ROOT,
+                meta=META,
+            )
         elif event == "interaction_context_action":
             try:
                 self._last_context_action_event = dict(content)

@@ -147492,6 +147492,47 @@ var LegendOverlay = class {
   }
 };
 
+// src/ui/webgl-status-overlay.ts
+var WebGLStatusOverlay = class {
+  constructor(host) {
+    this.host = host;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-webgl-status", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      left: "50%",
+      top: "18px",
+      transform: "translateX(-50%)",
+      display: "none",
+      maxWidth: "min(90%, 420px)",
+      padding: "10px 14px",
+      borderRadius: "12px",
+      border: "1px solid rgba(251, 191, 36, 0.45)",
+      background: "rgba(28, 22, 10, 0.94)",
+      color: "#fde68a",
+      boxShadow: "0 12px 28px rgba(0,0,0,0.32)",
+      zIndex: "40",
+      fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+      fontSize: "12px",
+      lineHeight: "1.4",
+      textAlign: "center",
+      pointerEvents: "none"
+    });
+    this.host.appendChild(this.root);
+  }
+  show(message) {
+    this.root.textContent = message;
+    this.root.style.display = "block";
+  }
+  hide() {
+    this.root.style.display = "none";
+    this.root.textContent = "";
+  }
+  dispose() {
+    this.root.remove();
+  }
+};
+
 // src/managers/active-selection.ts
 function buildGroupItemsFromStructure(structure) {
   const firstAtomicUnit = structure.units.find((unit2) => unit2.kind === 0);
@@ -151467,6 +151508,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.host = host;
     this.notify = notify;
     this.initOptions = initOptions;
+    this.webglContextLost = false;
     this.canvasInsetAnimFrame = null;
     this.canvasInsetFrom = { left: 0, right: 0 };
     this.canvasInsetTo = { left: 0, right: 0 };
@@ -151562,6 +151604,7 @@ var MolSysViewerController = class _MolSysViewerController {
     };
     this.toolStatusOverlay = new ToolStatusOverlay(host);
     this.legendOverlay = new LegendOverlay(host);
+    this.webglStatusOverlay = new WebGLStatusOverlay(host);
     new HoverTooltip(host, plugin);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
       const tag = this.nextMeasurementTag();
@@ -152017,6 +152060,8 @@ var MolSysViewerController = class _MolSysViewerController {
         this.triggerLocalAddonEvent("camera-moved", cameraState);
       });
     }
+    plugin.canvas3dContext?.contextLost?.subscribe(() => this.handleWebGLContextLost());
+    plugin.canvas3dContext?.contextRestored?.subscribe(() => this.handleWebGLContextRestored());
     this.refreshNavigatePanel();
     this.refreshWorkbenchPanel();
     this.updateWelcomeState(true);
@@ -152217,10 +152262,24 @@ var MolSysViewerController = class _MolSysViewerController {
     this.measurementTagCounter += 1;
     return `measurement_${this.measurementTagCounter}`;
   }
+  handleWebGLContextLost() {
+    if (this.webglContextLost) return;
+    this.webglContextLost = true;
+    this.webglStatusOverlay.show("GPU connection lost. Restoring the scene\u2026");
+    this.notify?.({ event: "webgl_context_lost" });
+  }
+  handleWebGLContextRestored() {
+    if (!this.webglContextLost) return;
+    this.webglContextLost = false;
+    this.webglStatusOverlay.hide();
+    this.plugin.canvas3d?.requestDraw();
+    this.notify?.({ event: "webgl_context_restored" });
+  }
   dispose() {
     this.measurementTools.dispose();
     this.toolStatusOverlay.dispose();
     this.legendOverlay.dispose();
+    this.webglStatusOverlay.dispose();
     this.groupPanel.dispose();
     this.workbenchPanel.dispose();
     this.sharedShell?.dispose();

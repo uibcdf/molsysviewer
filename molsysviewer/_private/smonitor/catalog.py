@@ -151,6 +151,18 @@ CATALOG = {
         "category": "diagnostic",
         "level": "WARNING",
     },
+    "webgl_context_lost": {
+        "code": "MOLSYSVIEWER-WEBGL-CONTEXT-LOST",
+        "source": "molsysviewer.viewer",
+        "category": "rendering",
+        "level": "WARNING",
+    },
+    "webgl_context_restored": {
+        "code": "MOLSYSVIEWER-WEBGL-CONTEXT-RESTORED",
+        "source": "molsysviewer.viewer",
+        "category": "rendering",
+        "level": "INFO",
+    },
 }
 
 CODES = {

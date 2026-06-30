@@ -260,6 +260,17 @@ def test_trajectory_frame_rendered_transaction_ack():
     fail = view.wait_for_transaction("tx-nonexistent", timeout_s=0.01)
     assert fail is False
 
+def test_webgl_context_lost_and_restored_toggle_queryable_state():
+    view = MolSysView()
+    assert view._webgl_context_lost is False  # noqa: SLF001
+
+    view._handle_frontend_event({"event": "webgl_context_lost"})  # noqa: SLF001
+    assert view._webgl_context_lost is True  # noqa: SLF001
+
+    view._handle_frontend_event({"event": "webgl_context_restored"})  # noqa: SLF001
+    assert view._webgl_context_lost is False  # noqa: SLF001
+
+
 def test_trajectory_frame_changed_syncs_player_index_and_play_state():
     view = MolSysView()
 

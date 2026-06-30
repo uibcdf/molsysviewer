@@ -26,6 +26,7 @@ import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectio
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { LegendOverlay } from "../ui/legend-overlay";
+import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
@@ -482,6 +483,8 @@ export class MolSysViewerController {
     private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly legendOverlay: LegendOverlay;
+    private readonly webglStatusOverlay: WebGLStatusOverlay;
+    private webglContextLost = false;
     private readonly groupPanel: GroupPanel;
     private readonly workbenchPanel: WorkbenchPanel;
     public readonly sharedShell?: FloatingPanelShell;
@@ -803,6 +806,7 @@ export class MolSysViewerController {
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
         this.legendOverlay = new LegendOverlay(host);
+        this.webglStatusOverlay = new WebGLStatusOverlay(host);
         new HoverTooltip(host, plugin);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
             const tag = this.nextMeasurementTag();
@@ -1292,15 +1296,40 @@ export class MolSysViewerController {
             });
         }
 
+        // WebGL context loss/recovery. Mol* already listens on the canvas and
+        // rebuilds GL resources from the retained scene on restore; we subscribe
+        // to its observables to inform the user and the Python kernel, then force
+        // a redraw. No scene re-injection: Mol* restores it (re-injecting would
+        // duplicate the scene).
+        plugin.canvas3dContext?.contextLost?.subscribe(() => this.handleWebGLContextLost());
+        plugin.canvas3dContext?.contextRestored?.subscribe(() => this.handleWebGLContextRestored());
+
         this.refreshNavigatePanel();
         this.refreshWorkbenchPanel();
         this.updateWelcomeState(true);
+    }
+
+    private handleWebGLContextLost(): void {
+        if (this.webglContextLost) return;
+        this.webglContextLost = true;
+        this.webglStatusOverlay.show("GPU connection lost. Restoring the scene…");
+        this.notify?.({ event: "webgl_context_lost" });
+    }
+
+    private handleWebGLContextRestored(): void {
+        if (!this.webglContextLost) return;
+        this.webglContextLost = false;
+        this.webglStatusOverlay.hide();
+        // Mol* has rebuilt GL resources from the retained scene; force a repaint.
+        this.plugin.canvas3d?.requestDraw();
+        this.notify?.({ event: "webgl_context_restored" });
     }
 
     dispose(): void {
         this.measurementTools.dispose();
         this.toolStatusOverlay.dispose();
         this.legendOverlay.dispose();
+        this.webglStatusOverlay.dispose();
         this.groupPanel.dispose();
         this.workbenchPanel.dispose();
         this.sharedShell?.dispose();
