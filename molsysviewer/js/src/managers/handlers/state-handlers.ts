@@ -34,6 +34,7 @@ import {
     ShowLayerMessage,
     ShowRegionMessage,
     UpdateVisibilityMessage,
+    UpdateVisibilityDeltaMessage,
     ZoomMessage,
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
@@ -77,6 +78,11 @@ export class StateHandlers {
     private readonly pendingLayerVisibility = new Map<string, boolean>();
     private readonly pendingRegions: CreateRegionMessage[] = [];
     private pendingVisibility?: number[];
+    // Versioned visibility state for the delta protocol: the last applied visible
+    // atom indices and the version they were stamped with. A delta only applies
+    // when its base_version matches; otherwise we ask the kernel for a full resync.
+    private currentVisibleIndices: number[] | null = null;
+    private visibilityVersion = 0;
     private requestedGlobalHidden: boolean | null = null;
     private pendingZoom?: ZoomMessage;
 
@@ -210,7 +216,34 @@ export class StateHandlers {
 
     async updateVisibility(msg: UpdateVisibilityMessage | number[] | undefined) {
         const indices = Array.isArray(msg) || msg === undefined ? msg : msg.options?.visible_atom_indices;
-        
+        const version = (Array.isArray(msg) || msg === undefined) ? undefined : msg.options?.version;
+        if (Array.isArray(indices)) {
+            this.currentVisibleIndices = indices;
+            if (typeof version === "number") this.visibilityVersion = version;
+        }
+        await this.applyVisibility(indices);
+    }
+
+    async updateVisibilityDelta(msg: UpdateVisibilityDeltaMessage) {
+        const opts = msg.options;
+        if (!opts) return;
+        // Apply only on top of the exact version we currently hold; otherwise the
+        // stream drifted (missed/out-of-order message or a bug) and we ask the
+        // kernel for the authoritative full state instead of applying blindly.
+        if (this.currentVisibleIndices === null || opts.base_version !== this.visibilityVersion) {
+            this.callbacks.notify({ event: "request_visibility_resync" });
+            return;
+        }
+        const set = new Set(this.currentVisibleIndices);
+        for (const i of opts.shown ?? []) set.add(i);
+        for (const i of opts.hidden ?? []) set.delete(i);
+        const nextIndices = Array.from(set);
+        this.currentVisibleIndices = nextIndices;
+        this.visibilityVersion = opts.version;
+        await this.applyVisibility(nextIndices);
+    }
+
+    private async applyVisibility(indices: number[] | undefined) {
         const structure = this.callbacks.getStructure();
         if (!structure) {
             if (Array.isArray(indices)) {

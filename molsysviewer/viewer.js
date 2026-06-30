@@ -144875,6 +144875,11 @@ var StateHandlers = class {
     this.pendingGlobalOps = [];
     this.pendingLayerVisibility = /* @__PURE__ */ new Map();
     this.pendingRegions = [];
+    // Versioned visibility state for the delta protocol: the last applied visible
+    // atom indices and the version they were stamped with. A delta only applies
+    // when its base_version matches; otherwise we ask the kernel for a full resync.
+    this.currentVisibleIndices = null;
+    this.visibilityVersion = 0;
     this.requestedGlobalHidden = null;
   }
   parseMolstarThemeSpec(value) {
@@ -144983,6 +144988,29 @@ var StateHandlers = class {
   }
   async updateVisibility(msg) {
     const indices2 = Array.isArray(msg) || msg === void 0 ? msg : msg.options?.visible_atom_indices;
+    const version = Array.isArray(msg) || msg === void 0 ? void 0 : msg.options?.version;
+    if (Array.isArray(indices2)) {
+      this.currentVisibleIndices = indices2;
+      if (typeof version === "number") this.visibilityVersion = version;
+    }
+    await this.applyVisibility(indices2);
+  }
+  async updateVisibilityDelta(msg) {
+    const opts = msg.options;
+    if (!opts) return;
+    if (this.currentVisibleIndices === null || opts.base_version !== this.visibilityVersion) {
+      this.callbacks.notify({ event: "request_visibility_resync" });
+      return;
+    }
+    const set4 = new Set(this.currentVisibleIndices);
+    for (const i of opts.shown ?? []) set4.add(i);
+    for (const i of opts.hidden ?? []) set4.delete(i);
+    const nextIndices = Array.from(set4);
+    this.currentVisibleIndices = nextIndices;
+    this.visibilityVersion = opts.version;
+    await this.applyVisibility(nextIndices);
+  }
+  async applyVisibility(indices2) {
     const structure = this.callbacks.getStructure();
     if (!structure) {
       if (Array.isArray(indices2)) {
@@ -152959,6 +152987,9 @@ var MolSysViewerController = class _MolSysViewerController {
         // State/Region Ops
         case "update_visibility":
           await this.state.updateVisibility(msg);
+          break;
+        case "update_visibility_delta":
+          await this.state.updateVisibilityDelta(msg);
           break;
         case "set_focus_fade":
           await this.state.setFocusFade(msg);
