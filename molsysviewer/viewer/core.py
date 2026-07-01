@@ -471,9 +471,15 @@ class MolSysView(
             # via initial_messages trait on startup.
             self._pending_messages.clear()
         elif event == "request_widget_runtime_source":
-            self._send_runtime_only({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
+            # This is the lazy-load bootstrap handshake: the frontend requests the
+            # runtime source BEFORE the real runtime has loaded, so `_ready` is
+            # necessarily still False here. Send directly (not via
+            # `_send_runtime_only`, which drops messages while not ready) — the
+            # frontend is listening because it just asked. Gating this on `_ready`
+            # deadlocks: `_ready` only becomes True once this source has loaded.
+            self.widget.send({"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "request_popup_source":
-            self._send_runtime_only({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
+            self.widget.send({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "region_ack":
             tag = content.get("tag")
             if tag and tag in self._regions:
