@@ -32,6 +32,17 @@ only the first of which is MolSysViewer's to solve and achievable now:
 This document reframes the work into **feasibility tiers** with an explicit
 ownership and acceptance criterion for each.
 
+**On necessity (read this before building anything).** The single most valuable
+output of this proposal is the *document itself*: it prevents the impossible
+tiers (3–4) from being re-derived as local work. Beyond that, **nothing here is
+both necessary and easy pre-1.0.** The transport win is only a ~4–5× constant
+factor on a one-time load, and no profile yet shows it hurting. An earlier draft
+claimed shape-set batching was a demonstrated present pain — that was wrong: the
+code **already batches** every shape set into one message (verified; see Audit),
+so there is no low-hanging, presently-justified win to grab. Everything remaining
+should wait for a **triggering benchmark** — a concrete system/trajectory that
+measurably hurts — before any code is written. See "Prioritization" at the end.
+
 ---
 
 ## Audit: current reality (what the code actually does)
@@ -55,15 +66,33 @@ ownership and acceptance criterion for each.
   comm. **No binary buffers are used today**, although AnyWidget fully supports
   them (`widget.send(content, buffers=[...])` ↔ JS `model.on("msg:custom", (msg,
   buffers) => ...)`).
-* **Shapes.** Large shape sets (TopoMT tetrahedra/clouds: thousands of objects)
-  are sent and the per-message overhead floods the channel.
+* **Shapes.** Large shape sets are **already batched**: `add_tetrahedra`,
+  `add_alpha_sphere_set`, `add_rings`, `add_triangle_faces`, `add_network_links`,
+  etc. each send **one** message whose `options` carries the full arrays (e.g.
+  `tetra_coords`, `atom_quads`, `colors`). The per-object Python loops only build
+  those lists; there is **no** per-object message flood. So the residual cost is
+  *not* message count — it is that the single batched message is **JSON** (text
+  expansion of the numeric arrays inside it), i.e. the same transport issue as
+  coordinates, not a distinct batching problem.
 
 ---
 
 ## Tier 1 — Binary transport + message batching (FEASIBLE, MolSysViewer-level)
 
-**This is the tier to implement: it targets the true bottleneck (text JSON and
-per-object message floods) at the layer MolSysViewer owns.**
+**Correction (verified against the code).** An earlier draft split this into
+"1a shape-batching (do now)" and "1b binary coordinates (later)" on the premise
+that shape sets flood the channel with one message per object. **That premise is
+false:** the shape ops already batch every set into a single message (see Audit).
+So there is *no* separate, presently-justified batching win. What remains is a
+single concern — the numeric payloads (coordinates *and* the arrays inside the
+batched shape messages) travel as **JSON text** — and it is uniformly
+**profile-gated**:
+
+* **Binary + compressed numeric transport: do only once profiled.** A ~4–5×
+  constant factor (more with compression, below) on a *one-time* load; real but
+  speculative until a concrete large system measurably hurts. This covers both
+  coordinate arrays and the arrays carried inside already-batched shape messages.
+  Do not build ahead of that evidence.
 
 ### What this tier does and does *not* do
 Tier 1 is **purely a transport optimization**. It reduces the *bytes on the wire*
@@ -150,11 +179,23 @@ the buffers. Proposed envelopes:
    handshake (or feature-flag it) and fall back to JSON transparently; the public
    behaviour and the exported/replayed format must be identical either way.
 
-### Reproducibility constraint
-The **exported / replayed** format stays JSON-friendly and self-describing.
-Binary buffers are a **live-session transport optimization**, not the export
-format — mirroring the decision taken for the visibility-delta protocol (full
-state stays reproducible; the optimized wire form is ephemeral).
+### Compression — where the real win is (beyond raw f32)
+Plain `float32` is only ~4–5× smaller than JSON. The domain-specific wins are
+larger and already-proven, and should be considered part of 1b rather than a
+separate initiative:
+
+* **Integer quantization.** Encode coordinates as 16-bit fixed point relative to
+  a per-frame (or per-model) bounding box → another ~2× over f32, at a precision
+  loss that is invisible for rendering.
+* **Inter-frame delta encoding.** Trajectory coordinates change little between
+  consecutive frames; delta + integer packing is where the *order-of-magnitude*
+  gains for long trajectories live.
+* **Reuse the proven strategy.** This is exactly what **BinaryCIF** does (column
+  encodings: delta, run-length, integer packing) — and **Mol\* already decodes
+  BinaryCIF natively**. We should reuse its *encoding strategy* (and, if the shoe
+  fits, its decoder) rather than inventing a bespoke float buffer format. This
+  reframes 1b: the point is not "f32 instead of JSON," it is "a compact,
+  Mol\*-aligned coordinate encoding."
 
 ### Reproducibility constraint
 The **exported / replayed** format stays JSON-friendly and self-describing.
@@ -207,6 +248,16 @@ path instead of the in-place mutation. This guard belongs in the frontend decode
 step (Tier 1, step 3) and protects both Tier 1 streaming and Tier 2
 interpolation from silently writing misaligned positions.
 
+### The load-upfront memory ceiling (why transport alone is not enough)
+Binary transport (Tier 1) shrinks the *transfer*, but the current design loads
+**all frames into Mol\* at once** and animates client-side — so `N_frames ×
+N_atoms` coordinates all live in browser (and GPU) memory simultaneously. No
+encoding fixes that: it is a *memory* ceiling, not a *bandwidth* one. For truly
+large trajectories the answer is **streaming a sliding window** of frames
+(load/evict around the playhead) — which is this tier's job, not Tier 1's. State
+this limitation explicitly so binary transport is not oversold as "handles
+arbitrarily large trajectories."
+
 ### Ownership
 MolSysViewer (frontend interpolation + the existing `partial_coordinates_update`
 path). Optional and lower priority than Tier 1.
@@ -237,22 +288,52 @@ them here prevents re-deriving them as local work.
 
 ---
 
-## Tier 4 — Cross-process GPU sharing (INFEASIBLE over Jupyter)
+## Tier 4 — "GPU from the notebook": three distinct things, only one is infeasible
 
+"Can we use the GPU from the notebook?" hides three different questions. Lumping
+them all under "infeasible" was too coarse — only (a) is truly blocked.
+
+### (a) Zero-copy GPU buffer handoff kernel → browser — INFEASIBLE
 `cl_khr_gl_sharing` / WebGPU shared buffers between a Python solver and the
 browser assume **shared GPU memory in one process**. In the standard Jupyter
 deployment the kernel and the browser are **separate processes, frequently on
-separate machines**, with only the comm channel between them — there is no shared
-GPU context to map.
+separate machines**, and the browser isolates its GPU process in a sandbox even
+on the same machine — there is no shared GPU context to map. **Discard for the
+Jupyter path.** The only same-process scenario is the standalone Qt (PySide6 +
+WebEngine) embedding, and even there it is a major undertaking with uncertain
+payoff — revisit only if that product specifically justifies it.
 
-* The *only* scenario where same-process GPU sharing is even conceivable is the
-  **standalone Qt (PySide6 + WebEngine)** embedding, where Python and the renderer
-  share a process — and even there it is a major undertaking with uncertain
-  payoff.
+### (b) Kernel-side GPU *preparation* — FEASIBLE, currently unused
+The Python kernel can absolutely use *its own* GPU (CuPy / PyTorch / numba-cuda)
+to **prepare** data before transport: decimate/downsample, generate or simplify
+a mesh, or quantize coordinates on-GPU. This is not zero-copy and the result
+still travels over the comm as bytes — but "GPU from the notebook" in this sense
+is real and useful, and it composes with Tier 1's compression. Low priority, but
+a legitimate option, not an impossibility. Cost: adds an optional heavyweight GPU
+dependency on the kernel side — keep it strictly optional.
+
+---
+
+## Tier 5 — Server-side GPU rendering + pixel streaming (FEASIBLE, different architecture)
+
+The industry answer to "the system is too big to ship geometry to the client" is
+to **not ship geometry at all**: render on a server-side GPU (headless Mol\* or
+another engine) and stream **pixels/video** (H.264 / WebRTC) to the notebook,
+mirroring only camera/interaction events back. Precedent: remote VMD, MDsrv,
+remote ChimeraX.
+
+* **Pro:** transport cost becomes independent of system size — a 10-atom and a
+  10-million-atom system stream the same video bitrate; the client is a thin
+  viewport.
+* **Con:** needs server-side GPU infrastructure, adds interaction latency, and is
+  a *fundamentally different product shape* from the current in-browser Mol\*
+  embedding. Not a drop-in.
 
 ### Recommendation
-**Discard for the Jupyter path.** Revisit only if the standalone-Qt product
-specifically justifies it, as a separate initiative.
+Do not build now. Record it as the **escape hatch for the extreme case**: if a
+real workload ever exceeds what in-browser Mol\* can hold (see the load-upfront
+memory ceiling), this — not more transport tuning — is the architecturally honest
+answer. A separate initiative if it ever lands.
 
 ---
 
@@ -318,13 +399,33 @@ in a unit test and treat the perceived-smoothness claim as a manual/QA check.
 
 | Tier | What | Verdict | Owner |
 |------|------|---------|-------|
-| 1 | Binary coordinate/shape transport + batching | **Do now** | MolSysViewer (+ thin MolSysMT contract) |
-| 2 | Coordinate-level frame interpolation | Optional, later | MolSysViewer |
+| 1a | Shape-set batching | **Already implemented** — no work | — |
+| 1b | Binary + compressed numeric transport (coords + batched-shape arrays; int16/delta, BinaryCIF-aligned) | Do **only once profiled** | MolSysViewer (+ thin MolSysMT contract) |
+| 2 | Coordinate-level interpolation + sliding-window streaming | Optional, later; the real answer to the memory ceiling | MolSysViewer |
 | 3 | GPU-compute surfaces, shader restyle, VBO bypass, vertex-shader LERP, WebGPU storage | Out of scope | Mol\* upstream |
-| 4 | Cross-process GPU sharing (cl_khr_gl_sharing / WebGPU shared) | Infeasible (Jupyter) | n/a (only same-process Qt; separate initiative) |
+| 4a | Zero-copy GPU handoff kernel→browser | Infeasible (Jupyter) | n/a (only same-process Qt) |
+| 4b | Kernel-side GPU *preparation* (CuPy/Torch) | Feasible, low priority, optional dep | MolSysViewer |
+| 5 | Server-side GPU rendering + pixel streaming | Feasible; escape hatch for the extreme case | Separate initiative |
 
-**Bottom line:** the real, achievable, MolSysViewer-owned win is **Tier 1**
-(binary transport + batching) — it attacks the genuine bottleneck (JSON
-expansion and per-object message floods) without claiming GPU-engine or
-cross-process capabilities that MolSysViewer cannot deliver. Tiers 3–4 are
+## Prioritization (when to build, if ever)
+
+1. **The document is the deliverable.** Its highest value is already banked:
+   it stops Tiers 3, 4a, and 5 from being mistaken for local work. No code is
+   required for that value to exist.
+2. **Nothing here is a pre-1.0 must-do.** The one item that looked like an easy,
+   necessary win (shape batching) is **already implemented**. There is no
+   low-hanging fruit left to grab before 1.0.
+3. **Everything remaining waits for a triggering benchmark** — a concrete
+   system/trajectory that measurably hurts. Without that evidence, 1b/2/4b are
+   premature optimization, especially pre-1.0 with addons still pending.
+4. **For the extreme case, reach for Tier 5, not more transport tuning.** Once a
+   workload exceeds what in-browser Mol\* can hold in memory, no amount of
+   encoding helps; server-side rendering is the architecturally honest answer.
+
+**Bottom line:** post-1.0 material. Shape batching (1a) is already done;
+binary/compressed numeric transport (1b) is real but should wait for a profile;
+Tier 2 (streaming) is the answer to the memory ceiling when it arrives. The GPU
+questions resolve cleanly: zero-copy handoff is impossible (4a), kernel-side GPU
+prep is possible-but-optional (4b), and server-side rendering (5) is the honest
+escape hatch for systems too large to ship to the client. Tiers 3–5 are
 documented precisely so they are not pursued as local work by mistake.

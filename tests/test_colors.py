@@ -98,3 +98,43 @@ def test_builtin_palette_names_are_registered_when_available():
     assert "viridis" in colors.palette_names()
     assert "turbo" in colors.palette_names()
     assert "categorical_default" in colors.palette_names()
+
+
+def test_cvd_safe_qualitative_catalog_is_registered_and_tagged():
+    for name in ("okabe_ito", "tol_bright", "tol_muted", "tol_vibrant", "tol_high_contrast"):
+        assert name in colors.palette_names()
+        assert colors.is_cvd_safe(name)
+        assert name in colors.cvd_safe_names()
+
+    # Okabe-Ito is the canonical 8-colour set with its documented first colour.
+    okabe = colors.get_palette("okabe_ito")
+    assert len(okabe.colors) == 8
+    assert okabe.colors[0] == 0xE69F00
+
+
+def test_cvd_safe_scheme_maps_categories_in_palette_order():
+    scheme = colors.get_scheme("tol_bright", categories=["alpha", "beta", "gamma"])
+    assert scheme.mapping == {"alpha": 0x4477AA, "beta": 0xEE6677, "gamma": 0x228833}
+    # Colours cycle when categories exceed the palette length.
+    long = colors.get_scheme("tol_high_contrast", categories=["a", "b", "c", "d"])
+    assert long.mapping["a"] == long.mapping["d"]
+
+
+def test_non_cvd_safe_palettes_are_not_tagged():
+    assert not colors.is_cvd_safe("turbo")
+    assert not colors.is_cvd_safe("rainbow")
+
+
+def test_perceptually_uniform_continuous_maps_are_cvd_tagged_when_available():
+    if "viridis" not in colors.palette_names():
+        pytest.importorskip("matplotlib")
+
+    for name in ("viridis", "cividis", "magma", "inferno", "plasma"):
+        assert name in colors.palette_names()
+        assert colors.is_cvd_safe(name)
+
+
+def test_view_exposes_cvd_safe_catalog():
+    view = MolSysView()
+    assert view.colors.is_cvd_safe("okabe_ito")
+    assert "okabe_ito" in view.colors.cvd_safe_names()
