@@ -267,6 +267,7 @@ class ColorRegistry:
         self._palettes: dict[str, ContinuousPalette] = {}
         self._schemes: dict[str, CategoricalColorScheme] = {}
         self._generated_scheme_palettes: dict[str, tuple[Any, int | None]] = {}
+        self._cvd_safe: set[str] = set()
 
     def color_names(self) -> list[str]:
         return sorted(self._named_colors.keys())
@@ -282,6 +283,21 @@ class ColorRegistry:
 
     def scheme_names(self) -> list[str]:
         return sorted(set(self._schemes.keys()) | set(self._generated_scheme_palettes.keys()))
+
+    def mark_cvd_safe(self, *names: str) -> None:
+        """Tag one or more palette/scheme names as colour-vision-deficiency safe."""
+        for name in names:
+            key = str(name).strip()
+            if key:
+                self._cvd_safe.add(key)
+
+    def is_cvd_safe(self, name: str) -> bool:
+        """Whether ``name`` is a registered colour-blind-safe palette or scheme."""
+        return str(name).strip() in self._cvd_safe
+
+    def cvd_safe_names(self) -> list[str]:
+        """All palette/scheme names tagged as colour-blind safe (Okabe-Ito, Tol, perceptually-uniform continuous)."""
+        return sorted(self._cvd_safe)
 
     def get_palette(self, name: str) -> ContinuousPalette:
         return self._palettes[name]
@@ -536,6 +552,45 @@ colors.register_generated_scheme(
     fallback="lightgrey",
     overwrite=True,
 )
+
+
+# --- Colour-vision-deficiency (CVD) safe catalog -----------------------------
+#
+# Curated categorical palettes that stay distinguishable under the common forms
+# of colour blindness (deuteranopia, protanopia, tritanopia). Sources: Okabe &
+# Ito (2008) and Paul Tol's qualitative schemes. Each is registered twice — as a
+# continuous palette (for sampling) and as a generated scheme (for mapping
+# arbitrary categories in order, e.g. legends / multi-component views) — and
+# tagged so addons can discover them via ``colors.cvd_safe_names()``.
+_CVD_SAFE_QUALITATIVE: dict[str, list[str]] = {
+    # Okabe-Ito 8-colour qualitative palette (skips black for category use).
+    "okabe_ito": [
+        "#E69F00", "#56B4E9", "#009E73", "#F0E442",
+        "#0072B2", "#D55E00", "#CC79A7", "#000000",
+    ],
+    # Paul Tol qualitative schemes.
+    "tol_bright": ["#4477AA", "#EE6677", "#228833", "#CCBB44", "#66CCEE", "#AA3377", "#BBBBBB"],
+    "tol_muted": [
+        "#CC6677", "#332288", "#DDCC77", "#117733", "#88CCEE",
+        "#882255", "#44AA99", "#999933", "#AA4499",
+    ],
+    "tol_vibrant": ["#EE7733", "#0077BB", "#33BBEE", "#EE3377", "#CC3311", "#009988", "#BBBBBB"],
+    "tol_high_contrast": ["#004488", "#DDAA33", "#BB5566"],
+}
+
+for _cvd_name, _cvd_colors in _CVD_SAFE_QUALITATIVE.items():
+    colors.register_palette(_cvd_name, _cvd_colors, overwrite=True)
+    colors.register_generated_scheme(_cvd_name, _cvd_name, fallback="#BBBBBB", overwrite=True)
+    colors.mark_cvd_safe(_cvd_name)
+
+# Perceptually-uniform continuous colormaps are CVD-safe by construction; make
+# sure the strongest ones are registered and tagged (turbo/rainbow are not).
+for _cvd_cmap in ("viridis", "cividis", "magma", "inferno", "plasma"):
+    try:
+        colors.register_palette(_cvd_cmap, f"mpl:{_cvd_cmap}", overwrite=True)
+    except Exception:
+        continue
+    colors.mark_cvd_safe(_cvd_cmap)
 
 
 def expand_values_to_atoms(
