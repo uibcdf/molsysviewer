@@ -63,6 +63,7 @@ export interface MolSysPayload {
         indexA: number[];
         indexB: number[];
         order?: number[];
+        type?: string[];
     };
     meta?: Record<string, unknown>;
     time?: {

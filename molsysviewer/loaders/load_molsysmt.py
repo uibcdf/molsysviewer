@@ -368,11 +368,23 @@ def _normalize_bonds(bonds: Any) -> dict[str, Any] | None:
         except Exception:
             order_array = None
 
+    bond_type = bonds.get("type")
+    type_array = None
+    if bond_type is not None:
+        try:
+            ta = np.asarray(bond_type, dtype=str).ravel()
+            if ta.shape == array_a.shape:
+                type_array = ta.tolist()
+        except Exception:
+            type_array = None
+
     payload = {
         "indexA": array_a.tolist(),
         "indexB": array_b.tolist(),
     }
     if order_array is not None:
         payload["order"] = order_array
+    if type_array is not None:
+        payload["type"] = type_array
 
     return payload
