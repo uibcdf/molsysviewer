@@ -30,6 +30,7 @@ from ..figures import FigureSpec
 from ..interaction_targets import InteractionTarget
 from ..measurements import MeasurementsManager
 from ..player import PlayerManager
+from ..trajectory_plot import TrajectoryPlotManager
 from ..scene import SceneManager
 from ..selections import SelectionsManager, Selection
 from ..styles import StylesManager
@@ -212,6 +213,7 @@ class MolSysView(
         self._hover_callbacks: list = []
         self._click_callbacks: list = []
         self._context_callbacks: list = []
+        self._frame_change_callbacks: list = []
         self._last_active_selection_event: dict | None = None
         self._last_tool_state_event: dict | None = None
         self._webgl_context_lost: bool = False
@@ -292,6 +294,7 @@ class MolSysView(
         self.selections = SelectionsManager(self)
         self.scene = SceneManager(self)
         self.player = PlayerManager(self)
+        self.trajectory_plot = TrajectoryPlotManager(self)
         self.camera = CameraManager(self)
         self.movie = MovieManager(self)
         try:
