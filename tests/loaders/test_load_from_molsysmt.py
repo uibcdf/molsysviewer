@@ -49,7 +49,7 @@ def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
             "element_symbol": ["C"],
             "formal_charge": [0],
         },
-        "bonds": {"atom_pairs": [[0, 0]], "order": [1]},
+        "bonds": {"atom_pairs": [[0, 0]], "order": [1], "type": ["single"]},
         "structures": [
             {
                 "coordinates": [[1.0, 2.0, 3.0]],
@@ -93,7 +93,7 @@ def test_load_from_molsysmt_uses_viewer_json(monkeypatch):
         [0.0, 20.0, 0.0],
         [0.0, 0.0, 30.0],
     ]
-    assert payload["bonds"] == {"indexA": [0], "indexB": [0], "order": [1]}
+    assert payload["bonds"] == {"indexA": [0], "indexB": [0], "order": [1], "type": ["single"]}
 
 
 
