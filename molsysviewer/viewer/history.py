@@ -10,6 +10,7 @@ class HistoryMixin:
         "set_clip_planes": "clip_planes",
         "set_legend": "legend",
         "set_focus_fade": "focus_fade",
+        "set_trajectory_plot": "trajectory_plot",
     }
 
     def _tag_from_message(self, msg: dict) -> str | None:
