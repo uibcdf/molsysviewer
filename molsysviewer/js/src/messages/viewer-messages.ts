@@ -341,6 +341,20 @@ export type SetLegendMessage = {
     };
 };
 
+export type SetTrajectoryPlotMessage = {
+    op: "set_trajectory_plot";
+    options?: {
+        visible?: boolean;
+        series?: Array<{ label: string; values: number[]; color?: number }>;
+        n_frames?: number;
+        x?: number[];
+        events?: Array<{ frame: number; label?: string; color?: number }>;
+        x_label?: string;
+        y_label?: string;
+        title?: string;
+    };
+};
+
 export type SectionEntry = {
     tag: string;
     /** Point on the plane in nm (Python convention). */
@@ -714,6 +728,7 @@ export type ViewerMessage =
     UpdateVisibilityMessage |
     UpdateVisibilityDeltaMessage |
     SetFocusFadeMessage |
+    SetTrajectoryPlotMessage |
     ClearSceneMessage |
     ClearAllMessage |
     ClearByTagMessage |

@@ -16,3 +16,4 @@ import "./context-menu.test";
 import "./workbench-panel.test";
 import "./addon-panel-lifecycle.test";
 import "./webgl-status-overlay.test";
+import "./trajectory-plot-overlay.test";

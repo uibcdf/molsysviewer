@@ -870,6 +870,18 @@ class MolSysView(
             self._current_structure_index = int(orig_frame)
             self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
             self.player._store_state()  # noqa: SLF001
+            if self._frame_change_callbacks:
+                frame_event = {
+                    "event": "frame_changed",
+                    "frame": int(orig_frame),
+                    "is_playing": bool(content.get("is_playing", False)),
+                }
+                for cb in list(self._frame_change_callbacks):
+                    try:
+                        cb(frame_event)
+                    except Exception:
+                        # A misbehaving user callback must not break frame tracking.
+                        pass
             if self._box_record is not None:
                 self.show_box(
                     color=self._box_record["color"],

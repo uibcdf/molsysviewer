@@ -101,6 +101,25 @@ class InteractionMixin:
         except ValueError:
             pass
 
+    def on_frame_change(self, callback) -> None:
+        """Register a callback invoked whenever the trajectory frame changes.
+
+        The callback receives an event dict with ``event`` (``"frame_changed"``),
+        ``frame`` (the 0-based original-structure index) and ``is_playing``.
+        Useful to drive synchronized views such as the 2D trajectory plot.
+
+        Call :meth:`off_frame_change` with the same callable to unregister.
+        """
+        if callback not in self._frame_change_callbacks:
+            self._frame_change_callbacks.append(callback)
+
+    def off_frame_change(self, callback) -> None:
+        """Remove a previously registered frame-change callback."""
+        try:
+            self._frame_change_callbacks.remove(callback)
+        except ValueError:
+            pass
+
 
 InteractionMixin.__module__ = "molsysviewer.viewer"
 for _name, _value in InteractionMixin.__dict__.items():
