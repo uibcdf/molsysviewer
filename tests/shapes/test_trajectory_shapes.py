@@ -6,6 +6,7 @@ Also tests add_hbonds with per-structure atom-index pairs.
 """
 
 import numpy as np
+import pytest
 import pyunitwizard as puw
 
 from molsysviewer.shapes.spheres import SphereShapes
@@ -52,9 +53,9 @@ def test_add_sphere_includes_structures_coords_in_message():
     opts = view.messages[0]["options"]
     assert "structures_coords" in opts
     assert len(opts["structures_coords"]) == 3
-    assert opts["structures_coords"][0] == [0.0, 0.0, 0.0]
-    assert opts["structures_coords"][1] == [1.0, 1.0, 1.0]
-    assert opts["structures_coords"][2] == [2.0, 2.0, 2.0]
+    assert opts["structures_coords"][0] == pytest.approx([0.0, 0.0, 0.0])
+    assert opts["structures_coords"][1] == pytest.approx([1.0, 1.0, 1.0])
+    assert opts["structures_coords"][2] == pytest.approx([2.0, 2.0, 2.0])
 
 
 def test_add_sphere_without_structure_centers_has_no_structures_coords():
@@ -79,7 +80,7 @@ def test_add_triangle_faces_includes_structures_coords():
     frame1 = [[[0, 0, 1], [1, 0, 1], [0, 1, 1]]]
     structures = [frame0, frame1]
 
-    tris.add_triangle_faces(structure_vertices=structures, tag="t1")
+    tris.add_triangle_faces(structure_vertices=puw.quantity(structures, "angstroms"), tag="t1")
 
     opts = view.messages[0]["options"]
     assert "structures_coords" in opts
@@ -133,7 +134,7 @@ def test_add_channel_tube_includes_structures_coords():
     tubes.add_channel_tube(
         centers=puw.quantity(centers_struct0, "angstroms"),
         radii=puw.quantity([1.0, 1.0, 1.0], "angstroms"),
-        structure_centers=[centers_struct0, centers_struct1],
+        structure_centers=puw.quantity([centers_struct0, centers_struct1], "angstroms"),
         tag="tube1",
     )
 

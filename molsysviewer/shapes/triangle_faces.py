@@ -150,6 +150,7 @@ class TriangleFaces:
         atom_triplets_list = self._normalize_triplets(atom_triplets)
 
         if structure_vertices is not None and not atom_triplets_list:
+            structure_vertices = puw.get_value(structure_vertices, to_unit="angstroms")
             structures_list = [
                 self._normalize_vertices_raw(fv) if fv is not None else None
                 for fv in structure_vertices

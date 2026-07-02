@@ -4,6 +4,7 @@ from typing import Iterable, Sequence
 
 from smonitor import signal
 
+from .. import pyunitwizard as puw
 from .._private.arg_digestion import digest
 from ..colors import colors as global_colors
 from ..colors import normalize_color
@@ -144,6 +145,7 @@ class ChannelTubes:
         if name is not None:
             options["name"] = name
         if structure_centers is not None:
+            structure_centers = puw.get_value(structure_centers, to_unit="angstroms")
             options["structures_coords"] = [
                 self._normalize_centers_raw(fc) if fc is not None else None
                 for fc in structure_centers
