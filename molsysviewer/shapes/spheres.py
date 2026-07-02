@@ -118,8 +118,10 @@ class SphereShapes:
                 atom_indices = [int(idx) for idx in indices]
 
         # Detect batch vs single by inspecting the resolved numpy array.
+        # `center`/`radius` arrive as digested length quantities; Mol* wants
+        # angstroms, so convert explicitly at this boundary.
         try:
-            arr = np.asarray(to_wire_angstroms(center), dtype=float)
+            arr = np.asarray(puw.get_value(center, to_unit="angstroms"), dtype=float)
         except Exception:
             arr = None
 
@@ -136,10 +138,10 @@ class SphereShapes:
             layer_tag=layer_tag,
             meta={"shape_kind": "sphere", "shape_name": "Sphere"},
         )
-        center_val = arr.tolist() if arr is not None else [float(v) for v in to_wire_angstroms(center)]
+        center_val = arr.tolist() if arr is not None else [float(v) for v in puw.get_value(center, to_unit="angstroms")]
         options: dict = {
             "center": center_val,
-            "radius": float(to_wire_angstroms(radius)),
+            "radius": float(puw.get_value(radius, to_unit="angstroms")),
             "color": normalize_color(color),
             "alpha": float(alpha),
             "tag": layer.tag,
@@ -154,7 +156,7 @@ class SphereShapes:
             ]
 
         if structure_centers is not None:
-            fc_arr = np.asarray(to_wire_angstroms(structure_centers), dtype=float)
+            fc_arr = np.asarray(puw.get_value(structure_centers, to_unit="angstroms"), dtype=float)
             options["structures_coords"] = [
                 fc_arr[i].tolist() if fc_arr[i] is not None else None
                 for i in range(len(fc_arr))
@@ -194,7 +196,7 @@ class SphereShapes:
                 return [cast(v) for v in seq]
             return [cast(value)] * n
 
-        radii_list = _as_list(to_wire_angstroms(radii), float)
+        radii_list = _as_list(puw.get_value(radii, to_unit="angstroms"), float)
         colors_list = _as_list(colors, normalize_color)
         alphas_list = _as_list(alphas, float)
 
