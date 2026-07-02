@@ -67,9 +67,13 @@ def test_shapes_exports_and_delegation(monkeypatch):
 
     monkeypatch.setattr(manager.spheres, "add_sphere", fake_add_sphere)
 
-    manager.add_sphere(center=(1, 2, 3), radius=5)
-    assert called["args"][0] == (1, 2, 3)
-    assert called["args"][1] == 5
+    manager.add_sphere(center=puw.quantity([1, 2, 3], "nm"), radius=puw.quantity(2.5, "nm"))
+    # The public surface digests the length arguments (into standardized nm
+    # quantities) and then delegates to the inner sphere helper with
+    # skip_digestion=True (the inner trusts already-validated values).
+    assert called["kwargs"].get("skip_digestion") is True
+    assert puw.get_value(called["args"][0], to_unit="nm", value_type=list) == [1.0, 2.0, 3.0]
+    assert puw.get_value(called["args"][1], to_unit="nm", value_type=float) == 2.5
 
 
 def test_add_sphere_sends_message():

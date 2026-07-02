@@ -196,6 +196,7 @@ class ShapesManager:
         return layer
 
     @signal(tags=["shape"])
+    @digest()
     def add_sphere(
         self,
         center="[0.0, 0.0, 0.0] nm",
