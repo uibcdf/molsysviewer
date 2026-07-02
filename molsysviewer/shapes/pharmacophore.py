@@ -6,7 +6,6 @@ from typing import Any, Iterable, Mapping, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import colors as global_colors
 from ._registry import register_shape_layer
@@ -33,7 +32,7 @@ class PharmacophoreShapes:
     @staticmethod
     def _norm_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
         # Extract raw magnitudes in Angstroms (wire format for Mol*)
-        centers_raw = to_wire_angstroms(centers)
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         out: list[list[float]] = []
         for idx, c in enumerate(centers_raw):
             if len(c) != 3:
@@ -86,7 +85,7 @@ class PharmacophoreShapes:
                 return [cast(seq[0])] * len(kinds_list)
             return [cast(v) for v in seq]
 
-        radii_raw = to_wire_angstroms(radii) if radii is not None else None
+        radii_raw = puw.get_value(radii, to_unit="angstroms") if radii is not None else None
         radii_list = _as_list(radii_raw, float, 0.6)
         alphas_list = _as_list(alphas, float, 0.6)
         color_registry = getattr(self._view, "colors", global_colors)

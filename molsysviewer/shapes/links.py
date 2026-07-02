@@ -7,7 +7,6 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import colors as global_colors, normalize_color
 from ._registry import register_shape_layer
@@ -35,7 +34,7 @@ class LinkShapes:
 
         # Internal length representation is nanometers; convert to the Mol*
         # angstrom wire format at this edge (bare values are treated as nm).
-        coords_raw = to_wire_angstroms(coords)
+        coords_raw = puw.get_value(coords, to_unit="angstroms")
 
         normalized: list[list[list[float]]] = []
         for pair in coords_raw:
@@ -157,7 +156,7 @@ class LinkShapes:
         n_links = len(coordinate_pairs_list) if coordinate_pairs_list else len(atom_pairs_list)
 
         # Extract raw magnitudes in Angstroms (wire format for Mol*)
-        radii_raw = to_wire_angstroms(radius)
+        radii_raw = puw.get_value(radius, to_unit="angstroms")
         radii_list = self._normalize_optional_list(radii_raw, n_links, float)
         colors_list = self._normalize_optional_list(color, n_links, normalize_color)
         pocket_ids_list = self._normalize_optional_list(pocket_ids, n_links, lambda v: v)
@@ -262,7 +261,7 @@ class LinkShapes:
             for entry in structures
         ]
 
-        radius_ang = float(to_wire_angstroms(radius))
+        radius_ang = float(puw.get_value(radius, to_unit="angstroms"))
 
         options: dict = {
             "structures_atom_pairs": structures_list,
