@@ -230,6 +230,18 @@ export type LoadMolSysPayloadMessage = {
     multiple_structures?: boolean;
 };
 
+export type LoadMolSysPayloadRefMessage = {
+    op: "load_molsys_payload_ref";
+    ref?: {
+        kind?: "file";
+        url?: string;
+    };
+    label?: string;
+    /** Hint from Python side: true when the molsys has more than one structure. */
+    multiple_structures?: boolean;
+    n_structures?: number;
+};
+
 export type LoadStructureFromUrlMessage = {
     op: "load_structure_from_url";
     url: string;
@@ -723,6 +735,7 @@ export type ViewerMessage =
     SetMeasurementSettingsMessage |
     LoadStructureMessage |
     LoadMolSysPayloadMessage |
+    LoadMolSysPayloadRefMessage |
     LoadStructureFromUrlMessage |
     LoadPdbIdMessage |
     UpdateVisibilityMessage |

@@ -529,14 +529,26 @@ class MovieManager:
             payload["height_px"] = int(height_px)
         view._send_runtime_only(payload)  # type: ignore[attr-defined]
 
+        # Cooperative wait: under a Qt host the movie frames arrive as events that
+        # must be processed on this same (main) thread, so a plain time.sleep would
+        # deadlock. If the host exposes an event pump (view._qt_process_events, set
+        # to QCoreApplication.processEvents), drive it while waiting. In Jupyter /
+        # non-Qt backends there is no pump and this degrades to the sleep loop.
+        process_events = getattr(view, "_qt_process_events", None)  # noqa: SLF001
         deadline = time.monotonic() + timeout_s
         while not view._movie_export_done:  # type: ignore[attr-defined]
             if time.monotonic() > deadline:
+                received = len(view._movie_export_frames or [])  # type: ignore[attr-defined]
                 view._movie_export_frames = None  # type: ignore[attr-defined]
                 raise TimeoutError(
                     f"Movie export timed out after {timeout_s:.0f}s "
-                    f"(received {len(view._movie_export_frames or [])} of {total_frames} frames)."
+                    f"(received {received} of {total_frames} frames)."
                 )
+            if callable(process_events):
+                try:
+                    process_events()
+                except Exception:
+                    pass
             time.sleep(0.05)
 
         frames_data = view._movie_export_frames  # type: ignore[attr-defined]

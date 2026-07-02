@@ -1,6 +1,7 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import {
     LoadMolSysPayloadMessage,
+    LoadMolSysPayloadRefMessage,
     LoadPdbIdMessage,
     LoadStructureFromUrlMessage,
     LoadStructureMessage,
@@ -41,6 +42,20 @@ export class LoaderHandlers {
             return;
         }
         await this.loadFromMolSysPayloadInternal(msg.payload, msg.label);
+    }
+
+    async loadMolSysPayloadRef(msg: LoadMolSysPayloadRefMessage) {
+        const url = msg.ref?.url;
+        if (!url || typeof url !== "string") {
+            console.warn("[MolSysViewer] load_molsys_payload_ref without ref.url");
+            return;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Could not fetch MolSys payload ref: ${response.status} ${response.statusText}`);
+        }
+        const payload = await response.json() as MolSysPayload;
+        await this.loadFromMolSysPayloadInternal(payload, msg.label);
     }
 
     async loadFromUrl(msg: LoadStructureFromUrlMessage) {

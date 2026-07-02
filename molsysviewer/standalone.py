@@ -158,6 +158,8 @@ def _build_demo_gallery(
     debug_js: bool | None,
     mode: str,
     runtime_urls: Sequence[str] | None,
+    host_event_transport: str | None = None,
+    show_empty_host_overlay: bool = True,
 ) -> list[tuple[str, str]]:
     links: list[tuple[str, str]] = []
     for demo_name in sorted(demo.keys()):
@@ -180,6 +182,8 @@ def _build_demo_gallery(
             prepare_addons=False,
             mode=mode,
             runtime_urls=runtime_urls,
+            host_event_transport=host_event_transport,
+            show_empty_host_overlay=show_empty_host_overlay,
         )
         links.append((demo_name, demo_path.name))
     return links
@@ -245,6 +249,8 @@ def build_standalone0_html(
     prepare_addons: bool = True,
     mode: str = "standalone",
     runtime_urls: Sequence[str] | None = None,
+    host_event_transport: str | None = None,
+    show_empty_host_overlay: bool = True,
 ) -> str:
     """Build a first standalone-shaped HTML host using the current viewer runtime."""
 
@@ -271,9 +277,10 @@ def build_standalone0_html(
         mode=mode,
         inline_messages=True,
         runtime_urls=runtime_urls,
+        host_event_transport=host_event_transport,
         skip_digestion=True,
     )
-    if molecular_system is None:
+    if molecular_system is None and show_empty_host_overlay:
         demo_links = (
             _build_demo_gallery(
                 output_path,
@@ -286,6 +293,8 @@ def build_standalone0_html(
                 debug_js=debug_js,
                 mode=mode,
                 runtime_urls=runtime_urls,
+                host_event_transport=host_event_transport,
+                show_empty_host_overlay=show_empty_host_overlay,
             )
             if generate_demo_gallery
             else []

@@ -1498,6 +1498,7 @@ class MolSysView(
         mode: str = "standalone",
         inline_messages: bool = True,
         runtime_urls: Sequence[str] | None = None,
+        host_event_transport: str | None = None,
         skip_digestion: bool = False,
     ) -> None:
         """Export this viewer widget to an HTML file.
@@ -1549,6 +1550,7 @@ class MolSysView(
                 messages=messages,
                 inline_messages=inline_messages,
                 runtime_urls=runtime_urls,
+                host_event_transport=host_event_transport,
             )
         with open(output_filename, "w", encoding="utf-8") as f:
             f.write(html)
@@ -2105,6 +2107,7 @@ class MolSysView(
         messages: list[dict],
         inline_messages: bool,
         runtime_urls: Sequence[str] | None = None,
+        host_event_transport: str | None = None,
     ) -> str:
         """Create a lightweight HTML that loads a shared runtime and replays messages."""
         # This HTML is meant to be embedded and load the runtime from the CDN
@@ -2124,6 +2127,8 @@ class MolSysView(
             "enable_popout": bool(include_popout),
             "debug_js": bool(getattr(self.widget, "debug_js", False)),
         }
+        if host_event_transport:
+            ui_config["host_event_transport"] = str(host_event_transport)
 
         messages_json = self._json_for_html_script(messages) if inline_messages else "[]"
         ui_json = self._json_for_html_script(ui_config)
@@ -2198,4 +2203,3 @@ for _name, _value in MolSysView.__dict__.items():
             _value.__module__ = "molsysviewer.viewer"
         except Exception:
             pass
-
