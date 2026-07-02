@@ -19,45 +19,33 @@ We use ArgDigest in **package style**. Validation and normalization live outside
   `is_composed_of(...)`, and `extract(...)` are also part of the hardening
   surface when they own a stable contract;
 - missing-digester warnings on stable public paths are treated as integration debt;
-- shape/detail coverage is broader than before, but not yet exhaustive across every argument of every overlay method.
+- shape-overlay digestion is now active end to end, including strict length-unit
+  validation (see below and [units_and_quantities.md](units_and_quantities.md)).
 
-### Known issue: shape-overlay digestion is effectively bypassed
+### Resolved: shape-overlay digestion is now active end to end
 
-The `ShapesManager.add_*` wrappers are thin `*args/**kwargs` forwarders, so per
-Rule 1 they are **not** decorated with `@digest()`. The real digesters live on the
-submodules (`ChannelTubes.add_channel_tube`, `Rings.add_rings`, …) which *do*
-carry `@digest()`. However, each wrapper delegates with a **hardcoded
-`skip_digestion=True`**:
+This was previously bypassed: the `ShapesManager.add_*` wrappers forced
+`skip_digestion=True` on delegation, and several shape digesters rejected the
+`Quantity` values that callers actually pass. Both have been fixed (see
+[units_and_quantities.md](units_and_quantities.md) for the full quantity policy):
 
-```python
-def add_channel_tube(self, *args, skip_digestion=False, **kwargs):
-    return self.tubes.add_channel_tube(*args, skip_digestion=True, **kwargs)
-```
+- **Full-signature public methods** (e.g. `ShapesManager.add_sphere`) carry
+  `@digest()` and delegate to their submodule helper with `skip_digestion=True`
+  (the inner is an internal, already-validated call).
+- **Thin `*args/**kwargs` forwarders** delegate **without** forcing skip, so the
+  submodule helper (which owns the real named signature and `@digest()`)
+  validates on the public path. They are still not decorated themselves (Rule 1).
+- **Every length digester** now accepts the real input forms (unit strings,
+  `Quantity`, pint/…) and rejects bare numbers, via
+  `puw.ensure_quantity(..., dimensionality={'[L]': 1})` wrapped by
+  `_private/arg_digestion/_quantity.py::digest_length_quantity`.
+- Digesting the *whole* public argument set means non-length digesters must also
+  accept the shape forms: `color`, `alpha`, and `tag` are now batch-aware
+  (single **or** a per-object list).
 
-The effect: on the public `view.shapes.add_*` path the submodule digester never
-runs either — shape-overlay digestion is **off end to end**.
-
-This is not (only) missing coverage; some *existing* shape digesters are also
-**wrong for the real input types**. `digest_coordinate_pairs` raises
-`ArgumentError` on a `Quantity`:
-
-```python
-if not isinstance(coordinate_pairs, (list, tuple)):
-    raise ArgumentError("coordinate_pairs", ...)
-```
-
-but callers pass `puw.quantity(...)`. Verified empirically: switching the
-wrappers to propagate `skip_digestion` (so the submodule digesters run) breaks 6
-shape tests with `ArgumentError`, because the digesters reject the `Quantity`
-values that are actually used. The forced `skip_digestion=True` is therefore
-**masking** an incomplete/incorrect digester layer, not a careless bypass.
-
-Correct fix (a project in itself, not part of adding a shape): make the shape
-digesters accept the real input types (`Quantity`, ndarray, nested lists) and
-*then* propagate `skip_digestion` instead of forcing it. Until then, keep the
-current pattern: forwarders undecorated, submodule digesters present but bypassed
-on the manager path. Do **not** propagate `skip_digestion` in the `add_*`
-wrappers and do **not** add `@digest()` to the forwarders.
+Lesson: turning on argdigest for a public method digests **all** its arguments —
+budget for making every argument's digester accept the real forms, not only the
+one you came for.
 
 ### Rules
 
@@ -91,6 +79,13 @@ Current rule:
 
 - `molsysviewer` should use one local PyUnitWizard path;
 - do not mix local digestion/config with `molsysmt.pyunitwizard` aliases.
+
+**Physical magnitudes (lengths, positions, …) must be quantities, never bare
+numbers.** This is a hard policy with its own document —
+[units_and_quantities.md](units_and_quantities.md) — covering how to write a
+length digester (`digest_length_quantity` / `puw.ensure_quantity`), how to
+convert to the Mol\* wire unit (`puw.get_value(..., to_unit="angstroms")`), and
+the `skip_digestion` contract.
 
 ### Practical Audit Standard
 
