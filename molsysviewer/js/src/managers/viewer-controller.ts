@@ -26,6 +26,7 @@ import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectio
 import { MeasurementEndpointPolicy, MeasurementToolAction, MeasurementToolController } from "./measurement-tools";
 import { ToolStatusOverlay } from "../ui/tool-status";
 import { LegendOverlay } from "../ui/legend-overlay";
+import { TrajectoryPlotOverlay } from "../ui/trajectory-plot-overlay";
 import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
@@ -483,6 +484,7 @@ export class MolSysViewerController {
     private readonly activeSelection: ActiveSelectionController;
     private readonly toolStatusOverlay: ToolStatusOverlay;
     private readonly legendOverlay: LegendOverlay;
+    private readonly trajectoryPlotOverlay: TrajectoryPlotOverlay;
     private readonly webglStatusOverlay: WebGLStatusOverlay;
     private webglContextLost = false;
     private readonly groupPanel: GroupPanel;
@@ -806,6 +808,9 @@ export class MolSysViewerController {
 
         this.toolStatusOverlay = new ToolStatusOverlay(host);
         this.legendOverlay = new LegendOverlay(host);
+        this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
+            void this.trajectory.setTrajectoryFrame(frame);
+        });
         this.webglStatusOverlay = new WebGLStatusOverlay(host);
         new HoverTooltip(host, plugin);
         this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
@@ -1288,6 +1293,7 @@ export class MolSysViewerController {
         this.trajectory.onTrajectoryState(
             (state) => {
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
+                this.trajectoryPlotOverlay.setFrame(state.currentFrame);
             },
             { immediate: false },
         );
@@ -1992,6 +1998,7 @@ export class MolSysViewerController {
                 case "set_lighting": await this.scene.setLighting(msg as any); break;
                 case "set_clip_planes": await this.scene.setClipPlanes(msg as any); break;
                 case "set_legend": this.legendOverlay.set((msg as any).options?.items, (msg as any).options?.position); break;
+                case "set_trajectory_plot": this.trajectoryPlotOverlay.set((msg as any).options); break;
                 case "set_camera_mode": await this.scene.setCameraMode(msg as any); break;
                 case "set_panel_mode": this.setPanelMode((msg as any).panel, (msg as any).expanded); break;
                 case "set_workspace": this.selectWorkspace((msg as any).workspace ?? "core"); break;

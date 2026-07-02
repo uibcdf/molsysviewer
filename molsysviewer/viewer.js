@@ -13307,8 +13307,8 @@ function Hsl() {
 })(Hsl || (Hsl = {}));
 
 // node_modules/molstar/lib/mol-util/color/color.js
-function Color(hex) {
-  return hex;
+function Color(hex2) {
+  return hex2;
 }
 (function(Color2) {
   function toStyle(hexColor) {
@@ -140395,9 +140395,9 @@ function styleToVisualParams(style) {
   if (!style) return void 0;
   const params = {};
   if (style.color !== void 0) {
-    const hex = style.color.trim();
-    if (hex.startsWith("#") && (hex.length === 7 || hex.length === 4)) {
-      const full = hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
+    const hex2 = style.color.trim();
+    if (hex2.startsWith("#") && (hex2.length === 7 || hex2.length === 4)) {
+      const full = hex2.length === 4 ? `#${hex2[1]}${hex2[1]}${hex2[2]}${hex2[2]}${hex2[3]}${hex2[3]}` : hex2;
       params.textColor = Color(parseInt(full.slice(1), 16));
     }
   }
@@ -140571,9 +140571,9 @@ function styleToVisualParams2(style) {
   if (!style) return void 0;
   const params = {};
   if (style.color !== void 0) {
-    const hex = style.color.trim();
-    if (hex.startsWith("#") && (hex.length === 7 || hex.length === 4)) {
-      const full = hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
+    const hex2 = style.color.trim();
+    if (hex2.startsWith("#") && (hex2.length === 7 || hex2.length === 4)) {
+      const full = hex2.length === 4 ? `#${hex2[1]}${hex2[1]}${hex2[2]}${hex2[2]}${hex2[3]}${hex2[3]}` : hex2;
       params.textColor = Color(parseInt(full.slice(1), 16));
     }
   }
@@ -147499,13 +147499,13 @@ var LegendOverlay = class {
         gap: "6px"
       });
       const chip = document.createElement("span");
-      const hex = "#" + (it.color >>> 0 & 16777215).toString(16).padStart(6, "0");
+      const hex2 = "#" + (it.color >>> 0 & 16777215).toString(16).padStart(6, "0");
       Object.assign(chip.style, {
         display: "inline-block",
         width: "12px",
         height: "12px",
         borderRadius: "2px",
-        background: hex,
+        background: hex2,
         flex: "0 0 auto"
       });
       const label2 = document.createElement("span");
@@ -147515,6 +147515,188 @@ var LegendOverlay = class {
     });
     this.root.replaceChildren(...rows);
     this.root.style.display = "block";
+  }
+  dispose() {
+    this.root.remove();
+  }
+};
+
+// src/ui/trajectory-plot-overlay.ts
+var SVG_NS = "http://www.w3.org/2000/svg";
+var WIDTH = 440;
+var HEIGHT = 168;
+var M5 = { top: 22, right: 12, bottom: 26, left: 40 };
+var DEFAULT_COLORS = [4487082, 15623799, 2263091, 13417284, 6737134, 11154295];
+function hex(color, fallback) {
+  if (color === void 0 || color === null) return fallback;
+  return "#" + (color >>> 0 & 16777215).toString(16).padStart(6, "0");
+}
+var TrajectoryPlotOverlay = class {
+  constructor(host, onSeek) {
+    this.host = host;
+    this.onSeek = onSeek;
+    this.nFrames = 0;
+    this.currentFrame = 0;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-trajectory-plot", "true");
+    Object.assign(this.root.style, {
+      position: "absolute",
+      bottom: "12px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      display: "none",
+      background: "rgba(20, 20, 20, 0.78)",
+      borderRadius: "8px",
+      padding: "6px",
+      zIndex: "10",
+      cursor: "pointer",
+      userSelect: "none"
+    });
+    this.host.appendChild(this.root);
+  }
+  set(options) {
+    if (!options || options.visible === false || !options.series || options.series.length === 0) {
+      this.hide();
+      return;
+    }
+    this.options = options;
+    const first4 = options.series[0];
+    this.nFrames = options.n_frames ?? first4.values.length;
+    this.render();
+    this.root.style.display = "block";
+    this.setFrame(this.currentFrame);
+  }
+  hide() {
+    this.options = void 0;
+    this.root.style.display = "none";
+    this.root.replaceChildren();
+    this.svg = void 0;
+    this.playhead = void 0;
+  }
+  /** Move the playhead marker to `frame`; called on every trajectory frame change. */
+  setFrame(frame) {
+    this.currentFrame = frame;
+    if (!this.playhead || this.nFrames <= 1) return;
+    const x = this.frameToX(frame);
+    this.playhead.setAttribute("x1", String(x));
+    this.playhead.setAttribute("x2", String(x));
+  }
+  plotWidth() {
+    return WIDTH - M5.left - M5.right;
+  }
+  frameToX(frame) {
+    const denom = Math.max(this.nFrames - 1, 1);
+    const clamped = Math.max(0, Math.min(this.nFrames - 1, frame));
+    return M5.left + clamped / denom * this.plotWidth();
+  }
+  xToFrame(px) {
+    const denom = Math.max(this.nFrames - 1, 1);
+    const ratio = (px - M5.left) / this.plotWidth();
+    return Math.max(0, Math.min(this.nFrames - 1, Math.round(ratio * denom)));
+  }
+  render() {
+    const opts = this.options;
+    this.root.replaceChildren();
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("width", String(WIDTH));
+    svg.setAttribute("height", String(HEIGHT));
+    svg.setAttribute("viewBox", `0 0 ${WIDTH} ${HEIGHT}`);
+    this.svg = svg;
+    let min5 = Infinity;
+    let max5 = -Infinity;
+    for (const s of opts.series) {
+      for (const v4 of s.values) {
+        if (v4 < min5) min5 = v4;
+        if (v4 > max5) max5 = v4;
+      }
+    }
+    if (!isFinite(min5) || !isFinite(max5)) {
+      min5 = 0;
+      max5 = 1;
+    }
+    if (min5 === max5) {
+      min5 -= 1;
+      max5 += 1;
+    }
+    const yOf = (v4) => M5.top + (1 - (v4 - min5) / (max5 - min5)) * (HEIGHT - M5.top - M5.bottom);
+    const axis = document.createElementNS(SVG_NS, "path");
+    axis.setAttribute(
+      "d",
+      `M${M5.left},${M5.top} L${M5.left},${HEIGHT - M5.bottom} L${WIDTH - M5.right},${HEIGHT - M5.bottom}`
+    );
+    axis.setAttribute("fill", "none");
+    axis.setAttribute("stroke", "rgba(242,242,242,0.5)");
+    axis.setAttribute("stroke-width", "1");
+    svg.appendChild(axis);
+    for (const ev of opts.events ?? []) {
+      const x = this.frameToX(ev.frame);
+      const line = document.createElementNS(SVG_NS, "line");
+      line.setAttribute("x1", String(x));
+      line.setAttribute("x2", String(x));
+      line.setAttribute("y1", String(M5.top));
+      line.setAttribute("y2", String(HEIGHT - M5.bottom));
+      line.setAttribute("stroke", hex(ev.color, "#f59e0b"));
+      line.setAttribute("stroke-width", "1");
+      line.setAttribute("stroke-dasharray", "3,2");
+      svg.appendChild(line);
+    }
+    opts.series.forEach((s, i) => {
+      const denom = Math.max(s.values.length - 1, 1);
+      const pts = s.values.map((v4, idx) => `${M5.left + idx / denom * this.plotWidth()},${yOf(v4)}`).join(" ");
+      const poly = document.createElementNS(SVG_NS, "polyline");
+      poly.setAttribute("points", pts);
+      poly.setAttribute("fill", "none");
+      poly.setAttribute("stroke", hex(s.color, hex(DEFAULT_COLORS[i % DEFAULT_COLORS.length], "#4477aa")));
+      poly.setAttribute("stroke-width", "1.5");
+      svg.appendChild(poly);
+    });
+    const playhead = document.createElementNS(SVG_NS, "line");
+    playhead.setAttribute("y1", String(M5.top));
+    playhead.setAttribute("y2", String(HEIGHT - M5.bottom));
+    playhead.setAttribute("stroke", "#ffffff");
+    playhead.setAttribute("stroke-width", "1.5");
+    playhead.setAttribute("pointer-events", "none");
+    svg.appendChild(playhead);
+    this.playhead = playhead;
+    if (opts.title) svg.appendChild(this.text(WIDTH / 2, 14, opts.title, "middle", "#f2f2f2", 12));
+    if (opts.x_label) svg.appendChild(this.text(WIDTH / 2, HEIGHT - 6, opts.x_label, "middle", "rgba(242,242,242,0.7)", 10));
+    if (opts.y_label) {
+      const t5 = this.text(12, HEIGHT / 2, opts.y_label, "middle", "rgba(242,242,242,0.7)", 10);
+      t5.setAttribute("transform", `rotate(-90 12 ${HEIGHT / 2})`);
+      svg.appendChild(t5);
+    }
+    svg.appendChild(this.text(M5.left, HEIGHT - M5.bottom + 12, "0", "middle", "rgba(242,242,242,0.6)", 9));
+    svg.appendChild(this.text(WIDTH - M5.right, HEIGHT - M5.bottom + 12, String(Math.max(this.nFrames - 1, 0)), "middle", "rgba(242,242,242,0.6)", 9));
+    if (opts.series.length > 1) {
+      opts.series.forEach((s, i) => {
+        const ly = M5.top + 2 + i * 13;
+        const chip = document.createElementNS(SVG_NS, "rect");
+        chip.setAttribute("x", String(WIDTH - M5.right - 90));
+        chip.setAttribute("y", String(ly));
+        chip.setAttribute("width", "9");
+        chip.setAttribute("height", "9");
+        chip.setAttribute("fill", hex(s.color, hex(DEFAULT_COLORS[i % DEFAULT_COLORS.length], "#4477aa")));
+        svg.appendChild(chip);
+        svg.appendChild(this.text(WIDTH - M5.right - 77, ly + 8, s.label, "start", "#e8e8e8", 10));
+      });
+    }
+    svg.addEventListener("click", (e) => {
+      const rect = svg.getBoundingClientRect();
+      const px = (e.clientX - rect.left) * (WIDTH / rect.width);
+      this.onSeek(this.xToFrame(px));
+    });
+    this.root.appendChild(svg);
+  }
+  text(x, y, content, anchor, fill, size4) {
+    const t5 = document.createElementNS(SVG_NS, "text");
+    t5.setAttribute("x", String(x));
+    t5.setAttribute("y", String(y));
+    t5.setAttribute("text-anchor", anchor);
+    t5.setAttribute("fill", fill);
+    t5.setAttribute("font-size", String(size4));
+    t5.setAttribute("font-family", '"IBM Plex Sans", system-ui, sans-serif');
+    t5.textContent = content;
+    return t5;
   }
   dispose() {
     this.root.remove();
@@ -151633,6 +151815,9 @@ var MolSysViewerController = class _MolSysViewerController {
     };
     this.toolStatusOverlay = new ToolStatusOverlay(host);
     this.legendOverlay = new LegendOverlay(host);
+    this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
+      void this.trajectory.setTrajectoryFrame(frame);
+    });
     this.webglStatusOverlay = new WebGLStatusOverlay(host);
     new HoverTooltip(host, plugin);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
@@ -152083,6 +152268,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.trajectory.onTrajectoryState(
       (state) => {
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
+        this.trajectoryPlotOverlay.setFrame(state.currentFrame);
       },
       { immediate: false }
     );
@@ -152950,6 +153136,9 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_legend":
           this.legendOverlay.set(msg.options?.items, msg.options?.position);
+          break;
+        case "set_trajectory_plot":
+          this.trajectoryPlotOverlay.set(msg.options);
           break;
         case "set_camera_mode":
           await this.scene.setCameraMode(msg);
