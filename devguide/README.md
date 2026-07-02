@@ -38,7 +38,9 @@ That principle should guide prioritization throughout the repository.
    - The Python/JS bridge, Mol* integration, and messaging protocol.
 2. [**Digestion and Dependencies**](digestion_and_dependencies.md)
    - Using ArgDigest for validation and DepDigest for environment robustness.
-3. [**SMonitor Integration**](smonitor.md)
+3. [**Units and Quantities**](units_and_quantities.md)
+   - Policy for physical magnitudes: quantities required, bare numbers rejected.
+4. [**SMonitor Integration**](smonitor.md)
    - Diagnostics, catalog rules, and telemetry signals.
 4. [**Interaction Overview**](interaction_overview.md)
    - Entry point for interaction design, decisions already closed, and implementation order.
