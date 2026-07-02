@@ -1906,16 +1906,19 @@ export class MolSysViewerController {
             const isLoaderOp = msg.op === "load_structure_from_string" ||
                                msg.op === "load_pdb_string" ||
                                msg.op === "load_molsys_payload" ||
+                               msg.op === "load_molsys_payload_ref" ||
                                msg.op === "load_structure_from_url" ||
                                msg.op === "load_pdb_id";
             if (isLoaderOp) {
                 this.hideWelcomeCard();
             }
 
-            if ((msg as any).op === "load_molsys_payload") {
+            if ((msg as any).op === "load_molsys_payload" || (msg as any).op === "load_molsys_payload_ref") {
                 const structures = (msg as any).payload?.structures;
                 if (Array.isArray(structures)) {
                     this.trajectory.setExpectedFrameCount(structures.length);
+                } else if (typeof (msg as any).n_structures === "number") {
+                    this.trajectory.setExpectedFrameCount((msg as any).n_structures);
                 } else if ((msg as any).multiple_structures === true) {
                     // No structures array yet, but Python told us there are multiple frames.
                     this.trajectory.setExpectedFrameCount(2);
@@ -1926,6 +1929,7 @@ export class MolSysViewerController {
                 case "load_structure_from_string":
                 case "load_pdb_string": await this.loader.loadFromString(msg); break;
                 case "load_molsys_payload": await this.loader.loadMolSysPayload(msg); break;
+                case "load_molsys_payload_ref": await this.loader.loadMolSysPayloadRef(msg); break;
                 case "load_structure_from_url": await this.loader.loadFromUrl(msg); break;
                 case "load_pdb_id": await this.loader.loadPdbId(msg); break;
 

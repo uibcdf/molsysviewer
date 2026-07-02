@@ -55,6 +55,14 @@ const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
             } else if ((msg as any).multiple_structures === false && frameCount === undefined) {
                 multipleStructures = false;
             }
+        } else if ((msg as any).op === "load_molsys_payload_ref") {
+            hasStructures = true;
+            if (typeof (msg as any).n_structures === "number") {
+                frameCount = (msg as any).n_structures;
+                multipleStructures = frameCount > 1;
+            } else if ((msg as any).multiple_structures === true) {
+                multipleStructures = true;
+            }
         }
     }
     return { frameCount, multipleStructures, hasStructures };
@@ -78,9 +86,58 @@ export async function bootDocsView(opts: {
 
     const commandLog: ViewerMessage[] = Array.isArray(opts.initialMessages) ? [...opts.initialMessages] : [];
     const ui = opts.ui || {};
+    const notifyHost = (event: Record<string, any>) => {
+        if (!event || typeof event !== "object") return;
+        if (ui.host_event_transport !== "url-scheme") return;
+        try {
+            const payload = encodeURIComponent(JSON.stringify(event));
+            const url = `molsysviewer://event?payload=${payload}`;
+            const iframe = document.createElement("iframe");
+            Object.assign(iframe.style, {
+                display: "none",
+                width: "0",
+                height: "0",
+                border: "0",
+            });
+            iframe.src = url;
+            document.documentElement.appendChild(iframe);
+            window.setTimeout(() => iframe.remove(), 0);
+        } catch (error) {
+            console.error("[MolSysViewer docs] Could not notify host:", error);
+        }
+    };
+
+    const messageMeta = (msg: ViewerMessage) => ({
+        id: (msg as any)?.id,
+        generation: (msg as any)?.generation,
+        op: (msg as any)?.op,
+    });
+
+    const notifyRenderReady = (msg: ViewerMessage) => {
+        const meta = messageMeta(msg);
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                notifyHost({ event: "render_ready", ...meta });
+            });
+        });
+    };
+
     (window as any).__molsysviewerDocsHandleMessage = async (msg: ViewerMessage) => {
-        const controller = await controllerPromise;
-        await controller.handleMessage(msg);
+        const meta = messageMeta(msg);
+        try {
+            const controller = await controllerPromise;
+            await controller.handleMessage(msg);
+            commandLog.push(msg);
+            notifyHost({ event: "message_ack", phase: "handled", ...meta });
+            if ((msg as any)?.op === "load_molsys_payload" || (msg as any)?.op === "load_molsys_payload_ref") {
+                notifyHost({ event: "structure_ready", ...meta });
+                notifyRenderReady(msg);
+            }
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            notifyHost({ event: "message_error", phase: "handled", error: message, ...meta });
+            throw error;
+        }
     };
 
     // Setup DOM
@@ -232,8 +289,11 @@ export async function bootDocsView(opts: {
             for (const msg of initial) {
                 if (msg) await controller.handleMessage(msg);
             }
+            notifyHost({ event: "ready" });
         } catch (err) {
             console.error("[MolSysViewer docs] Init error:", err);
+            const message = err instanceof Error ? err.message : String(err);
+            notifyHost({ event: "frontend_error", phase: "init", error: message });
         }
     })();
 }

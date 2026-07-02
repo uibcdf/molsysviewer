@@ -11,6 +11,8 @@ from .utils import (
     _load_qt_shell_state,
     _show_startup_status,
     _qt_runtime_urls,
+    _install_qt_message_bridge,
+    _load_molecular_system_into_qt_host,
 )
 from .menus import _install_menu_bar
 
@@ -50,19 +52,24 @@ def create_standalone_qt0_window(
     QFileDialog = qt["QFileDialog"]
     QInputDialog = qt["QInputDialog"]
     QMessageBox = qt["QMessageBox"]
+    QTimer = qt["QTimer"]
+    QWebEnginePage = qt["QWebEnginePage"]
+    QWebEngineUrlScheme = qt["QWebEngineUrlScheme"]
+    QWebEngineUrlSchemeHandler = qt["QWebEngineUrlSchemeHandler"]
+    QBuffer = qt["QBuffer"]
+    QByteArray = qt["QByteArray"]
+
+    # Must run before the QApplication is created, or Chromium rejects the schemes.
+    _get_helper("_register_qt_url_schemes")(QWebEngineUrlScheme)
 
     if output_filename is None:
         with tempfile.NamedTemporaryFile(prefix="molsysviewer-qt0-", suffix=".html", delete=False) as handle:
             output_filename = handle.name
 
     html_path = build_standalone0_html(
-        molecular_system,
+        None,
         output_filename,
         title=title,
-        selection=selection,
-        structure_indices=structure_indices,
-        syntax=syntax,
-        load_mode=load_mode,
         include_controls=include_controls,
         include_popout=include_popout,
         discover_addons=discover_addons,
@@ -71,6 +78,8 @@ def create_standalone_qt0_window(
         debug_js=debug_js,
         mode="lite",
         runtime_urls=_get_helper("_qt_runtime_urls")(),
+        host_event_transport="url-scheme",
+        show_empty_host_overlay=False,
     )
 
     current_state = {"molecular_system": molecular_system, "base_title": title, "loaded_label": None}
@@ -86,6 +95,15 @@ def create_standalone_qt0_window(
         window.resize(initial_width, initial_height)
 
     webview = QWebEngineView(window)
+    _get_helper("_install_qt_message_bridge")(
+        webview,
+        QWebEnginePage,
+        QTimer,
+        status_callback=lambda message: window.statusBar().showMessage(message),
+        QWebEngineUrlSchemeHandler=QWebEngineUrlSchemeHandler,
+        QBuffer=QBuffer,
+        QByteArray=QByteArray,
+    )
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
     _get_helper("_install_menu_bar")(
@@ -100,7 +118,22 @@ def create_standalone_qt0_window(
         current_title=title,
         current_state=current_state,
     )
-    _get_helper("_show_startup_status")(window, current_state)
+    if molecular_system is None:
+        _get_helper("_show_startup_status")(window, current_state)
+    else:
+        _get_helper("_load_molecular_system_into_qt_host")(
+            molecular_system,
+            window=window,
+            webview=webview,
+            current_state=current_state,
+            loaded_label=None,
+            status_message="Loading molecular system...",
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            load_mode=load_mode,
+            debug_js=debug_js,
+        )
 
     return {
         "app": app,

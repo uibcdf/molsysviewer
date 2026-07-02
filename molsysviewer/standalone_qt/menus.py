@@ -2,15 +2,12 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-import shutil
 from typing import Any
 
 from ..demo import demo
 from .utils import (
     _rebuild_qt_html,
-    _set_empty_state,
     _persist_shell_state,
-    _reload_html_in_view,
     _show_status,
     _show_host_error,
     _set_action_shortcut,
@@ -21,8 +18,8 @@ from .utils import (
     _load_demo_into_qt_host,
     _restore_last_source,
     _send_viewer_message,
+    _load_molecular_system_into_qt_host,
     _export_qt_figure,
-    _set_loaded_state,
     _current_source_summary,
     _host_info_message,
 )
@@ -63,15 +60,14 @@ def _install_menu_bar(
 
     def _new_empty_host():
         try:
-            _get_helper("_rebuild_qt_html")(
+            _get_helper("_load_molecular_system_into_qt_host")(
                 None,
-                html_path=html_path,
-                title=current_title,
+                window=window,
+                webview=webview,
+                current_state=current_state,
+                loaded_label=None,
+                status_message="Opened empty host.",
             )
-            _get_helper("_set_empty_state")(window, current_state)
-            _get_helper("_persist_shell_state")(current_state, window=window)
-            _get_helper("_reload_html_in_view")(webview, QUrl, html_path)
-            _get_helper("_show_status")(window, "Opened empty host.")
         except Exception as exc:
             _get_helper("_show_host_error")(window, QMessageBox, "New Empty Host Failed", f"Could not open empty host: {exc}")
 
@@ -91,22 +87,21 @@ def _install_menu_bar(
         if not selected:
             return
         try:
-            _get_helper("_rebuild_qt_html")(
+            _get_helper("_load_molecular_system_into_qt_host")(
                 selected,
-                html_path=html_path,
-                title=current_title,
+                window=window,
+                webview=webview,
+                current_state=current_state,
+                loaded_label=Path(selected).name,
+                status_message=f"Loaded file: {Path(selected).name}",
             )
-            _get_helper("_set_loaded_state")(window, current_state, selected, Path(selected).name)
             _get_helper("_record_recent_source")(
                 current_state,
                 kind="file",
                 value=selected,
                 loaded_label=Path(selected).name,
             )
-            _get_helper("_persist_shell_state")(current_state, window=window)
-            _get_helper("_reload_html_in_view")(webview, QUrl, html_path)
             _refresh_recent_menu()
-            _get_helper("_show_status")(window, f"Loaded file: {Path(selected).name}")
         except Exception as exc:
             _get_helper("_show_host_error")(window, QMessageBox, "Open File Failed", f"Could not load file: {exc}")
 
@@ -215,22 +210,21 @@ def _install_menu_bar(
         if not accepted or not pdb_id:
             return
         try:
-            _get_helper("_rebuild_qt_html")(
+            _get_helper("_load_molecular_system_into_qt_host")(
                 pdb_id,
-                html_path=html_path,
-                title=current_title,
+                window=window,
+                webview=webview,
+                current_state=current_state,
+                loaded_label=pdb_id,
+                status_message=f"Loaded PDB ID: {pdb_id}",
             )
-            _get_helper("_set_loaded_state")(window, current_state, pdb_id, pdb_id)
             _get_helper("_record_recent_source")(
                 current_state,
                 kind="pdb_id",
                 value=pdb_id,
                 loaded_label=pdb_id,
             )
-            _get_helper("_persist_shell_state")(current_state, window=window)
-            _get_helper("_reload_html_in_view")(webview, QUrl, html_path)
             _refresh_recent_menu()
-            _get_helper("_show_status")(window, f"Loaded PDB ID: {pdb_id}")
         except Exception as exc:
             _get_helper("_show_host_error")(window, QMessageBox, "Load PDB ID Failed", f"Could not load PDB ID: {exc}")
 
@@ -252,22 +246,21 @@ def _install_menu_bar(
         if not accepted or not source_value:
             return
         try:
-            _get_helper("_rebuild_qt_html")(
+            _get_helper("_load_molecular_system_into_qt_host")(
                 source_value,
-                html_path=html_path,
-                title=current_title,
+                window=window,
+                webview=webview,
+                current_state=current_state,
+                loaded_label=source_value,
+                status_message=f"Loaded source: {source_value}",
             )
-            _get_helper("_set_loaded_state")(window, current_state, source_value, source_value)
             _get_helper("_record_recent_source")(
                 current_state,
                 kind="source",
                 value=source_value,
                 loaded_label=source_value,
             )
-            _get_helper("_persist_shell_state")(current_state, window=window)
-            _get_helper("_reload_html_in_view")(webview, QUrl, html_path)
             _refresh_recent_menu()
-            _get_helper("_show_status")(window, f"Loaded source: {source_value}")
         except Exception as exc:
             _get_helper("_show_host_error")(window, QMessageBox, "Load Source Failed", f"Could not load source: {exc}")
 
@@ -346,7 +339,11 @@ def _install_menu_bar(
             return
         try:
             destination = Path(selected).expanduser().resolve()
-            shutil.copyfile(html_path, destination)
+            _get_helper("_rebuild_qt_html")(
+                current_state.get("molecular_system"),
+                html_path=str(destination),
+                title=current_title,
+            )
             _get_helper("_show_status")(window, f"Exported HTML: {destination.name}")
         except Exception as exc:
             _get_helper("_show_host_error")(window, QMessageBox, "Export HTML Failed", f"Could not export HTML: {exc}")

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import shutil
 import sys
 import tempfile
+import time
 from typing import Any, Sequence
+from urllib.parse import parse_qs, urlparse
 
 from ..demo import demo
 from ..standalone import _resolve_view, build_standalone0_html
@@ -18,6 +21,15 @@ QT_IMPORT_ERROR = (
 
 QT_STATE_FILENAME = "standalone_qt0_state.json"
 
+# Custom URL schemes for the Qt live-message transport. Both must be registered
+# with QWebEngineUrlScheme.registerScheme(...) BEFORE the QApplication is
+# created, or Chromium treats them as invalid.
+#   - QT_EVENT_SCHEME: JS -> Python events, intercepted in acceptNavigationRequest.
+#   - QT_PAYLOAD_SCHEME: Python -> JS large payloads, served by a scheme handler
+#     (so the page fetches them without needing file:// access).
+QT_EVENT_SCHEME = "molsysviewer"
+QT_PAYLOAD_SCHEME = "molsysviewer-payload"
+
 
 def _get_helper(name: str) -> Any:
     m = sys.modules.get("molsysviewer.standalone_qt")
@@ -26,10 +38,26 @@ def _get_helper(name: str) -> Any:
     return globals()[name]
 
 
+def _configure_qt_webengine_environment(prefix: str | os.PathLike[str] | None = None) -> None:
+    base = Path(prefix or os.environ.get("CONDA_PREFIX") or sys.prefix)
+    candidates = {
+        "QTWEBENGINEPROCESS_PATH": base / "libexec" / "QtWebEngineProcess",
+        "QTWEBENGINE_RESOURCES_PATH": base / "resources",
+        "QTWEBENGINE_LOCALES_PATH": base / "translations" / "qtwebengine_locales",
+    }
+    for env_name, path in candidates.items():
+        if env_name not in os.environ and path.exists():
+            os.environ[env_name] = str(path)
+
+
 def _import_qt():
+    _get_helper("_configure_qt_webengine_environment")()
     try:
-        from PySide6_uibcdf.QtCore import QUrl
+        from PySide6_uibcdf.QtCore import QBuffer, QByteArray, QTimer, QUrl
         from PySide6_uibcdf.QtGui import QAction
+        from PySide6_uibcdf.QtWebEngineCore import (
+            QWebEnginePage, QWebEngineUrlScheme, QWebEngineUrlSchemeHandler,
+        )
         from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
         from PySide6_uibcdf.QtWidgets import (
             QApplication, QFileDialog, QInputDialog, QMainWindow, QMessageBox,
@@ -40,11 +68,17 @@ def _import_qt():
     return {
         "QAction": QAction,
         "QApplication": QApplication,
+        "QBuffer": QBuffer,
+        "QByteArray": QByteArray,
         "QFileDialog": QFileDialog,
         "QInputDialog": QInputDialog,
         "QMainWindow": QMainWindow,
         "QMessageBox": QMessageBox,
+        "QTimer": QTimer,
         "QUrl": QUrl,
+        "QWebEnginePage": QWebEnginePage,
+        "QWebEngineUrlScheme": QWebEngineUrlScheme,
+        "QWebEngineUrlSchemeHandler": QWebEngineUrlSchemeHandler,
         "QWebEngineView": QWebEngineView,
     }
 
@@ -144,6 +178,9 @@ def _set_action_shortcut(action, shortcut: str) -> None:
 
 
 def _reload_html_in_view(webview, QUrl, html_path: str) -> None:
+    bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+    if bridge is not None and hasattr(bridge, "on_load_started"):
+        bridge.on_load_started()
     webview.setUrl(QUrl.fromLocalFile(html_path))
 
 
@@ -249,7 +286,309 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
         return
 
 
+class QtMessageBridge:
+    """Runtime-only queue for Qt -> JS viewer messages."""
+
+    def __init__(self, webview, QTimer, *, status_callback=None) -> None:
+        self.webview = webview
+        self.QTimer = QTimer
+        self.status_callback = status_callback
+        self.ready = False
+        self.queue: list[dict[str, Any]] = []
+        self.inflight: dict[str, Any] | None = None
+        self.next_id = 0
+        self.generation = 0
+        self.payload_ref_threshold_bytes = int(os.environ.get("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1000000"))
+        # Large payloads are served in-memory over a custom URL scheme (see
+        # MolSysViewerPayloadSchemeHandler) instead of a temp file + fetch(file://),
+        # which Chromium blocks from a file:// page. Keyed by message id.
+        self.payloads: dict[str, bytes] = {}
+
+    def on_load_started(self) -> None:
+        self.ready = False
+        if self.inflight is not None:
+            self._cleanup_entry(self.inflight)
+        self._cleanup_queue()
+        self.inflight = None
+        self.generation += 1
+
+    def begin_generation(self, *, clear_queue: bool = True) -> int:
+        self.generation += 1
+        if self.inflight is not None:
+            self._cleanup_entry(self.inflight)
+        self.inflight = None
+        if clear_queue:
+            self._cleanup_queue()
+            self.queue.clear()
+        return self.generation
+
+    def send(self, message: dict[str, Any]) -> None:
+        entry = self._make_entry(message)
+        coalesce_key = entry.get("coalesce_key")
+        if coalesce_key:
+            self.queue = [item for item in self.queue if item.get("coalesce_key") != coalesce_key]
+        self.queue.append(entry)
+        self._flush()
+
+    def handle_frontend_event(self, event: dict[str, Any]) -> None:
+        name = event.get("event")
+        if name == "ready":
+            self.ready = True
+            self._flush()
+            return
+        if name in {"message_ack", "message_error", "structure_ready", "render_ready"}:
+            self._handle_message_event(event)
+            return
+        if name == "frontend_error":
+            self._show_status(f"Frontend error: {event.get('error', 'unknown error')}")
+
+    def _make_entry(self, message: dict[str, Any]) -> dict[str, Any]:
+        self.next_id += 1
+        msg = dict(message)
+        msg.setdefault("id", f"qt-{self.next_id}")
+        msg.setdefault("generation", self.generation)
+        payload_id = self._materialize_payload_ref(msg)
+        op = str(msg.get("op", ""))
+        wait_event = "structure_ready" if op in {"load_molsys_payload", "load_molsys_payload_ref"} else "message_ack"
+        timeout_s = 30.0 if wait_event == "structure_ready" else 5.0
+        return {
+            "id": msg["id"],
+            "generation": msg["generation"],
+            "message": msg,
+            "payload_id": payload_id,
+            "wait_event": wait_event,
+            "timeout_s": timeout_s,
+            "coalesce_key": self._coalesce_key(msg),
+        }
+
+    def _materialize_payload_ref(self, message: dict[str, Any]) -> str | None:
+        if message.get("op") != "load_molsys_payload":
+            return None
+        payload = message.get("payload")
+        if not isinstance(payload, dict):
+            return None
+        payload_text = json.dumps(payload, separators=(",", ":"))
+        if len(payload_text.encode("utf-8")) < self.payload_ref_threshold_bytes:
+            return None
+        payload_id = str(message["id"])
+        self.payloads[payload_id] = payload_text.encode("utf-8")
+        n_structures = len(payload.get("structures") or []) if isinstance(payload.get("structures"), list) else None
+        message.pop("payload", None)
+        message["op"] = "load_molsys_payload_ref"
+        # Served by MolSysViewerPayloadSchemeHandler; the page fetches this URL.
+        message["ref"] = {"kind": "scheme", "url": f"{QT_PAYLOAD_SCHEME}://payload/{payload_id}"}
+        if n_structures is not None:
+            message["n_structures"] = n_structures
+        return payload_id
+
+    def _coalesce_key(self, message: dict[str, Any]) -> str | None:
+        op = message.get("op")
+        if op == "set_panel_mode":
+            return "set_panel_mode"
+        if op == "set_trajectory_frame":
+            return "set_trajectory_frame"
+        return None
+
+    def _flush(self) -> None:
+        if not self.ready or self.inflight is not None or not self.queue:
+            return
+        entry = self.queue.pop(0)
+        self.inflight = entry
+        entry["deadline"] = time.monotonic() + float(entry["timeout_s"])
+        self._arm_timeout(entry)
+        self._run_javascript(entry)
+
+    def _run_javascript(self, entry: dict[str, Any]) -> None:
+        page = self.webview.page() if hasattr(self.webview, "page") else None
+        if page is None or not hasattr(page, "runJavaScript"):
+            self.inflight = None
+            self.queue.insert(0, entry)
+            return
+        payload = json.dumps(entry["message"], separators=(",", ":"))
+        script = (
+            "(() => { "
+            "const handler = window.__molsysviewerDocsHandleMessage; "
+            "if (typeof handler !== 'function') return {accepted:false}; "
+            f"const message = {payload}; "
+            "Promise.resolve(handler(message)).catch((error) => { "
+            "console.error('[MolSysViewer Qt bridge] message failed', error); "
+            "}); "
+            "return {accepted:true}; "
+            "})()"
+        )
+
+        def _callback(result=None):
+            accepted = isinstance(result, dict) and result.get("accepted") is True
+            if accepted:
+                return
+            if self.inflight is entry:
+                self.inflight = None
+                self.ready = False
+                self.queue.insert(0, entry)
+                self._retry_later()
+
+        try:
+            page.runJavaScript(script, _callback)
+        except TypeError:
+            page.runJavaScript(script)
+        except Exception as exc:
+            self.inflight = None
+            self.queue.insert(0, entry)
+            self._show_status(f"Could not send viewer message: {exc}")
+            self._retry_later()
+
+    def _handle_message_event(self, event: dict[str, Any]) -> None:
+        entry = self.inflight
+        if entry is None:
+            return
+        if event.get("id") != entry.get("id"):
+            return
+        if event.get("generation") != entry.get("generation"):
+            return
+        if event.get("event") == "message_error":
+            self.inflight = None
+            self._cleanup_entry(entry)
+            self._show_status(f"Viewer message failed: {event.get('error', 'unknown error')}")
+            self._flush()
+            return
+        if event.get("event") != entry.get("wait_event"):
+            return
+        self.inflight = None
+        self._cleanup_entry(entry)
+        self._flush()
+
+    def _arm_timeout(self, entry: dict[str, Any]) -> None:
+        timeout_ms = max(1, int(float(entry["timeout_s"]) * 1000))
+
+        def _check_timeout():
+            if self.inflight is not entry:
+                return
+            if time.monotonic() <= float(entry.get("deadline", 0.0)):
+                return
+            self.inflight = None
+            self._cleanup_entry(entry)
+            self._show_status(f"Viewer message timed out: {entry['message'].get('op', 'unknown')}")
+            self._flush()
+
+        self.QTimer.singleShot(timeout_ms, _check_timeout)
+
+    def _retry_later(self) -> None:
+        self.QTimer.singleShot(50, self._flush)
+
+    def _show_status(self, message: str) -> None:
+        if callable(self.status_callback):
+            self.status_callback(message)
+
+    def _cleanup_entry(self, entry: dict[str, Any]) -> None:
+        payload_id = entry.get("payload_id")
+        if isinstance(payload_id, str):
+            self.payloads.pop(payload_id, None)
+
+    def _cleanup_queue(self) -> None:
+        for entry in self.queue:
+            self._cleanup_entry(entry)
+
+
+def _register_qt_url_schemes(QWebEngineUrlScheme) -> None:
+    """Register the custom transport schemes. Idempotent; must run before QApplication."""
+    flag = QWebEngineUrlScheme.Flag
+    specs = {
+        # Event scheme: navigations intercepted in acceptNavigationRequest. No
+        # handler; it only needs to be a known scheme so the navigation is valid.
+        QT_EVENT_SCHEME: flag.SecureScheme | flag.LocalScheme | flag.LocalAccessAllowed,
+        # Payload scheme: served by a QWebEngineUrlSchemeHandler and fetched by the
+        # page, so it must allow CORS-enabled fetches.
+        QT_PAYLOAD_SCHEME: flag.SecureScheme | flag.CorsEnabled,
+    }
+    for name, flags in specs.items():
+        name_bytes = name.encode("ascii")
+        if QWebEngineUrlScheme.schemeByName(name_bytes).name():
+            continue  # already registered
+        scheme = QWebEngineUrlScheme(name_bytes)
+        scheme.setFlags(flags)
+        QWebEngineUrlScheme.registerScheme(scheme)
+
+
+def _make_payload_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray, payloads: dict[str, bytes]):
+    """Build a scheme handler that serves in-memory payloads over QT_PAYLOAD_SCHEME."""
+
+    class MolSysViewerPayloadSchemeHandler(QWebEngineUrlSchemeHandler):
+        def requestStarted(self, job):  # noqa: N802
+            url = job.requestUrl()
+            payload_id = (url.path() if hasattr(url, "path") else "").lstrip("/")
+            data = payloads.get(payload_id)
+            if data is None:
+                if hasattr(job, "fail"):
+                    job.fail(getattr(job, "UrlNotFound", 0))
+                return
+            buffer = QBuffer(job)
+            buffer.setData(QByteArray(data))
+            buffer.open(QBuffer.OpenModeFlag.ReadOnly if hasattr(QBuffer, "OpenModeFlag") else QBuffer.ReadOnly)
+            job.reply(QByteArray(b"application/json"), buffer)
+
+    return MolSysViewerPayloadSchemeHandler()
+
+
+def _decode_qt_bridge_event(url: str) -> dict[str, Any] | None:
+    parsed = urlparse(url)
+    if parsed.scheme != QT_EVENT_SCHEME or parsed.netloc != "event":
+        return None
+    payload_values = parse_qs(parsed.query).get("payload")
+    if not payload_values:
+        return None
+    try:
+        event = json.loads(payload_values[0])
+    except Exception:
+        return None
+    if not isinstance(event, dict) or not isinstance(event.get("event"), str):
+        return None
+    return event
+
+
+def _install_qt_message_bridge(
+    webview,
+    QWebEnginePage,
+    QTimer,
+    *,
+    status_callback=None,
+    QWebEngineUrlSchemeHandler=None,
+    QBuffer=None,
+    QByteArray=None,
+):
+    class MolSysViewerQtPage(QWebEnginePage):
+        def acceptNavigationRequest(self, url, nav_type, is_main_frame):  # noqa: N802
+            event = _decode_qt_bridge_event(url.toString() if hasattr(url, "toString") else str(url))
+            if event is not None:
+                bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+                if bridge is not None:
+                    bridge.handle_frontend_event(event)
+                return False
+            return super().acceptNavigationRequest(url, nav_type, is_main_frame)
+
+    page = MolSysViewerQtPage(webview)
+    webview.setPage(page)
+    bridge = QtMessageBridge(webview, QTimer, status_callback=status_callback)
+    setattr(webview, "_molsysviewer_qt_bridge", bridge)
+
+    # Serve large payloads over the custom scheme, so the page fetches them
+    # without needing (insecure) file:// access.
+    if QWebEngineUrlSchemeHandler is not None and QBuffer is not None and QByteArray is not None:
+        handler = _get_helper("_make_payload_scheme_handler")(
+            QWebEngineUrlSchemeHandler, QBuffer, QByteArray, bridge.payloads
+        )
+        profile = page.profile() if hasattr(page, "profile") else None
+        if profile is not None and hasattr(profile, "installUrlSchemeHandler"):
+            profile.installUrlSchemeHandler(QT_PAYLOAD_SCHEME.encode("ascii"), handler)
+        setattr(webview, "_molsysviewer_qt_payload_handler", handler)
+
+    return bridge
+
+
 def _send_viewer_message(webview, message: dict[str, Any]) -> None:
+    bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+    if bridge is not None:
+        bridge.send(message)
+        return
     page = webview.page() if hasattr(webview, "page") else None
     if page is None or not hasattr(page, "runJavaScript"):
         return
@@ -260,6 +599,14 @@ def _send_viewer_message(webview, message: dict[str, Any]) -> None:
         "}"
     )
     page.runJavaScript(script)
+
+
+def _send_viewer_messages(webview, messages: Sequence[dict[str, Any]], *, new_generation: bool = False) -> None:
+    bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+    if bridge is not None and new_generation:
+        bridge.begin_generation()
+    for message in messages:
+        _get_helper("_send_viewer_message")(webview, message)
 
 
 def _qt_runtime_urls() -> list[str]:
@@ -284,7 +631,68 @@ def _rebuild_qt_html(
         prepare_addons=False,
         mode="lite",
         runtime_urls=_get_helper("_qt_runtime_urls")(),
+        host_event_transport="url-scheme",
     )
+
+
+def _build_qt_live_messages(
+    molecular_system: Any,
+    *,
+    selection: str | Sequence[int] = "all",
+    structure_indices: str | Sequence[int] = "all",
+    syntax: str = "MolSysMT",
+    load_mode: str = "selection",
+    debug_js: bool | None = None,
+) -> list[dict[str, Any]]:
+    if molecular_system is None:
+        return [{"op": "clear_all"}]
+    view = _resolve_view(
+        molecular_system,
+        selection=selection,
+        structure_indices=structure_indices,
+        syntax=syntax,
+        load_mode=load_mode,
+        debug_js=debug_js,
+    )
+    messages = view._build_export_messages()  # noqa: SLF001
+    return [{"op": "clear_all"}, *messages]
+
+
+def _load_molecular_system_into_qt_host(
+    molecular_system: Any,
+    *,
+    window,
+    webview,
+    current_state: dict[str, Any],
+    loaded_label: str | None,
+    status_message: str,
+    selection: str | Sequence[int] = "all",
+    structure_indices: str | Sequence[int] = "all",
+    syntax: str = "MolSysMT",
+    load_mode: str = "selection",
+    debug_js: bool | None = None,
+) -> None:
+    messages = _get_helper("_build_qt_live_messages")(
+        molecular_system,
+        selection=selection,
+        structure_indices=structure_indices,
+        syntax=syntax,
+        load_mode=load_mode,
+        debug_js=debug_js,
+    )
+    _get_helper("_send_viewer_messages")(webview, messages, new_generation=True)
+    if molecular_system is None:
+        _get_helper("_set_empty_state")(window, current_state)
+    else:
+        if loaded_label is None:
+            current_state["molecular_system"] = molecular_system
+            current_state["loaded_label"] = None
+            if hasattr(window, "setWindowTitle"):
+                window.setWindowTitle(current_state["base_title"])
+        else:
+            _get_helper("_set_loaded_state")(window, current_state, molecular_system, loaded_label)
+    _get_helper("_persist_shell_state")(current_state, window=window)
+    _get_helper("_show_status")(window, status_message)
 
 
 def _export_qt_figure(
@@ -311,21 +719,20 @@ def _load_demo_into_qt_host(
     current_title: str,
     current_state: dict[str, Any],
 ) -> None:
-    _get_helper("_rebuild_qt_html")(
+    _get_helper("_load_molecular_system_into_qt_host")(
         demo[demo_name],
-        html_path=html_path,
-        title=current_title,
+        window=window,
+        webview=webview,
+        current_state=current_state,
+        loaded_label=demo_name,
+        status_message=f"Loaded demo: {demo_name}",
     )
-    _get_helper("_set_loaded_state")(window, current_state, demo[demo_name], demo_name)
     _get_helper("_record_recent_source")(
         current_state,
         kind="demo",
         value=demo_name,
         loaded_label=demo_name,
     )
-    _get_helper("_persist_shell_state")(current_state, window=window)
-    _get_helper("_reload_html_in_view")(webview, QUrl, html_path)
-    _get_helper("_show_status")(window, f"Loaded demo: {demo_name}")
 
 
 def _load_recent_source(
@@ -352,26 +759,26 @@ def _load_recent_source(
             current_state=current_state,
         )
         return
-    _get_helper("_rebuild_qt_html")(
+    _get_helper("_load_molecular_system_into_qt_host")(
         value,
-        html_path=html_path,
-        title=current_title,
+        window=window,
+        webview=webview,
+        current_state=current_state,
+        loaded_label=loaded_label,
+        status_message=(
+            f"Loaded PDB ID: {loaded_label}"
+            if kind == "pdb_id"
+            else f"Loaded source: {loaded_label}"
+            if kind == "source"
+            else f"Loaded file: {loaded_label}"
+        ),
     )
-    _get_helper("_set_loaded_state")(window, current_state, value, loaded_label)
     _get_helper("_record_recent_source")(
         current_state,
         kind=kind,
         value=value,
         loaded_label=loaded_label,
     )
-    _get_helper("_persist_shell_state")(current_state, window=window)
-    _get_helper("_reload_html_in_view")(webview, QUrl, html_path)
-    if kind == "pdb_id":
-        _get_helper("_show_status")(window, f"Loaded PDB ID: {loaded_label}")
-    elif kind == "source":
-        _get_helper("_show_status")(window, f"Loaded source: {loaded_label}")
-    else:
-        _get_helper("_show_status")(window, f"Loaded file: {loaded_label}")
 
 
 def _restore_last_source(
