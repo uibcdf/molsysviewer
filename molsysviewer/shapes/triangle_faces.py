@@ -7,7 +7,6 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import normalize_color
 from ._registry import register_shape_layer
@@ -23,7 +22,7 @@ class TriangleFaces:
             return []
 
         # Extract raw magnitudes in Angstroms (wire format for Mol*)
-        vertices_raw = to_wire_angstroms(vertices)
+        vertices_raw = puw.get_value(vertices, to_unit="angstroms")
 
         normalized: list[list[list[float]]] = []
         for tri in vertices_raw:
@@ -191,13 +190,13 @@ class TriangleFaces:
         if draw_edges is not None:
             options["draw_edges"] = bool(draw_edges)
         if edge_radius is not None:
-            options["edge_radius"] = float(to_wire_angstroms(edge_radius))
+            options["edge_radius"] = float(puw.get_value(edge_radius, to_unit="angstroms"))
         if edge_color is not None:
             options["edge_color"] = int(edge_color)
         if show_normals is not None:
             options["show_normals"] = bool(show_normals)
         if normal_length is not None:
-            options["normal_length"] = float(to_wire_angstroms(normal_length))
+            options["normal_length"] = float(puw.get_value(normal_length, to_unit="angstroms"))
         if normal_color is not None:
             options["normal_color"] = int(normal_color)
         tag = tag or self._view._next_shape_tag()  # noqa: SLF001

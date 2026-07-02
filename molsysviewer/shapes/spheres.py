@@ -6,7 +6,6 @@ import molsysmt as msm
 from smonitor import signal
 
 from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from ..layers import Layer, Shape
 from .._private.arg_digestion import digest
 from ..colors import normalize_color
@@ -254,9 +253,9 @@ class SphereShapes:
         - Separate colors and alpha for alpha-spheres and atoms.
         - Uses a single message to minimize per-shape overhead.
         """
-        centers_raw = to_wire_angstroms(centers)
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         centers_list = [list(c) for c in centers_raw]
-        radii_raw = to_wire_angstroms(radii)
+        radii_raw = puw.get_value(radii, to_unit="angstroms")
         radii_list = [float(r) for r in radii_raw]
 
         if len(centers_list) != len(radii_list):
@@ -272,10 +271,10 @@ class SphereShapes:
         }
 
         if atom_centers is not None:
-            atom_centers_raw = to_wire_angstroms(atom_centers)
+            atom_centers_raw = puw.get_value(atom_centers, to_unit="angstroms")
             options["atom_spheres"] = {
                 "centers": [list(c) for c in atom_centers_raw],
-                "radius": float(to_wire_angstroms(atom_radius)),
+                "radius": float(puw.get_value(atom_radius, to_unit="angstroms")),
                 "color": normalize_color(color_atoms),
                 "alpha": float(alpha_atoms),
             }

@@ -6,7 +6,7 @@ from smonitor import signal
 
 from .._private.arg_digestion import digest
 from ._registry import register_shape_layer
-from ._units import to_wire_angstroms
+from .. import pyunitwizard as puw
 
 
 class PocketBlobs:
@@ -18,7 +18,7 @@ class PocketBlobs:
     @staticmethod
     def _normalize_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
         # Extract raw magnitude in Angstroms (wire format for Mol*) in a single batch call
-        val = to_wire_angstroms(centers)
+        val = puw.get_value(centers, to_unit="angstroms")
         return val.tolist()
 
     @staticmethod
@@ -57,7 +57,7 @@ class PocketBlobs:
         name: str | None = None,
     ):
         centers_list = self._normalize_centers(centers)
-        radii_list = [float(r) for r in to_wire_angstroms(radii)]
+        radii_list = [float(r) for r in puw.get_value(radii, to_unit="angstroms")]
 
         if len(centers_list) == 0:
             raise ValueError("centers must not be empty")

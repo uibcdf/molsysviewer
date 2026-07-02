@@ -5,7 +5,6 @@ from typing import Iterable, Sequence
 from smonitor import signal
 
 from .. import pyunitwizard as puw
-from ._units import to_wire_angstroms
 from .._private.arg_digestion import digest
 from ..colors import colors as global_colors
 from ._registry import register_shape_layer
@@ -20,7 +19,7 @@ class AnisotropyEllipsoids:
     @staticmethod
     def _normalize_centers(centers: Iterable[Sequence[float]]) -> list[list[float]]:
         # Extract raw magnitudes in Angstroms (wire format for Mol*)
-        centers_raw = to_wire_angstroms(centers)
+        centers_raw = puw.get_value(centers, to_unit="angstroms")
         normalized: list[list[float]] = []
         for idx, center in enumerate(centers_raw):
             if len(center) != 3:
