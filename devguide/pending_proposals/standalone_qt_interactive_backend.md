@@ -34,8 +34,19 @@ reenvía los eventos de producto al view, `MolSysView(transport=…)`, y el host
 crea **un** `MolSysView` persistente que conduce las cargas con `view.load(...,
 mode="replace")` (en vez del snapshot temporal), con `view._qt_process_events =
 app.processEvents`. Verificado con fakes + molsysmt real; falta el round-trip en
-ventana Qt real. **Esto habilita F2 y F3** (ya reciben eventos), que quedan
-principalmente como *validación* + glue de UI.
+ventana Qt real.
+
+**F2 y F3 implementados** (glue de UI incluido, pendiente validación en Qt real):
+- Enrutado de eventos probado end-to-end (un `interaction_click` reenviado
+  actualiza el estado del view; un `movie_frame` cae en el buffer de export).
+- **F3**: acción de menú contextual nativa (`QMenu` en click derecho vía
+  `view.on_context`, "Reset view").
+- **F2**: acción de menú "Export Movie (orbit)" que hace `add_camera_orbit` +
+  `movie.export` sobre el view persistente (la espera cooperativa bombea el bucle
+  Qt con `view._qt_process_events`).
+
+Lo único pendiente de F1/F2/F3 es **verlo correr en una ventana Qt real** (el
+render, el context menu mostrándose, y una película exportada sin bloqueo).
 
 ## F1 — `MolSysView` persistente ligado al bridge (núcleo) — HECHO
 

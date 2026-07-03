@@ -273,6 +273,26 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     class FakeUrlSchemeHandlerBase:
         pass
 
+    class FakeQMenu:
+        created = 0
+
+        def __init__(self, _parent=None):
+            FakeQMenu.created += 1
+            self._actions = []
+
+        def addAction(self, text):
+            action = FakeAction(text)
+            self._actions.append(action)
+            return action
+
+        def exec(self, _pos):
+            return None
+
+    class FakeQCursor:
+        @staticmethod
+        def pos():
+            return (0, 0)
+
     class FakeQTimer:
         @staticmethod
         def singleShot(_timeout_ms, callback):
@@ -341,7 +361,9 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     module_core.QBuffer = FakeQBuffer
     module_core.QByteArray = FakeQByteArray
     module_gui.QAction = FakeAction
+    module_gui.QCursor = FakeQCursor
     module_widgets.QApplication = FakeApplication
+    module_widgets.QMenu = FakeQMenu
     module_widgets.QFileDialog = FakeFileDialog
     module_widgets.QInputDialog = FakeInputDialog
     module_widgets.QMainWindow = FakeMainWindow
@@ -399,6 +421,17 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     view = runtime["webview"]._molsysviewer_view
     assert isinstance(view, MolSysView)
     assert view.widget is runtime["webview"]._molsysviewer_qt_bridge.event_sink.__self__
+
+    # F3 glue: a right-click context event reaches the view and shows a native Qt menu.
+    before_menus = FakeQMenu.created
+    runtime["webview"]._molsysviewer_qt_bridge.handle_frontend_event(
+        {"event": "interaction_context_menu", "kind": "empty"}
+    )
+    assert FakeQMenu.created == before_menus + 1
+
+    # F2 glue: the Export menu offers movie export.
+    export_menu = runtime["window"].menu_bar.menus[2]
+    assert any(getattr(a, "text", None) == "Export Movie (orbit)" for a in export_menu.actions)
 
     load_calls = []
     reset_calls = []

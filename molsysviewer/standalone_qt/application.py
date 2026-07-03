@@ -58,6 +58,8 @@ def create_standalone_qt0_window(
     QWebEngineUrlSchemeHandler = qt["QWebEngineUrlSchemeHandler"]
     QBuffer = qt["QBuffer"]
     QByteArray = qt["QByteArray"]
+    QMenu = qt["QMenu"]
+    QCursor = qt["QCursor"]
 
     # Must run before the QApplication is created, or Chromium rejects the schemes.
     _get_helper("_register_qt_url_schemes")(QWebEngineUrlScheme)
@@ -116,6 +118,20 @@ def create_standalone_qt0_window(
     view = MolSysView(transport=channel, debug_js=debug_js)
     view._qt_process_events = getattr(app, "processEvents", None)  # noqa: SLF001
     webview._molsysviewer_view = view
+
+    # Native Qt context menu on right-click: the frontend emits
+    # interaction_context_menu, the bridge forwards it to the view, and this
+    # callback (registered on the persistent view) shows a QMenu at the cursor.
+    def _qt_context_menu(_event: Any) -> None:
+        try:
+            menu = QMenu(window)
+            reset_action = menu.addAction("Reset view")
+            reset_action.triggered.connect(lambda *_: view.camera.reset())
+            menu.exec(QCursor.pos())
+        except Exception:
+            pass
+
+    view.on_context(_qt_context_menu)
 
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
