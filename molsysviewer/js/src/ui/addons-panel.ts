@@ -1,51 +1,14 @@
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
-type WorkbenchItem = {
-    key?: string;
-    title: string;
-    subtitle?: string;
-    hidden?: boolean;
-    active?: boolean;
-    context?: boolean;
-    onActivate?: () => void;
-    onToggleVisibility?: () => void;
-};
-
-type SceneSummary = {
-    styleTag?: string;
-    preset?: string;
-    figurePreset?: string;
-    figureScale?: number;
-    figureVariants?: string[];
-};
-
-type AddonSummary = {
-    name: string;
-    workspaceTitles: string[];
-    panelTitles: string[];
-    workbenchTitles: string[];
-    contextActionTitles: string[];
-    exportHelperTitles: string[];
-    active?: boolean;
-};
-
-type AddonSectionSummary = {
-    key: string;
-    workspaceId: string;
-    title: string;
-    itemTitle: string;
-    itemSubtitle?: string;
-};
-
-type AddonDiagnosticSummary = {
+export type AddonDiagnosticSummary = {
     kind?: string;
     source: string;
     reason: string;
     traceback?: string;
 };
 
-type WorkspaceOption = {
+export type WorkspaceOption = {
     id: string;
     title: string;
     subtitle?: string;
@@ -54,8 +17,10 @@ type WorkspaceOption = {
     workbenchSectionTitles?: string[];
     contextActionCount?: number;
     exportHelperCount?: number;
+    description?: string; // Add-on description
 };
-type WorkspacePanelOption = {
+
+export type WorkspacePanelOption = {
     id: string;
     title: string;
     description?: string;
@@ -63,7 +28,8 @@ type WorkspacePanelOption = {
     addon?: string;
     active?: boolean;
 };
-type ActiveWorkspacePanelSummary = {
+
+export type ActiveWorkspacePanelSummary = {
     workspaceTitle: string;
     title: string;
     description?: string;
@@ -79,39 +45,29 @@ type ActiveWorkspacePanelSummary = {
     }>;
 };
 
-type BuiltInAddonSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
-type AddonSectionKey = BuiltInAddonSectionKey | `addon:${string}`;
-
-type SectionView = {
-    root: HTMLDivElement;
-    list: HTMLDivElement;
-    empty: HTMLDivElement;
-    marker: HTMLSpanElement;
-};
-
 export class AddonsPanel {
     private readonly shell: PanelShell | FloatingPanelShell;
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
     private readonly toggleButton: HTMLButtonElement;
-    private readonly workspaceRuntimeDeck: HTMLDivElement;
+
+    // Two-column layout columns
+    private readonly leftColumn: HTMLDivElement;
+    private readonly rightColumn: HTMLDivElement;
+
+    // Content Hosts
     private readonly workspaceOverviewHost: HTMLDivElement;
-    private readonly workspaceOverviewTitle: HTMLDivElement;
-    private readonly workspaceOverviewBody: HTMLDivElement;
-    private readonly workspacePanelHost: HTMLDivElement;
-    private readonly workspacePanelHostTitle: HTMLDivElement;
-    private readonly workspacePanelHostBody: HTMLDivElement;
     private readonly addonsWidgetHost: HTMLDivElement;
-    private readonly sections = new Map<AddonSectionKey, SectionView>();
-    private readonly sectionExpanded = new Map<AddonSectionKey, boolean>();
-    private readonly builtInSectionKeys: BuiltInAddonSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
-    private addonSectionKeys: AddonSectionKey[] = [];
+
+    // State
     private workspaceItems: WorkspaceOption[] = [];
     private workspacePanelItems: WorkspacePanelOption[] = [];
     private currentWorkspaceId = "core";
+    private activeWorkspacePanelSummary: ActiveWorkspacePanelSummary | null = null;
+    private addonDiagnostics: AddonDiagnosticSummary[] = [];
+
     private onSelectWorkspace?: (workspaceId: string) => void;
     private onSelectWorkspacePanel?: (panelId: string) => void;
-    private activeWorkspacePanelSummary: ActiveWorkspacePanelSummary | null = null;
     private expanded = false;
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToNavigate?: () => void;
@@ -127,7 +83,7 @@ export class AddonsPanel {
             ? options.sharedShell
             : (floating
                 ? new FloatingPanelShell(host, { title: "Add-ons", navButtonLabel: "Navigate" })
-                : new PanelShell(host, { title: "Add-ons", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" }));
+                : new PanelShell(host, { title: "Add-ons", width: 560, toggleWidth: 26, navButtonLabel: "Navigate" }));
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
 
@@ -135,10 +91,9 @@ export class AddonsPanel {
             this.body = document.createElement("div");
             Object.assign(this.body.style, {
                 display: "none",
-                flexDirection: "column",
-                overflowX: "hidden",
-                overflowY: "auto",
-                gap: "8px",
+                flexDirection: "row",
+                overflow: "hidden",
+                gap: "0",
                 width: "100%",
                 height: "100%",
             });
@@ -146,10 +101,9 @@ export class AddonsPanel {
         } else {
             this.body = this.shell.content;
             Object.assign(this.body.style, {
-                flexDirection: "column",
-                overflowX: "hidden",
-                overflowY: "auto",
-                gap: "8px",
+                flexDirection: "row",
+                overflow: "hidden",
+                gap: "0",
             });
         }
 
@@ -190,120 +144,60 @@ export class AddonsPanel {
             });
         }
 
-        Object.assign(this.body.style, {
-            flexDirection: "column",
-            overflowX: "hidden",
-            overflowY: "auto",
-            gap: "8px",
-        });
-
-        this.workspaceRuntimeDeck = document.createElement("div");
-        this.workspaceRuntimeDeck.setAttribute("data-molsysviewer-addons-workspace-runtime-deck", "true");
-        Object.assign(this.workspaceRuntimeDeck.style, {
+        // ── Left column: Navigation Tabs (Addon Sections) ───────────
+        this.leftColumn = document.createElement("div");
+        this.leftColumn.setAttribute("data-molsysviewer-addons-panel-left", "true");
+        Object.assign(this.leftColumn.style, {
             display: "none",
             flexDirection: "column",
             gap: "8px",
+            width: "180px",
+            minWidth: "180px",
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingRight: "8px",
+            borderRight: "1px solid rgba(255,255,255,0.06)",
         });
-        this.body.appendChild(this.workspaceRuntimeDeck);
+        this.body.appendChild(this.leftColumn);
 
+        // ── Right column: Content Viewport ──────────────────────────
+        this.rightColumn = document.createElement("div");
+        this.rightColumn.setAttribute("data-molsysviewer-addons-panel-right", "true");
+        Object.assign(this.rightColumn.style, {
+            display: "flex",
+            flexDirection: "column",
+            flex: "1 1 0",
+            minWidth: "0",
+            overflow: "hidden",
+        });
+        this.body.appendChild(this.rightColumn);
+
+        // Catalog grid container
         this.workspaceOverviewHost = document.createElement("div");
         this.workspaceOverviewHost.setAttribute("data-molsysviewer-addons-workspace-overview", "true");
         Object.assign(this.workspaceOverviewHost.style, {
-            display: "none",
-            flexDirection: "column",
-            gap: "6px",
-            padding: "10px",
-            borderRadius: "10px",
-            background: "rgba(255,255,255,0.045)",
-            border: "1px solid rgba(255,255,255,0.08)",
-        });
-
-        this.workspaceOverviewTitle = document.createElement("div");
-        this.workspaceOverviewTitle.setAttribute("data-molsysviewer-addons-workspace-overview-title", "true");
-        Object.assign(this.workspaceOverviewTitle.style, {
-            fontSize: "11px",
-            fontWeight: "700",
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "rgba(244,244,245,0.74)",
-        });
-        this.workspaceOverviewTitle.textContent = "Workspaces";
-
-        this.workspaceOverviewBody = document.createElement("div");
-        this.workspaceOverviewBody.setAttribute("data-molsysviewer-addons-workspace-overview-body", "true");
-        Object.assign(this.workspaceOverviewBody.style, {
-            display: "grid",
-            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: "6px",
-        });
-
-        this.workspaceOverviewHost.appendChild(this.workspaceOverviewTitle);
-        this.workspaceOverviewHost.appendChild(this.workspaceOverviewBody);
-        this.workspaceRuntimeDeck.appendChild(this.workspaceOverviewHost);
-
-        this.workspacePanelHost = document.createElement("div");
-        this.workspacePanelHost.setAttribute("data-molsysviewer-addons-workspace-panel-host", "true");
-        Object.assign(this.workspacePanelHost.style, {
-            display: "none",
-            flexDirection: "column",
-            gap: "6px",
-            padding: "10px",
-            borderRadius: "10px",
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-        });
-
-        this.workspacePanelHostTitle = document.createElement("div");
-        this.workspacePanelHostTitle.setAttribute("data-molsysviewer-addons-workspace-panel-title", "true");
-        Object.assign(this.workspacePanelHostTitle.style, {
-            fontSize: "12px",
-            fontWeight: "700",
-            color: "rgba(244,244,245,0.96)",
-        });
-
-        this.workspacePanelHostBody = document.createElement("div");
-        this.workspacePanelHostBody.setAttribute("data-molsysviewer-addons-workspace-panel-body", "true");
-        Object.assign(this.workspacePanelHostBody.style, {
             display: "flex",
             flexDirection: "column",
-            gap: "4px",
-            fontSize: "12px",
-            color: "rgba(244,244,245,0.78)",
+            gap: "12px",
+            flex: "1 1 0",
+            overflowY: "auto",
+            paddingRight: "4px",
         });
+        this.rightColumn.appendChild(this.workspaceOverviewHost);
 
+        // Widget host
         this.addonsWidgetHost = document.createElement("div");
         this.addonsWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
         Object.assign(this.addonsWidgetHost.style, {
             display: "none",
             flexDirection: "column",
-            gap: "4px",
-            flex: "1 1 auto",
-            overflow: "auto",
+            flex: "1 1 0",
+            overflowY: "auto",
         });
-
-        this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
-        this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
-        this.workspacePanelHost.appendChild(this.addonsWidgetHost);
-        this.workspaceRuntimeDeck.appendChild(this.workspacePanelHost);
-
-        this.createSection("annotations", "Annotations", "No annotations yet.");
-        this.createSection("measurements", "Measurements", "No measurements yet.");
-        this.createSection("shapes", "Shapes", "No shapes yet.");
-        this.createSection("scene", "Scene", "No scene style selected.");
-        this.createSection("addons", "Add-ons", "No add-ons active.");
+        this.rightColumn.appendChild(this.addonsWidgetHost);
 
         this.applyExpandedState();
-        // Drawer mode: always show the collapse tab at the right edge so it is reachable
-        // even before a structure loads. Floating mode starts hidden until a structure loads.
         this.setVisible(!floating);
-    }
-
-    private updateBodyDisplay(): void {
-        if (this.sharedShell) {
-            this.body.style.display = (this.visible && this.expanded) ? "flex" : "none";
-        } else {
-            this.shell.setVisible(this.visible);
-        }
     }
 
     setVisible(visible: boolean): void {
@@ -349,13 +243,10 @@ export class AddonsPanel {
         this.onSelectWorkspace = onSelect;
         this.shell.setOnSelectWorkspace(onSelect);
         this.shell.setWorkspaceOptions(items, currentId);
-        this.renderWorkspaceOverview();
+        this.render();
     }
 
-    setWorkspacePanels(
-        items: WorkspacePanelOption[],
-        onSelect: ((panelId: string) => void) | undefined,
-    ): void {
+    setWorkspacePanels(items: WorkspacePanelOption[], onSelect: ((panelId: string) => void) | undefined): void {
         this.workspacePanelItems = Array.isArray(items) ? items : [];
         this.onSelectWorkspacePanel = onSelect;
         if (!this.sharedShell) {
@@ -366,638 +257,50 @@ export class AddonsPanel {
                 active: item.active,
             })));
         }
-        this.renderWorkspaceOverview();
+        this.render();
     }
 
     setActiveWorkspacePanel(summary: ActiveWorkspacePanelSummary | null): void {
         this.activeWorkspacePanelSummary = summary;
-        this.renderWorkspaceOverview();
-        this.workspacePanelHostBody.replaceChildren();
-        if (!summary) {
-            this.workspacePanelHost.style.display = "none";
-            return;
-        }
-
-        this.workspacePanelHost.style.display = "flex";
-        this.workspacePanelHostTitle.textContent = `${summary.workspaceTitle} · ${summary.title}`;
-
-        if (summary.description) {
-            const description = document.createElement("div");
-            description.setAttribute("data-molsysviewer-addons-workspace-panel-description", "true");
-            description.textContent = summary.description;
-            this.workspacePanelHostBody.appendChild(description);
-        }
-        if (summary.entry) {
-            const entry = document.createElement("div");
-            entry.setAttribute("data-molsysviewer-addons-workspace-panel-entry", "true");
-            entry.textContent = `Entry: ${summary.entry}`;
-            this.workspacePanelHostBody.appendChild(entry);
-        }
-        if (summary.addon) {
-            const addon = document.createElement("div");
-            addon.setAttribute("data-molsysviewer-addons-workspace-panel-addon", "true");
-            addon.textContent = `Add-on: ${summary.addon}`;
-            this.workspacePanelHostBody.appendChild(addon);
-        }
-        if ((summary.contextActionTitles?.length ?? 0) > 0 || (summary.exportHelperTitles?.length ?? 0) > 0) {
-            const capabilities = document.createElement("div");
-            capabilities.setAttribute("data-molsysviewer-addons-workspace-panel-capabilities", "true");
-            Object.assign(capabilities.style, {
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                marginTop: "4px",
-            });
-
-            if ((summary.contextActionTitles?.length ?? 0) > 0) {
-                const context = document.createElement("div");
-                context.setAttribute("data-molsysviewer-addons-workspace-panel-context-actions", "true");
-                context.textContent = `Context: ${summary.contextActionTitles!.join(", ")}`;
-                capabilities.appendChild(context);
-            }
-
-            if ((summary.exportHelperTitles?.length ?? 0) > 0) {
-                const exports = document.createElement("div");
-                exports.setAttribute("data-molsysviewer-addons-workspace-panel-export-helpers", "true");
-                exports.textContent = `Export: ${summary.exportHelperTitles!.join(", ")}`;
-                capabilities.appendChild(exports);
-            }
-
-            this.workspacePanelHostBody.appendChild(capabilities);
-        }
-        if (Array.isArray(summary.sections) && summary.sections.length > 0) {
-            const sectionsBlock = document.createElement("div");
-            sectionsBlock.setAttribute("data-molsysviewer-addons-workspace-panel-sections", "true");
-            Object.assign(sectionsBlock.style, {
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                marginTop: "4px",
-            });
-
-            for (const section of summary.sections) {
-                const sectionCard = document.createElement("div");
-                sectionCard.setAttribute("data-molsysviewer-addons-workspace-panel-section", section.key);
-                Object.assign(sectionCard.style, {
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "3px",
-                    padding: "8px",
-                    borderRadius: "8px",
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                });
-
-                const sectionTitle = document.createElement("div");
-                sectionTitle.setAttribute("data-molsysviewer-addons-workspace-panel-section-title", section.key);
-                Object.assign(sectionTitle.style, {
-                    fontSize: "11px",
-                    fontWeight: "700",
-                    color: "rgba(244,244,245,0.90)",
-                });
-                sectionTitle.textContent = section.title;
-
-                const itemTitle = document.createElement("div");
-                itemTitle.setAttribute("data-molsysviewer-addons-workspace-panel-section-item", section.key);
-                itemTitle.textContent = section.itemTitle;
-
-                sectionCard.appendChild(sectionTitle);
-                sectionCard.appendChild(itemTitle);
-
-                if (section.itemSubtitle) {
-                    const itemSubtitle = document.createElement("div");
-                    itemSubtitle.setAttribute("data-molsysviewer-addons-workspace-panel-section-subtitle", section.key);
-                    Object.assign(itemSubtitle.style, {
-                        fontSize: "11px",
-                        color: "rgba(244,244,245,0.62)",
-                    });
-                    itemSubtitle.textContent = section.itemSubtitle;
-                    sectionCard.appendChild(itemSubtitle);
-                }
-
-                sectionsBlock.appendChild(sectionCard);
-            }
-
-            this.workspacePanelHostBody.appendChild(sectionsBlock);
-        }
-    }
-
-    private renderWorkspaceOverview(): void {
-        const items = this.workspaceItems;
-        const currentId = this.currentWorkspaceId;
-        const onSelect = this.onSelectWorkspace;
-        this.workspaceOverviewBody.replaceChildren();
-
-        if (!Array.isArray(items) || items.length <= 1) {
-            this.workspaceRuntimeDeck.style.display = this.activeWorkspacePanelSummary ? "flex" : "none";
-            this.workspaceOverviewHost.style.display = "none";
-            return;
-        }
-
-        const mosaic = items.length >= 3;
-        this.workspaceRuntimeDeck.style.display = "flex";
-        this.workspaceOverviewHost.style.display = "flex";
-        this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
-
-        const appendSection = (key: string, label: string): void => {
-            if (!mosaic) return;
-            const section = document.createElement("div");
-            section.setAttribute("data-molsysviewer-addons-workspace-overview-section", key);
-            section.textContent = label;
-            Object.assign(section.style, {
-                gridColumn: "1 / -1",
-                fontSize: "10px",
-                fontWeight: "700",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "rgba(244,244,245,0.54)",
-                padding: "2px 1px 0 1px",
-            });
-            this.workspaceOverviewBody.appendChild(section);
-        };
-
-        const appendCard = (item: WorkspaceOption, fullSpan = false): void => {
-            const card = document.createElement("button");
-            card.type = "button";
-            card.setAttribute("data-molsysviewer-addons-workspace-overview-card", item.id);
-            const isCurrent = item.id === currentId;
-            if (item.id === currentId) {
-                card.setAttribute("data-molsysviewer-addons-workspace-overview-current", item.id);
-            }
-            Object.assign(card.style, {
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                gap: "5px",
-                width: "100%",
-                minHeight: mosaic ? "72px" : "0",
-                padding: mosaic ? "10px 11px" : "8px 10px",
-                borderRadius: "10px",
-                border: isCurrent ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.07)",
-                background: isCurrent ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.03)",
-                color: isCurrent ? "#f4f4f5" : "rgba(244,244,245,0.82)",
-                cursor: "pointer",
-                textAlign: "left",
-            });
-            if (fullSpan && mosaic) card.style.gridColumn = "1 / -1";
-
-            const title = document.createElement("div");
-            title.setAttribute("data-molsysviewer-addons-workspace-overview-card-title", item.id);
-            Object.assign(title.style, {
-                fontSize: "12px",
-                fontWeight: "700",
-            });
-            title.textContent = item.title;
-            card.appendChild(title);
-
-            const subtitleText = isCurrent && this.activeWorkspacePanelSummary
-                ? `Panel: ${this.activeWorkspacePanelSummary.title}`
-                : item.subtitle;
-            if (subtitleText) {
-                const subtitle = document.createElement("div");
-                subtitle.setAttribute("data-molsysviewer-addons-workspace-overview-card-subtitle", item.id);
-                Object.assign(subtitle.style, {
-                    fontSize: "11px",
-                    lineHeight: "1.25",
-                    color: isCurrent ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.58)",
-                });
-                subtitle.textContent = subtitleText;
-                card.appendChild(subtitle);
-            }
-
-            if (isCurrent && this.activeWorkspacePanelSummary?.entry) {
-                const entry = document.createElement("div");
-                entry.setAttribute("data-molsysviewer-addons-workspace-overview-card-entry", item.id);
-                Object.assign(entry.style, {
-                    fontSize: "10px",
-                    lineHeight: "1.2",
-                    color: "rgba(244,244,245,0.58)",
-                });
-                entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
-                card.appendChild(entry);
-            }
-
-            const overviewCapabilityTexts: string[] = [];
-            if ((item.panelCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.panelCount} panel${item.panelCount === 1 ? "" : "s"}`);
-            if ((item.workbenchSectionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.workbenchSectionCount} section${item.workbenchSectionCount === 1 ? "" : "s"}`);
-            if ((item.contextActionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.contextActionCount} context`);
-            if ((item.exportHelperCount ?? 0) > 0) overviewCapabilityTexts.push(`${item.exportHelperCount} export`);
-
-            if (overviewCapabilityTexts.length > 0) {
-                const capabilities = document.createElement("div");
-                capabilities.setAttribute("data-molsysviewer-addons-workspace-overview-card-capabilities", item.id);
-                Object.assign(capabilities.style, {
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "4px",
-                    marginTop: "2px",
-                });
-
-                for (const text of overviewCapabilityTexts) {
-                    const chip = document.createElement("div");
-                    chip.setAttribute("data-molsysviewer-addons-workspace-overview-card-capability", text.toLowerCase().replace(/\s+/g, "-"));
-                    Object.assign(chip.style, {
-                        padding: "3px 7px",
-                        borderRadius: "999px",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        background: isCurrent ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.035)",
-                        fontSize: "10px",
-                        fontWeight: "700",
-                        color: isCurrent ? "rgba(244,244,245,0.82)" : "rgba(244,244,245,0.72)",
-                    });
-                    chip.textContent = text;
-                    capabilities.appendChild(chip);
-                }
-
-                card.appendChild(capabilities);
-            }
-
-            if (!isCurrent && (item.workbenchSectionTitles?.length ?? 0) > 0) {
-                const sections = document.createElement("div");
-                sections.setAttribute("data-molsysviewer-addons-workspace-overview-card-sections", item.id);
-                Object.assign(sections.style, {
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "3px",
-                    width: "100%",
-                    marginTop: "2px",
-                });
-
-                for (const titleText of item.workbenchSectionTitles!.slice(0, 2)) {
-                    const section = document.createElement("div");
-                    section.setAttribute("data-molsysviewer-addons-workspace-overview-card-section", `${item.id}:${titleText}`);
-                    Object.assign(section.style, {
-                        fontSize: "10px",
-                        lineHeight: "1.25",
-                        color: "rgba(244,244,245,0.62)",
-                    });
-                    section.textContent = titleText;
-                    sections.appendChild(section);
-                }
-
-                card.appendChild(sections);
-            }
-
-            if (isCurrent && this.activeWorkspacePanelSummary) {
-                const preview = document.createElement("div");
-                preview.setAttribute("data-molsysviewer-addons-workspace-overview-preview", item.id);
-                Object.assign(preview.style, {
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                    width: "100%",
-                    marginTop: "2px",
-                    padding: "8px",
-                    borderRadius: "8px",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                });
-
-                if (this.activeWorkspacePanelSummary.description) {
-                    const description = document.createElement("div");
-                    description.setAttribute("data-molsysviewer-addons-workspace-overview-preview-description", item.id);
-                    Object.assign(description.style, {
-                        fontSize: "11px",
-                        lineHeight: "1.3",
-                        color: "rgba(244,244,245,0.72)",
-                    });
-                    description.textContent = this.activeWorkspacePanelSummary.description;
-                    preview.appendChild(description);
-                }
-
-                const capabilityTexts: string[] = [];
-                if ((this.activeWorkspacePanelSummary.contextActionTitles?.length ?? 0) > 0) {
-                    capabilityTexts.push(`Context ${this.activeWorkspacePanelSummary.contextActionTitles!.length}`);
-                }
-                if ((this.activeWorkspacePanelSummary.exportHelperTitles?.length ?? 0) > 0) {
-                    capabilityTexts.push(`Export ${this.activeWorkspacePanelSummary.exportHelperTitles!.length}`);
-                }
-                if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
-                    capabilityTexts.push(`Sections ${this.activeWorkspacePanelSummary.sections!.length}`);
-                }
-
-                if (capabilityTexts.length > 0) {
-                    const capabilities = document.createElement("div");
-                    capabilities.setAttribute("data-molsysviewer-addons-workspace-overview-preview-capabilities", item.id);
-                    Object.assign(capabilities.style, {
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "4px",
-                    });
-
-                    for (const text of capabilityTexts) {
-                        const chip = document.createElement("div");
-                        chip.setAttribute("data-molsysviewer-addons-workspace-overview-preview-capability", text.toLowerCase().replace(/\s+/g, "-"));
-                        Object.assign(chip.style, {
-                            padding: "3px 7px",
-                            borderRadius: "999px",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            background: "rgba(255,255,255,0.04)",
-                            fontSize: "10px",
-                            fontWeight: "700",
-                            color: "rgba(244,244,245,0.76)",
-                        });
-                        chip.textContent = text;
-                        capabilities.appendChild(chip);
-                    }
-
-                    preview.appendChild(capabilities);
-                }
-
-                if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
-                    const sections = document.createElement("div");
-                    sections.setAttribute("data-molsysviewer-addons-workspace-overview-preview-sections", item.id);
-                    Object.assign(sections.style, {
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "4px",
-                    });
-
-                    for (const section of this.activeWorkspacePanelSummary.sections!.slice(0, 2)) {
-                        const sectionRow = document.createElement("div");
-                        sectionRow.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section", section.key);
-                        Object.assign(sectionRow.style, {
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "2px",
-                        });
-
-                        const sectionTitle = document.createElement("div");
-                        sectionTitle.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section-title", section.key);
-                        Object.assign(sectionTitle.style, {
-                            fontSize: "10px",
-                            fontWeight: "700",
-                            letterSpacing: "0.04em",
-                            textTransform: "uppercase",
-                            color: "rgba(244,244,245,0.54)",
-                        });
-                        sectionTitle.textContent = section.title;
-                        sectionRow.appendChild(sectionTitle);
-
-                        const sectionItem = document.createElement("div");
-                        sectionItem.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section-item", section.key);
-                        Object.assign(sectionItem.style, {
-                            fontSize: "11px",
-                            color: "rgba(244,244,245,0.78)",
-                        });
-                        sectionItem.textContent = section.itemTitle;
-                        sectionRow.appendChild(sectionItem);
-
-                        if (section.itemSubtitle) {
-                            const sectionSubtitle = document.createElement("div");
-                            sectionSubtitle.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section-subtitle", section.key);
-                            Object.assign(sectionSubtitle.style, {
-                                fontSize: "10px",
-                                color: "rgba(244,244,245,0.58)",
-                            });
-                            sectionSubtitle.textContent = section.itemSubtitle;
-                            sectionRow.appendChild(sectionSubtitle);
-                        }
-
-                        sections.appendChild(sectionRow);
-                    }
-
-                    preview.appendChild(sections);
-                }
-
-                card.appendChild(preview);
-            }
-
-            if (isCurrent && this.workspacePanelItems.length > 0) {
-                const panelStrip = document.createElement("div");
-                panelStrip.setAttribute("data-molsysviewer-addons-workspace-overview-panels", item.id);
-                Object.assign(panelStrip.style, {
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "4px",
-                    marginTop: "2px",
-                });
-
-                for (const panel of this.workspacePanelItems) {
-                    const panelButton = document.createElement("button");
-                    panelButton.type = "button";
-                    panelButton.setAttribute("data-molsysviewer-addons-workspace-overview-panel", panel.id);
-                    if (panel.active) {
-                        panelButton.setAttribute("data-molsysviewer-addons-workspace-overview-panel-current", panel.id);
-                    }
-                    Object.assign(panelButton.style, {
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        gap: "2px",
-                        width: "100%",
-                        padding: "6px 8px",
-                        borderRadius: "8px",
-                        border: panel.active ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
-                        background: panel.active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
-                        color: panel.active ? "#f4f4f5" : "rgba(244,244,245,0.76)",
-                        cursor: "pointer",
-                        textAlign: "left",
-                    });
-                    const panelTitle = document.createElement("div");
-                    panelTitle.setAttribute("data-molsysviewer-addons-workspace-overview-panel-title", panel.id);
-                    Object.assign(panelTitle.style, {
-                        fontSize: "10px",
-                        fontWeight: "700",
-                    });
-                    panelTitle.textContent = panel.title;
-                    panelButton.appendChild(panelTitle);
-
-                    if (panel.description) {
-                        const panelDescription = document.createElement("div");
-                        panelDescription.setAttribute("data-molsysviewer-addons-workspace-overview-panel-description", panel.id);
-                        Object.assign(panelDescription.style, {
-                            fontSize: "10px",
-                            lineHeight: "1.2",
-                            color: panel.active ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.6)",
-                        });
-                        panelDescription.textContent = panel.description;
-                        panelButton.appendChild(panelDescription);
-                    }
-
-                    if (panel.active && panel.entry) {
-                        const panelEntry = document.createElement("div");
-                        panelEntry.setAttribute("data-molsysviewer-addons-workspace-overview-panel-entry", panel.id);
-                        Object.assign(panelEntry.style, {
-                            fontSize: "9px",
-                            lineHeight: "1.2",
-                            color: "rgba(244,244,245,0.54)",
-                        });
-                        panelEntry.textContent = `Entry: ${panel.entry}`;
-                        panelButton.appendChild(panelEntry);
-                    }
-
-                    panelButton.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        this.onSelectWorkspacePanel?.(panel.id);
-                    });
-                    panelStrip.appendChild(panelButton);
-                }
-
-                card.appendChild(panelStrip);
-            }
-
-            const marker = document.createElement("div");
-            marker.setAttribute("data-molsysviewer-addons-workspace-overview-card-marker", item.id);
-            Object.assign(marker.style, {
-                fontSize: "10px",
-                fontWeight: "700",
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                color: isCurrent ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.48)",
-            });
-            marker.textContent = isCurrent ? "Current workspace" : "Open workspace";
-            card.appendChild(marker);
-
-            card.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                onSelect?.(item.id);
-            });
-            this.workspaceOverviewBody.appendChild(card);
-        };
-
-        if (mosaic) {
-            const currentItems = items.filter((item) => item.id === currentId);
-            const remainingCoreItems = items.filter((item) => item.id === "core" && item.id !== currentId);
-            const remainingAddonItems = items.filter((item) => item.id !== "core" && item.id !== currentId);
-            if (currentItems.length > 0) {
-                appendSection("current", "Current");
-                for (const item of currentItems) appendCard(item, true);
-            }
-            if (remainingCoreItems.length > 0) {
-                appendSection("core", "Core");
-                for (const item of remainingCoreItems) appendCard(item, true);
-            }
-            if (remainingAddonItems.length > 0) {
-                appendSection("addons", "Add-ons");
-                for (const item of remainingAddonItems) appendCard(item, false);
-            }
-        } else {
-            for (const item of items) appendCard(item, false);
-        }
-    }
-
-    setAnnotations(items: WorkbenchItem[]): void {
-        this.renderItems(this.sections.get("annotations")!, items);
-        this.applySectionExpandedState("annotations");
-    }
-
-    setMeasurements(items: WorkbenchItem[]): void {
-        this.renderItems(this.sections.get("measurements")!, items);
-        this.applySectionExpandedState("measurements");
-    }
-
-    setShapes(items: WorkbenchItem[]): void {
-        this.renderItems(this.sections.get("shapes")!, items);
-        this.applySectionExpandedState("shapes");
-    }
-
-    setScene(summary: SceneSummary | null): void {
-        const items: WorkbenchItem[] = [];
-        if (summary?.styleTag) items.push({ title: `Style: ${summary.styleTag}` });
-        if (summary?.preset) items.push({ title: `Preset: ${summary.preset}` });
-        if (summary?.figurePreset || summary?.figureScale) {
-            const scale = typeof summary?.figureScale === "number" ? `${summary.figureScale.toFixed(1)}x` : undefined;
-            items.push({
-                title: `Figure: ${summary?.figurePreset ?? "publication-light"}${scale ? ` @ ${scale}` : ""}`,
-            });
-        }
-        if ((summary?.figureVariants?.length ?? 0) > 0) {
-            items.push({ title: `Variants: ${summary!.figureVariants!.join(", ")}` });
-        }
-        this.renderItems(this.sections.get("scene")!, items);
-        this.applySectionExpandedState("scene");
-    }
-
-    setAddons(items: AddonSummary[]): void {
-        this.renderItems(
-            this.sections.get("addons")!,
-            items.map((item) => ({
-                key: item.name,
-                title: item.name,
-                active: item.active,
-                subtitle: [
-                    item.workspaceTitles.length > 0 ? `Workspaces: ${item.workspaceTitles.join(", ")}` : null,
-                    item.panelTitles.length > 0 ? `Panels: ${item.panelTitles.join(", ")}` : null,
-                    item.workbenchTitles.length > 0 ? `Workbench: ${item.workbenchTitles.join(", ")}` : null,
-                    item.contextActionTitles.length > 0 ? `Context: ${item.contextActionTitles.join(", ")}` : null,
-                    item.exportHelperTitles.length > 0 ? `Export: ${item.exportHelperTitles.join(", ")}` : null,
-                ].filter(Boolean).join(" · "),
-            })),
-        );
-        this.applySectionExpandedState("addons");
+        this.render();
     }
 
     setAddonDiagnostics(items: AddonDiagnosticSummary[]): void {
-        const section = this.sections.get("addons")!;
-        const rows = Array.from(section.list.children) as HTMLElement[];
-        const failures = Array.isArray(items) ? items : [];
-        for (const failure of failures) {
-            const source = failure.source || "unknown source";
-            const reason = failure.reason || "unknown error";
-            const title = failure.kind === "lifecycle"
-                ? `Lifecycle failed: ${source}`
-                : `Discovery failed: ${source}`;
-            const row = this.makeRow({
-                key: `addon-failure:${source}`,
-                title,
-                subtitle: reason,
-            });
-            row.setAttribute("data-molsysviewer-addons-addon-discovery-failure", source);
-            if (failure.traceback) row.title = failure.traceback;
-            rows.push(row);
-        }
-        if (rows.length === 0) {
-            section.list.replaceChildren();
-            section.empty.style.display = "block";
-        } else {
-            section.empty.style.display = "none";
-            section.list.replaceChildren(...rows);
-        }
-        this.applySectionExpandedState("addons");
+        this.addonDiagnostics = Array.isArray(items) ? items : [];
+        this.render();
     }
 
-    setAddonWorkbenchSections(items: AddonSectionSummary[]): void {
-        const nextKeys = new Set<AddonSectionKey>();
-        for (const item of items) {
-            const key = (`addon:${item.key}`) as AddonSectionKey;
-            nextKeys.add(key);
-            if (!this.sections.has(key)) {
-                this.createSection(key, item.title, "Add-on section registered.");
-            }
-            const section = this.sections.get(key)!;
-            this.renderItems(section, [{ key: item.key, title: item.itemTitle, subtitle: item.itemSubtitle }]);
-            this.applySectionExpandedState(key);
-        }
-
-        for (const key of this.addonSectionKeys) {
-            if (nextKeys.has(key)) continue;
-            const section = this.sections.get(key);
-            section?.root.remove();
-            this.sections.delete(key);
-            this.sectionExpanded.delete(key);
-        }
-
-        this.addonSectionKeys = Array.from(nextKeys);
-        this.reorderSections();
-    }
+    // Stubs to keep full API compatibility with viewer-controller.ts
+    setAnnotations(_items: any[]): void {}
+    setMeasurements(_items: any[]): void {}
+    setShapes(_items: any[]): void {}
+    setScene(_summary: any): void {}
+    setAddons(_items: any[]): void {}
+    setAddonWorkbenchSections(_items: any[]): void {}
 
     mountAddonWidget(el: HTMLElement): void {
         this.addonsWidgetHost.replaceChildren(el);
         this.addonsWidgetHost.style.display = "flex";
+        this.workspaceOverviewHost.style.display = "none";
     }
 
     unmountAddonWidget(): void {
         this.addonsWidgetHost.replaceChildren();
         this.addonsWidgetHost.style.display = "none";
+        this.workspaceOverviewHost.style.display = "flex";
     }
 
     dispose(): void {
         if (!this.sharedShell) {
             this.shell.dispose();
+        }
+    }
+
+    private updateBodyDisplay(): void {
+        if (this.sharedShell) {
+            this.body.style.display = (this.visible && this.expanded) ? "flex" : "none";
+        } else {
+            this.shell.setVisible(this.visible);
         }
     }
 
@@ -1015,200 +318,425 @@ export class AddonsPanel {
         this.onExpandedChange?.(this.expanded);
     }
 
-    private createSection(key: AddonSectionKey, title: string, emptyText: string): SectionView {
-        const section = document.createElement("div");
-        section.setAttribute("data-molsysviewer-addons-section", key);
-        Object.assign(section.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-            padding: "8px",
-            borderRadius: "10px",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.06)",
-        });
+    private render(): void {
+        const isCore = this.currentWorkspaceId === "core";
 
-        const header = document.createElement("button");
-        header.type = "button";
-        header.setAttribute("data-molsysviewer-addons-section-toggle", key);
-        Object.assign(header.style, {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "8px",
-            fontSize: "11px",
-            fontWeight: "700",
-            color: "rgba(244,244,245,0.88)",
-            background: "transparent",
-            border: "0",
-            padding: "0",
-            cursor: "pointer",
-            textAlign: "left",
-        });
-        const headerTitle = document.createElement("span");
-        headerTitle.textContent = title;
-        const headerMarker = document.createElement("span");
-        headerMarker.setAttribute("data-molsysviewer-addons-section-marker", key);
-        headerMarker.textContent = "−";
-        Object.assign(headerMarker.style, {
-            color: "rgba(244,244,245,0.52)",
-            fontSize: "12px",
-            lineHeight: "1",
-        });
-        header.appendChild(headerTitle);
-        header.appendChild(headerMarker);
-        header.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.sectionExpanded.set(key, !(this.sectionExpanded.get(key) ?? true));
-            this.applySectionExpandedState(key);
-        });
-
-        const list = document.createElement("div");
-        Object.assign(list.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-        });
-
-        const empty = document.createElement("div");
-        empty.setAttribute("data-molsysviewer-addons-empty", title.toLowerCase());
-        Object.assign(empty.style, {
-            fontSize: "11px",
-            color: "rgba(244,244,245,0.56)",
-        });
-        empty.textContent = emptyText;
-
-        section.appendChild(header);
-        section.appendChild(list);
-        section.appendChild(empty);
-        this.body.appendChild(section);
-
-        const view = { root: section, list, empty, marker: headerMarker };
-        this.sections.set(key, view);
-        this.sectionExpanded.set(key, true);
-        return view;
-    }
-
-    private renderItems(section: SectionView, items: WorkbenchItem[]): void {
-        section.list.replaceChildren();
-        if (items.length === 0) {
-            section.empty.style.display = "block";
-            return;
-        }
-        section.empty.style.display = "none";
-        for (const item of items) {
-            section.list.appendChild(this.makeRow(item));
+        if (isCore) {
+            this.leftColumn.style.display = "none";
+            this.rightColumn.style.paddingLeft = "0";
+            this.workspaceOverviewHost.style.display = "flex";
+            this.renderCatalogView();
+        } else {
+            this.leftColumn.style.display = "flex";
+            this.rightColumn.style.paddingLeft = "12px";
+            this.workspaceOverviewHost.style.display = "none";
+            this.renderAddonWorkspaceView();
         }
     }
 
-    private applySectionExpandedState(key: AddonSectionKey): void {
-        const section = this.sections.get(key);
-        if (!section) return;
-        const expanded = this.sectionExpanded.get(key) ?? true;
-        section.marker.textContent = expanded ? "−" : "+";
-        section.list.style.display = expanded ? "flex" : "none";
-        const hasItems = section.list.children.length > 0;
-        section.empty.style.display = expanded && !hasItems ? "block" : "none";
-    }
-
-    private reorderSections(): void {
-        const orderedKeys: AddonSectionKey[] = [
-            ...this.builtInSectionKeys,
-            ...this.addonSectionKeys.sort((left, right) => left.localeCompare(right)),
-        ];
-        for (const key of orderedKeys) {
-            const section = this.sections.get(key);
-            if (section) this.body.appendChild(section.root);
-        }
-    }
-
-    private makeRow(item: WorkbenchItem): HTMLDivElement {
-        const row = document.createElement("div");
-        row.setAttribute("data-molsysviewer-addons-item", "true");
-        if (item.key) row.setAttribute("data-molsysviewer-addons-item-key", item.key);
-        if (item.active) row.setAttribute("data-molsysviewer-addons-item-active", "true");
-        if (item.context) row.setAttribute("data-molsysviewer-addons-item-context", "true");
-        Object.assign(row.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "2px",
-            padding: "6px 8px",
-            borderRadius: "8px",
-            background: item.active
-                ? "rgba(255,255,255,0.12)"
-                : item.context
-                    ? "rgba(255,255,255,0.08)"
-                : item.hidden
-                    ? "rgba(255,255,255,0.03)"
-                    : "rgba(255,255,255,0.06)",
-            color: item.hidden ? "rgba(244,244,245,0.58)" : "#f4f4f5",
-            cursor: item.onActivate ? "pointer" : "default",
-            outline: item.active
-                ? "1px solid rgba(255,255,255,0.16)"
-                : item.context
-                    ? "1px solid rgba(255,255,255,0.10)"
-                    : "none",
-        });
-        if (item.onActivate) {
-            row.addEventListener("click", (event) => {
-                event.preventDefault?.();
-                event.stopPropagation?.();
-                item.onActivate?.();
-            });
-        }
-
-        const top = document.createElement("div");
-        Object.assign(top.style, {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "8px",
-        });
+    // ── Catalog Screen Rendering ──────────────────────────────────
+    private renderCatalogView(): void {
+        this.workspaceOverviewHost.replaceChildren();
 
         const title = document.createElement("div");
         Object.assign(title.style, {
-            fontSize: "12px",
-            fontWeight: "600",
-            flex: "1 1 auto",
+            fontSize: "13px",
+            fontWeight: "700",
+            color: "#f4f4f5",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            paddingBottom: "6px",
+            marginBottom: "4px",
         });
-        title.textContent = item.title;
-        top.appendChild(title);
+        title.textContent = "Available Add-ons";
+        this.workspaceOverviewHost.appendChild(title);
 
-        if (item.onToggleVisibility) {
-            const visibilityButton = document.createElement("button");
-            visibilityButton.type = "button";
-            visibilityButton.setAttribute("data-molsysviewer-addons-item-visibility", item.hidden ? "hidden" : "visible");
-            visibilityButton.textContent = item.hidden ? "Show" : "Hide";
-            Object.assign(visibilityButton.style, {
-                fontSize: "10px",
-                color: "rgba(244,244,245,0.72)",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.10)",
-                borderRadius: "999px",
-                padding: "1px 6px",
+        const grid = document.createElement("div");
+        Object.assign(grid.style, {
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "12px",
+            width: "100%",
+        });
+        this.workspaceOverviewHost.appendChild(grid);
+
+        // Filter out "core" from catalog display
+        const addonItems = this.workspaceItems.filter((item) => item.id !== "core");
+
+        if (addonItems.length === 0 && this.addonDiagnostics.length === 0) {
+            const empty = document.createElement("div");
+            Object.assign(empty.style, {
+                fontSize: "11px",
+                color: "rgba(244,244,245,0.48)",
+                textAlign: "center",
+                padding: "20px 0",
+            });
+            empty.textContent = "No analytical add-ons registered.";
+            this.workspaceOverviewHost.appendChild(empty);
+            return;
+        }
+
+        // Render successfully discovered add-ons
+        for (const item of addonItems) {
+            // Find if there is a loading/discovery diagnostic failure for this addon
+            const failure = this.addonDiagnostics.find(
+                (d) => d.source.toLowerCase().includes(item.id.toLowerCase())
+            );
+
+            const card = document.createElement("button");
+            card.type = "button";
+            card.setAttribute("data-molsysviewer-addon-card", item.id);
+            
+            Object.assign(card.style, {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "stretch",
+                gap: "8px",
+                padding: "12px",
+                borderRadius: "10px",
+                textAlign: "left",
+                cursor: "pointer",
+                transition: "all 0.15s ease-in-out",
+            });
+
+            if (failure) {
+                // Failure card: styling red
+                card.setAttribute("data-molsysviewer-addons-addon-discovery-failure", item.id);
+                Object.assign(card.style, {
+                    background: "rgba(239,68,68,0.03)",
+                    border: "1px solid rgba(239,68,68,0.25)",
+                    color: "#fca5a5",
+                });
+                card.title = failure.traceback || "Diagnostic traceback unavailable";
+
+                // Error badge
+                const header = document.createElement("div");
+                Object.assign(header.style, {
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                });
+                const name = document.createElement("span");
+                Object.assign(name.style, { fontWeight: "700", fontSize: "13px" });
+                name.textContent = item.title;
+                const badge = document.createElement("span");
+                Object.assign(badge.style, {
+                    fontSize: "9px",
+                    background: "rgba(239,68,68,0.2)",
+                    border: "1px solid rgba(239,68,68,0.4)",
+                    color: "#ef4444",
+                    borderRadius: "4px",
+                    padding: "1px 5px",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                });
+                badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
+                header.appendChild(name);
+                header.appendChild(badge);
+                card.appendChild(header);
+
+                // Short reason
+                const desc = document.createElement("div");
+                Object.assign(desc.style, { fontSize: "11px", color: "rgba(252,165,165,0.72)", lineHeight: "1.3" });
+                desc.textContent = failure.reason || "Error loading addon.";
+                card.appendChild(desc);
+
+                // Collapsible traceback viewer on click
+                const traceBox = document.createElement("pre");
+                Object.assign(traceBox.style, {
+                    display: "none",
+                    margin: "6px 0 0 0",
+                    padding: "8px",
+                    borderRadius: "6px",
+                    background: "rgba(0,0,0,0.3)",
+                    border: "1px solid rgba(239,68,68,0.15)",
+                    fontSize: "9px",
+                    color: "rgba(252,165,165,0.9)",
+                    overflowX: "auto",
+                    whiteSpace: "pre-wrap",
+                });
+                traceBox.textContent = failure.traceback || "No traceback detail.";
+                card.appendChild(traceBox);
+
+                card.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const isVisible = traceBox.style.display === "block";
+                    traceBox.style.display = isVisible ? "none" : "block";
+                });
+            } else {
+                // Success card: styling standard dark-indigo
+                Object.assign(card.style, {
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: "#f4f4f5",
+                });
+                card.addEventListener("mouseenter", () => {
+                    card.style.background = "rgba(255,255,255,0.06)";
+                    card.style.border = "1px solid rgba(255,255,255,0.14)";
+                    card.style.transform = "translateY(-1px)";
+                });
+                card.addEventListener("mouseleave", () => {
+                    card.style.background = "rgba(255,255,255,0.03)";
+                    card.style.border = "1px solid rgba(255,255,255,0.08)";
+                    card.style.transform = "translateY(0)";
+                });
+
+                const name = document.createElement("div");
+                Object.assign(name.style, { fontWeight: "700", fontSize: "13px" });
+                name.textContent = item.title;
+                card.appendChild(name);
+
+                if (item.subtitle || item.description) {
+                    const desc = document.createElement("div");
+                    Object.assign(desc.style, {
+                        fontSize: "11px",
+                        color: "rgba(244,244,245,0.58)",
+                        lineHeight: "1.35",
+                    });
+                    desc.textContent = item.description || item.subtitle || "";
+                    card.appendChild(desc);
+                }
+
+                // Capabilities chips
+                const chipRow = document.createElement("div");
+                Object.assign(chipRow.style, { display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "4px" });
+                card.appendChild(chipRow);
+
+                const createChip = (text: string) => {
+                    const chip = document.createElement("span");
+                    Object.assign(chip.style, {
+                        fontSize: "9px",
+                        fontWeight: "700",
+                        padding: "2px 6px",
+                        borderRadius: "99px",
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        color: "rgba(244,244,245,0.64)",
+                    });
+                    chip.textContent = text;
+                    chipRow.appendChild(chip);
+                };
+
+                if ((item.panelCount ?? 0) > 0) createChip(`${item.panelCount} Panel${item.panelCount === 1 ? "" : "s"}`);
+                if ((item.workbenchSectionCount ?? 0) > 0) createChip(`${item.workbenchSectionCount} Section${item.workbenchSectionCount === 1 ? "" : "s"}`);
+                if ((item.contextActionCount ?? 0) > 0) createChip(`${item.contextActionCount} Context`);
+
+                card.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.onSelectWorkspace?.(item.id);
+                });
+            }
+
+            grid.appendChild(card);
+        }
+
+        // Render standalone diagnostics failures that don't match listed workspaces
+        for (const failure of this.addonDiagnostics) {
+            const isMatched = addonItems.some((item) => failure.source.toLowerCase().includes(item.id.toLowerCase()));
+            if (isMatched) continue;
+
+            const card = document.createElement("button");
+            card.type = "button";
+            card.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
+            Object.assign(card.style, {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "stretch",
+                gap: "8px",
+                padding: "12px",
+                borderRadius: "10px",
+                background: "rgba(239,68,68,0.03)",
+                border: "1px solid rgba(239,68,68,0.25)",
+                color: "#fca5a5",
+                textAlign: "left",
                 cursor: "pointer",
             });
-            visibilityButton.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                item.onToggleVisibility?.();
+
+            const header = document.createElement("div");
+            Object.assign(header.style, { display: "flex", justifyContent: "space-between", alignItems: "center" });
+            const name = document.createElement("span");
+            Object.assign(name.style, { fontWeight: "700", fontSize: "13px" });
+            name.textContent = failure.source;
+            const badge = document.createElement("span");
+            Object.assign(badge.style, {
+                fontSize: "9px",
+                background: "rgba(239,68,68,0.2)",
+                border: "1px solid rgba(239,68,68,0.4)",
+                color: "#ef4444",
+                borderRadius: "4px",
+                padding: "1px 5px",
+                fontWeight: "700",
+                textTransform: "uppercase",
             });
-            top.appendChild(visibilityButton);
-        }
+            badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
+            header.appendChild(name);
+            header.appendChild(badge);
+            card.appendChild(header);
 
-        row.appendChild(top);
+            const desc = document.createElement("div");
+            Object.assign(desc.style, { fontSize: "11px", color: "rgba(252,165,165,0.72)", lineHeight: "1.3" });
+            desc.textContent = failure.reason || "Error loading entry point.";
+            card.appendChild(desc);
 
-        if (item.subtitle) {
-            const subtitle = document.createElement("div");
-            Object.assign(subtitle.style, {
-                fontSize: "11px",
-                color: item.hidden ? "rgba(244,244,245,0.45)" : "rgba(244,244,245,0.68)",
+            const traceBox = document.createElement("pre");
+            Object.assign(traceBox.style, {
+                display: "none",
+                margin: "6px 0 0 0",
+                padding: "8px",
+                borderRadius: "6px",
+                background: "rgba(0,0,0,0.3)",
+                border: "1px solid rgba(239,68,68,0.15)",
+                fontSize: "9px",
+                color: "rgba(252,165,165,0.9)",
+                overflowX: "auto",
+                whiteSpace: "pre-wrap",
             });
-            subtitle.textContent = item.subtitle;
-            row.appendChild(subtitle);
-        }
+            traceBox.textContent = failure.traceback || "No traceback detail.";
+            card.appendChild(traceBox);
 
-        return row;
+            card.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const isVisible = traceBox.style.display === "block";
+                traceBox.style.display = isVisible ? "none" : "block";
+            });
+
+            grid.appendChild(card);
+        }
+    }
+
+    // ── Active Addon Workspace view (Sidebar + Widget area) ────────
+    private renderAddonWorkspaceView(): void {
+        this.leftColumn.replaceChildren();
+
+        // 1. Back button
+        const backBtn = document.createElement("button");
+        backBtn.type = "button";
+        backBtn.setAttribute("data-molsysviewer-addon-back-button", "true");
+        Object.assign(backBtn.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            width: "100%",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(255,255,255,0.04)",
+            color: "#f4f4f5",
+            fontSize: "11px",
+            fontWeight: "700",
+            cursor: "pointer",
+            marginBottom: "12px",
+            transition: "all 0.15s ease",
+        });
+        backBtn.textContent = "← Back to Add-ons";
+
+        backBtn.addEventListener("mouseenter", () => {
+            backBtn.style.background = "rgba(255,255,255,0.08)";
+            backBtn.style.border = "1px solid rgba(255,255,255,0.16)";
+        });
+        backBtn.addEventListener("mouseleave", () => {
+            backBtn.style.background = "rgba(255,255,255,0.04)";
+            backBtn.style.border = "1px solid rgba(255,255,255,0.1)";
+        });
+        backBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.onSelectWorkspace?.("core");
+        });
+
+        this.leftColumn.appendChild(backBtn);
+
+        // 2. Sections header title
+        const sectionsHeader = document.createElement("div");
+        Object.assign(sectionsHeader.style, {
+            fontSize: "10px",
+            fontWeight: "700",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            color: "rgba(244,244,245,0.48)",
+            paddingLeft: "4px",
+            marginBottom: "6px",
+        });
+        sectionsHeader.textContent = "Add-on Sections";
+        this.leftColumn.appendChild(sectionsHeader);
+
+        // 3. Sections vertical menu
+        const menuContainer = document.createElement("div");
+        Object.assign(menuContainer.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            width: "100%",
+        });
+        this.leftColumn.appendChild(menuContainer);
+
+        // Render sections (filtering out navigate and addons tabs which belong to main shell)
+        const relevantSections = this.workspacePanelItems.filter(
+            (item) => item.id !== "navigate" && item.id !== "addons"
+        );
+
+        for (const panel of relevantSections) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.setAttribute("data-molsysviewer-addon-section-tab", panel.id);
+            Object.assign(btn.style, {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "2px",
+                width: "100%",
+                padding: "8px 12px",
+                borderRadius: "8px",
+                border: "0",
+                background: "transparent",
+                color: "rgba(244,244,245,0.68)",
+                textAlign: "left",
+                cursor: "pointer",
+                transition: "all 0.15s ease-in-out",
+            });
+
+            if (panel.active) {
+                Object.assign(btn.style, {
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#f4f4f5",
+                    borderLeft: "3px solid #6366f1",
+                    paddingLeft: "9px",
+                });
+            } else {
+                btn.addEventListener("mouseenter", () => {
+                    btn.style.background = "rgba(255,255,255,0.04)";
+                    btn.style.color = "rgba(244,244,245,0.9)";
+                });
+                btn.addEventListener("mouseleave", () => {
+                    btn.style.background = "transparent";
+                    btn.style.color = "rgba(244,244,245,0.68)";
+                });
+            }
+
+            const title = document.createElement("div");
+            Object.assign(title.style, { fontSize: "12px", fontWeight: "600" });
+            title.textContent = panel.title;
+            btn.appendChild(title);
+
+            if (panel.description) {
+                const sub = document.createElement("div");
+                Object.assign(sub.style, {
+                    fontSize: "10px",
+                    color: panel.active ? "rgba(244,244,245,0.6)" : "rgba(244,244,245,0.44)",
+                });
+                sub.textContent = panel.description;
+                btn.appendChild(sub);
+            }
+
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.onSelectWorkspacePanel?.(panel.id);
+            });
+
+            menuContainer.appendChild(btn);
+        }
     }
 }
