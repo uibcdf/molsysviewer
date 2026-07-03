@@ -818,6 +818,25 @@ def test_qt_view_channel_delivers_bridge_events_to_on_msg():
     assert received == [{"event": "interaction_click", "kind": "structure"}]
 
 
+def test_molsysview_accepts_qt_transport_and_routes_events():
+    from molsysviewer import MolSysView
+
+    bridge = _FakeBridge()
+    channel = QtViewChannel(bridge)
+    view = MolSysView(transport=channel)
+    assert view.widget is channel
+
+    # Outgoing (post-ready) messages route through the channel to the bridge.
+    view._ready = True  # noqa: SLF001
+    view._send({"op": "clear_all"})  # noqa: SLF001
+    assert {"op": "clear_all"} in bridge.sent
+
+    # Incoming: a bridge-forwarded frontend event reaches _handle_frontend_event.
+    view._ready = False  # noqa: SLF001
+    bridge.event_sink({"event": "ready"})
+    assert view._ready is True  # noqa: SLF001
+
+
 def test_qt_bridge_forwards_product_events_but_not_transport():
     class FakeQTimer:
         @staticmethod
