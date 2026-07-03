@@ -683,6 +683,7 @@ class _FakeUrlScheme:
         LocalScheme = 2
         LocalAccessAllowed = 4
         CorsEnabled = 8
+        FetchApiAllowed = 16
 
     def __init__(self, name: bytes = b"") -> None:
         self._name = name
@@ -710,8 +711,11 @@ def test_register_qt_url_schemes_registers_event_and_payload_schemes():
 
     assert b"molsysviewer" in _FakeUrlScheme.registered
     assert b"molsysviewer-payload" in _FakeUrlScheme.registered
-    # CORS must be enabled on the payload scheme so the page can fetch it.
+    # The event and payload schemes must be fetchable in real Qt.
+    assert _FakeUrlScheme.registered[b"molsysviewer"]._flags & _FakeUrlScheme.Flag.CorsEnabled
+    assert _FakeUrlScheme.registered[b"molsysviewer"]._flags & _FakeUrlScheme.Flag.FetchApiAllowed
     assert _FakeUrlScheme.registered[b"molsysviewer-payload"]._flags & _FakeUrlScheme.Flag.CorsEnabled
+    assert _FakeUrlScheme.registered[b"molsysviewer-payload"]._flags & _FakeUrlScheme.Flag.FetchApiAllowed
 
     # Idempotent: registering again does not duplicate or error.
     standalone_qt._register_qt_url_schemes(_FakeUrlScheme)
@@ -783,6 +787,69 @@ def test_payload_scheme_handler_serves_and_fails_correctly():
 
     # Only successfully served payloads are recorded (used by the real-Qt smoke).
     assert handler.served == ["qt-7"]
+
+
+def test_event_scheme_handler_delivers_event_to_bridge():
+    class FakeByteArray:
+        def __init__(self, data=b""):
+            self.data = bytes(data)
+
+    class FakeBuffer:
+        class OpenModeFlag:
+            ReadOnly = 1
+
+        def __init__(self, parent=None):
+            self._data = None
+            self.opened = False
+
+        def setData(self, ba):  # noqa: N802
+            self._data = ba
+
+        def open(self, mode):
+            self.opened = True
+
+    class FakeHandlerBase:
+        pass
+
+    class FakeUrl:
+        def toString(self):  # noqa: N802
+            return "molsysviewer://event?payload=%7B%22event%22%3A%22ready%22%7D"
+
+    class FakeJob:
+        def __init__(self):
+            self.replied = None
+
+        def requestUrl(self):  # noqa: N802
+            return FakeUrl()
+
+        def reply(self, content_type, buffer):
+            self.replied = (content_type, buffer)
+
+    class FakeBridge:
+        def __init__(self):
+            self.events = []
+
+        def handle_frontend_event(self, event):
+            self.events.append(event)
+
+    class FakeWebView:
+        pass
+
+    webview = FakeWebView()
+    bridge = FakeBridge()
+    webview._molsysviewer_qt_bridge = bridge
+    handler = standalone_qt._make_event_scheme_handler(
+        FakeHandlerBase, FakeBuffer, FakeByteArray, webview
+    )
+
+    job = FakeJob()
+    handler.requestStarted(job)
+
+    assert bridge.events == [{"event": "ready"}]
+    content_type, buffer = job.replied
+    assert content_type.data == b"application/json"
+    assert buffer._data.data == b'{"ok":true}'
+    assert buffer.opened is True
 
 
 def test_qt_bridge_reports_load_progress():
