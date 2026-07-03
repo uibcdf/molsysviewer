@@ -261,7 +261,8 @@ What remains:
 
 Status:
 
-- done for the pre-`1.0.0` host gate
+- implemented up to the limit currently verifiable without a real Qt/WebGL
+  render smoke
 - packaging decision (A2) closed and validated
 
 Goal:
@@ -291,8 +292,10 @@ Main work (completed):
 - packaging strategy rationale documented in
   `devguide/standalone_packaging_strategy.md` ✓
 
-What remains open (not a `molsysviewer` blocker):
+What remains open:
 
+- final real-window Qt validation: molecular load, `structure_ready`, visible
+  WebGL render, native context menu, movie export without blocking
 - final end-user installation/distribution story (conda recipe for users,
   not just for development)
 - multi-platform support (macOS, Windows) — documented in sibling repo devguides
@@ -301,10 +304,12 @@ What remains open (not a `molsysviewer` blocker):
 
 Current reading:
 
-- Phase E in `molsysviewer` is materially complete
-- the remaining standalone uncertainty is end-user distribution, not host
-  credibility or packaging direction
-- do not reopen host slices unless a real runtime or QA gap appears
+- Phase E's backend implementation is materially complete, but the host cannot
+  be called closed until the real Qt/WebGL validation passes
+- the remaining standalone uncertainty is now QA/distribution, not the basic
+  host architecture
+- do not add more standalone layers until the real-window smoke validates the
+  current bridge and render path
 
 See also:
 
@@ -733,15 +738,17 @@ None. Item 6 is complete.
   - JS unit/e2e scaffolding exists with runnable scripts.
   - `pytest` and `python -m pytest` now resolve the same in-repo package during test collection.
 
-- `Ongoing maintenance` — no remaining coverage gaps
+- `Ongoing maintenance`
   - Python suite: all passing. ✓
-  - JS unit suite: 109 tests passing (2026-04-27). ✓
+  - JS unit suite: 140 tests passing in the latest local verification
+    (2026-07-03). ✓
     - measurement-handler: centroid endpoint path, `setSettings` policy and representative-atom overrides
     - annotation-handler: `updateLabel` updates spec for future rebuilds, `getSpec` contract
     - state-handler: `renameRegion` preserves hidden flag, `createRegion` queues without structure
-  - E2E suite: 9 scenario files (added `workflow-integration.e2e.ts` 2026-04-27):
+  - E2E suite: 10 scenario files:
     region-hide, annotations+measurements, shape-trajectory, export-replay,
-    group-panel, hierarchy, measurements, range-selection, **workflow-integration** ✓
+    group-panel, hierarchy, measurements, range-selection, workflow-integration,
+    and scientific-workflow.
   - `workflow-integration.e2e.ts`: load → label → distance measurement → clear_all + replay;
     verifies the programmatic replay-safe API path end to end. ✓
 
