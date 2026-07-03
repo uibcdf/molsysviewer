@@ -845,6 +845,25 @@ def test_molsysview_accepts_qt_transport_and_routes_events():
     assert view._ready is True  # noqa: SLF001
 
 
+def test_qt_transport_delivers_interaction_and_movie_events_to_view():
+    """F2/F3 enablement: with the persistent view, forwarded frontend events reach
+    the view's interaction state and movie-export buffer end to end."""
+    from molsysviewer import MolSysView
+
+    bridge = _FakeBridge()
+    channel = QtViewChannel(bridge)
+    view = MolSysView(transport=channel)
+
+    # F3: an interaction event updates the view's last-click state.
+    bridge.event_sink({"event": "interaction_click", "kind": "empty"})
+    assert view.get_last_click_event() is not None
+
+    # F2: a movie frame lands in the export buffer (the cooperative wait consumes it).
+    view._movie_export_frames = []  # noqa: SLF001
+    bridge.event_sink({"event": "movie_frame", "data_uri": "data:image/png;base64,AAAA"})
+    assert len(view._movie_export_frames) == 1  # noqa: SLF001
+
+
 def test_qt_bridge_forwards_product_events_but_not_transport():
     class FakeQTimer:
         @staticmethod
