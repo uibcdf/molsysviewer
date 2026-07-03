@@ -454,7 +454,7 @@ export class GroupStrip {
                     if (customColorInt !== undefined) {
                         colorHex = "#" + customColorInt.toString(16).padStart(6, "0");
                     } else if (this.activeColorScheme === "physicochemical") {
-                        const groupNameUpper = (item.group_name ?? "").toUpperCase();
+                        const groupNameUpper = (item.group_name ?? "").split(" ")[0]?.toUpperCase() ?? "";
                         const residueClass = ResidueToClass[groupNameUpper];
                         if (residueClass) {
                             colorHex = PhysicochemicalColorsHex[residueClass];
