@@ -3187,32 +3187,77 @@ export class MolSysViewerController {
         const style = document.createElement("style");
         style.id = "molsysviewer-global-styles";
         style.textContent = `
-            [data-molsysviewer-group-panel-body]::-webkit-scrollbar,
-            [data-molsysviewer-group-panel-section]::-webkit-scrollbar,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar,
-            [data-molsysviewer-group-strip-row]::-webkit-scrollbar {
+            /* Firefox Scrollbar Styling */
+            [data-molsysviewer-group-panel] *,
+            [data-molsysviewer-addons-panel] * {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+            }
+
+            /* Webkit Scrollbar Styling (Chrome, Safari, Edge) */
+            [data-molsysviewer-group-panel] *::-webkit-scrollbar,
+            [data-molsysviewer-addons-panel] *::-webkit-scrollbar,
+            [data-molsysviewer-context-scroll]::-webkit-scrollbar {
                 width: 6px;
                 height: 6px;
             }
-            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-track,
-            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-track,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-track,
-            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-track {
+            [data-molsysviewer-group-panel] *::-webkit-scrollbar-track,
+            [data-molsysviewer-addons-panel] *::-webkit-scrollbar-track,
+            [data-molsysviewer-context-scroll]::-webkit-scrollbar-track {
                 background: transparent;
             }
-            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb,
-            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb,
-            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb {
+            [data-molsysviewer-group-panel] *::-webkit-scrollbar-thumb,
+            [data-molsysviewer-addons-panel] *::-webkit-scrollbar-thumb,
+            [data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb {
                 background: rgba(255, 255, 255, 0.15);
                 border-radius: 3px;
+                transition: background 0.15s ease;
             }
-            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb:hover {
+            [data-molsysviewer-group-panel] *::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-addons-panel] *::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb:hover {
                 background: rgba(255, 255, 255, 0.35);
             }
+
+            /* Range Slider Styling */
+            [data-molsysviewer-group-panel] input[type="range"] {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.12);
+                border-radius: 2px;
+                outline: none;
+                transition: opacity 0.15s ease;
+            }
+            [data-molsysviewer-group-panel] input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #6366f1;
+                cursor: pointer;
+                transition: transform 0.1s ease, background 0.1s ease;
+            }
+            [data-molsysviewer-group-panel] input[type="range"]::-webkit-slider-thumb:hover {
+                transform: scale(1.2);
+                background: #818cf8;
+            }
+            [data-molsysviewer-group-panel] input[type="range"]::-moz-range-thumb {
+                width: 12px;
+                height: 12px;
+                border: 0;
+                border-radius: 50%;
+                background: #6366f1;
+                cursor: pointer;
+                transition: transform 0.1s ease, background 0.1s ease;
+            }
+            [data-molsysviewer-group-panel] input[type="range"]::-moz-range-thumb:hover {
+                transform: scale(1.2);
+                background: #818cf8;
+            }
+
             @keyframes molsysviewer-fade-in-up {
                 from {
                     opacity: 0;
