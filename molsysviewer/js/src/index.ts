@@ -92,16 +92,9 @@ export async function bootDocsView(opts: {
         try {
             const payload = encodeURIComponent(JSON.stringify(event));
             const url = `molsysviewer://event?payload=${payload}`;
-            const iframe = document.createElement("iframe");
-            Object.assign(iframe.style, {
-                display: "none",
-                width: "0",
-                height: "0",
-                border: "0",
+            void fetch(url).catch((error) => {
+                console.error("[MolSysViewer docs] Could not notify host:", error);
             });
-            iframe.src = url;
-            document.documentElement.appendChild(iframe);
-            window.setTimeout(() => iframe.remove(), 0);
         } catch (error) {
             console.error("[MolSysViewer docs] Could not notify host:", error);
         }

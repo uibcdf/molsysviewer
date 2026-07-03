@@ -522,12 +522,12 @@ def _register_qt_url_schemes(QWebEngineUrlScheme) -> None:
     """Register the custom transport schemes. Idempotent; must run before QApplication."""
     flag = QWebEngineUrlScheme.Flag
     specs = {
-        # Event scheme: navigations intercepted in acceptNavigationRequest. No
-        # handler; it only needs to be a known scheme so the navigation is valid.
-        QT_EVENT_SCHEME: flag.SecureScheme | flag.LocalScheme | flag.LocalAccessAllowed,
+        # Event scheme: JS posts tiny events with fetch(...). Navigation
+        # interception is kept as a fallback, but Chromium blocks it in real Qt.
+        QT_EVENT_SCHEME: flag.SecureScheme | flag.CorsEnabled | flag.FetchApiAllowed | flag.LocalScheme,
         # Payload scheme: served by a QWebEngineUrlSchemeHandler and fetched by the
         # page, so it must allow CORS-enabled fetches.
-        QT_PAYLOAD_SCHEME: flag.SecureScheme | flag.CorsEnabled,
+        QT_PAYLOAD_SCHEME: flag.SecureScheme | flag.CorsEnabled | flag.FetchApiAllowed,
     }
     for name, flags in specs.items():
         name_bytes = name.encode("ascii")
@@ -564,6 +564,25 @@ def _make_payload_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray
     handler = MolSysViewerPayloadSchemeHandler()
     handler.served = served
     return handler
+
+
+def _make_event_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray, webview):
+    """Build a scheme handler that delivers JS -> Python events over QT_EVENT_SCHEME."""
+
+    class MolSysViewerEventSchemeHandler(QWebEngineUrlSchemeHandler):
+        def requestStarted(self, job):  # noqa: N802
+            url = job.requestUrl()
+            event = _decode_qt_bridge_event(url.toString() if hasattr(url, "toString") else str(url))
+            if event is not None:
+                bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+                if bridge is not None:
+                    bridge.handle_frontend_event(event)
+            buffer = QBuffer(job)
+            buffer.setData(QByteArray(b'{"ok":true}'))
+            buffer.open(QBuffer.OpenModeFlag.ReadOnly if hasattr(QBuffer, "OpenModeFlag") else QBuffer.ReadOnly)
+            job.reply(QByteArray(b"application/json"), buffer)
+
+    return MolSysViewerEventSchemeHandler()
 
 
 def _decode_qt_bridge_event(url: str) -> dict[str, Any] | None:
@@ -607,16 +626,23 @@ def _install_qt_message_bridge(
     bridge = QtMessageBridge(webview, QTimer, status_callback=status_callback)
     setattr(webview, "_molsysviewer_qt_bridge", bridge)
 
-    # Serve large payloads over the custom scheme, so the page fetches them
-    # without needing (insecure) file:// access.
     if QWebEngineUrlSchemeHandler is not None and QBuffer is not None and QByteArray is not None:
-        handler = _get_helper("_make_payload_scheme_handler")(
-            QWebEngineUrlSchemeHandler, QBuffer, QByteArray, bridge.payloads
+        event_handler = _get_helper("_make_event_scheme_handler")(
+            QWebEngineUrlSchemeHandler, QBuffer, QByteArray, webview
         )
         profile = page.profile() if hasattr(page, "profile") else None
         if profile is not None and hasattr(profile, "installUrlSchemeHandler"):
-            profile.installUrlSchemeHandler(QT_PAYLOAD_SCHEME.encode("ascii"), handler)
-        setattr(webview, "_molsysviewer_qt_payload_handler", handler)
+            profile.installUrlSchemeHandler(QT_EVENT_SCHEME.encode("ascii"), event_handler)
+        setattr(webview, "_molsysviewer_qt_event_handler", event_handler)
+
+        # Serve large payloads over the custom scheme, so the page fetches them
+        # without needing (insecure) file:// access.
+        payload_handler = _get_helper("_make_payload_scheme_handler")(
+            QWebEngineUrlSchemeHandler, QBuffer, QByteArray, bridge.payloads
+        )
+        if profile is not None and hasattr(profile, "installUrlSchemeHandler"):
+            profile.installUrlSchemeHandler(QT_PAYLOAD_SCHEME.encode("ascii"), payload_handler)
+        setattr(webview, "_molsysviewer_qt_payload_handler", payload_handler)
 
     return bridge
 

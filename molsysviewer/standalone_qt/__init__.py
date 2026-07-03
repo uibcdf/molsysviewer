@@ -27,6 +27,7 @@ from .utils import (
     QtMessageBridge,
     _register_qt_url_schemes,
     _make_payload_scheme_handler,
+    _make_event_scheme_handler,
     _install_qt_message_bridge,
     _send_viewer_message,
     _send_viewer_messages,

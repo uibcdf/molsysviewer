@@ -2,18 +2,29 @@
 
 ## Estado
 
-Pendiente. Continuación de `standalone_qt_live_model` (ya **cerrado**: el modelo
-vivo de mensajes de **carga** está implementado y validado en Qt real —
-shell persistente, `QtMessageBridge` con ids/generación/ack/error/coalescing,
-esquemas `molsysviewer://` (eventos) y `molsysviewer-payload://` (datos), y una
-carga reproduce la escena entera). La arquitectura de superficies está en
+Implementado hasta el límite verificable sin una ventana Qt real renderizando.
+
+F1/F2/F3 están implementados y cubiertos con fakes, `molsysmt` real y un smoke
+Qt mínimo para el canal JS -> Python. El backend interactivo ya usa un
+`MolSysView` persistente ligado al bridge, enruta eventos de producto hacia el
+view, y conecta export de película/context-menu a ese view persistente.
+
+Pendiente de cierre final: validación de producto en una ventana Qt real con
+render WebGL funcional. Sin esa prueba no conviene añadir más capas de código:
+el riesgo sería optimizar contra fakes en vez de contra la superficie real.
+
+Continuación de `standalone_qt_live_model` (ya **cerrado**: el modelo vivo de
+mensajes de **carga** está implementado — shell persistente, `QtMessageBridge`
+con ids/generación/ack/error/coalescing, esquemas `molsysviewer://` para eventos
+y `molsysviewer-payload://` para datos). La arquitectura de superficies está en
 `docs/content/developer/standalone_surfaces.md`.
 
 ## Problema
 
-El host Qt **no tiene un `MolSysView` persistente** ligado al bridge. Hoy
-`_build_qt_live_messages` crea un `MolSysView` **temporal**, lo serializa con
-`_build_export_messages()` y lo descarta; manda dicts crudos al webview. Por eso:
+El problema original era que el host Qt **no tenía un `MolSysView` persistente**
+ligado al bridge. Antes, `_build_qt_live_messages` creaba un `MolSysView`
+**temporal**, lo serializaba con `_build_export_messages()` y lo descartaba;
+mandaba dicts crudos al webview. Por eso:
 
 - Las **cargas** funcionan (snapshot reproducible → mensajes vivos).
 - Pero **no hay `_handle_frontend_event` que reciba eventos**, así que en Qt no
@@ -22,21 +33,20 @@ El host Qt **no tiene un `MolSysView` persistente** ligado al bridge. Hoy
   rebuilds tras cambiar la topología). El `bridge.handle_frontend_event` solo
   procesa los eventos del propio bridge (ready/ack/error/…) e ignora el resto.
 
-Para que Qt sea una superficie de producto **interactiva** (no solo un cargador),
-hay que promover el host Qt al mismo modelo que AnyWidget: **el `MolSysView` es el
-backend, el bridge es el transporte**.
+La solución implementada promueve el host Qt al mismo modelo conceptual que
+AnyWidget: **el `MolSysView` es el backend, el bridge es el transporte**.
 
 ## Progreso
 
-**F1 implementado** (pendiente validación en Qt real): `QtViewChannel` (canal
+**F1 implementado** (pendiente validación visual en Qt real): `QtViewChannel` (canal
 que satisface la interfaz `widget` del view), `event_sink` en el bridge que
 reenvía los eventos de producto al view, `MolSysView(transport=…)`, y el host Qt
 crea **un** `MolSysView` persistente que conduce las cargas con `view.load(...,
 mode="replace")` (en vez del snapshot temporal), con `view._qt_process_events =
-app.processEvents`. Verificado con fakes + molsysmt real; falta el round-trip en
-ventana Qt real.
+app.processEvents`. Verificado con fakes + `molsysmt` real.
 
-**F2 y F3 implementados** (glue de UI incluido, pendiente validación en Qt real):
+**F2 y F3 implementados** (glue de UI incluido, pendiente validación visual en Qt
+real):
 - Enrutado de eventos probado end-to-end (un `interaction_click` reenviado
   actualiza el estado del view; un `movie_frame` cae en el buffer de export).
 - **F3**: acción de menú contextual nativa (`QMenu` en click derecho vía
@@ -44,9 +54,37 @@ ventana Qt real.
 - **F2**: acción de menú "Export Movie (orbit)" que hace `add_camera_orbit` +
   `movie.export` sobre el view persistente (la espera cooperativa bombea el bucle
   Qt con `view._qt_process_events`).
+- **Transporte JS -> Python validado con Qt real mínimo**: la vía original por
+  navegación (`iframe`, `window.location`, `anchor`) a `molsysviewer://event`
+  no dispara `acceptNavigationRequest` en Qt real (`about:blank#blocked` o
+  silencio). Se reemplazó por `fetch("molsysviewer://event?...")` servido por
+  `QWebEngineUrlSchemeHandler`; el smoke mínimo sin Mol*/WebGL confirma que
+  `ready` llega a Python y pone `bridge.ready=True`.
 
-Lo único pendiente de F1/F2/F3 es **verlo correr en una ventana Qt real** (el
-render, el context menu mostrándose, y una película exportada sin bloqueo).
+Lo único pendiente de F1/F2/F3 es **verlo correr en una ventana Qt real con render
+funcional**: carga visible, context menu mostrándose, y una película exportada
+sin bloqueo.
+
+## Validacion realizada
+
+- Tests unitarios/fakes para el bridge, el `QtViewChannel`, el view persistente,
+  eventos de interaccion, eventos de pelicula, handler de payloads y handler de
+  eventos.
+- Tests con `molsysmt` real dentro de la suite Python.
+- Smoke Qt mínimo con HTML sin Mol*/WebGL: `fetch("molsysviewer://event?...")`
+  llega al handler Python y pone `bridge.ready=True`.
+- Suite Python completa en verde.
+- Tests JS en verde tras reconstruir el runtime.
+
+## Validacion pendiente
+
+- Cargar una molecula en una ventana Qt real y confirmar `structure_ready` +
+  render visible.
+- Confirmar que el context menu nativo aparece en click derecho y ejecuta la
+  accion esperada.
+- Exportar una pelicula corta y confirmar que no bloquea el hilo principal.
+- Verificar una edicion dinamica post-carga, por ejemplo `add_sphere(...)`, sin
+  recargar la shell.
 
 ## F1 — `MolSysView` persistente ligado al bridge (núcleo) — HECHO
 
@@ -97,13 +135,21 @@ render, el context menu mostrándose, y una película exportada sin bloqueo).
 
 ## Criterios de cierre
 
-1. En Qt, un `view.load(...)` y un rebuild pasan por el bridge con generación y ack.
+Cumplidos a nivel de código/fakes:
+
+1. `view.load(...)` y los mensajes del view persistente pasan por el bridge con
+   generación y ack.
 2. Los eventos del frontend (interacción, movie, acks de escena) llegan al
-   `MolSysView` persistente.
-3. Export de película funciona en Qt sin bloqueo, con timeout.
-4. Hover/click y una edición dinámica (p. ej. `add_sphere`) funcionan sin recargar.
-5. `_message_history` sigue siendo la única fuente reproducible; export HTML intacto.
-6. Tests de enrutado de eventos, movie y edición dinámica en verde.
+   `MolSysView` persistente cuando el bridge los recibe.
+3. `_message_history` sigue siendo la única fuente reproducible; export HTML
+   intacto.
+4. Tests de enrutado de eventos, movie y edición dinámica en verde.
+
+Pendientes de validación real:
+
+1. En Qt real, carga visible con `structure_ready` y render WebGL.
+2. Export de película funciona en Qt sin bloqueo, con timeout.
+3. Hover/click/context-menu y una edición dinámica funcionan sin recargar.
 
 ## Riesgos
 
