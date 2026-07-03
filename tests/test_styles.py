@@ -157,6 +157,7 @@ def test_styles_builtin_catalog_exposes_canonical_tags():
         "coarse-surface",
         "default",
         "empty",
+        "physicochemical",
         "polymer-and-ligand",
         "polymer-cartoon",
         "spacefill-element-cpk",
@@ -177,6 +178,7 @@ def test_styles_structural_scheme_catalogs_expose_curated_public_options():
         "entity_default",
         "illustrative_default",
         "molecule_type",
+        "physicochemical",
         "residue_name",
         "secondary_structure_default",
     ]

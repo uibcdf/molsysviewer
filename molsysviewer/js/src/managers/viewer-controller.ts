@@ -34,6 +34,7 @@ import { GroupPanel } from "../ui/group-panel";
 import { AddonsPanel } from "../ui/addons-panel";
 import { FloatingPanelShell } from "../ui/floating-panel-shell";
 import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
+import { MsvPhysicochemicalColorThemeProvider } from "../themes/physicochemical-color";
 import { HoverTooltip } from "../ui/hover-tooltip";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
@@ -642,6 +643,7 @@ export class MolSysViewerController {
 
         // Register custom colour themes after plugin init.
         plugin.representation.structure.themes.colorThemeRegistry.add(MsvPerAtomColorThemeProvider);
+        plugin.representation.structure.themes.colorThemeRegistry.add(MsvPhysicochemicalColorThemeProvider);
 
         const init = (plugin as any).initViewerAsync ?? (plugin as any).initViewer;
         let ok = false;
@@ -951,6 +953,12 @@ export class MolSysViewerController {
                 event: "interaction_context_action",
                 action,
                 ...details,
+            });
+        }, async (scheme) => {
+            const themeName = scheme === "physicochemical" ? "msv-physicochemical" : "element-symbol";
+            const components = this.state.getComponents();
+            await this.plugin.managers.structure.component.updateRepresentationsTheme(components, {
+                color: themeName as any
             });
         }, { sharedShell, floating: floatingPanels, model: this.model });
         const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
@@ -2091,8 +2099,14 @@ export class MolSysViewerController {
                     }
                     await this.state.setLayerTag(msg);
                     break;
-                case "set_atom_colors": await this.state.setAtomColors(msg as any); break;
-                case "clear_atom_colors": await this.state.clearAtomColors(msg as any); break;
+                case "set_atom_colors":
+                    await this.state.setAtomColors(msg as any);
+                    this.groupPanel.render();
+                    break;
+                case "clear_atom_colors":
+                    await this.state.clearAtomColors(msg as any);
+                    this.groupPanel.render();
+                    break;
                 case "set_global_representation": await this.state.setGlobalRepresentation(msg); break;
                 case "show_global": await this.state.showGlobal(msg); break;
                 case "hide_global": await this.state.hideGlobal(msg); break;

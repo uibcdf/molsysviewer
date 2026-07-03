@@ -5,6 +5,8 @@ import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ActiveSelectionItem, ActiveSelectionPayload, GroupSelectionItem } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
+import { ResidueToClass, PhysicochemicalColorsHex } from "../themes/physicochemical-color";
+import { getPerAtomColor } from "../themes/per-atom-color";
 
 type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
 type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
@@ -64,6 +66,14 @@ export class GroupStrip {
     private readonly collapsedMolecules = new Set<number>();
     private readonly collapsedComponents = new Set<string>();
     private currentContextTarget: ContextMenuTarget | null = null;
+    private activeColorScheme: "neutral" | "physicochemical" = "neutral";
+
+    setColorScheme(scheme: "neutral" | "physicochemical"): void {
+        if (this.activeColorScheme !== scheme) {
+            this.activeColorScheme = scheme;
+            this.render();
+        }
+    }
 
     constructor(
         private readonly host: HTMLElement,
@@ -438,19 +448,32 @@ export class GroupStrip {
                         this.currentContextTarget?.kind === "structure"
                         && Array.isArray(this.currentContextTarget.atom_indices)
                         && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key;
+                    const firstAtomIndex = item.atom_indices[0];
+                    const customColorInt = firstAtomIndex !== undefined ? getPerAtomColor(firstAtomIndex) : undefined;
+                    let colorHex: string | null = null;
+                    if (customColorInt !== undefined) {
+                        colorHex = "#" + customColorInt.toString(16).padStart(6, "0");
+                    } else if (this.activeColorScheme === "physicochemical") {
+                        const groupNameUpper = (item.group_name ?? "").toUpperCase();
+                        const residueClass = ResidueToClass[groupNameUpper];
+                        if (residueClass) {
+                            colorHex = PhysicochemicalColorsHex[residueClass];
+                        }
+                    }
+
                     Object.assign(button.style, {
                         padding: "4px 8px",
                         borderRadius: "999px",
                         border: selected
-                            ? "1px solid rgba(255,255,255,0.38)"
+                            ? (colorHex ? `1px solid ${colorHex}` : "1px solid rgba(255,255,255,0.38)")
                             : contextSelected
                                 ? "1px solid rgba(251, 191, 36, 0.48)"
-                                : "1px solid rgba(255,255,255,0.12)",
+                                : (colorHex ? `1px solid ${colorHex}33` : "1px solid rgba(255,255,255,0.12)"),
                         background: selected
-                            ? "rgba(255,255,255,0.18)"
+                            ? (colorHex ? `${colorHex}40` : "rgba(255,255,255,0.18)")
                             : contextSelected
                                 ? "rgba(251, 191, 36, 0.12)"
-                                : "rgba(255,255,255,0.06)",
+                                : (colorHex ? `${colorHex}18` : "rgba(255,255,255,0.06)"),
                         boxShadow: contextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
                         color: "inherit",
                         cursor: "pointer",
