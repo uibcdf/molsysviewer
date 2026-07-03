@@ -39,6 +39,7 @@ from .utils import (
     _load_recent_source,
     _restore_last_source,
 )
+from .view_channel import QtViewChannel
 from .menus import _install_menu_bar
 from .application import create_standalone_qt0_window, launch_standalone_qt0
 from .main import _build_arg_parser, main
