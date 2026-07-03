@@ -383,6 +383,38 @@ def _install_menu_bar(
     export_figure_action.triggered.connect(_export_figure)
     export_menu.addAction(export_figure_action)
 
+    export_movie_action = QAction("Export Movie (orbit)", window)
+
+    def _export_movie():
+        view = getattr(webview, "_molsysviewer_view", None)
+        if view is None or current_state.get("molecular_system") is None:
+            _get_helper("_show_status")(window, "No molecular system is loaded for movie export.")
+            return
+        if not hasattr(QFileDialog, "getSaveFileName"):
+            _get_helper("_show_status")(window, "Export Movie is not available in the current Qt runtime.")
+            return
+        selected, _filter = QFileDialog.getSaveFileName(
+            window,
+            "Export MolSysViewer movie",
+            str(Path(html_path).with_name("molsysviewer-movie.mp4")),
+            "Video files (*.mp4 *.gif *.webm);;All files (*)",
+        )
+        if not selected:
+            return
+        try:
+            destination = Path(selected).expanduser().resolve()
+            _get_helper("_show_status")(window, "Rendering movie…")
+            # Frames render in the frontend and arrive as events; the movie
+            # exporter's cooperative wait pumps the Qt loop via view._qt_process_events.
+            view.movie.add_camera_orbit(duration_ms=4000.0)
+            view.movie.export(str(destination))
+            _get_helper("_show_status")(window, f"Exported Movie: {destination.name}")
+        except Exception as exc:
+            _get_helper("_show_host_error")(window, QMessageBox, "Export Movie Failed", f"Could not export movie: {exc}")
+
+    export_movie_action.triggered.connect(_export_movie)
+    export_menu.addAction(export_movie_action)
+
     about_action = QAction("About MolSysViewer Qt Prototype", window)
 
     def _show_about() -> None:

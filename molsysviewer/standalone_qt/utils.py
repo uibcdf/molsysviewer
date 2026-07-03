@@ -54,13 +54,13 @@ def _import_qt():
     _get_helper("_configure_qt_webengine_environment")()
     try:
         from PySide6_uibcdf.QtCore import QBuffer, QByteArray, QTimer, QUrl
-        from PySide6_uibcdf.QtGui import QAction
+        from PySide6_uibcdf.QtGui import QAction, QCursor
         from PySide6_uibcdf.QtWebEngineCore import (
             QWebEnginePage, QWebEngineUrlScheme, QWebEngineUrlSchemeHandler,
         )
         from PySide6_uibcdf.QtWebEngineWidgets import QWebEngineView
         from PySide6_uibcdf.QtWidgets import (
-            QApplication, QFileDialog, QInputDialog, QMainWindow, QMessageBox,
+            QApplication, QFileDialog, QInputDialog, QMainWindow, QMenu, QMessageBox,
         )
     except Exception as exc:  # pragma: no cover
         raise ImportError(QT_IMPORT_ERROR) from exc
@@ -74,6 +74,8 @@ def _import_qt():
         "QInputDialog": QInputDialog,
         "QMainWindow": QMainWindow,
         "QMessageBox": QMessageBox,
+        "QCursor": QCursor,
+        "QMenu": QMenu,
         "QTimer": QTimer,
         "QUrl": QUrl,
         "QWebEnginePage": QWebEnginePage,
