@@ -71390,10 +71390,10 @@ var Transformer;
     return t5;
   }
   Transformer2.create = create3;
-  function factory2(namespace) {
+  function factory3(namespace) {
     return (definition) => create3(namespace, definition);
   }
-  Transformer2.factory = factory2;
+  Transformer2.factory = factory3;
   function builderFactory(namespace) {
     return Builder.build(namespace);
   }
@@ -72450,10 +72450,10 @@ var StateSelection;
 // node_modules/molstar/lib/mol-state/object.js
 var StateObject;
 (function(StateObject2) {
-  function factory2() {
+  function factory3() {
     return (type3) => create3(type3);
   }
-  StateObject2.factory = factory2;
+  StateObject2.factory = factory3;
   function create3(type3) {
     var _a;
     return _a = class O {
@@ -144865,6 +144865,9 @@ var MsvPerAtomColorThemeProvider = {
   defaultValues: {},
   isApplicable: (ctx) => !!ctx.structure
 };
+function getPerAtomColor(atomIndex) {
+  return _perAtomColorMap.get(atomIndex);
+}
 function setPerAtomColors(atomIndices, colorInts, replace = true) {
   if (replace) _perAtomColorMap.clear();
   const len = Math.min(atomIndices.length, colorInts.length);
@@ -144918,7 +144921,8 @@ var StateHandlers = class {
         residue_name: "residue-name",
         molecule_type: "molecule-type",
         entity_default: "entity-id",
-        illustrative_default: "illustrative"
+        illustrative_default: "illustrative",
+        physicochemical: "msv-physicochemical"
       }[scheme];
       if (mapped) {
         return {
@@ -146241,7 +146245,7 @@ var ViewerContextMenu = class {
       const isSwing = this.currentSceneState?.isSwingActive;
       const isDark = this.currentSceneState?.isDarkMode;
       const isNavOpen = this.currentSceneState?.isNavigateExpanded;
-      const isWorkOpen = this.currentSceneState?.isAddonsExpanded;
+      const isWorkOpen = this.currentSceneState?.isWorkbenchExpanded;
       const activeMode = this.currentSceneState?.currentViewerMode || "classic";
       this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
       this.scrollEl.appendChild(this.makeActionButton(
@@ -146269,7 +146273,7 @@ var ViewerContextMenu = class {
       });
       this.scrollEl.appendChild(divPanels);
       this.scrollEl.appendChild(this.makeActionButton(
-        isNavOpen ? "Close Studio Panel" : "Open Studio Panel",
+        isNavOpen ? "Close Navigate Panel" : "Open Navigate Panel",
         "open_navigate"
       ));
       this.scrollEl.appendChild(this.makeActionButton(
@@ -146320,6 +146324,9 @@ var ViewerContextMenu = class {
       section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
       section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
       section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
+      if (this.currentSelection.count_atoms > 0) {
+        section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
+      }
       section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
       this.scrollEl.appendChild(section);
     }
@@ -146784,9 +146791,6 @@ var ViewerContextMenu = class {
       return { camera_forward };
     }
     return {};
-  }
-  hasAddonContextItem(addon, id, target) {
-    return this.currentAddonItems.some((item2) => item2.addon === addon && item2.id === id && item2.enabled !== false && (!item2.target_kinds || item2.target_kinds.length === 0 || item2.target_kinds.includes(target.kind)));
   }
   makeAddonActionButton(addonAction) {
     const button = document.createElement("button");
@@ -148177,6 +148181,130 @@ var ActiveSelectionController = class {
   }
 };
 
+// src/themes/physicochemical-color.ts
+var ResidueToClass = {
+  // Three letter codes
+  "GLY": "aliphatic",
+  "ALA": "aliphatic",
+  "VAL": "aliphatic",
+  "LEU": "aliphatic",
+  "ILE": "aliphatic",
+  "PRO": "aliphatic",
+  "PHE": "aromatic",
+  "TYR": "aromatic",
+  "TRP": "aromatic",
+  "ASP": "acidic",
+  "GLU": "acidic",
+  "LYS": "basic",
+  "ARG": "basic",
+  "HIS": "basic",
+  "SER": "hydroxylic",
+  "THR": "hydroxylic",
+  "CYS": "sulfur-containing",
+  "MET": "sulfur-containing",
+  "ASN": "amidic",
+  "GLN": "amidic",
+  // One letter codes
+  "G": "aliphatic",
+  "A": "aliphatic",
+  "V": "aliphatic",
+  "L": "aliphatic",
+  "I": "aliphatic",
+  "P": "aliphatic",
+  "F": "aromatic",
+  "Y": "aromatic",
+  "W": "aromatic",
+  "D": "acidic",
+  "E": "acidic",
+  "K": "basic",
+  "R": "basic",
+  "H": "basic",
+  "S": "hydroxylic",
+  "T": "hydroxylic",
+  "C": "sulfur-containing",
+  "M": "sulfur-containing",
+  "N": "amidic",
+  "Q": "amidic"
+};
+var PhysicochemicalColorsHex = {
+  aliphatic: "#ef4444",
+  aromatic: "#10b981",
+  acidic: "#f59e0b",
+  basic: "#0ea5e9",
+  hydroxylic: "#ec4899",
+  "sulfur-containing": "#eab308",
+  amidic: "#2563eb"
+};
+var PhysicochemicalColorsInt = {
+  aliphatic: 15680580,
+  aromatic: 1096065,
+  acidic: 16096779,
+  basic: 959977,
+  hydroxylic: 15485081,
+  "sulfur-containing": 15381256,
+  amidic: 2450411
+};
+var DEFAULT_COLOR2 = Color(11184810);
+var MsvPhysicochemicalColorThemeName = "msv-physicochemical";
+function getAtomicCompId3(unit2, element) {
+  return unit2.model.atomicHierarchy.atoms.label_comp_id.value(element);
+}
+function getCoarseCompId3(unit2, element) {
+  const seqIdBegin = unit2.coarseElements.seq_id_begin.value(element);
+  const seqIdEnd = unit2.coarseElements.seq_id_end.value(element);
+  if (seqIdBegin === seqIdEnd) {
+    const entityKey = unit2.coarseElements.entityKey[element];
+    const seq = unit2.model.sequence.byEntityKey[entityKey].sequence;
+    return seq.compId.value(seqIdBegin - 1);
+  }
+  return void 0;
+}
+function getPhysicochemicalColor(compId3) {
+  const upper = compId3.toUpperCase();
+  const cls = ResidueToClass[upper];
+  if (cls && PhysicochemicalColorsInt[cls] !== void 0) {
+    return Color(PhysicochemicalColorsInt[cls]);
+  }
+  return DEFAULT_COLOR2;
+}
+function factory2(_ctx, _props) {
+  function color(location2) {
+    if (element_exports.Location.is(location2)) {
+      if (Unit.isAtomic(location2.unit)) {
+        const compId3 = getAtomicCompId3(location2.unit, location2.element);
+        return getPhysicochemicalColor(compId3);
+      } else {
+        const compId3 = getCoarseCompId3(location2.unit, location2.element);
+        if (compId3) return getPhysicochemicalColor(compId3);
+      }
+    } else if (Bond.isLocation(location2)) {
+      if (Unit.isAtomic(location2.aUnit)) {
+        const compId3 = getAtomicCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+        return getPhysicochemicalColor(compId3);
+      } else {
+        const compId3 = getCoarseCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+        if (compId3) return getPhysicochemicalColor(compId3);
+      }
+    }
+    return DEFAULT_COLOR2;
+  }
+  return {
+    factory: factory2,
+    granularity: "groupInstance",
+    color,
+    props: {}
+  };
+}
+var MsvPhysicochemicalColorThemeProvider = {
+  name: MsvPhysicochemicalColorThemeName,
+  label: "MSV Physicochemical Class",
+  category: ColorTheme.Category.Residue,
+  factory: factory2,
+  getParams: () => ({}),
+  defaultValues: {},
+  isApplicable: (ctx) => !!ctx.structure
+};
+
 // src/ui/group-strip.ts
 function selectionKey(item2) {
   const molPart = item2.molecule_indices?.join(",") ?? "0";
@@ -148229,6 +148357,7 @@ var GroupStrip = class {
     this.collapsedMolecules = /* @__PURE__ */ new Set();
     this.collapsedComponents = /* @__PURE__ */ new Set();
     this.currentContextTarget = null;
+    this.activeColorScheme = "neutral";
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-group-strip", "true");
     Object.assign(this.root.style, {
@@ -148277,6 +148406,12 @@ var GroupStrip = class {
     this.section.appendChild(this.row);
     this.root.appendChild(this.section);
     this.host.appendChild(this.root);
+  }
+  setColorScheme(scheme) {
+    if (this.activeColorScheme !== scheme) {
+      this.activeColorScheme = scheme;
+      this.render();
+    }
   }
   setData(structure, items) {
     this.structure = structure;
@@ -148556,11 +148691,23 @@ var GroupStrip = class {
           button.setAttribute("data-group-name", item2.group_name ?? "");
           const selected = this.selectedElementKeys.has(key2);
           const contextSelected = this.currentContextTarget?.kind === "structure" && Array.isArray(this.currentContextTarget.atom_indices) && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key2;
+          const firstAtomIndex = item2.atom_indices[0];
+          const customColorInt = firstAtomIndex !== void 0 ? getPerAtomColor(firstAtomIndex) : void 0;
+          let colorHex = null;
+          if (customColorInt !== void 0) {
+            colorHex = "#" + customColorInt.toString(16).padStart(6, "0");
+          } else if (this.activeColorScheme === "physicochemical") {
+            const groupNameUpper = (item2.group_name ?? "").toUpperCase();
+            const residueClass = ResidueToClass[groupNameUpper];
+            if (residueClass) {
+              colorHex = PhysicochemicalColorsHex[residueClass];
+            }
+          }
           Object.assign(button.style, {
             padding: "4px 8px",
             borderRadius: "999px",
-            border: selected ? "1px solid rgba(255,255,255,0.38)" : contextSelected ? "1px solid rgba(251, 191, 36, 0.48)" : "1px solid rgba(255,255,255,0.12)",
-            background: selected ? "rgba(255,255,255,0.18)" : contextSelected ? "rgba(251, 191, 36, 0.12)" : "rgba(255,255,255,0.06)",
+            border: selected ? colorHex ? `1px solid ${colorHex}` : "1px solid rgba(255,255,255,0.38)" : contextSelected ? "1px solid rgba(251, 191, 36, 0.48)" : colorHex ? `1px solid ${colorHex}50` : "1px solid rgba(255,255,255,0.12)",
+            background: selected ? colorHex ? `${colorHex}55` : "rgba(255,255,255,0.18)" : contextSelected ? "rgba(251, 191, 36, 0.12)" : colorHex ? `${colorHex}22` : "rgba(255,255,255,0.06)",
             boxShadow: contextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
             color: "inherit",
             cursor: "pointer",
@@ -149986,7 +150133,7 @@ var FloatingPanelShell = class {
 
 // src/ui/group-panel.ts
 var GroupPanel = class {
-  constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onAction, options) {
+  constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onChangeColorScheme, options) {
     this.host = host;
     this.onSelect = onSelect;
     this.onInteraction = onInteraction;
@@ -149996,10 +150143,7 @@ var GroupPanel = class {
     this.onAnnotationContext = onAnnotationContext;
     this.onActivateSavedSelection = onActivateSavedSelection;
     this.onFocusRegion = onFocusRegion;
-    this.onAction = onAction;
-    this.activeTab = "system";
-    this.tabs = /* @__PURE__ */ new Map();
-    this.activeStyleRegionTag = null;
+    this.onChangeColorScheme = onChangeColorScheme;
     this.strips = /* @__PURE__ */ new Map();
     this.expanded = false;
     this.currentSelection = {
@@ -150024,16 +150168,12 @@ var GroupPanel = class {
     this.collapseStateByChain = /* @__PURE__ */ new Map();
     this.savedSelections = [];
     this.regions = [];
-    this.shapes = [];
-    this.annotations = [];
-    this.measurements = [];
-    this.sceneState = {};
     this.runtimeVisibleOverride = null;
     this.visible = false;
-    this.model = options?.model;
+    this.activeColorScheme = "neutral";
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
-    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Studio", navButtonLabel: "Add-ons" }) : new PanelShell(this.host, { title: "Studio", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" });
+    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Workbench" }) : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Workbench" });
     this.root = this.shell.root;
     this.toggleButton = this.shell.toggleButton;
     if (options?.sharedShell) {
@@ -150077,226 +150217,52 @@ var GroupPanel = class {
       overflow: "hidden",
       gap: "0"
     });
-    this.leftColumn = document.createElement("div");
-    this.leftColumn.setAttribute("data-molsysviewer-group-panel-left", "true");
-    Object.assign(this.leftColumn.style, {
+    const leftColumn = document.createElement("div");
+    leftColumn.setAttribute("data-molsysviewer-group-panel-left", "true");
+    Object.assign(leftColumn.style, {
       display: "flex",
       flexDirection: "column",
-      justifyContent: "space-between",
+      gap: "8px",
       width: "180px",
       minWidth: "180px",
-      height: "100%",
-      paddingRight: "8px",
-      borderRight: "1px solid rgba(255,255,255,0.06)",
-      boxSizing: "border-box"
-    });
-    this.body.appendChild(this.leftColumn);
-    this.tabsContainer = document.createElement("div");
-    Object.assign(this.tabsContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      width: "100%",
       overflowY: "auto",
       overflowX: "hidden",
-      flex: "1 1 0"
+      paddingRight: "8px"
     });
-    this.leftColumn.appendChild(this.tabsContainer);
-    const bottomContainer = document.createElement("div");
-    Object.assign(bottomContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      borderTop: "1px solid rgba(255,255,255,0.06)",
-      paddingTop: "8px",
-      marginTop: "8px",
-      flex: "0 0 auto"
-    });
-    this.leftColumn.appendChild(bottomContainer);
-    const settingsBtn = document.createElement("button");
-    settingsBtn.type = "button";
-    settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
-    Object.assign(settingsBtn.style, {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
-      gap: "2px",
-      width: "100%",
-      padding: "8px 12px",
-      borderRadius: "8px",
-      border: "0",
-      background: "transparent",
-      color: "rgba(244,244,245,0.68)",
-      textAlign: "left",
-      cursor: "pointer",
-      transition: "all 0.15s ease-in-out"
-    });
-    settingsBtn.addEventListener("mouseenter", () => {
-      if (this.activeTab !== "settings") {
-        settingsBtn.style.background = "rgba(255,255,255,0.04)";
-        settingsBtn.style.color = "rgba(244,244,245,0.9)";
-      }
-    });
-    settingsBtn.addEventListener("mouseleave", () => {
-      if (this.activeTab !== "settings") {
-        settingsBtn.style.background = "transparent";
-        settingsBtn.style.color = "rgba(244,244,245,0.68)";
-      }
-    });
-    settingsBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.switchTab("settings");
-    });
-    const settingsTitle = document.createElement("div");
-    Object.assign(settingsTitle.style, { fontSize: "12px", fontWeight: "600" });
-    settingsTitle.textContent = "\u2699 Settings";
-    settingsBtn.appendChild(settingsTitle);
-    const settingsBadge = document.createElement("span");
-    Object.assign(settingsBadge.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.48)"
-    });
-    settingsBadge.textContent = "Viewer config";
-    settingsBtn.appendChild(settingsBadge);
-    bottomContainer.appendChild(settingsBtn);
-    this.tabs.set("settings", { button: settingsBtn, badge: settingsBadge });
-    this.rightColumn = document.createElement("div");
-    this.rightColumn.setAttribute("data-molsysviewer-group-panel-right", "true");
-    Object.assign(this.rightColumn.style, {
+    this.body.appendChild(leftColumn);
+    const rightColumn = document.createElement("div");
+    rightColumn.setAttribute("data-molsysviewer-group-panel-right", "true");
+    Object.assign(rightColumn.style, {
       display: "flex",
       flexDirection: "column",
       flex: "1 1 0",
       minWidth: "0",
-      overflow: "hidden",
-      paddingLeft: "12px"
+      gap: "8px",
+      overflow: "hidden"
     });
-    this.body.appendChild(this.rightColumn);
-    this.systemSection = this.createSection("system");
-    this.selectionSection = this.createSection("selection");
-    this.regionsSection = this.createSection("regions");
-    this.overlaysSection = this.createSection("overlays");
-    this.viewportSection = this.createSection("viewport");
-    this.settingsSection = this.createSection("settings");
-    Object.assign(this.systemSection.style, {
+    this.body.appendChild(rightColumn);
+    rightColumn.appendChild(this.makeSectionHeader("Structure"));
+    this.structureSection = document.createElement("div");
+    this.structureSection.setAttribute("data-molsysviewer-group-panel-section", "structure");
+    Object.assign(this.structureSection.style, {
+      display: "flex",
       flexDirection: "row",
+      gap: "10px",
       overflowX: "auto",
       overflowY: "hidden",
-      paddingBottom: "8px"
-    });
-    this.addTab("system", "System", "None");
-    this.addTab("selection", "Selection", "None");
-    this.addTab("regions", "Regions", "0");
-    this.addTab("overlays", "Overlays", "0");
-    this.addTab("viewport", "Viewport", "Dark");
-    this.switchTab("system");
-    this.renderSelectionSection();
-    this.renderRegionsSection();
-    this.renderOverlaysSection();
-    this.renderViewportSection();
-  }
-  createSection(key2) {
-    const section = document.createElement("div");
-    section.setAttribute("data-molsysviewer-group-panel-section", key2);
-    Object.assign(section.style, {
-      display: "none",
-      flexDirection: "column",
       flex: "1 1 0",
-      minHeight: "0",
-      gap: "12px",
-      overflowY: "auto"
+      minHeight: "0"
     });
-    this.rightColumn.appendChild(section);
-    return section;
-  }
-  addTab(key2, title, initialBadge) {
-    const button = document.createElement("button");
-    button.setAttribute("data-molsysviewer-group-panel-tab", key2);
-    Object.assign(button.style, {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
-      gap: "2px",
-      width: "100%",
-      padding: "8px 12px",
-      borderRadius: "8px",
-      border: "0",
-      background: "transparent",
-      color: "rgba(244,244,245,0.68)",
-      textAlign: "left",
-      cursor: "pointer",
-      transition: "all 0.15s ease-in-out"
-    });
-    button.addEventListener("mouseenter", () => {
-      if (this.activeTab !== key2) {
-        button.style.background = "rgba(255,255,255,0.04)";
-        button.style.color = "rgba(244,244,245,0.9)";
-      }
-    });
-    button.addEventListener("mouseleave", () => {
-      if (this.activeTab !== key2) {
-        button.style.background = "transparent";
-        button.style.color = "rgba(244,244,245,0.68)";
-      }
-    });
-    button.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.switchTab(key2);
-    });
-    const titleDiv = document.createElement("div");
-    Object.assign(titleDiv.style, {
-      fontSize: "12px",
-      fontWeight: "600"
-    });
-    titleDiv.textContent = title;
-    const badge = document.createElement("span");
-    Object.assign(badge.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.48)"
-    });
-    badge.textContent = initialBadge;
-    button.appendChild(titleDiv);
-    button.appendChild(badge);
-    this.tabsContainer.appendChild(button);
-    this.tabs.set(key2, { button, badge });
-  }
-  switchTab(key2) {
-    this.activeTab = key2;
-    for (const [tabKey, { button, badge }] of this.tabs.entries()) {
-      if (tabKey === key2) {
-        Object.assign(button.style, {
-          background: "rgba(255,255,255,0.08)",
-          color: "#f4f4f5",
-          borderLeft: "3px solid #6366f1",
-          paddingLeft: "9px"
-        });
-        badge.style.color = "rgba(244,244,245,0.8)";
-      } else {
-        Object.assign(button.style, {
-          background: "transparent",
-          color: "rgba(244,244,245,0.68)",
-          borderLeft: "0",
-          paddingLeft: "12px"
-        });
-        badge.style.color = "rgba(244,244,245,0.48)";
-      }
-    }
-    this.systemSection.style.display = key2 === "system" ? "flex" : "none";
-    this.selectionSection.style.display = key2 === "selection" ? "flex" : "none";
-    this.regionsSection.style.display = key2 === "regions" ? "flex" : "none";
-    this.overlaysSection.style.display = key2 === "overlays" ? "flex" : "none";
-    this.viewportSection.style.display = key2 === "viewport" ? "flex" : "none";
-    this.settingsSection.style.display = key2 === "settings" ? "flex" : "none";
-    if (key2 === "settings") {
-      this.renderSettingsSection();
-    }
+    rightColumn.appendChild(this.structureSection);
+    this.summarySections = {
+      active: this.createSummarySection("Active", "No active selection.", leftColumn),
+      saved: this.createSummarySection("Saved", "No saved selections yet.", leftColumn),
+      regions: this.createSummarySection("Regions", "No regions yet.", leftColumn)
+    };
   }
   setStructure(structure) {
     this.structure = structure;
     if (!structure) this.annotationMessages.length = 0;
-    this.switchTab("system");
     this.render();
   }
   get panelContentWidth() {
@@ -150315,14 +150281,11 @@ var GroupPanel = class {
   setOnExpandedChange(callback) {
     this.onExpandedChange = callback;
   }
-  setOnNavigateToWorkbench(callback, label2 = "Add-ons") {
+  setOnNavigateToWorkbench(callback, label2 = "Workbench") {
     this.onNavigateToWorkbench = callback;
     if (!this.sharedShell) {
       this.shell.setNavButtonLabel(callback ? label2 : void 0);
     }
-  }
-  setOnNavigateToSettings(callback) {
-    this.onNavigateToSettings = callback;
   }
   setRuntimeVisible(visible) {
     this.runtimeVisibleOverride = visible;
@@ -150343,54 +150306,15 @@ var GroupPanel = class {
     for (const strip of this.strips.values()) {
       strip.updateSelection(selection);
     }
-    const badge = this.tabs.get("selection")?.badge;
-    if (badge) {
-      badge.textContent = selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None";
-    }
-    this.renderSelectionSection();
+    this.renderSummaries();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
-    this.renderSelectionSection();
+    this.renderSummaries();
   }
   setRegions(items) {
     this.regions = [...items];
-    const badge = this.tabs.get("regions")?.badge;
-    if (badge) {
-      badge.textContent = String(items.length);
-    }
-    this.renderRegionsSection();
-  }
-  setShapes(items) {
-    this.shapes = [...items];
-    this.updateOverlaysBadge();
-    this.renderOverlaysSection();
-  }
-  setAnnotations(items) {
-    this.annotations = [...items];
-    this.updateOverlaysBadge();
-    this.renderOverlaysSection();
-  }
-  setMeasurements(items) {
-    this.measurements = [...items];
-    this.updateOverlaysBadge();
-    this.renderOverlaysSection();
-  }
-  updateOverlaysBadge() {
-    const count3 = this.shapes.length + this.annotations.length + this.measurements.length;
-    const badge = this.tabs.get("overlays")?.badge;
-    if (badge) {
-      badge.textContent = String(count3);
-    }
-  }
-  setScene(state) {
-    this.sceneState = { ...state };
-    const badge = this.tabs.get("viewport")?.badge;
-    if (badge) {
-      badge.textContent = state.isDarkMode ? "Dark" : "Light";
-      if (state.isSpinActive) badge.textContent += " \xB7 Spin";
-    }
-    this.renderViewportSection();
+    this.renderSummaries();
   }
   updateContextTarget(target) {
     this.currentContextTarget = target;
@@ -150482,17 +150406,14 @@ var GroupPanel = class {
     if (!this.sharedShell && !this.visible && this.expanded) {
       this.expanded = false;
     }
-    const badge = this.tabs.get("system")?.badge;
-    if (badge) {
-      badge.textContent = naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None";
-    }
     if (!this.structure || grouped.size === 0) return;
     for (const [chain2, chainItems] of grouped.entries()) {
       let strip = this.strips.get(chain2);
       if (!strip) {
-        strip = new GroupStrip(this.systemSection, chain2, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+        strip = new GroupStrip(this.structureSection, chain2, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
         this.strips.set(chain2, strip);
       }
+      strip.setColorScheme(this.activeColorScheme);
       strip.setData(this.structure, chainItems);
       strip.setCollapseState(this.collapseStateByChain.get(chain2));
       strip.updateSelection(this.currentSelection);
@@ -150503,6 +150424,7 @@ var GroupPanel = class {
       }
     }
     this.applyExpandedState();
+    this.renderSummaries();
   }
   captureCollapseState() {
     for (const [chain2, strip] of this.strips.entries()) {
@@ -150511,1007 +150433,253 @@ var GroupPanel = class {
   }
   makeSectionHeader(title) {
     const header2 = document.createElement("div");
+    header2.setAttribute("data-molsysviewer-group-panel-section-title", title.toLowerCase());
     Object.assign(header2.style, {
-      fontSize: "13px",
-      fontWeight: "700",
-      color: "#f4f4f5",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      paddingBottom: "6px",
-      marginBottom: "6px"
-    });
-    header2.textContent = title;
-    return header2;
-  }
-  // ── 1. Selection Section Rendering ───────────────────────
-  renderSelectionSection() {
-    this.selectionSection.replaceChildren();
-    this.selectionSection.appendChild(this.makeSectionHeader("Active Selection"));
-    const activeContainer = document.createElement("div");
-    Object.assign(activeContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)"
-    });
-    this.selectionSection.appendChild(activeContainer);
-    if (this.currentSelection.count_atoms > 0) {
-      const countLabel2 = document.createElement("div");
-      countLabel2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-      Object.assign(countLabel2.style, {
-        fontSize: "12px",
-        color: "#e4e4e7",
-        fontWeight: "500"
-      });
-      countLabel2.textContent = `${this.currentSelection.count_atoms} atoms selected (${this.currentSelection.source_kind} level)`;
-      activeContainer.appendChild(countLabel2);
-      const btnRow = document.createElement("div");
-      Object.assign(btnRow.style, {
-        display: "flex",
-        gap: "8px"
-      });
-      activeContainer.appendChild(btnRow);
-      const inlineForm = document.createElement("div");
-      Object.assign(inlineForm.style, {
-        display: "none",
-        flexDirection: "row",
-        gap: "6px",
-        marginTop: "6px"
-      });
-      const inlineInput = document.createElement("input");
-      inlineInput.type = "text";
-      Object.assign(inlineInput.style, {
-        flex: "1 1 0",
-        background: "rgba(0,0,0,0.2)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "6px",
-        padding: "6px 8px",
-        color: "#fff",
-        fontSize: "11px",
-        outline: "none"
-      });
-      const inlineConfirm = document.createElement("button");
-      Object.assign(inlineConfirm.style, {
-        background: "#6366f1",
-        border: "0",
-        borderRadius: "6px",
-        padding: "6px 10px",
-        color: "#fff",
-        fontSize: "11px",
-        fontWeight: "600",
-        cursor: "pointer"
-      });
-      const inlineCancel = document.createElement("button");
-      inlineCancel.textContent = "Cancel";
-      Object.assign(inlineCancel.style, {
-        background: "rgba(255,255,255,0.08)",
-        border: "0",
-        borderRadius: "6px",
-        padding: "6px 10px",
-        color: "#e4e4e7",
-        fontSize: "11px",
-        cursor: "pointer"
-      });
-      inlineForm.appendChild(inlineInput);
-      inlineForm.appendChild(inlineConfirm);
-      inlineForm.appendChild(inlineCancel);
-      activeContainer.appendChild(inlineForm);
-      const showForm = (mode) => {
-        inlineForm.style.display = "flex";
-        inlineInput.value = "";
-        inlineInput.placeholder = mode === "save" ? "Selection name..." : "Region name...";
-        inlineConfirm.textContent = mode === "save" ? "Save" : "Create";
-        const newConfirm = inlineConfirm.cloneNode(true);
-        const newCancel = inlineCancel.cloneNode(true);
-        inlineConfirm.replaceWith(newConfirm);
-        inlineCancel.replaceWith(newCancel);
-        newConfirm.addEventListener("click", () => {
-          const tag = inlineInput.value.trim();
-          if (!tag) return;
-          if (mode === "save") {
-            this.onAction?.("save_selection", { tag });
-          } else {
-            this.onAction?.("create_region_from_selection", { tag });
-          }
-          inlineForm.style.display = "none";
-        });
-        newCancel.addEventListener("click", () => {
-          inlineForm.style.display = "none";
-        });
-        inlineInput.focus();
-      };
-      const clearBtn = this.makeButton("Clear", () => this.onSelect([], false));
-      const saveBtn = this.makeButton("Save", () => showForm("save"));
-      const regionBtn = this.makeButton("Create Region", () => showForm("region"));
-      btnRow.appendChild(clearBtn);
-      btnRow.appendChild(saveBtn);
-      btnRow.appendChild(regionBtn);
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        textAlign: "center",
-        padding: "6px 0"
-      });
-      emptyLabel.textContent = "No active selection.";
-      activeContainer.appendChild(emptyLabel);
-    }
-    this.selectionSection.appendChild(this.makeSectionHeader("Saved Selections"));
-    const savedList = document.createElement("div");
-    Object.assign(savedList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.selectionSection.appendChild(savedList);
-    if (this.savedSelections.length > 0) {
-      const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
-      for (const item2 of sorted) {
-        const row = this.makeRowElement(
-          item2.tag,
-          `${item2.atom_count} atoms`,
-          () => this.onActivateSavedSelection(item2.tag),
-          () => this.onAction?.("delete_selection", { tag: item2.tag })
-        );
-        savedList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No saved selections yet.";
-      savedList.appendChild(emptyLabel);
-    }
-  }
-  // ── 2. Regions Section Rendering ─────────────────────────
-  renderRegionsSection() {
-    this.regionsSection.replaceChildren();
-    this.regionsSection.appendChild(this.makeSectionHeader("Regions"));
-    const list3 = document.createElement("div");
-    Object.assign(list3.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.regionsSection.appendChild(list3);
-    if (this.regions.length > 0) {
-      const sorted = [...this.regions].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
-      for (const item2 of sorted) {
-        const itemContainer = document.createElement("div");
-        Object.assign(itemContainer.style, {
-          display: "flex",
-          flexDirection: "column"
-        });
-        list3.appendChild(itemContainer);
-        const row = this.makeRowElement(
-          item2.tag,
-          item2.hidden ? `${item2.atom_count} atoms \xB7 hidden` : `${item2.atom_count} atoms`,
-          () => this.onFocusRegion(item2.tag),
-          () => this.onAction?.("delete_region", { tag: item2.tag }),
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: () => this.onAction?.("toggle_region_visibility", { tag: item2.tag })
-          },
-          () => {
-            this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
-            this.renderRegionsSection();
-          }
-        );
-        itemContainer.appendChild(row);
-        if (this.activeStyleRegionTag === item2.tag) {
-          itemContainer.appendChild(this.renderStyleComposer(item2.tag));
-        }
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No regions yet.";
-      list3.appendChild(emptyLabel);
-    }
-  }
-  // ── 3. Overlays Section Rendering ────────────────────────
-  renderOverlaysSection() {
-    this.overlaysSection.replaceChildren();
-    this.overlaysSection.appendChild(this.makeSectionHeader("Scene Overlays"));
-    this.overlaysSection.appendChild(this.makeSectionHeader("3D Shapes"));
-    const shapesList = document.createElement("div");
-    Object.assign(shapesList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      marginBottom: "12px"
-    });
-    this.overlaysSection.appendChild(shapesList);
-    if (this.shapes.length > 0) {
-      for (const item2 of this.shapes) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Geometry",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        shapesList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No shapes yet.";
-      shapesList.appendChild(emptyLabel);
-    }
-    this.overlaysSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
-    const annotationsList = document.createElement("div");
-    Object.assign(annotationsList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      marginBottom: "12px"
-    });
-    this.overlaysSection.appendChild(annotationsList);
-    if (this.annotations.length > 0) {
-      for (const item2 of this.annotations) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Annotation",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        annotationsList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No annotations yet.";
-      annotationsList.appendChild(emptyLabel);
-    }
-    this.overlaysSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
-    const measurementsList = document.createElement("div");
-    Object.assign(measurementsList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.overlaysSection.appendChild(measurementsList);
-    if (this.measurements.length > 0) {
-      for (const item2 of this.measurements) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Distance line",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        measurementsList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No measurements yet.";
-      measurementsList.appendChild(emptyLabel);
-    }
-  }
-  renderStyleComposer(tag) {
-    const container = document.createElement("div");
-    Object.assign(container.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "8px 10px",
-      borderRadius: "6px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px dashed rgba(255,255,255,0.08)",
-      marginTop: "4px",
-      marginBottom: "4px"
-    });
-    const styleRow = document.createElement("div");
-    Object.assign(styleRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const styleLabel = document.createElement("span");
-    styleLabel.textContent = "Representation Style";
-    Object.assign(styleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
-    const styleSelect = this.makeStyledSelect(
-      ["Cartoon", "Sticks", "CPK", "Trace", "Putty"],
-      "Cartoon",
-      () => {
-      }
-    );
-    styleRow.appendChild(styleLabel);
-    styleRow.appendChild(styleSelect);
-    container.appendChild(styleRow);
-    const colorRow = document.createElement("div");
-    Object.assign(colorRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const colorLabel = document.createElement("span");
-    colorLabel.textContent = "Color Scheme";
-    Object.assign(colorLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
-    const customColorInput = document.createElement("input");
-    customColorInput.type = "color";
-    customColorInput.value = "#3b82f6";
-    Object.assign(customColorInput.style, {
-      width: "20px",
-      height: "20px",
-      border: "1px solid rgba(255,255,255,0.25)",
-      borderRadius: "50%",
-      padding: "0",
-      background: "transparent",
-      cursor: "pointer",
-      display: "none",
-      boxSizing: "border-box",
-      overflow: "hidden",
-      outline: "none"
-    });
-    const colorSelect = this.makeStyledSelect(
-      ["Element (CPK)", "Chain ID", "Secondary Structure", "Hydrophobicity", "Custom Color"],
-      "Element (CPK)",
-      (val) => {
-        customColorInput.style.display = val === "Custom Color" ? "inline-block" : "none";
-      }
-    );
-    const colorRight = document.createElement("div");
-    Object.assign(colorRight.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "6px"
-    });
-    colorRight.appendChild(customColorInput);
-    colorRight.appendChild(colorSelect);
-    colorRow.appendChild(colorLabel);
-    colorRow.appendChild(colorRight);
-    container.appendChild(colorRow);
-    const actionsRow = document.createElement("div");
-    Object.assign(actionsRow.style, {
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: "6px",
-      width: "100%",
-      marginTop: "4px"
-    });
-    const cancelBtn = this.makeButton("Cancel", () => {
-      this.activeStyleRegionTag = null;
-      this.renderRegionsSection();
-    });
-    Object.assign(cancelBtn.style, {
-      flex: "0 0 auto",
-      fontSize: "10px",
-      padding: "3px 8px"
-    });
-    const applyBtn = this.makeButton("Apply Style", () => {
-      const chosenStyleMap = {
-        "Cartoon": "cartoon",
-        "Sticks": "licorice",
-        "CPK": "spacefill",
-        "Trace": "backbone",
-        "Putty": "putty"
-      };
-      const repr = chosenStyleMap[styleSelect.value] || "cartoon";
-      const chosenColor = colorSelect.value;
-      let scheme = void 0;
-      if (chosenColor === "Element (CPK)") scheme = "element";
-      else if (chosenColor === "Chain ID") scheme = "chain-id";
-      else if (chosenColor === "Secondary Structure") scheme = "secondary-structure";
-      else if (chosenColor === "Hydrophobicity") scheme = "hydrophobicity";
-      else if (chosenColor === "Custom Color") scheme = customColorInput.value;
-      this.onAction?.("set_region_representation", {
-        tag,
-        representation: repr,
-        params: scheme ? { color_scheme: scheme } : {}
-      });
-      this.activeStyleRegionTag = null;
-      this.renderRegionsSection();
-    });
-    Object.assign(applyBtn.style, {
-      flex: "0 0 auto",
-      fontSize: "10px",
-      padding: "3px 8px",
-      background: "rgba(16,185,129,0.15)",
-      border: "1px solid rgba(16,185,129,0.3)"
-    });
-    applyBtn.addEventListener("mouseenter", () => {
-      applyBtn.style.background = "rgba(16,185,129,0.25)";
-      applyBtn.style.border = "1px solid rgba(16,185,129,0.5)";
-    });
-    applyBtn.addEventListener("mouseleave", () => {
-      applyBtn.style.background = "rgba(16,185,129,0.15)";
-      applyBtn.style.border = "1px solid rgba(16,185,129,0.3)";
-    });
-    actionsRow.appendChild(cancelBtn);
-    actionsRow.appendChild(applyBtn);
-    container.appendChild(actionsRow);
-    return container;
-  }
-  // ── 5. Viewport Section Rendering ────────────────────────
-  renderViewportSection() {
-    this.viewportSection.replaceChildren();
-    this.viewportSection.appendChild(this.makeSectionHeader("Viewport & Export Settings"));
-    const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-      gap: "10px",
-      paddingBottom: "10px"
-    });
-    this.viewportSection.appendChild(grid);
-    const viewportCard = this.makeSettingsCard("Viewport Settings");
-    grid.appendChild(viewportCard);
-    const bgRow = document.createElement("div");
-    Object.assign(bgRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const bgLabel = document.createElement("span");
-    bgLabel.textContent = "Background";
-    Object.assign(bgLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const bgSelect = this.makeStyledSelect(["Dark", "Light"], this.sceneState.isDarkMode ? "Dark" : "Light", (val) => {
-      this.onAction?.("toggle_background", { mode: val.toLowerCase() });
-    });
-    bgRow.appendChild(bgLabel);
-    bgRow.appendChild(bgSelect);
-    viewportCard.appendChild(bgRow);
-    viewportCard.appendChild(this.makeCheckboxRow("Auto-Rotate (Spin)", !!this.sceneState.isSpinActive, () => {
-      this.onAction?.("toggle_spin");
-    }));
-    viewportCard.appendChild(this.makeCheckboxRow("Oscillate (Swing)", !!this.sceneState.isSwingActive, () => {
-      this.onAction?.("toggle_swing");
-    }));
-    const cameraCard = this.makeSettingsCard("Camera Projection");
-    grid.appendChild(cameraCard);
-    const projRow = document.createElement("div");
-    Object.assign(projRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const projLabel = document.createElement("span");
-    projLabel.textContent = "Projection";
-    Object.assign(projLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const projSelect = this.makeStyledSelect(
-      ["Perspective", "Orthographic"],
-      this.sceneState.cameraMode === "orthographic" ? "Orthographic" : "Perspective",
-      (val) => {
-        this.onAction?.("set_camera_mode", { mode: val.toLowerCase() });
-      }
-    );
-    projRow.appendChild(projLabel);
-    projRow.appendChild(projSelect);
-    cameraCard.appendChild(projRow);
-    const fogEnabled = !!this.sceneState.fogEnabled;
-    const fogIntensity = typeof this.sceneState.fogIntensity === "number" ? this.sceneState.fogIntensity : 0.5;
-    cameraCard.appendChild(this.makeCheckboxRow("Fog Enabled", fogEnabled, (checked) => {
-      this.onAction?.("set_fog", { enable: checked, intensity: fogIntensity });
-    }));
-    const fogSliderRow = document.createElement("div");
-    Object.assign(fogSliderRow.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      marginTop: "2px"
-    });
-    const fogSliderLabel = document.createElement("div");
-    Object.assign(fogSliderLabel.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)"
-    });
-    fogSliderLabel.innerHTML = `<span>Fog Intensity</span><span>${Math.round(fogIntensity * 100)}%</span>`;
-    const fogSlider = document.createElement("input");
-    fogSlider.type = "range";
-    fogSlider.min = "0.0";
-    fogSlider.max = "1.0";
-    fogSlider.step = "0.05";
-    fogSlider.value = String(fogIntensity);
-    fogSlider.disabled = !fogEnabled;
-    Object.assign(fogSlider.style, {
-      width: "100%",
-      height: "4px",
-      borderRadius: "2px",
-      background: "rgba(255,255,255,0.12)",
-      outline: "none",
-      cursor: fogEnabled ? "pointer" : "not-allowed",
-      opacity: fogEnabled ? "1" : "0.5"
-    });
-    fogSlider.addEventListener("change", () => {
-      const intensity = parseFloat(fogSlider.value);
-      this.onAction?.("set_fog", { enable: fogEnabled, intensity });
-    });
-    fogSliderRow.appendChild(fogSliderLabel);
-    fogSliderRow.appendChild(fogSlider);
-    cameraCard.appendChild(fogSliderRow);
-    const exportCard = this.makeSettingsCard("Figure Export");
-    grid.appendChild(exportCard);
-    const currentPreset = this.sceneState.figurePreset || "publication-light";
-    const currentScale = typeof this.sceneState.figureScale === "number" ? this.sceneState.figureScale : 2;
-    const currentVariants = this.sceneState.figureVariants || ["dark", "transparent"];
-    const isTransparent = currentVariants.includes("transparent");
-    const updateFigureSpec = (preset, scale, trans) => {
-      const variants = ["dark"];
-      if (trans) variants.push("transparent");
-      this.onAction?.("set_figure_spec", {
-        figure_preset: preset,
-        figure_scale: scale,
-        figure_variants: variants
-      });
-    };
-    const presetRow = document.createElement("div");
-    Object.assign(presetRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const presetLabel = document.createElement("span");
-    presetLabel.textContent = "Preset";
-    Object.assign(presetLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const presetSelect = this.makeStyledSelect(
-      ["Light", "Dark"],
-      currentPreset.includes("dark") ? "Dark" : "Light",
-      (val) => {
-        const presetVal = val === "Dark" ? "publication-dark" : "publication-light";
-        updateFigureSpec(presetVal, currentScale, isTransparent);
-      }
-    );
-    presetRow.appendChild(presetLabel);
-    presetRow.appendChild(presetSelect);
-    exportCard.appendChild(presetRow);
-    const scaleRow = document.createElement("div");
-    Object.assign(scaleRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const scaleLabel = document.createElement("span");
-    scaleLabel.textContent = "Resolution Scale";
-    Object.assign(scaleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const scaleSelect = this.makeStyledSelect(["1.0x", "2.0x", "3.0x", "4.0x"], `${currentScale.toFixed(1)}x`, (val) => {
-      const scaleVal = parseFloat(val.replace("x", ""));
-      updateFigureSpec(currentPreset, scaleVal, isTransparent);
-    });
-    scaleRow.appendChild(scaleLabel);
-    scaleRow.appendChild(scaleSelect);
-    exportCard.appendChild(scaleRow);
-    exportCard.appendChild(this.makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
-      updateFigureSpec(currentPreset, currentScale, checked);
-    }));
-    const downloadRow = document.createElement("div");
-    Object.assign(downloadRow.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      marginTop: "6px"
-    });
-    const downloadButton = this.makeButton("Download Image File", () => {
-      this.onAction?.("download_image");
-    });
-    downloadRow.appendChild(downloadButton);
-    exportCard.appendChild(downloadRow);
-    const dataCard = this.makeSettingsCard("Data & State");
-    grid.appendChild(dataCard);
-    const htmlRow = document.createElement("div");
-    Object.assign(htmlRow.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      width: "100%"
-    });
-    const htmlLabel = document.createElement("span");
-    htmlLabel.textContent = "Save standalone view as HTML page";
-    Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
-    const htmlButton = this.makeButton("Download HTML View", () => {
-      this.onAction?.("export_html");
-    });
-    htmlRow.appendChild(htmlLabel);
-    htmlRow.appendChild(htmlButton);
-    dataCard.appendChild(htmlRow);
-  }
-  // ── Helper UI Constructors ──────────────────────────────
-  makeButton(text, onClick) {
-    const btn = document.createElement("button");
-    btn.textContent = text;
-    Object.assign(btn.style, {
-      flex: "1 1 0",
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.1)",
-      borderRadius: "6px",
-      padding: "5px 8px",
-      color: "#f4f4f5",
       fontSize: "11px",
-      fontWeight: "600",
-      cursor: "pointer",
-      transition: "all 0.15s ease",
-      textAlign: "center"
-    });
-    btn.addEventListener("mouseenter", () => {
-      btn.style.background = "rgba(255,255,255,0.12)";
-      btn.style.border = "1px solid rgba(255,255,255,0.16)";
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.background = "rgba(255,255,255,0.06)";
-      btn.style.border = "1px solid rgba(255,255,255,0.1)";
-    });
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onClick();
-    });
-    return btn;
-  }
-  makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
-    const row = document.createElement("div");
-    row.setAttribute("data-molsysviewer-group-panel-row", "true");
-    row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-    Object.assign(row.style, {
+      fontWeight: "700",
+      color: "rgba(244,244,245,0.88)",
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: "6px 10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.05)",
-      border: "1px solid rgba(255,255,255,0.06)",
-      gap: "8px",
-      transition: "background 0.1s ease"
-    });
-    row.addEventListener("mouseenter", () => {
-      row.style.background = "rgba(255,255,255,0.09)";
-    });
-    row.addEventListener("mouseleave", () => {
-      row.style.background = "rgba(255,255,255,0.05)";
-    });
-    const main = document.createElement("div");
-    Object.assign(main.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "2px",
-      flex: "1 1 0",
-      minWidth: "0",
-      cursor: onActivate ? "pointer" : "default"
-    });
-    if (onActivate) {
-      row.style.cursor = "pointer";
-      row.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onActivate();
-      });
-    }
-    const title = document.createElement("div");
-    Object.assign(title.style, {
-      fontSize: "12px",
-      fontWeight: "600",
-      color: "#f4f4f5",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
-    });
-    title.textContent = titleText;
-    const subtitle = document.createElement("div");
-    Object.assign(subtitle.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
-    });
-    subtitle.textContent = subtitleText;
-    main.appendChild(title);
-    main.appendChild(subtitle);
-    row.appendChild(main);
-    const actions = document.createElement("div");
-    Object.assign(actions.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-      flex: "0 0 auto"
-    });
-    row.appendChild(actions);
-    if (onStyle) {
-      const styleBtn = document.createElement("button");
-      styleBtn.type = "button";
-      styleBtn.textContent = "\u{1F3A8}";
-      styleBtn.title = "Style & Color";
-      Object.assign(styleBtn.style, {
-        background: "transparent",
-        border: "0",
-        color: "rgba(244,244,245,0.55)",
-        fontSize: "11px",
-        cursor: "pointer",
-        padding: "2px 6px",
-        borderRadius: "4px"
-      });
-      styleBtn.addEventListener("mouseenter", () => {
-        styleBtn.style.color = "#10b981";
-      });
-      styleBtn.addEventListener("mouseleave", () => {
-        styleBtn.style.color = "rgba(244,244,245,0.55)";
-      });
-      styleBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onStyle();
-      });
-      actions.appendChild(styleBtn);
-    }
-    if (visibility?.onToggleVisibility) {
-      const eyeBtn = document.createElement("button");
-      eyeBtn.type = "button";
-      eyeBtn.textContent = visibility.hidden ? "\u29BB" : "\u{1F441}";
-      eyeBtn.title = visibility.hidden ? "Show" : "Hide";
-      Object.assign(eyeBtn.style, {
-        background: "transparent",
-        border: "0",
-        color: visibility.hidden ? "rgba(244,244,245,0.36)" : "#6366f1",
-        fontSize: "12px",
-        cursor: "pointer",
-        padding: "2px 6px",
-        borderRadius: "4px"
-      });
-      eyeBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        visibility.onToggleVisibility?.(!visibility.hidden);
-      });
-      actions.appendChild(eyeBtn);
-    }
-    if (onDelete) {
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.textContent = "\u2715";
-      delBtn.title = "Delete";
-      Object.assign(delBtn.style, {
-        background: "transparent",
-        border: "0",
-        color: "rgba(244,244,245,0.48)",
-        fontSize: "12px",
-        cursor: "pointer",
-        padding: "2px 6px",
-        borderRadius: "4px",
-        transition: "color 0.1s ease"
-      });
-      delBtn.addEventListener("mouseenter", () => {
-        delBtn.style.color = "#ef4444";
-      });
-      delBtn.addEventListener("mouseleave", () => {
-        delBtn.style.color = "rgba(244,244,245,0.48)";
-      });
-      delBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onDelete();
-      });
-      actions.appendChild(delBtn);
-    }
-    return row;
-  }
-  makeSettingsCard(titleText) {
-    const card = document.createElement("div");
-    Object.assign(card.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)"
-    });
-    const header2 = document.createElement("div");
-    Object.assign(header2.style, {
-      fontSize: "11px",
-      fontWeight: "700",
-      color: "rgba(244,244,245,0.48)",
-      textTransform: "uppercase",
-      borderBottom: "1px solid rgba(255,255,255,0.04)",
-      paddingBottom: "4px",
-      marginBottom: "2px"
-    });
-    header2.textContent = titleText;
-    card.appendChild(header2);
-    return card;
-  }
-  makeCheckboxRow(labelText, checked, onChange) {
-    const row = document.createElement("div");
-    Object.assign(row.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%",
-      cursor: "pointer"
-    });
-    const label2 = document.createElement("span");
-    label2.textContent = labelText;
-    Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    row.appendChild(label2);
-    const cb2 = document.createElement("input");
-    cb2.type = "checkbox";
-    cb2.checked = checked;
-    Object.assign(cb2.style, {
-      cursor: "pointer",
-      outline: "none"
-    });
-    const toggle = () => {
-      cb2.checked = !cb2.checked;
-      onChange(cb2.checked);
-    };
-    row.addEventListener("click", (e) => {
-      if (e.target !== cb2) {
-        e.preventDefault();
-        toggle();
-      }
-    });
-    cb2.addEventListener("change", () => {
-      onChange(cb2.checked);
-    });
-    row.appendChild(cb2);
-    return row;
-  }
-  makeStyledSelect(options, selectedValue, onChange) {
-    const select = document.createElement("select");
-    Object.assign(select.style, {
-      background: "rgba(0,0,0,0.28)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "3px 6px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      fontWeight: "500",
-      outline: "none",
-      cursor: "pointer"
-    });
-    for (const opt of options) {
-      const el = document.createElement("option");
-      el.value = opt;
-      el.textContent = opt;
-      el.selected = opt === selectedValue;
-      select.appendChild(el);
-    }
-    select.addEventListener("change", () => {
-      onChange(select.value);
-    });
-    return select;
-  }
-  renderSettingsSection() {
-    this.settingsSection.replaceChildren();
-    this.settingsSection.appendChild(this.makeSectionHeader("Viewer Settings"));
-    const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-      gap: "10px",
-      paddingBottom: "10px"
-    });
-    this.settingsSection.appendChild(grid);
-    const configCard = this.makeSettingsCard("Viewport Controls");
-    grid.appendChild(configCard);
-    const autohideRow = document.createElement("div");
-    Object.assign(autohideRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%",
-      marginTop: "4px"
-    });
-    configCard.appendChild(autohideRow);
-    const autohideLabel = document.createElement("span");
-    autohideLabel.textContent = "Autohide Controls";
-    Object.assign(autohideLabel.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.8)",
-      lineHeight: "1.3"
-    });
-    autohideRow.appendChild(autohideLabel);
-    const autohideEnabled = this.model ? !!this.model.get("autohide_controls") : true;
-    const autohideToggleTrack = document.createElement("div");
-    Object.assign(autohideToggleTrack.style, {
-      width: "30px",
-      height: "16px",
-      borderRadius: "8px",
-      background: autohideEnabled ? "#6366f1" : "rgba(255,255,255,0.12)",
       position: "relative",
-      cursor: "pointer",
-      transition: "background 0.2s ease",
-      flexShrink: "0"
+      width: "100%"
     });
-    const autohideToggleThumb = document.createElement("div");
-    Object.assign(autohideToggleThumb.style, {
-      width: "12px",
-      height: "12px",
-      borderRadius: "50%",
-      background: "#ffffff",
+    const text = document.createElement("span");
+    text.textContent = title;
+    header2.appendChild(text);
+    if (title === "Structure") {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.innerHTML = "\u{1F3A8}";
+      btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
+      Object.assign(btn.style, {
+        background: "transparent",
+        border: "none",
+        color: "rgba(244,244,245,0.6)",
+        cursor: "pointer",
+        padding: "2px 4px",
+        fontSize: "12px",
+        outline: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      });
+      btn.addEventListener("mouseenter", () => {
+        btn.style.color = "rgba(244,244,245,0.95)";
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.color = "rgba(244,244,245,0.6)";
+      });
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggleColorSchemeMenu(btn);
+      });
+      header2.appendChild(btn);
+    }
+    return header2;
+  }
+  toggleColorSchemeMenu(button) {
+    const existing = this.root.querySelector("[data-molsysviewer-color-scheme-menu]");
+    if (existing) {
+      existing.remove();
+      return;
+    }
+    const dropdown = document.createElement("div");
+    dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
+    Object.assign(dropdown.style, {
       position: "absolute",
-      top: "2px",
-      left: autohideEnabled ? "16px" : "2px",
-      transition: "left 0.2s ease"
+      top: "20px",
+      right: "0",
+      background: "#18181b",
+      border: "1px solid #3f3f46",
+      borderRadius: "4px",
+      zIndex: "100",
+      padding: "4px 0",
+      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
+      display: "flex",
+      flexDirection: "column",
+      minWidth: "140px"
     });
-    autohideToggleTrack.appendChild(autohideToggleThumb);
-    autohideRow.appendChild(autohideToggleTrack);
-    autohideToggleTrack.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (this.model) {
-        const newVal = !this.model.get("autohide_controls");
-        this.model.set("autohide_controls", newVal);
-        this.model.save_changes();
-        this.renderSettingsSection();
+    const makeOption = (label2, value) => {
+      const opt = document.createElement("button");
+      opt.type = "button";
+      opt.setAttribute("data-molsysviewer-color-scheme-option", value);
+      opt.textContent = label2;
+      const active = this.activeColorScheme === value;
+      Object.assign(opt.style, {
+        background: active ? "rgba(255,255,255,0.08)" : "transparent",
+        border: "none",
+        color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
+        padding: "6px 12px",
+        fontSize: "11px",
+        textAlign: "left",
+        cursor: "pointer",
+        fontWeight: active ? "700" : "400"
+      });
+      opt.addEventListener("mouseenter", () => {
+        opt.style.background = "rgba(255,255,255,0.12)";
+        opt.style.color = "#ffffff";
+      });
+      opt.addEventListener("mouseleave", () => {
+        opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
+        opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
+      });
+      opt.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropdown.remove();
+        if (this.activeColorScheme !== value) {
+          this.activeColorScheme = value;
+          this.render();
+          this.onChangeColorScheme?.(value);
+        }
+      });
+      return opt;
+    };
+    dropdown.appendChild(makeOption("Neutral", "neutral"));
+    dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
+    button.parentElement?.appendChild(dropdown);
+    const onOutsideClick = (e) => {
+      if (!dropdown.contains(e.target) && e.target !== button) {
+        dropdown.remove();
+        window.removeEventListener("click", onOutsideClick);
       }
+    };
+    setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
+  }
+  createSummarySection(title, emptyText, parent = this.body) {
+    const key2 = title.toLowerCase();
+    const section = document.createElement("div");
+    section.setAttribute("data-molsysviewer-group-panel-section", key2);
+    Object.assign(section.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      padding: "8px",
+      borderRadius: "10px",
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.06)"
     });
+    section.appendChild(this.makeSectionHeader(title));
+    const list3 = document.createElement("div");
+    Object.assign(list3.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px"
+    });
+    const empty2 = document.createElement("div");
+    empty2.setAttribute("data-molsysviewer-group-panel-empty", key2);
+    Object.assign(empty2.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    empty2.textContent = emptyText;
+    section.appendChild(list3);
+    section.appendChild(empty2);
+    parent.appendChild(section);
+    return { root: section, list: list3, empty: empty2 };
+  }
+  renderSummaries() {
+    this.renderSummaryItems(
+      this.summarySections.active,
+      this.currentSelection.source_kind === "empty" ? [] : [{
+        title: `${this.currentSelection.count_atoms} atoms`,
+        subtitle: `${this.currentSelection.source_kind} \xB7 ${this.currentSelection.target_level}`
+      }]
+    );
+    this.renderSummaryItems(
+      this.summarySections.saved,
+      this.savedSelections.slice().sort((a8, b8) => a8.tag.localeCompare(b8.tag)).map((item2) => ({
+        title: item2.tag,
+        subtitle: `${item2.atom_count} atoms`,
+        onActivate: () => this.onActivateSavedSelection(item2.tag)
+      }))
+    );
+    this.renderSummaryItems(
+      this.summarySections.regions,
+      this.regions.slice().sort((a8, b8) => a8.tag.localeCompare(b8.tag)).map((item2) => ({
+        title: item2.tag,
+        subtitle: item2.hidden ? `${item2.atom_count} atoms \xB7 hidden` : `${item2.atom_count} atoms`,
+        onActivate: () => this.onFocusRegion(item2.tag)
+      }))
+    );
+  }
+  renderSummaryItems(section, items) {
+    section.list.replaceChildren();
+    if (items.length === 0) {
+      section.empty.style.display = "block";
+      return;
+    }
+    section.empty.style.display = "none";
+    for (const item2 of items) {
+      const row = document.createElement("div");
+      row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+      Object.assign(row.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "2px",
+        padding: "6px 8px",
+        borderRadius: "8px",
+        background: "rgba(255,255,255,0.06)",
+        color: "#f4f4f5",
+        cursor: item2.onActivate ? "pointer" : "default"
+      });
+      if (item2.onActivate) {
+        row.addEventListener("click", (event) => {
+          event.preventDefault?.();
+          event.stopPropagation?.();
+          item2.onActivate?.();
+        });
+      }
+      const title = document.createElement("div");
+      Object.assign(title.style, {
+        fontSize: "12px",
+        fontWeight: "600"
+      });
+      title.textContent = item2.title;
+      const subtitle = document.createElement("div");
+      Object.assign(subtitle.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.68)"
+      });
+      subtitle.textContent = item2.subtitle;
+      row.appendChild(title);
+      row.appendChild(subtitle);
+      section.list.appendChild(row);
+    }
   }
 };
 
-// src/ui/addons-panel.ts
-var AddonsPanel = class {
+// src/ui/workbench-panel.ts
+var WorkbenchPanel = class {
   constructor(host, options) {
     this.host = host;
-    // State
+    this.sections = /* @__PURE__ */ new Map();
+    this.sectionExpanded = /* @__PURE__ */ new Map();
+    this.builtInSectionKeys = ["annotations", "measurements", "shapes", "scene", "addons"];
+    this.addonSectionKeys = [];
     this.workspaceItems = [];
     this.workspacePanelItems = [];
-    this.addonsList = [];
     this.currentWorkspaceId = "core";
     this.activeWorkspacePanelSummary = null;
-    this.addonDiagnostics = [];
-    this.activeSectionKey = null;
-    this.widgetObserver = null;
     this.expanded = false;
     this.visible = false;
     const floating = options?.floating || !!options?.sharedShell;
     this.floating = floating;
     this.sharedShell = !!options?.sharedShell;
-    this.onAction = options?.onAction;
-    this.model = options?.model;
-    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(host, { title: "Add-ons", navButtonLabel: "Studio" }) : new PanelShell(host, { title: "Add-ons", width: 560, toggleWidth: 26, navButtonLabel: "Studio" });
+    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" }) : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" });
     this.root = this.shell.root;
     this.toggleButton = this.shell.toggleButton;
     if (options?.sharedShell) {
       this.body = document.createElement("div");
       Object.assign(this.body.style, {
         display: "none",
-        flexDirection: "row",
-        overflow: "hidden",
-        gap: "0",
+        flexDirection: "column",
+        overflowX: "hidden",
+        overflowY: "auto",
+        gap: "8px",
         width: "100%",
         height: "100%"
       });
@@ -151519,14 +150687,15 @@ var AddonsPanel = class {
     } else {
       this.body = this.shell.content;
       Object.assign(this.body.style, {
-        flexDirection: "row",
-        overflow: "hidden",
-        gap: "0"
+        flexDirection: "column",
+        overflowX: "hidden",
+        overflowY: "auto",
+        gap: "8px"
       });
     }
-    this.root.setAttribute("data-molsysviewer-addons-panel", "true");
-    this.shell.titleElement.setAttribute("data-molsysviewer-addons-panel-title", "true");
-    this.body.setAttribute("data-molsysviewer-addons-panel-body", "true");
+    this.root.setAttribute("data-molsysviewer-workbench-panel", "true");
+    this.shell.titleElement.setAttribute("data-molsysviewer-workbench-panel-title", "true");
+    this.body.setAttribute("data-molsysviewer-workbench-panel-body", "true");
     if (!floating) {
       Object.assign(this.root.style, {
         left: "unset",
@@ -151558,71 +150727,105 @@ var AddonsPanel = class {
         this.onNavigateToNavigate?.();
       });
     }
-    this.leftColumn = document.createElement("div");
-    this.leftColumn.setAttribute("data-molsysviewer-addons-panel-left", "true");
-    Object.assign(this.leftColumn.style, {
-      display: "flex",
+    Object.assign(this.body.style, {
       flexDirection: "column",
-      gap: "8px",
-      width: "180px",
-      minWidth: "180px",
-      overflowY: "auto",
       overflowX: "hidden",
-      paddingRight: "8px",
-      borderRight: "1px solid rgba(255,255,255,0.06)"
-    });
-    this.body.appendChild(this.leftColumn);
-    this.rightColumn = document.createElement("div");
-    this.rightColumn.setAttribute("data-molsysviewer-addons-panel-right", "true");
-    Object.assign(this.rightColumn.style, {
-      display: "flex",
-      flexDirection: "column",
-      flex: "1 1 0",
-      minWidth: "0",
-      overflow: "hidden",
-      paddingLeft: "12px"
-    });
-    this.body.appendChild(this.rightColumn);
-    this.workspaceOverviewHost = document.createElement("div");
-    this.workspaceOverviewHost.setAttribute("data-molsysviewer-addons-workspace-overview", "true");
-    Object.assign(this.workspaceOverviewHost.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "12px",
-      flex: "1 1 0",
       overflowY: "auto",
-      paddingRight: "4px"
+      gap: "8px"
     });
-    this.rightColumn.appendChild(this.workspaceOverviewHost);
-    this.addonHeaderHost = document.createElement("div");
-    this.addonHeaderHost.setAttribute("data-molsysviewer-addon-header-host", "true");
-    Object.assign(this.addonHeaderHost.style, {
+    this.workspaceRuntimeDeck = document.createElement("div");
+    this.workspaceRuntimeDeck.setAttribute("data-molsysviewer-workbench-workspace-runtime-deck", "true");
+    Object.assign(this.workspaceRuntimeDeck.style, {
+      display: "none",
+      flexDirection: "column",
+      gap: "8px"
+    });
+    this.body.appendChild(this.workspaceRuntimeDeck);
+    this.workspaceOverviewHost = document.createElement("div");
+    this.workspaceOverviewHost.setAttribute("data-molsysviewer-workbench-workspace-overview", "true");
+    Object.assign(this.workspaceOverviewHost.style, {
       display: "none",
       flexDirection: "column",
       gap: "6px",
-      paddingBottom: "8px",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      marginBottom: "8px",
-      flex: "0 0 auto"
+      padding: "10px",
+      borderRadius: "10px",
+      background: "rgba(255,255,255,0.045)",
+      border: "1px solid rgba(255,255,255,0.08)"
     });
-    this.rightColumn.appendChild(this.addonHeaderHost);
-    this.addonsWidgetHost = document.createElement("div");
-    this.addonsWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
-    Object.assign(this.addonsWidgetHost.style, {
+    this.workspaceOverviewTitle = document.createElement("div");
+    this.workspaceOverviewTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-title", "true");
+    Object.assign(this.workspaceOverviewTitle.style, {
+      fontSize: "11px",
+      fontWeight: "700",
+      letterSpacing: "0.06em",
+      textTransform: "uppercase",
+      color: "rgba(244,244,245,0.74)"
+    });
+    this.workspaceOverviewTitle.textContent = "Workspaces";
+    this.workspaceOverviewBody = document.createElement("div");
+    this.workspaceOverviewBody.setAttribute("data-molsysviewer-workbench-workspace-overview-body", "true");
+    Object.assign(this.workspaceOverviewBody.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      gap: "6px"
+    });
+    this.workspaceOverviewHost.appendChild(this.workspaceOverviewTitle);
+    this.workspaceOverviewHost.appendChild(this.workspaceOverviewBody);
+    this.workspaceRuntimeDeck.appendChild(this.workspaceOverviewHost);
+    this.workspacePanelHost = document.createElement("div");
+    this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
+    Object.assign(this.workspacePanelHost.style, {
       display: "none",
       flexDirection: "column",
-      flex: "1 1 0",
-      overflowY: "auto"
+      gap: "6px",
+      padding: "10px",
+      borderRadius: "10px",
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.06)"
     });
-    this.rightColumn.appendChild(this.addonsWidgetHost);
-    if (typeof MutationObserver !== "undefined") {
-      this.widgetObserver = new MutationObserver(() => {
-        this.applySectionVisibilityFilter();
-      });
-      this.widgetObserver.observe(this.addonsWidgetHost, { childList: true, subtree: true });
-    }
+    this.workspacePanelHostTitle = document.createElement("div");
+    this.workspacePanelHostTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-title", "true");
+    Object.assign(this.workspacePanelHostTitle.style, {
+      fontSize: "12px",
+      fontWeight: "700",
+      color: "rgba(244,244,245,0.96)"
+    });
+    this.workspacePanelHostBody = document.createElement("div");
+    this.workspacePanelHostBody.setAttribute("data-molsysviewer-workbench-workspace-panel-body", "true");
+    Object.assign(this.workspacePanelHostBody.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+      fontSize: "12px",
+      color: "rgba(244,244,245,0.78)"
+    });
+    this.workspaceAddonWidgetHost = document.createElement("div");
+    this.workspaceAddonWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
+    Object.assign(this.workspaceAddonWidgetHost.style, {
+      display: "none",
+      flexDirection: "column",
+      gap: "4px",
+      flex: "1 1 auto",
+      overflow: "auto"
+    });
+    this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
+    this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
+    this.workspacePanelHost.appendChild(this.workspaceAddonWidgetHost);
+    this.workspaceRuntimeDeck.appendChild(this.workspacePanelHost);
+    this.createSection("annotations", "Annotations", "No annotations yet.");
+    this.createSection("measurements", "Measurements", "No measurements yet.");
+    this.createSection("shapes", "Shapes", "No shapes yet.");
+    this.createSection("scene", "Scene", "No scene style selected.");
+    this.createSection("addons", "Add-ons", "No add-ons active.");
     this.applyExpandedState();
     this.setVisible(!floating);
+  }
+  updateBodyDisplay() {
+    if (this.sharedShell) {
+      this.body.style.display = this.visible && this.expanded ? "flex" : "none";
+    } else {
+      this.shell.setVisible(this.visible);
+    }
   }
   setVisible(visible) {
     this.visible = visible;
@@ -151648,7 +150851,7 @@ var AddonsPanel = class {
   setOnExpandedChange(callback) {
     this.onExpandedChange = callback;
   }
-  setOnNavigateToNavigate(callback, label2 = "Studio") {
+  setOnNavigateToNavigate(callback, label2 = "Navigate") {
     this.onNavigateToNavigate = callback;
     if (!this.sharedShell) {
       this.shell.setNavButtonLabel(callback ? label2 : void 0);
@@ -151660,71 +150863,584 @@ var AddonsPanel = class {
     this.onSelectWorkspace = onSelect;
     this.shell.setOnSelectWorkspace(onSelect);
     this.shell.setWorkspaceOptions(items, currentId);
-    this.render();
+    this.renderWorkspaceOverview();
   }
   setWorkspacePanels(items, onSelect) {
     this.workspacePanelItems = Array.isArray(items) ? items : [];
     this.onSelectWorkspacePanel = onSelect;
-    this.render();
-  }
-  setPanelStack(items, onSelect) {
     if (!this.sharedShell) {
       this.shell.setOnSelectPanel(onSelect);
-      this.shell.setPanelOptions(items);
+      this.shell.setPanelOptions(items.map((item2) => ({
+        id: item2.id,
+        title: item2.title,
+        active: item2.active
+      })));
     }
+    this.renderWorkspaceOverview();
   }
   setActiveWorkspacePanel(summary) {
     this.activeWorkspacePanelSummary = summary;
-    this.render();
+    this.renderWorkspaceOverview();
+    this.workspacePanelHostBody.replaceChildren();
+    if (!summary) {
+      this.workspacePanelHost.style.display = "none";
+      return;
+    }
+    this.workspacePanelHost.style.display = "flex";
+    this.workspacePanelHostTitle.textContent = `${summary.workspaceTitle} \xB7 ${summary.title}`;
+    if (summary.description) {
+      const description = document.createElement("div");
+      description.setAttribute("data-molsysviewer-workbench-workspace-panel-description", "true");
+      description.textContent = summary.description;
+      this.workspacePanelHostBody.appendChild(description);
+    }
+    if (summary.entry) {
+      const entry = document.createElement("div");
+      entry.setAttribute("data-molsysviewer-workbench-workspace-panel-entry", "true");
+      entry.textContent = `Entry: ${summary.entry}`;
+      this.workspacePanelHostBody.appendChild(entry);
+    }
+    if (summary.addon) {
+      const addon = document.createElement("div");
+      addon.setAttribute("data-molsysviewer-workbench-workspace-panel-addon", "true");
+      addon.textContent = `Add-on: ${summary.addon}`;
+      this.workspacePanelHostBody.appendChild(addon);
+    }
+    if ((summary.contextActionTitles?.length ?? 0) > 0 || (summary.exportHelperTitles?.length ?? 0) > 0) {
+      const capabilities = document.createElement("div");
+      capabilities.setAttribute("data-molsysviewer-workbench-workspace-panel-capabilities", "true");
+      Object.assign(capabilities.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+        marginTop: "4px"
+      });
+      if ((summary.contextActionTitles?.length ?? 0) > 0) {
+        const context2 = document.createElement("div");
+        context2.setAttribute("data-molsysviewer-workbench-workspace-panel-context-actions", "true");
+        context2.textContent = `Context: ${summary.contextActionTitles.join(", ")}`;
+        capabilities.appendChild(context2);
+      }
+      if ((summary.exportHelperTitles?.length ?? 0) > 0) {
+        const exports = document.createElement("div");
+        exports.setAttribute("data-molsysviewer-workbench-workspace-panel-export-helpers", "true");
+        exports.textContent = `Export: ${summary.exportHelperTitles.join(", ")}`;
+        capabilities.appendChild(exports);
+      }
+      this.workspacePanelHostBody.appendChild(capabilities);
+    }
+    if (Array.isArray(summary.sections) && summary.sections.length > 0) {
+      const sectionsBlock = document.createElement("div");
+      sectionsBlock.setAttribute("data-molsysviewer-workbench-workspace-panel-sections", "true");
+      Object.assign(sectionsBlock.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+        marginTop: "4px"
+      });
+      for (const section of summary.sections) {
+        const sectionCard = document.createElement("div");
+        sectionCard.setAttribute("data-molsysviewer-workbench-workspace-panel-section", section.key);
+        Object.assign(sectionCard.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "3px",
+          padding: "8px",
+          borderRadius: "8px",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.06)"
+        });
+        const sectionTitle = document.createElement("div");
+        sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-title", section.key);
+        Object.assign(sectionTitle.style, {
+          fontSize: "11px",
+          fontWeight: "700",
+          color: "rgba(244,244,245,0.90)"
+        });
+        sectionTitle.textContent = section.title;
+        const itemTitle = document.createElement("div");
+        itemTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-item", section.key);
+        itemTitle.textContent = section.itemTitle;
+        sectionCard.appendChild(sectionTitle);
+        sectionCard.appendChild(itemTitle);
+        if (section.itemSubtitle) {
+          const itemSubtitle = document.createElement("div");
+          itemSubtitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-subtitle", section.key);
+          Object.assign(itemSubtitle.style, {
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.62)"
+          });
+          itemSubtitle.textContent = section.itemSubtitle;
+          sectionCard.appendChild(itemSubtitle);
+        }
+        sectionsBlock.appendChild(sectionCard);
+      }
+      this.workspacePanelHostBody.appendChild(sectionsBlock);
+    }
   }
-  setAddonDiagnostics(items) {
-    this.addonDiagnostics = Array.isArray(items) ? items : [];
-    this.render();
+  renderWorkspaceOverview() {
+    const items = this.workspaceItems;
+    const currentId = this.currentWorkspaceId;
+    const onSelect = this.onSelectWorkspace;
+    this.workspaceOverviewBody.replaceChildren();
+    if (!Array.isArray(items) || items.length <= 1) {
+      this.workspaceRuntimeDeck.style.display = this.activeWorkspacePanelSummary ? "flex" : "none";
+      this.workspaceOverviewHost.style.display = "none";
+      return;
+    }
+    const mosaic = items.length >= 3;
+    this.workspaceRuntimeDeck.style.display = "flex";
+    this.workspaceOverviewHost.style.display = "flex";
+    this.workspaceOverviewBody.style.gridTemplateColumns = mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
+    const appendSection = (key2, label2) => {
+      if (!mosaic) return;
+      const section = document.createElement("div");
+      section.setAttribute("data-molsysviewer-workbench-workspace-overview-section", key2);
+      section.textContent = label2;
+      Object.assign(section.style, {
+        gridColumn: "1 / -1",
+        fontSize: "10px",
+        fontWeight: "700",
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color: "rgba(244,244,245,0.54)",
+        padding: "2px 1px 0 1px"
+      });
+      this.workspaceOverviewBody.appendChild(section);
+    };
+    const appendCard = (item2, fullSpan = false) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.setAttribute("data-molsysviewer-workbench-workspace-overview-card", item2.id);
+      const isCurrent = item2.id === currentId;
+      if (item2.id === currentId) {
+        card.setAttribute("data-molsysviewer-workbench-workspace-overview-current", item2.id);
+      }
+      Object.assign(card.style, {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: "5px",
+        width: "100%",
+        minHeight: mosaic ? "72px" : "0",
+        padding: mosaic ? "10px 11px" : "8px 10px",
+        borderRadius: "10px",
+        border: isCurrent ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.07)",
+        background: isCurrent ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.03)",
+        color: isCurrent ? "#f4f4f5" : "rgba(244,244,245,0.82)",
+        cursor: "pointer",
+        textAlign: "left"
+      });
+      if (fullSpan && mosaic) card.style.gridColumn = "1 / -1";
+      const title = document.createElement("div");
+      title.setAttribute("data-molsysviewer-workbench-workspace-overview-card-title", item2.id);
+      Object.assign(title.style, {
+        fontSize: "12px",
+        fontWeight: "700"
+      });
+      title.textContent = item2.title;
+      card.appendChild(title);
+      const subtitleText = isCurrent && this.activeWorkspacePanelSummary ? `Panel: ${this.activeWorkspacePanelSummary.title}` : item2.subtitle;
+      if (subtitleText) {
+        const subtitle = document.createElement("div");
+        subtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-card-subtitle", item2.id);
+        Object.assign(subtitle.style, {
+          fontSize: "11px",
+          lineHeight: "1.25",
+          color: isCurrent ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.58)"
+        });
+        subtitle.textContent = subtitleText;
+        card.appendChild(subtitle);
+      }
+      if (isCurrent && this.activeWorkspacePanelSummary?.entry) {
+        const entry = document.createElement("div");
+        entry.setAttribute("data-molsysviewer-workbench-workspace-overview-card-entry", item2.id);
+        Object.assign(entry.style, {
+          fontSize: "10px",
+          lineHeight: "1.2",
+          color: "rgba(244,244,245,0.58)"
+        });
+        entry.textContent = `Entry: ${this.activeWorkspacePanelSummary.entry}`;
+        card.appendChild(entry);
+      }
+      const overviewCapabilityTexts = [];
+      if ((item2.panelCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.panelCount} panel${item2.panelCount === 1 ? "" : "s"}`);
+      if ((item2.workbenchSectionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.workbenchSectionCount} section${item2.workbenchSectionCount === 1 ? "" : "s"}`);
+      if ((item2.contextActionCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.contextActionCount} context`);
+      if ((item2.exportHelperCount ?? 0) > 0) overviewCapabilityTexts.push(`${item2.exportHelperCount} export`);
+      if (overviewCapabilityTexts.length > 0) {
+        const capabilities = document.createElement("div");
+        capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capabilities", item2.id);
+        Object.assign(capabilities.style, {
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "4px",
+          marginTop: "2px"
+        });
+        for (const text of overviewCapabilityTexts) {
+          const chip = document.createElement("div");
+          chip.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capability", text.toLowerCase().replace(/\s+/g, "-"));
+          Object.assign(chip.style, {
+            padding: "3px 7px",
+            borderRadius: "999px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: isCurrent ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.035)",
+            fontSize: "10px",
+            fontWeight: "700",
+            color: isCurrent ? "rgba(244,244,245,0.82)" : "rgba(244,244,245,0.72)"
+          });
+          chip.textContent = text;
+          capabilities.appendChild(chip);
+        }
+        card.appendChild(capabilities);
+      }
+      if (!isCurrent && (item2.workbenchSectionTitles?.length ?? 0) > 0) {
+        const sections = document.createElement("div");
+        sections.setAttribute("data-molsysviewer-workbench-workspace-overview-card-sections", item2.id);
+        Object.assign(sections.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "3px",
+          width: "100%",
+          marginTop: "2px"
+        });
+        for (const titleText of item2.workbenchSectionTitles.slice(0, 2)) {
+          const section = document.createElement("div");
+          section.setAttribute("data-molsysviewer-workbench-workspace-overview-card-section", `${item2.id}:${titleText}`);
+          Object.assign(section.style, {
+            fontSize: "10px",
+            lineHeight: "1.25",
+            color: "rgba(244,244,245,0.62)"
+          });
+          section.textContent = titleText;
+          sections.appendChild(section);
+        }
+        card.appendChild(sections);
+      }
+      if (isCurrent && this.activeWorkspacePanelSummary) {
+        const preview = document.createElement("div");
+        preview.setAttribute("data-molsysviewer-workbench-workspace-overview-preview", item2.id);
+        Object.assign(preview.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+          width: "100%",
+          marginTop: "2px",
+          padding: "8px",
+          borderRadius: "8px",
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.08)"
+        });
+        if (this.activeWorkspacePanelSummary.description) {
+          const description = document.createElement("div");
+          description.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-description", item2.id);
+          Object.assign(description.style, {
+            fontSize: "11px",
+            lineHeight: "1.3",
+            color: "rgba(244,244,245,0.72)"
+          });
+          description.textContent = this.activeWorkspacePanelSummary.description;
+          preview.appendChild(description);
+        }
+        const capabilityTexts = [];
+        if ((this.activeWorkspacePanelSummary.contextActionTitles?.length ?? 0) > 0) {
+          capabilityTexts.push(`Context ${this.activeWorkspacePanelSummary.contextActionTitles.length}`);
+        }
+        if ((this.activeWorkspacePanelSummary.exportHelperTitles?.length ?? 0) > 0) {
+          capabilityTexts.push(`Export ${this.activeWorkspacePanelSummary.exportHelperTitles.length}`);
+        }
+        if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
+          capabilityTexts.push(`Sections ${this.activeWorkspacePanelSummary.sections.length}`);
+        }
+        if (capabilityTexts.length > 0) {
+          const capabilities = document.createElement("div");
+          capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capabilities", item2.id);
+          Object.assign(capabilities.style, {
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "4px"
+          });
+          for (const text of capabilityTexts) {
+            const chip = document.createElement("div");
+            chip.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capability", text.toLowerCase().replace(/\s+/g, "-"));
+            Object.assign(chip.style, {
+              padding: "3px 7px",
+              borderRadius: "999px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.04)",
+              fontSize: "10px",
+              fontWeight: "700",
+              color: "rgba(244,244,245,0.76)"
+            });
+            chip.textContent = text;
+            capabilities.appendChild(chip);
+          }
+          preview.appendChild(capabilities);
+        }
+        if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
+          const sections = document.createElement("div");
+          sections.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-sections", item2.id);
+          Object.assign(sections.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px"
+          });
+          for (const section of this.activeWorkspacePanelSummary.sections.slice(0, 2)) {
+            const sectionRow = document.createElement("div");
+            sectionRow.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section", section.key);
+            Object.assign(sectionRow.style, {
+              display: "flex",
+              flexDirection: "column",
+              gap: "2px"
+            });
+            const sectionTitle = document.createElement("div");
+            sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-title", section.key);
+            Object.assign(sectionTitle.style, {
+              fontSize: "10px",
+              fontWeight: "700",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              color: "rgba(244,244,245,0.54)"
+            });
+            sectionTitle.textContent = section.title;
+            sectionRow.appendChild(sectionTitle);
+            const sectionItem = document.createElement("div");
+            sectionItem.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-item", section.key);
+            Object.assign(sectionItem.style, {
+              fontSize: "11px",
+              color: "rgba(244,244,245,0.78)"
+            });
+            sectionItem.textContent = section.itemTitle;
+            sectionRow.appendChild(sectionItem);
+            if (section.itemSubtitle) {
+              const sectionSubtitle = document.createElement("div");
+              sectionSubtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", section.key);
+              Object.assign(sectionSubtitle.style, {
+                fontSize: "10px",
+                color: "rgba(244,244,245,0.58)"
+              });
+              sectionSubtitle.textContent = section.itemSubtitle;
+              sectionRow.appendChild(sectionSubtitle);
+            }
+            sections.appendChild(sectionRow);
+          }
+          preview.appendChild(sections);
+        }
+        card.appendChild(preview);
+      }
+      if (isCurrent && this.workspacePanelItems.length > 0) {
+        const panelStrip = document.createElement("div");
+        panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item2.id);
+        Object.assign(panelStrip.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+          marginTop: "2px"
+        });
+        for (const panel of this.workspacePanelItems) {
+          const panelButton = document.createElement("button");
+          panelButton.type = "button";
+          panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel", panel.id);
+          if (panel.active) {
+            panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-current", panel.id);
+          }
+          Object.assign(panelButton.style, {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "2px",
+            width: "100%",
+            padding: "6px 8px",
+            borderRadius: "8px",
+            border: panel.active ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
+            background: panel.active ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
+            color: panel.active ? "#f4f4f5" : "rgba(244,244,245,0.76)",
+            cursor: "pointer",
+            textAlign: "left"
+          });
+          const panelTitle = document.createElement("div");
+          panelTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-title", panel.id);
+          Object.assign(panelTitle.style, {
+            fontSize: "10px",
+            fontWeight: "700"
+          });
+          panelTitle.textContent = panel.title;
+          panelButton.appendChild(panelTitle);
+          if (panel.description) {
+            const panelDescription = document.createElement("div");
+            panelDescription.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-description", panel.id);
+            Object.assign(panelDescription.style, {
+              fontSize: "10px",
+              lineHeight: "1.2",
+              color: panel.active ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.6)"
+            });
+            panelDescription.textContent = panel.description;
+            panelButton.appendChild(panelDescription);
+          }
+          if (panel.active && panel.entry) {
+            const panelEntry = document.createElement("div");
+            panelEntry.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-entry", panel.id);
+            Object.assign(panelEntry.style, {
+              fontSize: "9px",
+              lineHeight: "1.2",
+              color: "rgba(244,244,245,0.54)"
+            });
+            panelEntry.textContent = `Entry: ${panel.entry}`;
+            panelButton.appendChild(panelEntry);
+          }
+          panelButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onSelectWorkspacePanel?.(panel.id);
+          });
+          panelStrip.appendChild(panelButton);
+        }
+        card.appendChild(panelStrip);
+      }
+      const marker = document.createElement("div");
+      marker.setAttribute("data-molsysviewer-workbench-workspace-overview-card-marker", item2.id);
+      Object.assign(marker.style, {
+        fontSize: "10px",
+        fontWeight: "700",
+        letterSpacing: "0.04em",
+        textTransform: "uppercase",
+        color: isCurrent ? "rgba(244,244,245,0.72)" : "rgba(244,244,245,0.48)"
+      });
+      marker.textContent = isCurrent ? "Current workspace" : "Open workspace";
+      card.appendChild(marker);
+      card.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onSelect?.(item2.id);
+      });
+      this.workspaceOverviewBody.appendChild(card);
+    };
+    if (mosaic) {
+      const currentItems = items.filter((item2) => item2.id === currentId);
+      const remainingCoreItems = items.filter((item2) => item2.id === "core" && item2.id !== currentId);
+      const remainingAddonItems = items.filter((item2) => item2.id !== "core" && item2.id !== currentId);
+      if (currentItems.length > 0) {
+        appendSection("current", "Current");
+        for (const item2 of currentItems) appendCard(item2, true);
+      }
+      if (remainingCoreItems.length > 0) {
+        appendSection("core", "Core");
+        for (const item2 of remainingCoreItems) appendCard(item2, true);
+      }
+      if (remainingAddonItems.length > 0) {
+        appendSection("addons", "Add-ons");
+        for (const item2 of remainingAddonItems) appendCard(item2, false);
+      }
+    } else {
+      for (const item2 of items) appendCard(item2, false);
+    }
   }
-  // Stubs to keep full API compatibility with viewer-controller.ts
-  setAnnotations(_items) {
+  setAnnotations(items) {
+    this.renderItems(this.sections.get("annotations"), items);
+    this.applySectionExpandedState("annotations");
   }
-  setMeasurements(_items) {
+  setMeasurements(items) {
+    this.renderItems(this.sections.get("measurements"), items);
+    this.applySectionExpandedState("measurements");
   }
-  setShapes(_items) {
+  setShapes(items) {
+    this.renderItems(this.sections.get("shapes"), items);
+    this.applySectionExpandedState("shapes");
   }
-  setScene(_summary) {
+  setScene(summary) {
+    const items = [];
+    if (summary?.styleTag) items.push({ title: `Style: ${summary.styleTag}` });
+    if (summary?.preset) items.push({ title: `Preset: ${summary.preset}` });
+    if (summary?.figurePreset || summary?.figureScale) {
+      const scale = typeof summary?.figureScale === "number" ? `${summary.figureScale.toFixed(1)}x` : void 0;
+      items.push({
+        title: `Figure: ${summary?.figurePreset ?? "publication-light"}${scale ? ` @ ${scale}` : ""}`
+      });
+    }
+    if ((summary?.figureVariants?.length ?? 0) > 0) {
+      items.push({ title: `Variants: ${summary.figureVariants.join(", ")}` });
+    }
+    this.renderItems(this.sections.get("scene"), items);
+    this.applySectionExpandedState("scene");
   }
   setAddons(items) {
-    this.addonsList = Array.isArray(items) ? items : [];
-    this.render();
+    this.renderItems(
+      this.sections.get("addons"),
+      items.map((item2) => ({
+        key: item2.name,
+        title: item2.name,
+        active: item2.active,
+        subtitle: [
+          item2.workspaceTitles.length > 0 ? `Workspaces: ${item2.workspaceTitles.join(", ")}` : null,
+          item2.panelTitles.length > 0 ? `Panels: ${item2.panelTitles.join(", ")}` : null,
+          item2.workbenchTitles.length > 0 ? `Workbench: ${item2.workbenchTitles.join(", ")}` : null,
+          item2.contextActionTitles.length > 0 ? `Context: ${item2.contextActionTitles.join(", ")}` : null,
+          item2.exportHelperTitles.length > 0 ? `Export: ${item2.exportHelperTitles.join(", ")}` : null
+        ].filter(Boolean).join(" \xB7 ")
+      }))
+    );
+    this.applySectionExpandedState("addons");
   }
-  setAddonWorkbenchSections(_items) {
+  setAddonDiagnostics(items) {
+    const section = this.sections.get("addons");
+    const rows = Array.from(section.list.children);
+    const failures = Array.isArray(items) ? items : [];
+    for (const failure of failures) {
+      const source = failure.source || "unknown source";
+      const reason = failure.reason || "unknown error";
+      const title = failure.kind === "lifecycle" ? `Lifecycle failed: ${source}` : `Discovery failed: ${source}`;
+      const row = this.makeRow({
+        key: `addon-failure:${source}`,
+        title,
+        subtitle: reason
+      });
+      row.setAttribute("data-molsysviewer-workbench-addon-discovery-failure", source);
+      if (failure.traceback) row.title = failure.traceback;
+      rows.push(row);
+    }
+    if (rows.length === 0) {
+      section.list.replaceChildren();
+      section.empty.style.display = "block";
+    } else {
+      section.empty.style.display = "none";
+      section.list.replaceChildren(...rows);
+    }
+    this.applySectionExpandedState("addons");
+  }
+  setAddonWorkbenchSections(items) {
+    const nextKeys = /* @__PURE__ */ new Set();
+    for (const item2 of items) {
+      const key2 = `addon:${item2.key}`;
+      nextKeys.add(key2);
+      if (!this.sections.has(key2)) {
+        this.createSection(key2, item2.title, "Add-on section registered.");
+      }
+      const section = this.sections.get(key2);
+      this.renderItems(section, [{ key: item2.key, title: item2.itemTitle, subtitle: item2.itemSubtitle }]);
+      this.applySectionExpandedState(key2);
+    }
+    for (const key2 of this.addonSectionKeys) {
+      if (nextKeys.has(key2)) continue;
+      const section = this.sections.get(key2);
+      section?.root.remove();
+      this.sections.delete(key2);
+      this.sectionExpanded.delete(key2);
+    }
+    this.addonSectionKeys = Array.from(nextKeys);
+    this.reorderSections();
   }
   mountAddonWidget(el) {
-    this.addonsWidgetHost.replaceChildren(el);
-    this.addonsWidgetHost.style.display = "flex";
-    this.workspaceOverviewHost.style.display = "none";
-    this.applySectionVisibilityFilter();
+    this.workspaceAddonWidgetHost.replaceChildren(el);
+    this.workspaceAddonWidgetHost.style.display = "flex";
   }
   unmountAddonWidget() {
-    this.addonsWidgetHost.replaceChildren();
-    this.addonsWidgetHost.style.display = "none";
-    this.workspaceOverviewHost.style.display = "flex";
-    this.activeSectionKey = null;
-  }
-  unmountAddonWidgetOnly() {
-    this.addonsWidgetHost.replaceChildren();
+    this.workspaceAddonWidgetHost.replaceChildren();
+    this.workspaceAddonWidgetHost.style.display = "none";
   }
   dispose() {
-    if (this.widgetObserver) {
-      this.widgetObserver.disconnect();
-      this.widgetObserver = null;
-    }
     if (!this.sharedShell) {
       this.shell.dispose();
-    }
-  }
-  updateBodyDisplay() {
-    if (this.sharedShell) {
-      this.body.style.display = this.visible && this.expanded ? "flex" : "none";
-    } else {
-      this.shell.setVisible(this.visible);
     }
   }
   applyExpandedState() {
@@ -151740,791 +151456,176 @@ var AddonsPanel = class {
     }
     this.onExpandedChange?.(this.expanded);
   }
-  render() {
-    this.renderLeftNavigation();
-    const isCore = this.currentWorkspaceId === "core";
-    if (isCore) {
-      this.addonHeaderHost.style.display = "none";
-      this.addonsWidgetHost.style.display = "none";
-      this.workspaceOverviewHost.style.display = "flex";
-      this.renderCatalogView();
-    } else {
-      this.workspaceOverviewHost.style.display = "none";
-      this.addonHeaderHost.style.display = "flex";
-      this.addonsWidgetHost.style.display = "flex";
-      const activeWorkspace = this.workspaceItems.find((item2) => item2.id === this.currentWorkspaceId);
-      if (activeWorkspace) {
-        this.renderAddonHeader(activeWorkspace);
-      }
-      this.applySectionVisibilityFilter();
-    }
-  }
-  // ── Catalog Screen Rendering ──────────────────────────────────
-  renderCatalogView() {
-    this.workspaceOverviewHost.replaceChildren();
-    const header2 = document.createElement("div");
+  createSection(key2, title, emptyText) {
+    const section = document.createElement("div");
+    section.setAttribute("data-molsysviewer-workbench-section", key2);
+    Object.assign(section.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      padding: "8px",
+      borderRadius: "10px",
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.06)"
+    });
+    const header2 = document.createElement("button");
+    header2.type = "button";
+    header2.setAttribute("data-molsysviewer-workbench-section-toggle", key2);
     Object.assign(header2.style, {
       display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      paddingBottom: "8px",
-      marginBottom: "12px",
-      flex: "0 0 auto"
-    });
-    this.workspaceOverviewHost.appendChild(header2);
-    const title = document.createElement("div");
-    Object.assign(title.style, {
-      fontSize: "13px",
-      fontWeight: "700",
-      color: "#f4f4f5"
-    });
-    title.textContent = "Settings & Extensions";
-    header2.appendChild(title);
-    const subtitle = document.createElement("div");
-    Object.assign(subtitle.style, {
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "8px",
       fontSize: "11px",
-      color: "rgba(244,244,245,0.48)"
-    });
-    subtitle.textContent = "Configure global viewer options, manage analytical extensions, and register custom modules.";
-    header2.appendChild(subtitle);
-    const actionsRow = document.createElement("div");
-    Object.assign(actionsRow.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      marginBottom: "12px"
-    });
-    this.workspaceOverviewHost.appendChild(actionsRow);
-    const rescanBtn = document.createElement("button");
-    rescanBtn.type = "button";
-    Object.assign(rescanBtn.style, {
-      padding: "4px 8px",
-      background: "rgba(255,255,255,0.05)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "4px",
-      color: "rgba(244,244,245,0.78)",
-      fontSize: "10px",
-      fontWeight: "600",
-      cursor: "pointer",
-      transition: "all 0.15s ease"
-    });
-    rescanBtn.textContent = "\u27F3 Autodetect";
-    rescanBtn.addEventListener("mouseenter", () => {
-      rescanBtn.style.background = "rgba(255,255,255,0.08)";
-      rescanBtn.style.color = "#ffffff";
-    });
-    rescanBtn.addEventListener("mouseleave", () => {
-      rescanBtn.style.background = "rgba(255,255,255,0.05)";
-      rescanBtn.style.color = "rgba(244,244,245,0.78)";
-    });
-    rescanBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      this.onAction?.("addon_rescan", {});
-    });
-    actionsRow.appendChild(rescanBtn);
-    const registerBtn = document.createElement("button");
-    registerBtn.type = "button";
-    Object.assign(registerBtn.style, {
-      padding: "4px 8px",
-      background: "rgba(99,102,241,0.15)",
-      border: "1px solid rgba(99,102,241,0.3)",
-      borderRadius: "4px",
-      color: "#a5b4fc",
-      fontSize: "10px",
-      fontWeight: "600",
-      cursor: "pointer",
-      transition: "all 0.15s ease"
-    });
-    registerBtn.textContent = "\uFF0B Register Module";
-    registerBtn.addEventListener("mouseenter", () => {
-      registerBtn.style.background = "rgba(99,102,241,0.25)";
-      registerBtn.style.color = "#c7d2fe";
-    });
-    registerBtn.addEventListener("mouseleave", () => {
-      registerBtn.style.background = "rgba(99,102,241,0.15)";
-      registerBtn.style.color = "#a5b4fc";
-    });
-    actionsRow.appendChild(registerBtn);
-    const registerForm = document.createElement("form");
-    Object.assign(registerForm.style, {
-      display: "none",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: "8px",
-      padding: "8px",
-      borderRadius: "6px",
-      background: "rgba(255,255,255,0.02)",
-      border: "1px solid rgba(255,255,255,0.06)",
-      marginBottom: "12px",
-      width: "100%"
-    });
-    this.workspaceOverviewHost.appendChild(registerForm);
-    const registerInput = document.createElement("input");
-    registerInput.type = "text";
-    registerInput.placeholder = "Module or package name (e.g. molsysmt)";
-    Object.assign(registerInput.style, {
-      flex: "1",
-      padding: "4px 8px",
-      borderRadius: "4px",
-      border: "1px solid rgba(255,255,255,0.1)",
-      background: "rgba(0,0,0,0.2)",
-      color: "#ffffff",
-      fontSize: "11px"
-    });
-    registerForm.appendChild(registerInput);
-    const submitBtn = document.createElement("button");
-    submitBtn.type = "submit";
-    Object.assign(submitBtn.style, {
-      padding: "4px 10px",
-      background: "#6366f1",
-      borderRadius: "4px",
-      border: "0",
-      color: "#ffffff",
-      fontSize: "10px",
       fontWeight: "700",
-      cursor: "pointer"
-    });
-    submitBtn.textContent = "Register";
-    registerForm.appendChild(submitBtn);
-    const cancelBtn = document.createElement("button");
-    cancelBtn.type = "button";
-    Object.assign(cancelBtn.style, {
-      padding: "4px 8px",
+      color: "rgba(244,244,245,0.88)",
       background: "transparent",
-      border: "1px solid rgba(255,255,255,0.1)",
-      borderRadius: "4px",
-      color: "rgba(244,244,245,0.48)",
-      fontSize: "10px",
-      cursor: "pointer"
+      border: "0",
+      padding: "0",
+      cursor: "pointer",
+      textAlign: "left"
     });
-    cancelBtn.textContent = "Cancel";
-    registerForm.appendChild(cancelBtn);
-    registerBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      registerForm.style.display = "flex";
-      registerInput.focus();
+    const headerTitle = document.createElement("span");
+    headerTitle.textContent = title;
+    const headerMarker = document.createElement("span");
+    headerMarker.setAttribute("data-molsysviewer-workbench-section-marker", key2);
+    headerMarker.textContent = "\u2212";
+    Object.assign(headerMarker.style, {
+      color: "rgba(244,244,245,0.52)",
+      fontSize: "12px",
+      lineHeight: "1"
     });
-    cancelBtn.addEventListener("click", () => {
-      registerForm.style.display = "none";
-      registerInput.value = "";
+    header2.appendChild(headerTitle);
+    header2.appendChild(headerMarker);
+    header2.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.sectionExpanded.set(key2, !(this.sectionExpanded.get(key2) ?? true));
+      this.applySectionExpandedState(key2);
     });
-    registerForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const val = registerInput.value.trim();
-      if (val) {
-        this.onAction?.("addon_register_module", { name: val });
-        registerForm.style.display = "none";
-        registerInput.value = "";
-      }
+    const list3 = document.createElement("div");
+    Object.assign(list3.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px"
     });
-    let effectiveAddons = this.addonsList;
-    if (effectiveAddons.length === 0) {
-      effectiveAddons = this.workspaceItems.filter((w) => w.id !== "core").map((w) => ({
-        name: w.id,
-        title: w.title,
-        description: w.description || w.subtitle || "",
-        enabled: true,
-        workspaceTitles: [w.title],
-        panelTitles: w.panelCount ? Array(w.panelCount).fill("Panel") : [],
-        workbenchTitles: w.workbenchSectionCount ? Array(w.workbenchSectionCount).fill("Section") : [],
-        contextActionTitles: w.contextActionCount ? Array(w.contextActionCount).fill("Context") : [],
-        exportHelperTitles: w.exportHelperCount ? Array(w.exportHelperCount).fill("Export") : []
-      }));
-    }
-    if (effectiveAddons.length === 0 && this.addonDiagnostics.length === 0) {
-      const empty2 = document.createElement("div");
-      Object.assign(empty2.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        textAlign: "center",
-        padding: "24px 0"
-      });
-      empty2.textContent = "No analytical add-ons registered.";
-      this.workspaceOverviewHost.appendChild(empty2);
+    const empty2 = document.createElement("div");
+    empty2.setAttribute("data-molsysviewer-workbench-empty", title.toLowerCase());
+    Object.assign(empty2.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    empty2.textContent = emptyText;
+    section.appendChild(header2);
+    section.appendChild(list3);
+    section.appendChild(empty2);
+    this.body.appendChild(section);
+    const view2 = { root: section, list: list3, empty: empty2, marker: headerMarker };
+    this.sections.set(key2, view2);
+    this.sectionExpanded.set(key2, true);
+    return view2;
+  }
+  renderItems(section, items) {
+    section.list.replaceChildren();
+    if (items.length === 0) {
+      section.empty.style.display = "block";
       return;
     }
-    const extensionsHeader = document.createElement("div");
-    Object.assign(extensionsHeader.style, {
-      fontSize: "10px",
-      fontWeight: "700",
-      textTransform: "uppercase",
-      letterSpacing: "0.06em",
-      color: "rgba(244,244,245,0.44)",
-      marginBottom: "8px"
-    });
-    extensionsHeader.textContent = "Registered Add-ons";
-    this.workspaceOverviewHost.appendChild(extensionsHeader);
-    const listContainer = document.createElement("div");
-    Object.assign(listContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      width: "100%"
-    });
-    this.workspaceOverviewHost.appendChild(listContainer);
-    for (const addon of effectiveAddons) {
-      const failure = this.addonDiagnostics.find(
-        (d5) => d5.source.toLowerCase().includes(addon.name.toLowerCase())
-      );
-      const row = document.createElement("div");
-      row.setAttribute("data-molsysviewer-addon-card", addon.name);
-      Object.assign(row.style, {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "stretch",
-        gap: "4px",
-        padding: "10px 12px",
-        borderRadius: "8px",
-        border: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.02)",
-        transition: "all 0.15s ease",
-        position: "relative",
-        paddingRight: "100px",
-        textAlign: "left",
-        cursor: "pointer"
-      });
-      if (failure) {
-        row.setAttribute("data-molsysviewer-addons-addon-discovery-failure", addon.name);
-        Object.assign(row.style, {
-          background: "rgba(239,68,68,0.03)",
-          border: "1px solid rgba(239,68,68,0.25)",
-          paddingRight: "12px"
-        });
-        const header3 = document.createElement("div");
-        Object.assign(header3.style, {
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        });
-        const name = document.createElement("span");
-        Object.assign(name.style, { fontWeight: "700", fontSize: "12px", color: "#fca5a5" });
-        name.textContent = addon.title || addon.name;
-        const badge = document.createElement("span");
-        Object.assign(badge.style, {
-          fontSize: "8px",
-          background: "rgba(239,68,68,0.2)",
-          border: "1px solid rgba(239,68,68,0.4)",
-          color: "#ef4444",
-          borderRadius: "4px",
-          padding: "1px 5px",
-          fontWeight: "700"
-        });
-        badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
-        header3.appendChild(name);
-        header3.appendChild(badge);
-        row.appendChild(header3);
-        const desc = document.createElement("div");
-        Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
-        desc.textContent = failure.reason || "Error loading addon.";
-        row.appendChild(desc);
-        const traceBox = document.createElement("pre");
-        Object.assign(traceBox.style, {
-          display: "none",
-          margin: "6px 0 0 0",
-          padding: "8px",
-          borderRadius: "6px",
-          background: "rgba(0,0,0,0.3)",
-          border: "1px solid rgba(239,68,68,0.15)",
-          fontSize: "9px",
-          color: "rgba(252,165,165,0.9)",
-          overflowX: "auto",
-          whiteSpace: "pre-wrap"
-        });
-        traceBox.textContent = failure.traceback || "No traceback detail.";
-        row.appendChild(traceBox);
-        row.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const isVisible = traceBox.style.display === "block";
-          traceBox.style.display = isVisible ? "none" : "block";
-        });
-      } else {
-        row.addEventListener("mouseenter", () => {
-          if (addon.enabled) {
-            row.style.background = "rgba(255,255,255,0.04)";
-            row.style.border = "1px solid rgba(255,255,255,0.1)";
-          }
-        });
-        row.addEventListener("mouseleave", () => {
-          row.style.background = "rgba(255,255,255,0.02)";
-          row.style.border = "1px solid rgba(255,255,255,0.06)";
-        });
-        const matchedWorkspace = this.workspaceItems.find(
-          (w) => w.addon === addon.name || w.id === addon.name
-        );
-        row.addEventListener("click", (e) => {
-          e.preventDefault();
-          if (addon.enabled && matchedWorkspace) {
-            this.onSelectWorkspace?.(matchedWorkspace.id);
-          }
-        });
-        const nameRow = document.createElement("div");
-        Object.assign(nameRow.style, {
-          display: "flex",
-          alignItems: "center",
-          gap: "6px"
-        });
-        row.appendChild(nameRow);
-        const name = document.createElement("div");
-        Object.assign(name.style, {
-          fontWeight: "700",
-          fontSize: "12px",
-          color: addon.enabled ? "#f4f4f5" : "rgba(244,244,245,0.34)"
-        });
-        name.textContent = addon.title || addon.name;
-        nameRow.appendChild(name);
-        if (!addon.enabled) {
-          const disabledBadge = document.createElement("span");
-          Object.assign(disabledBadge.style, {
-            fontSize: "8px",
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(244,244,245,0.3)",
-            padding: "1px 4px",
-            borderRadius: "3px"
-          });
-          disabledBadge.textContent = "Disabled";
-          nameRow.appendChild(disabledBadge);
-        }
-        const desc = document.createElement("div");
-        Object.assign(desc.style, {
-          fontSize: "10px",
-          color: addon.enabled ? "rgba(244,244,245,0.48)" : "rgba(244,244,245,0.22)",
-          lineHeight: "1.35"
-        });
-        desc.textContent = addon.description || "";
-        row.appendChild(desc);
-        const chipRow = document.createElement("div");
-        Object.assign(chipRow.style, {
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "4px",
-          marginTop: "2px",
-          opacity: addon.enabled ? "1" : "0.3"
-        });
-        row.appendChild(chipRow);
-        const createChip = (text) => {
-          const chip = document.createElement("span");
-          Object.assign(chip.style, {
-            fontSize: "8px",
-            fontWeight: "700",
-            padding: "1px 5px",
-            borderRadius: "99px",
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            color: "rgba(244,244,245,0.5)"
-          });
-          chip.textContent = text;
-          chipRow.appendChild(chip);
-        };
-        const panels = addon.panelTitles?.length || 0;
-        const sections = addon.workbenchTitles?.length || 0;
-        const actions = addon.contextActionTitles?.length || 0;
-        if (panels > 0) createChip(`${panels} Panel${panels === 1 ? "" : "s"}`);
-        if (sections > 0) createChip(`${sections} Section${sections === 1 ? "" : "s"}`);
-        if (actions > 0) createChip(`${actions} Context`);
-        const actionsContainer = document.createElement("div");
-        Object.assign(actionsContainer.style, {
-          position: "absolute",
-          right: "12px",
-          top: "50%",
-          transform: "translateY(-50%)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px"
-        });
-        row.appendChild(actionsContainer);
-        const toggleTrack = document.createElement("div");
-        Object.assign(toggleTrack.style, {
-          width: "30px",
-          height: "16px",
-          borderRadius: "8px",
-          background: addon.enabled ? "#6366f1" : "rgba(255,255,255,0.12)",
-          position: "relative",
-          cursor: "pointer",
-          transition: "background 0.2s ease"
-        });
-        const toggleThumb = document.createElement("div");
-        Object.assign(toggleThumb.style, {
-          width: "12px",
-          height: "12px",
-          borderRadius: "50%",
-          background: "#ffffff",
-          position: "absolute",
-          top: "2px",
-          left: addon.enabled ? "16px" : "2px",
-          transition: "left 0.2s ease"
-        });
-        toggleTrack.appendChild(toggleThumb);
-        actionsContainer.appendChild(toggleTrack);
-        toggleTrack.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.onAction?.(addon.enabled ? "addon_disable" : "addon_enable", { name: addon.name });
-        });
-        if (matchedWorkspace) {
-          const openBtn = document.createElement("button");
-          openBtn.type = "button";
-          Object.assign(openBtn.style, {
-            padding: "3px 8px",
-            borderRadius: "4px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.03)",
-            color: addon.enabled ? "rgba(244,244,245,0.78)" : "rgba(244,244,245,0.2)",
-            fontSize: "10px",
-            fontWeight: "600",
-            cursor: addon.enabled ? "pointer" : "not-allowed",
-            transition: "all 0.15s ease"
-          });
-          openBtn.textContent = "Open \u2794";
-          if (addon.enabled) {
-            openBtn.addEventListener("mouseenter", () => {
-              openBtn.style.background = "rgba(255,255,255,0.08)";
-              openBtn.style.color = "#ffffff";
-            });
-            openBtn.addEventListener("mouseleave", () => {
-              openBtn.style.background = "rgba(255,255,255,0.03)";
-              openBtn.style.color = "rgba(244,244,245,0.78)";
-            });
-            openBtn.addEventListener("click", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              this.onSelectWorkspace?.(matchedWorkspace.id);
-            });
-          }
-          actionsContainer.appendChild(openBtn);
-        }
-      }
-      listContainer.appendChild(row);
-    }
-    let diagnosticsRendered = false;
-    for (const failure of this.addonDiagnostics) {
-      const isMatched = effectiveAddons.some((addon) => failure.source.toLowerCase().includes(addon.name.toLowerCase()));
-      if (isMatched) continue;
-      if (!diagnosticsRendered) {
-        const diagHeader = document.createElement("div");
-        Object.assign(diagHeader.style, {
-          fontSize: "11px",
-          fontWeight: "700",
-          color: "#fca5a5",
-          marginTop: "16px",
-          marginBottom: "8px"
-        });
-        diagHeader.textContent = "Diagnostics & Failures";
-        this.workspaceOverviewHost.appendChild(diagHeader);
-        diagnosticsRendered = true;
-      }
-      const card = document.createElement("div");
-      card.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
-      Object.assign(card.style, {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "stretch",
-        gap: "6px",
-        padding: "10px 12px",
-        borderRadius: "8px",
-        background: "rgba(239,68,68,0.03)",
-        border: "1px solid rgba(239,68,68,0.25)",
-        color: "#fca5a5",
-        marginBottom: "8px",
-        cursor: "pointer"
-      });
-      const header3 = document.createElement("div");
-      Object.assign(header3.style, { display: "flex", justifyContent: "space-between", alignItems: "center" });
-      const name = document.createElement("span");
-      Object.assign(name.style, { fontWeight: "700", fontSize: "12px" });
-      name.textContent = failure.source;
-      const badge = document.createElement("span");
-      Object.assign(badge.style, {
-        fontSize: "8px",
-        background: "rgba(239,68,68,0.2)",
-        border: "1px solid rgba(239,68,68,0.4)",
-        color: "#ef4444",
-        borderRadius: "4px",
-        padding: "1px 5px",
-        fontWeight: "700"
-      });
-      badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
-      header3.appendChild(name);
-      header3.appendChild(badge);
-      card.appendChild(header3);
-      const desc = document.createElement("div");
-      Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
-      desc.textContent = failure.reason || "Error loading entry point.";
-      card.appendChild(desc);
-      const traceBox = document.createElement("pre");
-      Object.assign(traceBox.style, {
-        display: "none",
-        margin: "6px 0 0 0",
-        padding: "8px",
-        borderRadius: "6px",
-        background: "rgba(0,0,0,0.3)",
-        border: "1px solid rgba(239,68,68,0.15)",
-        fontSize: "9px",
-        color: "rgba(252,165,165,0.9)",
-        overflowX: "auto",
-        whiteSpace: "pre-wrap"
-      });
-      traceBox.textContent = failure.traceback || "No traceback detail.";
-      card.appendChild(traceBox);
-      card.addEventListener("click", (e) => {
-        e.preventDefault();
-        const isVisible = traceBox.style.display === "block";
-        traceBox.style.display = isVisible ? "none" : "block";
-      });
-      this.workspaceOverviewHost.appendChild(card);
+    section.empty.style.display = "none";
+    for (const item2 of items) {
+      section.list.appendChild(this.makeRow(item2));
     }
   }
-  // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
-  renderLeftNavigation() {
-    this.leftColumn.replaceChildren();
-    Object.assign(this.leftColumn.style, {
-      display: "flex",
-      flexDirection: "column",
-      height: "100%",
-      justifyContent: "space-between",
-      paddingRight: "8px",
-      boxSizing: "border-box"
-    });
-    const topContainer = document.createElement("div");
-    Object.assign(topContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      overflowY: "auto",
-      flex: "1 1 0"
-    });
-    this.leftColumn.appendChild(topContainer);
-    const bottomContainer = document.createElement("div");
-    Object.assign(bottomContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      borderTop: "1px solid rgba(255,255,255,0.06)",
-      paddingTop: "8px",
-      marginTop: "8px",
-      flex: "0 0 auto"
-    });
-    this.leftColumn.appendChild(bottomContainer);
-    const createWorkspaceButton = (workspace) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.setAttribute("data-molsysviewer-addon-workspace-tab", workspace.id);
-      Object.assign(btn.style, {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: "2px",
-        width: "100%",
-        padding: "8px 12px",
-        borderRadius: "8px",
-        border: "0",
-        background: "transparent",
-        color: "rgba(244,244,245,0.68)",
-        textAlign: "left",
-        cursor: "pointer",
-        transition: "all 0.15s ease-in-out"
-      });
-      const isActive = workspace.id === this.currentWorkspaceId;
-      if (isActive) {
-        Object.assign(btn.style, {
-          background: "rgba(255,255,255,0.08)",
-          color: "#f4f4f5",
-          borderLeft: "3px solid #6366f1",
-          paddingLeft: "9px"
-        });
-      } else {
-        btn.addEventListener("mouseenter", () => {
-          btn.style.background = "rgba(255,255,255,0.04)";
-          btn.style.color = "rgba(244,244,245,0.9)";
-        });
-        btn.addEventListener("mouseleave", () => {
-          btn.style.background = "transparent";
-          btn.style.color = "rgba(244,244,245,0.68)";
-        });
-      }
-      const title = document.createElement("div");
-      Object.assign(title.style, {
-        fontSize: "12px",
-        fontWeight: "600",
-        display: "flex",
-        alignItems: "center",
-        gap: "6px"
-      });
-      if (workspace.id === "core") {
-        title.textContent = "\u2699 Settings";
-      } else {
-        title.textContent = workspace.title;
-      }
-      btn.appendChild(title);
-      const descText = workspace.id === "core" ? "Add-ons manager" : workspace.description || workspace.subtitle || "";
-      if (descText) {
-        const sub = document.createElement("div");
-        Object.assign(sub.style, {
-          fontSize: "10px",
-          color: isActive ? "rgba(244,244,245,0.6)" : "rgba(244,244,245,0.44)"
-        });
-        sub.textContent = descText;
-        btn.appendChild(sub);
-      }
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.onSelectWorkspace?.(workspace.id);
-      });
-      return btn;
-    };
-    for (const workspace of this.workspaceItems) {
-      if (workspace.id === "core") continue;
-      topContainer.appendChild(createWorkspaceButton(workspace));
-    }
-    const coreWorkspace = this.workspaceItems.find((w) => w.id === "core") || {
-      id: "core",
-      title: "Settings"
-    };
-    bottomContainer.appendChild(createWorkspaceButton(coreWorkspace));
+  applySectionExpandedState(key2) {
+    const section = this.sections.get(key2);
+    if (!section) return;
+    const expanded = this.sectionExpanded.get(key2) ?? true;
+    section.marker.textContent = expanded ? "\u2212" : "+";
+    section.list.style.display = expanded ? "flex" : "none";
+    const hasItems = section.list.children.length > 0;
+    section.empty.style.display = expanded && !hasItems ? "block" : "none";
   }
-  // ── Right Column: Fixed Header with Subpanels & Sections ───────
-  renderAddonHeader(activeWorkspace) {
-    this.addonHeaderHost.replaceChildren();
-    const headerTitle = document.createElement("div");
-    Object.assign(headerTitle.style, {
-      fontSize: "13px",
-      fontWeight: "700",
-      color: "#f4f4f5",
-      marginBottom: "8px"
+  reorderSections() {
+    const orderedKeys = [
+      ...this.builtInSectionKeys,
+      ...this.addonSectionKeys.sort((left, right) => left.localeCompare(right))
+    ];
+    for (const key2 of orderedKeys) {
+      const section = this.sections.get(key2);
+      if (section) this.body.appendChild(section.root);
+    }
+  }
+  makeRow(item2) {
+    const row = document.createElement("div");
+    row.setAttribute("data-molsysviewer-workbench-item", "true");
+    if (item2.key) row.setAttribute("data-molsysviewer-workbench-item-key", item2.key);
+    if (item2.active) row.setAttribute("data-molsysviewer-workbench-item-active", "true");
+    if (item2.context) row.setAttribute("data-molsysviewer-workbench-item-context", "true");
+    Object.assign(row.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "2px",
+      padding: "6px 8px",
+      borderRadius: "8px",
+      background: item2.active ? "rgba(255,255,255,0.12)" : item2.context ? "rgba(255,255,255,0.08)" : item2.hidden ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.06)",
+      color: item2.hidden ? "rgba(244,244,245,0.58)" : "#f4f4f5",
+      cursor: item2.onActivate ? "pointer" : "default",
+      outline: item2.active ? "1px solid rgba(255,255,255,0.16)" : item2.context ? "1px solid rgba(255,255,255,0.10)" : "none"
     });
-    headerTitle.textContent = activeWorkspace.title;
-    this.addonHeaderHost.appendChild(headerTitle);
-    const row1 = document.createElement("div");
-    Object.assign(row1.style, {
+    if (item2.onActivate) {
+      row.addEventListener("click", (event) => {
+        event.preventDefault?.();
+        event.stopPropagation?.();
+        item2.onActivate?.();
+      });
+    }
+    const top = document.createElement("div");
+    Object.assign(top.style, {
       display: "flex",
       alignItems: "center",
-      flexWrap: "wrap",
-      gap: "16px",
-      width: "100%",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      paddingBottom: "4px",
-      marginBottom: "8px"
+      justifyContent: "space-between",
+      gap: "8px"
     });
-    this.addonHeaderHost.appendChild(row1);
-    const relevantPanels = this.workspacePanelItems.filter(
-      (item2) => item2.id !== "navigate" && item2.id !== "addons"
-    );
-    for (const panel of relevantPanels) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.setAttribute("data-molsysviewer-addon-panel-tab", panel.id);
-      Object.assign(btn.style, {
-        background: "transparent",
-        border: "0",
-        padding: "4px 0 8px 0",
+    const title = document.createElement("div");
+    Object.assign(title.style, {
+      fontSize: "12px",
+      fontWeight: "600",
+      flex: "1 1 auto"
+    });
+    title.textContent = item2.title;
+    top.appendChild(title);
+    if (item2.onToggleVisibility) {
+      const visibilityButton = document.createElement("button");
+      visibilityButton.type = "button";
+      visibilityButton.setAttribute("data-molsysviewer-workbench-item-visibility", item2.hidden ? "hidden" : "visible");
+      visibilityButton.textContent = item2.hidden ? "Show" : "Hide";
+      Object.assign(visibilityButton.style, {
+        fontSize: "10px",
+        color: "rgba(244,244,245,0.72)",
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.10)",
+        borderRadius: "999px",
+        padding: "1px 6px",
+        cursor: "pointer"
+      });
+      visibilityButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        item2.onToggleVisibility?.();
+      });
+      top.appendChild(visibilityButton);
+    }
+    row.appendChild(top);
+    if (item2.subtitle) {
+      const subtitle = document.createElement("div");
+      Object.assign(subtitle.style, {
         fontSize: "11px",
-        fontWeight: "600",
-        color: panel.active ? "#6366f1" : "rgba(244,244,245,0.48)",
-        cursor: "pointer",
-        position: "relative",
-        transition: "color 0.15s ease"
+        color: item2.hidden ? "rgba(244,244,245,0.45)" : "rgba(244,244,245,0.68)"
       });
-      if (panel.active) {
-        const underline = document.createElement("div");
-        Object.assign(underline.style, {
-          position: "absolute",
-          bottom: "0",
-          left: "0",
-          right: "0",
-          height: "2px",
-          background: "#6366f1"
-        });
-        btn.appendChild(underline);
-      } else {
-        btn.addEventListener("mouseenter", () => {
-          btn.style.color = "rgba(244,244,245,0.85)";
-        });
-        btn.addEventListener("mouseleave", () => {
-          btn.style.color = "rgba(244,244,245,0.48)";
-        });
-      }
-      btn.textContent = panel.title;
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.activeSectionKey = null;
-        this.onSelectWorkspacePanel?.(panel.id);
-      });
-      row1.appendChild(btn);
+      subtitle.textContent = item2.subtitle;
+      row.appendChild(subtitle);
     }
-    const summary = this.activeWorkspacePanelSummary;
-    if (summary && Array.isArray(summary.sections) && summary.sections.length > 0) {
-      const row2 = document.createElement("div");
-      Object.assign(row2.style, {
-        display: "flex",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: "6px",
-        width: "100%",
-        marginBottom: "4px"
-      });
-      this.addonHeaderHost.appendChild(row2);
-      const sections = summary.sections;
-      if (!this.activeSectionKey || !sections.some((s) => s.key === this.activeSectionKey)) {
-        this.activeSectionKey = sections[0].key;
-      }
-      for (const section of sections) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.setAttribute("data-molsysviewer-addon-section-tab", section.key);
-        const isActive = section.key === this.activeSectionKey;
-        Object.assign(btn.style, {
-          background: isActive ? "rgba(99,102,241,0.15)" : "transparent",
-          border: isActive ? "1px solid rgba(99,102,241,0.3)" : "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "4px",
-          padding: "3px 8px",
-          fontSize: "10px",
-          fontWeight: "500",
-          color: isActive ? "#a5b4fc" : "rgba(244,244,245,0.58)",
-          cursor: "pointer",
-          transition: "all 0.15s ease"
-        });
-        if (!isActive) {
-          btn.addEventListener("mouseenter", () => {
-            btn.style.background = "rgba(255,255,255,0.04)";
-            btn.style.color = "rgba(244,244,245,0.85)";
-          });
-          btn.addEventListener("mouseleave", () => {
-            btn.style.background = "transparent";
-            btn.style.color = "rgba(244,244,245,0.58)";
-          });
-        }
-        btn.textContent = section.title;
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.activeSectionKey = section.key;
-          this.render();
-        });
-        row2.appendChild(btn);
-      }
-    }
-  }
-  // ── Operation / Section Visibility Filter (Nivel 3) ──────────────
-  applySectionVisibilityFilter() {
-    const key2 = this.activeSectionKey;
-    if (!key2) return;
-    const sections = this.addonsWidgetHost.querySelectorAll("[data-molsysviewer-addon-section]");
-    if (sections.length === 0) return;
-    for (let i = 0; i < sections.length; i++) {
-      const el = sections[i];
-      const secKey = el.getAttribute("data-molsysviewer-addon-section");
-      if (secKey === key2) {
-        el.style.display = "";
-      } else {
-        el.style.display = "none";
-      }
-    }
+    return row;
   }
 };
 
@@ -152903,20 +152004,20 @@ var MolSysViewerController = class _MolSysViewerController {
     this.hoverDebounceMs = 60;
     this.lastPrimaryGroupClick = null;
     this.savedSelections = [];
-    this.addonsAnnotations = /* @__PURE__ */ new Map();
-    this.addonsMeasurements = /* @__PURE__ */ new Map();
-    this.addonsShapes = /* @__PURE__ */ new Map();
-    this.addonsScene = null;
-    this.addonsList = [];
+    this.workbenchAnnotations = /* @__PURE__ */ new Map();
+    this.workbenchMeasurements = /* @__PURE__ */ new Map();
+    this.workbenchShapes = /* @__PURE__ */ new Map();
+    this.workbenchScene = null;
+    this.workbenchAddons = [];
     this.addonWorkspaces = [];
     this.addonPanels = [];
     this.addonRuntimeInitialized = false;
-    this.addonSections = [];
+    this.workbenchAddonSections = [];
     this.addonContextActions = [];
     this.addonContextItems = [];
     this.addonDiagnostics = [];
-    this.addonsActive = null;
-    this.addonsContext = null;
+    this.workbenchActive = null;
+    this.workbenchContext = null;
     this.syncingPanelExpansion = false;
     this.lastPanelMode = "navigate";
     this.lastCorePanelMode = "navigate";
@@ -153027,7 +152128,7 @@ var MolSysViewerController = class _MolSysViewerController {
     let sharedShell = void 0;
     if (floatingUnified) {
       sharedShell = new FloatingPanelShell(host, {
-        title: "Studio",
+        title: "Navigate",
         panelModeStyle: initOptions?.panelModeStyle,
         onPanelPopClick: initOptions?.onPanelPopClick,
         isPanelOnly: this.isPanelOnly
@@ -153106,27 +152207,14 @@ var MolSysViewerController = class _MolSysViewerController {
       const region = this.state.getRegionSummaries().find((item2) => item2.tag === tag);
       if (!region) return;
       this.focusTarget({ atom_indices: region.atom_indices });
-    }, (action, details) => {
-      if (action === "download_image") {
-        this.downloadViewportImage();
-        return;
-      }
-      emitInteractionEvent({
-        event: "interaction_context_action",
-        action,
-        ...details
+    }, async (scheme) => {
+      const themeName = scheme === "physicochemical" ? "msv-physicochemical" : "element-symbol";
+      const components = this.getComponents();
+      await this.plugin.managers.structure.component.updateRepresentationsTheme(components, {
+        color: themeName
       });
-    }, { sharedShell, floating: floatingPanels, model: this.model });
-    const addonsOptions = sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : {};
-    addonsOptions.model = this.model;
-    addonsOptions.onAction = (action, details) => {
-      emitInteractionEvent({
-        event: "interaction_context_action",
-        action,
-        ...details
-      });
-    };
-    this.addonsPanel = new AddonsPanel(host, addonsOptions);
+    }, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
+    this.workbenchPanel = new WorkbenchPanel(host, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
     if (this.isPanelOnly) {
       this.groupPanel.setExpanded(true);
     }
@@ -153134,12 +152222,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.groupPanel.setOnExpandedChange((expanded) => {
       this.handlePanelExpansionChanged("navigate", expanded);
     });
-    this.groupPanel.setOnNavigateToSettings(() => {
-      this.setPanelMode("addons", true);
-      this.selectWorkspace("core");
-    });
-    this.addonsPanel.setOnExpandedChange((expanded) => {
-      this.handlePanelExpansionChanged("addons", expanded);
+    this.workbenchPanel.setOnExpandedChange((expanded) => {
+      this.handlePanelExpansionChanged("workbench", expanded);
     });
     const getCameraDirection = () => {
       const snap = this.plugin.canvas3d?.camera.getSnapshot?.();
@@ -153212,7 +152296,7 @@ var MolSysViewerController = class _MolSysViewerController {
         return;
       }
       if (action === "open_workbench") {
-        this.setPanelMode("addons", true);
+        this.setPanelMode("workbench", true);
         return;
       }
       if (action === "set_viewer_mode") {
@@ -153247,8 +152331,8 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       this.startMeasurementTool(action, details?.endpoint_policy);
     }, () => {
-      this.addonsContext = null;
-      this.refreshAddonsPanel();
+      this.workbenchContext = null;
+      this.refreshWorkbenchPanel();
     }, getCameraDirection);
     this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
     this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
@@ -153315,7 +152399,7 @@ var MolSysViewerController = class _MolSysViewerController {
             isSwingActive: this.scene.isSwingActive,
             isDarkMode: this.scene.isDarkMode,
             isNavigateExpanded: this.groupPanel.isExpanded(),
-            isAddonsExpanded: this.addonsPanel.isExpanded(),
+            isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
             currentViewerMode: this.model?.get("viewer_mode") || "integrated",
             isCanvasVisible: this.canvasHost.style.display !== "none"
           }
@@ -153473,7 +152557,7 @@ var MolSysViewerController = class _MolSysViewerController {
     plugin.canvas3dContext?.contextLost?.subscribe(() => this.handleWebGLContextLost());
     plugin.canvas3dContext?.contextRestored?.subscribe(() => this.handleWebGLContextRestored());
     this.refreshNavigatePanel();
-    this.refreshAddonsPanel();
+    this.refreshWorkbenchPanel();
     this.updateWelcomeState(true);
   }
   registerAddonListener(addonName, eventName, cb2) {
@@ -153576,6 +152660,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const plugin = new PluginContext(createMolSysViewerPluginSpec());
     await plugin.init();
     plugin.representation.structure.themes.colorThemeRegistry.add(MsvPerAtomColorThemeProvider);
+    plugin.representation.structure.themes.colorThemeRegistry.add(MsvPhysicochemicalColorThemeProvider);
     const init = plugin.initViewerAsync ?? plugin.initViewer;
     let ok = false;
     if (typeof init === "function") {
@@ -153603,7 +152688,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   getActivePanel() {
     if (this.groupPanel.isExpanded()) return "navigate";
-    if (this.addonsPanel.isExpanded()) return "addons";
+    if (this.workbenchPanel.isExpanded()) return "workbench";
     return null;
   }
   saveHostPanelState() {
@@ -153612,7 +152697,7 @@ var MolSysViewerController = class _MolSysViewerController {
         isSplit: this.sharedShell.isSplit,
         isAmbient: this.sharedShell.isAmbient,
         minimized: this.sharedShell.minimized,
-        expanded: this.groupPanel.isExpanded() || this.addonsPanel.isExpanded(),
+        expanded: this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded(),
         activePanel: this.getActivePanel()
       };
     }
@@ -153691,7 +152776,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.legendOverlay.dispose();
     this.webglStatusOverlay.dispose();
     this.groupPanel.dispose();
-    this.addonsPanel.dispose();
+    this.workbenchPanel.dispose();
     this.sharedShell?.dispose();
     this.splitResizeObserver?.disconnect();
     this.contextMenu.dispose();
@@ -153709,7 +152794,7 @@ var MolSysViewerController = class _MolSysViewerController {
       if (!this.host.contains(event.target)) return;
       if (event.key === "Escape") {
         if (this.measurementTools.isActive()) return;
-        if (this.groupPanel.isExpanded() || this.addonsPanel.isExpanded()) {
+        if (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded()) {
           event.preventDefault();
           event.stopPropagation();
           this.collapsePanels();
@@ -153737,10 +152822,10 @@ var MolSysViewerController = class _MolSysViewerController {
       if (event.key === "w" || event.key === "W") {
         event.preventDefault();
         event.stopPropagation();
-        if (this.addonsPanel.isVisible()) {
-          const open = this.addonsPanel.isExpanded();
+        if (this.workbenchPanel.isVisible()) {
+          const open = this.workbenchPanel.isExpanded();
           this.collapsePanels();
-          if (!open) this.setPanelMode("addons", true);
+          if (!open) this.setPanelMode("workbench", true);
         }
         return;
       }
@@ -153752,7 +152837,7 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
       return;
     }
-    const anyExpanded = this.groupPanel.isExpanded() || this.addonsPanel.isExpanded();
+    const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
     if (anyExpanded) {
       this.collapsePanels();
     } else {
@@ -153767,7 +152852,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.syncingPanelExpansion = true;
     try {
       this.groupPanel.setExpanded(false);
-      this.addonsPanel.setExpanded(false);
+      this.workbenchPanel.setExpanded(false);
       this.sharedShell?.setExpanded(false);
     } finally {
       this.syncingPanelExpansion = false;
@@ -153777,9 +152862,9 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   updateCanvasInsets() {
     const leftOpen = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
-    const rightOpen = this.addonsPanel.isVisible() && this.addonsPanel.isExpanded();
+    const rightOpen = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
     const toLeft = leftOpen ? this.groupPanel.panelContentWidth : 0;
-    const toRight = rightOpen ? this.addonsPanel.panelContentWidth : 0;
+    const toRight = rightOpen ? this.workbenchPanel.panelContentWidth : 0;
     if (this.canvasInsetAnimFrame !== null) {
       cancelAnimationFrame(this.canvasInsetAnimFrame);
       this.canvasInsetAnimFrame = null;
@@ -153823,7 +152908,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.syncingPanelExpansion = true;
     try {
       if (source === "navigate") {
-        this.addonsPanel.setExpanded(false);
+        this.workbenchPanel.setExpanded(false);
       } else {
         this.groupPanel.setExpanded(false);
       }
@@ -153833,28 +152918,25 @@ var MolSysViewerController = class _MolSysViewerController {
     this.updateCanvasInsets();
     this.emitPanelModeState();
   }
-  setPanelMode(panel, expanded, skipToggleCore = false) {
-    if (!skipToggleCore && panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
-      this.selectWorkspace("core");
-    }
+  setPanelMode(panel, expanded) {
     const shouldExpand = this.isPanelOnly ? true : expanded !== false;
     if (!shouldExpand) {
       this.collapsePanels();
       return;
     }
-    const requested = this.currentWorkspace === "core" ? panel ?? this.lastCorePanelMode : "addons";
+    const requested = this.currentWorkspace === "core" ? panel ?? this.lastCorePanelMode : "workbench";
     let target = null;
     if (this.isPanelOnly) {
-      target = requested === "addons" ? "addons" : "navigate";
+      target = requested === "workbench" ? "workbench" : "navigate";
     } else {
       if (requested === "navigate" && this.groupPanel.isVisible()) {
         target = "navigate";
-      } else if (requested === "addons" && this.addonsPanel.isVisible()) {
-        target = "addons";
+      } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
+        target = "workbench";
       } else if (this.groupPanel.isVisible()) {
         target = "navigate";
-      } else if (this.addonsPanel.isVisible()) {
-        target = "addons";
+      } else if (this.workbenchPanel.isVisible()) {
+        target = "workbench";
       }
     }
     if (!target) {
@@ -153864,7 +152946,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.syncingPanelExpansion = true;
     try {
       this.groupPanel.setExpanded(target === "navigate");
-      this.addonsPanel.setExpanded(target === "addons");
+      this.workbenchPanel.setExpanded(target === "workbench");
       if (this.sharedShell) {
         this.sharedShell.setVisible(true);
         this.sharedShell.setExpanded(true);
@@ -153888,15 +152970,15 @@ var MolSysViewerController = class _MolSysViewerController {
     if (this.currentWorkspace === "core") {
       this.groupPanel.setRuntimeVisible(null);
       this.groupPanel.setOnNavigateToWorkbench(() => {
-        this.setPanelMode("addons", true);
-      }, "Add-ons");
-      this.addonsPanel.setOnNavigateToNavigate(() => {
+        this.setPanelMode("workbench", true);
+      }, "Workbench");
+      this.workbenchPanel.setOnNavigateToNavigate(() => {
         this.setPanelMode("navigate", true);
-      }, "Studio");
+      }, "Navigate");
     } else {
       this.groupPanel.setRuntimeVisible(false);
       this.groupPanel.setOnNavigateToWorkbench(void 0);
-      this.addonsPanel.setOnNavigateToNavigate(() => {
+      this.workbenchPanel.setOnNavigateToNavigate(() => {
         this.selectWorkspace("core");
         this.setPanelMode(this.lastCorePanelMode, true);
       }, "Core");
@@ -153904,59 +152986,68 @@ var MolSysViewerController = class _MolSysViewerController {
     this.groupPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
       this.selectWorkspace(workspaceId);
     });
-    this.addonsPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
+    this.workbenchPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
       this.selectWorkspace(workspaceId);
     });
-    const activeMode = this.lastPanelMode;
+    if (this.currentWorkspace === "core") {
+      if (this.sharedShell) {
+        const activeMode = this.lastPanelMode;
+        this.sharedShell.setOnSelectPanel((panelId) => {
+          if (panelId === "navigate" || panelId === "workbench") {
+            this.setPanelMode(panelId, true);
+            this.refreshPanelWorkspaceChrome();
+          }
+        });
+        this.sharedShell.setPanelOptions([
+          { id: "navigate", title: "Navigate", active: activeMode === "navigate" },
+          { id: "workbench", title: "Workbench", active: activeMode === "workbench" }
+        ]);
+      }
+      this.groupPanel.setPanelStack([
+        { id: "navigate", title: "Navigate", active: true },
+        { id: "workbench", title: "Workbench" }
+      ], (panelId) => {
+        if (panelId === "workbench") this.setPanelMode("workbench", true);
+      });
+      this.workbenchPanel.setWorkspacePanels(
+        [
+          { id: "navigate", title: "Navigate" },
+          { id: "workbench", title: "Workbench", active: true }
+        ],
+        (panelId) => {
+          if (panelId === "navigate") this.setPanelMode("navigate", true);
+        }
+      );
+      return;
+    }
+    this.groupPanel.setPanelStack([], void 0);
+    const panels = this.getWorkspacePanels(this.currentWorkspace);
+    const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
     if (this.sharedShell) {
       this.sharedShell.setOnSelectPanel((panelId) => {
-        if (panelId === "navigate" || panelId === "addons") {
-          if (panelId === "navigate" && this.currentWorkspace !== "core") {
-            this.selectWorkspace("core");
-          }
-          this.setPanelMode(panelId, true);
-          this.refreshPanelWorkspaceChrome();
-        }
+        this.selectWorkspacePanel(this.currentWorkspace, panelId);
       });
-      this.sharedShell.setPanelOptions([
-        { id: "navigate", title: "Studio", active: activeMode === "navigate" },
-        { id: "addons", title: "Add-ons", active: activeMode === "addons" }
-      ]);
-    }
-    this.groupPanel.setPanelStack([
-      { id: "navigate", title: "Studio", active: true },
-      { id: "addons", title: "Add-ons", active: false }
-    ], (panelId) => {
-      if (panelId === "addons") this.setPanelMode("addons", true);
-    });
-    this.addonsPanel.setPanelStack([
-      { id: "navigate", title: "Studio", active: false },
-      { id: "addons", title: "Add-ons", active: true }
-    ], (panelId) => {
-      if (panelId === "navigate") {
-        this.selectWorkspace("core");
-        this.setPanelMode("navigate", true);
-      }
-    });
-    if (this.currentWorkspace !== "core") {
-      const panels = this.getWorkspacePanels(this.currentWorkspace);
-      const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
-      this.addonsPanel.setWorkspacePanels(
+      this.sharedShell.setPanelOptions(
         panels.map((item2) => ({
           id: item2.id,
           title: item2.title,
-          description: item2.description,
-          entry: item2.entry,
-          addon: item2.addon,
           active: item2.id === selectedId
-        })),
-        (panelId) => {
-          this.selectWorkspacePanel(this.currentWorkspace, panelId);
-        }
+        }))
       );
-    } else {
-      this.addonsPanel.setWorkspacePanels([], void 0);
     }
+    this.workbenchPanel.setWorkspacePanels(
+      panels.map((item2) => ({
+        id: item2.id,
+        title: item2.title,
+        description: item2.description,
+        entry: item2.entry,
+        addon: item2.addon,
+        active: item2.id === selectedId
+      })),
+      (panelId) => {
+        this.selectWorkspacePanel(this.currentWorkspace, panelId);
+      }
+    );
   }
   openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent) {
     const loci = this.groupPanel.focusItem(item2);
@@ -153988,7 +153079,7 @@ var MolSysViewerController = class _MolSysViewerController {
         isSwingActive: this.scene.isSwingActive,
         isDarkMode: this.scene.isDarkMode,
         isNavigateExpanded: this.groupPanel.isExpanded(),
-        isAddonsExpanded: this.addonsPanel.isExpanded(),
+        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
         currentViewerMode: this.model?.get("viewer_mode") || "integrated"
       }
     );
@@ -154018,7 +153109,7 @@ var MolSysViewerController = class _MolSysViewerController {
         isSwingActive: this.scene.isSwingActive,
         isDarkMode: this.scene.isDarkMode,
         isNavigateExpanded: this.groupPanel.isExpanded(),
-        isAddonsExpanded: this.addonsPanel.isExpanded(),
+        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
         currentViewerMode: this.model?.get("viewer_mode") || "integrated"
       }
     );
@@ -154039,20 +153130,20 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   syncWorkbenchContextFromPayload(payload) {
     if (!payload) {
-      this.addonsContext = null;
-      this.refreshAddonsPanel();
+      this.workbenchContext = null;
+      this.refreshWorkbenchPanel();
       return;
     }
     if (payload.kind === "annotation" && typeof payload.tag === "string") {
-      this.addonsContext = { section: "annotations", tag: payload.tag };
+      this.workbenchContext = { section: "annotations", tag: payload.tag };
     } else if (payload.kind === "measurement" && typeof payload.tag === "string") {
-      this.addonsContext = { section: "measurements", tag: payload.tag };
+      this.workbenchContext = { section: "measurements", tag: payload.tag };
     } else if (payload.kind === "shape" && typeof payload.tag === "string") {
-      this.addonsContext = { section: "shapes", tag: payload.tag };
+      this.workbenchContext = { section: "shapes", tag: payload.tag };
     } else {
-      this.addonsContext = null;
+      this.workbenchContext = null;
     }
-    this.refreshAddonsPanel();
+    this.refreshWorkbenchPanel();
   }
   normalizeManagedInteractionPayload(payload) {
     if (payload.kind !== "shape" || typeof payload.tag !== "string") return payload;
@@ -154346,7 +153437,7 @@ var MolSysViewerController = class _MolSysViewerController {
           if (!panelId) break;
           if (workspaceId === "core") {
             this.selectWorkspace("core");
-            if (panelId === "navigate" || panelId === "addons") {
+            if (panelId === "navigate" || panelId === "workbench") {
               this.setPanelMode(panelId, true);
             }
             break;
@@ -154421,9 +153512,11 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_atom_colors":
           await this.state.setAtomColors(msg);
+          this.groupPanel.render();
           break;
         case "clear_atom_colors":
           await this.state.clearAtomColors(msg);
+          this.groupPanel.render();
           break;
         case "set_global_representation":
           await this.state.setGlobalRepresentation(msg);
@@ -154507,8 +153600,8 @@ var MolSysViewerController = class _MolSysViewerController {
           if (!this.getWorkspaceOptions().some((item2) => item2.id === this.currentWorkspace)) {
             this.currentWorkspace = "core";
           }
-          this.addonsList = this.buildAddonRuntimeSummary(msg);
-          this.addonSections = this.buildAddonSectionSummary(msg);
+          this.workbenchAddons = this.buildAddonRuntimeSummary(msg);
+          this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg);
           this.addonContextActions = this.buildAddonContextActionSummary(msg);
           this.addonDiagnostics = this.buildAddonDiagnosticSummary(msg);
           this.addonRuntimeInitialized = true;
@@ -154519,7 +153612,7 @@ var MolSysViewerController = class _MolSysViewerController {
               break;
             }
           }
-          this.refreshAddonsPanel();
+          this.refreshWorkbenchPanel();
           break;
         }
         case "set_addon_context_items": {
@@ -154544,7 +153637,7 @@ var MolSysViewerController = class _MolSysViewerController {
           if (!mAddon || !mPanel || !mEsm) break;
           const mKey = `${mAddon}:${mPanel}`;
           if (this.activePanelWidgetKey === mKey) break;
-          this.cleanupActivePanelWidget(true);
+          this.cleanupActivePanelWidget();
           const el = document.createElement("div");
           Object.assign(el.style, { display: "flex", flexDirection: "column", gap: "8px", width: "100%" });
           let styleEl = null;
@@ -154690,7 +153783,7 @@ var MolSysViewerController = class _MolSysViewerController {
             break;
           }
           this.activePanelWidgetKey = mKey;
-          this.addonsPanel.mountAddonWidget(el);
+          this.workbenchPanel.mountAddonWidget(el);
           break;
         }
         case "addon_panel_message": {
@@ -154722,7 +153815,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       this.applyWorkbenchMessage(msg);
       this.refreshNavigatePanel();
-      this.refreshAddonsPanel();
+      this.refreshWorkbenchPanel();
       this.syncStripOverlaysForMessage(msg);
     } catch (error2) {
       console.error("[MolSysViewer] Error handling message:", msg, error2);
@@ -154747,7 +153840,7 @@ var MolSysViewerController = class _MolSysViewerController {
       this.currentStructure = last4.cell.transform.ref;
       this.groupPanel.setStructure(structure);
       this.refreshNavigatePanel();
-      this.addonsPanel.setVisible(true);
+      this.workbenchPanel.setVisible(true);
       if (structure) {
         this.activeSelection.setAllAvailableItems(buildGroupItemsFromStructure(structure));
       }
@@ -154782,15 +153875,15 @@ var MolSysViewerController = class _MolSysViewerController {
     this.loadedStructure = void 0;
     this.currentStructure = void 0;
     this.groupPanel.setStructure(void 0);
-    this.addonsPanel.setVisible(false);
+    this.workbenchPanel.setVisible(false);
     this.updateWelcomeState();
   }
   applyWorkbenchMessage(msg) {
     const op4 = msg?.op;
     if (typeof op4 !== "string") return;
     const upsertWorkbenchShape = (tag, title, subtitle, layerTag, atomIndices) => {
-      const existing = this.addonsShapes.get(tag);
-      this.addonsShapes.set(tag, {
+      const existing = this.workbenchShapes.get(tag);
+      this.workbenchShapes.set(tag, {
         title: existing?.title ?? title,
         subtitle: existing?.subtitle ?? subtitle,
         layerTag,
@@ -154799,23 +153892,23 @@ var MolSysViewerController = class _MolSysViewerController {
       });
     };
     if (op4 === "clear_all") {
-      this.addonsAnnotations.clear();
-      this.addonsMeasurements.clear();
-      this.addonsShapes.clear();
-      this.addonsScene = null;
-      this.addonsActive = null;
-      this.addonsContext = null;
+      this.workbenchAnnotations.clear();
+      this.workbenchMeasurements.clear();
+      this.workbenchShapes.clear();
+      this.workbenchScene = null;
+      this.workbenchActive = null;
+      this.workbenchContext = null;
       return;
     }
     if (op4 === "clear_scene") {
       const options = msg.options ?? {};
-      if (options.labels) this.addonsAnnotations.clear();
-      if (options.shapes) this.addonsShapes.clear();
-      if (options.styles) this.addonsScene = null;
-      if (this.addonsActive?.section === "annotations" && options.labels) this.addonsActive = null;
-      if (this.addonsActive?.section === "shapes" && options.shapes) this.addonsActive = null;
-      if (this.addonsContext?.section === "annotations" && options.labels) this.addonsContext = null;
-      if (this.addonsContext?.section === "shapes" && options.shapes) this.addonsContext = null;
+      if (options.labels) this.workbenchAnnotations.clear();
+      if (options.shapes) this.workbenchShapes.clear();
+      if (options.styles) this.workbenchScene = null;
+      if (this.workbenchActive?.section === "annotations" && options.labels) this.workbenchActive = null;
+      if (this.workbenchActive?.section === "shapes" && options.shapes) this.workbenchActive = null;
+      if (this.workbenchContext?.section === "annotations" && options.labels) this.workbenchContext = null;
+      if (this.workbenchContext?.section === "shapes" && options.shapes) this.workbenchContext = null;
       return;
     }
     if (op4 === "add_label") {
@@ -154824,17 +153917,17 @@ var MolSysViewerController = class _MolSysViewerController {
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : [];
       if (typeof tag === "string" && typeof text === "string" && text.trim()) {
-        this.addonsAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
+        this.workbenchAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
       }
       return;
     }
     if (op4 === "update_label") {
       const tag = msg.tag ?? msg.options?.tag;
-      const existing = typeof tag === "string" ? this.addonsAnnotations.get(tag) : void 0;
+      const existing = typeof tag === "string" ? this.workbenchAnnotations.get(tag) : void 0;
       if (!existing || typeof tag !== "string") return;
       const nextText = msg.options?.text;
       const nextAtomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.filter((value) => typeof value === "number") : existing.atomIndices;
-      this.addonsAnnotations.set(tag, {
+      this.workbenchAnnotations.set(tag, {
         text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
         layerTag: typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : existing.layerTag,
         hidden: existing.hidden,
@@ -154850,7 +153943,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const kind = op4 === "add_distance_measurement" ? "distance" : op4 === "add_angle_measurement" ? "angle" : "dihedral";
       const layerTag = typeof msg.options?.layer_tag === "string" ? msg.options.layer_tag : void 0;
       if (typeof tag === "string") {
-        this.addonsMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
+        this.workbenchMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
       }
       return;
     }
@@ -154952,7 +154045,7 @@ var MolSysViewerController = class _MolSysViewerController {
         const subtitle = typeof meta.shape_kind === "string" && meta.shape_kind.trim() ? meta.shape_kind.trim() : void 0;
         const layerTag = typeof meta.layer_tag === "string" && meta.layer_tag.trim() ? meta.layer_tag.trim() : void 0;
         const atomIndices = Array.isArray(meta.atom_indices) ? meta.atom_indices.filter((value) => typeof value === "number") : [];
-        this.addonsShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
+        this.workbenchShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
       }
       return;
     }
@@ -154960,69 +154053,69 @@ var MolSysViewerController = class _MolSysViewerController {
       const tag = msg.tag;
       if (typeof tag !== "string") return;
       const hidden = op4 === "hide_layer";
-      if (this.addonsAnnotations.has(tag)) {
-        const item2 = this.addonsAnnotations.get(tag);
-        this.addonsAnnotations.set(tag, { ...item2, hidden });
+      if (this.workbenchAnnotations.has(tag)) {
+        const item2 = this.workbenchAnnotations.get(tag);
+        this.workbenchAnnotations.set(tag, { ...item2, hidden });
       }
-      if (this.addonsMeasurements.has(tag)) {
-        const item2 = this.addonsMeasurements.get(tag);
-        this.addonsMeasurements.set(tag, { ...item2, hidden });
+      if (this.workbenchMeasurements.has(tag)) {
+        const item2 = this.workbenchMeasurements.get(tag);
+        this.workbenchMeasurements.set(tag, { ...item2, hidden });
       }
-      if (this.addonsShapes.has(tag)) {
-        const item2 = this.addonsShapes.get(tag);
-        this.addonsShapes.set(tag, { ...item2, hidden });
+      if (this.workbenchShapes.has(tag)) {
+        const item2 = this.workbenchShapes.get(tag);
+        this.workbenchShapes.set(tag, { ...item2, hidden });
       }
       return;
     }
     if (op4 === "delete_layer") {
       const tag = msg.tag;
       if (typeof tag !== "string") return;
-      this.addonsAnnotations.delete(tag);
-      this.addonsMeasurements.delete(tag);
-      this.addonsShapes.delete(tag);
-      if (this.addonsActive?.tag === tag) this.addonsActive = null;
-      if (this.addonsContext?.tag === tag) this.addonsContext = null;
+      this.workbenchAnnotations.delete(tag);
+      this.workbenchMeasurements.delete(tag);
+      this.workbenchShapes.delete(tag);
+      if (this.workbenchActive?.tag === tag) this.workbenchActive = null;
+      if (this.workbenchContext?.tag === tag) this.workbenchContext = null;
       return;
     }
     if (op4 === "set_layer_tag") {
       const oldTag = msg.tag;
       const newTag = msg.new_tag;
       if (typeof oldTag !== "string" || typeof newTag !== "string") return;
-      if (this.addonsAnnotations.has(oldTag)) {
-        const item2 = this.addonsAnnotations.get(oldTag);
-        this.addonsAnnotations.delete(oldTag);
-        this.addonsAnnotations.set(newTag, item2);
-        if (this.addonsActive?.section === "annotations" && this.addonsActive.tag === oldTag) {
-          this.addonsActive = { section: "annotations", tag: newTag };
+      if (this.workbenchAnnotations.has(oldTag)) {
+        const item2 = this.workbenchAnnotations.get(oldTag);
+        this.workbenchAnnotations.delete(oldTag);
+        this.workbenchAnnotations.set(newTag, item2);
+        if (this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === oldTag) {
+          this.workbenchActive = { section: "annotations", tag: newTag };
         }
-        if (this.addonsContext?.section === "annotations" && this.addonsContext.tag === oldTag) {
-          this.addonsContext = { section: "annotations", tag: newTag };
-        }
-      }
-      if (this.addonsMeasurements.has(oldTag)) {
-        const item2 = this.addonsMeasurements.get(oldTag);
-        this.addonsMeasurements.delete(oldTag);
-        this.addonsMeasurements.set(newTag, item2);
-        if (this.addonsActive?.section === "measurements" && this.addonsActive.tag === oldTag) {
-          this.addonsActive = { section: "measurements", tag: newTag };
+        if (this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === oldTag) {
+          this.workbenchContext = { section: "annotations", tag: newTag };
         }
       }
-      if (this.addonsShapes.has(oldTag)) {
-        const item2 = this.addonsShapes.get(oldTag);
-        this.addonsShapes.delete(oldTag);
-        this.addonsShapes.set(newTag, item2);
-        if (this.addonsActive?.section === "shapes" && this.addonsActive.tag === oldTag) {
-          this.addonsActive = { section: "shapes", tag: newTag };
+      if (this.workbenchMeasurements.has(oldTag)) {
+        const item2 = this.workbenchMeasurements.get(oldTag);
+        this.workbenchMeasurements.delete(oldTag);
+        this.workbenchMeasurements.set(newTag, item2);
+        if (this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === oldTag) {
+          this.workbenchActive = { section: "measurements", tag: newTag };
         }
-        if (this.addonsContext?.section === "shapes" && this.addonsContext.tag === oldTag) {
-          this.addonsContext = { section: "shapes", tag: newTag };
+      }
+      if (this.workbenchShapes.has(oldTag)) {
+        const item2 = this.workbenchShapes.get(oldTag);
+        this.workbenchShapes.delete(oldTag);
+        this.workbenchShapes.set(newTag, item2);
+        if (this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === oldTag) {
+          this.workbenchActive = { section: "shapes", tag: newTag };
+        }
+        if (this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === oldTag) {
+          this.workbenchContext = { section: "shapes", tag: newTag };
         }
       }
       return;
     }
     if (op4 === "load_molsys_payload" || op4 === "load_structure_from_string" || op4 === "load_pdb_string" || op4 === "load_structure_from_url" || op4 === "load_pdb_id") {
-      if (this.addonsScene === null) {
-        this.addonsScene = {
+      if (this.workbenchScene === null) {
+        this.workbenchScene = {
           figurePreset: "publication-light",
           figureScale: 2,
           figureVariants: ["dark", "transparent"]
@@ -155033,8 +154126,8 @@ var MolSysViewerController = class _MolSysViewerController {
     if (op4 === "set_global_representation") {
       const styleTag = typeof msg.user_preset?.name === "string" ? msg.user_preset.name : typeof msg.preset === "string" ? msg.preset : void 0;
       const preset = typeof msg.preset === "string" ? msg.preset : typeof msg.representation === "string" ? msg.representation : void 0;
-      this.addonsScene = {
-        ...this.addonsScene,
+      this.workbenchScene = {
+        ...this.workbenchScene,
         styleTag,
         preset,
         figurePreset: "publication-light",
@@ -155046,97 +154139,75 @@ var MolSysViewerController = class _MolSysViewerController {
       const figurePreset = typeof msg.figure_preset === "string" ? msg.figure_preset : void 0;
       const figureScale = typeof msg.figure_scale === "number" ? msg.figure_scale : void 0;
       const figureVariants = Array.isArray(msg.figure_variants) ? msg.figure_variants : void 0;
-      this.addonsScene = {
-        ...this.addonsScene,
+      this.workbenchScene = {
+        ...this.workbenchScene,
         ...figurePreset !== void 0 ? { figurePreset } : {},
         ...figureScale !== void 0 ? { figureScale } : {},
         ...figureVariants !== void 0 ? { figureVariants } : {}
       };
     }
   }
-  refreshAddonsPanel() {
-    this.groupPanel.setAnnotations(
-      Array.from(this.addonsAnnotations.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
+  refreshWorkbenchPanel() {
+    this.workbenchPanel.setAnnotations(
+      Array.from(this.workbenchAnnotations.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
         key: tag,
         title: item2.text,
         subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 layer: ${item2.layerTag}` : tag,
         hidden: item2.hidden,
-        active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
+        active: this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === tag,
+        context: this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === tag,
         onActivate: item2.atomIndices.length > 0 ? () => {
-          this.addonsActive = { section: "annotations", tag };
-          this.refreshAddonsPanel();
+          this.workbenchActive = { section: "annotations", tag };
+          this.refreshWorkbenchPanel();
           this.focusTarget({ atom_indices: item2.atomIndices });
         } : void 0,
         onToggleVisibility: () => {
           void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag });
-        },
-        onDelete: () => {
-          this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
         }
       }))
     );
-    this.groupPanel.setMeasurements(
-      Array.from(this.addonsMeasurements.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
+    this.workbenchPanel.setMeasurements(
+      Array.from(this.workbenchMeasurements.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
         key: tag,
         title: item2.kind[0].toUpperCase() + item2.kind.slice(1),
         subtitle: item2.layerTag && item2.layerTag !== tag ? `${tag} \xB7 ${item2.picks} picks \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 ${item2.picks} picks`,
         hidden: item2.hidden,
-        active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
+        active: this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === tag,
         onActivate: item2.atomIndices.length > 0 ? () => {
-          this.addonsActive = { section: "measurements", tag };
-          this.refreshAddonsPanel();
+          this.workbenchActive = { section: "measurements", tag };
+          this.refreshWorkbenchPanel();
           this.focusTarget({ atom_indices: item2.atomIndices });
         } : void 0,
         onToggleVisibility: () => {
           void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag });
-        },
-        onDelete: () => {
-          this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
         }
       }))
     );
-    this.groupPanel.setShapes(
-      Array.from(this.addonsShapes.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
+    this.workbenchPanel.setShapes(
+      Array.from(this.workbenchShapes.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
         key: tag,
         title: item2.title,
         subtitle: item2.layerTag && item2.layerTag !== tag ? item2.subtitle ? `${tag} \xB7 ${item2.subtitle} \xB7 layer: ${item2.layerTag}` : `${tag} \xB7 layer: ${item2.layerTag}` : item2.subtitle ? `${tag} \xB7 ${item2.subtitle}` : tag,
         hidden: item2.hidden,
-        active: this.addonsActive?.section === "shapes" && this.addonsActive.tag === tag,
+        active: this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === tag,
+        context: this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === tag,
         onActivate: item2.atomIndices.length > 0 ? () => {
-          this.addonsActive = { section: "shapes", tag };
-          this.refreshAddonsPanel();
+          this.workbenchActive = { section: "shapes", tag };
+          this.refreshWorkbenchPanel();
           this.focusTarget({ atom_indices: item2.atomIndices });
         } : void 0,
         onToggleVisibility: () => {
           void this.handleMessage({ op: item2.hidden ? "show_layer" : "hide_layer", tag });
-        },
-        onDelete: () => {
-          this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
         }
       }))
     );
-    const canvas3d = this.plugin.canvas3d;
-    const fogName = canvas3d?.props.cameraFog?.name;
-    const fogIntensity = canvas3d?.props.cameraFog?.params?.intensity;
-    this.groupPanel.setScene({
-      styleTag: this.addonsScene?.styleTag,
-      preset: this.addonsScene?.preset,
-      figurePreset: this.addonsScene?.figurePreset,
-      figureScale: this.addonsScene?.figureScale,
-      figureVariants: this.addonsScene?.figureVariants,
-      isDarkMode: this.scene.isDarkMode,
-      isSpinActive: this.scene.isSpinActive,
-      isSwingActive: this.scene.isSwingActive,
-      cameraMode: canvas3d?.props.camera?.mode ?? "perspective",
-      fogEnabled: fogName === "on",
-      fogIntensity: typeof fogIntensity === "number" ? fogIntensity / 100 : 0.5
-    });
+    this.workbenchPanel.setScene(this.workbenchScene);
     if (this.currentWorkspace === "core") {
-      this.addonsPanel.setActiveWorkspacePanel(null);
+      this.workbenchPanel.setActiveWorkspacePanel(null);
     } else {
       const panels = this.getWorkspacePanels(this.currentWorkspace);
       const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
-      this.addonsPanel.setWorkspacePanels(
+      this.workbenchPanel.setWorkspacePanels(
         panels.map((item2) => ({
           id: item2.id,
           title: item2.title,
@@ -155151,9 +154222,9 @@ var MolSysViewerController = class _MolSysViewerController {
       );
       const activePanel = panels.find((item2) => item2.id === selectedId) ?? null;
       const workspaceTitle = this.getWorkspaceOptions().find((item2) => item2.id === this.currentWorkspace)?.title ?? this.currentWorkspace;
-      const workspaceSections = this.addonSections.filter((item2) => item2.workspaceId === this.currentWorkspace);
-      const activeAddonSummary = activePanel ? this.addonsList.find((item2) => item2.name === activePanel.addon) : null;
-      this.addonsPanel.setActiveWorkspacePanel(
+      const workspaceSections = this.workbenchAddonSections.filter((item2) => item2.workspaceId === this.currentWorkspace);
+      const activeAddonSummary = activePanel ? this.workbenchAddons.find((item2) => item2.name === activePanel.addon) : null;
+      this.workbenchPanel.setActiveWorkspacePanel(
         activePanel ? {
           workspaceTitle,
           title: activePanel.title,
@@ -155162,7 +154233,7 @@ var MolSysViewerController = class _MolSysViewerController {
           addon: activePanel.addon,
           contextActionTitles: activeAddonSummary?.contextActionTitles ?? [],
           exportHelperTitles: activeAddonSummary?.exportHelperTitles ?? [],
-          sections: workspaceSections.filter((item2) => item2.panelId === void 0 || item2.panelId === activePanel.id).map((item2) => ({
+          sections: workspaceSections.map((item2) => ({
             key: item2.key,
             title: item2.title,
             itemTitle: item2.itemTitle,
@@ -155172,14 +154243,14 @@ var MolSysViewerController = class _MolSysViewerController {
       );
     }
     this.refreshPanelWorkspaceChrome();
-    this.addonsPanel.setAddons(
-      this.addonsList.map((item2) => ({
+    this.workbenchPanel.setAddons(
+      this.workbenchAddons.map((item2) => ({
         ...item2,
         active: this.currentWorkspace !== "core" && this.workspaceBelongsToAddon(this.currentWorkspace, item2.name)
       }))
     );
-    this.addonsPanel.setAddonDiagnostics(this.addonDiagnostics);
-    this.addonsPanel.setAddonWorkbenchSections([]);
+    this.workbenchPanel.setAddonDiagnostics(this.addonDiagnostics);
+    this.workbenchPanel.setAddonWorkbenchSections([]);
   }
   buildAddonWorkspaceSummary(msg) {
     const specs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
@@ -155211,29 +154282,14 @@ var MolSysViewerController = class _MolSysViewerController {
     })).sort((left, right) => left.key.localeCompare(right.key));
   }
   buildAddonRuntimeSummary(msg) {
-    const records = Array.isArray(msg?.addon_records) ? msg.addon_records : [];
+    const names = Array.isArray(msg?.addons) ? msg.addons.filter((value) => typeof value === "string") : [];
     const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
     const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
-    const workbenchSections = Array.isArray(msg?.addon_sections) ? msg.addon_sections : [];
+    const workbenchSections = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
     const contextActionSpecs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
     const exportHelperSpecs = Array.isArray(msg?.export_helper_specs) ? msg.export_helper_specs : [];
-    if (records.length > 0) {
-      return records.map((rec) => ({
-        name: rec.name,
-        enabled: rec.enabled !== false,
-        description: rec.description || "",
-        workspaceTitles: workspaceSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
-        panelTitles: panelSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
-        workbenchTitles: workbenchSections.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
-        contextActionTitles: contextActionSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
-        exportHelperTitles: exportHelperSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title)
-      })).sort((left, right) => left.name.localeCompare(right.name));
-    }
-    const names = Array.isArray(msg?.addons) ? msg.addons.filter((value) => typeof value === "string") : [];
     return names.map((name) => ({
       name,
-      enabled: true,
-      description: "",
       workspaceTitles: workspaceSpecs.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title),
       panelTitles: panelSpecs.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title),
       workbenchTitles: workbenchSections.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title),
@@ -155241,8 +154297,8 @@ var MolSysViewerController = class _MolSysViewerController {
       exportHelperTitles: exportHelperSpecs.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title)
     })).sort((left, right) => left.name.localeCompare(right.name));
   }
-  buildAddonSectionSummary(msg) {
-    const specs = Array.isArray(msg?.addon_sections) ? msg.addon_sections : [];
+  buildAddonWorkbenchSectionSummary(msg) {
+    const specs = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
     const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
     const workspaceByAddon = /* @__PURE__ */ new Map();
     for (const item2 of workspaceSpecs) {
@@ -155250,15 +154306,14 @@ var MolSysViewerController = class _MolSysViewerController {
       if (!workspaceByAddon.has(item2.addon)) workspaceByAddon.set(item2.addon, item2.id);
     }
     return specs.filter(
-      (item2) => typeof item2?.addon === "string" && typeof item2?.id === "string" && typeof item2?.title === "string" && (item2?.target_panel === void 0 || item2?.target_panel === "addons")
+      (item2) => typeof item2?.addon === "string" && typeof item2?.id === "string" && typeof item2?.title === "string" && (item2?.target_panel === void 0 || item2?.target_panel === "workbench")
     ).map((item2) => ({
       key: `${item2.addon}:${item2.id}`,
       workspaceId: workspaceByAddon.get(item2.addon) ?? item2.addon,
       addon: item2.addon,
       title: item2.title,
       itemTitle: `Add-on: ${item2.addon}`,
-      itemSubtitle: typeof item2?.entry === "string" ? item2.entry : void 0,
-      panelId: typeof item2?.meta?.panel === "string" ? item2.meta.panel : void 0
+      itemSubtitle: typeof item2?.entry === "string" ? item2.entry : void 0
     })).sort((left, right) => left.key.localeCompare(right.key));
   }
   buildAddonContextActionSummary(msg) {
@@ -155297,15 +154352,15 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   getWorkspaceOptions() {
     const options = [
-      { id: "core", title: "Core", subtitle: "Studio + Workbench" }
+      { id: "core", title: "Core", subtitle: "Navigate + Workbench" }
     ];
     for (const workspace of this.addonWorkspaces) {
       const panelCount = this.getWorkspacePanels(workspace.id).length;
-      const workbenchSections = this.addonSections.filter((item2) => item2.workspaceId === workspace.id);
+      const workbenchSections = this.workbenchAddonSections.filter((item2) => item2.workspaceId === workspace.id);
       const workbenchSectionCount = workbenchSections.length;
       const workbenchSectionTitles = workbenchSections.map((item2) => item2.title);
       const contextActionCount = this.addonContextActions.filter((item2) => this.workspaceBelongsToAddon(workspace.id, item2.addon)).length;
-      const exportHelperCount = this.addonsList.find((item2) => item2.name === workspace.addon)?.exportHelperTitles.length ?? 0;
+      const exportHelperCount = this.workbenchAddons.find((item2) => item2.name === workspace.addon)?.exportHelperTitles.length ?? 0;
       const totalVisible = panelCount + workbenchSectionCount;
       if (totalVisible <= 0) continue;
       const summaryParts = [];
@@ -155340,7 +154395,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.currentWorkspacePanelByWorkspace.set(workspaceId, next);
     return next;
   }
-  cleanupActivePanelWidget(preserveWorkspaceChrome = false) {
+  cleanupActivePanelWidget() {
     if (this.activePanelWidgetKey) {
       const parts = this.activePanelWidgetKey.split(":");
       if (parts.length > 0) {
@@ -155357,11 +154412,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.activePanelMsgListeners = [];
     this.activePanelWidgetKey = null;
-    if (preserveWorkspaceChrome) {
-      this.addonsPanel.unmountAddonWidgetOnly();
-    } else {
-      this.addonsPanel.unmountAddonWidget();
-    }
+    this.workbenchPanel.unmountAddonWidget();
   }
   selectWorkspacePanel(workspaceId, panelId) {
     const panels = this.getWorkspacePanels(workspaceId);
@@ -155371,7 +154422,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const prevPanel = panels.find((item2) => item2.id === prevPanelId);
       if (prevPanel?.widget_class) {
         this.notify?.({ event: "panel_unmount", addon: prevPanel.addon, panel: prevPanelId });
-        this.cleanupActivePanelWidget(true);
+        this.cleanupActivePanelWidget();
       }
     }
     this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
@@ -155382,7 +154433,7 @@ var MolSysViewerController = class _MolSysViewerController {
     } else if (!newPanel?.widget_class) {
       this.cleanupActivePanelWidget();
     }
-    this.refreshAddonsPanel();
+    this.refreshWorkbenchPanel();
     this.emitPanelModeState();
   }
   workspaceBelongsToAddon(workspaceId, addonName) {
@@ -155424,91 +154475,32 @@ var MolSysViewerController = class _MolSysViewerController {
     const style = document.createElement("style");
     style.id = "molsysviewer-global-styles";
     style.textContent = `
-            /* Firefox Scrollbar Styling */
-            [data-molsysviewer-group-panel] *,
-            [data-molsysviewer-addons-panel] * {
-                scrollbar-width: thin;
-                scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-            }
-
-            /* Webkit Scrollbar Styling (Chrome, Safari, Edge) */
-            [data-molsysviewer-group-panel] *::-webkit-scrollbar,
-            [data-molsysviewer-addons-panel] *::-webkit-scrollbar,
-            [data-molsysviewer-context-scroll]::-webkit-scrollbar {
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar {
                 width: 6px;
                 height: 6px;
             }
-            [data-molsysviewer-group-panel] *::-webkit-scrollbar-track,
-            [data-molsysviewer-addons-panel] *::-webkit-scrollbar-track,
-            [data-molsysviewer-context-scroll]::-webkit-scrollbar-track {
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-track,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-track {
                 background: transparent;
             }
-            [data-molsysviewer-group-panel] *::-webkit-scrollbar-thumb,
-            [data-molsysviewer-addons-panel] *::-webkit-scrollbar-thumb,
-            [data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb {
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb {
                 background: rgba(255, 255, 255, 0.15);
                 border-radius: 3px;
-                transition: background 0.15s ease;
             }
-            [data-molsysviewer-group-panel] *::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-addons-panel] *::-webkit-scrollbar-thumb:hover,
-            [data-molsysviewer-context-scroll]::-webkit-scrollbar-thumb:hover {
+            [data-molsysviewer-group-panel-body]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-panel-section]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-strip]::-webkit-scrollbar-thumb:hover,
+            [data-molsysviewer-group-strip-row]::-webkit-scrollbar-thumb:hover {
                 background: rgba(255, 255, 255, 0.35);
             }
-
-            /* Range Slider Styling */
-            [data-molsysviewer-group-panel] input[type="range"] {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 100%;
-                height: 4px;
-                background: rgba(255, 255, 255, 0.12);
-                border-radius: 2px;
-                outline: none;
-                transition: opacity 0.15s ease;
-                accent-color: #6366f1;
-            }
-            [data-molsysviewer-group-panel] input[type="range"]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background: #6366f1;
-                cursor: pointer;
-                transition: transform 0.1s ease, background 0.1s ease;
-            }
-            [data-molsysviewer-group-panel] input[type="range"]::-webkit-slider-thumb:hover {
-                transform: scale(1.2);
-                background: #818cf8;
-            }
-            [data-molsysviewer-group-panel] input[type="range"]::-moz-range-thumb {
-                width: 12px;
-                height: 12px;
-                border: 0;
-                border-radius: 50%;
-                background: #6366f1;
-                cursor: pointer;
-                transition: transform 0.1s ease, background 0.1s ease;
-            }
-            [data-molsysviewer-group-panel] input[type="range"]::-moz-range-thumb:hover {
-                transform: scale(1.2);
-                background: #818cf8;
-            }
-
-            /* Checkbox Styling */
-            [data-molsysviewer-group-panel] input[type="checkbox"] {
-                accent-color: #6366f1;
-                cursor: pointer;
-            }
-
-            /* Custom Focus States */
-            [data-molsysviewer-group-panel] input:focus,
-            [data-molsysviewer-group-panel] select:focus {
-                outline: none;
-                box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
-            }
-
             @keyframes molsysviewer-fade-in-up {
                 from {
                     opacity: 0;
@@ -155757,20 +154749,20 @@ var MolSysViewerController = class _MolSysViewerController {
           this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
         }
       }
-      this.setPanelMode("addons", true, true);
+      this.setPanelMode("workbench", true);
       this.emitPanelModeState();
       return;
     }
     this.setPanelMode(this.lastCorePanelMode, true);
     this.refreshNavigatePanel();
-    this.refreshAddonsPanel();
+    this.refreshWorkbenchPanel();
     this.emitPanelModeState();
   }
   emitPanelModeState() {
     const navigateExpanded = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
-    const addonsExpanded = this.addonsPanel.isVisible() && this.addonsPanel.isExpanded();
-    const expanded = navigateExpanded || addonsExpanded;
-    const panel = navigateExpanded ? "navigate" : addonsExpanded ? "addons" : null;
+    const workbenchExpanded = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
+    const expanded = navigateExpanded || workbenchExpanded;
+    const panel = navigateExpanded ? "navigate" : workbenchExpanded ? "workbench" : null;
     const workspacePanel = this.currentWorkspace === "core" ? panel : this.ensureWorkspacePanelSelection(this.currentWorkspace);
     this.notify?.({
       event: "panel_mode_state",
@@ -155880,27 +154872,6 @@ var MolSysViewerController = class _MolSysViewerController {
       if (targetBackgroundMode && shouldRestoreBackground) {
         await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
       }
-    }
-  }
-  async downloadViewportImage() {
-    const preset = this.addonsScene?.figurePreset || "publication-light";
-    const scale = this.addonsScene?.figureScale || 2;
-    const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
-    const transparent = variants.includes("transparent");
-    const dataUri = await this.getImageDataUri({
-      scale,
-      transparent,
-      preset
-    });
-    if (typeof dataUri === "string") {
-      const link = document.createElement("a");
-      link.href = dataUri;
-      link.download = "molsysviewer.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (typeof dataUri === "object" && dataUri.success === false) {
-      alert(dataUri.message);
     }
   }
   async setCameraSnapshot(snapshot, durationMs) {
@@ -156783,7 +155754,7 @@ var HelpOverlay = class {
       ["Right click", "Context menu"]
     ]));
     grid.appendChild(makeSection("Keyboard", [
-      ["N", "Open / close Studio"],
+      ["N", "Open / close Navigate"],
       ["W", "Open / close Workbench"],
       ["V", "Toggle canvas visibility"],
       ["H", "Toggle this help"],

@@ -468,12 +468,12 @@ export class GroupStrip {
                             ? (colorHex ? `1px solid ${colorHex}` : "1px solid rgba(255,255,255,0.38)")
                             : contextSelected
                                 ? "1px solid rgba(251, 191, 36, 0.48)"
-                                : (colorHex ? `1px solid ${colorHex}33` : "1px solid rgba(255,255,255,0.12)"),
+                                : (colorHex ? `1px solid ${colorHex}50` : "1px solid rgba(255,255,255,0.12)"),
                         background: selected
-                            ? (colorHex ? `${colorHex}40` : "rgba(255,255,255,0.18)")
+                            ? (colorHex ? `${colorHex}55` : "rgba(255,255,255,0.18)")
                             : contextSelected
                                 ? "rgba(251, 191, 36, 0.12)"
-                                : (colorHex ? `${colorHex}18` : "rgba(255,255,255,0.06)"),
+                                : (colorHex ? `${colorHex}22` : "rgba(255,255,255,0.06)"),
                         boxShadow: contextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
                         color: "inherit",
                         cursor: "pointer",

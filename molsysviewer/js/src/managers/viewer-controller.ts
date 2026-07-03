@@ -956,7 +956,7 @@ export class MolSysViewerController {
             });
         }, async (scheme) => {
             const themeName = scheme === "physicochemical" ? "msv-physicochemical" : "element-symbol";
-            const components = this.state.getComponents();
+            const components = this.getComponents();
             await this.plugin.managers.structure.component.updateRepresentationsTheme(components, {
                 color: themeName as any
             });
