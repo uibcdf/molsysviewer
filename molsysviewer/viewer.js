@@ -155020,6 +155020,7 @@ var MolSysViewerController = class _MolSysViewerController {
                 border-radius: 2px;
                 outline: none;
                 transition: opacity 0.15s ease;
+                accent-color: #6366f1;
             }
             [data-molsysviewer-group-panel] input[type="range"]::-webkit-slider-thumb {
                 -webkit-appearance: none;
@@ -155047,6 +155048,19 @@ var MolSysViewerController = class _MolSysViewerController {
             [data-molsysviewer-group-panel] input[type="range"]::-moz-range-thumb:hover {
                 transform: scale(1.2);
                 background: #818cf8;
+            }
+
+            /* Checkbox Styling */
+            [data-molsysviewer-group-panel] input[type="checkbox"] {
+                accent-color: #6366f1;
+                cursor: pointer;
+            }
+
+            /* Custom Focus States */
+            [data-molsysviewer-group-panel] input:focus,
+            [data-molsysviewer-group-panel] select:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
             }
 
             @keyframes molsysviewer-fade-in-up {
