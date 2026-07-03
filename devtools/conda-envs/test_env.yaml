@@ -11,6 +11,8 @@ dependencies:
   - anywidget
   - traitlets
   - packaging
+  - depdigest
+  - argdigest
   - smonitor
   - molsysmt
   - pyunitwizard
