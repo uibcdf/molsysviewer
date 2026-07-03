@@ -707,15 +707,41 @@ def _load_molecular_system_into_qt_host(
     load_mode: str = "selection",
     debug_js: bool | None = None,
 ) -> None:
-    messages = _get_helper("_build_qt_live_messages")(
-        molecular_system,
-        selection=selection,
-        structure_indices=structure_indices,
-        syntax=syntax,
-        load_mode=load_mode,
-        debug_js=debug_js,
-    )
-    _get_helper("_send_viewer_messages")(webview, messages, new_generation=True)
+    view = getattr(webview, "_molsysviewer_view", None)
+    bridge = getattr(webview, "_molsysviewer_qt_bridge", None)
+    if view is not None:
+        # Persistent-view path: drive the live backend directly. A new load starts
+        # a fresh generation and replaces the scene (reset_viewer + load), all
+        # emitted through the Qt channel/bridge.
+        if bridge is not None:
+            bridge.begin_generation()
+        if molecular_system is None:
+            view.reset_viewer(skip_digestion=True)
+        else:
+            from ..viewer.core import MolSysView
+            # Demos and some sources arrive as a MolSysView; load its underlying
+            # molecular system. Paths / PDB ids / molsysmt systems pass through.
+            target = molecular_system._molsys if isinstance(molecular_system, MolSysView) else molecular_system  # noqa: SLF001
+            view.load(
+                target,
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                mode="replace",
+                skip_digestion=True,
+            )
+    else:
+        # Fallback (no persistent view): the legacy snapshot path.
+        messages = _get_helper("_build_qt_live_messages")(
+            molecular_system,
+            selection=selection,
+            structure_indices=structure_indices,
+            syntax=syntax,
+            load_mode=load_mode,
+            debug_js=debug_js,
+        )
+        _get_helper("_send_viewer_messages")(webview, messages, new_generation=True)
+
     if molecular_system is None:
         _get_helper("_set_empty_state")(window, current_state)
     else:

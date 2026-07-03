@@ -95,7 +95,7 @@ def create_standalone_qt0_window(
         window.resize(initial_width, initial_height)
 
     webview = QWebEngineView(window)
-    _get_helper("_install_qt_message_bridge")(
+    bridge = _get_helper("_install_qt_message_bridge")(
         webview,
         QWebEnginePage,
         QTimer,
@@ -104,6 +104,19 @@ def create_standalone_qt0_window(
         QBuffer=QBuffer,
         QByteArray=QByteArray,
     )
+
+    # Persistent MolSysView driven through the Qt bridge: the same view backend
+    # as Jupyter, so loads, rebuilds, interactions and movie export all work over
+    # live messages. `view.widget` is a QtViewChannel wrapping the bridge; the
+    # bridge forwards frontend product events to it, reaching _handle_frontend_event.
+    from ..viewer.core import MolSysView
+    from .view_channel import QtViewChannel
+
+    channel = QtViewChannel(bridge)
+    view = MolSysView(transport=channel, debug_js=debug_js)
+    view._qt_process_events = getattr(app, "processEvents", None)  # noqa: SLF001
+    webview._molsysviewer_view = view
+
     webview.setUrl(QUrl.fromLocalFile(html_path))
     window.setCentralWidget(webview)
     _get_helper("_install_menu_bar")(

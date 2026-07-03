@@ -26,7 +26,18 @@ Para que Qt sea una superficie de producto **interactiva** (no solo un cargador)
 hay que promover el host Qt al mismo modelo que AnyWidget: **el `MolSysView` es el
 backend, el bridge es el transporte**.
 
-## F1 — `MolSysView` persistente ligado al bridge (núcleo)
+## Progreso
+
+**F1 implementado** (pendiente validación en Qt real): `QtViewChannel` (canal
+que satisface la interfaz `widget` del view), `event_sink` en el bridge que
+reenvía los eventos de producto al view, `MolSysView(transport=…)`, y el host Qt
+crea **un** `MolSysView` persistente que conduce las cargas con `view.load(...,
+mode="replace")` (en vez del snapshot temporal), con `view._qt_process_events =
+app.processEvents`. Verificado con fakes + molsysmt real; falta el round-trip en
+ventana Qt real. **Esto habilita F2 y F3** (ya reciben eventos), que quedan
+principalmente como *validación* + glue de UI.
+
+## F1 — `MolSysView` persistente ligado al bridge (núcleo) — HECHO
 
 - Crear **un** `MolSysView` en `create_standalone_qt0_window`, con vida = la de la
   ventana.

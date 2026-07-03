@@ -393,18 +393,25 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert restore_last_action.shortcut == "Ctrl+R"
     assert close_action.shortcut == "Ctrl+W"
     assert recent_menu.actions[0].text == "No recent sources"
-    calls = []
-    monkeypatch.setattr(
-        "molsysviewer.standalone_qt._build_qt_live_messages",
-        lambda molecular_system, **kwargs: calls.append((molecular_system, kwargs)) or [{"op": "clear_all"}],
-    )
+    # The load actions drive the persistent MolSysView (not the legacy snapshot).
+    from molsysviewer.viewer.core import MolSysView
+
+    view = runtime["webview"]._molsysviewer_view
+    assert isinstance(view, MolSysView)
+    assert view.widget is runtime["webview"]._molsysviewer_qt_bridge.event_sink.__self__
+
+    load_calls = []
+    reset_calls = []
+    monkeypatch.setattr(view, "load", lambda ms, **kwargs: load_calls.append(ms))
+    monkeypatch.setattr(view, "reset_viewer", lambda **kwargs: reset_calls.append(True))
+
     new_empty_action.triggered._callbacks[0]()
-    assert calls[-1][0] is None
+    assert len(reset_calls) == 1
     assert runtime["window"].status_bar.messages[-1] == "Opened empty host."
     assert runtime["window"].title == "Qt Prototype"
     FakeFileDialog.selected = str(tmp_path / "picked-system.pdb")
     file_menu.actions[1].triggered._callbacks[0]()
-    assert calls[-1][0] == str(tmp_path / "picked-system.pdb")
+    assert load_calls[-1] == str(tmp_path / "picked-system.pdb")
     assert runtime["webview"].url == f"file://{outfile.resolve()}"
     assert runtime["window"].status_bar.messages[-1] == "Loaded file: picked-system.pdb"
     assert runtime["window"].title == "Qt Prototype · picked-system.pdb"
@@ -412,7 +419,8 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert recent_menu.actions[0].actions[0].text == "picked-system.pdb"
     demo_action = next(action for action in demo_menu.actions if action.text == "pentalanine")
     demo_action.triggered._callbacks[0]()
-    assert type(calls[-1][0]).__name__ == "MolSysView"
+    # A demo is a MolSysView; the persistent view loads its underlying molsys.
+    assert not isinstance(load_calls[-1], MolSysView) and load_calls[-1] is not None
     assert runtime["window"].status_bar.messages[-1] == "Loaded demo: pentalanine"
     assert runtime["window"].title == "Qt Prototype · pentalanine"
     assert recent_menu.actions[0].title == "Demos"
@@ -421,7 +429,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert recent_menu.actions[1].actions[0].text == "picked-system.pdb"
     FakeInputDialog.value = "1crn"
     load_pdbid_action.triggered._callbacks[0]()
-    assert calls[-1][0] == "1crn"
+    assert load_calls[-1] == "1crn"
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
     assert runtime["window"].title == "Qt Prototype · 1crn"
     assert recent_menu.actions[0].title == "Demos"
@@ -430,14 +438,14 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert recent_menu.actions[2].actions[0].text == "1crn"
     FakeInputDialog.value = "molsysmt.MolSys"
     load_source_action.triggered._callbacks[0]()
-    assert calls[-1][0] == "molsysmt.MolSys"
+    assert load_calls[-1] == "molsysmt.MolSys"
     assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
     assert runtime["window"].title == "Qt Prototype · molsysmt.MolSys"
     assert recent_menu.actions[3].title == "Sources"
     assert recent_menu.actions[3].actions[0].text == "molsysmt.MolSys"
     assert recent_menu.actions[4].text == "Clear Recent Sources"
     restore_last_action.triggered._callbacks[0]()
-    assert calls[-1][0] == "molsysmt.MolSys"
+    assert load_calls[-1] == "molsysmt.MolSys"
     assert runtime["window"].status_bar.messages[-1] == "Loaded source: molsysmt.MolSys"
     recent_menu.actions[2].actions[0].triggered._callbacks[0]()
     assert runtime["window"].status_bar.messages[-1] == "Loaded PDB ID: 1crn"
@@ -504,7 +512,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
     assert '"height": 800' in persisted
 
     monkeypatch.setattr(
-        "molsysviewer.standalone_qt._build_qt_live_messages",
+        view, "load",
         lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("broken source")),
     )
     FakeFileDialog.selected = str(tmp_path / "broken-system.pdb")
