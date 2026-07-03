@@ -24,6 +24,7 @@ concepts.md
 public_api.md
 protocol_and_payloads.md
 units_and_quantities.md
+standalone_surfaces.md
 architecture.md
 architecture_full.md
 addons.md
