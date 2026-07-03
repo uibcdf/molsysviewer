@@ -153018,6 +153018,9 @@ var MolSysViewerController = class _MolSysViewerController {
     this.emitPanelModeState();
   }
   setPanelMode(panel, expanded) {
+    if (panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
+      this.selectWorkspace("core");
+    }
     const shouldExpand = this.isPanelOnly ? true : expanded !== false;
     if (!shouldExpand) {
       this.collapsePanels();

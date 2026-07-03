@@ -1518,6 +1518,10 @@ export class MolSysViewerController {
     }
 
     private setPanelMode(panel?: "navigate" | "addons" | null, expanded?: boolean): void {
+        if (panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
+            this.selectWorkspace("core");
+        }
+
         const shouldExpand = this.isPanelOnly ? true : (expanded !== false);
         if (!shouldExpand) {
             this.collapsePanels();
