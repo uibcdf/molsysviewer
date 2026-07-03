@@ -510,7 +510,12 @@ def _register_qt_url_schemes(QWebEngineUrlScheme) -> None:
 
 
 def _make_payload_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray, payloads: dict[str, bytes]):
-    """Build a scheme handler that serves in-memory payloads over QT_PAYLOAD_SCHEME."""
+    """Build a scheme handler that serves in-memory payloads over QT_PAYLOAD_SCHEME.
+
+    The returned handler exposes a `served` list (payload ids actually served) so
+    the round-trip can be asserted, e.g. by the real-Qt smoke test.
+    """
+    served: list[str] = []
 
     class MolSysViewerPayloadSchemeHandler(QWebEngineUrlSchemeHandler):
         def requestStarted(self, job):  # noqa: N802
@@ -525,8 +530,11 @@ def _make_payload_scheme_handler(QWebEngineUrlSchemeHandler, QBuffer, QByteArray
             buffer.setData(QByteArray(data))
             buffer.open(QBuffer.OpenModeFlag.ReadOnly if hasattr(QBuffer, "OpenModeFlag") else QBuffer.ReadOnly)
             job.reply(QByteArray(b"application/json"), buffer)
+            served.append(payload_id)
 
-    return MolSysViewerPayloadSchemeHandler()
+    handler = MolSysViewerPayloadSchemeHandler()
+    handler.served = served
+    return handler
 
 
 def _decode_qt_bridge_event(url: str) -> dict[str, Any] | None:
