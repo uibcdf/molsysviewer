@@ -19,7 +19,7 @@ For real MolSysSuite teams, a better first milestone is:
 
 - one workspace if the add-on is large enough
 - one panel
-- one workbench section
+- one addon section
 - one context action
 - optional minimal lifecycle hooks
 
@@ -61,7 +61,7 @@ That template is now more than declarative and more than single-panel:
 - its context action records the last handled payload
 - it models a small but credible workspace:
   - multiple panels
-  - multiple workbench sections
+  - multiple addon sections
   - more than one context action
   - one export helper
 
@@ -89,7 +89,7 @@ That helper currently does three things for you:
 
 - registers the bundled reference add-on
 - opens the `dialanine` demo system
-- opens the shared `Workbench` panel so the reference workspace is visible
+- opens the shared `Add-ons` panel so the reference workspace is visible
 
 ## 2. Register it directly during development
 

@@ -34,7 +34,7 @@ The stable surface to target today is:
 - typed contribution specs:
   - workspaces
   - panels
-  - workbench sections
+  - addon sections
   - context actions
   - shape providers
   - export helpers
@@ -69,7 +69,7 @@ Current public surfaces include:
 - `AddonWorkspaceSpec`
 - `AddonPanelSpec`
 - `AddonContextActionSpec`
-- `AddonWorkbenchSectionSpec`
+- `AddonSectionSpec`
 - `AddonShapeProviderSpec`
 - `AddonStyleHelperSpec`
 - `AddonExportHelperSpec`
@@ -83,7 +83,7 @@ An add-on may currently declare:
 - workspace specs
 - panels
 - context-menu actions
-- workbench sections
+- addon sections
 - shape providers
 - style helpers
 - export helpers
@@ -178,7 +178,7 @@ registration contract:
 
 - one workspace
 - several panels
-- several workbench/runtime contributions
+- several addon/runtime contributions
 - a minimal but visible lifecycle flow
 
 So it is a better starter for downstream teams than a purely declarative
@@ -202,7 +202,7 @@ for external teams:
 
 - register one bundled reference add-on
 - open a real demo system
-- land directly in the shared `Workbench` surface
+- land directly in the shared `Add-ons` surface
 - activate the add-on workspace
 - and open its entry panel so the add-on runtime can be inspected immediately
 
@@ -277,7 +277,7 @@ That template already includes:
 
 - one workspace
 - several panels
-- several workbench sections
+- several addon sections
 - more than one context action
 - one shape provider
 - one export helper
@@ -291,7 +291,7 @@ Recommended first milestone for external teams:
 
 1. define one workspace if the add-on is large enough
 2. contribute one panel
-3. contribute one workbench section
+3. contribute one addon section
 4. contribute one context action
 5. implement at most one real lifecycle-driven behavior
 
@@ -329,8 +329,7 @@ MolSysViewer now also supports a deliberately small per-view lifecycle:
 This lifecycle is Python-side and view-local.
 It is intended for light runtime wiring when an add-on becomes active in a
 specific view. Lifecycle callback exceptions are isolated: MolSysViewer records
-the failure, keeps the viewer running, and exposes the diagnostic in the
-Workbench Add-ons section. If `on_enable(view)` fails, that add-on is left
+the failure, keeps the viewer running, and exposes the diagnostic in the Add-ons panel. If `on_enable(view)` fails, that add-on is left
 disabled for the affected view so runtime state remains coherent.
 
 You can provide it explicitly:
@@ -429,12 +428,12 @@ view.addons.reset()
 ```
 
 MolSysViewer also now mirrors a minimal add-on runtime summary into the current
-Workbench runtime.
+Add-ons panel.
 
 The first visible slice is intentionally modest:
 
 - enabled add-ons appear in a dedicated `Add-ons` section
-- panel titles and workbench-section titles are summarized there
+- panel titles and addon-section titles are summarized there
 - context-action titles and export-helper titles are now also summarized there
 
 This is not full add-on UI execution yet.

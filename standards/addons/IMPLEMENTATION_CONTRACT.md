@@ -19,7 +19,7 @@ Public names:
 - `AddonWorkspaceSpec`
 - `AddonPanelSpec`
 - `AddonContextActionSpec`
-- `AddonWorkbenchSectionSpec`
+- `AddonSectionSpec`
 - `AddonShapeProviderSpec`
 - `AddonExportHelperSpec`
 - `AddonLifecycleSpec`
@@ -86,7 +86,7 @@ An add-on may currently declare:
 - workspaces
 - panels
 - context actions
-- workbench sections
+- addon sections
 - shape providers
 - style helpers
 - export helpers
@@ -133,7 +133,7 @@ The recommended first milestone is:
 
 1. one workspace if the add-on is large enough
 2. at least one panel
-3. at least one workbench section
+3. at least one addon section
 4. at least one context action
 5. one small lifecycle-driven behavior
 
@@ -161,7 +161,7 @@ That reference template is intentionally small but already demonstrates:
 
 - workspace contribution
 - multi-panel contribution
-- multi-section workbench contribution
+- multi-section addon contribution
 - more than one context-action contribution
 - shape-provider contribution
 - export-helper contribution
