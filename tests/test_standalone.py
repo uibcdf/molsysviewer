@@ -988,6 +988,93 @@ def test_qt_bridge_forwards_product_events_but_not_transport():
     assert "structure_ready" not in names
 
 
+# Tier-1 CI smoke: the real Qt JS->Python event transport WITHOUT Mol*/WebGL.
+# A trivial page (no viewer.js, no WebGL context) posts a `ready` event exactly
+# like the frontend does — fetch("molsysviewer://event?...") — and we assert the
+# bridge receives it and becomes ready. This isolates the transport
+# (fetch -> scheme handler -> bridge) that fakes cannot cover, runs headless
+# (offscreen, no GPU/display needed), and is the always-on CI gate. It runs in a
+# subprocess because QtWebEngine cannot be initialized more than once per process
+# (doing so alongside the rest of the suite aborts the interpreter). The render
+# (which needs WebGL) is validated separately in test_qt_live_model_full_render_gpu.
+_QT_TRANSPORT_SMOKE_SCRIPT = r'''
+import os, sys, tempfile, time
+os.environ.setdefault("QTWEBENGINE_DISABLE_SANDBOX", "1")
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+import molsysviewer.standalone_qt as sq
+qt = sq._import_qt()
+sq._register_qt_url_schemes(qt["QWebEngineUrlScheme"])
+app = sq._get_or_create_application(qt["QApplication"], None)
+view = qt["QWebEngineView"]()
+bridge = sq._install_qt_message_bridge(
+    view, qt["QWebEnginePage"], qt["QTimer"],
+    QWebEngineUrlSchemeHandler=qt["QWebEngineUrlSchemeHandler"],
+    QBuffer=qt["QBuffer"], QByteArray=qt["QByteArray"],
+)
+received = []
+bridge.event_sink = received.append
+html = ("<!doctype html><html><body><script>"
+        "window.addEventListener('load',function(){"
+        "fetch('molsysviewer://event?payload='+"
+        "encodeURIComponent(JSON.stringify({event:'ready'})));});"
+        "</script></body></html>")
+with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as fh:
+    fh.write(html); path = fh.name
+view.setUrl(qt["QUrl"].fromLocalFile(path))
+start = time.time()
+while time.time() - start < 15.0:
+    app.processEvents()
+    if bridge.ready:
+        break
+    time.sleep(0.02)
+ok = bool(bridge.ready) and any(e.get("event") == "ready" for e in received)
+print("TRANSPORT_READY:" + ("yes" if ok else "no"))
+sys.exit(0 if ok else 1)
+'''
+
+
+def test_qt_event_transport_smoke_real_qt():
+    """Real Qt JS->Python transport smoke (fetch -> scheme handler -> bridge).
+
+    Runs in a subprocess (QtWebEngine is single-init-per-process). Headless,
+    no GPU/display: this is the always-on CI gate for the transport.
+    """
+    import subprocess
+
+    try:
+        standalone_qt._import_qt()
+    except ImportError as exc:
+        pytest.skip(f"PySide6 is not available: {exc}")
+
+    # Curated env: force offscreen and strip QtWebEngine path/backend vars that
+    # other tests may leave in os.environ (they'd otherwise leak into the child
+    # and make QtWebEngine try a real GL/Vulkan backend). The child's _import_qt
+    # recomputes the resource paths fresh from CONDA_PREFIX.
+    env = dict(os.environ)
+    for key in (
+        "QTWEBENGINE_RESOURCES_PATH",
+        "QTWEBENGINEPROCESS_PATH",
+        "QTWEBENGINE_LOCALES_PATH",
+        "QTWEBENGINE_CHROMIUM_FLAGS",
+        "QT_QUICK_BACKEND",
+    ):
+        env.pop(key, None)
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    env["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
+
+    result = subprocess.run(
+        [sys.executable, "-c", _QT_TRANSPORT_SMOKE_SCRIPT],
+        capture_output=True,
+        text=True,
+        timeout=90,
+        env=env,
+    )
+    assert "TRANSPORT_READY:yes" in result.stdout, (
+        "real Qt event transport (fetch -> molsysviewer:// scheme handler -> bridge) "
+        f"failed.\nstdout={result.stdout}\nstderr={result.stderr[-1500:]}"
+    )
+
+
 def test_qt_live_model_smoke_real_window(monkeypatch):
     """Real (offscreen) Qt WebEngine smoke test for the live-message transport.
 
