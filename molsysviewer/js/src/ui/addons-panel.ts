@@ -30,7 +30,7 @@ type AddonSummary = {
     active?: boolean;
 };
 
-type AddonWorkbenchSectionSummary = {
+type AddonSectionSummary = {
     key: string;
     workspaceId: string;
     title: string;
@@ -79,8 +79,8 @@ type ActiveWorkspacePanelSummary = {
     }>;
 };
 
-type BuiltInWorkbenchSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
-type WorkbenchSectionKey = BuiltInWorkbenchSectionKey | `addon:${string}`;
+type BuiltInAddonSectionKey = "annotations" | "measurements" | "shapes" | "scene" | "addons";
+type AddonSectionKey = BuiltInAddonSectionKey | `addon:${string}`;
 
 type SectionView = {
     root: HTMLDivElement;
@@ -89,7 +89,7 @@ type SectionView = {
     marker: HTMLSpanElement;
 };
 
-export class WorkbenchPanel {
+export class AddonsPanel {
     private readonly shell: PanelShell | FloatingPanelShell;
     private readonly root: HTMLDivElement;
     private readonly body: HTMLDivElement;
@@ -101,11 +101,11 @@ export class WorkbenchPanel {
     private readonly workspacePanelHost: HTMLDivElement;
     private readonly workspacePanelHostTitle: HTMLDivElement;
     private readonly workspacePanelHostBody: HTMLDivElement;
-    private readonly workspaceAddonWidgetHost: HTMLDivElement;
-    private readonly sections = new Map<WorkbenchSectionKey, SectionView>();
-    private readonly sectionExpanded = new Map<WorkbenchSectionKey, boolean>();
-    private readonly builtInSectionKeys: BuiltInWorkbenchSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
-    private addonSectionKeys: WorkbenchSectionKey[] = [];
+    private readonly addonsWidgetHost: HTMLDivElement;
+    private readonly sections = new Map<AddonSectionKey, SectionView>();
+    private readonly sectionExpanded = new Map<AddonSectionKey, boolean>();
+    private readonly builtInSectionKeys: BuiltInAddonSectionKey[] = ["annotations", "measurements", "shapes", "scene", "addons"];
+    private addonSectionKeys: AddonSectionKey[] = [];
     private workspaceItems: WorkspaceOption[] = [];
     private workspacePanelItems: WorkspacePanelOption[] = [];
     private currentWorkspaceId = "core";
@@ -126,8 +126,8 @@ export class WorkbenchPanel {
         this.shell = options?.sharedShell
             ? options.sharedShell
             : (floating
-                ? new FloatingPanelShell(host, { title: "Workbench", navButtonLabel: "Navigate" })
-                : new PanelShell(host, { title: "Workbench", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" }));
+                ? new FloatingPanelShell(host, { title: "Add-ons", navButtonLabel: "Navigate" })
+                : new PanelShell(host, { title: "Add-ons", width: 240, toggleWidth: 26, navButtonLabel: "Navigate" }));
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
 
@@ -153,9 +153,9 @@ export class WorkbenchPanel {
             });
         }
 
-        this.root.setAttribute("data-molsysviewer-workbench-panel", "true");
-        this.shell.titleElement.setAttribute("data-molsysviewer-workbench-panel-title", "true");
-        this.body.setAttribute("data-molsysviewer-workbench-panel-body", "true");
+        this.root.setAttribute("data-molsysviewer-addons-panel", "true");
+        this.shell.titleElement.setAttribute("data-molsysviewer-addons-panel-title", "true");
+        this.body.setAttribute("data-molsysviewer-addons-panel-body", "true");
 
         if (!floating) {
             Object.assign(this.root.style, {
@@ -198,7 +198,7 @@ export class WorkbenchPanel {
         });
 
         this.workspaceRuntimeDeck = document.createElement("div");
-        this.workspaceRuntimeDeck.setAttribute("data-molsysviewer-workbench-workspace-runtime-deck", "true");
+        this.workspaceRuntimeDeck.setAttribute("data-molsysviewer-addons-workspace-runtime-deck", "true");
         Object.assign(this.workspaceRuntimeDeck.style, {
             display: "none",
             flexDirection: "column",
@@ -207,7 +207,7 @@ export class WorkbenchPanel {
         this.body.appendChild(this.workspaceRuntimeDeck);
 
         this.workspaceOverviewHost = document.createElement("div");
-        this.workspaceOverviewHost.setAttribute("data-molsysviewer-workbench-workspace-overview", "true");
+        this.workspaceOverviewHost.setAttribute("data-molsysviewer-addons-workspace-overview", "true");
         Object.assign(this.workspaceOverviewHost.style, {
             display: "none",
             flexDirection: "column",
@@ -219,7 +219,7 @@ export class WorkbenchPanel {
         });
 
         this.workspaceOverviewTitle = document.createElement("div");
-        this.workspaceOverviewTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-title", "true");
+        this.workspaceOverviewTitle.setAttribute("data-molsysviewer-addons-workspace-overview-title", "true");
         Object.assign(this.workspaceOverviewTitle.style, {
             fontSize: "11px",
             fontWeight: "700",
@@ -230,7 +230,7 @@ export class WorkbenchPanel {
         this.workspaceOverviewTitle.textContent = "Workspaces";
 
         this.workspaceOverviewBody = document.createElement("div");
-        this.workspaceOverviewBody.setAttribute("data-molsysviewer-workbench-workspace-overview-body", "true");
+        this.workspaceOverviewBody.setAttribute("data-molsysviewer-addons-workspace-overview-body", "true");
         Object.assign(this.workspaceOverviewBody.style, {
             display: "grid",
             gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
@@ -242,7 +242,7 @@ export class WorkbenchPanel {
         this.workspaceRuntimeDeck.appendChild(this.workspaceOverviewHost);
 
         this.workspacePanelHost = document.createElement("div");
-        this.workspacePanelHost.setAttribute("data-molsysviewer-workbench-workspace-panel-host", "true");
+        this.workspacePanelHost.setAttribute("data-molsysviewer-addons-workspace-panel-host", "true");
         Object.assign(this.workspacePanelHost.style, {
             display: "none",
             flexDirection: "column",
@@ -254,7 +254,7 @@ export class WorkbenchPanel {
         });
 
         this.workspacePanelHostTitle = document.createElement("div");
-        this.workspacePanelHostTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-title", "true");
+        this.workspacePanelHostTitle.setAttribute("data-molsysviewer-addons-workspace-panel-title", "true");
         Object.assign(this.workspacePanelHostTitle.style, {
             fontSize: "12px",
             fontWeight: "700",
@@ -262,7 +262,7 @@ export class WorkbenchPanel {
         });
 
         this.workspacePanelHostBody = document.createElement("div");
-        this.workspacePanelHostBody.setAttribute("data-molsysviewer-workbench-workspace-panel-body", "true");
+        this.workspacePanelHostBody.setAttribute("data-molsysviewer-addons-workspace-panel-body", "true");
         Object.assign(this.workspacePanelHostBody.style, {
             display: "flex",
             flexDirection: "column",
@@ -271,9 +271,9 @@ export class WorkbenchPanel {
             color: "rgba(244,244,245,0.78)",
         });
 
-        this.workspaceAddonWidgetHost = document.createElement("div");
-        this.workspaceAddonWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
-        Object.assign(this.workspaceAddonWidgetHost.style, {
+        this.addonsWidgetHost = document.createElement("div");
+        this.addonsWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
+        Object.assign(this.addonsWidgetHost.style, {
             display: "none",
             flexDirection: "column",
             gap: "4px",
@@ -283,7 +283,7 @@ export class WorkbenchPanel {
 
         this.workspacePanelHost.appendChild(this.workspacePanelHostTitle);
         this.workspacePanelHost.appendChild(this.workspacePanelHostBody);
-        this.workspacePanelHost.appendChild(this.workspaceAddonWidgetHost);
+        this.workspacePanelHost.appendChild(this.addonsWidgetHost);
         this.workspaceRuntimeDeck.appendChild(this.workspacePanelHost);
 
         this.createSection("annotations", "Annotations", "No annotations yet.");
@@ -383,25 +383,25 @@ export class WorkbenchPanel {
 
         if (summary.description) {
             const description = document.createElement("div");
-            description.setAttribute("data-molsysviewer-workbench-workspace-panel-description", "true");
+            description.setAttribute("data-molsysviewer-addons-workspace-panel-description", "true");
             description.textContent = summary.description;
             this.workspacePanelHostBody.appendChild(description);
         }
         if (summary.entry) {
             const entry = document.createElement("div");
-            entry.setAttribute("data-molsysviewer-workbench-workspace-panel-entry", "true");
+            entry.setAttribute("data-molsysviewer-addons-workspace-panel-entry", "true");
             entry.textContent = `Entry: ${summary.entry}`;
             this.workspacePanelHostBody.appendChild(entry);
         }
         if (summary.addon) {
             const addon = document.createElement("div");
-            addon.setAttribute("data-molsysviewer-workbench-workspace-panel-addon", "true");
+            addon.setAttribute("data-molsysviewer-addons-workspace-panel-addon", "true");
             addon.textContent = `Add-on: ${summary.addon}`;
             this.workspacePanelHostBody.appendChild(addon);
         }
         if ((summary.contextActionTitles?.length ?? 0) > 0 || (summary.exportHelperTitles?.length ?? 0) > 0) {
             const capabilities = document.createElement("div");
-            capabilities.setAttribute("data-molsysviewer-workbench-workspace-panel-capabilities", "true");
+            capabilities.setAttribute("data-molsysviewer-addons-workspace-panel-capabilities", "true");
             Object.assign(capabilities.style, {
                 display: "flex",
                 flexDirection: "column",
@@ -411,14 +411,14 @@ export class WorkbenchPanel {
 
             if ((summary.contextActionTitles?.length ?? 0) > 0) {
                 const context = document.createElement("div");
-                context.setAttribute("data-molsysviewer-workbench-workspace-panel-context-actions", "true");
+                context.setAttribute("data-molsysviewer-addons-workspace-panel-context-actions", "true");
                 context.textContent = `Context: ${summary.contextActionTitles!.join(", ")}`;
                 capabilities.appendChild(context);
             }
 
             if ((summary.exportHelperTitles?.length ?? 0) > 0) {
                 const exports = document.createElement("div");
-                exports.setAttribute("data-molsysviewer-workbench-workspace-panel-export-helpers", "true");
+                exports.setAttribute("data-molsysviewer-addons-workspace-panel-export-helpers", "true");
                 exports.textContent = `Export: ${summary.exportHelperTitles!.join(", ")}`;
                 capabilities.appendChild(exports);
             }
@@ -427,7 +427,7 @@ export class WorkbenchPanel {
         }
         if (Array.isArray(summary.sections) && summary.sections.length > 0) {
             const sectionsBlock = document.createElement("div");
-            sectionsBlock.setAttribute("data-molsysviewer-workbench-workspace-panel-sections", "true");
+            sectionsBlock.setAttribute("data-molsysviewer-addons-workspace-panel-sections", "true");
             Object.assign(sectionsBlock.style, {
                 display: "flex",
                 flexDirection: "column",
@@ -437,7 +437,7 @@ export class WorkbenchPanel {
 
             for (const section of summary.sections) {
                 const sectionCard = document.createElement("div");
-                sectionCard.setAttribute("data-molsysviewer-workbench-workspace-panel-section", section.key);
+                sectionCard.setAttribute("data-molsysviewer-addons-workspace-panel-section", section.key);
                 Object.assign(sectionCard.style, {
                     display: "flex",
                     flexDirection: "column",
@@ -449,7 +449,7 @@ export class WorkbenchPanel {
                 });
 
                 const sectionTitle = document.createElement("div");
-                sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-title", section.key);
+                sectionTitle.setAttribute("data-molsysviewer-addons-workspace-panel-section-title", section.key);
                 Object.assign(sectionTitle.style, {
                     fontSize: "11px",
                     fontWeight: "700",
@@ -458,7 +458,7 @@ export class WorkbenchPanel {
                 sectionTitle.textContent = section.title;
 
                 const itemTitle = document.createElement("div");
-                itemTitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-item", section.key);
+                itemTitle.setAttribute("data-molsysviewer-addons-workspace-panel-section-item", section.key);
                 itemTitle.textContent = section.itemTitle;
 
                 sectionCard.appendChild(sectionTitle);
@@ -466,7 +466,7 @@ export class WorkbenchPanel {
 
                 if (section.itemSubtitle) {
                     const itemSubtitle = document.createElement("div");
-                    itemSubtitle.setAttribute("data-molsysviewer-workbench-workspace-panel-section-subtitle", section.key);
+                    itemSubtitle.setAttribute("data-molsysviewer-addons-workspace-panel-section-subtitle", section.key);
                     Object.assign(itemSubtitle.style, {
                         fontSize: "11px",
                         color: "rgba(244,244,245,0.62)",
@@ -502,7 +502,7 @@ export class WorkbenchPanel {
         const appendSection = (key: string, label: string): void => {
             if (!mosaic) return;
             const section = document.createElement("div");
-            section.setAttribute("data-molsysviewer-workbench-workspace-overview-section", key);
+            section.setAttribute("data-molsysviewer-addons-workspace-overview-section", key);
             section.textContent = label;
             Object.assign(section.style, {
                 gridColumn: "1 / -1",
@@ -519,10 +519,10 @@ export class WorkbenchPanel {
         const appendCard = (item: WorkspaceOption, fullSpan = false): void => {
             const card = document.createElement("button");
             card.type = "button";
-            card.setAttribute("data-molsysviewer-workbench-workspace-overview-card", item.id);
+            card.setAttribute("data-molsysviewer-addons-workspace-overview-card", item.id);
             const isCurrent = item.id === currentId;
             if (item.id === currentId) {
-                card.setAttribute("data-molsysviewer-workbench-workspace-overview-current", item.id);
+                card.setAttribute("data-molsysviewer-addons-workspace-overview-current", item.id);
             }
             Object.assign(card.style, {
                 display: "flex",
@@ -543,7 +543,7 @@ export class WorkbenchPanel {
             if (fullSpan && mosaic) card.style.gridColumn = "1 / -1";
 
             const title = document.createElement("div");
-            title.setAttribute("data-molsysviewer-workbench-workspace-overview-card-title", item.id);
+            title.setAttribute("data-molsysviewer-addons-workspace-overview-card-title", item.id);
             Object.assign(title.style, {
                 fontSize: "12px",
                 fontWeight: "700",
@@ -556,7 +556,7 @@ export class WorkbenchPanel {
                 : item.subtitle;
             if (subtitleText) {
                 const subtitle = document.createElement("div");
-                subtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-card-subtitle", item.id);
+                subtitle.setAttribute("data-molsysviewer-addons-workspace-overview-card-subtitle", item.id);
                 Object.assign(subtitle.style, {
                     fontSize: "11px",
                     lineHeight: "1.25",
@@ -568,7 +568,7 @@ export class WorkbenchPanel {
 
             if (isCurrent && this.activeWorkspacePanelSummary?.entry) {
                 const entry = document.createElement("div");
-                entry.setAttribute("data-molsysviewer-workbench-workspace-overview-card-entry", item.id);
+                entry.setAttribute("data-molsysviewer-addons-workspace-overview-card-entry", item.id);
                 Object.assign(entry.style, {
                     fontSize: "10px",
                     lineHeight: "1.2",
@@ -586,7 +586,7 @@ export class WorkbenchPanel {
 
             if (overviewCapabilityTexts.length > 0) {
                 const capabilities = document.createElement("div");
-                capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capabilities", item.id);
+                capabilities.setAttribute("data-molsysviewer-addons-workspace-overview-card-capabilities", item.id);
                 Object.assign(capabilities.style, {
                     display: "flex",
                     flexWrap: "wrap",
@@ -596,7 +596,7 @@ export class WorkbenchPanel {
 
                 for (const text of overviewCapabilityTexts) {
                     const chip = document.createElement("div");
-                    chip.setAttribute("data-molsysviewer-workbench-workspace-overview-card-capability", text.toLowerCase().replace(/\s+/g, "-"));
+                    chip.setAttribute("data-molsysviewer-addons-workspace-overview-card-capability", text.toLowerCase().replace(/\s+/g, "-"));
                     Object.assign(chip.style, {
                         padding: "3px 7px",
                         borderRadius: "999px",
@@ -615,7 +615,7 @@ export class WorkbenchPanel {
 
             if (!isCurrent && (item.workbenchSectionTitles?.length ?? 0) > 0) {
                 const sections = document.createElement("div");
-                sections.setAttribute("data-molsysviewer-workbench-workspace-overview-card-sections", item.id);
+                sections.setAttribute("data-molsysviewer-addons-workspace-overview-card-sections", item.id);
                 Object.assign(sections.style, {
                     display: "flex",
                     flexDirection: "column",
@@ -626,7 +626,7 @@ export class WorkbenchPanel {
 
                 for (const titleText of item.workbenchSectionTitles!.slice(0, 2)) {
                     const section = document.createElement("div");
-                    section.setAttribute("data-molsysviewer-workbench-workspace-overview-card-section", `${item.id}:${titleText}`);
+                    section.setAttribute("data-molsysviewer-addons-workspace-overview-card-section", `${item.id}:${titleText}`);
                     Object.assign(section.style, {
                         fontSize: "10px",
                         lineHeight: "1.25",
@@ -641,7 +641,7 @@ export class WorkbenchPanel {
 
             if (isCurrent && this.activeWorkspacePanelSummary) {
                 const preview = document.createElement("div");
-                preview.setAttribute("data-molsysviewer-workbench-workspace-overview-preview", item.id);
+                preview.setAttribute("data-molsysviewer-addons-workspace-overview-preview", item.id);
                 Object.assign(preview.style, {
                     display: "flex",
                     flexDirection: "column",
@@ -656,7 +656,7 @@ export class WorkbenchPanel {
 
                 if (this.activeWorkspacePanelSummary.description) {
                     const description = document.createElement("div");
-                    description.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-description", item.id);
+                    description.setAttribute("data-molsysviewer-addons-workspace-overview-preview-description", item.id);
                     Object.assign(description.style, {
                         fontSize: "11px",
                         lineHeight: "1.3",
@@ -679,7 +679,7 @@ export class WorkbenchPanel {
 
                 if (capabilityTexts.length > 0) {
                     const capabilities = document.createElement("div");
-                    capabilities.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capabilities", item.id);
+                    capabilities.setAttribute("data-molsysviewer-addons-workspace-overview-preview-capabilities", item.id);
                     Object.assign(capabilities.style, {
                         display: "flex",
                         flexWrap: "wrap",
@@ -688,7 +688,7 @@ export class WorkbenchPanel {
 
                     for (const text of capabilityTexts) {
                         const chip = document.createElement("div");
-                        chip.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-capability", text.toLowerCase().replace(/\s+/g, "-"));
+                        chip.setAttribute("data-molsysviewer-addons-workspace-overview-preview-capability", text.toLowerCase().replace(/\s+/g, "-"));
                         Object.assign(chip.style, {
                             padding: "3px 7px",
                             borderRadius: "999px",
@@ -707,7 +707,7 @@ export class WorkbenchPanel {
 
                 if ((this.activeWorkspacePanelSummary.sections?.length ?? 0) > 0) {
                     const sections = document.createElement("div");
-                    sections.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-sections", item.id);
+                    sections.setAttribute("data-molsysviewer-addons-workspace-overview-preview-sections", item.id);
                     Object.assign(sections.style, {
                         display: "flex",
                         flexDirection: "column",
@@ -716,7 +716,7 @@ export class WorkbenchPanel {
 
                     for (const section of this.activeWorkspacePanelSummary.sections!.slice(0, 2)) {
                         const sectionRow = document.createElement("div");
-                        sectionRow.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section", section.key);
+                        sectionRow.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section", section.key);
                         Object.assign(sectionRow.style, {
                             display: "flex",
                             flexDirection: "column",
@@ -724,7 +724,7 @@ export class WorkbenchPanel {
                         });
 
                         const sectionTitle = document.createElement("div");
-                        sectionTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-title", section.key);
+                        sectionTitle.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section-title", section.key);
                         Object.assign(sectionTitle.style, {
                             fontSize: "10px",
                             fontWeight: "700",
@@ -736,7 +736,7 @@ export class WorkbenchPanel {
                         sectionRow.appendChild(sectionTitle);
 
                         const sectionItem = document.createElement("div");
-                        sectionItem.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-item", section.key);
+                        sectionItem.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section-item", section.key);
                         Object.assign(sectionItem.style, {
                             fontSize: "11px",
                             color: "rgba(244,244,245,0.78)",
@@ -746,7 +746,7 @@ export class WorkbenchPanel {
 
                         if (section.itemSubtitle) {
                             const sectionSubtitle = document.createElement("div");
-                            sectionSubtitle.setAttribute("data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", section.key);
+                            sectionSubtitle.setAttribute("data-molsysviewer-addons-workspace-overview-preview-section-subtitle", section.key);
                             Object.assign(sectionSubtitle.style, {
                                 fontSize: "10px",
                                 color: "rgba(244,244,245,0.58)",
@@ -766,7 +766,7 @@ export class WorkbenchPanel {
 
             if (isCurrent && this.workspacePanelItems.length > 0) {
                 const panelStrip = document.createElement("div");
-                panelStrip.setAttribute("data-molsysviewer-workbench-workspace-overview-panels", item.id);
+                panelStrip.setAttribute("data-molsysviewer-addons-workspace-overview-panels", item.id);
                 Object.assign(panelStrip.style, {
                     display: "flex",
                     flexDirection: "column",
@@ -777,9 +777,9 @@ export class WorkbenchPanel {
                 for (const panel of this.workspacePanelItems) {
                     const panelButton = document.createElement("button");
                     panelButton.type = "button";
-                    panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel", panel.id);
+                    panelButton.setAttribute("data-molsysviewer-addons-workspace-overview-panel", panel.id);
                     if (panel.active) {
-                        panelButton.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-current", panel.id);
+                        panelButton.setAttribute("data-molsysviewer-addons-workspace-overview-panel-current", panel.id);
                     }
                     Object.assign(panelButton.style, {
                         display: "flex",
@@ -796,7 +796,7 @@ export class WorkbenchPanel {
                         textAlign: "left",
                     });
                     const panelTitle = document.createElement("div");
-                    panelTitle.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-title", panel.id);
+                    panelTitle.setAttribute("data-molsysviewer-addons-workspace-overview-panel-title", panel.id);
                     Object.assign(panelTitle.style, {
                         fontSize: "10px",
                         fontWeight: "700",
@@ -806,7 +806,7 @@ export class WorkbenchPanel {
 
                     if (panel.description) {
                         const panelDescription = document.createElement("div");
-                        panelDescription.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-description", panel.id);
+                        panelDescription.setAttribute("data-molsysviewer-addons-workspace-overview-panel-description", panel.id);
                         Object.assign(panelDescription.style, {
                             fontSize: "10px",
                             lineHeight: "1.2",
@@ -818,7 +818,7 @@ export class WorkbenchPanel {
 
                     if (panel.active && panel.entry) {
                         const panelEntry = document.createElement("div");
-                        panelEntry.setAttribute("data-molsysviewer-workbench-workspace-overview-panel-entry", panel.id);
+                        panelEntry.setAttribute("data-molsysviewer-addons-workspace-overview-panel-entry", panel.id);
                         Object.assign(panelEntry.style, {
                             fontSize: "9px",
                             lineHeight: "1.2",
@@ -840,7 +840,7 @@ export class WorkbenchPanel {
             }
 
             const marker = document.createElement("div");
-            marker.setAttribute("data-molsysviewer-workbench-workspace-overview-card-marker", item.id);
+            marker.setAttribute("data-molsysviewer-addons-workspace-overview-card-marker", item.id);
             Object.assign(marker.style, {
                 fontSize: "10px",
                 fontWeight: "700",
@@ -946,7 +946,7 @@ export class WorkbenchPanel {
                 title,
                 subtitle: reason,
             });
-            row.setAttribute("data-molsysviewer-workbench-addon-discovery-failure", source);
+            row.setAttribute("data-molsysviewer-addons-addon-discovery-failure", source);
             if (failure.traceback) row.title = failure.traceback;
             rows.push(row);
         }
@@ -960,10 +960,10 @@ export class WorkbenchPanel {
         this.applySectionExpandedState("addons");
     }
 
-    setAddonWorkbenchSections(items: AddonWorkbenchSectionSummary[]): void {
-        const nextKeys = new Set<WorkbenchSectionKey>();
+    setAddonWorkbenchSections(items: AddonSectionSummary[]): void {
+        const nextKeys = new Set<AddonSectionKey>();
         for (const item of items) {
-            const key = (`addon:${item.key}`) as WorkbenchSectionKey;
+            const key = (`addon:${item.key}`) as AddonSectionKey;
             nextKeys.add(key);
             if (!this.sections.has(key)) {
                 this.createSection(key, item.title, "Add-on section registered.");
@@ -986,13 +986,13 @@ export class WorkbenchPanel {
     }
 
     mountAddonWidget(el: HTMLElement): void {
-        this.workspaceAddonWidgetHost.replaceChildren(el);
-        this.workspaceAddonWidgetHost.style.display = "flex";
+        this.addonsWidgetHost.replaceChildren(el);
+        this.addonsWidgetHost.style.display = "flex";
     }
 
     unmountAddonWidget(): void {
-        this.workspaceAddonWidgetHost.replaceChildren();
-        this.workspaceAddonWidgetHost.style.display = "none";
+        this.addonsWidgetHost.replaceChildren();
+        this.addonsWidgetHost.style.display = "none";
     }
 
     dispose(): void {
@@ -1015,9 +1015,9 @@ export class WorkbenchPanel {
         this.onExpandedChange?.(this.expanded);
     }
 
-    private createSection(key: WorkbenchSectionKey, title: string, emptyText: string): SectionView {
+    private createSection(key: AddonSectionKey, title: string, emptyText: string): SectionView {
         const section = document.createElement("div");
-        section.setAttribute("data-molsysviewer-workbench-section", key);
+        section.setAttribute("data-molsysviewer-addons-section", key);
         Object.assign(section.style, {
             display: "flex",
             flexDirection: "column",
@@ -1030,7 +1030,7 @@ export class WorkbenchPanel {
 
         const header = document.createElement("button");
         header.type = "button";
-        header.setAttribute("data-molsysviewer-workbench-section-toggle", key);
+        header.setAttribute("data-molsysviewer-addons-section-toggle", key);
         Object.assign(header.style, {
             display: "flex",
             alignItems: "center",
@@ -1048,7 +1048,7 @@ export class WorkbenchPanel {
         const headerTitle = document.createElement("span");
         headerTitle.textContent = title;
         const headerMarker = document.createElement("span");
-        headerMarker.setAttribute("data-molsysviewer-workbench-section-marker", key);
+        headerMarker.setAttribute("data-molsysviewer-addons-section-marker", key);
         headerMarker.textContent = "−";
         Object.assign(headerMarker.style, {
             color: "rgba(244,244,245,0.52)",
@@ -1072,7 +1072,7 @@ export class WorkbenchPanel {
         });
 
         const empty = document.createElement("div");
-        empty.setAttribute("data-molsysviewer-workbench-empty", title.toLowerCase());
+        empty.setAttribute("data-molsysviewer-addons-empty", title.toLowerCase());
         Object.assign(empty.style, {
             fontSize: "11px",
             color: "rgba(244,244,245,0.56)",
@@ -1102,7 +1102,7 @@ export class WorkbenchPanel {
         }
     }
 
-    private applySectionExpandedState(key: WorkbenchSectionKey): void {
+    private applySectionExpandedState(key: AddonSectionKey): void {
         const section = this.sections.get(key);
         if (!section) return;
         const expanded = this.sectionExpanded.get(key) ?? true;
@@ -1113,7 +1113,7 @@ export class WorkbenchPanel {
     }
 
     private reorderSections(): void {
-        const orderedKeys: WorkbenchSectionKey[] = [
+        const orderedKeys: AddonSectionKey[] = [
             ...this.builtInSectionKeys,
             ...this.addonSectionKeys.sort((left, right) => left.localeCompare(right)),
         ];
@@ -1125,10 +1125,10 @@ export class WorkbenchPanel {
 
     private makeRow(item: WorkbenchItem): HTMLDivElement {
         const row = document.createElement("div");
-        row.setAttribute("data-molsysviewer-workbench-item", "true");
-        if (item.key) row.setAttribute("data-molsysviewer-workbench-item-key", item.key);
-        if (item.active) row.setAttribute("data-molsysviewer-workbench-item-active", "true");
-        if (item.context) row.setAttribute("data-molsysviewer-workbench-item-context", "true");
+        row.setAttribute("data-molsysviewer-addons-item", "true");
+        if (item.key) row.setAttribute("data-molsysviewer-addons-item-key", item.key);
+        if (item.active) row.setAttribute("data-molsysviewer-addons-item-active", "true");
+        if (item.context) row.setAttribute("data-molsysviewer-addons-item-context", "true");
         Object.assign(row.style, {
             display: "flex",
             flexDirection: "column",
@@ -1178,7 +1178,7 @@ export class WorkbenchPanel {
         if (item.onToggleVisibility) {
             const visibilityButton = document.createElement("button");
             visibilityButton.type = "button";
-            visibilityButton.setAttribute("data-molsysviewer-workbench-item-visibility", item.hidden ? "hidden" : "visible");
+            visibilityButton.setAttribute("data-molsysviewer-addons-item-visibility", item.hidden ? "hidden" : "visible");
             visibilityButton.textContent = item.hidden ? "Show" : "Hide";
             Object.assign(visibilityButton.style, {
                 fontSize: "10px",

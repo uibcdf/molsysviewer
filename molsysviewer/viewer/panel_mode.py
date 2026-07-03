@@ -119,7 +119,7 @@ class PanelModeMixin:
         """Return the current effective workspace catalog visible to the view."""
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
         panel_specs = self.addons.panel_specs(skip_digestion=True)
-        workbench_specs = self.addons.workbench_section_specs(skip_digestion=True)
+        workbench_specs = self.addons.addon_section_specs(skip_digestion=True)
         context_action_specs = self.addons.context_action_specs(skip_digestion=True)
         export_helper_specs = self.addons.export_helper_specs(skip_digestion=True)
         state = self.get_panel_mode_state() or {}
@@ -147,7 +147,7 @@ class PanelModeMixin:
             workbench_section_count = sum(
                 1
                 for item in workbench_specs
-                if item.get("addon") == addon_name and item.get("target_panel", "workbench") == "workbench"
+                if item.get("addon") == addon_name and item.get("target_panel", "addons") == "addons"
             )
             context_action_count = sum(1 for item in context_action_specs if item.get("addon") == addon_name)
             export_helper_count = sum(1 for item in export_helper_specs if item.get("addon") == addon_name)
@@ -187,7 +187,7 @@ class PanelModeMixin:
         if workspace == "core":
             return [
                 {"id": "navigate", "title": "Navigate", "active": active_workspace == "core" and active_panel == "navigate"},
-                {"id": "workbench", "title": "Workbench", "active": active_workspace == "core" and active_panel == "workbench"},
+                {"id": "addons", "title": "Add-ons", "active": active_workspace == "core" and active_panel == "addons"},
             ]
 
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
@@ -235,7 +235,7 @@ class PanelModeMixin:
             return []
 
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
-        workbench_specs = self.addons.workbench_section_specs(skip_digestion=True)
+        workbench_specs = self.addons.addon_section_specs(skip_digestion=True)
         addon_name = next(
             (
                 item.get("addon")
@@ -251,7 +251,7 @@ class PanelModeMixin:
         for item in workbench_specs:
             if item.get("addon") != addon_name:
                 continue
-            if item.get("target_panel", "workbench") != "workbench":
+            if item.get("target_panel", "addons") != "addons":
                 continue
             section_id = item.get("id")
             title = item.get("title")
@@ -260,7 +260,7 @@ class PanelModeMixin:
             record = dict(item)
             record["workspace"] = workspace
             records.append(record)
-        return self._enrich_workbench_sections(records)
+        return self._enrich_addon_sections(records)
 
     @signal(tags=["viewer", "panel", "query"], extra_factory=_workspace_runtime_signal_extra)
     @digest()
@@ -320,7 +320,7 @@ class PanelModeMixin:
             return dict(payload)
         return {"value": payload}
 
-    def _enrich_workbench_sections(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def _enrich_addon_sections(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         enriched: list[dict[str, Any]] = []
         for item in records:
             record = dict(item)
@@ -350,8 +350,8 @@ class PanelModeMixin:
         addon_names = self.addons.enabled(skip_digestion=True)
         workspace_specs = self.addons.workspace_specs(skip_digestion=True)
         panel_specs = self.addons.panel_specs(skip_digestion=True)
-        workbench_sections = self._enrich_workbench_sections(
-            self.addons.workbench_section_specs(skip_digestion=True)
+        addon_sections = self._enrich_addon_sections(
+            self.addons.addon_section_specs(skip_digestion=True)
         )
         context_action_specs = self.addons.context_action_specs(skip_digestion=True)
         export_helper_specs = self._enrich_export_helper_specs(
@@ -364,7 +364,7 @@ class PanelModeMixin:
             "addons": addon_names,
             "workspace_specs": workspace_specs,
             "panel_specs": panel_specs,
-            "workbench_sections": workbench_sections,
+            "addon_sections": addon_sections,
             "context_action_specs": context_action_specs,
             "export_helper_specs": export_helper_specs,
             "discovery_failures": discovery_failures,

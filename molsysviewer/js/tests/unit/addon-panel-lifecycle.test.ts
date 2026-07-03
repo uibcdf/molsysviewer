@@ -67,9 +67,9 @@ test("addon panel render cleanup runs before widget host unmount", async () => {
         controller.notify = undefined;
         controller.applyWorkbenchMessage = () => {};
         controller.refreshNavigatePanel = () => {};
-        controller.refreshWorkbenchPanel = () => {};
+        controller.refreshAddonsPanel = () => {};
         controller.syncStripOverlaysForMessage = () => {};
-        controller.workbenchPanel = {
+        controller.addonsPanel = {
             mountAddonWidget(_el: HTMLElement) {
                 events.push("mount");
             },
@@ -105,7 +105,7 @@ test("backend error ack shows a frontend toast", async () => {
         controller.host = host;
         controller.applyWorkbenchMessage = () => {};
         controller.refreshNavigatePanel = () => {};
-        controller.refreshWorkbenchPanel = () => {};
+        controller.refreshAddonsPanel = () => {};
         controller.syncStripOverlaysForMessage = () => {};
 
         await controller.handleMessage({

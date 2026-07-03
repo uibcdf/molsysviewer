@@ -243,19 +243,19 @@ class AddonContextActionSpec:
 
 
 @dataclass(frozen=True)
-class AddonWorkbenchSectionSpec:
+class AddonSectionSpec:
     id: str
     title: str
     entry: str
-    target_panel: str = "workbench"
+    target_panel: str = "addons"
     order: int = 0
     meta: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "id", _ensure_non_empty_text(self.id, "AddonWorkbenchSectionSpec.id"))
-        object.__setattr__(self, "title", _ensure_non_empty_text(self.title, "AddonWorkbenchSectionSpec.title"))
-        object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonWorkbenchSectionSpec.entry"))
-        object.__setattr__(self, "target_panel", _ensure_non_empty_text(self.target_panel, "AddonWorkbenchSectionSpec.target_panel"))
+        object.__setattr__(self, "id", _ensure_non_empty_text(self.id, "AddonSectionSpec.id"))
+        object.__setattr__(self, "title", _ensure_non_empty_text(self.title, "AddonSectionSpec.title"))
+        object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonSectionSpec.entry"))
+        object.__setattr__(self, "target_panel", _ensure_non_empty_text(self.target_panel, "AddonSectionSpec.target_panel"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
     def info(self) -> dict[str, Any]:
@@ -517,7 +517,7 @@ class AddonSpec:
     workspaces: tuple[AddonWorkspaceSpec, ...] = field(default_factory=tuple)
     panels: tuple[AddonPanelSpec, ...] = field(default_factory=tuple)
     context_actions: tuple[AddonContextActionSpec, ...] = field(default_factory=tuple)
-    workbench_sections: tuple[AddonWorkbenchSectionSpec, ...] = field(default_factory=tuple)
+    addon_sections: tuple[AddonSectionSpec, ...] = field(default_factory=tuple)
     shape_providers: tuple[AddonShapeProviderSpec, ...] = field(default_factory=tuple)
     style_helpers: tuple[AddonStyleHelperSpec, ...] = field(default_factory=tuple)
     export_helpers: tuple[AddonExportHelperSpec, ...] = field(default_factory=tuple)
@@ -546,7 +546,7 @@ class AddonSpec:
         object.__setattr__(self, "workspaces", tuple(self.workspaces))
         object.__setattr__(self, "panels", tuple(self.panels))
         object.__setattr__(self, "context_actions", tuple(self.context_actions))
-        object.__setattr__(self, "workbench_sections", tuple(self.workbench_sections))
+        object.__setattr__(self, "addon_sections", tuple(self.addon_sections))
         object.__setattr__(self, "shape_providers", tuple(self.shape_providers))
         object.__setattr__(self, "style_helpers", tuple(self.style_helpers))
         object.__setattr__(self, "export_helpers", tuple(self.export_helpers))
@@ -555,7 +555,7 @@ class AddonSpec:
         _validate_unique_ids(self.workspaces, "AddonSpec.workspaces")
         _validate_unique_ids(self.panels, "AddonSpec.panels")
         _validate_unique_ids(self.context_actions, "AddonSpec.context_actions")
-        _validate_unique_ids(self.workbench_sections, "AddonSpec.workbench_sections")
+        _validate_unique_ids(self.addon_sections, "AddonSpec.addon_sections")
         _validate_unique_ids(self.shape_providers, "AddonSpec.shape_providers")
         _validate_unique_ids(self.style_helpers, "AddonSpec.style_helpers")
         _validate_unique_ids(self.export_helpers, "AddonSpec.export_helpers")
@@ -571,7 +571,7 @@ class AddonSpec:
             "workspaces": [item.info() for item in self.workspaces],
             "panels": [item.info() for item in self.panels],
             "context_actions": [item.info() for item in self.context_actions],
-            "workbench_sections": [item.info() for item in self.workbench_sections],
+            "addon_sections": [item.info() for item in self.addon_sections],
             "shape_providers": [item.info() for item in self.shape_providers],
             "style_helpers": [item.info() for item in self.style_helpers],
             "export_helpers": [item.info() for item in self.export_helpers],
@@ -609,10 +609,10 @@ class _AddonAggregationMixin:
     def context_action_specs(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
         return self._aggregate("context_actions")
 
-    @signal(tags=["addon", "workbench"])
+    @signal(tags=["addon", "addons"])
     @digest()
-    def workbench_section_specs(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
-        return self._aggregate("workbench_sections")
+    def addon_section_specs(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        return self._aggregate("addon_sections")
 
     @signal(tags=["addon", "shape"])
     @digest()

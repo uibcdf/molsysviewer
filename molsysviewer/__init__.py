@@ -31,7 +31,7 @@ from .addons import (
     AddonSpec,
     AddonStyleHelperSpec,
     AddonToolModeSpec,
-    AddonWorkbenchSectionSpec,
+    AddonSectionSpec,
     AddonWorkspaceSpec,
 )
 from .styles import Style
@@ -130,7 +130,7 @@ __all__ = [
     "AddonWorkspaceSpec",
     "AddonPanelSpec",
     "AddonContextActionSpec",
-    "AddonWorkbenchSectionSpec",
+    "AddonSectionSpec",
     "AddonShapeProviderSpec",
     "AddonStyleHelperSpec",
     "AddonExportHelperSpec",

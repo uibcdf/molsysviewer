@@ -7,7 +7,7 @@ from molsysviewer.addons import (
     AddonPanelSpec,
     AddonShapeProviderSpec,
     AddonSpec,
-    AddonWorkbenchSectionSpec,
+    AddonSectionSpec,
     AddonWorkspaceSpec,
 )
 
@@ -67,19 +67,19 @@ addon = AddonSpec(
             order=20,
         ),
     ),
-    workbench_sections=(
-        AddonWorkbenchSectionSpec(
+    addon_sections=(
+        AddonSectionSpec(
             id="pockets",
             title="Pockets",
             entry="molsysviewer_topomt.workbench.pockets",
-            target_panel="workbench",
+            target_panel="addons",
             order=30,
         ),
-        AddonWorkbenchSectionSpec(
+        AddonSectionSpec(
             id="channels",
             title="Channels",
             entry="molsysviewer_topomt.workbench.channels",
-            target_panel="workbench",
+            target_panel="addons",
             order=40,
         ),
     ),

@@ -31,7 +31,7 @@ import { WebGLStatusOverlay } from "../ui/webgl-status-overlay";
 import { ActiveSelectionController, ActiveSelectionItem, buildGroupItemsFromStructure, lociToGroupItems } from "./active-selection";
 import type { ActiveSelectionPayload } from "./active-selection";
 import { GroupPanel } from "../ui/group-panel";
-import { WorkbenchPanel } from "../ui/workbench-panel";
+import { AddonsPanel } from "../ui/addons-panel";
 import { FloatingPanelShell } from "../ui/floating-panel-shell";
 import { MsvPerAtomColorThemeProvider } from "../themes/per-atom-color";
 import { HoverTooltip } from "../ui/hover-tooltip";
@@ -68,7 +68,7 @@ type AddonPanelRuntime = {
     entry?: string;
     widget_class?: string;
 };
-type AddonWorkbenchSectionRuntime = {
+type AddonSectionRuntime = {
     key: string;
     workspaceId: string;
     addon: string;
@@ -488,7 +488,7 @@ export class MolSysViewerController {
     private readonly webglStatusOverlay: WebGLStatusOverlay;
     private webglContextLost = false;
     private readonly groupPanel: GroupPanel;
-    private readonly workbenchPanel: WorkbenchPanel;
+    private readonly addonsPanel: AddonsPanel;
     public readonly sharedShell?: FloatingPanelShell;
     private splitResizeObserver?: ResizeObserver;
     public readonly canvasHost: HTMLDivElement;
@@ -509,23 +509,23 @@ export class MolSysViewerController {
     private readonly hoverDebounceMs = 60;
     private lastPrimaryGroupClick: { key: string; time: number } | null = null;
     private savedSelections: SavedSelectionRecord[] = [];
-    private readonly workbenchAnnotations = new Map<string, { text: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
-    private readonly workbenchMeasurements = new Map<string, { kind: string; picks: number; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
-    private readonly workbenchShapes = new Map<string, { title: string; subtitle?: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
-    private workbenchScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
-    private workbenchAddons: AddonRuntimeSummary[] = [];
+    private readonly addonsAnnotations = new Map<string, { text: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private readonly addonsMeasurements = new Map<string, { kind: string; picks: number; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private readonly addonsShapes = new Map<string, { title: string; subtitle?: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
+    private addonsList: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
     private addonPanels: AddonPanelRuntime[] = [];
     private addonRuntimeInitialized = false;
-    private workbenchAddonSections: AddonWorkbenchSectionRuntime[] = [];
+    private addonSections: AddonSectionRuntime[] = [];
     private addonContextActions: AddonContextActionRuntime[] = [];
     private addonContextItems: AddonContextItemRuntime[] = [];
     private addonDiagnostics: AddonDiagnosticRuntime[] = [];
-    private workbenchActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
-    private workbenchContext: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
+    private addonsActive: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
+    private addonsContext: { section: "annotations" | "measurements" | "shapes"; tag: string } | null = null;
     private syncingPanelExpansion = false;
-    private lastPanelMode: "navigate" | "workbench" = "navigate";
-    private lastCorePanelMode: "navigate" | "workbench" = "navigate";
+    private lastPanelMode: "navigate" | "addons" = "navigate";
+    private lastCorePanelMode: "navigate" | "addons" = "navigate";
     private currentWorkspace = "core";
     private readonly currentWorkspacePanelByWorkspace = new Map<string, string>();
     private activePanelMsgListeners: Array<(msg: any) => void> = [];
@@ -689,9 +689,9 @@ export class MolSysViewerController {
         return this.model ? (this.model.get("panel_mode_style") || "drawer") : this.localPanelModeStyle;
     }
 
-    getActivePanel(): "navigate" | "workbench" | null {
+    getActivePanel(): "navigate" | "addons" | null {
         if (this.groupPanel.isExpanded()) return "navigate";
-        if (this.workbenchPanel.isExpanded()) return "workbench";
+        if (this.addonsPanel.isExpanded()) return "addons";
         return null;
     }
 
@@ -703,7 +703,7 @@ export class MolSysViewerController {
                 isSplit: this.sharedShell.isSplit,
                 isAmbient: this.sharedShell.isAmbient,
                 minimized: this.sharedShell.minimized,
-                expanded: this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded(),
+                expanded: this.groupPanel.isExpanded() || this.addonsPanel.isExpanded(),
                 activePanel: this.getActivePanel(),
             };
         }
@@ -939,8 +939,14 @@ export class MolSysViewerController {
             const region = this.state.getRegionSummaries().find((item) => item.tag === tag);
             if (!region) return;
             this.focusTarget({ atom_indices: region.atom_indices });
+        }, (action, details) => {
+            emitInteractionEvent({
+                event: "interaction_context_action",
+                action,
+                ...details,
+            });
         }, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
-        this.workbenchPanel = new WorkbenchPanel(host, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
+        this.addonsPanel = new AddonsPanel(host, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
         if (this.isPanelOnly) {
             this.groupPanel.setExpanded(true);
         }
@@ -948,8 +954,8 @@ export class MolSysViewerController {
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
         });
-        this.workbenchPanel.setOnExpandedChange((expanded) => {
-            this.handlePanelExpansionChanged("workbench", expanded);
+        this.addonsPanel.setOnExpandedChange((expanded) => {
+            this.handlePanelExpansionChanged("addons", expanded);
         });
         const getCameraDirection = (): [number, number, number] => {
             const snap = this.plugin.canvas3d?.camera.getSnapshot?.();
@@ -1022,7 +1028,7 @@ export class MolSysViewerController {
                 return;
             }
             if (action === "open_workbench") {
-                this.setPanelMode("workbench", true);
+                this.setPanelMode("addons", true);
                 return;
             }
             if (action === "set_viewer_mode") {
@@ -1066,8 +1072,8 @@ export class MolSysViewerController {
             }
             this.startMeasurementTool(action, details?.endpoint_policy);
         }, () => {
-            this.workbenchContext = null;
-            this.refreshWorkbenchPanel();
+            this.addonsContext = null;
+            this.refreshAddonsPanel();
         }, getCameraDirection);
         this.releaseContextMenuSuppression = suppressCanvasContextMenu(host, this.canvasHost);
         this.releaseGlobalEscapeHandler = this.installGlobalEscapeHandler();
@@ -1139,7 +1145,7 @@ export class MolSysViewerController {
                         isSwingActive: this.scene.isSwingActive,
                         isDarkMode: this.scene.isDarkMode,
                         isNavigateExpanded: this.groupPanel.isExpanded(),
-                        isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                        isAddonsExpanded: this.addonsPanel.isExpanded(),
                         currentViewerMode: this.model?.get("viewer_mode") || "integrated",
                         isCanvasVisible: this.canvasHost.style.display !== "none",
                     }
@@ -1314,7 +1320,7 @@ export class MolSysViewerController {
         plugin.canvas3dContext?.contextRestored?.subscribe(() => this.handleWebGLContextRestored());
 
         this.refreshNavigatePanel();
-        this.refreshWorkbenchPanel();
+        this.refreshAddonsPanel();
         this.updateWelcomeState(true);
     }
 
@@ -1340,7 +1346,7 @@ export class MolSysViewerController {
         this.legendOverlay.dispose();
         this.webglStatusOverlay.dispose();
         this.groupPanel.dispose();
-        this.workbenchPanel.dispose();
+        this.addonsPanel.dispose();
         this.sharedShell?.dispose();
         this.splitResizeObserver?.disconnect();
         this.contextMenu.dispose();
@@ -1361,7 +1367,7 @@ export class MolSysViewerController {
 
             if (event.key === "Escape") {
                 if (this.measurementTools.isActive()) return;
-                if (this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded()) {
+                if (this.groupPanel.isExpanded() || this.addonsPanel.isExpanded()) {
                     event.preventDefault();
                     event.stopPropagation();
                     this.collapsePanels();
@@ -1391,10 +1397,10 @@ export class MolSysViewerController {
             if (event.key === "w" || event.key === "W") {
                 event.preventDefault();
                 event.stopPropagation();
-                if (this.workbenchPanel.isVisible()) {
-                    const open = this.workbenchPanel.isExpanded();
+                if (this.addonsPanel.isVisible()) {
+                    const open = this.addonsPanel.isExpanded();
                     this.collapsePanels();
-                    if (!open) this.setPanelMode("workbench", true);
+                    if (!open) this.setPanelMode("addons", true);
                 }
                 return;
             }
@@ -1411,7 +1417,7 @@ export class MolSysViewerController {
         if (this.onTogglePanelModeOverride && this.onTogglePanelModeOverride()) {
             return;
         }
-        const anyExpanded = this.groupPanel.isExpanded() || this.workbenchPanel.isExpanded();
+        const anyExpanded = this.groupPanel.isExpanded() || this.addonsPanel.isExpanded();
         if (anyExpanded) {
             this.collapsePanels();
         } else {
@@ -1427,7 +1433,7 @@ export class MolSysViewerController {
         this.syncingPanelExpansion = true;
         try {
             this.groupPanel.setExpanded(false);
-            this.workbenchPanel.setExpanded(false);
+            this.addonsPanel.setExpanded(false);
             this.sharedShell?.setExpanded(false);
         } finally {
             this.syncingPanelExpansion = false;
@@ -1438,9 +1444,9 @@ export class MolSysViewerController {
 
     private updateCanvasInsets(): void {
         const leftOpen = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
-        const rightOpen = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
+        const rightOpen = this.addonsPanel.isVisible() && this.addonsPanel.isExpanded();
         const toLeft = leftOpen ? this.groupPanel.panelContentWidth : 0;
-        const toRight = rightOpen ? this.workbenchPanel.panelContentWidth : 0;
+        const toRight = rightOpen ? this.addonsPanel.panelContentWidth : 0;
 
         // Cancel any running animation and read current *animated* position as start.
         if (this.canvasInsetAnimFrame !== null) {
@@ -1485,7 +1491,7 @@ export class MolSysViewerController {
         this.canvasInsetAnimFrame = requestAnimationFrame(tick);
     }
 
-    private handlePanelExpansionChanged(source: "navigate" | "workbench", expanded: boolean): void {
+    private handlePanelExpansionChanged(source: "navigate" | "addons", expanded: boolean): void {
         if (this.syncingPanelExpansion) return;
         if (expanded) {
             this.lastPanelMode = source;
@@ -1500,7 +1506,7 @@ export class MolSysViewerController {
         this.syncingPanelExpansion = true;
         try {
             if (source === "navigate") {
-                this.workbenchPanel.setExpanded(false);
+                this.addonsPanel.setExpanded(false);
             } else {
                 this.groupPanel.setExpanded(false);
             }
@@ -1511,7 +1517,7 @@ export class MolSysViewerController {
         this.emitPanelModeState();
     }
 
-    private setPanelMode(panel?: "navigate" | "workbench" | null, expanded?: boolean): void {
+    private setPanelMode(panel?: "navigate" | "addons" | null, expanded?: boolean): void {
         const shouldExpand = this.isPanelOnly ? true : (expanded !== false);
         if (!shouldExpand) {
             this.collapsePanels();
@@ -1521,19 +1527,19 @@ export class MolSysViewerController {
         const requested =
             this.currentWorkspace === "core"
                 ? (panel ?? this.lastCorePanelMode)
-                : "workbench";
-        let target: "navigate" | "workbench" | null = null;
+                : "addons";
+        let target: "navigate" | "addons" | null = null;
         if (this.isPanelOnly) {
-            target = requested === "workbench" ? "workbench" : "navigate";
+            target = requested === "addons" ? "addons" : "navigate";
         } else {
             if (requested === "navigate" && this.groupPanel.isVisible()) {
                 target = "navigate";
-            } else if (requested === "workbench" && this.workbenchPanel.isVisible()) {
-                target = "workbench";
+            } else if (requested === "addons" && this.addonsPanel.isVisible()) {
+                target = "addons";
             } else if (this.groupPanel.isVisible()) {
                 target = "navigate";
-            } else if (this.workbenchPanel.isVisible()) {
-                target = "workbench";
+            } else if (this.addonsPanel.isVisible()) {
+                target = "addons";
             }
         }
         if (!target) {
@@ -1544,7 +1550,7 @@ export class MolSysViewerController {
         this.syncingPanelExpansion = true;
         try {
             this.groupPanel.setExpanded(target === "navigate");
-            this.workbenchPanel.setExpanded(target === "workbench");
+            this.addonsPanel.setExpanded(target === "addons");
             if (this.sharedShell) {
                 this.sharedShell.setVisible(true);
                 this.sharedShell.setExpanded(true);
@@ -1570,15 +1576,15 @@ export class MolSysViewerController {
         if (this.currentWorkspace === "core") {
             this.groupPanel.setRuntimeVisible(null);
             this.groupPanel.setOnNavigateToWorkbench(() => {
-                this.setPanelMode("workbench", true);
-            }, "Workbench");
-            this.workbenchPanel.setOnNavigateToNavigate(() => {
+                this.setPanelMode("addons", true);
+            }, "Add-ons");
+            this.addonsPanel.setOnNavigateToNavigate(() => {
                 this.setPanelMode("navigate", true);
             }, "Navigate");
         } else {
             this.groupPanel.setRuntimeVisible(false);
             this.groupPanel.setOnNavigateToWorkbench(undefined);
-            this.workbenchPanel.setOnNavigateToNavigate(() => {
+            this.addonsPanel.setOnNavigateToNavigate(() => {
                 this.selectWorkspace("core");
                 this.setPanelMode(this.lastCorePanelMode, true);
             }, "Core");
@@ -1587,7 +1593,7 @@ export class MolSysViewerController {
         this.groupPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
             this.selectWorkspace(workspaceId);
         });
-        this.workbenchPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
+        this.addonsPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
             this.selectWorkspace(workspaceId);
         });
 
@@ -1595,26 +1601,26 @@ export class MolSysViewerController {
             if (this.sharedShell) {
                 const activeMode = this.lastPanelMode;
                 this.sharedShell.setOnSelectPanel((panelId) => {
-                    if (panelId === "navigate" || panelId === "workbench") {
+                    if (panelId === "navigate" || panelId === "addons") {
                         this.setPanelMode(panelId, true);
                         this.refreshPanelWorkspaceChrome();
                     }
                 });
                 this.sharedShell.setPanelOptions([
                     { id: "navigate", title: "Navigate", active: activeMode === "navigate" },
-                    { id: "workbench", title: "Workbench", active: activeMode === "workbench" },
+                    { id: "addons", title: "Add-ons", active: activeMode === "addons" },
                 ]);
             }
             this.groupPanel.setPanelStack([
                 { id: "navigate", title: "Navigate", active: true },
-                { id: "workbench", title: "Workbench" },
+                { id: "addons", title: "Add-ons" },
             ], (panelId) => {
-                if (panelId === "workbench") this.setPanelMode("workbench", true);
+                if (panelId === "addons") this.setPanelMode("addons", true);
             });
-            this.workbenchPanel.setWorkspacePanels(
+            this.addonsPanel.setWorkspacePanels(
                 [
                     { id: "navigate", title: "Navigate" },
-                    { id: "workbench", title: "Workbench", active: true },
+                    { id: "addons", title: "Add-ons", active: true },
                 ],
                 (panelId) => {
                     if (panelId === "navigate") this.setPanelMode("navigate", true);
@@ -1638,7 +1644,7 @@ export class MolSysViewerController {
                 }))
             );
         }
-        this.workbenchPanel.setWorkspacePanels(
+        this.addonsPanel.setWorkspacePanels(
             panels.map((item) => ({
                 id: item.id,
                 title: item.title,
@@ -1688,7 +1694,7 @@ export class MolSysViewerController {
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
                 isNavigateExpanded: this.groupPanel.isExpanded(),
-                isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                isAddonsExpanded: this.addonsPanel.isExpanded(),
                 currentViewerMode: this.model?.get("viewer_mode") || "integrated",
             }
         );
@@ -1724,7 +1730,7 @@ export class MolSysViewerController {
                 isSwingActive: this.scene.isSwingActive,
                 isDarkMode: this.scene.isDarkMode,
                 isNavigateExpanded: this.groupPanel.isExpanded(),
-                isWorkbenchExpanded: this.workbenchPanel.isExpanded(),
+                isAddonsExpanded: this.addonsPanel.isExpanded(),
                 currentViewerMode: this.model?.get("viewer_mode") || "integrated",
             }
         );
@@ -1748,20 +1754,20 @@ export class MolSysViewerController {
 
     private syncWorkbenchContextFromPayload(payload: ContextInteractionPayload | null): void {
         if (!payload) {
-            this.workbenchContext = null;
-            this.refreshWorkbenchPanel();
+            this.addonsContext = null;
+            this.refreshAddonsPanel();
             return;
         }
         if (payload.kind === "annotation" && typeof payload.tag === "string") {
-            this.workbenchContext = { section: "annotations", tag: payload.tag };
+            this.addonsContext = { section: "annotations", tag: payload.tag };
         } else if (payload.kind === "measurement" && typeof payload.tag === "string") {
-            this.workbenchContext = { section: "measurements", tag: payload.tag };
+            this.addonsContext = { section: "measurements", tag: payload.tag };
         } else if (payload.kind === "shape" && typeof payload.tag === "string") {
-            this.workbenchContext = { section: "shapes", tag: payload.tag };
+            this.addonsContext = { section: "shapes", tag: payload.tag };
         } else {
-            this.workbenchContext = null;
+            this.addonsContext = null;
         }
-        this.refreshWorkbenchPanel();
+        this.refreshAddonsPanel();
     }
 
     private normalizeManagedInteractionPayload(payload: InteractionPayload): InteractionPayload {
@@ -2016,7 +2022,7 @@ export class MolSysViewerController {
                     if (!panelId) break;
                     if (workspaceId === "core") {
                         this.selectWorkspace("core");
-                        if (panelId === "navigate" || panelId === "workbench") {
+                        if (panelId === "navigate" || panelId === "addons") {
                             this.setPanelMode(panelId, true);
                         }
                         break;
@@ -2134,8 +2140,8 @@ export class MolSysViewerController {
                     if (!this.getWorkspaceOptions().some((item) => item.id === this.currentWorkspace)) {
                         this.currentWorkspace = "core";
                     }
-                    this.workbenchAddons = this.buildAddonRuntimeSummary(msg as any);
-                    this.workbenchAddonSections = this.buildAddonWorkbenchSectionSummary(msg as any);
+                    this.addonsList = this.buildAddonRuntimeSummary(msg as any);
+                    this.addonSections = this.buildAddonSectionSummary(msg as any);
                     this.addonContextActions = this.buildAddonContextActionSummary(msg as any);
                     this.addonDiagnostics = this.buildAddonDiagnosticSummary(msg as any);
                     this.addonRuntimeInitialized = true;
@@ -2146,7 +2152,7 @@ export class MolSysViewerController {
                             break;
                         }
                     }
-                    this.refreshWorkbenchPanel();
+                    this.refreshAddonsPanel();
                     break;
                 }
 
@@ -2316,7 +2322,7 @@ export class MolSysViewerController {
                         break;
                     }
                     this.activePanelWidgetKey = mKey;
-                    this.workbenchPanel.mountAddonWidget(el);
+                    this.addonsPanel.mountAddonWidget(el);
                     break;
                 }
 
@@ -2349,7 +2355,7 @@ export class MolSysViewerController {
             }
             this.applyWorkbenchMessage(msg);
             this.refreshNavigatePanel();
-            this.refreshWorkbenchPanel();
+            this.refreshAddonsPanel();
             this.syncStripOverlaysForMessage(msg);
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
@@ -2378,7 +2384,7 @@ export class MolSysViewerController {
             this.currentStructure = last.cell.transform.ref as any;
             this.groupPanel.setStructure(structure);
             this.refreshNavigatePanel();
-            this.workbenchPanel.setVisible(true);
+            this.addonsPanel.setVisible(true);
             if (structure) {
                 this.activeSelection.setAllAvailableItems(buildGroupItemsFromStructure(structure));
             }
@@ -2415,7 +2421,7 @@ export class MolSysViewerController {
         this.loadedStructure = undefined;
         this.currentStructure = undefined;
         this.groupPanel.setStructure(undefined);
-        this.workbenchPanel.setVisible(false);
+        this.addonsPanel.setVisible(false);
         this.updateWelcomeState();
     }
 
@@ -2430,8 +2436,8 @@ export class MolSysViewerController {
             layerTag: string | undefined,
             atomIndices: number[],
         ) => {
-            const existing = this.workbenchShapes.get(tag);
-            this.workbenchShapes.set(tag, {
+            const existing = this.addonsShapes.get(tag);
+            this.addonsShapes.set(tag, {
                 title: existing?.title ?? title,
                 subtitle: existing?.subtitle ?? subtitle,
                 layerTag,
@@ -2441,24 +2447,24 @@ export class MolSysViewerController {
         };
 
         if (op === "clear_all") {
-            this.workbenchAnnotations.clear();
-            this.workbenchMeasurements.clear();
-            this.workbenchShapes.clear();
-            this.workbenchScene = null;
-            this.workbenchActive = null;
-            this.workbenchContext = null;
+            this.addonsAnnotations.clear();
+            this.addonsMeasurements.clear();
+            this.addonsShapes.clear();
+            this.addonsScene = null;
+            this.addonsActive = null;
+            this.addonsContext = null;
             return;
         }
 
         if (op === "clear_scene") {
             const options = (msg as any).options ?? {};
-            if (options.labels) this.workbenchAnnotations.clear();
-            if (options.shapes) this.workbenchShapes.clear();
-            if (options.styles) this.workbenchScene = null;
-            if (this.workbenchActive?.section === "annotations" && options.labels) this.workbenchActive = null;
-            if (this.workbenchActive?.section === "shapes" && options.shapes) this.workbenchActive = null;
-            if (this.workbenchContext?.section === "annotations" && options.labels) this.workbenchContext = null;
-            if (this.workbenchContext?.section === "shapes" && options.shapes) this.workbenchContext = null;
+            if (options.labels) this.addonsAnnotations.clear();
+            if (options.shapes) this.addonsShapes.clear();
+            if (options.styles) this.addonsScene = null;
+            if (this.addonsActive?.section === "annotations" && options.labels) this.addonsActive = null;
+            if (this.addonsActive?.section === "shapes" && options.shapes) this.addonsActive = null;
+            if (this.addonsContext?.section === "annotations" && options.labels) this.addonsContext = null;
+            if (this.addonsContext?.section === "shapes" && options.shapes) this.addonsContext = null;
             return;
         }
 
@@ -2470,20 +2476,20 @@ export class MolSysViewerController {
                 ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : [];
             if (typeof tag === "string" && typeof text === "string" && text.trim()) {
-                this.workbenchAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
+                this.addonsAnnotations.set(tag, { text: text.trim(), layerTag, hidden: false, atomIndices });
             }
             return;
         }
 
         if (op === "update_label") {
             const tag = (msg as any).tag ?? (msg as any).options?.tag;
-            const existing = typeof tag === "string" ? this.workbenchAnnotations.get(tag) : undefined;
+            const existing = typeof tag === "string" ? this.addonsAnnotations.get(tag) : undefined;
             if (!existing || typeof tag !== "string") return;
             const nextText = (msg as any).options?.text;
             const nextAtomIndices = Array.isArray((msg as any).options?.atom_indices)
                 ? (msg as any).options.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                 : existing.atomIndices;
-            this.workbenchAnnotations.set(tag, {
+            this.addonsAnnotations.set(tag, {
                 text: typeof nextText === "string" && nextText.trim() ? nextText.trim() : existing.text,
                 layerTag: typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : existing.layerTag,
                 hidden: existing.hidden,
@@ -2500,7 +2506,7 @@ export class MolSysViewerController {
             const kind = op === "add_distance_measurement" ? "distance" : op === "add_angle_measurement" ? "angle" : "dihedral";
             const layerTag = typeof (msg as any).options?.layer_tag === "string" ? (msg as any).options.layer_tag : undefined;
             if (typeof tag === "string") {
-                this.workbenchMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
+                this.addonsMeasurements.set(tag, { kind, picks, layerTag, hidden: false, atomIndices });
             }
             return;
         }
@@ -2634,7 +2640,7 @@ export class MolSysViewerController {
                 const atomIndices = Array.isArray(meta.atom_indices)
                     ? meta.atom_indices.filter((value: unknown): value is number => typeof value === "number")
                     : [];
-                this.workbenchShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
+                this.addonsShapes.set(tag, { title, subtitle, layerTag, hidden: false, atomIndices });
             }
             return;
         }
@@ -2643,17 +2649,17 @@ export class MolSysViewerController {
             const tag = (msg as any).tag;
             if (typeof tag !== "string") return;
             const hidden = op === "hide_layer";
-            if (this.workbenchAnnotations.has(tag)) {
-                const item = this.workbenchAnnotations.get(tag)!;
-                this.workbenchAnnotations.set(tag, { ...item, hidden });
+            if (this.addonsAnnotations.has(tag)) {
+                const item = this.addonsAnnotations.get(tag)!;
+                this.addonsAnnotations.set(tag, { ...item, hidden });
             }
-            if (this.workbenchMeasurements.has(tag)) {
-                const item = this.workbenchMeasurements.get(tag)!;
-                this.workbenchMeasurements.set(tag, { ...item, hidden });
+            if (this.addonsMeasurements.has(tag)) {
+                const item = this.addonsMeasurements.get(tag)!;
+                this.addonsMeasurements.set(tag, { ...item, hidden });
             }
-            if (this.workbenchShapes.has(tag)) {
-                const item = this.workbenchShapes.get(tag)!;
-                this.workbenchShapes.set(tag, { ...item, hidden });
+            if (this.addonsShapes.has(tag)) {
+                const item = this.addonsShapes.get(tag)!;
+                this.addonsShapes.set(tag, { ...item, hidden });
             }
             return;
         }
@@ -2661,11 +2667,11 @@ export class MolSysViewerController {
         if (op === "delete_layer") {
             const tag = (msg as any).tag;
             if (typeof tag !== "string") return;
-            this.workbenchAnnotations.delete(tag);
-            this.workbenchMeasurements.delete(tag);
-            this.workbenchShapes.delete(tag);
-            if (this.workbenchActive?.tag === tag) this.workbenchActive = null;
-            if (this.workbenchContext?.tag === tag) this.workbenchContext = null;
+            this.addonsAnnotations.delete(tag);
+            this.addonsMeasurements.delete(tag);
+            this.addonsShapes.delete(tag);
+            if (this.addonsActive?.tag === tag) this.addonsActive = null;
+            if (this.addonsContext?.tag === tag) this.addonsContext = null;
             return;
         }
 
@@ -2673,34 +2679,34 @@ export class MolSysViewerController {
             const oldTag = (msg as any).tag;
             const newTag = (msg as any).new_tag;
             if (typeof oldTag !== "string" || typeof newTag !== "string") return;
-            if (this.workbenchAnnotations.has(oldTag)) {
-                const item = this.workbenchAnnotations.get(oldTag)!;
-                this.workbenchAnnotations.delete(oldTag);
-                this.workbenchAnnotations.set(newTag, item);
-                if (this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === oldTag) {
-                    this.workbenchActive = { section: "annotations", tag: newTag };
+            if (this.addonsAnnotations.has(oldTag)) {
+                const item = this.addonsAnnotations.get(oldTag)!;
+                this.addonsAnnotations.delete(oldTag);
+                this.addonsAnnotations.set(newTag, item);
+                if (this.addonsActive?.section === "annotations" && this.addonsActive.tag === oldTag) {
+                    this.addonsActive = { section: "annotations", tag: newTag };
                 }
-                if (this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === oldTag) {
-                    this.workbenchContext = { section: "annotations", tag: newTag };
-                }
-            }
-            if (this.workbenchMeasurements.has(oldTag)) {
-                const item = this.workbenchMeasurements.get(oldTag)!;
-                this.workbenchMeasurements.delete(oldTag);
-                this.workbenchMeasurements.set(newTag, item);
-                if (this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === oldTag) {
-                    this.workbenchActive = { section: "measurements", tag: newTag };
+                if (this.addonsContext?.section === "annotations" && this.addonsContext.tag === oldTag) {
+                    this.addonsContext = { section: "annotations", tag: newTag };
                 }
             }
-            if (this.workbenchShapes.has(oldTag)) {
-                const item = this.workbenchShapes.get(oldTag)!;
-                this.workbenchShapes.delete(oldTag);
-                this.workbenchShapes.set(newTag, item);
-                if (this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === oldTag) {
-                    this.workbenchActive = { section: "shapes", tag: newTag };
+            if (this.addonsMeasurements.has(oldTag)) {
+                const item = this.addonsMeasurements.get(oldTag)!;
+                this.addonsMeasurements.delete(oldTag);
+                this.addonsMeasurements.set(newTag, item);
+                if (this.addonsActive?.section === "measurements" && this.addonsActive.tag === oldTag) {
+                    this.addonsActive = { section: "measurements", tag: newTag };
                 }
-                if (this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === oldTag) {
-                    this.workbenchContext = { section: "shapes", tag: newTag };
+            }
+            if (this.addonsShapes.has(oldTag)) {
+                const item = this.addonsShapes.get(oldTag)!;
+                this.addonsShapes.delete(oldTag);
+                this.addonsShapes.set(newTag, item);
+                if (this.addonsActive?.section === "shapes" && this.addonsActive.tag === oldTag) {
+                    this.addonsActive = { section: "shapes", tag: newTag };
+                }
+                if (this.addonsContext?.section === "shapes" && this.addonsContext.tag === oldTag) {
+                    this.addonsContext = { section: "shapes", tag: newTag };
                 }
             }
             return;
@@ -2708,8 +2714,8 @@ export class MolSysViewerController {
 
         if (op === "load_molsys_payload" || op === "load_structure_from_string" || op === "load_pdb_string" ||
             op === "load_structure_from_url" || op === "load_pdb_id") {
-            if (this.workbenchScene === null) {
-                this.workbenchScene = {
+            if (this.addonsScene === null) {
+                this.addonsScene = {
                     figurePreset: "publication-light",
                     figureScale: 2.0,
                     figureVariants: ["dark", "transparent"],
@@ -2731,8 +2737,8 @@ export class MolSysViewerController {
                     : typeof (msg as any).representation === "string"
                         ? (msg as any).representation
                         : undefined;
-            this.workbenchScene = {
-                ...this.workbenchScene,
+            this.addonsScene = {
+                ...this.addonsScene,
                 styleTag,
                 preset,
                 figurePreset: "publication-light",
@@ -2745,8 +2751,8 @@ export class MolSysViewerController {
             const figurePreset = typeof (msg as any).figure_preset === "string" ? (msg as any).figure_preset : undefined;
             const figureScale = typeof (msg as any).figure_scale === "number" ? (msg as any).figure_scale : undefined;
             const figureVariants = Array.isArray((msg as any).figure_variants) ? (msg as any).figure_variants as string[] : undefined;
-            this.workbenchScene = {
-                ...this.workbenchScene,
+            this.addonsScene = {
+                ...this.addonsScene,
                 ...(figurePreset !== undefined ? { figurePreset } : {}),
                 ...(figureScale !== undefined ? { figureScale } : {}),
                 ...(figureVariants !== undefined ? { figureVariants } : {}),
@@ -2754,29 +2760,31 @@ export class MolSysViewerController {
         }
     }
 
-    private refreshWorkbenchPanel(): void {
-        this.workbenchPanel.setAnnotations(
-            Array.from(this.workbenchAnnotations.entries())
+    private refreshAddonsPanel(): void {
+        this.groupPanel.setAnnotations(
+            Array.from(this.addonsAnnotations.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([tag, item]) => ({
                     key: tag,
                     title: item.text,
                     subtitle: item.layerTag && item.layerTag !== tag ? `${tag} · layer: ${item.layerTag}` : tag,
                     hidden: item.hidden,
-                    active: this.workbenchActive?.section === "annotations" && this.workbenchActive.tag === tag,
-                    context: this.workbenchContext?.section === "annotations" && this.workbenchContext.tag === tag,
+                    active: this.addonsActive?.section === "annotations" && this.addonsActive.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
-                        this.workbenchActive = { section: "annotations", tag };
-                        this.refreshWorkbenchPanel();
+                        this.addonsActive = { section: "annotations", tag };
+                        this.refreshAddonsPanel();
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
                         void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
                     },
+                    onDelete: () => {
+                        this.notify?.({ event: "interaction_context_action", action: "delete_annotation", tag });
+                    },
                 }))
         );
-        this.workbenchPanel.setMeasurements(
-            Array.from(this.workbenchMeasurements.entries())
+        this.groupPanel.setMeasurements(
+            Array.from(this.addonsMeasurements.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([tag, item]) => ({
                     key: tag,
@@ -2785,19 +2793,22 @@ export class MolSysViewerController {
                         ? `${tag} · ${item.picks} picks · layer: ${item.layerTag}`
                         : `${tag} · ${item.picks} picks`,
                     hidden: item.hidden,
-                    active: this.workbenchActive?.section === "measurements" && this.workbenchActive.tag === tag,
+                    active: this.addonsActive?.section === "measurements" && this.addonsActive.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
-                        this.workbenchActive = { section: "measurements", tag };
-                        this.refreshWorkbenchPanel();
+                        this.addonsActive = { section: "measurements", tag };
+                        this.refreshAddonsPanel();
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
                         void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
                     },
+                    onDelete: () => {
+                        this.notify?.({ event: "interaction_context_action", action: "delete_measurement", tag });
+                    },
                 }))
         );
-        this.workbenchPanel.setShapes(
-            Array.from(this.workbenchShapes.entries())
+        this.groupPanel.setShapes(
+            Array.from(this.addonsShapes.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
                 .map(([tag, item]) => ({
                     key: tag,
@@ -2806,25 +2817,43 @@ export class MolSysViewerController {
                         ? item.subtitle ? `${tag} · ${item.subtitle} · layer: ${item.layerTag}` : `${tag} · layer: ${item.layerTag}`
                         : item.subtitle ? `${tag} · ${item.subtitle}` : tag,
                     hidden: item.hidden,
-                    active: this.workbenchActive?.section === "shapes" && this.workbenchActive.tag === tag,
-                    context: this.workbenchContext?.section === "shapes" && this.workbenchContext.tag === tag,
+                    active: this.addonsActive?.section === "shapes" && this.addonsActive.tag === tag,
                     onActivate: item.atomIndices.length > 0 ? () => {
-                        this.workbenchActive = { section: "shapes", tag };
-                        this.refreshWorkbenchPanel();
+                        this.addonsActive = { section: "shapes", tag };
+                        this.refreshAddonsPanel();
                         this.focusTarget({ atom_indices: item.atomIndices });
                     } : undefined,
                     onToggleVisibility: () => {
                         void this.handleMessage({ op: item.hidden ? "show_layer" : "hide_layer", tag });
                     },
+                    onDelete: () => {
+                        this.notify?.({ event: "interaction_context_action", action: "delete_shape", tag });
+                    },
                 }))
         );
-        this.workbenchPanel.setScene(this.workbenchScene);
+
+        const canvas3d = this.plugin.canvas3d;
+        const fogName = canvas3d?.props.cameraFog?.name;
+        const fogIntensity = canvas3d?.props.cameraFog?.params?.intensity;
+        this.groupPanel.setScene({
+            styleTag: this.addonsScene?.styleTag,
+            preset: this.addonsScene?.preset,
+            figurePreset: this.addonsScene?.figurePreset,
+            figureScale: this.addonsScene?.figureScale,
+            figureVariants: this.addonsScene?.figureVariants,
+            isDarkMode: this.scene.isDarkMode,
+            isSpinActive: this.scene.isSpinActive,
+            isSwingActive: this.scene.isSwingActive,
+            cameraMode: canvas3d?.props.camera?.mode ?? "perspective",
+            fogEnabled: fogName === "on",
+            fogIntensity: typeof fogIntensity === "number" ? fogIntensity / 100 : 0.5,
+        });
         if (this.currentWorkspace === "core") {
-            this.workbenchPanel.setActiveWorkspacePanel(null);
+            this.addonsPanel.setActiveWorkspacePanel(null);
         } else {
             const panels = this.getWorkspacePanels(this.currentWorkspace);
             const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
-            this.workbenchPanel.setWorkspacePanels(
+            this.addonsPanel.setWorkspacePanels(
                 panels.map((item) => ({
                     id: item.id,
                     title: item.title,
@@ -2839,11 +2868,11 @@ export class MolSysViewerController {
             );
             const activePanel = panels.find((item) => item.id === selectedId) ?? null;
             const workspaceTitle = this.getWorkspaceOptions().find((item) => item.id === this.currentWorkspace)?.title ?? this.currentWorkspace;
-            const workspaceSections = this.workbenchAddonSections.filter((item) => item.workspaceId === this.currentWorkspace);
+            const workspaceSections = this.addonSections.filter((item) => item.workspaceId === this.currentWorkspace);
             const activeAddonSummary = activePanel
-                ? this.workbenchAddons.find((item) => item.name === activePanel.addon)
+                ? this.addonsList.find((item) => item.name === activePanel.addon)
                 : null;
-            this.workbenchPanel.setActiveWorkspacePanel(
+            this.addonsPanel.setActiveWorkspacePanel(
                 activePanel
                     ? {
                         workspaceTitle,
@@ -2864,14 +2893,14 @@ export class MolSysViewerController {
             );
         }
         this.refreshPanelWorkspaceChrome();
-        this.workbenchPanel.setAddons(
-            this.workbenchAddons.map((item) => ({
+        this.addonsPanel.setAddons(
+            this.addonsList.map((item) => ({
                 ...item,
                 active: this.currentWorkspace !== "core" && this.workspaceBelongsToAddon(this.currentWorkspace, item.name),
             }))
         );
-        this.workbenchPanel.setAddonDiagnostics(this.addonDiagnostics);
-        this.workbenchPanel.setAddonWorkbenchSections([]);
+        this.addonsPanel.setAddonDiagnostics(this.addonDiagnostics);
+        this.addonsPanel.setAddonWorkbenchSections([]);
     }
 
     private buildAddonWorkspaceSummary(msg: any): WorkspaceRuntime[] {
@@ -2921,7 +2950,7 @@ export class MolSysViewerController {
             : [];
         const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
-        const workbenchSections = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+        const workbenchSections = Array.isArray(msg?.addon_sections) ? msg.addon_sections : [];
         const contextActionSpecs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
         const exportHelperSpecs = Array.isArray(msg?.export_helper_specs) ? msg.export_helper_specs : [];
 
@@ -2947,8 +2976,8 @@ export class MolSysViewerController {
             .sort((left, right) => left.name.localeCompare(right.name));
     }
 
-    private buildAddonWorkbenchSectionSummary(msg: any): AddonWorkbenchSectionRuntime[] {
-        const specs: any[] = Array.isArray(msg?.workbench_sections) ? msg.workbench_sections : [];
+    private buildAddonSectionSummary(msg: any): AddonSectionRuntime[] {
+        const specs: any[] = Array.isArray(msg?.addon_sections) ? msg.addon_sections : [];
         const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         const workspaceByAddon = new Map<string, string>();
         for (const item of workspaceSpecs) {
@@ -2961,7 +2990,7 @@ export class MolSysViewerController {
                     typeof item?.addon === "string"
                     && typeof item?.id === "string"
                     && typeof item?.title === "string"
-                    && (item?.target_panel === undefined || item?.target_panel === "workbench")
+                    && (item?.target_panel === undefined || item?.target_panel === "addons")
             )
             .map((item: any) => ({
                 key: `${item.addon}:${item.id}`,
@@ -3026,11 +3055,11 @@ export class MolSysViewerController {
 
         for (const workspace of this.addonWorkspaces) {
             const panelCount = this.getWorkspacePanels(workspace.id).length;
-            const workbenchSections = this.workbenchAddonSections.filter((item) => item.workspaceId === workspace.id);
+            const workbenchSections = this.addonSections.filter((item) => item.workspaceId === workspace.id);
             const workbenchSectionCount = workbenchSections.length;
             const workbenchSectionTitles = workbenchSections.map((item) => item.title);
             const contextActionCount = this.addonContextActions.filter((item) => this.workspaceBelongsToAddon(workspace.id, item.addon)).length;
-            const exportHelperCount = this.workbenchAddons.find((item) => item.name === workspace.addon)?.exportHelperTitles.length ?? 0;
+            const exportHelperCount = this.addonsList.find((item) => item.name === workspace.addon)?.exportHelperTitles.length ?? 0;
             const totalVisible = panelCount + workbenchSectionCount;
             if (totalVisible <= 0) continue;
 
@@ -3085,7 +3114,7 @@ export class MolSysViewerController {
         }
         this.activePanelMsgListeners = [];
         this.activePanelWidgetKey = null;
-        this.workbenchPanel.unmountAddonWidget();
+        this.addonsPanel.unmountAddonWidget();
     }
 
     private selectWorkspacePanel(workspaceId: string, panelId: string): void {
@@ -3113,7 +3142,7 @@ export class MolSysViewerController {
             this.cleanupActivePanelWidget();
         }
 
-        this.refreshWorkbenchPanel();
+        this.refreshAddonsPanel();
         this.emitPanelModeState();
     }
 
@@ -3458,24 +3487,24 @@ export class MolSysViewerController {
                     this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
                 }
             }
-            this.setPanelMode("workbench", true);
+            this.setPanelMode("addons", true);
             this.emitPanelModeState();
             return;
         }
         this.setPanelMode(this.lastCorePanelMode, true);
         this.refreshNavigatePanel();
-        this.refreshWorkbenchPanel();
+        this.refreshAddonsPanel();
         this.emitPanelModeState();
     }
 
     private emitPanelModeState(): void {
         const navigateExpanded = this.groupPanel.isVisible() && this.groupPanel.isExpanded();
-        const workbenchExpanded = this.workbenchPanel.isVisible() && this.workbenchPanel.isExpanded();
-        const expanded = navigateExpanded || workbenchExpanded;
+        const addonsExpanded = this.addonsPanel.isVisible() && this.addonsPanel.isExpanded();
+        const expanded = navigateExpanded || addonsExpanded;
         const panel = navigateExpanded
             ? "navigate"
-            : workbenchExpanded
-                ? "workbench"
+            : addonsExpanded
+                ? "addons"
                 : null;
         const workspacePanel =
             this.currentWorkspace === "core"

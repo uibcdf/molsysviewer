@@ -493,7 +493,7 @@ def test_create_standalone_qt0_window_builds_minimal_runtime(monkeypatch, tmp_pa
         action.triggered._callbacks[0]()
     scripts = runtime["webview"].scripts
     assert any('"panel":"navigate"' in script for script in scripts)
-    assert any('"panel":"workbench"' in script for script in scripts)
+    assert any('"panel":"addons"' in script for script in scripts)
     assert any('"expanded":false' in script and '"panel":null' in script for script in scripts)
     export_menu = runtime["window"].menu_bar.menus[2]
     assert export_menu.actions[0].shortcut == "Ctrl+Shift+S"

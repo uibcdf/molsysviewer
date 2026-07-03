@@ -63,9 +63,9 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         view.reset_camera(skip_digestion=True)
         view.get_camera_snapshot(skip_digestion=True)
         view.set_camera_snapshot({"target": [0, 0, 0]}, skip_digestion=True)
-        view.set_panel_mode("workbench", skip_digestion=True)
+        view.set_panel_mode("addons", skip_digestion=True)
         view.set_workspace("core", skip_digestion=True)
-        view.set_workspace_panel("workbench", workspace="core", skip_digestion=True)
+        view.set_workspace_panel("addons", workspace="core", skip_digestion=True)
         view.workspace_catalog(skip_digestion=True)
         view.workspace_panels("core", skip_digestion=True)
         view.workspace_sections("core", skip_digestion=True)
@@ -117,10 +117,10 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
         assert "figure" in tags_by_key["molsysviewer.exports.figure_publication_set"]
         assert meta_by_key["molsysviewer.viewer.get_camera_snapshot"].get("pretty") is None
         assert meta_by_key["molsysviewer.viewer.set_camera_snapshot"].get("snapshot_keys") == ["target"]
-        assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("panel") == "workbench"
+        assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("panel") == "addons"
         assert meta_by_key["molsysviewer.viewer.set_panel_mode"].get("expanded") is True
         assert meta_by_key["molsysviewer.viewer.set_workspace"].get("workspace") == "core"
-        assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("panel") == "workbench"
+        assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("panel") == "addons"
         assert meta_by_key["molsysviewer.viewer.set_workspace_panel"].get("workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("current_workspace") == "core"
         assert meta_by_key["molsysviewer.viewer.workspace_catalog"].get("workspace_count") >= 1

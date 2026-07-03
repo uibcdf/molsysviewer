@@ -59,7 +59,7 @@ def test_core_public_api_does_not_emit_missing_digester_warnings(tmp_path):
         }
         view.set_controls_visible(True, autohide=False, position=("top", "left"), position_fullscreen="bottom right")
         view.set_panel_mode("navigate")
-        view.set_panel_mode("workbench")
+        view.set_panel_mode("addons")
         view.set_panel_mode(None, expanded=False)
         view.set_workspace("core")
         view.set_workspace("audit")

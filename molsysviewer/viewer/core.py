@@ -660,6 +660,11 @@ class MolSysView(
                     if not isinstance(tag, str) or tag.strip() == "":
                         raise ValueError("save_selection requires non-empty tag.")
                     self.active_selection.save(tag=tag.strip(), skip_digestion=True)
+                elif action == "delete_selection":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_selection requires non-empty tag.")
+                    self.selections.delete(tag.strip(), skip_digestion=True)
                 elif action == "add_label_from_selection":
                     text = content.get("text")
                     if not isinstance(text, str) or text.strip() == "":

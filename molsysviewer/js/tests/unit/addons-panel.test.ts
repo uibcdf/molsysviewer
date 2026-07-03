@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import test from "node:test";
 
-import { WorkbenchPanel } from "../../src/ui/workbench-panel";
+import { AddonsPanel } from "../../src/ui/addons-panel";
 
 class FakeElement {
     public readonly style: Record<string, string> = {};
@@ -76,21 +76,21 @@ function findFirstText(node: FakeElement): string {
     return "";
 }
 
-test("WorkbenchPanel renders titled shell and empty sections", () => {
+test("AddonsPanel renders titled shell and empty sections", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
 
         panel.setVisible(true);
 
         const root = host.children[0];
-        const title = findFirstByAttribute(root, "data-molsysviewer-workbench-panel-title");
+        const title = findFirstByAttribute(root, "data-molsysviewer-addons-panel-title");
         const navGroup = findFirstByAttribute(root, "data-molsysviewer-panel-nav-group", "true");
-        const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "workbench");
+        const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "add-ons");
         const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "navigate");
-        const annotationsEmpty = findFirstByAttribute(root, "data-molsysviewer-workbench-empty", "annotations");
-        const sceneEmpty = findFirstByAttribute(root, "data-molsysviewer-workbench-empty", "scene");
+        const annotationsEmpty = findFirstByAttribute(root, "data-molsysviewer-addons-empty", "annotations");
+        const sceneEmpty = findFirstByAttribute(root, "data-molsysviewer-addons-empty", "scene");
 
         assert.ok(root);
         assert.ok(title);
@@ -98,7 +98,7 @@ test("WorkbenchPanel renders titled shell and empty sections", () => {
         assert.ok(navCurrent);
         assert.ok(navButton);
         assert.strictEqual(navButton?.textContent, "Navigate");
-        assert.strictEqual(title?.textContent, "Workbench");
+        assert.strictEqual(title?.textContent, "Add-ons");
         assert.strictEqual(root.style.display, "flex");
         assert.strictEqual(root.style.transform, "translateX(240px)");
         assert.strictEqual(annotationsEmpty?.textContent, "No annotations yet.");
@@ -110,11 +110,11 @@ test("WorkbenchPanel renders titled shell and empty sections", () => {
     }
 });
 
-test("WorkbenchPanel populates sections and scene summary", () => {
+test("AddonsPanel populates sections and scene summary", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
 
         panel.setVisible(true);
         panel.setAnnotations([{ key: "notes", title: "Picked label", subtitle: "group 12", active: true, context: true }]);
@@ -139,15 +139,15 @@ test("WorkbenchPanel populates sections and scene summary", () => {
         const root = host.children[0];
         const items = [];
         const collect = (node: FakeElement) => {
-            if (node.getAttribute("data-molsysviewer-workbench-item") === "true") items.push(node);
+            if (node.getAttribute("data-molsysviewer-addons-item") === "true") items.push(node);
             for (const child of node.children) collect(child);
         };
         collect(root);
 
         assert.strictEqual(items.length, 8);
         assert.strictEqual(findFirstText(items[0]), "Picked label");
-        assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-active"), "true");
-        assert.strictEqual(items[0].getAttribute("data-molsysviewer-workbench-item-context"), "true");
+        assert.strictEqual(items[0].getAttribute("data-molsysviewer-addons-item-active"), "true");
+        assert.strictEqual(items[0].getAttribute("data-molsysviewer-addons-item-context"), "true");
         assert.strictEqual(findFirstText(items[1]), "Distance");
         assert.strictEqual(findFirstText(items[2]), "Pocket");
         assert.strictEqual(findFirstText(items[3]), "Style: polymer-and-ligand");
@@ -167,11 +167,11 @@ test("WorkbenchPanel populates sections and scene summary", () => {
     }
 });
 
-test("WorkbenchPanel renders addon discovery failures", () => {
+test("AddonsPanel renders addon discovery failures", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
 
         panel.setVisible(true);
         panel.setAddons([]);
@@ -193,7 +193,7 @@ test("WorkbenchPanel renders addon discovery failures", () => {
         const root = host.children[0];
         const failure = findFirstByAttribute(
             root,
-            "data-molsysviewer-workbench-addon-discovery-failure",
+            "data-molsysviewer-addons-addon-discovery-failure",
             "entry-point:broken-addon",
         );
 
@@ -204,7 +204,7 @@ test("WorkbenchPanel renders addon discovery failures", () => {
 
         const lifecycleFailure = findFirstByAttribute(
             root,
-            "data-molsysviewer-workbench-addon-discovery-failure",
+            "data-molsysviewer-addons-addon-discovery-failure",
             "lifecycle:broken-addon.on_enable",
         );
         assert.ok(lifecycleFailure);
@@ -218,11 +218,11 @@ test("WorkbenchPanel renders addon discovery failures", () => {
     }
 });
 
-test("WorkbenchPanel renders dynamic addon workbench sections", () => {
+test("AddonsPanel renders dynamic addon workbench sections", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
 
         panel.setVisible(true);
         panel.setAddonWorkbenchSections([
@@ -235,8 +235,8 @@ test("WorkbenchPanel renders dynamic addon workbench sections", () => {
         ]);
 
         const root = host.children[0];
-        const section = findFirstByAttribute(root, "data-molsysviewer-workbench-section", "addon:topomt:pockets");
-        const row = findFirstByAttribute(root, "data-molsysviewer-workbench-item-key", "topomt:pockets");
+        const section = findFirstByAttribute(root, "data-molsysviewer-addons-section", "addon:topomt:pockets");
+        const row = findFirstByAttribute(root, "data-molsysviewer-addons-item-key", "topomt:pockets");
 
         assert.ok(section);
         assert.ok(row);
@@ -249,11 +249,11 @@ test("WorkbenchPanel renders dynamic addon workbench sections", () => {
     }
 });
 
-test("WorkbenchPanel renders workspace panel selector and active host", () => {
+test("AddonsPanel renders workspace panel selector and active host", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
         let selected = "";
         let selectedWorkspace = "";
 
@@ -293,39 +293,39 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
         });
 
         const root = host.children[0];
-        const runtimeDeck = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-runtime-deck", "true");
-        const currentSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "current");
-        const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
-        const overviewSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-subtitle", "topomt");
-        const overviewEntry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-entry", "topomt");
-        const overviewPreview = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview", "topomt");
-        const overviewPreviewDescription = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-description", "topomt");
-        const overviewPreviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-capabilities", "topomt");
-        const overviewPreviewSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section", "topomt:pockets");
-        const overviewPreviewSectionTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-title", "topomt:pockets");
-        const overviewPreviewSectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-item", "topomt:pockets");
-        const overviewPreviewSectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-preview-section-subtitle", "topomt:pockets");
-        const overviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-capabilities", "topomt");
-        const overviewPanels = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panels", "topomt");
-        const overviewCurrentPanel = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-current", "topo");
-        const overviewPanelButton = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel", "channels");
-        const overviewCurrentPanelTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-title", "topo");
-        const overviewCurrentPanelDescription = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-description", "topo");
-        const overviewCurrentPanelEntry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-entry", "topo");
-        const overviewPanelButtonTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-panel-title", "channels");
-        const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "topomt");
+        const runtimeDeck = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-runtime-deck", "true");
+        const currentSection = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-section", "current");
+        const overviewCard = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card", "topomt");
+        const overviewSubtitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-subtitle", "topomt");
+        const overviewEntry = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-entry", "topomt");
+        const overviewPreview = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview", "topomt");
+        const overviewPreviewDescription = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview-description", "topomt");
+        const overviewPreviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview-capabilities", "topomt");
+        const overviewPreviewSection = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview-section", "topomt:pockets");
+        const overviewPreviewSectionTitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview-section-title", "topomt:pockets");
+        const overviewPreviewSectionItem = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview-section-item", "topomt:pockets");
+        const overviewPreviewSectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-preview-section-subtitle", "topomt:pockets");
+        const overviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-capabilities", "topomt");
+        const overviewPanels = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panels", "topomt");
+        const overviewCurrentPanel = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panel-current", "topo");
+        const overviewPanelButton = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panel", "channels");
+        const overviewCurrentPanelTitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panel-title", "topo");
+        const overviewCurrentPanelDescription = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panel-description", "topo");
+        const overviewCurrentPanelEntry = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panel-entry", "topo");
+        const overviewPanelButtonTitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-panel-title", "channels");
+        const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-marker", "topomt");
         const stack = findFirstByAttribute(root, "data-molsysviewer-panel-stack", "true");
         const active = findFirstByAttribute(root, "data-molsysviewer-panel-stack-current", "topo");
         const button = findFirstByAttribute(root, "data-molsysviewer-panel-stack-option", "channels");
-        const hostCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-host", "true");
-        const title = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-title", "true");
-        const entry = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-entry", "true");
-        const context = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-context-actions", "true");
-        const exports = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-export-helpers", "true");
-        const section = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section", "topomt:pockets");
-        const sectionTitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-title", "topomt:pockets");
-        const sectionItem = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-item", "topomt:pockets");
-        const sectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-panel-section-subtitle", "topomt:pockets");
+        const hostCard = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-host", "true");
+        const title = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-title", "true");
+        const entry = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-entry", "true");
+        const context = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-context-actions", "true");
+        const exports = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-export-helpers", "true");
+        const section = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-section", "topomt:pockets");
+        const sectionTitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-section-title", "topomt:pockets");
+        const sectionItem = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-section-item", "topomt:pockets");
+        const sectionSubtitle = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-panel-section-subtitle", "topomt:pockets");
 
         assert.ok(runtimeDeck);
         assert.ok(currentSection);
@@ -395,18 +395,18 @@ test("WorkbenchPanel renders workspace panel selector and active host", () => {
     }
 });
 
-test("WorkbenchPanel rows trigger activation when provided", () => {
+test("AddonsPanel rows trigger activation when provided", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
         let activated = 0;
 
         panel.setVisible(true);
         panel.setAnnotations([{ title: "Picked label", subtitle: "group 12", onActivate: () => { activated += 1; } }]);
 
         const root = host.children[0];
-        const row = findFirstByAttribute(root, "data-molsysviewer-workbench-item");
+        const row = findFirstByAttribute(root, "data-molsysviewer-addons-item");
         assert.ok(row);
         row?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(activated, 1);
@@ -417,11 +417,11 @@ test("WorkbenchPanel rows trigger activation when provided", () => {
     }
 });
 
-test("WorkbenchPanel rows expose visibility toggle when provided", () => {
+test("AddonsPanel rows expose visibility toggle when provided", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
         let toggled = 0;
 
         panel.setVisible(true);
@@ -433,7 +433,7 @@ test("WorkbenchPanel rows expose visibility toggle when provided", () => {
         }]);
 
         const root = host.children[0];
-        const button = findFirstByAttribute(root, "data-molsysviewer-workbench-item-visibility", "hidden");
+        const button = findFirstByAttribute(root, "data-molsysviewer-addons-item-visibility", "hidden");
         assert.ok(button);
         assert.strictEqual(button?.textContent, "Show");
         button?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
@@ -445,20 +445,20 @@ test("WorkbenchPanel rows expose visibility toggle when provided", () => {
     }
 });
 
-test("WorkbenchPanel sections can collapse and expand", () => {
+test("AddonsPanel sections can collapse and expand", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
 
         panel.setVisible(true);
         panel.setAnnotations([{ title: "Picked label", subtitle: "group 12" }]);
 
         const root = host.children[0];
-        const toggle = findFirstByAttribute(root, "data-molsysviewer-workbench-section-toggle", "annotations");
-        const marker = findFirstByAttribute(root, "data-molsysviewer-workbench-section-marker", "annotations");
-        const section = findFirstByAttribute(root, "data-molsysviewer-workbench-section", "annotations");
-        const row = findFirstByAttribute(root, "data-molsysviewer-workbench-item");
+        const toggle = findFirstByAttribute(root, "data-molsysviewer-addons-section-toggle", "annotations");
+        const marker = findFirstByAttribute(root, "data-molsysviewer-addons-section-marker", "annotations");
+        const section = findFirstByAttribute(root, "data-molsysviewer-addons-section", "annotations");
+        const row = findFirstByAttribute(root, "data-molsysviewer-addons-item");
         assert.ok(toggle);
         assert.ok(marker);
         assert.ok(section);
@@ -482,12 +482,12 @@ test("WorkbenchPanel sections can collapse and expand", () => {
     }
 });
 
-test("WorkbenchPanel exposes shared expanded state API and collapses when hidden", () => {
+test("AddonsPanel exposes shared expanded state API and collapses when hidden", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
         let lastExpanded: boolean | null = null;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
         panel.setOnExpandedChange((expanded) => { lastExpanded = expanded; });
 
         panel.setVisible(true);
@@ -509,12 +509,12 @@ test("WorkbenchPanel exposes shared expanded state API and collapses when hidden
     }
 });
 
-test("WorkbenchPanel header nav button triggers navigate-to-navigate callback", () => {
+test("AddonsPanel header nav button triggers navigate-to-navigate callback", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
         let navigated = 0;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
         panel.setOnNavigateToNavigate(() => { navigated += 1; });
 
         panel.setVisible(true);
@@ -532,12 +532,12 @@ test("WorkbenchPanel header nav button triggers navigate-to-navigate callback", 
     }
 });
 
-test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist", () => {
+test("AddonsPanel exposes workspace launcher when multiple workspaces exist", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
         let selectedWorkspace: string | null = null;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
         panel.setWorkspaces(
             [
                 { id: "core", title: "Core", subtitle: "Navigate + Workbench", panelCount: 2 },
@@ -556,16 +556,16 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
         const currentTitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-title", "true");
         const currentSubtitle = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-current-subtitle", "true");
         const launcher = findFirstByAttribute(root, "data-molsysviewer-panel-workspace-launcher", "true");
-        const overview = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview", "true");
-        const overviewCurrentSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "current");
-        const overviewAddonSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-section", "addons");
-        const overviewCard = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card", "topomt");
-        const overviewCurrent = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-current", "core");
-        const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "topomt");
-        const overviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-capabilities", "topomt");
-        const overviewSections = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-sections", "topomt");
-        const overviewSection = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-section", "topomt:Pockets");
-        const overviewCurrentMarker = findFirstByAttribute(root, "data-molsysviewer-workbench-workspace-overview-card-marker", "core");
+        const overview = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview", "true");
+        const overviewCurrentSection = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-section", "current");
+        const overviewAddonSection = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-section", "addons");
+        const overviewCard = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card", "topomt");
+        const overviewCurrent = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-current", "core");
+        const overviewMarker = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-marker", "topomt");
+        const overviewCapabilities = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-capabilities", "topomt");
+        const overviewSections = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-sections", "topomt");
+        const overviewSection = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-section", "topomt:Pockets");
+        const overviewCurrentMarker = findFirstByAttribute(root, "data-molsysviewer-addons-workspace-overview-card-marker", "core");
         assert.ok(current);
         assert.ok(currentMarker);
         assert.ok(currentTitle);
@@ -624,11 +624,11 @@ test("WorkbenchPanel exposes workspace launcher when multiple workspaces exist",
     }
 });
 
-test("WorkbenchPanel supports custom navigation labels", () => {
+test("AddonsPanel supports custom navigation labels", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const panel = new WorkbenchPanel(host);
+        const panel = new AddonsPanel(host);
 
         let navigated = 0;
         panel.setOnNavigateToNavigate(() => {

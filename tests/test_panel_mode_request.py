@@ -1,4 +1,4 @@
-from molsysviewer import AddonPanelSpec, AddonSpec, AddonWorkbenchSectionSpec, AddonWorkspaceSpec, MolSysView, addons
+from molsysviewer import AddonPanelSpec, AddonSpec, AddonSectionSpec, AddonWorkspaceSpec, MolSysView, addons
 
 
 def test_set_panel_mode_sends_message():
@@ -9,12 +9,12 @@ def test_set_panel_mode_sends_message():
     view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
 
     view.set_panel_mode("navigate")
-    view.set_panel_mode("workbench")
+    view.set_panel_mode("addons")
     view.set_panel_mode(None, expanded=False)
 
     assert sent == [
         {"op": "set_panel_mode", "panel": "navigate", "expanded": True},
-        {"op": "set_panel_mode", "panel": "workbench", "expanded": True},
+        {"op": "set_panel_mode", "panel": "addons", "expanded": True},
         {"op": "set_panel_mode", "panel": None, "expanded": False},
     ]
 
@@ -55,12 +55,12 @@ def test_set_panel_mode_is_kept_in_message_history():
     view = MolSysView(debug_js=True)
 
     view.set_panel_mode("navigate")
-    view.set_panel_mode("workbench")
+    view.set_panel_mode("addons")
     view.set_panel_mode(None, expanded=False)
 
     assert view._message_history[-3:] == [  # noqa: SLF001
         {"op": "set_panel_mode", "panel": "navigate", "expanded": True},
-        {"op": "set_panel_mode", "panel": "workbench", "expanded": True},
+        {"op": "set_panel_mode", "panel": "addons", "expanded": True},
         {"op": "set_panel_mode", "panel": None, "expanded": False},
     ]
 
@@ -94,7 +94,7 @@ def test_get_panel_mode_state_returns_last_frontend_state():
 
     payload = {
         "event": "panel_mode_state",
-        "panel": "workbench",
+        "panel": "addons",
         "expanded": True,
         "workspace": "topomt",
         "workspace_panel": "topo",
@@ -130,8 +130,8 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
                 name="topomt",
                 workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
+                addon_sections=(
+                    AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
                 ),
             )
         )
@@ -153,7 +153,7 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
         ]
         assert view.workspace_panels() == [
             {"id": "navigate", "title": "Navigate", "active": False},
-            {"id": "workbench", "title": "Workbench", "active": False},
+            {"id": "addons", "title": "Add-ons", "active": False},
         ]
         assert view.workspace_panels("topomt") == [
             {
@@ -171,7 +171,7 @@ def test_workspace_catalog_and_panels_follow_effective_runtime():
                 "id": "summary",
                 "title": "Summary",
                 "entry": "topomt.section.summary",
-                "target_panel": "workbench",
+                "target_panel": "addons",
                 "order": 0,
                 "meta": {},
                 "addon": "topomt",
@@ -198,7 +198,7 @@ def test_workspace_catalog_and_panels_reflect_active_runtime_state():
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "panel_mode_state",
-                "panel": "workbench",
+                "panel": "addons",
                 "expanded": True,
                 "workspace": "topomt",
                 "workspace_panel": "topo",
@@ -248,7 +248,7 @@ def test_workspace_runtime_aggregates_state_catalog_and_current_panels():
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "panel_mode_state",
-                "panel": "workbench",
+                "panel": "addons",
                 "expanded": True,
                 "workspace": "topomt",
                 "workspace_panel": "topo",
@@ -258,7 +258,7 @@ def test_workspace_runtime_aggregates_state_catalog_and_current_panels():
         assert view.workspace_runtime() == {
             "state": {
                 "event": "panel_mode_state",
-                "panel": "workbench",
+                "panel": "addons",
                 "expanded": True,
                 "workspace": "topomt",
                 "workspace_panel": "topo",
@@ -323,8 +323,8 @@ def test_workspace_runtime_includes_current_sections():
                 name="topomt",
                 workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
+                addon_sections=(
+                    AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
                 ),
             )
         )
@@ -332,7 +332,7 @@ def test_workspace_runtime_includes_current_sections():
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "panel_mode_state",
-                "panel": "workbench",
+                "panel": "addons",
                 "expanded": True,
                 "workspace": "topomt",
                 "workspace_panel": "topo",
@@ -366,7 +366,7 @@ def test_workspace_runtime_includes_current_sections():
                 "id": "summary",
                 "title": "Summary",
                 "entry": "topomt.section.summary",
-                "target_panel": "workbench",
+                "target_panel": "addons",
                 "order": 0,
                 "meta": {},
                 "addon": "topomt",
@@ -385,8 +385,8 @@ def test_workspace_runtime_pretty_returns_json():
                 name="topomt",
                 workspaces=(AddonWorkspaceSpec(id="topomt", title="TopoMT", entry_panel="topo"),),
                 panels=(AddonPanelSpec(id="topo", title="Topo", entry="topomt.panel.topo"),),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
+                addon_sections=(
+                    AddonSectionSpec(id="summary", title="Summary", entry="topomt.section.summary"),
                 ),
             )
         )
@@ -394,7 +394,7 @@ def test_workspace_runtime_pretty_returns_json():
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "panel_mode_state",
-                "panel": "workbench",
+                "panel": "addons",
                 "expanded": True,
                 "workspace": "topomt",
                 "workspace_panel": "topo",

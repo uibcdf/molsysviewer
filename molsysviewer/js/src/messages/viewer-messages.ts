@@ -530,7 +530,7 @@ export type SetCameraSnapshotMessage = {
 
 export type SetPanelModeMessage = {
     op: "set_panel_mode";
-    panel?: "navigate" | "workbench" | null;
+    panel?: "navigate" | "addons" | null;
     expanded?: boolean;
 };
 
@@ -567,7 +567,7 @@ export type SetAddonRuntimeSummaryMessage = {
         target?: string;
         meta?: Record<string, unknown>;
     }>;
-    workbench_sections?: Array<{
+    addon_sections?: Array<{
         addon?: string;
         id?: string;
         title?: string;

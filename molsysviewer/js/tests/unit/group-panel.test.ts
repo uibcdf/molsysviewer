@@ -124,7 +124,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         const title = findFirstByAttribute(root, "data-molsysviewer-group-panel-title");
         const navGroup = findFirstByAttribute(root, "data-molsysviewer-panel-nav-group", "true");
         const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "navigate");
-        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "workbench");
+        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "add-ons");
         const body = findFirstByAttribute(root, "data-molsysviewer-group-panel-body");
         const toggle = root.children[1];
         const stripRoots = collectByAttribute(root, 'data-molsysviewer-group-strip', 'true');
@@ -134,7 +134,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         assert.ok(navGroup);
         assert.ok(navCurrent);
         assert.ok(navButton);
-        assert.strictEqual(navButton?.textContent, "Workbench");
+        assert.strictEqual(navButton?.textContent, "Add-ons");
         assert.strictEqual(title?.textContent, "Navigate");
         assert.strictEqual(root.style.display, 'flex');
         assert.strictEqual(toggle.textContent, '>');
@@ -194,15 +194,13 @@ test("GroupPanel renders active, saved, and region summaries", () => {
         panel.setRegions([{ tag: "binding", atom_count: 2, hidden: true }]);
 
         const root = host.children[0];
-        const activeSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "active");
-        const savedSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "saved");
+        const selectionSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "selection");
         const regionsSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "regions");
         const summaryItems = collectByAttribute(root, "data-molsysviewer-group-panel-summary-item", "true").map((node) => firstText(node));
 
-        assert.ok(activeSection);
-        assert.ok(savedSection);
+        assert.ok(selectionSection);
         assert.ok(regionsSection);
-        assert.ok(summaryItems.includes("2 atoms"));
+        assert.ok(summaryItems.some((txt) => txt.includes("2 atoms")));
         assert.ok(summaryItems.includes("site_a"));
         assert.ok(summaryItems.includes("binding"));
 
@@ -507,7 +505,7 @@ test("GroupPanel exposes panel stack in the shared header", () => {
         panel.setPanelStack(
             [
                 { id: "navigate", title: "Navigate", active: true },
-                { id: "workbench", title: "Workbench" },
+                { id: "addons", title: "Add-ons" },
             ],
             (panelId) => { selected = panelId; },
         );
@@ -515,13 +513,13 @@ test("GroupPanel exposes panel stack in the shared header", () => {
         const root = host.children[0];
         const stack = findFirstByAttribute(root, "data-molsysviewer-panel-stack", "true");
         const current = findFirstByAttribute(root, "data-molsysviewer-panel-stack-current", "navigate");
-        const option = findFirstByAttribute(root, "data-molsysviewer-panel-stack-option", "workbench");
+        const option = findFirstByAttribute(root, "data-molsysviewer-panel-stack-option", "addons");
 
         assert.ok(stack);
         assert.ok(current);
         assert.ok(option);
         option?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.strictEqual(selected, "workbench");
+        assert.strictEqual(selected, "addons");
 
         panel.dispose();
     } finally {
@@ -561,7 +559,7 @@ test("GroupPanel header nav button triggers navigate-to-workbench callback", () 
         panel.setStructure(structure);
 
         const root = host.children[0];
-        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "workbench");
+        const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "add-ons");
         assert.ok(navButton);
 
         navButton?.dispatch("click", { preventDefault() {}, stopPropagation() {} });

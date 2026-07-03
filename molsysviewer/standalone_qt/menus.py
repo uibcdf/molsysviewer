@@ -302,15 +302,15 @@ def _install_menu_bar(
     )
     view_menu.addAction(open_navigate_action)
 
-    open_workbench_action = QAction("Open Workbench", window)
-    _get_helper("_set_action_shortcut")(open_workbench_action, "Ctrl+2")
-    open_workbench_action.triggered.connect(
+    open_addons_action = QAction("Open Add-ons", window)
+    _get_helper("_set_action_shortcut")(open_addons_action, "Ctrl+2")
+    open_addons_action.triggered.connect(
         lambda: _get_helper("_send_viewer_message")(
             webview,
-            {"op": "set_panel_mode", "panel": "workbench", "expanded": True},
+            {"op": "set_panel_mode", "panel": "addons", "expanded": True},
         )
     )
-    view_menu.addAction(open_workbench_action)
+    view_menu.addAction(open_addons_action)
 
     close_panel_action = QAction("Close Panel Mode", window)
     _get_helper("_set_action_shortcut")(close_panel_action, "Escape")

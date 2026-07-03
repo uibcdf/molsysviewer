@@ -10,7 +10,7 @@ def digest_panel(panel, caller=None):
         "molsysviewer.viewer.set_panel_mode",
         "molsysviewer.viewer.MolSysView.set_panel_mode",
     }:
-        if panel in {"navigate", "workbench"}:
+        if panel in {"navigate", "addons"}:
             return panel
     if isinstance(panel, str) and caller in {
         "molsysviewer.viewer.set_workspace_panel",

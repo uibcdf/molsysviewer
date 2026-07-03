@@ -88,7 +88,7 @@ def build_reference_demo_view(
     addon = register_reference_addon(name, registry=registry)
     view = demo[demo_key]
     if expand_workbench:
-        view.set_panel_mode(panel="workbench", expanded=True, skip_digestion=True)
+        view.set_panel_mode(panel="addons", expanded=True, skip_digestion=True)
         workspace = addon.workspaces[0] if len(addon.workspaces) > 0 else None
         if workspace is not None:
             view.set_workspace(workspace.id, skip_digestion=True)

@@ -142,7 +142,7 @@ export class ViewerContextMenu {
         isSwingActive?: boolean;
         isDarkMode?: boolean;
         isNavigateExpanded?: boolean;
-        isWorkbenchExpanded?: boolean;
+        isAddonsExpanded?: boolean;
         isCanvasVisible?: boolean;
         currentViewerMode?: string;
     } | null = null;
@@ -216,7 +216,7 @@ export class ViewerContextMenu {
             isSwingActive?: boolean;
             isDarkMode?: boolean;
             isNavigateExpanded?: boolean;
-            isWorkbenchExpanded?: boolean;
+            isAddonsExpanded?: boolean;
             currentViewerMode?: string;
             isCanvasVisible?: boolean;
         } | null,
@@ -274,7 +274,7 @@ export class ViewerContextMenu {
             const isSwing = this.currentSceneState?.isSwingActive;
             const isDark = this.currentSceneState?.isDarkMode;
             const isNavOpen = this.currentSceneState?.isNavigateExpanded;
-            const isWorkOpen = this.currentSceneState?.isWorkbenchExpanded;
+            const isWorkOpen = this.currentSceneState?.isAddonsExpanded;
             const activeMode = this.currentSceneState?.currentViewerMode || "classic";
 
             this.scrollEl.appendChild(this.makeActionButton("Reset View", "reset_view"));
