@@ -743,6 +743,45 @@ def test_payload_scheme_handler_serves_and_fails_correctly():
     assert handler.served == ["qt-7"]
 
 
+def test_qt_bridge_reports_load_progress():
+    class FakeQTimer:
+        @staticmethod
+        def singleShot(_timeout_ms, _callback):
+            pass
+
+    class FakePage:
+        def runJavaScript(self, script, callback=None):
+            if callback is not None:
+                callback({"accepted": True})
+
+    class FakeWebView:
+        def __init__(self):
+            self._page = FakePage()
+
+        def page(self):
+            return self._page
+
+    statuses: list[str] = []
+    bridge = standalone_qt.QtMessageBridge(FakeWebView(), FakeQTimer, status_callback=statuses.append)
+    bridge.ready = True
+    bridge.send({"op": "load_molsys_payload", "payload": {"atoms": {}, "structures": []}})
+
+    assert any("Loading" in s for s in statuses)
+    mid = bridge.inflight["id"]
+    gen = bridge.inflight["generation"]
+
+    bridge.handle_frontend_event({"event": "structure_ready", "id": mid, "generation": gen})
+    assert any("rendering" in s.lower() for s in statuses)
+
+    bridge.handle_frontend_event({"event": "render_ready", "id": mid, "generation": gen})
+    assert statuses[-1] == "Ready."
+
+    # A stale-generation event must not overwrite the status.
+    statuses.clear()
+    bridge.handle_frontend_event({"event": "structure_ready", "id": mid, "generation": gen - 1})
+    assert statuses == []
+
+
 def test_qt_live_model_smoke_real_window(monkeypatch):
     """Real (offscreen) Qt WebEngine smoke test for the live-message transport.
 
@@ -836,3 +875,58 @@ def test_qt_live_model_smoke_real_window(monkeypatch):
     assert bridge.inflight is None
 
 
+
+
+def test_qt_live_model_full_render_gpu(monkeypatch):
+    """Opt-in end-to-end render test: also validates the actual 3D/WebGL draw.
+
+    Disabled by default (needs a WebGL-capable environment). Enable with
+    MOLSYSVIEWER_QT_GPU_TEST=1, ideally under xvfb with software WebGL, e.g.:
+
+        QTWEBENGINE_CHROMIUM_FLAGS="--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader" \
+        MOLSYSVIEWER_QT_GPU_TEST=1 xvfb-run -a pytest -k full_render_gpu
+
+    Unlike the default smoke, this asserts the load fully completes (structure
+    rendered), not just that the transports work.
+    """
+    if not os.environ.get("MOLSYSVIEWER_QT_GPU_TEST"):
+        pytest.skip("Set MOLSYSVIEWER_QT_GPU_TEST=1 (WebGL-capable env) to run the full render test.")
+    try:
+        standalone_qt._import_qt()
+    except ImportError as exc:
+        pytest.skip(f"PySide6 is not available: {exc}")
+
+    monkeypatch.setenv("MOLSYSVIEWER_QT_PAYLOAD_REF_THRESHOLD", "1")
+    monkeypatch.setenv("QTWEBENGINE_DISABLE_SANDBOX", "1")
+    monkeypatch.setenv("QT_QPA_PLATFORM", os.environ.get("QT_QPA_PLATFORM", "offscreen"))
+
+    runtime = create_standalone_qt0_window(demo["dialanine"], title="Full Render GPU Test")
+    app = runtime["app"]
+    webview = runtime["webview"]
+    window = runtime["window"]
+    bridge = webview._molsysviewer_qt_bridge
+
+    import time
+    start = time.time()
+    success = False
+    status_msg = ""
+    while time.time() - start < 30.0:
+        app.processEvents()
+        if bridge.ready and len(bridge.queue) == 0 and bridge.inflight is None:
+            success = True
+            break
+        if hasattr(window, "statusBar") and window.statusBar():
+            status_msg = window.statusBar().currentMessage()
+        time.sleep(0.05)
+
+    try:
+        window.close()
+    except Exception:
+        pass
+
+    assert bridge.ready is True, f"bridge never became ready. Status: {status_msg}"
+    handler = getattr(webview, "_molsysviewer_qt_payload_handler", None)
+    assert handler is not None and len(handler.served) >= 1, "payload was not served over the custom scheme"
+    # The whole point of this test: the load actually finished (rendered).
+    assert success, f"structure did not finish rendering within timeout. Status: {status_msg}"
+    assert bridge.inflight is None

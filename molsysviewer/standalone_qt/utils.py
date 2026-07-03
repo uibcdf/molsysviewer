@@ -337,6 +337,13 @@ class QtMessageBridge:
             self._flush()
             return
         if name in {"message_ack", "message_error", "structure_ready", "render_ready"}:
+            # Progress feedback for the current generation, so the user is never
+            # left in front of a blank window during a long load.
+            if event.get("generation") == self.generation:
+                if name == "structure_ready":
+                    self._show_status("Structure ready, rendering…")
+                elif name == "render_ready":
+                    self._show_status("Ready.")
             self._handle_message_event(event)
             return
         if name == "frontend_error":
@@ -395,6 +402,8 @@ class QtMessageBridge:
         entry = self.queue.pop(0)
         self.inflight = entry
         entry["deadline"] = time.monotonic() + float(entry["timeout_s"])
+        if str(entry["message"].get("op", "")) in {"load_molsys_payload", "load_molsys_payload_ref"}:
+            self._show_status("Loading molecular system…")
         self._arm_timeout(entry)
         self._run_javascript(entry)
 
