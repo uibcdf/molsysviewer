@@ -33,6 +33,7 @@ from .addons import (
     AddonToolModeSpec,
     AddonSectionSpec,
     AddonWorkspaceSpec,
+    AddonWorkbenchSectionSpec,
 )
 from .styles import Style
 from .figures import FigureSpec
@@ -90,7 +91,7 @@ def launch_standalone_qt0(*args, **kwargs):
     return _launch_standalone_qt0(*args, **kwargs)
 
 
-addons.discover()
+addons.discover(include_known_modules=True)
 
 __all__ = [
     "MolSysView",
@@ -138,4 +139,5 @@ __all__ = [
     "AddonLifecycleSpec",
     "AddonPanelWidget",
     "config",
+    "AddonWorkbenchSectionSpec",
 ]

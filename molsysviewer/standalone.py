@@ -224,7 +224,7 @@ def _prepare_addons(
             global_addons.load_project_config(str(project_config))
 
     if discover_addons:
-        global_addons.discover()
+        global_addons.discover(include_known_modules=True)
 
     for module_name in addon_modules or ():
         global_addons.register_module(module_name)

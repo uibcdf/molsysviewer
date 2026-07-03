@@ -255,7 +255,10 @@ class AddonSectionSpec:
         object.__setattr__(self, "id", _ensure_non_empty_text(self.id, "AddonSectionSpec.id"))
         object.__setattr__(self, "title", _ensure_non_empty_text(self.title, "AddonSectionSpec.title"))
         object.__setattr__(self, "entry", _ensure_non_empty_text(self.entry, "AddonSectionSpec.entry"))
-        object.__setattr__(self, "target_panel", _ensure_non_empty_text(self.target_panel, "AddonSectionSpec.target_panel"))
+        target = self.target_panel
+        if target == "workbench":
+            target = "addons"
+        object.__setattr__(self, "target_panel", _ensure_non_empty_text(target, "AddonSectionSpec.target_panel"))
         object.__setattr__(self, "meta", _normalize_meta(self.meta))
 
     def info(self) -> dict[str, Any]:
@@ -267,6 +270,10 @@ class AddonSectionSpec:
             "order": self.order,
             "meta": dict(self.meta),
         }
+
+
+# Deprecated alias for backward compatibility
+AddonWorkbenchSectionSpec = AddonSectionSpec
 
 
 @dataclass(frozen=True)
@@ -381,6 +388,7 @@ def _validate_unique_ids(items: tuple[Any, ...], label: str) -> None:
 
 
 KNOWN_ADDON_MODULES: tuple[str, ...] = (
+    "molsysviewer_molsysmt",
     "molsysviewer_topomt",
     "molsysviewer_pharmacophoremt",
     "molsysviewer_elasnetmt",
@@ -518,6 +526,7 @@ class AddonSpec:
     panels: tuple[AddonPanelSpec, ...] = field(default_factory=tuple)
     context_actions: tuple[AddonContextActionSpec, ...] = field(default_factory=tuple)
     addon_sections: tuple[AddonSectionSpec, ...] = field(default_factory=tuple)
+    workbench_sections_field: tuple[AddonSectionSpec, ...] = field(default_factory=tuple, repr=False, metadata={"alias": "workbench_sections"})
     shape_providers: tuple[AddonShapeProviderSpec, ...] = field(default_factory=tuple)
     style_helpers: tuple[AddonStyleHelperSpec, ...] = field(default_factory=tuple)
     export_helpers: tuple[AddonExportHelperSpec, ...] = field(default_factory=tuple)
@@ -527,6 +536,47 @@ class AddonSpec:
     # an object with the add-on's public attributes (e.g. topography).
     state_factory: Any = None
     meta: dict[str, Any] = field(default_factory=dict)
+
+    def __init__(
+        self,
+        name: str,
+        package: str | None = None,
+        version: str | None = None,
+        requires_molsysviewer: str | None = None,
+        description: str | None = None,
+        workspaces: tuple[AddonWorkspaceSpec, ...] = (),
+        panels: tuple[AddonPanelSpec, ...] = (),
+        context_actions: tuple[AddonContextActionSpec, ...] = (),
+        addon_sections: tuple[AddonSectionSpec, ...] = (),
+        workbench_sections: tuple[AddonSectionSpec, ...] = (),
+        shape_providers: tuple[AddonShapeProviderSpec, ...] = (),
+        style_helpers: tuple[AddonStyleHelperSpec, ...] = (),
+        export_helpers: tuple[AddonExportHelperSpec, ...] = (),
+        tool_modes: tuple[AddonToolModeSpec, ...] = (),
+        state_factory: Any = None,
+        meta: dict[str, Any] | None = None,
+    ) -> None:
+        object.__setattr__(self, "name", name)
+        object.__setattr__(self, "package", package)
+        object.__setattr__(self, "version", version)
+        object.__setattr__(self, "requires_molsysviewer", requires_molsysviewer)
+        object.__setattr__(self, "description", description)
+        object.__setattr__(self, "workspaces", workspaces)
+        object.__setattr__(self, "panels", panels)
+        object.__setattr__(self, "context_actions", context_actions)
+        object.__setattr__(self, "addon_sections", addon_sections)
+        object.__setattr__(self, "workbench_sections_field", workbench_sections)
+        object.__setattr__(self, "shape_providers", shape_providers)
+        object.__setattr__(self, "style_helpers", style_helpers)
+        object.__setattr__(self, "export_helpers", export_helpers)
+        object.__setattr__(self, "tool_modes", tool_modes)
+        object.__setattr__(self, "state_factory", state_factory)
+        object.__setattr__(self, "meta", meta or {})
+        self.__post_init__()
+
+    @property
+    def workbench_sections(self) -> tuple[AddonSectionSpec, ...]:
+        return self.addon_sections
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "name", _ensure_non_empty_text(self.name, "AddonSpec.name"))
@@ -546,7 +596,12 @@ class AddonSpec:
         object.__setattr__(self, "workspaces", tuple(self.workspaces))
         object.__setattr__(self, "panels", tuple(self.panels))
         object.__setattr__(self, "context_actions", tuple(self.context_actions))
-        object.__setattr__(self, "addon_sections", tuple(self.addon_sections))
+
+        sections = self.addon_sections
+        if len(self.workbench_sections_field) > 0 and len(sections) == 0:
+            sections = self.workbench_sections_field
+        object.__setattr__(self, "addon_sections", tuple(sections))
+
         object.__setattr__(self, "shape_providers", tuple(self.shape_providers))
         object.__setattr__(self, "style_helpers", tuple(self.style_helpers))
         object.__setattr__(self, "export_helpers", tuple(self.export_helpers))
@@ -754,9 +809,16 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
         else:
             sources = [(str(module_name), str(module_name), None) for module_name in modules]
 
+        import sys
         for source, module_name, entry_point in sources:
-            if entry_point is None and module_name is not None and find_spec(module_name) is None:
-                continue
+            if entry_point is None and module_name is not None:
+                if find_spec(module_name) is None:
+                    continue
+                # Skip partially initialized modules during circular import
+                imported_mod = sys.modules.get(module_name)
+                if imported_mod is not None:
+                    if not hasattr(imported_mod, "addon") and not hasattr(imported_mod, "ADDON") and not hasattr(imported_mod, "get_addon"):
+                        continue
             try:
                 if entry_point is not None and hasattr(entry_point, "load"):
                     loaded = entry_point.load()
