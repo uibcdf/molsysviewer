@@ -22,9 +22,16 @@ Work done against the `0.18.0` tag.
 
 ---
 
-## 0.19.0 — Estabilización, Dogfooding y Calidad Final (Active)
+## 0.19.0 — Estabilización, Dogfooding y Calidad Final (Tagged)
 
-This milestone focuses on verifying the mature codebase, polishing the user experience, and creating onboarding materials to drive adoption.
+The `0.19.0` tag is now the clean checkpoint after the pre-`1.0.0`
+devguide cleanup, pending proposal triage, CI workflow repair, and standalone Qt
+backend consolidation work.
+
+This tag should be read as a stable development checkpoint, not the final
+`1.0.0` release gate. The remaining work is dogfooding, final validation, and
+dependency-channel synchronization once the latest sibling packages are
+published.
 
 ### 1. Technical Features & Infrastructure
 | # | Task | Notes | Status |
@@ -36,14 +43,22 @@ This milestone focuses on verifying the mature codebase, polishing the user expe
 ### 2. Scientific Adoption & Onboarding
 | # | Task | Notes | Status |
 |---|---|---|---|
-| 12 | **First-Contact Onboarding**: Simplify README quickstart | Show the 10-line synergy: MolSysMT reads anything ➔ MolSysViewer displays it | — |
+| 12 | **First-Contact Onboarding**: Simplify README quickstart | Show the 10-line synergy: MolSysMT reads anything ➔ MolSysViewer displays it | Pending after `0.19.0` |
 | 13 | **Surface & UX Polish**: Close minor interaction gaps | Add scroll inside the `GroupStrip` for large systems; improve context menu status feedback | ✅ 2026-06-24 |
 
 ### 3. Validation & Hardening
 | # | Task | Notes | Status |
 |---|---|---|---|
-| 14 | **Scientific Dogfooding**: Daily lab usage | Collect real-world friction and identify edge cases or bugs | — |
-| 15 | **Bug Resolution**: Fix findings from dogfooding | Address any stability or usability bugs raised by researchers | — |
+| 14 | **Scientific Dogfooding**: Daily lab usage | Collect real-world friction and identify edge cases or bugs | Pending after `0.19.0` |
+| 15 | **Bug Resolution**: Fix findings from dogfooding | Address any stability or usability bugs raised by researchers | Pending after `0.19.0` |
+
+Current CI note:
+
+- `CI_e2e` is green at the `0.19.0` checkpoint.
+- The main GitHub CI workflow has been repaired structurally, but its final
+  green state is temporarily gated by the publication cadence of sibling
+  dependency packages in conda, especially APIs from `smonitor` used by the
+  current MolSysViewer code.
 
 ---
 

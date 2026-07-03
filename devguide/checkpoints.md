@@ -15,16 +15,36 @@ It should help a developer answer, quickly:
 Update this file to reflect the current state.
 Do not append dated historical entries unless a date is itself operationally relevant.
 
+## Current Release Checkpoint
+
+`0.19.0` is now published as an annotated git tag. Treat it as the clean
+pre-`1.0.0` development checkpoint after the devguide cleanup, pending
+proposal/bug triage, CI workflow repair, and standalone Qt backend
+consolidation work.
+
+This checkpoint is intentionally not the final `1.0.0` gate. The remaining
+work is final dogfooding, real Qt/WebGL validation, and waiting for the latest
+sibling dependency packages to be published in the conda channel so GitHub CI
+can consume the APIs already used locally.
+
 ## Current Focus
 
-### Phase E — Standalone App & Parity Consolidation
+### Post-0.19.0 — Validation, Dogfooding, And Release Readiness
 
-With Phase D (unit consistency, TopoMT integration, and high-performance WebGL coordinate updates) fully closed and validated, the current focus shifts toward the production-ready maturation of the standalone Qt-based application shell and achieving parity in all user-facing documentation/tutorials.
+With Phase D (unit consistency, TopoMT integration, and high-performance WebGL
+coordinate updates) closed and Phase E's backend work materially implemented,
+the current focus shifts toward final validation, dependency-channel
+synchronization, and release-readiness polish.
 
 **Remaining steps toward `1.0.0`:**
-- **Mature the Qt Standalone Host**: Integrate the PySide6/QtWebEngine app shell with our unified reproducible workspace and scene state representation.
+- **Validate the Qt Standalone Host**: Run the real-window Qt/WebGL smoke path
+  once the local host environment is available: molecular load,
+  `structure_ready`, visible render, native context menu, and movie export.
 - **Visuals and Parity**: Promote any additional curated visual schemes or custom sizes to matching public Python APIs.
 - **Downstream Hardening**: Validate other add-on integrations (e.g. `pharmacophoremt`, `elasnetmt`, `topomt`) to ensure no regression or visual bugs occur during complex analysis workflows.
+- **Dependency publication sync**: Wait for the latest sibling packages,
+  especially `smonitor`, to be published for the CI matrix before treating
+  GitHub CI red status as a MolSysViewer code regression.
 
 ### Pending proposals and bugs: current state
 
