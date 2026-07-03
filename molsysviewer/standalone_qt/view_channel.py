@@ -23,6 +23,7 @@ class _Layout:
     def __init__(self) -> None:
         self.height: Any = None
         self.width: Any = None
+        self.min_height: Any = None
 
 
 class QtViewChannel:

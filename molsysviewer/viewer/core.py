@@ -181,8 +181,13 @@ class MolSysView(
         controls_mode: str | None = None,
         panel_mode_style: str | None = None,
         height: str = "480px",
+        transport: Any = None,
     ) -> None:
-        self.widget = MolSysViewerWidget()
+        # `transport` lets a non-Jupyter host (e.g. the standalone Qt shell) inject
+        # its own widget-like channel (see standalone_qt.QtViewChannel). It must
+        # implement the small surface the view uses: send/on_msg, config attrs and
+        # a `layout`. Defaults to the AnyWidget for Jupyter.
+        self.widget = transport if transport is not None else MolSysViewerWidget()
         self._debug_js = bool(debug_js) if debug_js is not None else False
         self.widget.debug_js = self._debug_js
         self._js_logs: list[dict[str, str]] = []
