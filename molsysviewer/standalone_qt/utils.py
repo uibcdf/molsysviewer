@@ -289,10 +289,15 @@ def _persist_shell_state(current_state: dict[str, Any], window=None) -> None:
 class QtMessageBridge:
     """Runtime-only queue for Qt -> JS viewer messages."""
 
-    def __init__(self, webview, QTimer, *, status_callback=None) -> None:
+    def __init__(self, webview, QTimer, *, status_callback=None, event_sink=None) -> None:
         self.webview = webview
         self.QTimer = QTimer
         self.status_callback = status_callback
+        # Optional callback(event: dict) that receives the frontend "product"
+        # events (interaction, movie, scene acks, ready, ...) so a persistent
+        # MolSysView can consume them. The pure-transport events (ack/error/
+        # structure_ready/render_ready) are handled by the bridge and not forwarded.
+        self.event_sink = event_sink
         self.ready = False
         self.queue: list[dict[str, Any]] = []
         self.inflight: dict[str, Any] | None = None
@@ -335,8 +340,10 @@ class QtMessageBridge:
         if name == "ready":
             self.ready = True
             self._flush()
+            self._forward_to_view(event)  # the view also needs "ready"
             return
         if name in {"message_ack", "message_error", "structure_ready", "render_ready"}:
+            # Pure-transport events: handled here, not forwarded to the view.
             # Progress feedback for the current generation, so the user is never
             # left in front of a blank window during a long load.
             if event.get("generation") == self.generation:
@@ -348,6 +355,17 @@ class QtMessageBridge:
             return
         if name == "frontend_error":
             self._show_status(f"Frontend error: {event.get('error', 'unknown error')}")
+            return
+        # Any other frontend event (interaction_*, movie_*, region_ack, ...) is a
+        # product event for the persistent MolSysView.
+        self._forward_to_view(event)
+
+    def _forward_to_view(self, event: dict[str, Any]) -> None:
+        if callable(self.event_sink):
+            try:
+                self.event_sink(event)
+            except Exception:
+                pass
 
     def _make_entry(self, message: dict[str, Any]) -> dict[str, Any]:
         self.next_id += 1

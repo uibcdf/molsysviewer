@@ -12,6 +12,7 @@ from molsysviewer import demo
 from molsysviewer.standalone import build_standalone0_html, launch_standalone0, main
 import molsysviewer.standalone_qt as standalone_qt
 from molsysviewer.standalone_qt import QT_IMPORT_ERROR, create_standalone_qt0_window, main as qt_main
+from molsysviewer.standalone_qt import QtViewChannel
 
 
 def test_build_standalone0_html_writes_file(tmp_path):
@@ -780,6 +781,65 @@ def test_qt_bridge_reports_load_progress():
     statuses.clear()
     bridge.handle_frontend_event({"event": "structure_ready", "id": mid, "generation": gen - 1})
     assert statuses == []
+
+
+class _FakeBridge:
+    def __init__(self):
+        self.sent = []
+        self.event_sink = None
+
+    def send(self, msg):
+        self.sent.append(msg)
+
+
+def test_qt_view_channel_routes_send_and_initial_messages_to_bridge():
+    bridge = _FakeBridge()
+    channel = QtViewChannel(bridge)
+
+    channel.send({"op": "clear_all"})
+    assert bridge.sent == [{"op": "clear_all"}]
+
+    # `initial_messages` is set cumulatively before ready; only new entries are
+    # forwarded to the bridge, each exactly once.
+    channel.initial_messages = [{"op": "m1"}]
+    channel.initial_messages = [{"op": "m1"}, {"op": "m2"}]
+    assert bridge.sent == [{"op": "clear_all"}, {"op": "m1"}, {"op": "m2"}]
+
+
+def test_qt_view_channel_delivers_bridge_events_to_on_msg():
+    bridge = _FakeBridge()
+    channel = QtViewChannel(bridge)
+    received = []
+    channel.on_msg(lambda _widget, content, _buffers: received.append(content))
+
+    # The channel wired itself as the bridge's event sink.
+    assert callable(bridge.event_sink)
+    bridge.event_sink({"event": "interaction_click", "kind": "structure"})
+    assert received == [{"event": "interaction_click", "kind": "structure"}]
+
+
+def test_qt_bridge_forwards_product_events_but_not_transport():
+    class FakeQTimer:
+        @staticmethod
+        def singleShot(_t, _cb):
+            pass
+
+    forwarded = []
+    bridge = standalone_qt.QtMessageBridge(
+        object(), FakeQTimer, event_sink=forwarded.append
+    )
+
+    bridge.handle_frontend_event({"event": "ready"})
+    bridge.handle_frontend_event({"event": "interaction_hover", "kind": "empty"})
+    # Pure-transport events must NOT reach the view.
+    bridge.handle_frontend_event({"event": "message_ack", "id": "x", "generation": 0})
+    bridge.handle_frontend_event({"event": "structure_ready", "id": "x", "generation": 0})
+
+    names = [e.get("event") for e in forwarded]
+    assert "ready" in names
+    assert "interaction_hover" in names
+    assert "message_ack" not in names
+    assert "structure_ready" not in names
 
 
 def test_qt_live_model_smoke_real_window(monkeypatch):
