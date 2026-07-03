@@ -30,16 +30,22 @@ Implementado hasta ahora:
   el flag inseguro `LocalContentCanAccessFileUrls` y los temporales;
 - **primitiva de espera cooperativa** para export de películas: el bucle bombea
   `view._qt_process_events` (que el host Qt fijaría a
-  `QCoreApplication.processEvents`) si existe; en Jupyter/no-Qt degrada al sleep.
+  `QCoreApplication.processEvents`) si existe; en Jupyter/no-Qt degrada al sleep;
+- **entorno Qt desbloqueado**: `qt6-webengine-uibcdf` empaqueta `icudtl.dat` y
+  scripts `activate.d`/`deactivate.d` (rutas + `QTWEBENGINE_DISABLE_SANDBOX=1`);
+  `pyside6-addons-uibcdf` reexpone `QWebEngineUrlScheme.flags()/setFlags()`
+  (estaban excluidos en el typesystem de Shiboken);
+- **validado en Qt real** por `test_qt_live_model_smoke_real_window`: el canal de
+  eventos (`bridge.ready`) y el servido de payload por `molsysviewer-payload://`
+  (`handler.served`) funcionan de extremo a extremo.
 
-Pendiente (bloqueado por entorno / fase posterior):
+Pendiente:
 
-- **validación con ventana Qt real** de todo el round-trip (que el esquema de
-  eventos dispare `acceptNavigationRequest`, que el `fetch` del esquema de
-  payload funcione, que las cargas no hagan timeout). Existe el arnés:
-  `test_qt_live_model_smoke_real_window` (marcado `skip`);
-- desbloquear el entorno: `icudtl.dat`/packaging `qt6-webengine-uibcdf`, sin lo
-  cual no se puede validar nada de lo anterior;
+- **validación del render 3D/WebGL**: el smoke afirma IPC + payload pero **no** el
+  render (headless con `--disable-gpu` no tiene contexto WebGL, así que ese tramo
+  se omite explícitamente). Requiere un runner con GPU o `xvfb` + WebGL por
+  software (SwiftShader/ANGLE), preferiblemente como test opt-in / job de CI
+  aparte, no el smoke por defecto;
 - **fase 4/5**: que el host Qt fije `_qt_process_events` y **enrute los eventos
   `movie_frame`/`movie_export_done` al `view`** (hoy el bridge solo procesa
   ack/error/ready; la primitiva de espera existe pero aún no tiene consumidor);

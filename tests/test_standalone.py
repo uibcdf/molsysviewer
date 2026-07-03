@@ -744,12 +744,19 @@ def test_payload_scheme_handler_serves_and_fails_correctly():
 
 
 def test_qt_live_model_smoke_real_window(monkeypatch):
-    """Smoke test to run once a real Qt WebEngine environment is available.
+    """Real (offscreen) Qt WebEngine smoke test for the live-message transport.
 
-    Should: open the window offscreen, load a demo, and assert that a
-    `structure_ready` event arrives (i.e. the event scheme + bridge round-trip
-    works and the load does not time out), and that a payload above the ref
-    threshold is served and parsed over the molsysviewer-payload scheme.
+    Asserts, in real Qt: the event scheme + bridge round-trip (bridge.ready) and
+    that a payload above the ref threshold is served over the molsysviewer-payload
+    scheme (handler.served).
+
+    NOT validated here: the actual 3D/WebGL render. Headless (offscreen +
+    --disable-gpu) has no WebGL context, so the structure never finishes drawing
+    and this test skips that part. To also validate rendering, run in an
+    environment with a real GPU, or with xvfb plus software WebGL
+    (QTWEBENGINE_CHROMIUM_FLAGS="--use-gl=angle --use-angle=swiftshader
+    --enable-unsafe-swiftshader") — best kept as a separate opt-in test/CI job,
+    not the default smoke.
     """
     try:
         standalone_qt._import_qt()
