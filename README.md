@@ -162,7 +162,7 @@ npm run build
 
 # Run the test suites
 pytest tests/                              # Python
-npm --prefix molsysviewer/js run test:js   # JS unit (109 tests)
+npm --prefix molsysviewer/js run test:js   # JS unit tests
 ```
 
 Developer guide: https://www.uibcdf.org/molsysviewer/content/developer/

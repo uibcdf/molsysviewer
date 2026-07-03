@@ -62,4 +62,4 @@ Tasks that extend the reach and automation of the project but do not block the i
 | 16 | **E2E Playwright CI Automation** | Run the 10 Playwright E2E tests headlessly in GitHub Actions on every pull request | Planned |
 | 17 | **macOS & Windows Standalone Support** | Build and publish PySide6/QtWebEngine conda recipes for macOS and Windows | Planned |
 | 18 | Add Windows to CI matrix | Standard runner compatibility verification | Planned |
-| 19 | Add Python 3.13 to CI matrix | Upgrade testing environment | Planned |
+| 19 | Add Python 3.13 to CI matrix | Upgrade testing environment; local development already uses Python 3.13, CI still covers 3.10-3.12 until package availability is confirmed | Planned |

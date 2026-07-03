@@ -1,0 +1,20 @@
+channels:
+  - uibcdf
+  - conda-forge
+  - ambermd
+
+dependencies:
+  - pip
+  - versioningit
+  - pytest
+  - pytest-cov
+  - anywidget
+  - traitlets
+  - packaging
+  - smonitor
+  - molsysmt
+  - pyunitwizard
+  - numpy
+  - pandas
+  - imageio
+  - nodejs>=18

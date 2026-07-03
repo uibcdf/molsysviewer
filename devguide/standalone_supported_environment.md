@@ -26,11 +26,11 @@ The full conda family is **5 packages**:
 
 | Package | Version | Build | Role | How it arrives |
 |---------|---------|-------|------|----------------|
-| `shiboken6-uibcdf` | `6.9.2` | `_3` | Python/C++ bridge | install explicitly |
-| `pyside6-essentials-uibcdf` | `6.9.2` | `_3` | Core Qt bindings | install explicitly |
-| `pyside6-addons-uibcdf` | `6.9.2` | `_3` | Add-on Qt bindings (includes WebEngine) | install explicitly |
+| `shiboken6-uibcdf` | `6.9.2` | `_3` or newer | Python/C++ bridge | install explicitly |
+| `pyside6-essentials-uibcdf` | `6.9.2` | `_3` or newer | Core Qt bindings | install explicitly |
+| `pyside6-addons-uibcdf` | `6.9.2` | `_5` or newer | Add-on Qt bindings (includes WebEngine; exposes `QWebEngineUrlScheme.setFlags`) | install explicitly |
 | `qt6-positioning-uibcdf` | `6.9.2` | `_0` | Qt Positioning native runtime | auto-pulled as dependency of `addons` |
-| `qt6-webengine-uibcdf` | `6.9.2` | `_0` | Qt WebEngine native runtime | auto-pulled as dependency of `addons` |
+| `qt6-webengine-uibcdf` | `6.9.2` | `_1` or newer | Qt WebEngine native runtime, resources, locales, activation scripts | auto-pulled as dependency of `addons` |
 
 You only need to name the three Python-binding packages explicitly.
 The two Qt native-runtime packages are declared as `run` dependencies of
@@ -38,9 +38,9 @@ The two Qt native-runtime packages are declared as `run` dependencies of
 
 ```bash
 mamba install -c uibcdf -c conda-forge \
-    "shiboken6-uibcdf=6.9.2=*_3" \
-    "pyside6-essentials-uibcdf=6.9.2=*_3" \
-    "pyside6-addons-uibcdf=6.9.2=*_3"
+    "shiboken6-uibcdf=6.9.2" \
+    "pyside6-essentials-uibcdf=6.9.2" \
+    "pyside6-addons-uibcdf=6.9.2"
 ```
 
 If the solver has trouble (common in complex envs), install all five from direct
@@ -66,6 +66,13 @@ print("OK")
 ```
 
 ## What Was Learned
+
+Current package-level fixes also include:
+
+- `qt6-webengine-uibcdf` exports the Qt WebEngine resource paths and Chromium
+  sandbox override through conda activation/deactivation scripts.
+- `pyside6-addons-uibcdf` exposes `QWebEngineUrlScheme.flags()` and
+  `setFlags(...)`, which MolSysViewer needs for fetchable custom schemes.
 
 - A coherent `pip` Qt stack worked in practice as a prototype path.
 - Mixing conda `pyside6` + pip `PySide6-Addons` was not reliable.

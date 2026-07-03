@@ -26,6 +26,7 @@ function pythonToNpmVersion(pyVersion) {
 }
 
 let pyVersion = null;
+const pkg = JSON.parse(fs.readFileSync(packageJsonFile, "utf8"));
 if (fs.existsSync(pythonVersionFile)) {
   pyVersion = readPythonVersion(pythonVersionFile);
 } else {
@@ -33,18 +34,20 @@ if (fs.existsSync(pythonVersionFile)) {
     process.env.RELEASE_VERSION ||
     process.env.GITHUB_REF_NAME ||
     process.env.GIT_REF_NAME;
-  if (envVersion) {
+  if (envVersion && /^\d+\.\d+\.\d+(?:[A-Za-z0-9._+-]*)?$/.test(envVersion.replace(/^v/, ""))) {
     pyVersion = envVersion.replace(/^v/, "");
     console.warn(
       `[sync-python-version] _version.py not found. Using ${pyVersion} from environment.`
     );
   } else {
-    throw new Error(`Missing ${pythonVersionFile} and no version override found.`);
+    pyVersion = pkg.version || pkg.pythonVersion || "0.0.0";
+    console.warn(
+      `[sync-python-version] _version.py not found and no release version is available. Reusing ${pyVersion}.`
+    );
   }
 }
 const npmVersion = pythonToNpmVersion(pyVersion);
 
-const pkg = JSON.parse(fs.readFileSync(packageJsonFile, "utf8"));
 pkg.version = npmVersion;
 pkg.pythonVersion = pyVersion;
 fs.writeFileSync(packageJsonFile, JSON.stringify(pkg, null, 2) + "\n", "utf8");
