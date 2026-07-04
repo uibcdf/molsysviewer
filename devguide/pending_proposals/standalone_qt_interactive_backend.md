@@ -2,16 +2,32 @@
 
 ## Estado
 
-Implementado hasta el límite verificable sin una ventana Qt real renderizando.
+**Validado en Qt real (aleph, GPU + pantalla, 2026-07-04).** El único gate que
+quedaba —render WebGL funcional en una ventana Qt real— está superado. El núcleo
+del backend interactivo funciona en producto:
 
-F1/F2/F3 están implementados y cubiertos con fakes, `molsysmt` real y un smoke
-Qt mínimo para el canal JS -> Python. El backend interactivo ya usa un
-`MolSysView` persistente ligado al bridge, enruta eventos de producto hacia el
-view, y conecta export de película/context-menu a ese view persistente.
+- ✅ Render 3D en GPU (dialanine visible; zoom/rotación con ratón).
+- ✅ Transporte JS→Python (`fetch("molsysviewer://event")` → handler → bridge).
+- ✅ Context menu nativo (F3): click derecho despliega el menú y "Reset view" funciona.
+- ✅ `MolSysView` persistente ligado al bridge, con eventos de producto enrutados
+  al view.
 
-Pendiente de cierre final: validación de producto en una ventana Qt real con
-render WebGL funcional. Sin esa prueba no conviene añadir más capas de código:
-el riesgo sería optimizar contra fakes en vez de contra la superficie real.
+(El instalable de la familia Qt-for-Python está publicado en el canal `uibcdf`, así
+que esto se prueba sin compilar — ver `project_standalone_packaging`.)
+
+### Known issues (deprioritized — no bloquean el núcleo)
+
+- **Load Demo no reemplaza el sistema en vivo** (F1): el Python **sí emite**
+  `clear_all` + `load_molsys_payload` con `view._ready=True` (comprobado con
+  `MolSysView` real + `QtViewChannel` + bridge fake), así que el fallo es
+  frontend/transporte — el `clear_all` o el payload de la 2ª generación no se
+  aplican en el frontend.
+- **Export Movie: "no camera snapshot available"** (F2): `add_camera_orbit`
+  necesita un snapshot de cámara no disponible en el contexto Qt (falta el
+  round-trip de petición de cámara / `_last_camera_snapshot` a None).
+
+Estos 2 quedan como follow-up acotado; el resto de la propuesta (abajo) es el
+registro de diseño e implementación.
 
 Continuación de `standalone_qt_live_model` (ya **cerrado**: el modelo vivo de
 mensajes de **carga** está implementado — shell persistente, `QtMessageBridge`
