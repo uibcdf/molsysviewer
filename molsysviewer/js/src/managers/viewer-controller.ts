@@ -940,6 +940,10 @@ export class MolSysViewerController {
             if (!region) return;
             this.focusTarget({ atom_indices: region.atom_indices });
         }, (action, details) => {
+            if (action === "download_image") {
+                this.downloadViewportImage();
+                return;
+            }
             emitInteractionEvent({
                 event: "interaction_context_action",
                 action,
@@ -3689,6 +3693,30 @@ export class MolSysViewerController {
             if (targetBackgroundMode && shouldRestoreBackground) {
                 await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
             }
+        }
+    }
+
+    async downloadViewportImage() {
+        const preset = this.addonsScene?.figurePreset || "publication-light";
+        const scale = this.addonsScene?.figureScale || 2.0;
+        const variants = this.addonsScene?.figureVariants || ["dark", "transparent"];
+        const transparent = variants.includes("transparent");
+
+        const dataUri = await this.getImageDataUri({
+            scale,
+            transparent,
+            preset,
+        });
+
+        if (typeof dataUri === "string") {
+            const link = document.createElement("a");
+            link.href = dataUri;
+            link.download = "molsysviewer.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else if (typeof dataUri === "object" && dataUri.success === false) {
+            alert(dataUri.message);
         }
     }
 

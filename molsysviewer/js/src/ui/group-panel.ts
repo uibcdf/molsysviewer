@@ -43,7 +43,7 @@ type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
 type WorkspaceOption = { id: string; title: string; subtitle?: string };
 type PanelOption = { id: string; title: string; active?: boolean };
 
-type TabKey = "structure" | "selection" | "regions" | "shapes" | "layers" | "scene";
+type TabKey = "structure" | "selection" | "regions" | "shapes" | "scene" | "export";
 
 export class GroupPanel {
     private readonly root: HTMLDivElement;
@@ -62,7 +62,7 @@ export class GroupPanel {
     private readonly selectionSection: HTMLDivElement;
     private readonly regionsSection: HTMLDivElement;
     private readonly shapesSection: HTMLDivElement;
-    private readonly layersSection: HTMLDivElement;
+    private readonly exportSection: HTMLDivElement;
     private readonly sceneSection: HTMLDivElement;
 
     private readonly strips = new Map<string, GroupStrip>();
@@ -202,8 +202,8 @@ export class GroupPanel {
         this.selectionSection = this.createSection("selection");
         this.regionsSection = this.createSection("regions");
         this.shapesSection = this.createSection("shapes");
-        this.layersSection = this.createSection("layers");
         this.sceneSection = this.createSection("scene");
+        this.exportSection = this.createSection("export");
 
         // Set structure panel layout specificity
         Object.assign(this.structureSection.style, {
@@ -218,8 +218,8 @@ export class GroupPanel {
         this.addTab("selection", "Selection", "None");
         this.addTab("regions", "Regions", "0");
         this.addTab("shapes", "Shapes", "0");
-        this.addTab("layers", "Layers", "0");
         this.addTab("scene", "Scene", "Dark");
+        this.addTab("export", "Export", "None");
 
         // Switch to structure tab by default
         this.switchTab("structure");
@@ -228,8 +228,8 @@ export class GroupPanel {
         this.renderSelectionSection();
         this.renderRegionsSection();
         this.renderShapesSection();
-        this.renderLayersSection();
         this.renderSceneSection();
+        this.renderExportSection();
     }
 
     private createSection(key: TabKey): HTMLDivElement {
@@ -334,8 +334,8 @@ export class GroupPanel {
         this.selectionSection.style.display = key === "selection" ? "flex" : "none";
         this.regionsSection.style.display = key === "regions" ? "flex" : "none";
         this.shapesSection.style.display = key === "shapes" ? "flex" : "none";
-        this.layersSection.style.display = key === "layers" ? "flex" : "none";
         this.sceneSection.style.display = key === "scene" ? "flex" : "none";
+        this.exportSection.style.display = key === "export" ? "flex" : "none";
     }
 
     setStructure(structure: Structure | undefined): void {
@@ -426,31 +426,25 @@ export class GroupPanel {
 
     setShapes(items: NavigateItem[]): void {
         this.shapes = [...items];
-        
-        // Update sidebar Shapes badge
-        const badge = this.tabs.get("shapes")?.badge;
-        if (badge) {
-            badge.textContent = String(items.length);
-        }
-
+        this.updateShapesBadge();
         this.renderShapesSection();
     }
 
     setAnnotations(items: NavigateItem[]): void {
         this.annotations = [...items];
-        this.updateLayersBadge();
-        this.renderLayersSection();
+        this.updateShapesBadge();
+        this.renderShapesSection();
     }
 
     setMeasurements(items: NavigateItem[]): void {
         this.measurements = [...items];
-        this.updateLayersBadge();
-        this.renderLayersSection();
+        this.updateShapesBadge();
+        this.renderShapesSection();
     }
 
-    private updateLayersBadge(): void {
-        const count = this.annotations.length + this.measurements.length;
-        const badge = this.tabs.get("layers")?.badge;
+    private updateShapesBadge(): void {
+        const count = this.shapes.length + this.annotations.length + this.measurements.length;
+        const badge = this.tabs.get("shapes")?.badge;
         if (badge) {
             badge.textContent = String(count);
         }
@@ -825,15 +819,17 @@ export class GroupPanel {
     // ── 3. Shapes Section Rendering ──────────────────────────
     private renderShapesSection(): void {
         this.shapesSection.replaceChildren();
-        this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
 
-        const list = document.createElement("div");
-        Object.assign(list.style, {
+        // A. 3D Shapes
+        this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
+        const shapesList = document.createElement("div");
+        Object.assign(shapesList.style, {
             display: "flex",
             flexDirection: "column",
             gap: "6px",
+            marginBottom: "12px",
         });
-        this.shapesSection.appendChild(list);
+        this.shapesSection.appendChild(shapesList);
 
         if (this.shapes.length > 0) {
             for (const item of this.shapes) {
@@ -847,7 +843,7 @@ export class GroupPanel {
                         onToggleVisibility: item.onToggleVisibility
                     }
                 );
-                list.appendChild(row);
+                shapesList.appendChild(row);
             }
         } else {
             const emptyLabel = document.createElement("div");
@@ -857,16 +853,11 @@ export class GroupPanel {
                 paddingLeft: "4px",
             });
             emptyLabel.textContent = "No shapes yet.";
-            list.appendChild(emptyLabel);
+            shapesList.appendChild(emptyLabel);
         }
-    }
 
-    // ── 4. Layers Section Rendering ──────────────────────────
-    private renderLayersSection(): void {
-        this.layersSection.replaceChildren();
-
-        // A. Annotations Sub-section
-        this.layersSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
+        // B. Annotations (Labels)
+        this.shapesSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
         const annotationsList = document.createElement("div");
         Object.assign(annotationsList.style, {
             display: "flex",
@@ -874,7 +865,7 @@ export class GroupPanel {
             gap: "6px",
             marginBottom: "12px",
         });
-        this.layersSection.appendChild(annotationsList);
+        this.shapesSection.appendChild(annotationsList);
 
         if (this.annotations.length > 0) {
             for (const item of this.annotations) {
@@ -901,15 +892,15 @@ export class GroupPanel {
             annotationsList.appendChild(emptyLabel);
         }
 
-        // B. Measurements Sub-section
-        this.layersSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
+        // C. Measurements (Distances)
+        this.shapesSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
         const measurementsList = document.createElement("div");
         Object.assign(measurementsList.style, {
             display: "flex",
             flexDirection: "column",
             gap: "6px",
         });
-        this.layersSection.appendChild(measurementsList);
+        this.shapesSection.appendChild(measurementsList);
 
         if (this.measurements.length > 0) {
             for (const item of this.measurements) {
@@ -1058,7 +1049,22 @@ export class GroupPanel {
         fogSliderRow.appendChild(fogSlider);
         cameraCard.appendChild(fogSliderRow);
 
-        // C. Figure Export Card
+    }
+
+    private renderExportSection(): void {
+        this.exportSection.replaceChildren();
+        this.exportSection.appendChild(this.makeSectionHeader("Export Visuals & Structures"));
+
+        const grid = document.createElement("div");
+        Object.assign(grid.style, {
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "10px",
+            paddingBottom: "10px",
+        });
+        this.exportSection.appendChild(grid);
+
+        // A. Figure Export Card
         const exportCard = this.makeSettingsCard("Figure Export");
         grid.appendChild(exportCard);
 
@@ -1077,7 +1083,7 @@ export class GroupPanel {
             });
         };
 
-        // C1. Preset selector
+        // A1. Preset selector
         const presetRow = document.createElement("div");
         Object.assign(presetRow.style, {
             display: "flex",
@@ -1098,7 +1104,7 @@ export class GroupPanel {
         presetRow.appendChild(presetSelect);
         exportCard.appendChild(presetRow);
 
-        // C2. Resolution Scale dropdown
+        // A2. Resolution Scale dropdown
         const scaleRow = document.createElement("div");
         Object.assign(scaleRow.style, {
             display: "flex",
@@ -1117,10 +1123,46 @@ export class GroupPanel {
         scaleRow.appendChild(scaleSelect);
         exportCard.appendChild(scaleRow);
 
-        // C3. Transparency checkbox
+        // A3. Transparency checkbox
         exportCard.appendChild(this.makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
             updateFigureSpec(currentPreset, currentScale, checked);
         }));
+
+        // A4. Download button
+        const downloadRow = document.createElement("div");
+        Object.assign(downloadRow.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            width: "100%",
+            marginTop: "6px",
+        });
+        const downloadButton = this.makeButton("Download Image File", () => {
+            this.onAction?.("download_image");
+        });
+        downloadRow.appendChild(downloadButton);
+        exportCard.appendChild(downloadRow);
+
+        // B. Data & State Card
+        const dataCard = this.makeSettingsCard("Data & State");
+        grid.appendChild(dataCard);
+
+        const htmlRow = document.createElement("div");
+        Object.assign(htmlRow.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+            width: "100%",
+        });
+        const htmlLabel = document.createElement("span");
+        htmlLabel.textContent = "Save standalone view as HTML page";
+        Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
+        const htmlButton = this.makeButton("Download HTML View", () => {
+            this.onAction?.("export_html");
+        });
+        htmlRow.appendChild(htmlLabel);
+        htmlRow.appendChild(htmlButton);
+        dataCard.appendChild(htmlRow);
     }
 
     // ── Helper UI Constructors ──────────────────────────────

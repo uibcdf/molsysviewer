@@ -703,6 +703,8 @@ class MolSysView(
                     if layer is None:
                         raise ValueError(f"No layer found for measurement tag {tag!r}.")
                     layer.hide(skip_digestion=True)
+                elif action == "export_html":
+                    self.export.html("molsysviewer_export.html")
             except Exception as exc:
                 self._send_backend_error_ack(content, exc)
                 return
