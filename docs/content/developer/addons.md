@@ -134,7 +134,32 @@ Always return a cleanup function from `render` if you register window event list
 ### 3. Panel State Isolation
 Use `model.get()`, `model.set()`, and `model.send()` to sync state. State properties are isolated and namespace-bound to the active add-on.
 
-### 4. Aesthetics and CSS Guidelines
+### 4. Panel Subsections and Tab Navigation (Nivel 3)
+Add-ons can organize panels into multiple sub-sections or tabs. MolSysViewer automatically renders tab buttons and manages visibility transitions when the following rules are met:
+
+1.  **Define Sections in Python:**
+    Register sections via `addon_sections` (using `AddonSectionSpec` with `target_panel="addons"`).
+2.  **Target Specific Panels:**
+    To display a section only when a particular panel is active, set the panel ID in the section's metadata:
+    ```python
+    AddonSectionSpec(
+        id="interactive",
+        title="Interactive Controls",
+        entry="...",
+        target_panel="addons",
+        meta={"panel": "main"},  # Only visible when panel 'main' is selected
+    )
+    ```
+3.  **Decorate HTML Elements in JavaScript:**
+    Inside your panel's ESM `render` function, assign the matching `data-molsysviewer-addon-section` attribute to the container element of that subsection. The attribute value must follow the format `<addon_name>:<section_id>`:
+    ```html
+    <div data-molsysviewer-addon-section="my-addon:interactive" style="...">
+        <!-- Interactive content here -->
+    </div>
+    ```
+    Any elements without this attribute will remain visible at all times (like headers or shared controls).
+
+### 5. Aesthetics and CSS Guidelines
 *   **Color Palette**: Use CSS variables or coordinate with the dark mode system. Avoid hardcoded light backgrounds. Use `rgba(255, 255, 255, 0.08)` for borders/hover, and `#f4f4f5` for primary text.
 *   **Typography**: Use inherited IBM Plex Sans / system sans-serif fonts. Do not override global fonts.
 *   **CSS Isolation**: Write scoped classes or prefix selectors to avoid style leakages into the core viewer chrome.
