@@ -29,7 +29,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 1: Interactive Utilities -->
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div data-molsysviewer-addon-section="dummy-addon:interactive" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
                         1. Interactive Counter
                     </div>
@@ -54,7 +54,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 2: Input & State Sync -->
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div data-molsysviewer-addon-section="dummy-addon:inputs" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
                         2. Controls & Sync
                     </div>
@@ -82,7 +82,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 3: Property Monitor Table -->
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div data-molsysviewer-addon-section="dummy-addon:status" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center;">
                         <span>3. Status & Properties</span>
                         <span style="background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 600;">ACTIVE</span>
@@ -234,9 +234,23 @@ addon = AddonSpec(
     ),
     addon_sections=(
         AddonSectionSpec(
-            id="controls",
-            title="Controls",
-            entry="molsysviewer_dummy_addon.workbench.controls",
+            id="interactive",
+            title="Interactive",
+            entry="molsysviewer_dummy_addon.workbench.interactive",
+            target_panel="addons",
+            order=10,
+        ),
+        AddonSectionSpec(
+            id="inputs",
+            title="Inputs & Sync",
+            entry="molsysviewer_dummy_addon.workbench.inputs",
+            target_panel="addons",
+            order=20,
+        ),
+        AddonSectionSpec(
+            id="status",
+            title="Status & Properties",
+            entry="molsysviewer_dummy_addon.workbench.status",
             target_panel="addons",
             order=30,
         ),
@@ -272,7 +286,7 @@ def on_enable(view) -> None:
         "enabled": True,
         "workspace": "dummy",
         "panels": ["main", "secondary"],
-        "sections": ["controls"],
+        "sections": ["interactive", "inputs", "status"],
         "context_actions": ["focus-dummy", "inspect-dummy"],
         "export_helpers": ["dummy-export"],
         "last_context_action": None,
