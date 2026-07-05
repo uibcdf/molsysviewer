@@ -31,7 +31,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 <!-- Section 1: Interactive Utilities -->
                 <div data-molsysviewer-addon-section="dummy-addon:interactive" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
-                        1. Interactive Counter
+                        Interactive Counter
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
                         <button id="btn-count" style="background: #6366f1; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; transition: background 0.2s;">
@@ -56,7 +56,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 <!-- Section 2: Input & State Sync -->
                 <div data-molsysviewer-addon-section="dummy-addon:inputs" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
-                        2. Controls & Sync
+                        Controls & Sync
                     </div>
                     
                     <!-- Text input -->
@@ -84,7 +84,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 <!-- Section 3: Property Monitor Table -->
                 <div data-molsysviewer-addon-section="dummy-addon:status" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center;">
-                        <span>3. Status & Properties</span>
+                        <span>Status & Properties</span>
                         <span style="background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 600;">ACTIVE</span>
                     </div>
                     <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 4px; text-align: left;">
@@ -165,13 +165,44 @@ class DummySecondaryPanelWidget(AddonPanelWidget):
     _esm = """
     export function render({ model, el }) {
         el.innerHTML = `
-            <div style="padding: 16px; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #f4f4f5; display: flex; flex-direction: column; gap: 12px;">
-                <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #ffffff;">Secondary Panel</h3>
-                <p style="margin: 0; font-size: 13px; color: rgba(244,244,245,0.7); line-height: 1.5;">
-                    This secondary panel illustrates workspace navigation within the same add-on.
-                </p>
-                <div style="padding: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; font-size: 12px; color: rgba(244,244,245,0.6);">
-                    Active Workspace: <strong>Dummy</strong>
+            <div style="padding: 16px; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #f4f4f5; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; width: 100%;">
+                <!-- Header -->
+                <div>
+                    <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #ffffff;">Secondary Panel</h3>
+                </div>
+
+                <!-- Section 1: Overview -->
+                <div data-molsysviewer-addon-section="dummy-addon:secondary_overview" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
+                        Workspace Overview
+                    </div>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: rgba(244,244,245,0.7); line-height: 1.5;">
+                        This secondary panel illustrates workspace navigation within the same add-on.
+                    </p>
+                    <div style="margin-top: 6px; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; font-size: 11px; color: rgba(244,244,245,0.6);">
+                        Active Workspace: <strong>Dummy</strong>
+                    </div>
+                </div>
+
+                <!-- Section 2: Details -->
+                <div data-molsysviewer-addon-section="dummy-addon:secondary_details" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
+                        Workspace Details
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; margin-top: 4px;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px;">
+                            <span style="color: rgba(244,244,245,0.65);">Version</span>
+                            <span style="font-weight: 500;">0.1.0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px;">
+                            <span style="color: rgba(244,244,245,0.65);">Type</span>
+                            <span style="font-weight: 500;">Generic Tester</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: rgba(244,244,245,0.65);">Status</span>
+                            <span style="color: #4ade80; font-weight: 600;">Verified</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -239,6 +270,7 @@ addon = AddonSpec(
             entry="molsysviewer_dummy_addon.workbench.interactive",
             target_panel="addons",
             order=10,
+            meta={"panel": "main"},
         ),
         AddonSectionSpec(
             id="inputs",
@@ -246,6 +278,7 @@ addon = AddonSpec(
             entry="molsysviewer_dummy_addon.workbench.inputs",
             target_panel="addons",
             order=20,
+            meta={"panel": "main"},
         ),
         AddonSectionSpec(
             id="status",
@@ -253,6 +286,23 @@ addon = AddonSpec(
             entry="molsysviewer_dummy_addon.workbench.status",
             target_panel="addons",
             order=30,
+            meta={"panel": "main"},
+        ),
+        AddonSectionSpec(
+            id="secondary_overview",
+            title="Overview",
+            entry="molsysviewer_dummy_addon.workbench.secondary_overview",
+            target_panel="addons",
+            order=40,
+            meta={"panel": "secondary"},
+        ),
+        AddonSectionSpec(
+            id="secondary_details",
+            title="Details",
+            entry="molsysviewer_dummy_addon.workbench.secondary_details",
+            target_panel="addons",
+            order=50,
+            meta={"panel": "secondary"},
         ),
     ),
     shape_providers=(
@@ -286,7 +336,7 @@ def on_enable(view) -> None:
         "enabled": True,
         "workspace": "dummy",
         "panels": ["main", "secondary"],
-        "sections": ["interactive", "inputs", "status"],
+        "sections": ["interactive", "inputs", "status", "secondary_overview", "secondary_details"],
         "context_actions": ["focus-dummy", "inspect-dummy"],
         "export_helpers": ["dummy-export"],
         "last_context_action": None,

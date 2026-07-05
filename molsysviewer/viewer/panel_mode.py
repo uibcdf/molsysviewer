@@ -276,6 +276,15 @@ class PanelModeMixin:
         current_panels = self.workspace_panels(current_workspace, skip_digestion=True)
         current_sections = self.workspace_sections(current_workspace, skip_digestion=True)
         current_panel = next((item for item in current_panels if item.get("active") is True), None)
+        if current_panel is not None:
+            active_panel_id = current_panel.get("id")
+            filtered_sections = []
+            for sec in current_sections:
+                meta = sec.get("meta", {})
+                panel_id = meta.get("panel") if isinstance(meta, dict) else None
+                if panel_id is None or panel_id == active_panel_id:
+                    filtered_sections.append(sec)
+            current_sections = filtered_sections
         current_workspace_record = next((item for item in workspaces if item.get("id") == current_workspace), None)
         payload = {
             "state": dict(state),

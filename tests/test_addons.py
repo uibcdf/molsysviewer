@@ -625,7 +625,7 @@ def test_addon_template_module_is_importable_and_registerable():
         assert addons.workspace_specs()[0]["id"] == "dummy"
         assert [item["id"] for item in addons.panel_specs()] == ["main", "secondary"]
         assert [item["id"] for item in addons.context_action_specs()] == ["focus-dummy", "inspect-dummy"]
-        assert [item["id"] for item in addons.addon_section_specs()] == ["interactive", "inputs", "status"]
+        assert [item["id"] for item in addons.addon_section_specs()] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
         assert addons.shape_provider_specs()[0]["id"] == "dummy-shape"
         assert addons.export_helper_specs()[0]["id"] == "dummy-export"
         assert addons.lifecycle_for("dummy-addon") is not None
@@ -673,7 +673,7 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
         assert view._dummy_addon_runtime["enabled"] is True
         assert view._dummy_addon_runtime["workspace"] == "dummy"
         assert view._dummy_addon_runtime["panels"] == ["main", "secondary"]
-        assert view._dummy_addon_runtime["sections"] == ["interactive", "inputs", "status"]
+        assert view._dummy_addon_runtime["sections"] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
         assert view._dummy_addon_runtime["context_actions"] == ["focus-dummy", "inspect-dummy"]
         assert view._dummy_addon_runtime["export_helpers"] == ["dummy-export"]
 
@@ -753,7 +753,7 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
         assert addon_msg["addons"] == ["dummy-addon"]
         assert [item["id"] for item in addon_msg["panel_specs"]] == ["main", "secondary"]
         assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-dummy", "inspect-dummy"]
-        assert [item["id"] for item in addon_msg["addon_sections"]] == ["interactive", "inputs", "status"]
+        assert [item["id"] for item in addon_msg["addon_sections"]] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
         assert [item["id"] for item in addon_msg["export_helper_specs"]] == ["dummy-export"]
     finally:
         addons.clear()

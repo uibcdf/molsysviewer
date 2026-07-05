@@ -155162,7 +155162,7 @@ var MolSysViewerController = class _MolSysViewerController {
           addon: activePanel.addon,
           contextActionTitles: activeAddonSummary?.contextActionTitles ?? [],
           exportHelperTitles: activeAddonSummary?.exportHelperTitles ?? [],
-          sections: workspaceSections.map((item2) => ({
+          sections: workspaceSections.filter((item2) => item2.panelId === void 0 || item2.panelId === activePanel.id).map((item2) => ({
             key: item2.key,
             title: item2.title,
             itemTitle: item2.itemTitle,
@@ -155257,7 +155257,8 @@ var MolSysViewerController = class _MolSysViewerController {
       addon: item2.addon,
       title: item2.title,
       itemTitle: `Add-on: ${item2.addon}`,
-      itemSubtitle: typeof item2?.entry === "string" ? item2.entry : void 0
+      itemSubtitle: typeof item2?.entry === "string" ? item2.entry : void 0,
+      panelId: typeof item2?.meta?.panel === "string" ? item2.meta.panel : void 0
     })).sort((left, right) => left.key.localeCompare(right.key));
   }
   buildAddonContextActionSummary(msg) {

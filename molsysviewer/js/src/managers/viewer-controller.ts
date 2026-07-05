@@ -77,6 +77,7 @@ type AddonSectionRuntime = {
     title: string;
     itemTitle: string;
     itemSubtitle?: string;
+    panelId?: string;
 };
 type AddonContextActionRuntime = { addon: string; id: string; title: string; target_kinds: string[]; group?: string };
 type AddonContextItemRuntime = { addon: string; id: string; title: string; group?: string; order?: number; enabled?: boolean; target_kinds?: string[]; payload?: any };
@@ -2898,12 +2899,14 @@ export class MolSysViewerController {
                         addon: activePanel.addon,
                         contextActionTitles: activeAddonSummary?.contextActionTitles ?? [],
                         exportHelperTitles: activeAddonSummary?.exportHelperTitles ?? [],
-                        sections: workspaceSections.map((item) => ({
-                            key: item.key,
-                            title: item.title,
-                            itemTitle: item.itemTitle,
-                            itemSubtitle: item.itemSubtitle,
-                        })),
+                        sections: workspaceSections
+                            .filter((item) => item.panelId === undefined || item.panelId === activePanel.id)
+                            .map((item) => ({
+                                key: item.key,
+                                title: item.title,
+                                itemTitle: item.itemTitle,
+                                itemSubtitle: item.itemSubtitle,
+                            })),
                     }
                     : null,
             );
@@ -3042,6 +3045,7 @@ export class MolSysViewerController {
                 title: item.title as string,
                 itemTitle: `Add-on: ${item.addon as string}`,
                 itemSubtitle: typeof item?.entry === "string" ? item.entry as string : undefined,
+                panelId: typeof item?.meta?.panel === "string" ? item.meta.panel : undefined,
             }))
             .sort((left, right) => left.key.localeCompare(right.key));
     }
