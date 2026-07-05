@@ -70,6 +70,14 @@ def import_reference_module(name: str):
     return import_module(resolve_reference_addon(name))
 
 
+def register_dummy_addon(
+    *,
+    registry: "GlobalAddonsRegistry | None" = None,
+) -> "AddonSpec":
+    """Register the generic dummy/tester add-on into the registry."""
+    return register_reference_addon("dummy", registry=registry)
+
+
 def build_reference_demo_view(
     name: str,
     *,
@@ -102,6 +110,7 @@ __all__ = [
     "list_reference_addons",
     "resolve_reference_addon",
     "register_reference_addon",
+    "register_dummy_addon",
     "register_all_reference_addons",
     "import_reference_module",
     "build_reference_demo_view",

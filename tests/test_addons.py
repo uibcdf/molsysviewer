@@ -768,6 +768,11 @@ def test_addon_templates_helper_lists_and_registers_reference_addons():
         assert addon_templates.resolve_reference_addon("dummy") == "molsysviewer.addon_templates.dummy_addon"
         assert addon_templates.resolve_reference_addon("minimal_dummy") == "molsysviewer.addon_templates.dummy_addon"
 
+        addon = addon_templates.register_dummy_addon()
+        assert addon.name == "dummy-addon"
+        assert addons.available() == ["dummy-addon"]
+
+        addons.clear()
         addon = addon_templates.register_reference_addon("elasnetmt")
         assert addon.name == "elasnetmt-template"
         assert addons.available() == ["elasnetmt-template"]
