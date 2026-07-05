@@ -116,6 +116,77 @@ class ActiveSelection:
 
     @signal(tags=["selection"])
     @digest()
+    def set(
+        self,
+        selection: Any = "all",
+        *,
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+    ) -> "ActiveSelection":
+        """Set the active selection to the atoms matching ``selection``.
+
+        ``selection`` is a MolSysMT selection expression or an explicit list of
+        atom indices (in the molecular-system index space). Updates both the
+        Python-side active-selection payload and the frontend runtime, mirroring
+        an interaction-driven selection. A selection that resolves to no atoms
+        clears the active selection. Returns ``self``.
+        """
+        import molsysmt as msm
+
+        molsys = self._view._molsys  # noqa: SLF001
+        if molsys is None:
+            raise ValueError("No molecular system loaded.")
+
+        atom_indices = [
+            int(i)
+            for i in msm.select(molsys, selection=selection, syntax=syntax, skip_digestion=True)
+        ]
+        if not atom_indices:
+            self.clear(skip_digestion=True)
+            return self
+
+        group_indices = sorted(
+            {
+                int(g)
+                for g in msm.get(
+                    molsys,
+                    element="atom",
+                    selection=atom_indices,
+                    group_index=True,
+                    skip_digestion=True,
+                )
+            }
+        )
+
+        local_atoms = atom_indices
+        if self._view._index_mapper is not None:  # noqa: SLF001
+            local_atoms = self._view._index_mapper.to_local_atoms(atom_indices)  # noqa: SLF001
+
+        self._view._send({  # noqa: SLF001
+            "op": "set_active_selection",
+            "atom_indices": list(local_atoms),
+        })
+        self._view._last_active_selection_event = {  # noqa: SLF001
+            "event": "interaction_active_selection_changed",
+            "source_kind": "element",
+            "element_level": "atom",
+            "target_level": "none",
+            "items": [],
+            "atom_indices": list(atom_indices),
+            "group_indices": list(group_indices),
+            "component_indices": [],
+            "chain_indices": [],
+            "molecule_indices": [],
+            "entity_indices": [],
+            "count_atoms": len(atom_indices),
+            "count_groups": len(group_indices),
+            "count_shapes": 0,
+            "count_annotations": 0,
+        }
+        return self
+
+    @signal(tags=["selection"])
+    @digest()
     def clear(self, skip_digestion: bool = False) -> None:
         """Clear the active selection in both Python and the frontend runtime."""
         self._view._send({"op": "clear_active_selection"})  # noqa: SLF001

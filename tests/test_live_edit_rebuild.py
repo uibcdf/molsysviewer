@@ -547,6 +547,35 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
         20,
     ]
 
+
+def test_remove_rebuild_remaps_and_replays_per_atom_colors():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    n_atoms = view.molsys.get_n_atoms()
+    view.whole.set_color_by_values(
+        values=list(range(n_atoms)),
+        element="atom",
+        palette=[0x111111, 0xEEEEEE],
+        skip_digestion=True,
+    )
+    original_colors = dict(view._atom_color_map)  # noqa: SLF001
+
+    view.remove(selection=[0], skip_digestion=True)
+
+    expected_colors = {
+        old_index - 1: color
+        for old_index, color in original_colors.items()
+        if old_index != 0
+    }
+    assert view._atom_color_map == expected_colors  # noqa: SLF001
+
+    color_msg = next(msg for msg in view._message_history if msg.get("op") == "set_atom_colors")
+    assert color_msg["replace"] is True
+    assert color_msg["atom_indices"] == list(expected_colors.keys())
+    assert color_msg["colors"] == list(expected_colors.values())
+
+
 def test_remove_rebuild_remaps_dynamic_shape_frame_indices():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]

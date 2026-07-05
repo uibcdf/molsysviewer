@@ -1249,6 +1249,28 @@ class MolSysView(
         updated["atom_indices"] = remapped
         return updated
 
+    def _remap_atom_color_map(self, atom_index_map: dict[int, int] | None) -> None:
+        if not self._atom_color_map:
+            return
+        if atom_index_map is None:
+            remapped = dict(self._atom_color_map)
+        else:
+            remapped = {
+                atom_index_map[old_index]: color
+                for old_index, color in self._atom_color_map.items()
+                if old_index in atom_index_map
+            }
+        self._atom_color_map = remapped
+        if remapped:
+            self._send_replay(
+                {
+                    "op": "set_atom_colors",
+                    "atom_indices": list(remapped.keys()),
+                    "colors": list(remapped.values()),
+                    "replace": True,
+                }
+            )
+
     def _rebuild_view_from_current_molsys(
         self,
         *,
@@ -1325,6 +1347,8 @@ class MolSysView(
                 skip_digestion=True,
                 **getattr(self.whole, "_repr_params", {}),
             )
+
+        self._remap_atom_color_map(atom_index_map)
 
         if self._global_hidden:
             self._send({"op": "hide_global", "target": "global"})

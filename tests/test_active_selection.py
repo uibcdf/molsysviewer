@@ -65,3 +65,24 @@ def test_active_selection_focus_new_region_and_add_label_delegate_to_reproducibl
     layer = view.active_selection.add_label("Selected", tag="picked-label")
     assert layer.tag == "picked-label"
     assert view.annotations.contains("picked-label") is True
+
+
+def test_active_selection_set_selects_atoms_and_emits_frontend_message():
+    view = demo["dialanine"]
+
+    expected = sorted(int(i) for i in view.select(selection="group_index==1"))
+    result = view.active_selection.set("group_index==1")
+
+    assert result is view.active_selection
+    assert sorted(view.active_selection.atom_indices) == expected
+    assert view.active_selection.is_empty() is False
+    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+
+
+def test_active_selection_set_with_empty_match_clears():
+    view = demo["dialanine"]
+    view.active_selection.set("group_index==1")
+
+    view.active_selection.set('atom_name=="ZZZ"')
+
+    assert view.active_selection.is_empty() is True
