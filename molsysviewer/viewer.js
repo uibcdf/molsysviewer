@@ -146269,7 +146269,7 @@ var ViewerContextMenu = class {
       });
       this.scrollEl.appendChild(divPanels);
       this.scrollEl.appendChild(this.makeActionButton(
-        isNavOpen ? "Close Navigate Panel" : "Open Navigate Panel",
+        isNavOpen ? "Close Studio Panel" : "Open Studio Panel",
         "open_navigate"
       ));
       this.scrollEl.appendChild(this.makeActionButton(
@@ -149997,8 +149997,9 @@ var GroupPanel = class {
     this.onActivateSavedSelection = onActivateSavedSelection;
     this.onFocusRegion = onFocusRegion;
     this.onAction = onAction;
-    this.activeTab = "structure";
+    this.activeTab = "system";
     this.tabs = /* @__PURE__ */ new Map();
+    this.activeStyleRegionTag = null;
     this.strips = /* @__PURE__ */ new Map();
     this.expanded = false;
     this.currentSelection = {
@@ -150029,9 +150030,10 @@ var GroupPanel = class {
     this.sceneState = {};
     this.runtimeVisibleOverride = null;
     this.visible = false;
+    this.model = options?.model;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
-    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Add-ons" }) : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" });
+    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(this.host, { title: "Studio", navButtonLabel: "Add-ons" }) : new PanelShell(this.host, { title: "Studio", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" });
     this.root = this.shell.root;
     this.toggleButton = this.shell.toggleButton;
     if (options?.sharedShell) {
@@ -150080,15 +150082,86 @@ var GroupPanel = class {
     Object.assign(this.leftColumn.style, {
       display: "flex",
       flexDirection: "column",
-      gap: "6px",
+      justifyContent: "space-between",
       width: "180px",
       minWidth: "180px",
-      overflowY: "auto",
-      overflowX: "hidden",
+      height: "100%",
       paddingRight: "8px",
-      borderRight: "1px solid rgba(255,255,255,0.06)"
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+      boxSizing: "border-box"
     });
     this.body.appendChild(this.leftColumn);
+    this.tabsContainer = document.createElement("div");
+    Object.assign(this.tabsContainer.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      width: "100%",
+      overflowY: "auto",
+      overflowX: "hidden",
+      flex: "1 1 0"
+    });
+    this.leftColumn.appendChild(this.tabsContainer);
+    const bottomContainer = document.createElement("div");
+    Object.assign(bottomContainer.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+      width: "100%",
+      borderTop: "1px solid rgba(255,255,255,0.06)",
+      paddingTop: "8px",
+      marginTop: "8px",
+      flex: "0 0 auto"
+    });
+    this.leftColumn.appendChild(bottomContainer);
+    const settingsBtn = document.createElement("button");
+    settingsBtn.type = "button";
+    settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
+    Object.assign(settingsBtn.style, {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      gap: "2px",
+      width: "100%",
+      padding: "8px 12px",
+      borderRadius: "8px",
+      border: "0",
+      background: "transparent",
+      color: "rgba(244,244,245,0.68)",
+      textAlign: "left",
+      cursor: "pointer",
+      transition: "all 0.15s ease-in-out"
+    });
+    settingsBtn.addEventListener("mouseenter", () => {
+      if (this.activeTab !== "settings") {
+        settingsBtn.style.background = "rgba(255,255,255,0.04)";
+        settingsBtn.style.color = "rgba(244,244,245,0.9)";
+      }
+    });
+    settingsBtn.addEventListener("mouseleave", () => {
+      if (this.activeTab !== "settings") {
+        settingsBtn.style.background = "transparent";
+        settingsBtn.style.color = "rgba(244,244,245,0.68)";
+      }
+    });
+    settingsBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.switchTab("settings");
+    });
+    const settingsTitle = document.createElement("div");
+    Object.assign(settingsTitle.style, { fontSize: "12px", fontWeight: "600" });
+    settingsTitle.textContent = "\u2699 Settings";
+    settingsBtn.appendChild(settingsTitle);
+    const settingsBadge = document.createElement("span");
+    Object.assign(settingsBadge.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.48)"
+    });
+    settingsBadge.textContent = "Viewer config";
+    settingsBtn.appendChild(settingsBadge);
+    bottomContainer.appendChild(settingsBtn);
+    this.tabs.set("settings", { button: settingsBtn, badge: settingsBadge });
     this.rightColumn = document.createElement("div");
     this.rightColumn.setAttribute("data-molsysviewer-group-panel-right", "true");
     Object.assign(this.rightColumn.style, {
@@ -150100,30 +150173,28 @@ var GroupPanel = class {
       paddingLeft: "12px"
     });
     this.body.appendChild(this.rightColumn);
-    this.structureSection = this.createSection("structure");
+    this.systemSection = this.createSection("system");
     this.selectionSection = this.createSection("selection");
     this.regionsSection = this.createSection("regions");
-    this.shapesSection = this.createSection("shapes");
-    this.sceneSection = this.createSection("scene");
-    this.exportSection = this.createSection("export");
-    Object.assign(this.structureSection.style, {
+    this.overlaysSection = this.createSection("overlays");
+    this.viewportSection = this.createSection("viewport");
+    this.settingsSection = this.createSection("settings");
+    Object.assign(this.systemSection.style, {
       flexDirection: "row",
       overflowX: "auto",
       overflowY: "hidden",
       paddingBottom: "8px"
     });
-    this.addTab("structure", "Structure", "None");
+    this.addTab("system", "System", "None");
     this.addTab("selection", "Selection", "None");
     this.addTab("regions", "Regions", "0");
-    this.addTab("shapes", "Shapes", "0");
-    this.addTab("scene", "Scene", "Dark");
-    this.addTab("export", "Export", "None");
-    this.switchTab("structure");
+    this.addTab("overlays", "Overlays", "0");
+    this.addTab("viewport", "Viewport", "Dark");
+    this.switchTab("system");
     this.renderSelectionSection();
     this.renderRegionsSection();
-    this.renderShapesSection();
-    this.renderSceneSection();
-    this.renderExportSection();
+    this.renderOverlaysSection();
+    this.renderViewportSection();
   }
   createSection(key2) {
     const section = document.createElement("div");
@@ -150188,7 +150259,7 @@ var GroupPanel = class {
     badge.textContent = initialBadge;
     button.appendChild(titleDiv);
     button.appendChild(badge);
-    this.leftColumn.appendChild(button);
+    this.tabsContainer.appendChild(button);
     this.tabs.set(key2, { button, badge });
   }
   switchTab(key2) {
@@ -150212,17 +150283,20 @@ var GroupPanel = class {
         badge.style.color = "rgba(244,244,245,0.48)";
       }
     }
-    this.structureSection.style.display = key2 === "structure" ? "flex" : "none";
+    this.systemSection.style.display = key2 === "system" ? "flex" : "none";
     this.selectionSection.style.display = key2 === "selection" ? "flex" : "none";
     this.regionsSection.style.display = key2 === "regions" ? "flex" : "none";
-    this.shapesSection.style.display = key2 === "shapes" ? "flex" : "none";
-    this.sceneSection.style.display = key2 === "scene" ? "flex" : "none";
-    this.exportSection.style.display = key2 === "export" ? "flex" : "none";
+    this.overlaysSection.style.display = key2 === "overlays" ? "flex" : "none";
+    this.viewportSection.style.display = key2 === "viewport" ? "flex" : "none";
+    this.settingsSection.style.display = key2 === "settings" ? "flex" : "none";
+    if (key2 === "settings") {
+      this.renderSettingsSection();
+    }
   }
   setStructure(structure) {
     this.structure = structure;
     if (!structure) this.annotationMessages.length = 0;
-    this.switchTab("structure");
+    this.switchTab("system");
     this.render();
   }
   get panelContentWidth() {
@@ -150246,6 +150320,9 @@ var GroupPanel = class {
     if (!this.sharedShell) {
       this.shell.setNavButtonLabel(callback ? label2 : void 0);
     }
+  }
+  setOnNavigateToSettings(callback) {
+    this.onNavigateToSettings = callback;
   }
   setRuntimeVisible(visible) {
     this.runtimeVisibleOverride = visible;
@@ -150286,34 +150363,34 @@ var GroupPanel = class {
   }
   setShapes(items) {
     this.shapes = [...items];
-    this.updateShapesBadge();
-    this.renderShapesSection();
+    this.updateOverlaysBadge();
+    this.renderOverlaysSection();
   }
   setAnnotations(items) {
     this.annotations = [...items];
-    this.updateShapesBadge();
-    this.renderShapesSection();
+    this.updateOverlaysBadge();
+    this.renderOverlaysSection();
   }
   setMeasurements(items) {
     this.measurements = [...items];
-    this.updateShapesBadge();
-    this.renderShapesSection();
+    this.updateOverlaysBadge();
+    this.renderOverlaysSection();
   }
-  updateShapesBadge() {
+  updateOverlaysBadge() {
     const count3 = this.shapes.length + this.annotations.length + this.measurements.length;
-    const badge = this.tabs.get("shapes")?.badge;
+    const badge = this.tabs.get("overlays")?.badge;
     if (badge) {
       badge.textContent = String(count3);
     }
   }
   setScene(state) {
     this.sceneState = { ...state };
-    const badge = this.tabs.get("scene")?.badge;
+    const badge = this.tabs.get("viewport")?.badge;
     if (badge) {
       badge.textContent = state.isDarkMode ? "Dark" : "Light";
       if (state.isSpinActive) badge.textContent += " \xB7 Spin";
     }
-    this.renderSceneSection();
+    this.renderViewportSection();
   }
   updateContextTarget(target) {
     this.currentContextTarget = target;
@@ -150405,7 +150482,7 @@ var GroupPanel = class {
     if (!this.sharedShell && !this.visible && this.expanded) {
       this.expanded = false;
     }
-    const badge = this.tabs.get("structure")?.badge;
+    const badge = this.tabs.get("system")?.badge;
     if (badge) {
       badge.textContent = naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None";
     }
@@ -150413,7 +150490,7 @@ var GroupPanel = class {
     for (const [chain2, chainItems] of grouped.entries()) {
       let strip = this.strips.get(chain2);
       if (!strip) {
-        strip = new GroupStrip(this.structureSection, chain2, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+        strip = new GroupStrip(this.systemSection, chain2, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
         this.strips.set(chain2, strip);
       }
       strip.setData(this.structure, chainItems);
@@ -150606,6 +150683,12 @@ var GroupPanel = class {
     if (this.regions.length > 0) {
       const sorted = [...this.regions].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
+        const itemContainer = document.createElement("div");
+        Object.assign(itemContainer.style, {
+          display: "flex",
+          flexDirection: "column"
+        });
+        list3.appendChild(itemContainer);
         const row = this.makeRowElement(
           item2.tag,
           item2.hidden ? `${item2.atom_count} atoms \xB7 hidden` : `${item2.atom_count} atoms`,
@@ -150614,9 +150697,16 @@ var GroupPanel = class {
           {
             hidden: item2.hidden,
             onToggleVisibility: () => this.onAction?.("toggle_region_visibility", { tag: item2.tag })
+          },
+          () => {
+            this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
+            this.renderRegionsSection();
           }
         );
-        list3.appendChild(row);
+        itemContainer.appendChild(row);
+        if (this.activeStyleRegionTag === item2.tag) {
+          itemContainer.appendChild(this.renderStyleComposer(item2.tag));
+        }
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -150629,10 +150719,11 @@ var GroupPanel = class {
       list3.appendChild(emptyLabel);
     }
   }
-  // ── 3. Shapes Section Rendering ──────────────────────────
-  renderShapesSection() {
-    this.shapesSection.replaceChildren();
-    this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
+  // ── 3. Overlays Section Rendering ────────────────────────
+  renderOverlaysSection() {
+    this.overlaysSection.replaceChildren();
+    this.overlaysSection.appendChild(this.makeSectionHeader("Scene Overlays"));
+    this.overlaysSection.appendChild(this.makeSectionHeader("3D Shapes"));
     const shapesList = document.createElement("div");
     Object.assign(shapesList.style, {
       display: "flex",
@@ -150640,7 +150731,7 @@ var GroupPanel = class {
       gap: "6px",
       marginBottom: "12px"
     });
-    this.shapesSection.appendChild(shapesList);
+    this.overlaysSection.appendChild(shapesList);
     if (this.shapes.length > 0) {
       for (const item2 of this.shapes) {
         const row = this.makeRowElement(
@@ -150665,7 +150756,7 @@ var GroupPanel = class {
       emptyLabel.textContent = "No shapes yet.";
       shapesList.appendChild(emptyLabel);
     }
-    this.shapesSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
+    this.overlaysSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
     const annotationsList = document.createElement("div");
     Object.assign(annotationsList.style, {
       display: "flex",
@@ -150673,7 +150764,7 @@ var GroupPanel = class {
       gap: "6px",
       marginBottom: "12px"
     });
-    this.shapesSection.appendChild(annotationsList);
+    this.overlaysSection.appendChild(annotationsList);
     if (this.annotations.length > 0) {
       for (const item2 of this.annotations) {
         const row = this.makeRowElement(
@@ -150698,14 +150789,14 @@ var GroupPanel = class {
       emptyLabel.textContent = "No annotations yet.";
       annotationsList.appendChild(emptyLabel);
     }
-    this.shapesSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
+    this.overlaysSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
     const measurementsList = document.createElement("div");
     Object.assign(measurementsList.style, {
       display: "flex",
       flexDirection: "column",
       gap: "6px"
     });
-    this.shapesSection.appendChild(measurementsList);
+    this.overlaysSection.appendChild(measurementsList);
     if (this.measurements.length > 0) {
       for (const item2 of this.measurements) {
         const row = this.makeRowElement(
@@ -150731,10 +150822,147 @@ var GroupPanel = class {
       measurementsList.appendChild(emptyLabel);
     }
   }
-  // ── 5. Scene Section Rendering ───────────────────────────
-  renderSceneSection() {
-    this.sceneSection.replaceChildren();
-    this.sceneSection.appendChild(this.makeSectionHeader("Visual Scene Settings"));
+  renderStyleComposer(tag) {
+    const container = document.createElement("div");
+    Object.assign(container.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      padding: "8px 10px",
+      borderRadius: "6px",
+      background: "rgba(255,255,255,0.03)",
+      border: "1px dashed rgba(255,255,255,0.08)",
+      marginTop: "4px",
+      marginBottom: "4px"
+    });
+    const styleRow = document.createElement("div");
+    Object.assign(styleRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
+    const styleLabel = document.createElement("span");
+    styleLabel.textContent = "Representation Style";
+    Object.assign(styleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
+    const styleSelect = this.makeStyledSelect(
+      ["Cartoon", "Sticks", "CPK", "Trace", "Putty"],
+      "Cartoon",
+      () => {
+      }
+    );
+    styleRow.appendChild(styleLabel);
+    styleRow.appendChild(styleSelect);
+    container.appendChild(styleRow);
+    const colorRow = document.createElement("div");
+    Object.assign(colorRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
+    const colorLabel = document.createElement("span");
+    colorLabel.textContent = "Color Scheme";
+    Object.assign(colorLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
+    const customColorInput = document.createElement("input");
+    customColorInput.type = "color";
+    customColorInput.value = "#3b82f6";
+    Object.assign(customColorInput.style, {
+      width: "20px",
+      height: "20px",
+      border: "1px solid rgba(255,255,255,0.25)",
+      borderRadius: "50%",
+      padding: "0",
+      background: "transparent",
+      cursor: "pointer",
+      display: "none",
+      boxSizing: "border-box",
+      overflow: "hidden",
+      outline: "none"
+    });
+    const colorSelect = this.makeStyledSelect(
+      ["Element (CPK)", "Chain ID", "Secondary Structure", "Hydrophobicity", "Custom Color"],
+      "Element (CPK)",
+      (val) => {
+        customColorInput.style.display = val === "Custom Color" ? "inline-block" : "none";
+      }
+    );
+    const colorRight = document.createElement("div");
+    Object.assign(colorRight.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px"
+    });
+    colorRight.appendChild(customColorInput);
+    colorRight.appendChild(colorSelect);
+    colorRow.appendChild(colorLabel);
+    colorRow.appendChild(colorRight);
+    container.appendChild(colorRow);
+    const actionsRow = document.createElement("div");
+    Object.assign(actionsRow.style, {
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: "6px",
+      width: "100%",
+      marginTop: "4px"
+    });
+    const cancelBtn = this.makeButton("Cancel", () => {
+      this.activeStyleRegionTag = null;
+      this.renderRegionsSection();
+    });
+    Object.assign(cancelBtn.style, {
+      flex: "0 0 auto",
+      fontSize: "10px",
+      padding: "3px 8px"
+    });
+    const applyBtn = this.makeButton("Apply Style", () => {
+      const chosenStyleMap = {
+        "Cartoon": "cartoon",
+        "Sticks": "licorice",
+        "CPK": "spacefill",
+        "Trace": "backbone",
+        "Putty": "putty"
+      };
+      const repr = chosenStyleMap[styleSelect.value] || "cartoon";
+      const chosenColor = colorSelect.value;
+      let scheme = void 0;
+      if (chosenColor === "Element (CPK)") scheme = "element";
+      else if (chosenColor === "Chain ID") scheme = "chain-id";
+      else if (chosenColor === "Secondary Structure") scheme = "secondary-structure";
+      else if (chosenColor === "Hydrophobicity") scheme = "hydrophobicity";
+      else if (chosenColor === "Custom Color") scheme = customColorInput.value;
+      this.onAction?.("set_region_representation", {
+        tag,
+        representation: repr,
+        params: scheme ? { color_scheme: scheme } : {}
+      });
+      this.activeStyleRegionTag = null;
+      this.renderRegionsSection();
+    });
+    Object.assign(applyBtn.style, {
+      flex: "0 0 auto",
+      fontSize: "10px",
+      padding: "3px 8px",
+      background: "rgba(16,185,129,0.15)",
+      border: "1px solid rgba(16,185,129,0.3)"
+    });
+    applyBtn.addEventListener("mouseenter", () => {
+      applyBtn.style.background = "rgba(16,185,129,0.25)";
+      applyBtn.style.border = "1px solid rgba(16,185,129,0.5)";
+    });
+    applyBtn.addEventListener("mouseleave", () => {
+      applyBtn.style.background = "rgba(16,185,129,0.15)";
+      applyBtn.style.border = "1px solid rgba(16,185,129,0.3)";
+    });
+    actionsRow.appendChild(cancelBtn);
+    actionsRow.appendChild(applyBtn);
+    container.appendChild(actionsRow);
+    return container;
+  }
+  // ── 5. Viewport Section Rendering ────────────────────────
+  renderViewportSection() {
+    this.viewportSection.replaceChildren();
+    this.viewportSection.appendChild(this.makeSectionHeader("Viewport & Export Settings"));
     const grid = document.createElement("div");
     Object.assign(grid.style, {
       display: "grid",
@@ -150742,7 +150970,7 @@ var GroupPanel = class {
       gap: "10px",
       paddingBottom: "10px"
     });
-    this.sceneSection.appendChild(grid);
+    this.viewportSection.appendChild(grid);
     const viewportCard = this.makeSettingsCard("Viewport Settings");
     grid.appendChild(viewportCard);
     const bgRow = document.createElement("div");
@@ -150833,18 +151061,6 @@ var GroupPanel = class {
     fogSliderRow.appendChild(fogSliderLabel);
     fogSliderRow.appendChild(fogSlider);
     cameraCard.appendChild(fogSliderRow);
-  }
-  renderExportSection() {
-    this.exportSection.replaceChildren();
-    this.exportSection.appendChild(this.makeSectionHeader("Export Visuals & Structures"));
-    const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-      gap: "10px",
-      paddingBottom: "10px"
-    });
-    this.exportSection.appendChild(grid);
     const exportCard = this.makeSettingsCard("Figure Export");
     grid.appendChild(exportCard);
     const currentPreset = this.sceneState.figurePreset || "publication-light";
@@ -150965,7 +151181,7 @@ var GroupPanel = class {
     });
     return btn;
   }
-  makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility) {
+  makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
     const row = document.createElement("div");
     row.setAttribute("data-molsysviewer-group-panel-row", "true");
     row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
@@ -151034,6 +151250,33 @@ var GroupPanel = class {
       flex: "0 0 auto"
     });
     row.appendChild(actions);
+    if (onStyle) {
+      const styleBtn = document.createElement("button");
+      styleBtn.type = "button";
+      styleBtn.textContent = "\u{1F3A8}";
+      styleBtn.title = "Style & Color";
+      Object.assign(styleBtn.style, {
+        background: "transparent",
+        border: "0",
+        color: "rgba(244,244,245,0.55)",
+        fontSize: "11px",
+        cursor: "pointer",
+        padding: "2px 6px",
+        borderRadius: "4px"
+      });
+      styleBtn.addEventListener("mouseenter", () => {
+        styleBtn.style.color = "#10b981";
+      });
+      styleBtn.addEventListener("mouseleave", () => {
+        styleBtn.style.color = "rgba(244,244,245,0.55)";
+      });
+      styleBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onStyle();
+      });
+      actions.appendChild(styleBtn);
+    }
     if (visibility?.onToggleVisibility) {
       const eyeBtn = document.createElement("button");
       eyeBtn.type = "button";
@@ -151171,6 +151414,72 @@ var GroupPanel = class {
     });
     return select;
   }
+  renderSettingsSection() {
+    this.settingsSection.replaceChildren();
+    this.settingsSection.appendChild(this.makeSectionHeader("Viewer Settings"));
+    const grid = document.createElement("div");
+    Object.assign(grid.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      gap: "10px",
+      paddingBottom: "10px"
+    });
+    this.settingsSection.appendChild(grid);
+    const configCard = this.makeSettingsCard("Viewport Controls");
+    grid.appendChild(configCard);
+    const autohideRow = document.createElement("div");
+    Object.assign(autohideRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+      marginTop: "4px"
+    });
+    configCard.appendChild(autohideRow);
+    const autohideLabel = document.createElement("span");
+    autohideLabel.textContent = "Autohide Controls";
+    Object.assign(autohideLabel.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.8)",
+      lineHeight: "1.3"
+    });
+    autohideRow.appendChild(autohideLabel);
+    const autohideEnabled = this.model ? !!this.model.get("autohide_controls") : true;
+    const autohideToggleTrack = document.createElement("div");
+    Object.assign(autohideToggleTrack.style, {
+      width: "30px",
+      height: "16px",
+      borderRadius: "8px",
+      background: autohideEnabled ? "#6366f1" : "rgba(255,255,255,0.12)",
+      position: "relative",
+      cursor: "pointer",
+      transition: "background 0.2s ease",
+      flexShrink: "0"
+    });
+    const autohideToggleThumb = document.createElement("div");
+    Object.assign(autohideToggleThumb.style, {
+      width: "12px",
+      height: "12px",
+      borderRadius: "50%",
+      background: "#ffffff",
+      position: "absolute",
+      top: "2px",
+      left: autohideEnabled ? "16px" : "2px",
+      transition: "left 0.2s ease"
+    });
+    autohideToggleTrack.appendChild(autohideToggleThumb);
+    autohideRow.appendChild(autohideToggleTrack);
+    autohideToggleTrack.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (this.model) {
+        const newVal = !this.model.get("autohide_controls");
+        this.model.set("autohide_controls", newVal);
+        this.model.save_changes();
+        this.renderSettingsSection();
+      }
+    });
+  }
 };
 
 // src/ui/addons-panel.ts
@@ -151180,15 +151489,20 @@ var AddonsPanel = class {
     // State
     this.workspaceItems = [];
     this.workspacePanelItems = [];
+    this.addonsList = [];
     this.currentWorkspaceId = "core";
     this.activeWorkspacePanelSummary = null;
     this.addonDiagnostics = [];
+    this.activeSectionKey = null;
+    this.widgetObserver = null;
     this.expanded = false;
     this.visible = false;
     const floating = options?.floating || !!options?.sharedShell;
     this.floating = floating;
     this.sharedShell = !!options?.sharedShell;
-    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(host, { title: "Add-ons", navButtonLabel: "Navigate" }) : new PanelShell(host, { title: "Add-ons", width: 560, toggleWidth: 26, navButtonLabel: "Navigate" });
+    this.onAction = options?.onAction;
+    this.model = options?.model;
+    this.shell = options?.sharedShell ? options.sharedShell : floating ? new FloatingPanelShell(host, { title: "Add-ons", navButtonLabel: "Studio" }) : new PanelShell(host, { title: "Add-ons", width: 560, toggleWidth: 26, navButtonLabel: "Studio" });
     this.root = this.shell.root;
     this.toggleButton = this.shell.toggleButton;
     if (options?.sharedShell) {
@@ -151247,7 +151561,7 @@ var AddonsPanel = class {
     this.leftColumn = document.createElement("div");
     this.leftColumn.setAttribute("data-molsysviewer-addons-panel-left", "true");
     Object.assign(this.leftColumn.style, {
-      display: "none",
+      display: "flex",
       flexDirection: "column",
       gap: "8px",
       width: "180px",
@@ -151265,7 +151579,8 @@ var AddonsPanel = class {
       flexDirection: "column",
       flex: "1 1 0",
       minWidth: "0",
-      overflow: "hidden"
+      overflow: "hidden",
+      paddingLeft: "12px"
     });
     this.body.appendChild(this.rightColumn);
     this.workspaceOverviewHost = document.createElement("div");
@@ -151279,6 +151594,18 @@ var AddonsPanel = class {
       paddingRight: "4px"
     });
     this.rightColumn.appendChild(this.workspaceOverviewHost);
+    this.addonHeaderHost = document.createElement("div");
+    this.addonHeaderHost.setAttribute("data-molsysviewer-addon-header-host", "true");
+    Object.assign(this.addonHeaderHost.style, {
+      display: "none",
+      flexDirection: "column",
+      gap: "6px",
+      paddingBottom: "8px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      marginBottom: "8px",
+      flex: "0 0 auto"
+    });
+    this.rightColumn.appendChild(this.addonHeaderHost);
     this.addonsWidgetHost = document.createElement("div");
     this.addonsWidgetHost.setAttribute("data-molsysviewer-addon-widget-host", "true");
     Object.assign(this.addonsWidgetHost.style, {
@@ -151288,6 +151615,12 @@ var AddonsPanel = class {
       overflowY: "auto"
     });
     this.rightColumn.appendChild(this.addonsWidgetHost);
+    if (typeof MutationObserver !== "undefined") {
+      this.widgetObserver = new MutationObserver(() => {
+        this.applySectionVisibilityFilter();
+      });
+      this.widgetObserver.observe(this.addonsWidgetHost, { childList: true, subtree: true });
+    }
     this.applyExpandedState();
     this.setVisible(!floating);
   }
@@ -151315,7 +151648,7 @@ var AddonsPanel = class {
   setOnExpandedChange(callback) {
     this.onExpandedChange = callback;
   }
-  setOnNavigateToNavigate(callback, label2 = "Navigate") {
+  setOnNavigateToNavigate(callback, label2 = "Studio") {
     this.onNavigateToNavigate = callback;
     if (!this.sharedShell) {
       this.shell.setNavButtonLabel(callback ? label2 : void 0);
@@ -151332,15 +151665,13 @@ var AddonsPanel = class {
   setWorkspacePanels(items, onSelect) {
     this.workspacePanelItems = Array.isArray(items) ? items : [];
     this.onSelectWorkspacePanel = onSelect;
+    this.render();
+  }
+  setPanelStack(items, onSelect) {
     if (!this.sharedShell) {
       this.shell.setOnSelectPanel(onSelect);
-      this.shell.setPanelOptions(items.map((item2) => ({
-        id: item2.id,
-        title: item2.title,
-        active: item2.active
-      })));
+      this.shell.setPanelOptions(items);
     }
-    this.render();
   }
   setActiveWorkspacePanel(summary) {
     this.activeWorkspacePanelSummary = summary;
@@ -151359,7 +151690,9 @@ var AddonsPanel = class {
   }
   setScene(_summary) {
   }
-  setAddons(_items) {
+  setAddons(items) {
+    this.addonsList = Array.isArray(items) ? items : [];
+    this.render();
   }
   setAddonWorkbenchSections(_items) {
   }
@@ -151367,13 +151700,22 @@ var AddonsPanel = class {
     this.addonsWidgetHost.replaceChildren(el);
     this.addonsWidgetHost.style.display = "flex";
     this.workspaceOverviewHost.style.display = "none";
+    this.applySectionVisibilityFilter();
   }
   unmountAddonWidget() {
     this.addonsWidgetHost.replaceChildren();
     this.addonsWidgetHost.style.display = "none";
     this.workspaceOverviewHost.style.display = "flex";
+    this.activeSectionKey = null;
+  }
+  unmountAddonWidgetOnly() {
+    this.addonsWidgetHost.replaceChildren();
   }
   dispose() {
+    if (this.widgetObserver) {
+      this.widgetObserver.disconnect();
+      this.widgetObserver = null;
+    }
     if (!this.sharedShell) {
       this.shell.dispose();
     }
@@ -151399,108 +151741,283 @@ var AddonsPanel = class {
     this.onExpandedChange?.(this.expanded);
   }
   render() {
+    this.renderLeftNavigation();
     const isCore = this.currentWorkspaceId === "core";
     if (isCore) {
-      this.leftColumn.style.display = "none";
-      this.rightColumn.style.paddingLeft = "0";
+      this.addonHeaderHost.style.display = "none";
+      this.addonsWidgetHost.style.display = "none";
       this.workspaceOverviewHost.style.display = "flex";
       this.renderCatalogView();
     } else {
-      this.leftColumn.style.display = "flex";
-      this.rightColumn.style.paddingLeft = "12px";
       this.workspaceOverviewHost.style.display = "none";
-      this.renderAddonWorkspaceView();
+      this.addonHeaderHost.style.display = "flex";
+      this.addonsWidgetHost.style.display = "flex";
+      const activeWorkspace = this.workspaceItems.find((item2) => item2.id === this.currentWorkspaceId);
+      if (activeWorkspace) {
+        this.renderAddonHeader(activeWorkspace);
+      }
+      this.applySectionVisibilityFilter();
     }
   }
   // ── Catalog Screen Rendering ──────────────────────────────────
   renderCatalogView() {
     this.workspaceOverviewHost.replaceChildren();
+    const header2 = document.createElement("div");
+    Object.assign(header2.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      paddingBottom: "8px",
+      marginBottom: "12px",
+      flex: "0 0 auto"
+    });
+    this.workspaceOverviewHost.appendChild(header2);
     const title = document.createElement("div");
     Object.assign(title.style, {
       fontSize: "13px",
       fontWeight: "700",
-      color: "#f4f4f5",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      paddingBottom: "6px",
-      marginBottom: "4px"
+      color: "#f4f4f5"
     });
-    title.textContent = "Available Add-ons";
-    this.workspaceOverviewHost.appendChild(title);
-    const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-      gap: "12px",
+    title.textContent = "Settings & Extensions";
+    header2.appendChild(title);
+    const subtitle = document.createElement("div");
+    Object.assign(subtitle.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.48)"
+    });
+    subtitle.textContent = "Configure global viewer options, manage analytical extensions, and register custom modules.";
+    header2.appendChild(subtitle);
+    const actionsRow = document.createElement("div");
+    Object.assign(actionsRow.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      marginBottom: "12px"
+    });
+    this.workspaceOverviewHost.appendChild(actionsRow);
+    const rescanBtn = document.createElement("button");
+    rescanBtn.type = "button";
+    Object.assign(rescanBtn.style, {
+      padding: "4px 8px",
+      background: "rgba(255,255,255,0.05)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: "4px",
+      color: "rgba(244,244,245,0.78)",
+      fontSize: "10px",
+      fontWeight: "600",
+      cursor: "pointer",
+      transition: "all 0.15s ease"
+    });
+    rescanBtn.textContent = "\u27F3 Autodetect";
+    rescanBtn.addEventListener("mouseenter", () => {
+      rescanBtn.style.background = "rgba(255,255,255,0.08)";
+      rescanBtn.style.color = "#ffffff";
+    });
+    rescanBtn.addEventListener("mouseleave", () => {
+      rescanBtn.style.background = "rgba(255,255,255,0.05)";
+      rescanBtn.style.color = "rgba(244,244,245,0.78)";
+    });
+    rescanBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.onAction?.("addon_rescan", {});
+    });
+    actionsRow.appendChild(rescanBtn);
+    const registerBtn = document.createElement("button");
+    registerBtn.type = "button";
+    Object.assign(registerBtn.style, {
+      padding: "4px 8px",
+      background: "rgba(99,102,241,0.15)",
+      border: "1px solid rgba(99,102,241,0.3)",
+      borderRadius: "4px",
+      color: "#a5b4fc",
+      fontSize: "10px",
+      fontWeight: "600",
+      cursor: "pointer",
+      transition: "all 0.15s ease"
+    });
+    registerBtn.textContent = "\uFF0B Register Module";
+    registerBtn.addEventListener("mouseenter", () => {
+      registerBtn.style.background = "rgba(99,102,241,0.25)";
+      registerBtn.style.color = "#c7d2fe";
+    });
+    registerBtn.addEventListener("mouseleave", () => {
+      registerBtn.style.background = "rgba(99,102,241,0.15)";
+      registerBtn.style.color = "#a5b4fc";
+    });
+    actionsRow.appendChild(registerBtn);
+    const registerForm = document.createElement("form");
+    Object.assign(registerForm.style, {
+      display: "none",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: "8px",
+      padding: "8px",
+      borderRadius: "6px",
+      background: "rgba(255,255,255,0.02)",
+      border: "1px solid rgba(255,255,255,0.06)",
+      marginBottom: "12px",
       width: "100%"
     });
-    this.workspaceOverviewHost.appendChild(grid);
-    const addonItems = this.workspaceItems.filter((item2) => item2.id !== "core");
-    if (addonItems.length === 0 && this.addonDiagnostics.length === 0) {
+    this.workspaceOverviewHost.appendChild(registerForm);
+    const registerInput = document.createElement("input");
+    registerInput.type = "text";
+    registerInput.placeholder = "Module or package name (e.g. molsysmt)";
+    Object.assign(registerInput.style, {
+      flex: "1",
+      padding: "4px 8px",
+      borderRadius: "4px",
+      border: "1px solid rgba(255,255,255,0.1)",
+      background: "rgba(0,0,0,0.2)",
+      color: "#ffffff",
+      fontSize: "11px"
+    });
+    registerForm.appendChild(registerInput);
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "submit";
+    Object.assign(submitBtn.style, {
+      padding: "4px 10px",
+      background: "#6366f1",
+      borderRadius: "4px",
+      border: "0",
+      color: "#ffffff",
+      fontSize: "10px",
+      fontWeight: "700",
+      cursor: "pointer"
+    });
+    submitBtn.textContent = "Register";
+    registerForm.appendChild(submitBtn);
+    const cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    Object.assign(cancelBtn.style, {
+      padding: "4px 8px",
+      background: "transparent",
+      border: "1px solid rgba(255,255,255,0.1)",
+      borderRadius: "4px",
+      color: "rgba(244,244,245,0.48)",
+      fontSize: "10px",
+      cursor: "pointer"
+    });
+    cancelBtn.textContent = "Cancel";
+    registerForm.appendChild(cancelBtn);
+    registerBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      registerForm.style.display = "flex";
+      registerInput.focus();
+    });
+    cancelBtn.addEventListener("click", () => {
+      registerForm.style.display = "none";
+      registerInput.value = "";
+    });
+    registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = registerInput.value.trim();
+      if (val) {
+        this.onAction?.("addon_register_module", { name: val });
+        registerForm.style.display = "none";
+        registerInput.value = "";
+      }
+    });
+    let effectiveAddons = this.addonsList;
+    if (effectiveAddons.length === 0) {
+      effectiveAddons = this.workspaceItems.filter((w) => w.id !== "core").map((w) => ({
+        name: w.id,
+        title: w.title,
+        description: w.description || w.subtitle || "",
+        enabled: true,
+        workspaceTitles: [w.title],
+        panelTitles: w.panelCount ? Array(w.panelCount).fill("Panel") : [],
+        workbenchTitles: w.workbenchSectionCount ? Array(w.workbenchSectionCount).fill("Section") : [],
+        contextActionTitles: w.contextActionCount ? Array(w.contextActionCount).fill("Context") : [],
+        exportHelperTitles: w.exportHelperCount ? Array(w.exportHelperCount).fill("Export") : []
+      }));
+    }
+    if (effectiveAddons.length === 0 && this.addonDiagnostics.length === 0) {
       const empty2 = document.createElement("div");
       Object.assign(empty2.style, {
         fontSize: "11px",
         color: "rgba(244,244,245,0.48)",
         textAlign: "center",
-        padding: "20px 0"
+        padding: "24px 0"
       });
       empty2.textContent = "No analytical add-ons registered.";
       this.workspaceOverviewHost.appendChild(empty2);
       return;
     }
-    for (const item2 of addonItems) {
+    const extensionsHeader = document.createElement("div");
+    Object.assign(extensionsHeader.style, {
+      fontSize: "10px",
+      fontWeight: "700",
+      textTransform: "uppercase",
+      letterSpacing: "0.06em",
+      color: "rgba(244,244,245,0.44)",
+      marginBottom: "8px"
+    });
+    extensionsHeader.textContent = "Registered Add-ons";
+    this.workspaceOverviewHost.appendChild(extensionsHeader);
+    const listContainer = document.createElement("div");
+    Object.assign(listContainer.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      width: "100%"
+    });
+    this.workspaceOverviewHost.appendChild(listContainer);
+    for (const addon of effectiveAddons) {
       const failure = this.addonDiagnostics.find(
-        (d5) => d5.source.toLowerCase().includes(item2.id.toLowerCase())
+        (d5) => d5.source.toLowerCase().includes(addon.name.toLowerCase())
       );
-      const card = document.createElement("button");
-      card.type = "button";
-      card.setAttribute("data-molsysviewer-addon-card", item2.id);
-      Object.assign(card.style, {
+      const row = document.createElement("div");
+      row.setAttribute("data-molsysviewer-addon-card", addon.name);
+      Object.assign(row.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
-        gap: "8px",
-        padding: "12px",
-        borderRadius: "10px",
+        gap: "4px",
+        padding: "10px 12px",
+        borderRadius: "8px",
+        border: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(255,255,255,0.02)",
+        transition: "all 0.15s ease",
+        position: "relative",
+        paddingRight: "100px",
         textAlign: "left",
-        cursor: "pointer",
-        transition: "all 0.15s ease-in-out"
+        cursor: "pointer"
       });
       if (failure) {
-        card.setAttribute("data-molsysviewer-addons-addon-discovery-failure", item2.id);
-        Object.assign(card.style, {
+        row.setAttribute("data-molsysviewer-addons-addon-discovery-failure", addon.name);
+        Object.assign(row.style, {
           background: "rgba(239,68,68,0.03)",
           border: "1px solid rgba(239,68,68,0.25)",
-          color: "#fca5a5"
+          paddingRight: "12px"
         });
-        card.title = failure.traceback || "Diagnostic traceback unavailable";
-        const header2 = document.createElement("div");
-        Object.assign(header2.style, {
+        const header3 = document.createElement("div");
+        Object.assign(header3.style, {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         });
         const name = document.createElement("span");
-        Object.assign(name.style, { fontWeight: "700", fontSize: "13px" });
-        name.textContent = item2.title;
+        Object.assign(name.style, { fontWeight: "700", fontSize: "12px", color: "#fca5a5" });
+        name.textContent = addon.title || addon.name;
         const badge = document.createElement("span");
         Object.assign(badge.style, {
-          fontSize: "9px",
+          fontSize: "8px",
           background: "rgba(239,68,68,0.2)",
           border: "1px solid rgba(239,68,68,0.4)",
           color: "#ef4444",
           borderRadius: "4px",
           padding: "1px 5px",
-          fontWeight: "700",
-          textTransform: "uppercase"
+          fontWeight: "700"
         });
         badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
-        header2.appendChild(name);
-        header2.appendChild(badge);
-        card.appendChild(header2);
+        header3.appendChild(name);
+        header3.appendChild(badge);
+        row.appendChild(header3);
         const desc = document.createElement("div");
-        Object.assign(desc.style, { fontSize: "11px", color: "rgba(252,165,165,0.72)", lineHeight: "1.3" });
+        Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
         desc.textContent = failure.reason || "Error loading addon.";
-        card.appendChild(desc);
+        row.appendChild(desc);
         const traceBox = document.createElement("pre");
         Object.assign(traceBox.style, {
           display: "none",
@@ -151515,112 +152032,225 @@ var AddonsPanel = class {
           whiteSpace: "pre-wrap"
         });
         traceBox.textContent = failure.traceback || "No traceback detail.";
-        card.appendChild(traceBox);
-        card.addEventListener("click", (e) => {
+        row.appendChild(traceBox);
+        row.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const isVisible = traceBox.style.display === "block";
           traceBox.style.display = isVisible ? "none" : "block";
         });
       } else {
-        Object.assign(card.style, {
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          color: "#f4f4f5"
+        row.addEventListener("mouseenter", () => {
+          if (addon.enabled) {
+            row.style.background = "rgba(255,255,255,0.04)";
+            row.style.border = "1px solid rgba(255,255,255,0.1)";
+          }
         });
-        card.addEventListener("mouseenter", () => {
-          card.style.background = "rgba(255,255,255,0.06)";
-          card.style.border = "1px solid rgba(255,255,255,0.14)";
-          card.style.transform = "translateY(-1px)";
+        row.addEventListener("mouseleave", () => {
+          row.style.background = "rgba(255,255,255,0.02)";
+          row.style.border = "1px solid rgba(255,255,255,0.06)";
         });
-        card.addEventListener("mouseleave", () => {
-          card.style.background = "rgba(255,255,255,0.03)";
-          card.style.border = "1px solid rgba(255,255,255,0.08)";
-          card.style.transform = "translateY(0)";
+        const matchedWorkspace = this.workspaceItems.find(
+          (w) => w.addon === addon.name || w.id === addon.name
+        );
+        row.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (addon.enabled && matchedWorkspace) {
+            this.onSelectWorkspace?.(matchedWorkspace.id);
+          }
         });
+        const nameRow = document.createElement("div");
+        Object.assign(nameRow.style, {
+          display: "flex",
+          alignItems: "center",
+          gap: "6px"
+        });
+        row.appendChild(nameRow);
         const name = document.createElement("div");
-        Object.assign(name.style, { fontWeight: "700", fontSize: "13px" });
-        name.textContent = item2.title;
-        card.appendChild(name);
-        if (item2.subtitle || item2.description) {
-          const desc = document.createElement("div");
-          Object.assign(desc.style, {
-            fontSize: "11px",
-            color: "rgba(244,244,245,0.58)",
-            lineHeight: "1.35"
+        Object.assign(name.style, {
+          fontWeight: "700",
+          fontSize: "12px",
+          color: addon.enabled ? "#f4f4f5" : "rgba(244,244,245,0.34)"
+        });
+        name.textContent = addon.title || addon.name;
+        nameRow.appendChild(name);
+        if (!addon.enabled) {
+          const disabledBadge = document.createElement("span");
+          Object.assign(disabledBadge.style, {
+            fontSize: "8px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            color: "rgba(244,244,245,0.3)",
+            padding: "1px 4px",
+            borderRadius: "3px"
           });
-          desc.textContent = item2.description || item2.subtitle || "";
-          card.appendChild(desc);
+          disabledBadge.textContent = "Disabled";
+          nameRow.appendChild(disabledBadge);
         }
+        const desc = document.createElement("div");
+        Object.assign(desc.style, {
+          fontSize: "10px",
+          color: addon.enabled ? "rgba(244,244,245,0.48)" : "rgba(244,244,245,0.22)",
+          lineHeight: "1.35"
+        });
+        desc.textContent = addon.description || "";
+        row.appendChild(desc);
         const chipRow = document.createElement("div");
-        Object.assign(chipRow.style, { display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "4px" });
-        card.appendChild(chipRow);
+        Object.assign(chipRow.style, {
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "4px",
+          marginTop: "2px",
+          opacity: addon.enabled ? "1" : "0.3"
+        });
+        row.appendChild(chipRow);
         const createChip = (text) => {
           const chip = document.createElement("span");
           Object.assign(chip.style, {
-            fontSize: "9px",
+            fontSize: "8px",
             fontWeight: "700",
-            padding: "2px 6px",
+            padding: "1px 5px",
             borderRadius: "99px",
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(244,244,245,0.64)"
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            color: "rgba(244,244,245,0.5)"
           });
           chip.textContent = text;
           chipRow.appendChild(chip);
         };
-        if ((item2.panelCount ?? 0) > 0) createChip(`${item2.panelCount} Panel${item2.panelCount === 1 ? "" : "s"}`);
-        if ((item2.workbenchSectionCount ?? 0) > 0) createChip(`${item2.workbenchSectionCount} Section${item2.workbenchSectionCount === 1 ? "" : "s"}`);
-        if ((item2.contextActionCount ?? 0) > 0) createChip(`${item2.contextActionCount} Context`);
-        card.addEventListener("click", (e) => {
+        const panels = addon.panelTitles?.length || 0;
+        const sections = addon.workbenchTitles?.length || 0;
+        const actions = addon.contextActionTitles?.length || 0;
+        if (panels > 0) createChip(`${panels} Panel${panels === 1 ? "" : "s"}`);
+        if (sections > 0) createChip(`${sections} Section${sections === 1 ? "" : "s"}`);
+        if (actions > 0) createChip(`${actions} Context`);
+        const actionsContainer = document.createElement("div");
+        Object.assign(actionsContainer.style, {
+          position: "absolute",
+          right: "12px",
+          top: "50%",
+          transform: "translateY(-50%)",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        });
+        row.appendChild(actionsContainer);
+        const toggleTrack = document.createElement("div");
+        Object.assign(toggleTrack.style, {
+          width: "30px",
+          height: "16px",
+          borderRadius: "8px",
+          background: addon.enabled ? "#6366f1" : "rgba(255,255,255,0.12)",
+          position: "relative",
+          cursor: "pointer",
+          transition: "background 0.2s ease"
+        });
+        const toggleThumb = document.createElement("div");
+        Object.assign(toggleThumb.style, {
+          width: "12px",
+          height: "12px",
+          borderRadius: "50%",
+          background: "#ffffff",
+          position: "absolute",
+          top: "2px",
+          left: addon.enabled ? "16px" : "2px",
+          transition: "left 0.2s ease"
+        });
+        toggleTrack.appendChild(toggleThumb);
+        actionsContainer.appendChild(toggleTrack);
+        toggleTrack.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          this.onSelectWorkspace?.(item2.id);
+          this.onAction?.(addon.enabled ? "addon_disable" : "addon_enable", { name: addon.name });
         });
+        if (matchedWorkspace) {
+          const openBtn = document.createElement("button");
+          openBtn.type = "button";
+          Object.assign(openBtn.style, {
+            padding: "3px 8px",
+            borderRadius: "4px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            background: "rgba(255,255,255,0.03)",
+            color: addon.enabled ? "rgba(244,244,245,0.78)" : "rgba(244,244,245,0.2)",
+            fontSize: "10px",
+            fontWeight: "600",
+            cursor: addon.enabled ? "pointer" : "not-allowed",
+            transition: "all 0.15s ease"
+          });
+          openBtn.textContent = "Open \u2794";
+          if (addon.enabled) {
+            openBtn.addEventListener("mouseenter", () => {
+              openBtn.style.background = "rgba(255,255,255,0.08)";
+              openBtn.style.color = "#ffffff";
+            });
+            openBtn.addEventListener("mouseleave", () => {
+              openBtn.style.background = "rgba(255,255,255,0.03)";
+              openBtn.style.color = "rgba(244,244,245,0.78)";
+            });
+            openBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.onSelectWorkspace?.(matchedWorkspace.id);
+            });
+          }
+          actionsContainer.appendChild(openBtn);
+        }
       }
-      grid.appendChild(card);
+      listContainer.appendChild(row);
     }
+    let diagnosticsRendered = false;
     for (const failure of this.addonDiagnostics) {
-      const isMatched = addonItems.some((item2) => failure.source.toLowerCase().includes(item2.id.toLowerCase()));
+      const isMatched = effectiveAddons.some((addon) => failure.source.toLowerCase().includes(addon.name.toLowerCase()));
       if (isMatched) continue;
-      const card = document.createElement("button");
-      card.type = "button";
+      if (!diagnosticsRendered) {
+        const diagHeader = document.createElement("div");
+        Object.assign(diagHeader.style, {
+          fontSize: "11px",
+          fontWeight: "700",
+          color: "#fca5a5",
+          marginTop: "16px",
+          marginBottom: "8px"
+        });
+        diagHeader.textContent = "Diagnostics & Failures";
+        this.workspaceOverviewHost.appendChild(diagHeader);
+        diagnosticsRendered = true;
+      }
+      const card = document.createElement("div");
       card.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
       Object.assign(card.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
-        gap: "8px",
-        padding: "12px",
-        borderRadius: "10px",
+        gap: "6px",
+        padding: "10px 12px",
+        borderRadius: "8px",
         background: "rgba(239,68,68,0.03)",
         border: "1px solid rgba(239,68,68,0.25)",
         color: "#fca5a5",
-        textAlign: "left",
+        marginBottom: "8px",
         cursor: "pointer"
       });
-      const header2 = document.createElement("div");
-      Object.assign(header2.style, { display: "flex", justifyContent: "space-between", alignItems: "center" });
+      const header3 = document.createElement("div");
+      Object.assign(header3.style, { display: "flex", justifyContent: "space-between", alignItems: "center" });
       const name = document.createElement("span");
-      Object.assign(name.style, { fontWeight: "700", fontSize: "13px" });
+      Object.assign(name.style, { fontWeight: "700", fontSize: "12px" });
       name.textContent = failure.source;
       const badge = document.createElement("span");
       Object.assign(badge.style, {
-        fontSize: "9px",
+        fontSize: "8px",
         background: "rgba(239,68,68,0.2)",
         border: "1px solid rgba(239,68,68,0.4)",
         color: "#ef4444",
         borderRadius: "4px",
         padding: "1px 5px",
-        fontWeight: "700",
-        textTransform: "uppercase"
+        fontWeight: "700"
       });
       badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
-      header2.appendChild(name);
-      header2.appendChild(badge);
-      card.appendChild(header2);
+      header3.appendChild(name);
+      header3.appendChild(badge);
+      card.appendChild(header3);
       const desc = document.createElement("div");
-      Object.assign(desc.style, { fontSize: "11px", color: "rgba(252,165,165,0.72)", lineHeight: "1.3" });
+      Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
       desc.textContent = failure.reason || "Error loading entry point.";
       card.appendChild(desc);
       const traceBox = document.createElement("pre");
@@ -151640,77 +152270,49 @@ var AddonsPanel = class {
       card.appendChild(traceBox);
       card.addEventListener("click", (e) => {
         e.preventDefault();
-        e.stopPropagation();
         const isVisible = traceBox.style.display === "block";
         traceBox.style.display = isVisible ? "none" : "block";
       });
-      grid.appendChild(card);
+      this.workspaceOverviewHost.appendChild(card);
     }
   }
-  // ── Active Addon Workspace view (Sidebar + Widget area) ────────
-  renderAddonWorkspaceView() {
+  // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
+  renderLeftNavigation() {
     this.leftColumn.replaceChildren();
-    const backBtn = document.createElement("button");
-    backBtn.type = "button";
-    backBtn.setAttribute("data-molsysviewer-addon-back-button", "true");
-    Object.assign(backBtn.style, {
+    Object.assign(this.leftColumn.style, {
       display: "flex",
-      alignItems: "center",
-      gap: "6px",
-      width: "100%",
-      padding: "8px 10px",
-      borderRadius: "8px",
-      border: "1px solid rgba(255,255,255,0.1)",
-      background: "rgba(255,255,255,0.04)",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      fontWeight: "700",
-      cursor: "pointer",
-      marginBottom: "12px",
-      transition: "all 0.15s ease"
+      flexDirection: "column",
+      height: "100%",
+      justifyContent: "space-between",
+      paddingRight: "8px",
+      boxSizing: "border-box"
     });
-    backBtn.textContent = "\u2190 Back to Add-ons";
-    backBtn.addEventListener("mouseenter", () => {
-      backBtn.style.background = "rgba(255,255,255,0.08)";
-      backBtn.style.border = "1px solid rgba(255,255,255,0.16)";
-    });
-    backBtn.addEventListener("mouseleave", () => {
-      backBtn.style.background = "rgba(255,255,255,0.04)";
-      backBtn.style.border = "1px solid rgba(255,255,255,0.1)";
-    });
-    backBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.onSelectWorkspace?.("core");
-    });
-    this.leftColumn.appendChild(backBtn);
-    const sectionsHeader = document.createElement("div");
-    Object.assign(sectionsHeader.style, {
-      fontSize: "10px",
-      fontWeight: "700",
-      textTransform: "uppercase",
-      letterSpacing: "0.06em",
-      color: "rgba(244,244,245,0.48)",
-      paddingLeft: "4px",
-      marginBottom: "6px"
-    });
-    sectionsHeader.textContent = "Add-on Sections";
-    this.leftColumn.appendChild(sectionsHeader);
-    const menuContainer = document.createElement("div");
-    Object.assign(menuContainer.style, {
+    const topContainer = document.createElement("div");
+    Object.assign(topContainer.style, {
       display: "flex",
       flexDirection: "column",
       gap: "4px",
-      width: "100%"
+      width: "100%",
+      overflowY: "auto",
+      flex: "1 1 0"
     });
-    this.leftColumn.appendChild(menuContainer);
-    const relevantSections = this.workspacePanelItems.filter(
-      (item2) => item2.id !== "navigate" && item2.id !== "addons"
-    );
-    for (const panel of relevantSections) {
+    this.leftColumn.appendChild(topContainer);
+    const bottomContainer = document.createElement("div");
+    Object.assign(bottomContainer.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+      width: "100%",
+      borderTop: "1px solid rgba(255,255,255,0.06)",
+      paddingTop: "8px",
+      marginTop: "8px",
+      flex: "0 0 auto"
+    });
+    this.leftColumn.appendChild(bottomContainer);
+    const createWorkspaceButton = (workspace) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.setAttribute("data-molsysviewer-addon-section-tab", panel.id);
+      btn.setAttribute("data-molsysviewer-addon-workspace-tab", workspace.id);
       Object.assign(btn.style, {
         display: "flex",
         flexDirection: "column",
@@ -151726,7 +152328,8 @@ var AddonsPanel = class {
         cursor: "pointer",
         transition: "all 0.15s ease-in-out"
       });
-      if (panel.active) {
+      const isActive = workspace.id === this.currentWorkspaceId;
+      if (isActive) {
         Object.assign(btn.style, {
           background: "rgba(255,255,255,0.08)",
           color: "#f4f4f5",
@@ -151744,24 +152347,183 @@ var AddonsPanel = class {
         });
       }
       const title = document.createElement("div");
-      Object.assign(title.style, { fontSize: "12px", fontWeight: "600" });
-      title.textContent = panel.title;
+      Object.assign(title.style, {
+        fontSize: "12px",
+        fontWeight: "600",
+        display: "flex",
+        alignItems: "center",
+        gap: "6px"
+      });
+      if (workspace.id === "core") {
+        title.textContent = "\u2699 Settings";
+      } else {
+        title.textContent = workspace.title;
+      }
       btn.appendChild(title);
-      if (panel.description) {
+      const descText = workspace.id === "core" ? "Add-ons manager" : workspace.description || workspace.subtitle || "";
+      if (descText) {
         const sub = document.createElement("div");
         Object.assign(sub.style, {
           fontSize: "10px",
-          color: panel.active ? "rgba(244,244,245,0.6)" : "rgba(244,244,245,0.44)"
+          color: isActive ? "rgba(244,244,245,0.6)" : "rgba(244,244,245,0.44)"
         });
-        sub.textContent = panel.description;
+        sub.textContent = descText;
         btn.appendChild(sub);
       }
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
+        this.onSelectWorkspace?.(workspace.id);
+      });
+      return btn;
+    };
+    for (const workspace of this.workspaceItems) {
+      if (workspace.id === "core") continue;
+      topContainer.appendChild(createWorkspaceButton(workspace));
+    }
+    const coreWorkspace = this.workspaceItems.find((w) => w.id === "core") || {
+      id: "core",
+      title: "Settings"
+    };
+    bottomContainer.appendChild(createWorkspaceButton(coreWorkspace));
+  }
+  // ── Right Column: Fixed Header with Subpanels & Sections ───────
+  renderAddonHeader(activeWorkspace) {
+    this.addonHeaderHost.replaceChildren();
+    const headerTitle = document.createElement("div");
+    Object.assign(headerTitle.style, {
+      fontSize: "13px",
+      fontWeight: "700",
+      color: "#f4f4f5",
+      marginBottom: "8px"
+    });
+    headerTitle.textContent = activeWorkspace.title;
+    this.addonHeaderHost.appendChild(headerTitle);
+    const row1 = document.createElement("div");
+    Object.assign(row1.style, {
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: "16px",
+      width: "100%",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      paddingBottom: "4px",
+      marginBottom: "8px"
+    });
+    this.addonHeaderHost.appendChild(row1);
+    const relevantPanels = this.workspacePanelItems.filter(
+      (item2) => item2.id !== "navigate" && item2.id !== "addons"
+    );
+    for (const panel of relevantPanels) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.setAttribute("data-molsysviewer-addon-panel-tab", panel.id);
+      Object.assign(btn.style, {
+        background: "transparent",
+        border: "0",
+        padding: "4px 0 8px 0",
+        fontSize: "11px",
+        fontWeight: "600",
+        color: panel.active ? "#6366f1" : "rgba(244,244,245,0.48)",
+        cursor: "pointer",
+        position: "relative",
+        transition: "color 0.15s ease"
+      });
+      if (panel.active) {
+        const underline = document.createElement("div");
+        Object.assign(underline.style, {
+          position: "absolute",
+          bottom: "0",
+          left: "0",
+          right: "0",
+          height: "2px",
+          background: "#6366f1"
+        });
+        btn.appendChild(underline);
+      } else {
+        btn.addEventListener("mouseenter", () => {
+          btn.style.color = "rgba(244,244,245,0.85)";
+        });
+        btn.addEventListener("mouseleave", () => {
+          btn.style.color = "rgba(244,244,245,0.48)";
+        });
+      }
+      btn.textContent = panel.title;
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.activeSectionKey = null;
         this.onSelectWorkspacePanel?.(panel.id);
       });
-      menuContainer.appendChild(btn);
+      row1.appendChild(btn);
+    }
+    const summary = this.activeWorkspacePanelSummary;
+    if (summary && Array.isArray(summary.sections) && summary.sections.length > 0) {
+      const row2 = document.createElement("div");
+      Object.assign(row2.style, {
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "6px",
+        width: "100%",
+        marginBottom: "4px"
+      });
+      this.addonHeaderHost.appendChild(row2);
+      const sections = summary.sections;
+      if (!this.activeSectionKey || !sections.some((s) => s.key === this.activeSectionKey)) {
+        this.activeSectionKey = sections[0].key;
+      }
+      for (const section of sections) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("data-molsysviewer-addon-section-tab", section.key);
+        const isActive = section.key === this.activeSectionKey;
+        Object.assign(btn.style, {
+          background: isActive ? "rgba(99,102,241,0.15)" : "transparent",
+          border: isActive ? "1px solid rgba(99,102,241,0.3)" : "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "4px",
+          padding: "3px 8px",
+          fontSize: "10px",
+          fontWeight: "500",
+          color: isActive ? "#a5b4fc" : "rgba(244,244,245,0.58)",
+          cursor: "pointer",
+          transition: "all 0.15s ease"
+        });
+        if (!isActive) {
+          btn.addEventListener("mouseenter", () => {
+            btn.style.background = "rgba(255,255,255,0.04)";
+            btn.style.color = "rgba(244,244,245,0.85)";
+          });
+          btn.addEventListener("mouseleave", () => {
+            btn.style.background = "transparent";
+            btn.style.color = "rgba(244,244,245,0.58)";
+          });
+        }
+        btn.textContent = section.title;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.activeSectionKey = section.key;
+          this.render();
+        });
+        row2.appendChild(btn);
+      }
+    }
+  }
+  // ── Operation / Section Visibility Filter (Nivel 3) ──────────────
+  applySectionVisibilityFilter() {
+    const key2 = this.activeSectionKey;
+    if (!key2) return;
+    const sections = this.addonsWidgetHost.querySelectorAll("[data-molsysviewer-addon-section]");
+    if (sections.length === 0) return;
+    for (let i = 0; i < sections.length; i++) {
+      const el = sections[i];
+      const secKey = el.getAttribute("data-molsysviewer-addon-section");
+      if (secKey === key2) {
+        el.style.display = "";
+      } else {
+        el.style.display = "none";
+      }
     }
   }
 };
@@ -152265,7 +153027,7 @@ var MolSysViewerController = class _MolSysViewerController {
     let sharedShell = void 0;
     if (floatingUnified) {
       sharedShell = new FloatingPanelShell(host, {
-        title: "Navigate",
+        title: "Studio",
         panelModeStyle: initOptions?.panelModeStyle,
         onPanelPopClick: initOptions?.onPanelPopClick,
         isPanelOnly: this.isPanelOnly
@@ -152354,14 +153116,27 @@ var MolSysViewerController = class _MolSysViewerController {
         action,
         ...details
       });
-    }, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
-    this.addonsPanel = new AddonsPanel(host, sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : void 0);
+    }, { sharedShell, floating: floatingPanels, model: this.model });
+    const addonsOptions = sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : {};
+    addonsOptions.model = this.model;
+    addonsOptions.onAction = (action, details) => {
+      emitInteractionEvent({
+        event: "interaction_context_action",
+        action,
+        ...details
+      });
+    };
+    this.addonsPanel = new AddonsPanel(host, addonsOptions);
     if (this.isPanelOnly) {
       this.groupPanel.setExpanded(true);
     }
     this.refreshPanelWorkspaceChrome();
     this.groupPanel.setOnExpandedChange((expanded) => {
       this.handlePanelExpansionChanged("navigate", expanded);
+    });
+    this.groupPanel.setOnNavigateToSettings(() => {
+      this.setPanelMode("addons", true);
+      this.selectWorkspace("core");
     });
     this.addonsPanel.setOnExpandedChange((expanded) => {
       this.handlePanelExpansionChanged("addons", expanded);
@@ -153058,8 +153833,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.updateCanvasInsets();
     this.emitPanelModeState();
   }
-  setPanelMode(panel, expanded) {
-    if (panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
+  setPanelMode(panel, expanded, skipToggleCore = false) {
+    if (!skipToggleCore && panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
       this.selectWorkspace("core");
     }
     const shouldExpand = this.isPanelOnly ? true : expanded !== false;
@@ -153117,7 +153892,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }, "Add-ons");
       this.addonsPanel.setOnNavigateToNavigate(() => {
         this.setPanelMode("navigate", true);
-      }, "Navigate");
+      }, "Studio");
     } else {
       this.groupPanel.setRuntimeVisible(false);
       this.groupPanel.setOnNavigateToWorkbench(void 0);
@@ -153132,65 +153907,56 @@ var MolSysViewerController = class _MolSysViewerController {
     this.addonsPanel.setWorkspaces(workspaceOptions, this.currentWorkspace, (workspaceId) => {
       this.selectWorkspace(workspaceId);
     });
-    if (this.currentWorkspace === "core") {
-      if (this.sharedShell) {
-        const activeMode = this.lastPanelMode;
-        this.sharedShell.setOnSelectPanel((panelId) => {
-          if (panelId === "navigate" || panelId === "addons") {
-            this.setPanelMode(panelId, true);
-            this.refreshPanelWorkspaceChrome();
-          }
-        });
-        this.sharedShell.setPanelOptions([
-          { id: "navigate", title: "Navigate", active: activeMode === "navigate" },
-          { id: "addons", title: "Add-ons", active: activeMode === "addons" }
-        ]);
-      }
-      this.groupPanel.setPanelStack([
-        { id: "navigate", title: "Navigate", active: true },
-        { id: "addons", title: "Add-ons" }
-      ], (panelId) => {
-        if (panelId === "addons") this.setPanelMode("addons", true);
-      });
-      this.addonsPanel.setWorkspacePanels(
-        [
-          { id: "navigate", title: "Navigate" },
-          { id: "addons", title: "Add-ons", active: true }
-        ],
-        (panelId) => {
-          if (panelId === "navigate") this.setPanelMode("navigate", true);
-        }
-      );
-      return;
-    }
-    this.groupPanel.setPanelStack([], void 0);
-    const panels = this.getWorkspacePanels(this.currentWorkspace);
-    const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+    const activeMode = this.lastPanelMode;
     if (this.sharedShell) {
       this.sharedShell.setOnSelectPanel((panelId) => {
-        this.selectWorkspacePanel(this.currentWorkspace, panelId);
+        if (panelId === "navigate" || panelId === "addons") {
+          if (panelId === "navigate" && this.currentWorkspace !== "core") {
+            this.selectWorkspace("core");
+          }
+          this.setPanelMode(panelId, true);
+          this.refreshPanelWorkspaceChrome();
+        }
       });
-      this.sharedShell.setPanelOptions(
+      this.sharedShell.setPanelOptions([
+        { id: "navigate", title: "Studio", active: activeMode === "navigate" },
+        { id: "addons", title: "Add-ons", active: activeMode === "addons" }
+      ]);
+    }
+    this.groupPanel.setPanelStack([
+      { id: "navigate", title: "Studio", active: true },
+      { id: "addons", title: "Add-ons", active: false }
+    ], (panelId) => {
+      if (panelId === "addons") this.setPanelMode("addons", true);
+    });
+    this.addonsPanel.setPanelStack([
+      { id: "navigate", title: "Studio", active: false },
+      { id: "addons", title: "Add-ons", active: true }
+    ], (panelId) => {
+      if (panelId === "navigate") {
+        this.selectWorkspace("core");
+        this.setPanelMode("navigate", true);
+      }
+    });
+    if (this.currentWorkspace !== "core") {
+      const panels = this.getWorkspacePanels(this.currentWorkspace);
+      const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+      this.addonsPanel.setWorkspacePanels(
         panels.map((item2) => ({
           id: item2.id,
           title: item2.title,
+          description: item2.description,
+          entry: item2.entry,
+          addon: item2.addon,
           active: item2.id === selectedId
-        }))
+        })),
+        (panelId) => {
+          this.selectWorkspacePanel(this.currentWorkspace, panelId);
+        }
       );
+    } else {
+      this.addonsPanel.setWorkspacePanels([], void 0);
     }
-    this.addonsPanel.setWorkspacePanels(
-      panels.map((item2) => ({
-        id: item2.id,
-        title: item2.title,
-        description: item2.description,
-        entry: item2.entry,
-        addon: item2.addon,
-        active: item2.id === selectedId
-      })),
-      (panelId) => {
-        this.selectWorkspacePanel(this.currentWorkspace, panelId);
-      }
-    );
   }
   openContextMenuForItem(item2, pageX, pageY, emitInteractionEvent) {
     const loci = this.groupPanel.focusItem(item2);
@@ -153778,7 +154544,7 @@ var MolSysViewerController = class _MolSysViewerController {
           if (!mAddon || !mPanel || !mEsm) break;
           const mKey = `${mAddon}:${mPanel}`;
           if (this.activePanelWidgetKey === mKey) break;
-          this.cleanupActivePanelWidget();
+          this.cleanupActivePanelWidget(true);
           const el = document.createElement("div");
           Object.assign(el.style, { display: "flex", flexDirection: "column", gap: "8px", width: "100%" });
           let styleEl = null;
@@ -154445,14 +155211,29 @@ var MolSysViewerController = class _MolSysViewerController {
     })).sort((left, right) => left.key.localeCompare(right.key));
   }
   buildAddonRuntimeSummary(msg) {
-    const names = Array.isArray(msg?.addons) ? msg.addons.filter((value) => typeof value === "string") : [];
+    const records = Array.isArray(msg?.addon_records) ? msg.addon_records : [];
     const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
     const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
     const workbenchSections = Array.isArray(msg?.addon_sections) ? msg.addon_sections : [];
     const contextActionSpecs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
     const exportHelperSpecs = Array.isArray(msg?.export_helper_specs) ? msg.export_helper_specs : [];
+    if (records.length > 0) {
+      return records.map((rec) => ({
+        name: rec.name,
+        enabled: rec.enabled !== false,
+        description: rec.description || "",
+        workspaceTitles: workspaceSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
+        panelTitles: panelSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
+        workbenchTitles: workbenchSections.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
+        contextActionTitles: contextActionSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title),
+        exportHelperTitles: exportHelperSpecs.filter((item2) => item2?.addon === rec.name && typeof item2?.title === "string").map((item2) => item2.title)
+      })).sort((left, right) => left.name.localeCompare(right.name));
+    }
+    const names = Array.isArray(msg?.addons) ? msg.addons.filter((value) => typeof value === "string") : [];
     return names.map((name) => ({
       name,
+      enabled: true,
+      description: "",
       workspaceTitles: workspaceSpecs.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title),
       panelTitles: panelSpecs.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title),
       workbenchTitles: workbenchSections.filter((item2) => item2?.addon === name && typeof item2?.title === "string").map((item2) => item2.title),
@@ -154515,7 +155296,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   getWorkspaceOptions() {
     const options = [
-      { id: "core", title: "Core", subtitle: "Navigate + Workbench" }
+      { id: "core", title: "Core", subtitle: "Studio + Workbench" }
     ];
     for (const workspace of this.addonWorkspaces) {
       const panelCount = this.getWorkspacePanels(workspace.id).length;
@@ -154558,7 +155339,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.currentWorkspacePanelByWorkspace.set(workspaceId, next);
     return next;
   }
-  cleanupActivePanelWidget() {
+  cleanupActivePanelWidget(preserveWorkspaceChrome = false) {
     if (this.activePanelWidgetKey) {
       const parts = this.activePanelWidgetKey.split(":");
       if (parts.length > 0) {
@@ -154575,7 +155356,11 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     this.activePanelMsgListeners = [];
     this.activePanelWidgetKey = null;
-    this.addonsPanel.unmountAddonWidget();
+    if (preserveWorkspaceChrome) {
+      this.addonsPanel.unmountAddonWidgetOnly();
+    } else {
+      this.addonsPanel.unmountAddonWidget();
+    }
   }
   selectWorkspacePanel(workspaceId, panelId) {
     const panels = this.getWorkspacePanels(workspaceId);
@@ -154585,7 +155370,7 @@ var MolSysViewerController = class _MolSysViewerController {
       const prevPanel = panels.find((item2) => item2.id === prevPanelId);
       if (prevPanel?.widget_class) {
         this.notify?.({ event: "panel_unmount", addon: prevPanel.addon, panel: prevPanelId });
-        this.cleanupActivePanelWidget();
+        this.cleanupActivePanelWidget(true);
       }
     }
     this.currentWorkspacePanelByWorkspace.set(workspaceId, panelId);
@@ -154971,7 +155756,7 @@ var MolSysViewerController = class _MolSysViewerController {
           this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
         }
       }
-      this.setPanelMode("addons", true);
+      this.setPanelMode("addons", true, true);
       this.emitPanelModeState();
       return;
     }
@@ -155997,7 +156782,7 @@ var HelpOverlay = class {
       ["Right click", "Context menu"]
     ]));
     grid.appendChild(makeSection("Keyboard", [
-      ["N", "Open / close Navigate"],
+      ["N", "Open / close Studio"],
       ["W", "Open / close Workbench"],
       ["V", "Toggle canvas visibility"],
       ["H", "Toggle this help"],

@@ -307,7 +307,7 @@ export class ViewerContextMenu {
             this.scrollEl.appendChild(divPanels);
 
             this.scrollEl.appendChild(this.makeActionButton(
-                isNavOpen ? "Close Navigate Panel" : "Open Navigate Panel",
+                isNavOpen ? "Close Studio Panel" : "Open Studio Panel",
                 "open_navigate"
             ));
             this.scrollEl.appendChild(this.makeActionButton(

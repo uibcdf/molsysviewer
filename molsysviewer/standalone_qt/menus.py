@@ -292,7 +292,7 @@ def _install_menu_bar(
     close_action.triggered.connect(lambda: (_get_helper("_persist_shell_state")(current_state, window=window), window.close()))
     file_menu.addAction(close_action)
 
-    open_navigate_action = QAction("Open Navigate", window)
+    open_navigate_action = QAction("Open Studio", window)
     _get_helper("_set_action_shortcut")(open_navigate_action, "Ctrl+1")
     open_navigate_action.triggered.connect(
         lambda: _get_helper("_send_viewer_message")(

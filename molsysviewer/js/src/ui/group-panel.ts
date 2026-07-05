@@ -43,7 +43,7 @@ type RegionSummary = { tag: string; atom_count: number; hidden: boolean };
 type WorkspaceOption = { id: string; title: string; subtitle?: string };
 type PanelOption = { id: string; title: string; active?: boolean };
 
-type TabKey = "structure" | "selection" | "regions" | "shapes" | "scene" | "export";
+type TabKey = "system" | "selection" | "regions" | "overlays" | "viewport" | "settings";
 
 export class GroupPanel {
     private readonly root: HTMLDivElement;
@@ -53,17 +53,20 @@ export class GroupPanel {
     
     // Left column: Tabs
     private readonly leftColumn: HTMLDivElement;
-    private activeTab: TabKey = "structure";
+    private readonly tabsContainer: HTMLDivElement;
+    private activeTab: TabKey = "system";
     private readonly tabs: Map<TabKey, { button: HTMLButtonElement; badge: HTMLSpanElement }> = new Map();
 
     // Right column: Content Sections
     private readonly rightColumn: HTMLDivElement;
-    private readonly structureSection: HTMLDivElement;
+    private readonly systemSection: HTMLDivElement;
     private readonly selectionSection: HTMLDivElement;
     private readonly regionsSection: HTMLDivElement;
-    private readonly shapesSection: HTMLDivElement;
-    private readonly exportSection: HTMLDivElement;
-    private readonly sceneSection: HTMLDivElement;
+    private readonly overlaysSection: HTMLDivElement;
+    private readonly viewportSection: HTMLDivElement;
+    private readonly settingsSection: HTMLDivElement;
+    private readonly model?: any;
+    private activeStyleRegionTag: string | null = null;
 
     private readonly strips = new Map<string, GroupStrip>();
     private structure?: Structure;
@@ -97,6 +100,7 @@ export class GroupPanel {
 
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToWorkbench?: () => void;
+    private onNavigateToSettings?: () => void;
     private runtimeVisibleOverride: boolean | null = null;
     private readonly sharedShell: boolean;
     private visible = false;
@@ -112,15 +116,16 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
         private readonly onAction: ((action: string, details?: any) => void) | undefined,
-        options?: { floating?: boolean; sharedShell?: FloatingPanelShell },
+        options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any },
     ) {
+        this.model = options?.model;
         const floating = options?.floating || !!options?.sharedShell;
         this.sharedShell = !!options?.sharedShell;
         this.shell = options?.sharedShell
             ? options.sharedShell
             : (floating
-                ? new FloatingPanelShell(this.host, { title: "Navigate", navButtonLabel: "Add-ons" })
-                : new PanelShell(this.host, { title: "Navigate", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" }));
+                ? new FloatingPanelShell(this.host, { title: "Studio", navButtonLabel: "Add-ons" })
+                : new PanelShell(this.host, { title: "Studio", width: 560, toggleWidth: 26, navButtonLabel: "Add-ons" }));
         this.root = this.shell.root;
         this.toggleButton = this.shell.toggleButton;
 
@@ -174,15 +179,95 @@ export class GroupPanel {
         Object.assign(this.leftColumn.style, {
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "space-between",
             width: "180px",
             minWidth: "180px",
-            overflowY: "auto",
-            overflowX: "hidden",
+            height: "100%",
             paddingRight: "8px",
             borderRight: "1px solid rgba(255,255,255,0.06)",
+            boxSizing: "border-box",
         });
         this.body.appendChild(this.leftColumn);
+
+        // Container for top navigation tabs
+        this.tabsContainer = document.createElement("div");
+        Object.assign(this.tabsContainer.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+            width: "100%",
+            overflowY: "auto",
+            overflowX: "hidden",
+            flex: "1 1 0",
+        });
+        this.leftColumn.appendChild(this.tabsContainer);
+
+        // Container for bottom settings tab
+        const bottomContainer = document.createElement("div");
+        Object.assign(bottomContainer.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            width: "100%",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            paddingTop: "8px",
+            marginTop: "8px",
+            flex: "0 0 auto",
+        });
+        this.leftColumn.appendChild(bottomContainer);
+
+        // ⚙ Settings Button at the bottom
+        const settingsBtn = document.createElement("button");
+        settingsBtn.type = "button";
+        settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
+        Object.assign(settingsBtn.style, {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "2px",
+            width: "100%",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            border: "0",
+            background: "transparent",
+            color: "rgba(244,244,245,0.68)",
+            textAlign: "left",
+            cursor: "pointer",
+            transition: "all 0.15s ease-in-out",
+        });
+        settingsBtn.addEventListener("mouseenter", () => {
+            if (this.activeTab !== "settings") {
+                settingsBtn.style.background = "rgba(255,255,255,0.04)";
+                settingsBtn.style.color = "rgba(244,244,245,0.9)";
+            }
+        });
+        settingsBtn.addEventListener("mouseleave", () => {
+            if (this.activeTab !== "settings") {
+                settingsBtn.style.background = "transparent";
+                settingsBtn.style.color = "rgba(244,244,245,0.68)";
+            }
+        });
+        settingsBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.switchTab("settings");
+        });
+
+        const settingsTitle = document.createElement("div");
+        Object.assign(settingsTitle.style, { fontSize: "12px", fontWeight: "600" });
+        settingsTitle.textContent = "⚙ Settings";
+        settingsBtn.appendChild(settingsTitle);
+
+        const settingsBadge = document.createElement("span");
+        Object.assign(settingsBadge.style, {
+            fontSize: "10px",
+            color: "rgba(244,244,245,0.48)",
+        });
+        settingsBadge.textContent = "Viewer config";
+        settingsBtn.appendChild(settingsBadge);
+
+        bottomContainer.appendChild(settingsBtn);
+        this.tabs.set("settings", { button: settingsBtn, badge: settingsBadge });
 
         // ── Right column: Content Viewport ──────────────────────────
         this.rightColumn = document.createElement("div");
@@ -198,15 +283,15 @@ export class GroupPanel {
         this.body.appendChild(this.rightColumn);
 
         // Create Sections
-        this.structureSection = this.createSection("structure");
+        this.systemSection = this.createSection("system");
         this.selectionSection = this.createSection("selection");
         this.regionsSection = this.createSection("regions");
-        this.shapesSection = this.createSection("shapes");
-        this.sceneSection = this.createSection("scene");
-        this.exportSection = this.createSection("export");
+        this.overlaysSection = this.createSection("overlays");
+        this.viewportSection = this.createSection("viewport");
+        this.settingsSection = this.createSection("settings");
 
-        // Set structure panel layout specificity
-        Object.assign(this.structureSection.style, {
+        // Set system panel layout specificity
+        Object.assign(this.systemSection.style, {
             flexDirection: "row",
             overflowX: "auto",
             overflowY: "hidden",
@@ -214,22 +299,20 @@ export class GroupPanel {
         });
 
         // Add tabs
-        this.addTab("structure", "Structure", "None");
+        this.addTab("system", "System", "None");
         this.addTab("selection", "Selection", "None");
         this.addTab("regions", "Regions", "0");
-        this.addTab("shapes", "Shapes", "0");
-        this.addTab("scene", "Scene", "Dark");
-        this.addTab("export", "Export", "None");
+        this.addTab("overlays", "Overlays", "0");
+        this.addTab("viewport", "Viewport", "Dark");
 
-        // Switch to structure tab by default
-        this.switchTab("structure");
+        // Switch to system tab by default
+        this.switchTab("system");
 
         // Render empty sections initially
         this.renderSelectionSection();
         this.renderRegionsSection();
-        this.renderShapesSection();
-        this.renderSceneSection();
-        this.renderExportSection();
+        this.renderOverlaysSection();
+        this.renderViewportSection();
     }
 
     private createSection(key: TabKey): HTMLDivElement {
@@ -300,7 +383,7 @@ export class GroupPanel {
 
         button.appendChild(titleDiv);
         button.appendChild(badge);
-        this.leftColumn.appendChild(button);
+        this.tabsContainer.appendChild(button);
 
         this.tabs.set(key, { button, badge });
     }
@@ -330,20 +413,24 @@ export class GroupPanel {
         }
 
         // Toggle sections visibility
-        this.structureSection.style.display = key === "structure" ? "flex" : "none";
+        this.systemSection.style.display = key === "system" ? "flex" : "none";
         this.selectionSection.style.display = key === "selection" ? "flex" : "none";
         this.regionsSection.style.display = key === "regions" ? "flex" : "none";
-        this.shapesSection.style.display = key === "shapes" ? "flex" : "none";
-        this.sceneSection.style.display = key === "scene" ? "flex" : "none";
-        this.exportSection.style.display = key === "export" ? "flex" : "none";
+        this.overlaysSection.style.display = key === "overlays" ? "flex" : "none";
+        this.viewportSection.style.display = key === "viewport" ? "flex" : "none";
+        this.settingsSection.style.display = key === "settings" ? "flex" : "none";
+
+        if (key === "settings") {
+            this.renderSettingsSection();
+        }
     }
 
     setStructure(structure: Structure | undefined): void {
         this.structure = structure;
         if (!structure) this.annotationMessages.length = 0;
         
-        // Reset to structure tab on reload
-        this.switchTab("structure");
+        // Reset to system tab on reload
+        this.switchTab("system");
         this.render();
     }
 
@@ -373,6 +460,10 @@ export class GroupPanel {
         if (!this.sharedShell) {
             this.shell.setNavButtonLabel(callback ? label : undefined);
         }
+    }
+
+    setOnNavigateToSettings(callback: (() => void) | undefined): void {
+        this.onNavigateToSettings = callback;
     }
 
     setRuntimeVisible(visible: boolean | null): void {
@@ -426,25 +517,25 @@ export class GroupPanel {
 
     setShapes(items: NavigateItem[]): void {
         this.shapes = [...items];
-        this.updateShapesBadge();
-        this.renderShapesSection();
+        this.updateOverlaysBadge();
+        this.renderOverlaysSection();
     }
 
     setAnnotations(items: NavigateItem[]): void {
         this.annotations = [...items];
-        this.updateShapesBadge();
-        this.renderShapesSection();
+        this.updateOverlaysBadge();
+        this.renderOverlaysSection();
     }
 
     setMeasurements(items: NavigateItem[]): void {
         this.measurements = [...items];
-        this.updateShapesBadge();
-        this.renderShapesSection();
+        this.updateOverlaysBadge();
+        this.renderOverlaysSection();
     }
 
-    private updateShapesBadge(): void {
+    private updateOverlaysBadge(): void {
         const count = this.shapes.length + this.annotations.length + this.measurements.length;
-        const badge = this.tabs.get("shapes")?.badge;
+        const badge = this.tabs.get("overlays")?.badge;
         if (badge) {
             badge.textContent = String(count);
         }
@@ -453,14 +544,14 @@ export class GroupPanel {
     setScene(state: SceneState): void {
         this.sceneState = { ...state };
         
-        // Update sidebar Scene badge
-        const badge = this.tabs.get("scene")?.badge;
+        // Update sidebar Viewport badge
+        const badge = this.tabs.get("viewport")?.badge;
         if (badge) {
             badge.textContent = state.isDarkMode ? "Dark" : "Light";
             if (state.isSpinActive) badge.textContent += " · Spin";
         }
 
-        this.renderSceneSection();
+        this.renderViewportSection();
     }
 
     updateContextTarget(target: ContextMenuTarget | null): void {
@@ -565,8 +656,8 @@ export class GroupPanel {
             this.expanded = false;
         }
 
-        // Update sidebar Structure badge
-        const badge = this.tabs.get("structure")?.badge;
+        // Update sidebar System badge
+        const badge = this.tabs.get("system")?.badge;
         if (badge) {
             badge.textContent = naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None";
         }
@@ -576,7 +667,7 @@ export class GroupPanel {
         for (const [chain, chainItems] of grouped.entries()) {
             let strip = this.strips.get(chain);
             if (!strip) {
-                strip = new GroupStrip(this.structureSection, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+                strip = new GroupStrip(this.systemSection, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
                 this.strips.set(chain, strip);
             }
             strip.setData(this.structure, chainItems);
@@ -792,6 +883,13 @@ export class GroupPanel {
         if (this.regions.length > 0) {
             const sorted = [...this.regions].sort((a, b) => a.tag.localeCompare(b.tag));
             for (const item of sorted) {
+                const itemContainer = document.createElement("div");
+                Object.assign(itemContainer.style, {
+                    display: "flex",
+                    flexDirection: "column",
+                });
+                list.appendChild(itemContainer);
+
                 const row = this.makeRowElement(
                     item.tag,
                     item.hidden ? `${item.atom_count} atoms · hidden` : `${item.atom_count} atoms`,
@@ -800,9 +898,17 @@ export class GroupPanel {
                     {
                         hidden: item.hidden,
                         onToggleVisibility: () => this.onAction?.("toggle_region_visibility", { tag: item.tag })
+                    },
+                    () => {
+                        this.activeStyleRegionTag = this.activeStyleRegionTag === item.tag ? null : item.tag;
+                        this.renderRegionsSection();
                     }
                 );
-                list.appendChild(row);
+                itemContainer.appendChild(row);
+
+                if (this.activeStyleRegionTag === item.tag) {
+                    itemContainer.appendChild(this.renderStyleComposer(item.tag));
+                }
             }
         } else {
             const emptyLabel = document.createElement("div");
@@ -816,12 +922,13 @@ export class GroupPanel {
         }
     }
 
-    // ── 3. Shapes Section Rendering ──────────────────────────
-    private renderShapesSection(): void {
-        this.shapesSection.replaceChildren();
+    // ── 3. Overlays Section Rendering ────────────────────────
+    private renderOverlaysSection(): void {
+        this.overlaysSection.replaceChildren();
+        this.overlaysSection.appendChild(this.makeSectionHeader("Scene Overlays"));
 
         // A. 3D Shapes
-        this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
+        this.overlaysSection.appendChild(this.makeSectionHeader("3D Shapes"));
         const shapesList = document.createElement("div");
         Object.assign(shapesList.style, {
             display: "flex",
@@ -829,7 +936,7 @@ export class GroupPanel {
             gap: "6px",
             marginBottom: "12px",
         });
-        this.shapesSection.appendChild(shapesList);
+        this.overlaysSection.appendChild(shapesList);
 
         if (this.shapes.length > 0) {
             for (const item of this.shapes) {
@@ -857,7 +964,7 @@ export class GroupPanel {
         }
 
         // B. Annotations (Labels)
-        this.shapesSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
+        this.overlaysSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
         const annotationsList = document.createElement("div");
         Object.assign(annotationsList.style, {
             display: "flex",
@@ -865,7 +972,7 @@ export class GroupPanel {
             gap: "6px",
             marginBottom: "12px",
         });
-        this.shapesSection.appendChild(annotationsList);
+        this.overlaysSection.appendChild(annotationsList);
 
         if (this.annotations.length > 0) {
             for (const item of this.annotations) {
@@ -893,14 +1000,14 @@ export class GroupPanel {
         }
 
         // C. Measurements (Distances)
-        this.shapesSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
+        this.overlaysSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
         const measurementsList = document.createElement("div");
         Object.assign(measurementsList.style, {
             display: "flex",
             flexDirection: "column",
             gap: "6px",
         });
-        this.shapesSection.appendChild(measurementsList);
+        this.overlaysSection.appendChild(measurementsList);
 
         if (this.measurements.length > 0) {
             for (const item of this.measurements) {
@@ -928,10 +1035,165 @@ export class GroupPanel {
         }
     }
 
-    // ── 5. Scene Section Rendering ───────────────────────────
-    private renderSceneSection(): void {
-        this.sceneSection.replaceChildren();
-        this.sceneSection.appendChild(this.makeSectionHeader("Visual Scene Settings"));
+    private renderStyleComposer(tag: string): HTMLDivElement {
+        const container = document.createElement("div");
+        Object.assign(container.style, {
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "8px 10px",
+            borderRadius: "6px",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px dashed rgba(255,255,255,0.08)",
+            marginTop: "4px",
+            marginBottom: "4px",
+        });
+
+        // 1. Style / Representation select
+        const styleRow = document.createElement("div");
+        Object.assign(styleRow.style, {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+        });
+        const styleLabel = document.createElement("span");
+        styleLabel.textContent = "Representation Style";
+        Object.assign(styleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
+
+        const styleSelect = this.makeStyledSelect(
+            ["Cartoon", "Sticks", "CPK", "Trace", "Putty"],
+            "Cartoon",
+            () => {}
+        );
+        styleRow.appendChild(styleLabel);
+        styleRow.appendChild(styleSelect);
+        container.appendChild(styleRow);
+
+        // 2. Color scheme select
+        const colorRow = document.createElement("div");
+        Object.assign(colorRow.style, {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+        });
+        const colorLabel = document.createElement("span");
+        colorLabel.textContent = "Color Scheme";
+        Object.assign(colorLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
+
+        const customColorInput = document.createElement("input");
+        customColorInput.type = "color";
+        customColorInput.value = "#3b82f6"; // default blue
+        Object.assign(customColorInput.style, {
+            width: "20px",
+            height: "20px",
+            border: "1px solid rgba(255,255,255,0.25)",
+            borderRadius: "50%",
+            padding: "0",
+            background: "transparent",
+            cursor: "pointer",
+            display: "none",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            outline: "none",
+        });
+
+        const colorSelect = this.makeStyledSelect(
+            ["Element (CPK)", "Chain ID", "Secondary Structure", "Hydrophobicity", "Custom Color"],
+            "Element (CPK)",
+            (val) => {
+                customColorInput.style.display = val === "Custom Color" ? "inline-block" : "none";
+            }
+        );
+
+        const colorRight = document.createElement("div");
+        Object.assign(colorRight.style, {
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+        });
+        colorRight.appendChild(customColorInput);
+        colorRight.appendChild(colorSelect);
+
+        colorRow.appendChild(colorLabel);
+        colorRow.appendChild(colorRight);
+        container.appendChild(colorRow);
+
+        // 3. Actions Row (Apply & Cancel)
+        const actionsRow = document.createElement("div");
+        Object.assign(actionsRow.style, {
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "6px",
+            width: "100%",
+            marginTop: "4px",
+        });
+
+        const cancelBtn = this.makeButton("Cancel", () => {
+            this.activeStyleRegionTag = null;
+            this.renderRegionsSection();
+        });
+        Object.assign(cancelBtn.style, {
+            flex: "0 0 auto",
+            fontSize: "10px",
+            padding: "3px 8px",
+        });
+
+        const applyBtn = this.makeButton("Apply Style", () => {
+            const chosenStyleMap: Record<string, string> = {
+                "Cartoon": "cartoon",
+                "Sticks": "licorice",
+                "CPK": "spacefill",
+                "Trace": "backbone",
+                "Putty": "putty"
+            };
+            const repr = chosenStyleMap[styleSelect.value] || "cartoon";
+
+            const chosenColor = colorSelect.value;
+            let scheme: string | undefined = undefined;
+            if (chosenColor === "Element (CPK)") scheme = "element";
+            else if (chosenColor === "Chain ID") scheme = "chain-id";
+            else if (chosenColor === "Secondary Structure") scheme = "secondary-structure";
+            else if (chosenColor === "Hydrophobicity") scheme = "hydrophobicity";
+            else if (chosenColor === "Custom Color") scheme = customColorInput.value;
+
+            this.onAction?.("set_region_representation", {
+                tag,
+                representation: repr,
+                params: scheme ? { color_scheme: scheme } : {},
+            });
+
+            this.activeStyleRegionTag = null;
+            this.renderRegionsSection();
+        });
+        Object.assign(applyBtn.style, {
+            flex: "0 0 auto",
+            fontSize: "10px",
+            padding: "3px 8px",
+            background: "rgba(16,185,129,0.15)",
+            border: "1px solid rgba(16,185,129,0.3)",
+        });
+        applyBtn.addEventListener("mouseenter", () => {
+            applyBtn.style.background = "rgba(16,185,129,0.25)";
+            applyBtn.style.border = "1px solid rgba(16,185,129,0.5)";
+        });
+        applyBtn.addEventListener("mouseleave", () => {
+            applyBtn.style.background = "rgba(16,185,129,0.15)";
+            applyBtn.style.border = "1px solid rgba(16,185,129,0.3)";
+        });
+
+        actionsRow.appendChild(cancelBtn);
+        actionsRow.appendChild(applyBtn);
+        container.appendChild(actionsRow);
+
+        return container;
+    }
+
+    // ── 5. Viewport Section Rendering ────────────────────────
+    private renderViewportSection(): void {
+        this.viewportSection.replaceChildren();
+        this.viewportSection.appendChild(this.makeSectionHeader("Viewport & Export Settings"));
 
         const grid = document.createElement("div");
         Object.assign(grid.style, {
@@ -940,7 +1202,7 @@ export class GroupPanel {
             gap: "10px",
             paddingBottom: "10px",
         });
-        this.sceneSection.appendChild(grid);
+        this.viewportSection.appendChild(grid);
 
         // A. Viewport Card
         const viewportCard = this.makeSettingsCard("Viewport Settings");
@@ -1049,22 +1311,7 @@ export class GroupPanel {
         fogSliderRow.appendChild(fogSlider);
         cameraCard.appendChild(fogSliderRow);
 
-    }
-
-    private renderExportSection(): void {
-        this.exportSection.replaceChildren();
-        this.exportSection.appendChild(this.makeSectionHeader("Export Visuals & Structures"));
-
-        const grid = document.createElement("div");
-        Object.assign(grid.style, {
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-            gap: "10px",
-            paddingBottom: "10px",
-        });
-        this.exportSection.appendChild(grid);
-
-        // A. Figure Export Card
+        // C. Figure Export Card
         const exportCard = this.makeSettingsCard("Figure Export");
         grid.appendChild(exportCard);
 
@@ -1083,7 +1330,7 @@ export class GroupPanel {
             });
         };
 
-        // A1. Preset selector
+        // C1. Preset selector
         const presetRow = document.createElement("div");
         Object.assign(presetRow.style, {
             display: "flex",
@@ -1104,7 +1351,7 @@ export class GroupPanel {
         presetRow.appendChild(presetSelect);
         exportCard.appendChild(presetRow);
 
-        // A2. Resolution Scale dropdown
+        // C2. Resolution Scale dropdown
         const scaleRow = document.createElement("div");
         Object.assign(scaleRow.style, {
             display: "flex",
@@ -1123,12 +1370,12 @@ export class GroupPanel {
         scaleRow.appendChild(scaleSelect);
         exportCard.appendChild(scaleRow);
 
-        // A3. Transparency checkbox
+        // C3. Transparency checkbox
         exportCard.appendChild(this.makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
             updateFigureSpec(currentPreset, currentScale, checked);
         }));
 
-        // A4. Download button
+        // C4. Download button
         const downloadRow = document.createElement("div");
         Object.assign(downloadRow.style, {
             display: "flex",
@@ -1143,7 +1390,7 @@ export class GroupPanel {
         downloadRow.appendChild(downloadButton);
         exportCard.appendChild(downloadRow);
 
-        // B. Data & State Card
+        // D. Data & State Card
         const dataCard = this.makeSettingsCard("Data & State");
         grid.appendChild(dataCard);
 
@@ -1203,7 +1450,8 @@ export class GroupPanel {
         subtitleText: string,
         onActivate?: () => void,
         onDelete?: () => void,
-        visibility?: { hidden?: boolean; onToggleVisibility?: (hidden: boolean) => void }
+        visibility?: { hidden?: boolean; onToggleVisibility?: (hidden: boolean) => void },
+        onStyle?: () => void
     ): HTMLDivElement {
         const row = document.createElement("div");
         row.setAttribute("data-molsysviewer-group-panel-row", "true");
@@ -1283,6 +1531,35 @@ export class GroupPanel {
         });
         row.appendChild(actions);
 
+        // Style / Paint Button
+        if (onStyle) {
+            const styleBtn = document.createElement("button");
+            styleBtn.type = "button";
+            styleBtn.textContent = "🎨";
+            styleBtn.title = "Style & Color";
+            Object.assign(styleBtn.style, {
+                background: "transparent",
+                border: "0",
+                color: "rgba(244,244,245,0.55)",
+                fontSize: "11px",
+                cursor: "pointer",
+                padding: "2px 6px",
+                borderRadius: "4px",
+            });
+            styleBtn.addEventListener("mouseenter", () => {
+                styleBtn.style.color = "#10b981";
+            });
+            styleBtn.addEventListener("mouseleave", () => {
+                styleBtn.style.color = "rgba(244,244,245,0.55)";
+            });
+            styleBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onStyle();
+            });
+            actions.appendChild(styleBtn);
+        }
+
         // Visibility Toggle (Eye icon)
         if (visibility?.onToggleVisibility) {
             const eyeBtn = document.createElement("button");
@@ -1335,7 +1612,6 @@ export class GroupPanel {
             });
             actions.appendChild(delBtn);
         }
-
         return row;
     }
 
@@ -1436,5 +1712,81 @@ export class GroupPanel {
         });
 
         return select;
+    }
+
+    private renderSettingsSection(): void {
+        this.settingsSection.replaceChildren();
+        this.settingsSection.appendChild(this.makeSectionHeader("Viewer Settings"));
+
+        const grid = document.createElement("div");
+        Object.assign(grid.style, {
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "10px",
+            paddingBottom: "10px",
+        });
+        this.settingsSection.appendChild(grid);
+
+        // Viewport Controls preferences card
+        const configCard = this.makeSettingsCard("Viewport Controls");
+        grid.appendChild(configCard);
+
+        const autohideRow = document.createElement("div");
+        Object.assign(autohideRow.style, {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            marginTop: "4px",
+        });
+        configCard.appendChild(autohideRow);
+
+        const autohideLabel = document.createElement("span");
+        autohideLabel.textContent = "Autohide Controls";
+        Object.assign(autohideLabel.style, {
+            fontSize: "11px",
+            color: "rgba(244,244,245,0.8)",
+            lineHeight: "1.3",
+        });
+        autohideRow.appendChild(autohideLabel);
+
+        const autohideEnabled = this.model ? !!this.model.get("autohide_controls") : true;
+
+        // Custom iOS toggle switch for Autohide Controls
+        const autohideToggleTrack = document.createElement("div");
+        Object.assign(autohideToggleTrack.style, {
+            width: "30px",
+            height: "16px",
+            borderRadius: "8px",
+            background: autohideEnabled ? "#6366f1" : "rgba(255,255,255,0.12)",
+            position: "relative",
+            cursor: "pointer",
+            transition: "background 0.2s ease",
+            flexShrink: "0",
+        });
+        const autohideToggleThumb = document.createElement("div");
+        Object.assign(autohideToggleThumb.style, {
+            width: "12px",
+            height: "12px",
+            borderRadius: "50%",
+            background: "#ffffff",
+            position: "absolute",
+            top: "2px",
+            left: autohideEnabled ? "16px" : "2px",
+            transition: "left 0.2s ease",
+        });
+        autohideToggleTrack.appendChild(autohideToggleThumb);
+        autohideRow.appendChild(autohideToggleTrack);
+
+        autohideToggleTrack.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (this.model) {
+                const newVal = !this.model.get("autohide_controls");
+                this.model.set("autohide_controls", newVal);
+                this.model.save_changes();
+                this.renderSettingsSection();
+            }
+        });
     }
 }

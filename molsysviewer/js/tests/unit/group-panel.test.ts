@@ -123,7 +123,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         const shell = root.children[0];
         const title = findFirstByAttribute(root, "data-molsysviewer-group-panel-title");
         const navGroup = findFirstByAttribute(root, "data-molsysviewer-panel-nav-group", "true");
-        const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "navigate");
+        const navCurrent = findFirstByAttribute(root, "data-molsysviewer-panel-nav-current", "studio");
         const navButton = findFirstByAttribute(root, "data-molsysviewer-panel-nav", "add-ons");
         const body = findFirstByAttribute(root, "data-molsysviewer-group-panel-body");
         const toggle = root.children[1];
@@ -135,7 +135,7 @@ test("GroupPanel creates one GroupStrip per chain", () => {
         assert.ok(navCurrent);
         assert.ok(navButton);
         assert.strictEqual(navButton?.textContent, "Add-ons");
-        assert.strictEqual(title?.textContent, "Navigate");
+        assert.strictEqual(title?.textContent, "Studio");
         assert.strictEqual(root.style.display, 'flex');
         assert.strictEqual(toggle.textContent, '>');
         assert.strictEqual(root.style.transform, 'translateX(-560px)');
@@ -374,7 +374,7 @@ test("GroupPanel exposes workspace launcher when multiple workspaces exist", () 
         const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         panel.setWorkspaces(
             [
-                { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
+                { id: "core", title: "Core", subtitle: "Studio + Workbench" },
                 { id: "topomt", title: "TopoMT", subtitle: "2 panels · 1 section" },
                 { id: "pharmacophoremt", title: "PharmacophoreMT", subtitle: "3 panels · 2 sections" },
             ],
@@ -396,7 +396,7 @@ test("GroupPanel exposes workspace launcher when multiple workspaces exist", () 
         assert.ok(launcher);
         assert.strictEqual(currentMarker?.textContent, "Core workspace");
         assert.strictEqual(currentTitle?.textContent, "Core");
-        assert.strictEqual(currentSubtitle?.textContent, "Navigate + Workbench");
+        assert.strictEqual(currentSubtitle?.textContent, "Studio + Workbench");
         assert.strictEqual(launcher?.getAttribute("data-molsysviewer-panel-workspace-launcher-mode"), "mosaic");
 
         current?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
@@ -504,7 +504,7 @@ test("GroupPanel exposes panel stack in the shared header", () => {
 
         panel.setPanelStack(
             [
-                { id: "navigate", title: "Navigate", active: true },
+                { id: "navigate", title: "Studio", active: true },
                 { id: "addons", title: "Add-ons" },
             ],
             (panelId) => { selected = panelId; },

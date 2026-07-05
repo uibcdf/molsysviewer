@@ -117,9 +117,9 @@ test("AddonsPanel renders in catalog mode when currentWorkspaceId is core", () =
         assert.ok(rightColumn);
         assert.ok(overview);
 
-        // Sidebar is hidden in core/catalog mode
-        assert.strictEqual(leftColumn.style.display, "none");
-        assert.strictEqual(rightColumn.style.paddingLeft, "0");
+        // Sidebar is always visible
+        assert.strictEqual(leftColumn?.style.display, "flex");
+        assert.strictEqual(rightColumn?.style.paddingLeft, "12px");
 
         // Verify addon cards render
         const cards = collectByAttribute(root, "data-molsysviewer-addon-card");
@@ -224,27 +224,27 @@ test("AddonsPanel renders active workspace panels as vertical sidebar tabs", () 
         assert.ok(rightColumn);
 
         // Sidebar is visible in active workspace mode
-        assert.strictEqual(leftColumn.style.display, "flex");
-        assert.strictEqual(rightColumn.style.paddingLeft, "12px");
+        assert.strictEqual(leftColumn?.style.display, "flex");
+        assert.strictEqual(rightColumn?.style.paddingLeft, "12px");
 
-        // Back button is rendered
-        const backBtn = findFirstByAttribute(root, "data-molsysviewer-addon-back-button", "true");
-        assert.ok(backBtn);
-        assert.strictEqual(backBtn.textContent, "← Back to Add-ons");
+        // Catalog workspace tab acts as the back button
+        const catalogTab = findFirstByAttribute(root, "data-molsysviewer-addon-workspace-tab", "core");
+        assert.ok(catalogTab);
+        assert.strictEqual(findFirstText(catalogTab), "⚙ Settings");
 
-        // Back button triggers select core
-        backBtn.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        // Clicking Catalog triggers select core workspace
+        catalogTab.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(selectedWorkspace, "core");
 
-        // Workspace panel tabs are rendered (excluding shell control tabs navigate & addons)
-        const tabs = collectByAttribute(root, "data-molsysviewer-addon-section-tab");
+        // Workspace panel tabs are rendered horizontally (excluding shell control tabs navigate & addons)
+        const tabs = collectByAttribute(root, "data-molsysviewer-addon-panel-tab");
         assert.strictEqual(tabs.length, 2);
-        assert.strictEqual(tabs[0].getAttribute("data-molsysviewer-addon-section-tab"), "topo");
-        assert.strictEqual(tabs[1].getAttribute("data-molsysviewer-addon-section-tab"), "channels");
+        assert.strictEqual(tabs[0].getAttribute("data-molsysviewer-addon-panel-tab"), "topo");
+        assert.strictEqual(tabs[1].getAttribute("data-molsysviewer-addon-panel-tab"), "channels");
 
-        // Highlight active tab
-        assert.ok(tabs[0].style.borderLeft);
-        assert.ok(!tabs[1].style.borderLeft);
+        // Active tab has the underline child element, inactive does not
+        assert.strictEqual(tabs[0].children.length, 1);
+        assert.strictEqual(tabs[1].children.length, 0);
 
         // Tab click triggers callback
         tabs[1].dispatch("click", { preventDefault() {}, stopPropagation() {} });

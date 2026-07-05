@@ -46,6 +46,8 @@ type AddonRuntimeSummary = {
     contextActionTitles: string[];
     exportHelperTitles: string[];
     active?: boolean;
+    enabled?: boolean;
+    description?: string;
 };
 type WorkspaceRuntime = {
     id: string;
@@ -859,7 +861,7 @@ export class MolSysViewerController {
         let sharedShell: FloatingPanelShell | undefined = undefined;
         if (floatingUnified) {
             sharedShell = new FloatingPanelShell(host, { 
-                title: "Navigate", 
+                title: "Studio", 
                 panelModeStyle: initOptions?.panelModeStyle,
                 onPanelPopClick: initOptions?.onPanelPopClick,
                 isPanelOnly: this.isPanelOnly,
@@ -949,14 +951,27 @@ export class MolSysViewerController {
                 action,
                 ...details,
             });
-        }, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
-        this.addonsPanel = new AddonsPanel(host, sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : undefined));
+        }, { sharedShell, floating: floatingPanels, model: this.model });
+        const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
+        addonsOptions.model = this.model;
+        addonsOptions.onAction = (action: string, details: any) => {
+            emitInteractionEvent({
+                event: "interaction_context_action",
+                action,
+                ...details,
+            });
+        };
+        this.addonsPanel = new AddonsPanel(host, addonsOptions);
         if (this.isPanelOnly) {
             this.groupPanel.setExpanded(true);
         }
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("navigate", expanded);
+        });
+        this.groupPanel.setOnNavigateToSettings(() => {
+            this.setPanelMode("addons", true);
+            this.selectWorkspace("core");
         });
         this.addonsPanel.setOnExpandedChange((expanded) => {
             this.handlePanelExpansionChanged("addons", expanded);
@@ -1521,8 +1536,8 @@ export class MolSysViewerController {
         this.emitPanelModeState();
     }
 
-    private setPanelMode(panel?: "navigate" | "addons" | null, expanded?: boolean): void {
-        if (panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
+    private setPanelMode(panel?: "navigate" | "addons" | null, expanded?: boolean, skipToggleCore = false): void {
+        if (!skipToggleCore && panel === "addons" && this.currentWorkspace !== "core" && this.lastPanelMode === "addons" && this.addonsPanel.isExpanded()) {
             this.selectWorkspace("core");
         }
 
@@ -1588,7 +1603,7 @@ export class MolSysViewerController {
             }, "Add-ons");
             this.addonsPanel.setOnNavigateToNavigate(() => {
                 this.setPanelMode("navigate", true);
-            }, "Navigate");
+            }, "Studio");
         } else {
             this.groupPanel.setRuntimeVisible(false);
             this.groupPanel.setOnNavigateToWorkbench(undefined);
@@ -1605,66 +1620,59 @@ export class MolSysViewerController {
             this.selectWorkspace(workspaceId);
         });
 
-        if (this.currentWorkspace === "core") {
-            if (this.sharedShell) {
-                const activeMode = this.lastPanelMode;
-                this.sharedShell.setOnSelectPanel((panelId) => {
-                    if (panelId === "navigate" || panelId === "addons") {
-                        this.setPanelMode(panelId, true);
-                        this.refreshPanelWorkspaceChrome();
-                    }
-                });
-                this.sharedShell.setPanelOptions([
-                    { id: "navigate", title: "Navigate", active: activeMode === "navigate" },
-                    { id: "addons", title: "Add-ons", active: activeMode === "addons" },
-                ]);
-            }
-            this.groupPanel.setPanelStack([
-                { id: "navigate", title: "Navigate", active: true },
-                { id: "addons", title: "Add-ons" },
-            ], (panelId) => {
-                if (panelId === "addons") this.setPanelMode("addons", true);
-            });
-            this.addonsPanel.setWorkspacePanels(
-                [
-                    { id: "navigate", title: "Navigate" },
-                    { id: "addons", title: "Add-ons", active: true },
-                ],
-                (panelId) => {
-                    if (panelId === "navigate") this.setPanelMode("navigate", true);
-                },
-            );
-            return;
-        }
-
-        this.groupPanel.setPanelStack([], undefined);
-        const panels = this.getWorkspacePanels(this.currentWorkspace);
-        const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+        const activeMode = this.lastPanelMode;
         if (this.sharedShell) {
             this.sharedShell.setOnSelectPanel((panelId) => {
-                this.selectWorkspacePanel(this.currentWorkspace, panelId);
+                if (panelId === "navigate" || panelId === "addons") {
+                    if (panelId === "navigate" && this.currentWorkspace !== "core") {
+                        this.selectWorkspace("core");
+                    }
+                    this.setPanelMode(panelId, true);
+                    this.refreshPanelWorkspaceChrome();
+                }
             });
-            this.sharedShell.setPanelOptions(
+            this.sharedShell.setPanelOptions([
+                { id: "navigate", title: "Studio", active: activeMode === "navigate" },
+                { id: "addons", title: "Add-ons", active: activeMode === "addons" },
+            ]);
+        }
+
+        this.groupPanel.setPanelStack([
+            { id: "navigate", title: "Studio", active: true },
+            { id: "addons", title: "Add-ons", active: false },
+        ], (panelId) => {
+            if (panelId === "addons") this.setPanelMode("addons", true);
+        });
+
+        this.addonsPanel.setPanelStack([
+            { id: "navigate", title: "Studio", active: false },
+            { id: "addons", title: "Add-ons", active: true },
+        ], (panelId) => {
+            if (panelId === "navigate") {
+                this.selectWorkspace("core");
+                this.setPanelMode("navigate", true);
+            }
+        });
+
+        if (this.currentWorkspace !== "core") {
+            const panels = this.getWorkspacePanels(this.currentWorkspace);
+            const selectedId = this.ensureWorkspacePanelSelection(this.currentWorkspace);
+            this.addonsPanel.setWorkspacePanels(
                 panels.map((item) => ({
                     id: item.id,
                     title: item.title,
+                    description: item.description,
+                    entry: item.entry,
+                    addon: item.addon,
                     active: item.id === selectedId,
-                }))
+                })),
+                (panelId) => {
+                    this.selectWorkspacePanel(this.currentWorkspace, panelId);
+                },
             );
+        } else {
+            this.addonsPanel.setWorkspacePanels([], undefined);
         }
-        this.addonsPanel.setWorkspacePanels(
-            panels.map((item) => ({
-                id: item.id,
-                title: item.title,
-                description: item.description,
-                entry: item.entry,
-                addon: item.addon,
-                active: item.id === selectedId,
-            })),
-            (panelId) => {
-                this.selectWorkspacePanel(this.currentWorkspace, panelId);
-            },
-        );
     }
 
     private openContextMenuForItem(
@@ -2191,7 +2199,7 @@ export class MolSysViewerController {
                     if (!mAddon || !mPanel || !mEsm) break;
                     const mKey = `${mAddon}:${mPanel}`;
                     if (this.activePanelWidgetKey === mKey) break; // already mounted
-                    this.cleanupActivePanelWidget();
+                    this.cleanupActivePanelWidget(true);
                     const el = document.createElement("div");
                     Object.assign(el.style, { display: "flex", flexDirection: "column", gap: "8px", width: "100%" });
                     let styleEl: HTMLStyleElement | null = null;
@@ -2953,18 +2961,45 @@ export class MolSysViewerController {
     }
 
     private buildAddonRuntimeSummary(msg: any): AddonRuntimeSummary[] {
-        const names: string[] = Array.isArray(msg?.addons)
-            ? msg.addons.filter((value: unknown): value is string => typeof value === "string")
-            : [];
+        const records = Array.isArray(msg?.addon_records) ? msg.addon_records : [];
         const workspaceSpecs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
         const panelSpecs = Array.isArray(msg?.panel_specs) ? msg.panel_specs : [];
         const workbenchSections = Array.isArray(msg?.addon_sections) ? msg.addon_sections : [];
         const contextActionSpecs = Array.isArray(msg?.context_action_specs) ? msg.context_action_specs : [];
         const exportHelperSpecs = Array.isArray(msg?.export_helper_specs) ? msg.export_helper_specs : [];
 
+        if (records.length > 0) {
+            return records.map((rec: any) => ({
+                name: rec.name,
+                enabled: rec.enabled !== false,
+                description: rec.description || "",
+                workspaceTitles: workspaceSpecs
+                    .filter((item: any) => item?.addon === rec.name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                panelTitles: panelSpecs
+                    .filter((item: any) => item?.addon === rec.name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                workbenchTitles: workbenchSections
+                    .filter((item: any) => item?.addon === rec.name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                contextActionTitles: contextActionSpecs
+                    .filter((item: any) => item?.addon === rec.name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+                exportHelperTitles: exportHelperSpecs
+                    .filter((item: any) => item?.addon === rec.name && typeof item?.title === "string")
+                    .map((item: any) => item.title as string),
+            })).sort((left, right) => left.name.localeCompare(right.name));
+        }
+
+        const names: string[] = Array.isArray(msg?.addons)
+            ? msg.addons.filter((value: unknown): value is string => typeof value === "string")
+            : [];
+
         return names
             .map((name) => ({
                 name,
+                enabled: true,
+                description: "",
                 workspaceTitles: workspaceSpecs
                     .filter((item: any) => item?.addon === name && typeof item?.title === "string")
                     .map((item: any) => item.title as string),
@@ -3058,7 +3093,7 @@ export class MolSysViewerController {
 
     private getWorkspaceOptions(): WorkspaceRuntime[] {
         const options: WorkspaceRuntime[] = [
-            { id: "core", title: "Core", subtitle: "Navigate + Workbench" },
+            { id: "core", title: "Core", subtitle: "Studio + Workbench" },
         ];
 
         for (const workspace of this.addonWorkspaces) {
@@ -3108,7 +3143,7 @@ export class MolSysViewerController {
         return next;
     }
 
-    private cleanupActivePanelWidget(): void {
+    private cleanupActivePanelWidget(preserveWorkspaceChrome = false): void {
         if (this.activePanelWidgetKey) {
             const parts = this.activePanelWidgetKey.split(":");
             if (parts.length > 0) {
@@ -3122,7 +3157,11 @@ export class MolSysViewerController {
         }
         this.activePanelMsgListeners = [];
         this.activePanelWidgetKey = null;
-        this.addonsPanel.unmountAddonWidget();
+        if (preserveWorkspaceChrome) {
+            this.addonsPanel.unmountAddonWidgetOnly();
+        } else {
+            this.addonsPanel.unmountAddonWidget();
+        }
     }
 
     private selectWorkspacePanel(workspaceId: string, panelId: string): void {
@@ -3135,7 +3174,7 @@ export class MolSysViewerController {
             const prevPanel = panels.find((item) => item.id === prevPanelId);
             if (prevPanel?.widget_class) {
                 this.notify?.({ event: "panel_unmount", addon: prevPanel.addon, panel: prevPanelId });
-                this.cleanupActivePanelWidget();
+                this.cleanupActivePanelWidget(true);
             }
         }
 
@@ -3554,7 +3593,7 @@ export class MolSysViewerController {
                     this.notify?.({ event: "panel_navigate", addon: selectedPanel.addon, panel: selectedPanelId });
                 }
             }
-            this.setPanelMode("addons", true);
+            this.setPanelMode("addons", true, true);
             this.emitPanelModeState();
             return;
         }

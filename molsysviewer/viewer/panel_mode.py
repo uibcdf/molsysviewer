@@ -362,6 +362,7 @@ class PanelModeMixin:
         return {
             "op": "set_addon_runtime_summary",
             "addons": addon_names,
+            "addon_records": self.addons.records(skip_digestion=True),
             "workspace_specs": workspace_specs,
             "panel_specs": panel_specs,
             "addon_sections": addon_sections,

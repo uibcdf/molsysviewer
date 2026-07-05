@@ -117,6 +117,12 @@ These are valuable, but not the next move:
 - full Mol* incremental architecture rewrite
 - performance/engine expansion before the feature surface is mature
 
+## Post-1.0 Goals
+
+These are planned for subsequent major releases after the stable 1.0 release:
+
+- **GUI-driven Movie Editor**: An interactive movie maker interface inside the Studio panel to control keyframes, transitions, and export video files (MP4/GIF) directly from the browser canvas.
+
 ## Immediate Next Step
 
 The immediate direction is:

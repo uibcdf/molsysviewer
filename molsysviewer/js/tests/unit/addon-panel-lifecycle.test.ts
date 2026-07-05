@@ -76,6 +76,9 @@ test("addon panel render cleanup runs before widget host unmount", async () => {
             unmountAddonWidget() {
                 events.push("unmount");
             },
+            unmountAddonWidgetOnly() {
+                events.push("unmount_only");
+            },
         };
 
         await controller.handleMessage({

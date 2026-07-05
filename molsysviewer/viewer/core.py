@@ -587,6 +587,37 @@ class MolSysView(
                     )
                     self._sync_addons_runtime()
                     return
+                if action == "addon_enable":
+                    name = content.get("name")
+                    if isinstance(name, str) and name.strip():
+                        self.addons.enable(name.strip())
+                        self._sync_addons_runtime()
+                    return
+                elif action == "addon_disable":
+                    name = content.get("name")
+                    if isinstance(name, str) and name.strip():
+                        self.addons.disable(name.strip())
+                        self._sync_addons_runtime()
+                    return
+                elif action == "addon_rescan":
+                    try:
+                        self.addons._host.discover(include_known_modules=True)
+                    except Exception:
+                        pass
+                    self._sync_addons_runtime()
+                    return
+                elif action == "addon_register_module":
+                    name = content.get("name")
+                    if isinstance(name, str) and name.strip():
+                        name_stripped = name.strip()
+                        try:
+                            addon = self.addons._host.register_module(name_stripped)
+                            self.addons.enable(addon.name)
+                        except Exception as exc:
+                            self.addons._host._record_discovery_failure(name_stripped, exc)
+                        self._sync_addons_runtime()
+                    return
+
                 if action == "create_region_from_selection":
                     raw_tag = content.get("tag")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
@@ -621,6 +652,20 @@ class MolSysView(
                     if region is None:
                         raise ValueError(f"No region found with tag {tag!r}.")
                     region.rename(new_tag.strip(), skip_digestion=True)
+                elif action == "set_region_representation":
+                    tag = content.get("tag")
+                    repr_type = content.get("representation")
+                    params = content.get("params")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("set_region_representation requires non-empty tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    region.set_representation(
+                        representation=repr_type,
+                        skip_digestion=True,
+                        **(params if isinstance(params, dict) else {})
+                    )
                 elif action == "create_section_from_selection":
                     atom_indices = list(self.active_selection.atom_indices)
                     if len(atom_indices) == 0:
@@ -909,6 +954,8 @@ class MolSysView(
             panel_id = content.get("panel")
             if isinstance(addon_name, str) and isinstance(panel_id, str):
                 self._mount_addon_panel(addon_name.strip(), panel_id.strip())
+            else:
+                self._unmount_addon_panel()
         elif event == "panel_unmount":
             self._unmount_addon_panel()
         elif event == "addon_panel_action":

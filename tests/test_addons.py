@@ -1058,6 +1058,50 @@ def test_view_handles_frontend_addon_context_action_event():
     addons.clear()
 
 
+def test_view_handles_addon_manager_context_actions():
+    addons.clear()
+    addons.register(
+        AddonSpec(
+            name="topomt",
+        )
+    )
+    view = MolSysView(debug_js=True)
+    assert view.addons.is_enabled("topomt") is True
+
+    # Test addon_disable
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_disable",
+        "name": "topomt",
+    })
+    assert view.addons.is_enabled("topomt") is False
+
+    # Test addon_enable
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_enable",
+        "name": "topomt",
+    })
+    assert view.addons.is_enabled("topomt") is True
+
+    # Test addon_rescan
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_rescan",
+    })
+
+    # Test addon_register_module with a failing import (recorded failure)
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_register_module",
+        "name": "non_existent_addon_module_test",
+    })
+    failures = view.addons.discovery_failures()
+    assert any(f["source"] == "non_existent_addon_module_test" for f in failures)
+
+    addons.clear()
+
+
 def test_view_addons_sync_runtime_summary_message():
     addons.clear()
     view = MolSysView()

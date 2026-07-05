@@ -240,7 +240,7 @@ def _host_info_message(current_state: dict[str, Any], html_path: str) -> str:
         "  Ctrl+N  New Empty Host\n"
         "  Ctrl+O  Open File\n"
         "  Ctrl+R  Restore Last Source\n"
-        "  Ctrl+1  Navigate\n"
+        "  Ctrl+1  Studio\n"
         "  Ctrl+2  Add-ons\n"
         "  Escape  Close Panel Mode\n"
         "  Ctrl+Shift+S  Export HTML\n"
