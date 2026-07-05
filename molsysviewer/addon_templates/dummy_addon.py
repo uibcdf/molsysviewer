@@ -1,4 +1,5 @@
-"""Dummy reference add-on for testing and illustrating extension capabilities."""
+from dataclasses import dataclass, field
+from typing import Any
 
 from molsysviewer.addons import (
     AddonContextActionSpec,
@@ -11,6 +12,57 @@ from molsysviewer.addons import (
     AddonWorkspaceSpec,
     AddonPanelWidget,
 )
+
+
+@dataclass
+class DummyAddonRuntime:
+    enabled: bool = False
+    workspace: str = "dummy"
+    panels: list[str] = field(default_factory=lambda: ["main", "secondary"])
+    sections: list[str] = field(default_factory=lambda: ["interactive", "inputs", "status", "secondary_overview", "secondary_details"])
+    context_actions: list[str] = field(default_factory=lambda: ["focus-dummy", "inspect-dummy"])
+    export_helpers: list[str] = field(default_factory=lambda: ["dummy-export"])
+    last_context_action: dict[str, Any] | None = None
+
+    def __getitem__(self, key: str) -> Any:
+        return getattr(self, key)
+
+
+def create_dummy_state(view: Any) -> DummyAddonRuntime:
+    runtime = getattr(view, "_dummy_addon_runtime", None)
+    if isinstance(runtime, DummyAddonRuntime):
+        return runtime
+    state = DummyAddonRuntime()
+    try:
+        view._dummy_addon_runtime = state
+    except Exception:
+        pass
+    return state
+
+
+def ensure_runtime(view: Any) -> DummyAddonRuntime:
+    addons = getattr(view, "addons", None)
+    if addons is not None:
+        try:
+            namespace = getattr(addons, "dummy", None)
+        except Exception:
+            namespace = None
+        if isinstance(namespace, DummyAddonRuntime):
+            try:
+                view._dummy_addon_runtime = namespace
+            except Exception:
+                pass
+            return namespace
+
+    runtime = getattr(view, "_dummy_addon_runtime", None)
+    if not isinstance(runtime, DummyAddonRuntime):
+        runtime = DummyAddonRuntime()
+        try:
+            view._dummy_addon_runtime = runtime
+        except Exception:
+            pass
+    return runtime
+
 
 
 class DummyMainPanelWidget(AddonPanelWidget):
@@ -29,7 +81,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 1: Interactive Utilities -->
-                <div data-molsysviewer-addon-section="dummy-addon:interactive" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div data-molsysviewer-addon-section="dummy:interactive" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
                         Interactive Counter
                     </div>
@@ -54,7 +106,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 2: Input & State Sync -->
-                <div data-molsysviewer-addon-section="dummy-addon:inputs" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div data-molsysviewer-addon-section="dummy:inputs" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
                         Controls & Sync
                     </div>
@@ -82,7 +134,7 @@ class DummyMainPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 3: Property Monitor Table -->
-                <div data-molsysviewer-addon-section="dummy-addon:status" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div data-molsysviewer-addon-section="dummy:status" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center;">
                         <span>Status & Properties</span>
                         <span style="background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 600;">ACTIVE</span>
@@ -172,7 +224,7 @@ class DummySecondaryPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 1: Overview -->
-                <div data-molsysviewer-addon-section="dummy-addon:secondary_overview" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div data-molsysviewer-addon-section="dummy:secondary_overview" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
                         Workspace Overview
                     </div>
@@ -185,7 +237,7 @@ class DummySecondaryPanelWidget(AddonPanelWidget):
                 </div>
 
                 <!-- Section 2: Details -->
-                <div data-molsysviewer-addon-section="dummy-addon:secondary_details" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div data-molsysviewer-addon-section="dummy:secondary_details" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(244,244,245,0.4); letter-spacing: 0.05em;">
                         Workspace Details
                     </div>
@@ -214,9 +266,10 @@ class DummySecondaryPanelWidget(AddonPanelWidget):
 
 
 addon = AddonSpec(
-    name="dummy-addon",
-    package="molsysviewer-dummy-addon",
+    name="dummy",
+    package="molsysviewer-dummy",
     version="0.1.0",
+    state_factory=create_dummy_state,
     description="Dummy reference add-on for testing and illustrating extension capabilities.",
     workspaces=(
         AddonWorkspaceSpec(
@@ -331,26 +384,18 @@ def on_enable(view) -> None:
     """Reference hook for per-view initialization."""
     view._dummy_addon_enabled = True
     view._dummy_addon_events = getattr(view, "_dummy_addon_events", [])
-    view._dummy_addon_events.append(("enable", "dummy-addon"))
-    view._dummy_addon_runtime = {
-        "enabled": True,
-        "workspace": "dummy",
-        "panels": ["main", "secondary"],
-        "sections": ["interactive", "inputs", "status", "secondary_overview", "secondary_details"],
-        "context_actions": ["focus-dummy", "inspect-dummy"],
-        "export_helpers": ["dummy-export"],
-        "last_context_action": None,
-    }
+    view._dummy_addon_events.append(("enable", "dummy"))
+    runtime = ensure_runtime(view)
+    runtime.enabled = True
 
 
 def on_disable(view) -> None:
     """Reference hook for per-view teardown."""
     view._dummy_addon_enabled = False
     view._dummy_addon_events = getattr(view, "_dummy_addon_events", [])
-    view._dummy_addon_events.append(("disable", "dummy-addon"))
-    runtime = getattr(view, "_dummy_addon_runtime", None)
-    if isinstance(runtime, dict):
-        runtime["enabled"] = False
+    view._dummy_addon_events.append(("disable", "dummy"))
+    runtime = ensure_runtime(view)
+    runtime.enabled = False
 
 
 def on_context_action(view, action_id: str, payload: dict) -> None:
@@ -361,12 +406,11 @@ def on_context_action(view, action_id: str, payload: dict) -> None:
     }
     view._dummy_addon_events = getattr(view, "_dummy_addon_events", [])
     view._dummy_addon_events.append(("context", action_id))
-    runtime = getattr(view, "_dummy_addon_runtime", None)
-    if isinstance(runtime, dict):
-        runtime["last_context_action"] = {
-            "action_id": action_id,
-            "payload": payload,
-        }
+    runtime = ensure_runtime(view)
+    runtime.last_context_action = {
+        "action_id": action_id,
+        "payload": payload,
+    }
 
 
 lifecycle = AddonLifecycleSpec(

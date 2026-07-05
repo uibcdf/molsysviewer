@@ -620,16 +620,16 @@ def test_addon_template_module_is_importable_and_registerable():
     addons.clear()
     try:
         addon = addons.register_module("molsysviewer.addon_templates.dummy_addon")
-        assert addon.name == "dummy-addon"
-        assert addons.available() == ["dummy-addon"]
+        assert addon.name == "dummy"
+        assert addons.available() == ["dummy"]
         assert addons.workspace_specs()[0]["id"] == "dummy"
         assert [item["id"] for item in addons.panel_specs()] == ["main", "secondary"]
         assert [item["id"] for item in addons.context_action_specs()] == ["focus-dummy", "inspect-dummy"]
         assert [item["id"] for item in addons.addon_section_specs()] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
         assert addons.shape_provider_specs()[0]["id"] == "dummy-shape"
         assert addons.export_helper_specs()[0]["id"] == "dummy-export"
-        assert addons.lifecycle_for("dummy-addon") is not None
-        assert addons.lifecycle_for("dummy-addon").info() == {
+        assert addons.lifecycle_for("dummy") is not None
+        assert addons.lifecycle_for("dummy").info() == {
             "has_on_enable": True,
             "has_on_disable": True,
             "has_on_context_action": True,
@@ -669,7 +669,8 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
         view = MolSysView(debug_js=True)
 
         assert view._dummy_addon_enabled is True
-        assert ("enable", "dummy-addon") in view._dummy_addon_events
+        assert ("enable", "dummy") in view._dummy_addon_events
+        assert view.addons.dummy.enabled is True
         assert view._dummy_addon_runtime["enabled"] is True
         assert view._dummy_addon_runtime["workspace"] == "dummy"
         assert view._dummy_addon_runtime["panels"] == ["main", "secondary"]
@@ -681,7 +682,7 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
             {
                 "event": "interaction_context_action",
                 "action": "addon_context_action",
-                "addon": "dummy-addon",
+                "addon": "dummy",
                 "addon_action_id": "focus-dummy",
                 "addon_action_title": "Focus Dummy",
                 "context": {"kind": "structure", "atom_indices": [1, 2, 3]},
@@ -689,14 +690,14 @@ def test_addon_template_module_has_visible_runtime_lifecycle_flow():
         )
 
         assert view._dummy_addon_last_context_action["action_id"] == "focus-dummy"
-        assert view._dummy_addon_last_context_action["payload"]["addon"] == "dummy-addon"
+        assert view._dummy_addon_last_context_action["payload"]["addon"] == "dummy"
         assert view._dummy_addon_runtime["last_context_action"]["action_id"] == "focus-dummy"
         assert ("context", "focus-dummy") in view._dummy_addon_events
 
-        view.addons.disable("dummy-addon")
+        view.addons.disable("dummy")
         assert view._dummy_addon_enabled is False
         assert view._dummy_addon_runtime["enabled"] is False
-        assert ("disable", "dummy-addon") in view._dummy_addon_events
+        assert ("disable", "dummy") in view._dummy_addon_events
     finally:
         addons.clear()
 
@@ -748,9 +749,9 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
     view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
     try:
         addons.register_module("molsysviewer.addon_templates.dummy_addon")
-        view.addons.enable("dummy-addon")
+        view.addons.enable("dummy")
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
-        assert addon_msg["addons"] == ["dummy-addon"]
+        assert addon_msg["addons"] == ["dummy"]
         assert [item["id"] for item in addon_msg["panel_specs"]] == ["main", "secondary"]
         assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-dummy", "inspect-dummy"]
         assert [item["id"] for item in addon_msg["addon_sections"]] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
@@ -769,8 +770,8 @@ def test_addon_templates_helper_lists_and_registers_reference_addons():
         assert addon_templates.resolve_reference_addon("minimal_dummy") == "molsysviewer.addon_templates.dummy_addon"
 
         addon = addon_templates.register_dummy_addon()
-        assert addon.name == "dummy-addon"
-        assert addons.available() == ["dummy-addon"]
+        assert addon.name == "dummy"
+        assert addons.available() == ["dummy"]
 
         addons.clear()
         addon = addon_templates.register_reference_addon("elasnetmt")
@@ -787,8 +788,8 @@ def test_addon_templates_helper_can_register_all_reference_addons():
     addons.clear()
     try:
         registered = addon_templates.register_all_reference_addons()
-        assert [item.name for item in registered] == ["dummy-addon", "elasnetmt-template"]
-        assert addons.available() == ["dummy-addon", "elasnetmt-template"]
+        assert [item.name for item in registered] == ["dummy", "elasnetmt-template"]
+        assert addons.available() == ["dummy", "elasnetmt-template"]
     finally:
         addons.clear()
 
@@ -797,7 +798,7 @@ def test_addon_templates_helper_can_build_reference_demo_view():
     addons.clear()
     try:
         view = addon_templates.build_reference_demo_view("dummy")
-        assert view.addons.enabled() == ["dummy-addon"]
+        assert view.addons.enabled() == ["dummy"]
         assert [item["id"] for item in view.addons.workspace_specs()] == ["dummy"]
         assert [item["id"] for item in view.addons.panel_specs()] == ["main", "secondary"]
         assert view._dummy_addon_enabled is True
