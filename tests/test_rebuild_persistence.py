@@ -5,6 +5,7 @@ import numpy as np
 pytest.importorskip("molsysmt")
 import molsysmt as msm
 from molsysviewer.demo import demo
+from _edit_helpers import apply_remove
 
 def test_rebuild_persistence_and_hierarchy():
     """Stress test for persistence of annotations, measurements, and selections after rebuild."""
@@ -29,7 +30,7 @@ def test_rebuild_persistence_and_hierarchy():
 
     # 3. Perform a structural modification: Remove the first 5 atoms
     # This triggers rebuild_view_from_current_molsys
-    view.remove(selection='atom_index < 5', skip_digestion=True)
+    apply_remove(view, selection='atom_index < 5')
     
     new_n_atoms = int(msm.get(view._molsys, element='atom', n_atoms=True))
     assert new_n_atoms == initial_n_atoms - 5

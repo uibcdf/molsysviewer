@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from molsysviewer import MolSysView
+from _edit_helpers import apply_remove
 
 
 # ---------------------------------------------------------------------------
@@ -168,7 +169,7 @@ def test_set_global_representation_survives_rebuild():
     before_ops = [m.get("op") for m in view._message_history]  # noqa: SLF001
     assert "set_global_representation" in before_ops
 
-    view.remove(selection="atom_index < 3", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 3")
 
     repr_msgs = [m for m in view._message_history if m.get("op") == "set_global_representation"]  # noqa: SLF001
     assert len(repr_msgs) >= 1, "set_global_representation must appear in replayed history"
@@ -182,7 +183,7 @@ def test_global_hidden_state_replayed_after_rebuild():
     view.whole.hide(skip_digestion=True)
     assert view._global_hidden is True  # noqa: SLF001
 
-    view.remove(selection="atom_index < 2", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 2")
 
     assert view._global_hidden is True  # noqa: SLF001
     hide_ops = [m for m in view._message_history if m.get("op") == "hide_global"]  # noqa: SLF001
@@ -197,7 +198,7 @@ def test_hidden_region_state_replayed_after_rebuild():
     region.hide(skip_digestion=True)
     assert region._hidden is True  # noqa: SLF001
 
-    view.remove(selection="atom_index < 3", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 3")
 
     rebuilt_region = view.regions.get("pocket")
     assert rebuilt_region is not None

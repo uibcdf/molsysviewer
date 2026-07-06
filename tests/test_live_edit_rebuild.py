@@ -4,11 +4,69 @@ import pytest
 import numpy as np
 
 pytest.importorskip("molsysmt")
+import molsysmt as msm
 from molsysmt.native import Structures
 
 from molsysviewer import MolSysView
 from molsysviewer.demo import demo
 from molsysviewer._pyunitwizard import puw
+
+from _edit_helpers import apply_add, apply_append_structures, apply_remove, apply_set
+
+
+def test_apply_system_edit_reconciles_external_molsysmt_edit():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="frag",
+        representation="sticks",
+        skip_digestion=True,
+    )
+    view.shapes.add_links(
+        atom_pairs=[[0, 1], [1, 2]],
+        tag="links",
+        skip_digestion=True,
+    )
+    view.hide(selection=[2], skip_digestion=True)
+
+    old_n_atoms = int(msm.get(view.molsys, element="system", n_atoms=True, skip_digestion=True))
+    removed = {0}
+    kept = [index for index in range(old_n_atoms) if index not in removed]
+    atom_index_map = {old: new for new, old in enumerate(kept)}
+    new_molsys = msm.remove(
+        view.molsys,
+        selection=[0],
+        to_form="molsysmt.MolSys",
+        skip_digestion=True,
+    )
+
+    view.apply_system_edit(new_molsys, atom_index_map=atom_index_map)
+
+    assert view.molsys is new_molsys
+    assert view.regions["frag"].atom_indices == (0, 1)
+    assert view.atom_mask is not None
+    assert len(view.atom_mask) == 21
+    assert bool(view.atom_mask[0]) is True
+    assert bool(view.atom_mask[1]) is False
+
+    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
+    assert len(payload_msg["payload"]["atoms"]["atom_id"]) == 21
+
+    links_msg = next(
+        msg
+        for msg in view._message_history
+        if msg.get("op") == "add_network_links" and msg.get("options", {}).get("tag") == "links"
+    )
+    assert links_msg["options"]["atom_pairs"] == [[0, 1]]
+
+
+def test_apply_system_edit_requires_molecular_system():
+    view = demo["dialanine"]
+
+    with pytest.raises(ValueError, match="requires a molecular system"):
+        view.apply_system_edit(None)
 
 
 def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures():
@@ -30,7 +88,7 @@ def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures(
     )
     pocket_layer.hide(skip_digestion=True)
 
-    view.append_structures(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+    apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
 
     assert view.regions["frag"].atom_indices == (0, 1, 2)
     assert view.atom_mask is not None
@@ -156,7 +214,7 @@ def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
     )
     pocket_layer.hide(skip_digestion=True)
 
-    view.add(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
+    apply_add(view, demo["dialanine"]._molsys)  # noqa: SLF001
 
     assert view.regions["frag"].atom_indices == (0, 1, 2)
     assert view.atom_mask is not None
@@ -209,7 +267,7 @@ def test_set_rebuild_updates_group_name_and_preserves_hidden_state():
     )
     pocket_layer.hide(skip_digestion=True)
 
-    view.set(element="group", selection=[0], group_name="ACE2", skip_digestion=True)
+    apply_set(view, element="group", selection=[0], group_name="ACE2")
 
     assert view.regions["frag"].atom_indices == (0, 1, 2)
 
@@ -235,11 +293,11 @@ def test_set_rebuild_updates_coordinates_with_quantity():
     original_payload = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
     original_first = original_payload["payload"]["structures"][0]["coordinates"][0]
 
-    view.set(
+    apply_set(
+        view,
         element="atom",
         selection=[0],
         coordinates=puw.quantity([[[0.1, 0.2, 0.3]]], "nm"),
-        skip_digestion=True,
     )
 
     payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
@@ -303,7 +361,7 @@ def test_add_updates_load_blocks_without_creating_automatic_regions():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.load(demo["dialanine"]._molsys, label="first", skip_digestion=True)  # noqa: SLF001
-    view.add(demo["dialanine"]._molsys, label="second", skip_digestion=True)  # noqa: SLF001
+    apply_add(view, demo["dialanine"]._molsys, label="second")  # noqa: SLF001
 
     assert list(view.regions) == []
     assert len(view._load_blocks) == 2  # noqa: SLF001
@@ -334,9 +392,9 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     )
     pocket_layer.hide(skip_digestion=True)
 
-    view.set(element="group", selection=[0], group_name="ACE2", skip_digestion=True)
-    view.append_structures(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
-    view.remove(selection=[0], skip_digestion=True)
+    apply_set(view, element="group", selection=[0], group_name="ACE2")
+    apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
+    apply_remove(view, selection=[0])
 
     ops = [msg.get("op") for msg in view._message_history]
     assert ops == [
@@ -381,7 +439,7 @@ def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
     view.annotations.add_annotation(text="orphan", atom_indices=[0], tag="orphan-label", skip_digestion=True)
     view.measurements.add_distance([0], [1], tag="orphan-distance", skip_digestion=True)
 
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     assert "orphan-region" not in list(view.regions)
     assert "orphan-shape" not in view.shapes.tags(skip_digestion=True)
@@ -419,9 +477,9 @@ def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
     )
     pocket_layer.hide(skip_digestion=True)
 
-    view.set(element="group", selection=[0], group_name="ACE2", skip_digestion=True)
-    view.append_structures(demo["dialanine"]._molsys, skip_digestion=True)  # noqa: SLF001
-    view.remove(selection=[0], skip_digestion=True)
+    apply_set(view, element="group", selection=[0], group_name="ACE2")
+    apply_append_structures(view, demo["dialanine"]._molsys)  # noqa: SLF001
+    apply_remove(view, selection=[0])
 
     exported = view._clean_message_history()  # noqa: SLF001
 
@@ -487,7 +545,7 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     view.hide(selection=[2], skip_digestion=True)
     view.whole.hide(skip_digestion=True)
 
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     assert view.regions["frag"].atom_indices == (0, 1)
     assert view.atom_mask is not None
@@ -561,7 +619,7 @@ def test_remove_rebuild_remaps_and_replays_per_atom_colors():
     )
     original_colors = dict(view._atom_color_map)  # noqa: SLF001
 
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     expected_colors = {
         old_index - 1: color
@@ -591,7 +649,7 @@ def test_remove_rebuild_remaps_dynamic_shape_frame_indices():
         skip_digestion=True,
     )
 
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     sphere_msg = next(
         msg
@@ -618,7 +676,7 @@ def test_remove_rebuild_drops_dynamic_shape_when_all_frames_are_orphaned():
         skip_digestion=True,
     )
 
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     assert not any(
         msg.get("op") == "add_sphere" and msg.get("options", {}).get("tag") == "orphan-site"

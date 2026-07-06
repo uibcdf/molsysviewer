@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import molsysmt as msm
-import pytest
 
 from molsysviewer import MolSysView, demo, tools
 
@@ -28,21 +27,6 @@ def test_tools_basic_concatenate_structures_accepts_molecular_systems():
 
     assert isinstance(result, MolSysView)
     assert msm.get(result._molsys, element="system", n_structures=True, skip_digestion=True) == 2  # noqa: SLF001
-
-
-def test_tools_basic_query_wrappers_operate_on_view():
-    view = demo["dialanine"]
-
-    assert tools.select(view, selection=[0, 1, 2]) == [0, 1, 2]
-    assert tools.get(view, element="system", n_atoms=True) == 22
-    assert tools.contains(view, peptides=True) is True
-    assert tools.is_composed_of(view, n_molecules=1) is True
-    converted = tools.convert(view, to_form="molsysmt.MolSys")
-    assert msm.get(converted, element="system", n_atoms=True, skip_digestion=True) == 22
-
-    info = tools.info(view, element="group", selection=[0], source="molsys")
-    assert hasattr(info, "data")
-    assert info.data.shape[0] == 1
 
 
 def test_object_api_contains_extract_and_is_composed_of():
@@ -156,16 +140,6 @@ def test_tools_basic_copy_returns_independent_view_with_scene_state():
     assert result._global_hidden is True  # noqa: SLF001
 
 
-def test_tools_basic_compare_compares_loaded_molecular_systems_only():
-    view_a = demo["dialanine"]
-    view_b = demo["dialanine"]
-    view_c = tools.extract(view_b, selection=[0, 1, 2], debug_js=True)
-
-    assert tools.compare(view_a, view_b) is True
-    assert tools.compare(view_a, view_c) is False
-    assert tools.compare(view_a, view_c, output_type="dictionary", n_atoms=False)["n_atoms"] is True
-
-
 def test_tools_basic_merge_returns_new_view_from_multiple_views():
     view_a = demo["dialanine"]
     view_b = demo["dialanine"]
@@ -178,23 +152,6 @@ def test_tools_basic_merge_returns_new_view_from_multiple_views():
     assert msm.get(result._molsys, element="system", n_atoms=True, skip_digestion=True) == 44  # noqa: SLF001
 
 
-def test_tools_basic_live_edit_wrappers_delegate_to_view(monkeypatch):
-    monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
-
-    view = demo["dialanine"]
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
-
-    tools.set(view, element="group", selection=[0], group_name="ACE2")
-    payload_msg = next(msg for msg in view._message_history if msg.get("op") == "load_molsys_payload")
-    assert payload_msg["payload"]["atoms"]["residue_name"][:5] == ["ACE2"] * 5
-
-    tools.append_structures(view, demo["dialanine"]._molsys)
-    assert msm.get(view._molsys, element="system", n_structures=True, skip_digestion=True) == 2  # noqa: SLF001
-
-    tools.remove(view, selection=[0])
-    assert msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True) == 21  # noqa: SLF001
-
-
 def test_object_api_convert_delegates_to_current_molecular_system():
     view = demo["dialanine"]
 
@@ -202,14 +159,3 @@ def test_object_api_convert_delegates_to_current_molecular_system():
 
     assert msm.get(converted, element="system", n_atoms=True, skip_digestion=True) == 22
     assert msm.get(converted, element="system", n_structures=True, skip_digestion=True) == 1
-
-
-def test_tools_basic_add_wrapper_delegates_to_view(monkeypatch):
-    monkeypatch.setenv("NUMBA_CACHE_DIR", "/tmp/numba_cache")
-
-    view = demo["dialanine"]
-    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
-
-    tools.add(view, demo["dialanine"]._molsys)
-
-    assert msm.get(view._molsys, element="system", n_atoms=True, skip_digestion=True) == 44  # noqa: SLF001

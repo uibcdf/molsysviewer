@@ -148,7 +148,7 @@ test("ViewerContextMenu renders active selection section and selection actions",
         assert.ok(texts.includes("Save Selection"));
         assert.ok(texts.includes("Create Region from Selection"));
         assert.ok(texts.includes("Add Label from Selection"));
-        assert.ok(texts.includes("Remove Selected Atoms"));
+        assert.ok(!texts.includes("Remove Selected Atoms"));
         assert.ok(texts.includes("Clear Selection"));
 
         const targetButton = findNodeByText(root, "Focus Target");
@@ -200,16 +200,13 @@ test("ViewerContextMenu renders active selection section and selection actions",
     }
 });
 
-test("ViewerContextMenu renders remove action for active selection atoms", () => {
+test("ViewerContextMenu hides legacy remove action when MolSysMT addon item is available", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const actions: Array<{ action: string; target: any; details?: any }> = [];
         const notifications: any[] = [];
         const menu = new ViewerContextMenu(host, (msg) => {
             notifications.push(msg);
-        }, (action, target, details) => {
-            actions.push({ action, target, details });
         });
 
         const target = { event: "interaction_context_menu", kind: "structure" as const, atom_indices: [0, 1], group_name: "ALA", chain_name: "A" };
@@ -234,21 +231,39 @@ test("ViewerContextMenu renders remove action for active selection atoms", () =>
                 count_shapes: 0,
                 count_annotations: 0,
             },
+            null,
+            null,
+            null,
+            null,
+            [
+                {
+                    addon: "molsysmt",
+                    id: "remove-selected-atoms",
+                    title: "MolSysMT: remove selected atoms",
+                    group: "molsysmt",
+                    order: 5,
+                    enabled: true,
+                    target_kinds: ["structure"],
+                    payload: { atom_indices: [0, 1] },
+                },
+            ],
         );
 
         const root = (menu as any).root as FakeElement;
-        const button = findNodeByText(root, "Remove Selected Atoms");
-        assert.ok(button);
-        button!.dispatch("click");
+        assert.equal(findNodeByText(root, "Remove Selected Atoms"), null);
+        const addonButton = findNodeByText(root, "MolSysMT: remove selected atoms");
+        assert.ok(addonButton);
+        addonButton!.dispatch("click");
 
-        assert.deepStrictEqual(actions, [
-            { action: "remove_selection", target, details: {} },
-        ]);
         assert.deepStrictEqual(notifications, [
             {
                 event: "interaction_context_action",
-                action: "remove_selection",
+                action: "addon_context_action",
                 context: target,
+                addon: "molsysmt",
+                addon_action_id: "remove-selected-atoms",
+                addon_action_title: "MolSysMT: remove selected atoms",
+                addon_action_payload: { atom_indices: [0, 1] },
             },
         ]);
 
