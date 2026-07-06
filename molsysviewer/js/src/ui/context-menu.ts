@@ -364,9 +364,8 @@ export class ViewerContextMenu {
             section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
             section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
             section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
-            if (this.currentSelection.count_atoms > 0) {
-                section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
-            }
+            // "Remove Selected Atoms" is contributed by the MolSysMT addon as a
+            // context item (molecular editing is not a viewer-core action).
             section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
             this.scrollEl.appendChild(section);
         }
@@ -856,6 +855,15 @@ export class ViewerContextMenu {
             return { camera_forward };
         }
         return {};
+    }
+
+    private hasAddonContextItem(addon: string, id: string, target: ContextMenuTarget): boolean {
+        return this.currentAddonItems.some((item) => (
+            item.addon === addon
+            && item.id === id
+            && item.enabled !== false
+            && (!item.target_kinds || item.target_kinds.length === 0 || item.target_kinds.includes(target.kind))
+        ));
     }
 
     private makeAddonActionButton(addonAction: AddonContextActionSummary): HTMLButtonElement {

@@ -146320,9 +146320,6 @@ var ViewerContextMenu = class {
       section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
       section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
       section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
-      if (this.currentSelection.count_atoms > 0) {
-        section.appendChild(this.makeActionButton("Remove Selected Atoms", "remove_selection"));
-      }
       section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
       this.scrollEl.appendChild(section);
     }
@@ -146787,6 +146784,9 @@ var ViewerContextMenu = class {
       return { camera_forward };
     }
     return {};
+  }
+  hasAddonContextItem(addon, id, target) {
+    return this.currentAddonItems.some((item2) => item2.addon === addon && item2.id === id && item2.enabled !== false && (!item2.target_kinds || item2.target_kinds.length === 0 || item2.target_kinds.includes(target.kind)));
   }
   makeAddonActionButton(addonAction) {
     const button = document.createElement("button");

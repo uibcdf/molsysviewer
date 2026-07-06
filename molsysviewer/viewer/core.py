@@ -693,7 +693,21 @@ class MolSysView(
                     atom_indices = list(self.active_selection.atom_indices)
                     if len(atom_indices) == 0:
                         raise ValueError("remove_selection requires a non-empty active selection.")
-                    self.remove(selection=atom_indices, skip_digestion=True)
+                    # Molecular editing lives in the MolSysMT addon; core only dispatches.
+                    # If the addon is unavailable the action is a no-op (no core fallback).
+                    self.addons.handle_context_action(
+                        "molsysmt",
+                        "remove-selected-atoms",
+                        {
+                            "event": "interaction_context_action",
+                            "action": "remove_selection",
+                            "addon": "molsysmt",
+                            "addon_action_id": "remove-selected-atoms",
+                            "atom_indices": atom_indices,
+                            "context": content.get("context", {}),
+                        },
+                        skip_digestion=True,
+                    )
                     self.active_selection.clear(skip_digestion=True)
                 elif action == "activate_selection":
                     tag = content.get("tag")
@@ -1439,6 +1453,82 @@ class MolSysView(
             self._send_replay(msg)
 
         self._update_visibility_in_frontend()
+
+    @signal(tags=["edit"])
+    def apply_system_edit(
+        self,
+        new_molsys,
+        *,
+        atom_index_map: dict[int, int] | None = None,
+        label: str | None = None,
+        visible_atom_indices: list[int] | None = None,
+        load_blocks: str = "keep",
+        appended_n_atoms: int | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Replace the loaded molecular system and reconcile viewer state.
+
+        This is a low-level integration primitive for addons and advanced
+        callers. Molecular edit semantics belong to MolSysMT or an addon; this
+        method only applies the resulting system to the live viewer and remaps
+        viewer-owned state such as regions, selections, shapes, annotations,
+        measurements, visibility, per-atom colors, and the load-block accounting.
+
+        Parameters
+        ----------
+        new_molsys
+            Molecular system that should become the view's current system.
+        atom_index_map
+            Optional ``{old_atom_index: new_atom_index}`` map. Use ``None`` for
+            edits where atom identity and indices are unchanged.
+        label
+            Optional label for the rebuilt payload. Defaults to the current
+            view label.
+        visible_atom_indices
+            Optional list of visible atom indices in the pre-edit system. When
+            omitted, the current visibility state is captured before replacing
+            the system.
+        load_blocks
+            Load-block accounting policy after the edit: ``"keep"`` (default,
+            leave the blocks as-is, e.g. coordinate/attribute edits), ``"collapse"``
+            (one block for the current whole, e.g. after a removal), or
+            ``"append"`` (record a new block; requires ``appended_n_atoms``, e.g.
+            after an addition). Callers should not manage load blocks through
+            private helpers.
+        appended_n_atoms
+            Number of atoms appended by the edit; required when
+            ``load_blocks="append"``.
+        """
+        if new_molsys is None:
+            raise ValueError("apply_system_edit(...) requires a molecular system.")
+        if load_blocks not in ("keep", "collapse", "append"):
+            raise ValueError(
+                f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'."
+            )
+
+        visible = self.visible_atom_indices if visible_atom_indices is None else visible_atom_indices
+        effective_label = self._last_label if label is None else label
+        self._molsys = new_molsys
+        self.molecular_system = new_molsys
+        if label is not None:
+            self._last_label = label
+        self._rebuild_view_from_current_molsys(
+            label=effective_label,
+            atom_index_map=atom_index_map,
+            visible_atom_indices=visible,
+        )
+
+        # Reconcile load-block accounting so callers (view.add/remove and addons)
+        # do not have to touch the private load-block helpers.
+        if load_blocks == "collapse":
+            self._collapse_load_blocks_to_current_whole()
+        elif load_blocks == "append":
+            if appended_n_atoms is None:
+                raise ValueError("apply_system_edit(load_blocks='append') requires appended_n_atoms.")
+            if not self._load_blocks:
+                prior = max(int(self._molsys.get_n_atoms()) - int(appended_n_atoms), 0)
+                self._register_initial_load_block(n_atoms=prior, label=None)
+            self._append_load_block(n_atoms=int(appended_n_atoms), label=effective_label)
 
     def _local_structure_index_for_player(self) -> int:
         index = int(self._current_structure_index)

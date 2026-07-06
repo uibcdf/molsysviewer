@@ -15,7 +15,6 @@ def digest_output_type(output_type, caller=None):
     elif caller in {
         'molsysviewer.viewer.MolSysView.info',
         'molsysviewer.viewer.info',
-        'molsysviewer.tools.basic.info.info',
         'molsysviewer.regions.Region.info',
         'molsysviewer.regions.info',
     }:
@@ -30,7 +29,6 @@ def digest_output_type(output_type, caller=None):
         'molsysviewer.viewer.get',
         'molsysviewer.regions.Region.get',
         'molsysviewer.regions.get',
-        'molsysviewer.tools.basic.get.get',
     ]:
 
         if isinstance(output_type, str):

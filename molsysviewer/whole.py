@@ -155,26 +155,6 @@ class Whole:
             skip_digestion=True,
         )
 
-    @signal(tags=["edit", "whole"])
-    def append_structures(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Append structures to the underlying system (delegates to `MolSysView.append_structures`)."""
-        return self._view.append_structures(*args, skip_digestion=skip_digestion, **kwargs)
-
-    @signal(tags=["edit", "whole"])
-    def set(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Set attributes on the underlying system (delegates to `MolSysView.set`)."""
-        return self._view.set(*args, skip_digestion=skip_digestion, **kwargs)
-
-    @signal(tags=["edit", "whole"])
-    def add(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Add elements from another system (delegates to `MolSysView.add`)."""
-        return self._view.add(*args, skip_digestion=skip_digestion, **kwargs)
-
-    @signal(tags=["edit", "whole"])
-    def remove(self, *args: Any, skip_digestion: bool = False, **kwargs: Any):
-        """Remove atoms/structures from the system (delegates to `MolSysView.remove`)."""
-        return self._view.remove(*args, skip_digestion=skip_digestion, **kwargs)
-
     # --- Scalar colour mapping ---
 
     @signal(tags=["color", "whole"])
