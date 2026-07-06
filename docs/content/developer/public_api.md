@@ -35,23 +35,25 @@ Current scope clarification for `Style`:
 
 `molsysviewer.tools.basic` is now a public module. Current public helpers there include:
 
-- `select(...)`
-- `get(...)`
-- `info(...)`
 - `extract(...)`
-- `set(...)`
-- `remove(...)`
-- `add(...)`
-- `append_structures(...)`
-- `convert(...)`
-- `contains(...)`
-- `is_composed_of(...)`
 - `copy(...)`
-- `compare(...)`
 - `concatenate_structures(...)`
 - `merge(...)`
 
-`MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include, in addition to the older load/query/edit surface:
+Removed before 1.0:
+
+- `molsysviewer.tools.basic.{get, select, info, convert, contains, compare,
+  is_composed_of}`
+- `molsysviewer.tools.basic.{remove, add, set, append_structures}`
+- top-level `molsysviewer.tools.*` reexports for those removed functions
+- `view.{remove, add, set, append_structures}`
+- `view.whole.{remove, add, set, append_structures}`
+
+Pure molecular-system reads should use `molsysmt.*(view, ...)`. Live molecular
+edits on an existing viewer are provided by the MolSysMT addon namespace:
+`view.addons.molsysmt.basic.*`.
+
+`MolSysView` is also explicitly growing an inspection-oriented object API beyond the minimal viewer shell. Public user-facing methods now include:
 
 - `load(..., mode="add" | "replace" | "append_structures" | "auto", ...)`
   - current default is `mode="add"`
@@ -67,6 +69,13 @@ Current scope clarification for `Style`:
     - same atom count + no topology in the input -> `append_structures`
     - same atom count + matching topology -> `append_structures`
     - different atom count -> `add`
+- `apply_system_edit(new_molsys, atom_index_map=None, ...)`
+  - advanced integration primitive for add-ons and tooling
+  - replaces the view's molecular system and reconciles viewer-owned state
+    (regions, selections, visibility, colors, shapes, annotations,
+    measurements, layers, and index mappings)
+  - does not define molecular edit semantics; those belong to MolSysMT or an
+    add-on
 - `contains(...)`
 - `convert(...)`
 - `extract(...)`
@@ -130,8 +139,8 @@ Current scope clarification for `Style`:
   - `new_region(...)`
   - `add_label(...)` — deprecated alias for `annotations.add_label_from_active_selection(...)`
   - `save(...)`
-  - current canvas context-menu slice also supports destructive
-    `Remove Selected Atoms`, bridged through `view.remove(...)`
+  - canvas context-menu removal is contributed by the MolSysMT addon as
+    `remove-selected-atoms`; core does not own molecular-editing semantics
 - `view.selections`
   - `add(tag, *, atom_indices, items=None)` — direct-index shortcut, no MolSysMT lookup
   - `add_selection(tag, selection, *, element, mask, syntax)` — MolSysMT-based selection

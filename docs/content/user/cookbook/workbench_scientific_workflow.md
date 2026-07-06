@@ -163,8 +163,8 @@ Annotations and measurements created this way are not ephemeral overlays.
 They are:
 
 - **replay-safe**: stored in the message history and replayed by any export
-- **rebuild-safe**: atom indices are remapped correctly after `view.remove(...)` or
-  `view.append_structures(...)`
+- **rebuild-safe**: atom indices are remapped correctly after MolSysMT-addon
+  live edits or loader sugar such as `view.load(..., mode="append_structures")`
 - **panel-visible**: immediately reflected in Navigate GroupStrip badges and
   Workbench panel sections
 

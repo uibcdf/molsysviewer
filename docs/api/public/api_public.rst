@@ -22,6 +22,7 @@ MolSysView: core operations & loading
    :nosignatures:
 
    molsysviewer.MolSysView.load
+   molsysviewer.MolSysView.apply_system_edit
    molsysviewer.MolSysView.reset_viewer
    molsysviewer.MolSysView.zoom
    molsysviewer.MolSysView.focus_selection
@@ -45,8 +46,8 @@ MolSysView: trajectory navigation & playback
    molsysviewer.MolSysView.get_coordinates
    molsysviewer.MolSysView.set_coordinates
 
-MolSysView: query & live operations
------------------------------------
+MolSysView: query operations
+----------------------------
 
 .. autosummary::
    :toctree: autosummary
@@ -55,10 +56,6 @@ MolSysView: query & live operations
    molsysviewer.MolSysView.select
    molsysviewer.MolSysView.get
    molsysviewer.MolSysView.info
-   molsysviewer.MolSysView.append_structures
-   molsysviewer.MolSysView.set
-   molsysviewer.MolSysView.add
-   molsysviewer.MolSysView.remove
 
 MolSysView: state management & callbacks
 ----------------------------------------
