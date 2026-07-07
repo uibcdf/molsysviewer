@@ -361,11 +361,6 @@ class MeasurementsManager:
         if series_length <= 1:
             return 0
         index = int(getattr(self._view, "_current_structure_index", 0))
-        mapper = getattr(self._view, "_index_mapper", None)
-        if mapper is not None:
-            mapped = mapper.to_local_structure(index)
-            if mapped is not None:
-                index = int(mapped)
         return min(max(index, 0), series_length - 1)
 
     def _send_measurement(

@@ -45,13 +45,10 @@ class Region:
             return None
 
         if element == "bond":
-            local_sel = self.atom_indices
-            if self._view._index_mapper is not None:
-                local_sel = self._view._index_mapper.to_local_atoms(self.atom_indices)
             per_atom = msm.get(
                 self._view._molsys,  # noqa: SLF001
                 element="atom",
-                selection=list(local_sel),
+                selection=list(self.atom_indices),
                 output_type="values",
                 skip_digestion=True,
                 bond_index=True,
@@ -81,13 +78,10 @@ class Region:
             raise ValueError(f"Unsupported element level: {element!r}")
 
         atom_attribute = element_to_atom_attribute[element]
-        local_sel = self.atom_indices
-        if self._view._index_mapper is not None:
-            local_sel = self._view._index_mapper.to_local_atoms(self.atom_indices)
         values = msm.get(
             self._view._molsys,  # noqa: SLF001
             element="atom",
-            selection=list(local_sel),
+            selection=list(self.atom_indices),
             output_type="values",
             skip_digestion=True,
             **{atom_attribute: True},
@@ -240,16 +234,13 @@ class Region:
         self._view._send(msg)  # noqa: SLF001
 
     def _send_create(self) -> None:
-        local_atoms = None
+        atom_indices = None
         if self.atom_indices is not None:
-            if self._view._index_mapper is not None:
-                local_atoms = self._view._index_mapper.to_local_atoms(self.atom_indices)
-            else:
-                local_atoms = list(self.atom_indices)
+            atom_indices = list(self.atom_indices)
         self._send(
             "create_region",
             selection=self.selection,
-            atom_indices=local_atoms,
+            atom_indices=atom_indices,
             representation=self.representation,
             params=self.repr_params,
         )
@@ -549,20 +540,11 @@ class Region:
         import molsysmt as msm
         import numpy as np
 
-        local_sel = self.atom_indices
-        if self._view._index_mapper is not None:
-            local_sel = self._view._index_mapper.to_local_atoms(self.atom_indices)
-
-        mapped_structs = structure_indices
-        if self._view._index_mapper is not None:
-            if structure_indices not in ("all", None):
-                mapped_structs = self._view._index_mapper.to_local_structures(structure_indices)
-
         coords = msm.get(
             self._view._molsys,  # noqa: SLF001
             element="atom",
-            selection=list(local_sel),
-            structure_indices=mapped_structs,
+            selection=list(self.atom_indices),
+            structure_indices=structure_indices,
             coordinates=True,
             output_type="values",
             skip_digestion=True,

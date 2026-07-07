@@ -195,7 +195,7 @@ test("ActiveSelectionController supports annotation selections and mixes them wi
         entity_indices: [0],
         tag: "notes",
         text: "Catalytic",
-    }], true);
+    }], "add");
     controller.setItems([{
         source_kind: "element",
         element_level: "group",
@@ -207,7 +207,7 @@ test("ActiveSelectionController supports annotation selections and mixes them wi
         group_id: 2,
         chain_name: "A",
         entity_name: "1",
-    }], true);
+    }], "add");
 
     assert.deepStrictEqual(events, [
         {
@@ -359,6 +359,79 @@ test("ActiveSelectionController can rebuild a group-centric selection from atom 
         count_shapes: 0,
         count_annotations: 0,
     }]);
+});
+
+test("ActiveSelectionController supports explicit subtract and intersect operations", () => {
+    const events: any[] = [];
+    const controller = new ActiveSelectionController((msg) => events.push(msg));
+    const first = {
+        source_kind: "element" as const,
+        element_level: "group" as const,
+        atom_indices: [0, 1, 2],
+        group_indices: [0],
+        chain_indices: [0],
+        entity_indices: [0],
+        group_name: "ALA 1",
+        group_id: 1,
+        chain_name: "A",
+        entity_name: "1",
+    };
+    const second = {
+        source_kind: "element" as const,
+        element_level: "group" as const,
+        atom_indices: [3, 4],
+        group_indices: [1],
+        chain_indices: [0],
+        entity_indices: [0],
+        group_name: "GLY 2",
+        group_id: 2,
+        chain_name: "A",
+        entity_name: "1",
+    };
+
+    controller.setItems([first, second]);
+    controller.setItems([first], "subtract");
+    assert.deepStrictEqual(events.at(-1)?.group_indices, [1]);
+
+    controller.setItems([first, second]);
+    controller.setItems([first], "intersect");
+    assert.deepStrictEqual(events.at(-1)?.group_indices, [0]);
+
+    controller.setItems([], "intersect");
+    assert.strictEqual(events.at(-1)?.source_kind, "empty");
+});
+
+test("ActiveSelectionController supports bounded undo redo and history invalidation", () => {
+    const events: any[] = [];
+    const historyStates: any[] = [];
+    const controller = new ActiveSelectionController((msg) => events.push(msg));
+    controller.setHistoryListener((state) => historyStates.push(state));
+
+    controller.handlePrimaryClick(clickEvent([1]));
+    controller.handlePrimaryClick(clickEvent([3], true));
+
+    assert.strictEqual(controller.canUndo(), true);
+    assert.strictEqual(controller.canRedo(), false);
+    assert.deepStrictEqual(events.at(-1).atom_indices, [0, 1, 2, 3, 4]);
+
+    controller.undo();
+    assert.deepStrictEqual(events.at(-1).atom_indices, [0, 1, 2]);
+    assert.strictEqual(controller.canUndo(), true);
+    assert.strictEqual(controller.canRedo(), true);
+
+    controller.redo();
+    assert.deepStrictEqual(events.at(-1).atom_indices, [0, 1, 2, 3, 4]);
+    assert.strictEqual(controller.canRedo(), false);
+
+    controller.undo();
+    controller.handlePrimaryClick(clickEvent([3]));
+    assert.deepStrictEqual(events.at(-1).atom_indices, [3, 4]);
+    assert.strictEqual(controller.canRedo(), false);
+
+    controller.clearHistory();
+    assert.strictEqual(controller.canUndo(), false);
+    assert.strictEqual(controller.canRedo(), false);
+    assert.deepStrictEqual(historyStates.at(-1), { canUndo: false, canRedo: false });
 });
 
 test("ActiveSelectionController supports shape selections", () => {

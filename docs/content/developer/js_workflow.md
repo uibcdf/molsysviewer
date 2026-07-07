@@ -16,8 +16,18 @@ Do not edit generated artifacts by hand.
 ```bash
 cd molsysviewer/js
 npm install
-npm run build
+npm run build:runtime
 ```
+
+`npm run build:runtime` is the normal development rebuild. It regenerates
+`molsysviewer/viewer.js` and `molsysviewer/viewer.js.map` from TypeScript
+without changing package version metadata.
+
+Use `npm run build` only for release or packaging flows. It first runs
+`sync-python-version.mjs`, which rewrites `molsysviewer/js/package.json` from
+the Python `versioningit` output. In a dirty tree that can change
+`pythonVersion` to a local value such as `X.Y.Z+N.gSHA.dirty`; do not commit
+that churn as part of normal development.
 
 ## Test
 

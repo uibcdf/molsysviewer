@@ -23,7 +23,7 @@ from .._private.variables import is_all
 from ..widget import MolSysViewerWidget
 from ..loaders import load_from_molsysmt as _load_from_molsysmt
 from ..annotations import AnnotationsManager
-from ..active_selection import ActiveSelection
+from ..active_selection import ActiveSelection, _combine
 from ..addons import AddonPanelWidget, ViewAddonsManager, addons as global_addons
 from ..exports import ExportManager
 from ..figures import FigureSpec
@@ -220,6 +220,7 @@ class MolSysView(
         self._context_callbacks: list = []
         self._frame_change_callbacks: list = []
         self._last_active_selection_event: dict | None = None
+        self._active_selection_recipe: list[dict[str, Any]] = []
         self._last_tool_state_event: dict | None = None
         self._webgl_context_lost: bool = False
         # Visibility wire protocol: the frontend keeps a versioned visible-atom set
@@ -242,7 +243,8 @@ class MolSysView(
         self._empty = True
         self._load_blocks: list[dict[str, Any]] = []
         self._current_structure_index: int = 0
-        self._index_mapper = None
+        self._atom_index_mapper = None
+        self._structure_index_mapper = None
         self._rendered_transactions_acks: set = set()
         self._last_rendered_transaction: str | int | None = None
 
@@ -460,6 +462,269 @@ class MolSysView(
             )
         self._send_runtime_only(error_payload)
 
+    def _parse_selection_query_indices(self, expression: Any, syntax: str) -> list[int]:
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        if syntax == "Indices":
+            if isinstance(expression, str):
+                text = expression.strip()
+                if not text:
+                    return []
+                try:
+                    parsed = json.loads(text)
+                except json.JSONDecodeError:
+                    parsed = [part.strip() for part in re.split(r"[\s,]+", text) if part.strip()]
+            else:
+                parsed = expression
+            if isinstance(parsed, (int, np.integer)):
+                return [int(parsed)]
+            if not isinstance(parsed, (list, tuple, range, np.ndarray)):
+                raise ValueError("Indices syntax requires a list of atom indices.")
+            try:
+                return [int(item) for item in parsed]
+            except (TypeError, ValueError) as exc:
+                raise ValueError("Indices syntax requires integer atom indices.") from exc
+
+        selection = expression
+        if not isinstance(selection, str) or selection.strip() == "":
+            raise ValueError("Selection query requires a non-empty expression.")
+        return [
+            int(item)
+            for item in self.select(
+                selection=selection.strip(),
+                syntax=syntax,
+                element="atom",
+                skip_digestion=True,
+            )
+        ]
+
+    @staticmethod
+    def _copy_selection_recipe(recipe: Any) -> list[dict[str, Any]]:
+        if not isinstance(recipe, list):
+            return []
+        return [dict(step) for step in recipe if isinstance(step, Mapping)]
+
+    def _selection_recipe_step(
+        self,
+        *,
+        source: str,
+        op: str,
+        atom_indices: Any,
+        expression: Any | None = None,
+        syntax: str | None = None,
+        element: str | None = "atom",
+    ) -> dict[str, Any]:
+        step: dict[str, Any] = {
+            "source": source,
+            "op": op,
+            "atom_indices": [int(item) for item in (atom_indices or [])],
+        }
+        if expression is not None:
+            step["expression"] = expression
+        if syntax is not None:
+            step["syntax"] = syntax
+        if element is not None:
+            step["element"] = element
+        return step
+
+    def _set_active_selection_recipe(self, recipe: Any) -> None:
+        self._active_selection_recipe = self._copy_selection_recipe(recipe)
+
+    def _append_active_selection_recipe_step(self, step: dict[str, Any], op: str) -> None:
+        if op in {"replace", "invert"} or not self._active_selection_recipe:
+            recipe = [dict(step)]
+        else:
+            recipe = self._copy_selection_recipe(self._active_selection_recipe)
+            recipe.append(dict(step))
+        self._set_active_selection_recipe(recipe)
+
+    def _resolve_selection_recipe_step(
+        self,
+        step: Mapping[str, Any],
+        atom_index_map: dict[int, int] | None,
+    ) -> tuple[dict[str, Any] | None, list[int]]:
+        updated = dict(step)
+        source = str(updated.get("source") or "indices")
+        if source == "query" and updated.get("expression") is not None:
+            try:
+                resolved = self._parse_selection_query_indices(
+                    updated.get("expression"),
+                    str(updated.get("syntax") or "MolSysMT"),
+                )
+            except Exception:
+                raw_indices = updated.get("atom_indices")
+                if atom_index_map is None or not isinstance(raw_indices, list):
+                    raise
+                resolved = self._remap_indices(raw_indices, atom_index_map)
+        else:
+            raw_indices = updated.get("atom_indices")
+            if not isinstance(raw_indices, list):
+                resolved = []
+            elif atom_index_map is None:
+                resolved = [int(item) for item in raw_indices]
+            else:
+                resolved = self._remap_indices(raw_indices, atom_index_map)
+
+        if not resolved and source != "query":
+            return None, []
+        updated["atom_indices"] = list(resolved)
+        return updated, list(resolved)
+
+    def _replay_selection_recipe(
+        self,
+        recipe: Any,
+        atom_index_map: dict[int, int] | None,
+    ) -> tuple[list[dict[str, Any]], list[int]]:
+        replayed_recipe: list[dict[str, Any]] = []
+        result: list[int] = []
+        for raw_step in self._copy_selection_recipe(recipe):
+            step, incoming = self._resolve_selection_recipe_step(raw_step, atom_index_map)
+            if step is None:
+                continue
+            op = str(step.get("op") or "replace")
+            if op == "invert":
+                n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
+                result = _combine(incoming, incoming, "invert", universe=range(n_atoms))
+            elif op in {"replace", "add", "subtract", "intersect"}:
+                result = _combine(result, incoming, op)  # type: ignore[arg-type]
+            else:
+                result = _combine(result, incoming, "replace")
+                step["op"] = "replace"
+            replayed_recipe.append(step)
+        return replayed_recipe, result
+
+    def _apply_selection_query_action(self, content: Mapping[str, Any]) -> None:
+        expression = content.get("expression")
+        syntax = str(content.get("syntax") or "MolSysMT")
+        op = str(content.get("op") or "replace")
+        if op not in {"replace", "add", "subtract", "intersect", "invert"}:
+            raise ValueError(f"Unsupported selection query operation: {op!r}.")
+        incoming = self._parse_selection_query_indices(expression, syntax)
+        previous_recipe = self._copy_selection_recipe(self._active_selection_recipe)
+        if op == "invert":
+            n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
+            result = _combine(incoming, [], "invert", universe=range(n_atoms))
+        else:
+            result = _combine(self.active_selection.atom_indices, incoming, op)  # type: ignore[arg-type]
+        self.active_selection.set(result, skip_digestion=True)
+        if op not in {"replace", "invert"}:
+            self._set_active_selection_recipe(previous_recipe)
+        source = "indices" if syntax == "Indices" else "query"
+        step = self._selection_recipe_step(
+            source=source,
+            op=op,
+            atom_indices=incoming,
+            expression=expression if source == "query" else None,
+            syntax=syntax,
+            element="atom",
+        )
+        self._append_active_selection_recipe_step(step, op)
+
+    def _preview_selection_query_action(self, content: Mapping[str, Any]) -> None:
+        request_id = content.get("request_id")
+        try:
+            expression = content.get("expression")
+            syntax = str(content.get("syntax") or "MolSysMT")
+            atom_indices = self._parse_selection_query_indices(expression, syntax)
+            payload = {
+                "op": "selection_query_preview",
+                "request_id": request_id,
+                "ok": True,
+                "count": len(atom_indices),
+            }
+        except Exception as exc:
+            payload = {
+                "op": "selection_query_preview",
+                "request_id": request_id,
+                "ok": False,
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+            }
+        self._send_runtime_only(payload)
+
+    def _active_selection_query_system(self) -> tuple[Any, list[int]]:
+        atom_indices = list(self.active_selection.atom_indices)
+        if len(atom_indices) == 0:
+            raise ValueError("expand_selection requires a non-empty active selection.")
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        return self._molsys, atom_indices
+
+    @staticmethod
+    def _flatten_atom_index_result(values: Any) -> list[int]:
+        out: list[int] = []
+
+        def visit(item: Any) -> None:
+            if item is None:
+                return
+            if isinstance(item, (list, tuple, range, np.ndarray)):
+                for subitem in item:
+                    visit(subitem)
+                return
+            out.append(int(item))
+
+        visit(values)
+        return out
+
+    def _expand_selection_action(self, content: Mapping[str, Any]) -> None:
+        level = str(content.get("level") or "").strip().lower()
+        if level == "spatial":
+            self._expand_selection_spatial_action(content)
+            return
+        if level not in {"group", "component", "molecule", "chain", "entity"}:
+            raise ValueError(f"Unsupported selection expansion level: {level!r}.")
+
+        query_system, query_atoms = self._active_selection_query_system()
+        if len(query_atoms) == 0:
+            raise ValueError("expand_selection has no active atoms available in the loaded system.")
+
+        level_indices = msm.get(
+            query_system,
+            element="atom",
+            selection=query_atoms,
+            **{f"{level}_index": True},
+            output_type="values",
+            skip_digestion=True,
+        )
+        deduped_level_indices = sorted({int(item) for item in level_indices if item is not None})
+        if len(deduped_level_indices) == 0:
+            self.active_selection.clear(skip_digestion=True)
+            return
+
+        atom_index_result = msm.get(
+            query_system,
+            element=level,
+            selection=deduped_level_indices,
+            atom_index=True,
+            skip_digestion=True,
+        )
+        expanded_atoms = self._flatten_atom_index_result(atom_index_result)
+        self.active_selection.set(sorted(set(expanded_atoms)), skip_digestion=True)
+
+    def _expand_selection_spatial_action(self, content: Mapping[str, Any]) -> None:
+        current_atoms = list(self.active_selection.atom_indices)
+        if len(current_atoms) == 0:
+            raise ValueError("spatial expand_selection requires a non-empty active selection.")
+        try:
+            distance = float(content.get("distance_angstroms"))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("spatial expand_selection requires a numeric distance_angstroms value.") from exc
+        if distance <= 0:
+            raise ValueError("spatial expand_selection requires distance_angstroms > 0.")
+
+        distance_text = f"{distance:g}"
+        selection = f"all within {distance_text} angstroms of atom_index in {current_atoms}"
+        expanded_atoms = [
+            int(item)
+            for item in self.select(
+                selection=selection,
+                syntax="MolSysMT",
+                element="atom",
+                skip_digestion=True,
+            )
+        ]
+        self.active_selection.set(expanded_atoms, skip_digestion=True)
+
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
         event = content.get("event")
         if event == "widget_resize":
@@ -546,6 +811,8 @@ class MolSysView(
             self._last_context_event = self._enrich_interaction_payload(dict(content))
             for cb in list(self._context_callbacks):
                 cb(self._last_context_event)
+        elif event == "selection_query_preview_request":
+            self._preview_selection_query_action(content)
         elif event == "webgl_context_lost":
             # The browser dropped the WebGL context (GPU crash, sleep/wake, driver
             # reset). Mol* restores the scene from its retained state on recovery;
@@ -724,6 +991,55 @@ class MolSysView(
                     if not isinstance(tag, str) or tag.strip() == "":
                         raise ValueError("delete_selection requires non-empty tag.")
                     self.selections.delete(tag.strip(), skip_digestion=True)
+                elif action == "rename_selection":
+                    tag = content.get("tag")
+                    new_tag = content.get("new_tag")
+                    if not isinstance(tag, str) or not tag.strip():
+                        raise ValueError("rename_selection requires non-empty tag.")
+                    if not isinstance(new_tag, str) or not new_tag.strip():
+                        raise ValueError("rename_selection requires non-empty new_tag.")
+                    self.selections.set_tag(tag.strip(), new_tag.strip(), skip_digestion=True)
+                elif action == "compose_saved_selection":
+                    tag = content.get("tag")
+                    op = content.get("op")
+                    if not isinstance(tag, str) or not tag.strip():
+                        raise ValueError("compose_saved_selection requires non-empty tag.")
+                    if op not in {"add", "subtract", "intersect"}:
+                        raise ValueError(f"Unsupported compose operation: {op!r}.")
+                    saved = self.selections.get(tag.strip())
+                    if saved is None:
+                        raise ValueError(f"No saved selection found with tag {tag!r}.")
+                    result = _combine(self.active_selection.atom_indices, saved.atom_indices, op)  # type: ignore[arg-type]
+                    self.active_selection.set(result, skip_digestion=True)
+                elif action == "create_region_from_saved_selection":
+                    selection_tag = content.get("selection_tag")
+                    raw_tag = content.get("tag")
+                    if not isinstance(selection_tag, str) or not selection_tag.strip():
+                        raise ValueError("create_region_from_saved_selection requires non-empty selection_tag.")
+                    region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+                    saved = self.selections.get(selection_tag.strip())
+                    if saved is None:
+                        raise ValueError(f"No saved selection found with tag {selection_tag!r}.")
+                    saved.new_region(tag=region_tag, skip_digestion=True)
+                elif action == "create_label_from_saved_selection":
+                    selection_tag = content.get("selection_tag")
+                    text = content.get("text")
+                    raw_tag = content.get("tag")
+                    if not isinstance(selection_tag, str) or not selection_tag.strip():
+                        raise ValueError("create_label_from_saved_selection requires non-empty selection_tag.")
+                    if not isinstance(text, str) or not text.strip():
+                        raise ValueError("create_label_from_saved_selection requires non-empty text.")
+                    label_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+                    saved = self.selections.get(selection_tag.strip())
+                    if saved is None:
+                        raise ValueError(f"No saved selection found with tag {selection_tag!r}.")
+                    saved.add_label(text=text.strip(), tag=label_tag, skip_digestion=True)
+                elif action == "apply_selection_query":
+                    self._apply_selection_query_action(content)
+                elif action == "preview_selection_query":
+                    self._preview_selection_query_action(content)
+                elif action == "expand_selection":
+                    self._expand_selection_action(content)
                 elif action == "add_label_from_selection":
                     text = content.get("text")
                     if not isinstance(text, str) or text.strip() == "":
@@ -782,36 +1098,19 @@ class MolSysView(
                         break
         elif event == "interaction_active_selection_changed":
             enriched = dict(content)
-            atom_indices = content.get("atom_indices") or []
-            if self._index_mapper is not None:
-                orig_atoms = self._index_mapper.to_original_atoms(atom_indices)
-            else:
-                orig_atoms = list(atom_indices)
+            atom_indices = list(content.get("atom_indices") or [])
+            enriched["atom_indices"] = list(atom_indices)
 
-            enriched["atom_indices"] = list(orig_atoms)
-
-            query_system = None
-            query_selection = orig_atoms
-            if self.molecular_system is not None:
-                query_system = self.molecular_system
-                query_selection = orig_atoms
-            elif self._molsys is not None:
-                query_system = self._molsys
-                if self._index_mapper is not None:
-                    query_selection = self._index_mapper.to_local_atoms(orig_atoms)
-                else:
-                    query_selection = orig_atoms
-
-            if query_system is not None and len(query_selection) > 0:
+            if self._molsys is not None and len(atom_indices) > 0:
                 try:
                     group_indices = sorted(
                         {
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    query_system,
+                                    self._molsys,
                                     element="atom",
-                                    selection=query_selection,
+                                    selection=atom_indices,
                                     group_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -826,9 +1125,9 @@ class MolSysView(
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    query_system,
+                                    self._molsys,
                                     element="atom",
-                                    selection=query_selection,
+                                    selection=atom_indices,
                                     component_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -843,9 +1142,9 @@ class MolSysView(
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    query_system,
+                                    self._molsys,
                                     element="atom",
-                                    selection=query_selection,
+                                    selection=atom_indices,
                                     chain_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -860,9 +1159,9 @@ class MolSysView(
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    query_system,
+                                    self._molsys,
                                     element="atom",
-                                    selection=query_selection,
+                                    selection=atom_indices,
                                     molecule_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -877,9 +1176,9 @@ class MolSysView(
                             int(ii)
                             for ii in (
                                 msm.get(
-                                    query_system,
+                                    self._molsys,
                                     element="atom",
-                                    selection=query_selection,
+                                    selection=atom_indices,
                                     entity_index=True,
                                     output_type="values",
                                     skip_digestion=True,
@@ -895,7 +1194,7 @@ class MolSysView(
                     enriched["molecule_indices"] = molecule_indices
                     enriched["entity_indices"] = entity_indices
                     enriched["count_groups"] = len(group_indices)
-                    enriched["count_atoms"] = len(orig_atoms)
+                    enriched["count_atoms"] = len(atom_indices)
                 except Exception as exc:
                     emit_suppressed_exception(
                         "MolSysView._handle_frontend_event.active_selection_metadata",
@@ -904,9 +1203,22 @@ class MolSysView(
                     )
             else:
                 if "count_atoms" in content:
-                    enriched["count_atoms"] = len(orig_atoms)
+                    enriched["count_atoms"] = len(atom_indices)
 
             self._last_active_selection_event = enriched
+            if atom_indices:
+                self._set_active_selection_recipe(
+                    [
+                        self._selection_recipe_step(
+                            source="indices",
+                            op="replace",
+                            atom_indices=atom_indices,
+                            element="atom",
+                        )
+                    ]
+                )
+            else:
+                self._set_active_selection_recipe([])
             addons = getattr(self, "addons", None)
             if addons is not None and hasattr(addons, "refresh_context_items"):
                 try:
@@ -932,19 +1244,14 @@ class MolSysView(
                 self._last_rendered_transaction = t_id
         elif event == "trajectory_frame_changed":
             # Emitted by TS when playback stops; update Python-side frame index and NPT box.
-            frame = content.get("frame", 0)
-            orig_frame = frame
-            if self._index_mapper is not None:
-                mapped = self._index_mapper.to_original_structure(frame)
-                if mapped is not None:
-                    orig_frame = mapped
-            self._current_structure_index = int(orig_frame)
+            frame = int(content.get("frame", 0))
+            self._current_structure_index = frame
             self.player._is_playing = bool(content.get("is_playing", False))  # noqa: SLF001
             self.player._store_state()  # noqa: SLF001
             if self._frame_change_callbacks:
                 frame_event = {
                     "event": "frame_changed",
-                    "frame": int(orig_frame),
+                    "frame": frame,
                     "is_playing": bool(content.get("is_playing", False)),
                 }
                 for cb in list(self._frame_change_callbacks):
@@ -958,7 +1265,7 @@ class MolSysView(
                     color=self._box_record["color"],
                     width=self._box_record["width"],
                     alpha=self._box_record["alpha"],
-                    structure_indices=int(orig_frame),
+                    structure_indices=frame,
                     skip_digestion=True,
                 )
         elif event == "panel_mode_state":
@@ -1057,12 +1364,9 @@ class MolSysView(
         raw = payload.get("atom_indices")
         if not raw:
             return payload
-        if self._index_mapper is not None:
-            original_atoms = self._index_mapper.to_original_atoms(raw)
-            payload["atom_indices"] = original_atoms
-        else:
-            original_atoms = list(raw)
-        pick_set = set(original_atoms)
+        atom_indices = list(raw)
+        payload["atom_indices"] = atom_indices
+        pick_set = set(atom_indices)
         tags = [
             tag
             for tag, region in self._regions.items()
@@ -1249,17 +1553,34 @@ class MolSysView(
         return remapped
 
     def _remap_selection_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
-        if atom_index_map is None:
-            return msg
         if msg.get("op") != "save_selection":
-            return msg
+            return dict(msg)
+        updated = dict(msg)
+        recipe = msg.get("recipe")
+        if isinstance(recipe, list) and recipe:
+            try:
+                remapped_recipe, replayed_atoms = self._replay_selection_recipe(recipe, atom_index_map)
+            except Exception as exc:
+                emit_suppressed_exception(
+                    "MolSysView._remap_selection_message.recipe",
+                    exc,
+                    context={"tag": msg.get("tag")},
+                )
+            else:
+                if len(replayed_atoms) == 0:
+                    return None
+                updated["recipe"] = remapped_recipe
+                updated["atom_indices"] = replayed_atoms
+                return updated
+
+        if atom_index_map is None:
+            return updated
         atom_indices = msg.get("atom_indices")
         if not isinstance(atom_indices, list):
-            return dict(msg)
+            return updated
         remapped = self._remap_indices(atom_indices, atom_index_map)
         if len(remapped) == 0:
             return None
-        updated = dict(msg)
         updated["atom_indices"] = remapped
         return updated
 
@@ -1531,12 +1852,7 @@ class MolSysView(
             self._append_load_block(n_atoms=int(appended_n_atoms), label=effective_label)
 
     def _local_structure_index_for_player(self) -> int:
-        index = int(self._current_structure_index)
-        if self._index_mapper is not None:
-            mapped = self._index_mapper.to_local_structure(index)
-            if mapped is not None:
-                return int(mapped)
-        return index
+        return int(self._current_structure_index)
 
     def _player_replay_messages(self) -> list[dict]:
         messages: list[dict] = []

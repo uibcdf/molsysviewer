@@ -1,8 +1,27 @@
 # Bug + plan: unify the runtime on the `_molsys` index space
 
-**Status:** open — plan agreed, not implemented.
+**Status:** ✅ **RESOLVED (2026-07-07).**
 **Severity:** foundational (index-space convention across selection / interaction /
-regions). Currently causes a concrete failure (h5py, below) plus pervasive complexity.
+regions). Caused a concrete failure (h5py, below) plus pervasive complexity.
+
+## Resolution summary
+
+The runtime now operates entirely in the `_molsys` index space on **both axes**:
+
+- `view.select` resolves against `_molsys`; `active_selection.set` queries `_molsys`
+  (all five levels); the interaction/click handler, `_enrich_interaction_payload`,
+  regions, `expand_selection`, and the trajectory-frame handlers all use `_molsys`
+  directly. No `molecular_system` query or local↔original conversion remains on the
+  functional path.
+- Two independent per-axis mappers — `_atom_index_mapper`, `_structure_index_mapper` —
+  are built **only** when that axis is a real subset (`None` otherwise), kept purely as
+  reference/provenance. The old single `_index_mapper` was removed entirely.
+- Tests updated to the `_molsys`-space contract (e.g.
+  `test_context_action_expand_selection_uses_loaded_index_space_for_subset`).
+- Verified green: **546 Python passed / 3 skipped**, **141 JS passed**; the h5py
+  `test_selection_frontend_actions` failure is gone.
+
+The design/plan below is kept as the record of the diagnosis and decisions.
 
 ---
 
@@ -219,8 +238,19 @@ Suggested message:
 
 ## 7. Current tree state
 
-The `active_selection.set` `_molsys` rewrite (Phase **B1**) is already in the working
-tree, which is why the suite currently shows **2 failures** — a half-migrated state
-(`set` is `_molsys`-space; the producers are still original-space). This is the expected
-"red mid-migration" state. Land Phases A + C to make it coherent; do **not** revert B1 —
-complete the migration.
+Implemented in the working tree:
+
+- Runtime atom and structure/frame indices use `_molsys` space.
+- `view.molecular_system` remains provenance/reference and is not queried in the
+  selection hot path.
+- `_index_mapper` is no longer used as a combined mapper and is initialized to `None`.
+- `_atom_index_mapper` exists only when the loaded atom axis is a true subset.
+- `_structure_index_mapper` exists only when the loaded structure/frame axis is a true
+  subset.
+- Full loads create no identity mapper.
+
+Validation performed during the migration:
+
+- `python -m pytest tests/test_active_selection.py tests/test_index_mapper.py -x -q`
+- `python -m pytest tests/loaders/test_load_from_molsysmt.py -x -q`
+- `python -m pytest tests/ --tb=no -q`

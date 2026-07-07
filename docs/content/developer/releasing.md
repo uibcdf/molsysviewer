@@ -7,6 +7,8 @@ Use this page when you cut a release or publish the JS runtime.
 - The Python version is produced by `versioningit` from Git tags.
 - The JS package version is synchronized from Python during `npm run build`
   using `molsysviewer/js/scripts/sync-python-version.mjs`.
+- Development runtime rebuilds should use `npm run build:runtime`; that command
+  does not synchronize version metadata.
 
 Compatibility rule
 
@@ -37,6 +39,9 @@ https://cdn.jsdelivr.net/npm/@uibcdf/molsysviewer@X.Y.Z/dist/viewer.js
 How the version is chosen
 
 - `npm run build` syncs the JS version from the Python version.
+- `npm run build:runtime` only rebuilds the runtime artifact and must be used
+  for ordinary TypeScript development when version metadata should remain
+  untouched.
 - A release tag `X.Y.Z` defines the version for both artifacts.
 - The docs-lite export should point to the same `X.Y.Z` runtime URL.
 
@@ -52,6 +57,8 @@ GitHub workflow
 Key points
 - Do not edit `viewer.js` or `.map` by hand.
 - Keep the JS build manual and controlled.
+- Avoid committing `pythonVersion` changes produced from a dirty local
+  `versioningit` value.
 
 ## Pre-releases
 

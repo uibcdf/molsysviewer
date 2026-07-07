@@ -255,17 +255,10 @@ class RegionsMixin:
                     exclude.update(r.atom_indices)
             if self._molsys is None:
                 raise ValueError("Cannot build complement: no molecular system loaded.")
-            if self._index_mapper is not None:
-                total = len(self._index_mapper.original_atoms)
-            else:
-                total = int(self._molsys._get_n_atoms())
+            total = int(self._molsys._get_n_atoms())
             atom_indices = [i for i in range(total) if i not in exclude]
         elif atom_indices is None and self._molsys is not None:
-            local_indices = list(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
-            if self._index_mapper is not None:
-                atom_indices = self._index_mapper.to_original_atoms(local_indices)
-            else:
-                atom_indices = local_indices
+            atom_indices = list(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
         elif atom_indices is None and self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before creating regions.")
 
@@ -428,4 +421,3 @@ for _name, _value in RegionsMixin.__dict__.items():
                 exc,
                 context={"callable": _name},
             )
-

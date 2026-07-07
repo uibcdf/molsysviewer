@@ -60,6 +60,27 @@ Many automation agents assume that a TypeScript project requires rebuilding afte
 > **Do NOT automatically suggest running `npm run build`.**
 
 The build step is **manual** and is only run by maintainers when regenerating the stable artifact distributed with the Python package.
+When a maintainer or agent does need to regenerate the runtime bundle during
+development, use:
+
+```bash
+npm run build:runtime
+```
+
+That command runs the bundler only. It does not run
+`sync-python-version.mjs` and therefore does not rewrite
+`molsysviewer/js/package.json`.
+
+Reserve this command for release and packaging flows:
+
+```bash
+npm run build
+```
+
+`npm run build` synchronizes the JS package metadata from the Python
+`versioningit` output before building. In a dirty working tree this can rewrite
+`pythonVersion` to a local value such as `X.Y.Z+N.gSHA.dirty`; that metadata
+churn should not be committed as part of ordinary development work.
 
 ### Why?
 
@@ -71,6 +92,7 @@ The build step is **manual** and is only run by maintainers when regenerating th
 
 - Suggest changes **only** in `js/src/*.ts`.
 - NOT request or propose “run npm run build”.
+- Use `npm run build:runtime` only when a runtime artifact rebuild is explicitly needed.
 - NOT require build steps for validations or tests.
 - Assume that build is maintainers-only.
 
@@ -101,6 +123,7 @@ without also updating the Python widget and verifying end-to-end behavior.
 - **Edit**: `js/src/*.ts`
 - **Do NOT edit**: `molsysviewer/viewer.js`
 - **Do NOT suggest**: `npm run build`
+- **Development runtime rebuild**: `npm run build:runtime`
 - **Ignore**: `node_modules/`
 - **Build happens manually** only when the maintainer decides.
 

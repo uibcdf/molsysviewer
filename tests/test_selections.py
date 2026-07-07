@@ -48,6 +48,14 @@ def test_active_selection_save_creates_persistent_selection():
         "molecule_indices": [0],
         "entity_indices": [0],
         "count_items": 0,
+        "recipe": [
+            {
+                "source": "indices",
+                "op": "replace",
+                "atom_indices": atom_indices,
+                "element": "atom",
+            }
+        ],
     }
 
 
@@ -80,6 +88,7 @@ def test_persistent_selection_can_restore_itself_as_active_selection():
     assert restored is view.active_selection
     assert view.active_selection.info()["source_kind"] == "element"
     assert view.active_selection.group_indices == [1]
+    assert view._active_selection_recipe[0]["atom_indices"] == selection.atom_indices  # noqa: SLF001
     assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
 
 
@@ -131,3 +140,101 @@ def test_persistent_selection_records_are_exported_and_remapped_on_remove():
     selection_info = view.selections.info("picked")
     assert selection_info["group_indices"] == [0]
     assert selection_info["atom_indices"] == list(range(0, 10))
+    assert selection_info["recipe"][0]["atom_indices"] == list(range(0, 10))
+
+
+def test_query_selection_provenance_replays_after_system_edit():
+    view = demo["dialanine"]
+    selected = list(view.select(selection="group_index==1"))
+
+    view.selections.add_selection("query-picked", "group_index==1")
+
+    info = view.selections.info("query-picked")
+    assert info["expression"] == "group_index==1"
+    assert info["syntax"] == "MolSysMT"
+    assert info["element"] == "atom"
+    assert info["recipe"][0]["source"] == "query"
+    assert info["recipe"][0]["atom_indices"] == selected
+
+    apply_remove(view, selection="group_index==0")
+
+    reevaluated = list(view.select(selection="group_index==1"))
+    remapped = view.selections.info("query-picked")
+    assert remapped["atom_indices"] == reevaluated
+    assert remapped["recipe"][0]["expression"] == "group_index==1"
+    assert remapped["recipe"][0]["atom_indices"] == reevaluated
+
+
+def test_selection_frontend_actions():
+    view = demo["dialanine"]
+    g0 = list(view.select(selection="group_index==0"))
+    g1 = list(view.select(selection="group_index==1"))
+
+    # Seed active selection and save as "picked-g0"
+    view.active_selection.set(g0)
+
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "save_selection",
+        "tag": "picked-g0",
+    })
+    assert "picked-g0" in view.selections
+
+    # 1. rename_selection
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "rename_selection",
+        "tag": "picked-g0",
+        "new_tag": "g0-saved",
+    })
+    assert "picked-g0" not in view.selections
+    assert "g0-saved" in view.selections
+
+    # Rename conflict raises ValueError
+    view.active_selection.set(g1)
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "save_selection",
+        "tag": "picked-g1",
+    })
+    import pytest
+    with pytest.raises(ValueError, match="already exists"):
+        view.selections.set_tag("g0-saved", "picked-g1", skip_digestion=True)
+
+    # 2. compose_saved_selection
+    view.active_selection.set(g1)
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "compose_saved_selection",
+        "tag": "g0-saved",
+        "op": "add",
+    })
+    assert sorted(view.active_selection.atom_indices) == sorted(g0 + g1)
+
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "compose_saved_selection",
+        "tag": "g0-saved",
+        "op": "subtract",
+    })
+    assert sorted(view.active_selection.atom_indices) == sorted(g1)
+
+    # 3. create_region_from_saved_selection
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "create_region_from_saved_selection",
+        "selection_tag": "g0-saved",
+        "tag": "region-g0",
+    })
+    assert "region-g0" in view.regions
+    assert view.regions["region-g0"].atom_indices == tuple(g0)
+
+    # 4. create_label_from_saved_selection
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "create_label_from_saved_selection",
+        "selection_tag": "g0-saved",
+        "text": "My Label",
+        "tag": "label-g0",
+    })
+    assert view.annotations.contains("label-g0") is True

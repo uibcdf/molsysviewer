@@ -19,6 +19,10 @@ if TYPE_CHECKING:
 _NM_TO_ANGSTROM = puw.conversion_factor("nm", "angstroms")
 
 
+def _is_all_selector(value: Any) -> bool:
+    return value is None or (isinstance(value, str) and value == "all")
+
+
 def ensure_view(view: "MolSysView" | None = None) -> "MolSysView":
     if view is None:
         from ..viewer import MolSysView
@@ -51,16 +55,32 @@ def load_from_molsysmt(
     view.selection = selection
     view.structure_indices = structure_indices
 
-    # Initialize IndexMapper for original <-> local mapping
+    # Keep original <-> loaded-system mapping only as reference/provenance.
+    # Runtime state and all frontend payloads use the converted `_molsys`
+    # index space directly. The two axes are independent: a mapper exists only
+    # when that specific axis is a real subset.
+    view._atom_index_mapper = None
+    view._structure_index_mapper = None
     from ..viewer.index_mapper import IndexMapper
-    view._index_mapper = IndexMapper(
-        molecular_system,
-        selection=selection,
-        structure_indices=structure_indices,
-        syntax=syntax,
-    )
-    if view._index_mapper.original_structures:
-        view._current_structure_index = view._index_mapper.original_structures[0]
+    if not _is_all_selector(selection):
+        view._atom_index_mapper = IndexMapper(
+            molecular_system,
+            selection=selection,
+            structure_indices="all",
+            syntax=syntax,
+            build_atoms=True,
+            build_structures=False,
+        )
+    if not _is_all_selector(structure_indices):
+        view._structure_index_mapper = IndexMapper(
+            molecular_system,
+            selection="all",
+            structure_indices=structure_indices,
+            syntax=syntax,
+            build_atoms=False,
+            build_structures=True,
+        )
+    view._current_structure_index = 0
 
     # Convert to MolSys and create the atom mask.
     view._molsys = msm.convert(

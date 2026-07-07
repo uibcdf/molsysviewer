@@ -33,13 +33,7 @@ class SceneMixin:
         skip_digestion: bool = False,
     ) -> None:
         """Render the unit-cell or simulation-box edges in the canvas."""
-        mapped_idx = structure_indices
-        if self._index_mapper is not None:
-            if structure_indices not in ("all", None):
-                mapped = self._index_mapper.to_local_structure(structure_indices)
-                if mapped is not None:
-                    mapped_idx = mapped
-        sidx = 0 if mapped_idx in ("all", None) else int(mapped_idx)
+        sidx = 0 if structure_indices in ("all", None) else int(structure_indices)
 
         box_q = msm.get(self._molsys, element="system", box=True, skip_digestion=True)
         if box_q is None:
@@ -381,14 +375,10 @@ class SceneMixin:
             coords_arr = coords_arr[0]
         coords_ang = (coords_arr * _NM_TO_ANGSTROM).tolist()
 
-        remapped_indices = list(atom_indices)
-        if self._index_mapper is not None:
-            remapped_indices = self._index_mapper.to_local_atoms(atom_indices)
-
         self._send({
             "op": "partial_coordinates_update",
             "coordinates": coords_ang,
-            "atom_indices": remapped_indices,
+            "atom_indices": list(atom_indices),
             "transaction_id": transaction_id,
         })
 

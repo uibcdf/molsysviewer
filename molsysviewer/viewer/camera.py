@@ -79,18 +79,14 @@ class CameraManager:
         if view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded. Load a system before calling zoom().")
 
-        original_indices = view.select(
+        atom_indices = view.select(
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
             skip_digestion=True,
         )
-        if not original_indices:
+        if not atom_indices:
             raise ValueError("Cannot zoom: empty selection.")
-
-        local_indices = original_indices
-        if view._index_mapper is not None:
-            local_indices = view._index_mapper.to_local_atoms(original_indices)
 
         if duration_ms is not None:
             duration = duration_ms
@@ -101,7 +97,7 @@ class CameraManager:
         view._send(  # noqa: SLF001
             {
                 "op": "zoom",
-                "atom_indices": list(local_indices),
+                "atom_indices": list(atom_indices),
                 "options": {
                     "duration_ms": int(duration_ms_value),
                     "extra_radius": float(extra_radius_v),

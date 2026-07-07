@@ -9,6 +9,7 @@ class FakeElement {
     public textContent = "";
     public title = "";
     public type = "";
+    public disabled = false;
     private attributes = new Map<string, string>();
     private listeners = new Map<string, Array<(event?: any) => void>>();
 
@@ -210,6 +211,302 @@ test("GroupPanel renders active, saved, and region summaries", () => {
     }
 });
 
+test("GroupPanel selection query composer emits apply actions and accepts current preview", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+
+        const root = host.children[0];
+        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const union = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "add");
+        const invert = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "invert");
+        assert.ok(input);
+        assert.ok(union);
+        assert.ok(invert);
+
+        input.value = "group_index==1";
+        input.dispatch("input");
+        union?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "apply_selection_query",
+            details: {
+                expression: "group_index==1",
+                syntax: "MolSysMT",
+                op: "add",
+            },
+        });
+
+        invert?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(actions.at(-1).details.op, "invert");
+
+        (panel as any).selectionQueryPreviewRequest = 3;
+        panel.updateSelectionQueryPreview({ request_id: 2, ok: true, count: 99 });
+        panel.updateSelectionQueryPreview({ request_id: 3, ok: true, count: 2 });
+        const preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
+        assert.strictEqual(firstText(preview), "✓ 2 atoms");
+        assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "ok");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel selection query preview shows pending and error states", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+        );
+
+        const root = host.children[0];
+        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const select = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
+        assert.strictEqual(select.disabled, true);
+
+        input.value = "bad query";
+        input.dispatch("input");
+
+        let preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
+        assert.strictEqual(firstText(preview), "Checking query...");
+        assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "pending");
+
+        (panel as any).selectionQueryPreviewRequest = 1;
+        panel.updateSelectionQueryPreview({ request_id: 1, ok: false, error_message: "invalid syntax" });
+        preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
+        assert.strictEqual(firstText(preview), "✗ invalid syntax");
+        assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "error");
+
+        const enabledSelect = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
+        assert.strictEqual(enabledSelect.disabled, false);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel selection query preview uses a dedicated query-only action", async () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+
+        const root = host.children[0];
+        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        assert.ok(input);
+        input.value = "group_index==1";
+        input.dispatch("input");
+
+        await new Promise((resolve) => setTimeout(resolve, 270));
+
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "selection_query_preview_request",
+            details: {
+                request_id: 1,
+                expression: "group_index==1",
+                syntax: "MolSysMT",
+            },
+        });
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel selection query presets inject exact MolSysMT syntax", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+
+        const root = host.children[0];
+        const water = findFirstByAttribute(root, "data-molsysviewer-selection-query-preset", "water");
+        assert.ok(water);
+
+        water?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        assert.strictEqual(input.value, 'molecule_type=="water"');
+        assert.strictEqual((panel as any).selectionQuerySyntax, "MolSysMT");
+
+        (panel as any).selectionQueryPreviewRequest = 1;
+        assert.deepStrictEqual((panel as any).selectionQueryPreview, {
+            request_id: 1,
+            status: "pending",
+        });
+
+        const select = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
+        assert.strictEqual(select.disabled, false);
+        select.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "apply_selection_query",
+            details: {
+                expression: 'molecule_type=="water"',
+                syntax: "MolSysMT",
+                op: "replace",
+            },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel selection query cheat-sheet toggles and injects examples", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+        );
+
+        const root = host.children[0];
+        const toggle = findFirstByAttribute(root, "data-molsysviewer-selection-cheatsheet-toggle", "true");
+        assert.ok(toggle);
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-selection-cheatsheet"), null);
+
+        toggle?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const cheatSheet = findFirstByAttribute(root, "data-molsysviewer-selection-cheatsheet");
+        assert.ok(cheatSheet);
+        const chainExample = findFirstByAttribute(root, "data-molsysviewer-selection-cheatsheet-example", "Chain");
+        assert.ok(chainExample);
+
+        chainExample?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        assert.strictEqual(input.value, 'chain_id=="A"');
+        assert.strictEqual((panel as any).selectionQuerySyntax, "MolSysMT");
+        assert.deepStrictEqual((panel as any).selectionQueryPreview, {
+            request_id: 1,
+            status: "pending",
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel selection expanders emit hierarchical and spatial actions", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+        panel.updateSelection({
+            event: "interaction_active_selection_changed",
+            source_kind: "element",
+            target_level: "none",
+            element_level: "atom",
+            items: [],
+            atom_indices: [0, 1],
+            group_indices: [0],
+            component_indices: [0],
+            chain_indices: [0],
+            molecule_indices: [0],
+            entity_indices: [0],
+            count_atoms: 2,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 0,
+        });
+
+        const root = host.children[0];
+        const group = findFirstByAttribute(root, "data-molsysviewer-selection-expand-level", "group");
+        const distance = findFirstByAttribute(root, "data-molsysviewer-selection-spatial-distance") as any;
+        const spatial = findFirstByAttribute(root, "data-molsysviewer-selection-expand-spatial");
+        assert.ok(group);
+        assert.ok(distance);
+        assert.ok(spatial);
+
+        group.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "expand_selection",
+            details: { level: "group" },
+        });
+
+        distance.value = "6.5";
+        distance.dispatch("input");
+        spatial.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "expand_selection",
+            details: { level: "spatial", distance_angstroms: 6.5 },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel preserves collapse state when strips are recreated", () => {
     const restore = installFakeDom();
     try {
@@ -250,6 +547,111 @@ test("GroupPanel preserves collapse state when strips are recreated", () => {
 
         const remountedRoot = host.children[0];
         assert.strictEqual(findFirstGroupButton(remountedRoot), null);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel renders the selection modifier legend without changing callbacks", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let selectCalls = 0;
+        const panel = new GroupPanel(
+            host,
+            () => { selectCalls += 1; },
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+        );
+
+        const root = host.children[0];
+        const legend = findFirstByAttribute(root, "data-molsysviewer-selection-modifier-legend", "true");
+        const click = findFirstByAttribute(root, "data-molsysviewer-selection-modifier-legend-item", "Click");
+        const shift = findFirstByAttribute(root, "data-molsysviewer-selection-modifier-legend-item", "Shift");
+        const range = findFirstByAttribute(root, "data-molsysviewer-selection-modifier-legend-item", "Shift+Alt");
+
+        assert.ok(legend);
+        assert.strictEqual(click?.children[1]?.textContent, "Replace");
+        assert.strictEqual(shift?.children[1]?.textContent, "Add/toggle");
+        assert.strictEqual(range?.children[1]?.textContent, "Range");
+        assert.strictEqual(selectCalls, 0);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel exposes active selection undo redo buttons and scoped shortcuts", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+
+        const root = host.children[0];
+        let undo = findFirstByAttribute(root, "data-molsysviewer-selection-undo", "true") as any;
+        let redo = findFirstByAttribute(root, "data-molsysviewer-selection-redo", "true") as any;
+        assert.ok(undo);
+        assert.ok(redo);
+        assert.strictEqual(undo.disabled, true);
+        assert.strictEqual(redo.disabled, true);
+
+        panel.updateSelectionHistoryState({ canUndo: true, canRedo: false });
+        undo = findFirstByAttribute(root, "data-molsysviewer-selection-undo", "true") as any;
+        redo = findFirstByAttribute(root, "data-molsysviewer-selection-redo", "true") as any;
+        assert.strictEqual(undo.disabled, false);
+        assert.strictEqual(redo.disabled, true);
+
+        undo.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), { action: "undo_active_selection", details: undefined });
+
+        panel.updateSelectionHistoryState({ canUndo: true, canRedo: true });
+        const selectionPanel = findFirstByAttribute(root, "data-molsysviewer-selection-panel", "true");
+        const keyEvent = {
+            key: "y",
+            ctrlKey: true,
+            metaKey: false,
+            shiftKey: false,
+            target: selectionPanel,
+            prevented: false,
+            stopped: false,
+            preventDefault() { this.prevented = true; },
+            stopPropagation() { this.stopped = true; },
+        };
+        selectionPanel?.dispatch("keydown", keyEvent);
+        assert.deepStrictEqual(actions.at(-1), { action: "redo_active_selection", details: undefined });
+        assert.strictEqual(keyEvent.prevented, true);
+        assert.strictEqual(keyEvent.stopped, true);
+
+        const inputTarget = { tagName: "INPUT" };
+        selectionPanel?.dispatch("keydown", {
+            key: "z",
+            ctrlKey: true,
+            metaKey: false,
+            shiftKey: false,
+            target: inputTarget,
+            preventDefault() { throw new Error("should not capture editable shortcut"); },
+            stopPropagation() {},
+        });
+        assert.deepStrictEqual(actions.at(-1), { action: "redo_active_selection", details: undefined });
 
         panel.dispose();
     } finally {
@@ -311,6 +713,105 @@ test("GroupPanel saved and region summaries trigger their primary actions", () =
         regionItem?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.strictEqual(restoredTag, "site_a");
         assert.strictEqual(focusedRegion, "binding");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel saved selections card actions and inline forms", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        let lastAction: string | null = null;
+        let lastParams: any = null;
+        let restoredTag: string | null = null;
+
+        const panel = new GroupPanel(
+            host,
+            () => {}, // onSelect
+            () => {}, // onInteraction
+            () => {}, // onFocus
+            () => {}, // onHover
+            () => {}, // onContext
+            () => {}, // onAnnotationContext
+            (tag) => { restoredTag = tag; }, // onActivateSavedSelection
+            () => {}, // onFocusRegion
+            (action, params) => { lastAction = action; lastParams = params; } // onAction
+        );
+
+        const structure = { units: [{ kind: 0, elements: [0,1], model: {
+            sourceData: {
+                kind: "mol-viewer:molsysmt",
+                data: {
+                    molsys_molecule_id: [0, 0],
+                    molsys_molecule_name: ["Peptide", "Peptide"],
+                    molsys_component_id: [0, 0],
+                    molsys_component_name: ["Protein", "Protein"],
+                },
+            },
+            atomicHierarchy: {
+                residueAtomSegments: { offsets: [0, 2] },
+                chainAtomSegments: { index: [0, 0] },
+                atoms: { label_comp_id: { value: (_i: number) => "ALA" } },
+                residues: { auth_seq_id: { value: (i: number) => i + 1 } },
+                chains: {
+                    label_asym_id: { value: (_i: number) => "A" },
+                    label_entity_id: { value: (_i: number) => "0" },
+                },
+                index: { getEntityFromChain: (_i: number) => 0 },
+            },
+        }}] } as any;
+
+        panel.setStructure(structure);
+        panel.setSavedSelections([{ tag: "site_a", atom_count: 2, element_level: "group" }]);
+
+        const root = host.children[0];
+
+        // 1. Activate
+        const activateBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-activate", "site_a");
+        assert.ok(activateBtn);
+        activateBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(restoredTag, "site_a");
+
+        // 2. Compose Union
+        const unionBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-compose-add", "site_a");
+        assert.ok(unionBtn);
+        unionBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(lastAction, "compose_saved_selection");
+        assert.deepEqual(lastParams, { tag: "site_a", op: "add" });
+
+        // 3. Rename inline form triggering
+        const renameBtn = findFirstByAttribute(root, "data-molsysviewer-saved-selection-rename", "site_a");
+        assert.ok(renameBtn);
+        const card = findFirstByAttribute(root, "data-molsysviewer-saved-selection-card", "site_a");
+        assert.ok(card);
+        const btnRow = findFirstByAttribute(card, "data-molsysviewer-saved-selection-buttons-row", "site_a");
+        const inlineForm = card?.children[1] as any;
+        assert.ok(btnRow);
+        assert.ok(inlineForm);
+
+        // Initially inlineForm is hidden
+        assert.strictEqual(inlineForm.style.display, "none");
+
+        // Trigger rename
+        renameBtn?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(btnRow.style.display, "none");
+        assert.strictEqual(inlineForm.style.display, "flex");
+
+        // Fill and confirm rename
+        const input = inlineForm.children[0] as any;
+        const confirm = inlineForm.children[1] as any;
+        input.value = "site_new";
+        confirm?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        assert.strictEqual(lastAction, "rename_selection");
+        assert.deepEqual(lastParams, { tag: "site_a", new_tag: "site_new" });
+
+        // Form hides after confirm
+        assert.strictEqual(inlineForm.style.display, "none");
+        assert.strictEqual(btnRow.style.display, "flex");
 
         panel.dispose();
     } finally {

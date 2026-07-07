@@ -38,6 +38,36 @@ The Python side is intentionally layered:
 - **Loaders / private helpers**:
   - payload building, remapping, coordinate normalization, and export helpers.
 
+## Molecular-system index space
+
+There is **one canonical, functional index space: the loaded system, `view._molsys`**
+(the input converted to `molsysmt.MolSys`). Every selection and interaction — atom
+indices **and** structure/frame indices, on the Python API, the frontend, and what the
+user sees — is expressed in `_molsys` space. Atom `0` is the atom the user sees as `0`;
+`view.select`, `active_selection`, regions, expansion, and trajectory frames all resolve
+against `_molsys`.
+
+`view.molecular_system` is the **original input** (often a raw file form, e.g. an
+`.h5msm`) and is **provenance only** — never queried on the functional path (querying it
+is both fragile, e.g. h5py fancy-index ordering, and slow).
+
+When a **subset** is loaded, the link back to the original is kept as **reference only**,
+in **two independent per-axis mappers**:
+
+- `view._atom_index_mapper` — present iff *atoms* are a real subset (`selection != "all"`).
+- `view._structure_index_mapper` — present iff *structures* are a real subset
+  (`structure_indices != "all"`).
+
+Each is `None` when its axis is fully loaded (no identity mappers), and **neither is
+consulted in the functional path** — they exist solely to recover original indices on
+demand. This is a deliberate correction of an earlier "everything mapped to the original
+system" default; see the git history of
+`pending_bugs/active_selection_index_space_unification.md` for the full diagnosis.
+
+The only atom-index remapping that *is* functional is `apply_system_edit`'s
+`atom_index_map` — a **temporal** reconciliation of old↔new `_molsys` across an edit,
+orthogonal to the loaded↔original axis above.
+
 ## Live Edit and Rebuild
 
 Editing the molecular system lives **outside** the viewer core. The viewer exposes a

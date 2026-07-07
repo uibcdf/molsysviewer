@@ -2,13 +2,13 @@ import { StructureElement, Structure, Unit } from "molstar/lib/mol-model/structu
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 
-import { ActiveSelectionItem, ActiveSelectionPayload, GroupSelectionItem } from "../managers/active-selection";
+import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation, GroupSelectionItem } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
 import { ResidueToClass, PhysicochemicalColorsHex } from "../themes/physicochemical-color";
 import { getPerAtomColor } from "../themes/per-atom-color";
 
-type OnSelect = (items: ActiveSelectionItem[], additive: boolean) => void;
+type OnSelect = (items: ActiveSelectionItem[], op: ActiveSelectionSetOperation) => void;
 type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
 type OnFocus = (item: ActiveSelectionItem) => void;
 type OnHover = (item: ActiveSelectionItem | null) => void;
@@ -346,7 +346,7 @@ export class GroupStrip {
                 if (allItems.length > 0) {
                     this.onInteraction(allItems[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
                     if (allItems.length > 1) {
-                        this.onSelect(allItems, true);
+                        this.onSelect(allItems, "add");
                     }
                 }
             });
@@ -425,7 +425,7 @@ export class GroupStrip {
                     if (items.length > 0) {
                         this.onInteraction(items[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
                         if (items.length > 1) {
-                            this.onSelect(items, true);
+                            this.onSelect(items, "add");
                         }
                     }
                 });
@@ -531,7 +531,7 @@ export class GroupStrip {
                                 entity_indices: item.entity_indices,
                                 tag: primary.tag,
                                 text: primary.text,
-                            }], !!(event as MouseEvent).shiftKey);
+                            }], (event as MouseEvent).shiftKey ? "add" : "replace");
                         });
                         badge.addEventListener("contextmenu", (event) => {
                             event.preventDefault();

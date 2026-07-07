@@ -33,8 +33,6 @@ per-section "Current runtime note" blocks):
 
 - **`picking_level`** as a public concept is listed under "Decided" but is **not in
   the code** (no `picking_level` in Python or TS) — aspirational, not implemented.
-- **Subtract / Intersect** set operations (added to the vocabulary this session; see
-  the section below) — pending.
 - `tool_selection` as a first-class public object — open.
 - Persistent picking-level configuration, a `bond` target policy, and
   `show_only`/`make_region` actions on `active_selection` — future direction.
@@ -253,10 +251,21 @@ Currently implemented (canvas / strips, in `managers/active-selection.ts`):
 - **Range** — `Shift + Alt + left click`.
 - **Clear** — left click on empty canvas.
 
-**Pending extension:** **Subtract** and **Intersect** at the *group* level (e.g.
-"subtract all HIS", "intersect with a saved selection") are not yet part of the
-contract. They cannot be expressed by a single canvas click, so surfaces expose them
-via explicit controls — see the Studio → Selection subpanel proposal
+Defined extension (Studio → Selection Phase 0):
+
+- **Subtract** — remove every incoming item from `active_selection`, using the same
+  item identity used by Add/toggle. Aggregate index arrays are recomputed from the
+  surviving items or, for backend atom-index operations, from
+  `current_atom_indices - incoming_atom_indices`.
+- **Intersect** — keep only items that are present in both the current and incoming
+  selections. Aggregate index arrays are recomputed from the surviving items or, for
+  backend atom-index operations, from `current_atom_indices ∩ incoming_atom_indices`.
+- **Invert** — global complement operation. It requires a known universe, normally
+  all atoms in the currently loaded molecular system, and returns
+  `universe_atom_indices - current_atom_indices`.
+
+Subtract and Intersect cannot be expressed by a single canvas click, so surfaces
+expose them via explicit controls — see the Studio → Selection subpanel proposal
 (`pending_proposals/studio_selection_subpanel.md`). No new *click* modifier is
 planned (`Alt`+click is avoided; Linux window managers commonly capture it).
 

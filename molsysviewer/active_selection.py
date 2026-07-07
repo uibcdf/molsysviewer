@@ -1,10 +1,53 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from smonitor import signal
 
 from ._private.arg_digestion import digest
+
+SelectionCombineOperation = Literal["replace", "add", "subtract", "intersect", "invert"]
+
+
+def _dedupe_indices(indices: Any) -> list[int]:
+    seen: set[int] = set()
+    out: list[int] = []
+    for item in indices or []:
+        value = int(item)
+        if value in seen:
+            continue
+        seen.add(value)
+        out.append(value)
+    return out
+
+
+def _combine(
+    current: Any,
+    incoming: Any,
+    op: SelectionCombineOperation,
+    *,
+    universe: Any | None = None,
+) -> list[int]:
+    """Combine atom-index selections with the shared selection operation vocabulary."""
+    current_indices = _dedupe_indices(current)
+    incoming_indices = _dedupe_indices(incoming)
+    incoming_set = set(incoming_indices)
+
+    if op == "replace":
+        return incoming_indices
+    if op == "add":
+        current_set = set(current_indices)
+        return current_indices + [item for item in incoming_indices if item not in current_set]
+    if op == "subtract":
+        return [item for item in current_indices if item not in incoming_set]
+    if op == "intersect":
+        return [item for item in current_indices if item in incoming_set]
+    if op == "invert":
+        base = _dedupe_indices(incoming_indices if universe is None else universe)
+        current_set = set(current_indices)
+        return [item for item in base if item not in current_set]
+
+    raise ValueError(f"Unsupported selection combine operation: {op!r}.")
 
 
 def _empty_payload() -> dict[str, Any]:
@@ -126,10 +169,12 @@ class ActiveSelection:
         """Set the active selection to the atoms matching ``selection``.
 
         ``selection`` is a MolSysMT selection expression or an explicit list of
-        atom indices (in the molecular-system index space). Updates both the
-        Python-side active-selection payload and the frontend runtime, mirroring
-        an interaction-driven selection. A selection that resolves to no atoms
-        clears the active selection. Returns ``self``.
+        atom indices, both in the **loaded system** (``view._molsys``) index space —
+        the same space the frontend uses. Updates the Python-side active-selection
+        payload and the frontend runtime, mirroring an interaction-driven selection.
+        A selection that resolves to no atoms clears the active selection. Returns
+        ``self``. Note: this only *reads* the loaded system (via ``msm.get``) to derive
+        metadata; it never mutates it and never queries the original input form.
         """
         import molsysmt as msm
 
@@ -137,34 +182,37 @@ class ActiveSelection:
         if molsys is None:
             raise ValueError("No molecular system loaded.")
 
-        atom_indices = [
-            int(i)
-            for i in msm.select(molsys, selection=selection, syntax=syntax, skip_digestion=True)
-        ]
+        # Resolve the target to atom indices in _molsys' index space.
+        if syntax == "Indices" or not isinstance(selection, str):
+            raw_indices = [] if selection is None else selection
+            atom_indices = [int(i) for i in raw_indices]
+        else:
+            atom_indices = [
+                int(i)
+                for i in msm.select(molsys, selection=selection, element="atom", syntax=syntax, skip_digestion=True)
+            ]
+        atom_indices = list(dict.fromkeys(atom_indices))  # dedupe, keep incorporation order
         if not atom_indices:
             self.clear(skip_digestion=True)
             return self
 
-        group_indices = sorted(
-            {
-                int(g)
-                for g in msm.get(
-                    molsys,
-                    element="atom",
-                    selection=atom_indices,
-                    group_index=True,
-                    skip_digestion=True,
-                )
-            }
-        )
+        # Derive the full per-level metadata from _molsys (in-memory MolSys) — a
+        # read-only query; never against the original input (view.molecular_system).
+        level_indices: dict[str, list[int]] = {}
+        for level in ("group", "component", "chain", "molecule", "entity"):
+            values = msm.get(
+                molsys,
+                element="atom",
+                selection=atom_indices,
+                skip_digestion=True,
+                **{f"{level}_index": True},
+            )
+            level_indices[level] = sorted({int(v) for v in values})
 
-        local_atoms = atom_indices
-        if self._view._index_mapper is not None:  # noqa: SLF001
-            local_atoms = self._view._index_mapper.to_local_atoms(atom_indices)  # noqa: SLF001
-
+        # _molsys index space == frontend index space, so send the atoms as-is.
         self._view._send({  # noqa: SLF001
             "op": "set_active_selection",
-            "atom_indices": list(local_atoms),
+            "atom_indices": list(atom_indices),
         })
         self._view._last_active_selection_event = {  # noqa: SLF001
             "event": "interaction_active_selection_changed",
@@ -173,16 +221,27 @@ class ActiveSelection:
             "target_level": "none",
             "items": [],
             "atom_indices": list(atom_indices),
-            "group_indices": list(group_indices),
-            "component_indices": [],
-            "chain_indices": [],
-            "molecule_indices": [],
-            "entity_indices": [],
+            "group_indices": level_indices["group"],
+            "component_indices": level_indices["component"],
+            "chain_indices": level_indices["chain"],
+            "molecule_indices": level_indices["molecule"],
+            "entity_indices": level_indices["entity"],
             "count_atoms": len(atom_indices),
-            "count_groups": len(group_indices),
+            "count_groups": len(level_indices["group"]),
             "count_shapes": 0,
             "count_annotations": 0,
         }
+        if hasattr(self._view, "_selection_recipe_step") and hasattr(self._view, "_set_active_selection_recipe"):
+            source = "query" if isinstance(selection, str) and syntax != "Indices" else "indices"
+            step = self._view._selection_recipe_step(  # noqa: SLF001
+                source=source,
+                op="replace",
+                atom_indices=atom_indices,
+                expression=selection if source == "query" else None,
+                syntax=syntax,
+                element="atom",
+            )
+            self._view._set_active_selection_recipe([step])  # noqa: SLF001
         return self
 
     @signal(tags=["selection"])
@@ -191,6 +250,8 @@ class ActiveSelection:
         """Clear the active selection in both Python and the frontend runtime."""
         self._view._send({"op": "clear_active_selection"})  # noqa: SLF001
         self._view._last_active_selection_event = _empty_payload()  # noqa: SLF001
+        if hasattr(self._view, "_set_active_selection_recipe"):
+            self._view._set_active_selection_recipe([])  # noqa: SLF001
 
     @signal(tags=["selection", "region"])
     @digest()
@@ -233,4 +294,4 @@ class ActiveSelection:
         return self._view.selections.add_from_active_selection(tag=tag, skip_digestion=True)
 
 
-__all__ = ["ActiveSelection"]
+__all__ = ["ActiveSelection", "_combine"]

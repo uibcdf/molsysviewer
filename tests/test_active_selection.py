@@ -1,4 +1,8 @@
+import pytest
+
 from molsysviewer import demo
+from molsysviewer.active_selection import _combine
+from molsysviewer.loaders.load_molsysmt import load_from_molsysmt
 
 
 def _seed_group_selection(view, group_index=1):
@@ -86,3 +90,277 @@ def test_active_selection_set_with_empty_match_clears():
     view.active_selection.set('atom_name=="ZZZ"')
 
     assert view.active_selection.is_empty() is True
+
+
+def test_combine_selection_indices_preserves_order_and_supports_shared_ops():
+    assert _combine([3, 1, 3], [1, 2, 2], "replace") == [1, 2]
+    assert _combine([3, 1, 3], [1, 2, 2], "add") == [3, 1, 2]
+    assert _combine([3, 1, 2, 4], [1, 4], "subtract") == [3, 2]
+    assert _combine([3, 1, 2, 4], [1, 4, 9], "intersect") == [1, 4]
+    assert _combine([3, 1], [], "invert", universe=[0, 1, 2, 3, 4]) == [0, 2, 4]
+
+
+def test_combine_selection_indices_rejects_unknown_ops():
+    with pytest.raises(ValueError, match="Unsupported selection combine operation"):
+        _combine([1], [2], "xor")  # type: ignore[arg-type]
+
+
+def test_context_action_apply_selection_query_combines_with_active_selection():
+    view = demo["dialanine"]
+    group_0 = list(view.select(selection="group_index==0"))
+    group_1 = list(view.select(selection="group_index==1"))
+    view.active_selection.set(group_0)
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "apply_selection_query",
+            "expression": "group_index==1",
+            "syntax": "MolSysMT",
+            "op": "add",
+        }
+    )
+
+    assert sorted(view.active_selection.atom_indices) == sorted(group_0 + group_1)
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "apply_selection_query",
+            "expression": group_0,
+            "syntax": "Indices",
+            "op": "subtract",
+        }
+    )
+
+    assert view.active_selection.atom_indices == group_1
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "apply_selection_query",
+            "expression": group_1,
+            "syntax": "Indices",
+            "op": "invert",
+        }
+    )
+
+    assert set(view.active_selection.atom_indices).isdisjoint(group_1)
+    assert len(view.active_selection.atom_indices) == int(view._molsys.get_n_atoms()) - len(group_1)  # noqa: SLF001
+    recipe = view._active_selection_recipe  # noqa: SLF001
+    assert recipe[-1]["source"] == "indices"
+    assert recipe[-1]["op"] == "invert"
+    assert recipe[-1]["atom_indices"] == group_1
+
+
+def test_context_action_apply_selection_query_records_composable_recipe():
+    view = demo["dialanine"]
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "apply_selection_query",
+            "expression": "group_index==0",
+            "syntax": "MolSysMT",
+            "op": "replace",
+        }
+    )
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "apply_selection_query",
+            "expression": "group_index==1",
+            "syntax": "MolSysMT",
+            "op": "add",
+        }
+    )
+
+    recipe = view._active_selection_recipe  # noqa: SLF001
+    assert [step["op"] for step in recipe] == ["replace", "add"]
+    assert [step["expression"] for step in recipe] == ["group_index==0", "group_index==1"]
+    view.active_selection.save("combined")
+    record = view.selections.records()[0]
+    assert record["recipe"] == recipe
+
+
+def test_context_action_preview_selection_query_is_runtime_only():
+    view = demo["dialanine"]
+    before = len(view._message_history)  # noqa: SLF001
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = sent.append
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "selection_query_preview_request",
+            "request_id": 7,
+            "expression": "group_index==1",
+            "syntax": "MolSysMT",
+        }
+    )
+
+    assert len(view._message_history) == before  # noqa: SLF001
+    assert sent[-1]["op"] == "selection_query_preview"
+    assert sent[-1]["request_id"] == 7
+    assert sent[-1]["ok"] is True
+    assert sent[-1]["count"] == len(view.select(selection="group_index==1"))
+
+
+def test_context_action_apply_selection_query_error_keeps_active_selection():
+    view = demo["dialanine"]
+    original = _seed_group_selection(view, 1)
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = sent.append
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "apply_selection_query",
+            "expression": "not-an-index",
+            "syntax": "Indices",
+            "op": "replace",
+        }
+    )
+
+    assert view.active_selection.atom_indices == original
+    assert sent[-1]["op"] == "backend_error_occurred"
+    assert sent[-1]["action"] == "apply_selection_query"
+    assert sent[-1]["error_type"] == "ValueError"
+    assert "integer atom indices" in sent[-1]["error_message"]
+
+
+def test_context_action_preview_selection_query_error_is_inline_runtime_only():
+    view = demo["dialanine"]
+    before = len(view._message_history)  # noqa: SLF001
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = sent.append
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "selection_query_preview_request",
+            "request_id": 8,
+            "expression": "not-an-index",
+            "syntax": "Indices",
+        }
+    )
+
+    assert len(view._message_history) == before  # noqa: SLF001
+    assert sent[-1]["op"] == "selection_query_preview"
+    assert sent[-1]["request_id"] == 8
+    assert sent[-1]["ok"] is False
+    assert sent[-1]["error_type"] == "ValueError"
+    assert "integer atom indices" in sent[-1]["error_message"]
+
+
+def test_context_action_expand_selection_to_hierarchical_levels():
+    view = demo["dialanine"]
+    group_1 = list(view.select(selection="group_index==1"))
+    view.active_selection.set(group_1[:2])
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "expand_selection",
+            "level": "group",
+        }
+    )
+
+    assert view.active_selection.atom_indices == group_1
+
+    view.active_selection.set(group_1[:2])
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "expand_selection",
+            "level": "chain",
+        }
+    )
+
+    assert view.active_selection.atom_indices == list(range(int(view._molsys.get_n_atoms())))  # noqa: SLF001
+
+
+def test_context_action_expand_selection_rejects_empty_or_unknown_level():
+    view = demo["dialanine"]
+    sent = []
+    view._ready = True  # noqa: SLF001
+    view.widget.send = sent.append
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "expand_selection",
+            "level": "group",
+        }
+    )
+
+    assert sent[-1]["op"] == "backend_error_occurred"
+    assert "non-empty active selection" in sent[-1]["error_message"]
+
+    view.active_selection.set([0])
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "expand_selection",
+            "level": "residue",
+        }
+    )
+
+    assert sent[-1]["op"] == "backend_error_occurred"
+    assert "Unsupported selection expansion level" in sent[-1]["error_message"]
+
+
+def test_context_action_spatial_expand_selection_routes_through_native_query(monkeypatch):
+    view = demo["dialanine"]
+    view.active_selection.set([0, 1])
+    captured = {}
+
+    def fake_select(*, selection, syntax="MolSysMT", element="atom", skip_digestion=False, **_kwargs):
+        captured["selection"] = selection
+        captured["syntax"] = syntax
+        captured["element"] = element
+        captured["skip_digestion"] = skip_digestion
+        return [0, 1, 2, 3]
+
+    monkeypatch.setattr(view, "select", fake_select)
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "expand_selection",
+            "level": "spatial",
+            "distance_angstroms": 4.0,
+        }
+    )
+
+    assert captured == {
+        "selection": "all within 4 angstroms of atom_index in [0, 1]",
+        "syntax": "MolSysMT",
+        "element": "atom",
+        "skip_digestion": True,
+    }
+    assert view.active_selection.atom_indices == [0, 1, 2, 3]
+
+
+def test_context_action_expand_selection_uses_loaded_index_space_for_subset():
+    original_view = demo["dialanine"]
+    view = load_from_molsysmt(original_view.molecular_system, selection="group_index==1")
+    assert view._atom_index_mapper is not None  # noqa: SLF001
+    assert view._structure_index_mapper is None  # noqa: SLF001
+
+    view.active_selection.set([0])
+    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._message_history[-1]["atom_indices"] == [0]  # noqa: SLF001
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "expand_selection",
+            "level": "group",
+        }
+    )
+
+    assert view.active_selection.atom_indices == list(range(10))
+    assert view._message_history[-1]["op"] == "set_active_selection"  # noqa: SLF001
+    assert view._message_history[-1]["atom_indices"] == list(range(10))  # noqa: SLF001

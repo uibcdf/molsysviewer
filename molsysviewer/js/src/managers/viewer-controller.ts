@@ -909,8 +909,11 @@ export class MolSysViewerController {
         }
 
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
-        this.groupPanel = new GroupPanel(host, (items, additive) => {
-            this.activeSelection.setItems(items, additive);
+        this.activeSelection.setHistoryListener((state) => {
+            this.groupPanel?.updateSelectionHistoryState(state);
+        });
+        this.groupPanel = new GroupPanel(host, (items, op) => {
+            this.activeSelection.setItems(items, op);
         }, (item, modifiers) => {
             this.activeSelection.handleItemClick(item, modifiers);
         }, (item) => {
@@ -949,6 +952,21 @@ export class MolSysViewerController {
                 this.downloadViewportImage();
                 return;
             }
+            if (action === "undo_active_selection") {
+                this.activeSelection.undo();
+                return;
+            }
+            if (action === "redo_active_selection") {
+                this.activeSelection.redo();
+                return;
+            }
+            if (action === "selection_query_preview_request") {
+                emitInteractionEvent({
+                    event: "selection_query_preview_request",
+                    ...details,
+                });
+                return;
+            }
             emitInteractionEvent({
                 event: "interaction_context_action",
                 action,
@@ -961,6 +979,10 @@ export class MolSysViewerController {
                 color: themeName as any
             });
         }, { sharedShell, floating: floatingPanels, model: this.model });
+        this.groupPanel.updateSelectionHistoryState({
+            canUndo: this.activeSelection.canUndo(),
+            canRedo: this.activeSelection.canRedo(),
+        });
         const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
         addonsOptions.model = this.model;
         addonsOptions.onAction = (action: string, details: any) => {
@@ -1837,8 +1859,9 @@ export class MolSysViewerController {
             ? msg.atom_indices.filter((value: unknown): value is number => typeof value === "number")
             : [];
         const atomCount = atomIndices.length;
+        const elementLevel = typeof msg?.element_level === "string" ? msg.element_level : undefined;
         const next = this.savedSelections.filter((item) => item.tag !== tag);
-        next.push({ tag, atom_count: atomCount, atom_indices: atomIndices });
+        next.push({ tag, atom_count: atomCount, atom_indices: atomIndices, element_level: elementLevel });
         this.savedSelections = next.sort((a, b) => a.tag.localeCompare(b.tag));
     }
 
@@ -1942,6 +1965,7 @@ export class MolSysViewerController {
                                msg.op === "load_pdb_id";
             if (isLoaderOp) {
                 this.hideWelcomeCard();
+                this.activeSelection.clearHistory();
             }
 
             if ((msg as any).op === "load_molsys_payload" || (msg as any).op === "load_molsys_payload_ref") {
@@ -2056,7 +2080,10 @@ export class MolSysViewerController {
                     this.selectWorkspacePanel(workspaceId, panelId);
                     break;
                 }
-                case "clear_scene": await this.scene.clearScene(msg); break;
+                case "clear_scene":
+                    this.activeSelection.clearHistory();
+                    await this.scene.clearScene(msg);
+                    break;
                 case "clear_all": await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
 
@@ -2374,6 +2401,11 @@ export class MolSysViewerController {
                     break;
                 }
 
+                case "selection_query_preview": {
+                    this.groupPanel.updateSelectionQueryPreview(msg as any);
+                    break;
+                }
+
                 case "set_canvas_visibility": {
                     const visible = (msg as any).visible !== false;
                     this.setCanvasVisibility(visible);
@@ -2413,6 +2445,7 @@ export class MolSysViewerController {
         if (last) {
             const structure = last.cell.obj?.data;
             this.currentStructure = last.cell.transform.ref as any;
+            this.activeSelection.clearHistory();
             this.groupPanel.setStructure(structure);
             this.refreshNavigatePanel();
             this.addonsPanel.setVisible(true);
@@ -2424,6 +2457,7 @@ export class MolSysViewerController {
             this.trajectory.notifyListeners();
         } else {
             this.currentStructure = undefined;
+            this.activeSelection.clearHistory();
             this.groupPanel.setStructure(undefined);
             this.refreshNavigatePanel();
             this.activeSelection.setAllAvailableItems([]);

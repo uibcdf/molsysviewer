@@ -360,38 +360,6 @@ class MolSysMTInterfaceMixin:
         -----
         This method intentionally focuses on the common workflow: returning indices.
         """
-        if self._index_mapper is not None and self.molecular_system is not None:
-            # Query the original molecular system
-            orig_res = msm.select(
-                self.molecular_system,
-                selection=selection,
-                structure_indices=structure_indices,
-                element=element,
-                mask=mask,
-                syntax=syntax,
-                skip_digestion=True,
-            )
-            # Filter the original indices to only include loaded elements
-            if isinstance(orig_res, np.ndarray):
-                orig_list = orig_res.tolist()
-            elif isinstance(orig_res, (list, tuple, range)):
-                orig_list = list(orig_res)
-            else:
-                orig_list = [orig_res]
-
-            if element == "atom":
-                allowed = set(self._index_mapper.original_atoms)
-                filtered = [idx for idx in orig_list if idx in allowed]
-            elif element in ("structure", "frame"):
-                allowed = set(self._index_mapper.original_structures)
-                filtered = [idx for idx in orig_list if idx in allowed]
-            else:
-                filtered = orig_list
-
-            if isinstance(orig_res, np.ndarray):
-                return np.array(filtered, dtype=orig_res.dtype)
-            return filtered
-
         local_res = msm.select(
             self._molsys,
             selection=selection,
@@ -418,19 +386,11 @@ class MolSysMTInterfaceMixin:
         **kwargs,
     ):
         """Retrieve attribute values from the current molecular system (MolSysMT get)."""
-        mapped_selection = selection
-        mapped_structure_indices = structure_indices
-        if self._index_mapper is not None:
-            if selection is not None and not isinstance(selection, str):
-                mapped_selection = self._index_mapper.to_local_atoms(selection)
-            if structure_indices is not None and not isinstance(structure_indices, str):
-                mapped_structure_indices = self._index_mapper.to_local_structures(structure_indices)
-
         return msm.get(
             self._molsys,
             element=element,
-            selection=mapped_selection,
-            structure_indices=mapped_structure_indices,
+            selection=selection,
+            structure_indices=structure_indices,
             mask=mask,
             syntax=syntax,
             get_missing_bonds=get_missing_bonds,

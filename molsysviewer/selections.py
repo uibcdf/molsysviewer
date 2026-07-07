@@ -68,15 +68,12 @@ class Selection:
         atom_indices = info.get("atom_indices") or []
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
             raise ValueError(f"Selection {self.tag!r} does not resolve to any atoms.")
-        
-        local_atoms = atom_indices
-        if self._view._index_mapper is not None:
-            local_atoms = self._view._index_mapper.to_local_atoms(atom_indices)
 
         self._view._send({  # noqa: SLF001
             "op": "set_active_selection",
-            "atom_indices": list(local_atoms),
+            "atom_indices": list(atom_indices),
         })
+        recipe = [dict(step) for step in (info.get("recipe") or []) if isinstance(step, dict)]
         payload = {
             "event": "interaction_active_selection_changed",
             "source_kind": "element",
@@ -95,6 +92,8 @@ class Selection:
             "count_annotations": 0,
         }
         self._view._last_active_selection_event = payload  # noqa: SLF001
+        if hasattr(self._view, "_set_active_selection_recipe"):
+            self._view._set_active_selection_recipe(recipe)  # noqa: SLF001
         return self._view.active_selection  # noqa: SLF001
 
     @signal(tags=["selection", "region"])
@@ -171,6 +170,11 @@ class SelectionsManager:
         for tag in self.tags:
             yield self._selection(tag)
 
+    def __contains__(self, tag: object) -> bool:
+        # Membership is by tag; `__iter__` yields Selection wrappers, so without
+        # this `tag in manager` would silently be False.
+        return isinstance(tag, str) and self._record_for_tag(tag) is not None
+
     def _selection(self, tag: str) -> Selection:
         if tag not in self._view._selections:  # noqa: SLF001
             self._view._selections[tag] = Selection(self._view, tag)  # noqa: SLF001
@@ -236,17 +240,8 @@ class SelectionsManager:
             molecule_indices = list(record.get("molecule_indices") or [])
             entity_indices = list(record.get("entity_indices") or [])
 
-            query_system = None
+            query_system = self._view._molsys  # noqa: SLF001
             query_selection = atom_indices
-            if self._view.molecular_system is not None:
-                query_system = self._view.molecular_system
-                query_selection = atom_indices
-            elif self._view._molsys is not None:  # noqa: SLF001
-                query_system = self._view._molsys  # noqa: SLF001
-                if self._view._index_mapper is not None:  # noqa: SLF001
-                    query_selection = self._view._index_mapper.to_local_atoms(atom_indices)  # noqa: SLF001
-                else:
-                    query_selection = atom_indices
 
             if query_system is not None and len(query_selection) > 0:
                 try:
@@ -337,7 +332,7 @@ class SelectionsManager:
                     )
                 except Exception:
                     pass
-            return {
+            summary = {
                 "kind": "selection",
                 "tag": record.get("tag"),
                 "source_kind": record.get("source_kind", "element"),
@@ -352,6 +347,14 @@ class SelectionsManager:
                 "entity_indices": entity_indices,
                 "count_items": len(record.get("items") or []),
             }
+            for key in ("expression", "syntax", "element", "recipe"):
+                if key in record:
+                    value = record[key]
+                    if key == "recipe" and isinstance(value, list):
+                        summary[key] = [dict(step) for step in value if isinstance(step, dict)]
+                    else:
+                        summary[key] = value
+            return summary
 
         records = self.records(skip_digestion=True)
         if tag is None:
@@ -376,6 +379,10 @@ class SelectionsManager:
         chain_indices: list[int] | None = None,
         molecule_indices: list[int] | None = None,
         entity_indices: list[int] | None = None,
+        expression: Any | None = None,
+        syntax: str | None = None,
+        element: str | None = None,
+        recipe: list[dict[str, Any]] | None = None,
     ) -> Selection:
         """Internal: build and send a save_selection message, return the Selection wrapper."""
         if self.contains(tag, skip_digestion=True):
@@ -394,6 +401,14 @@ class SelectionsManager:
             "molecule_indices": list(molecule_indices or []),
             "entity_indices": list(entity_indices or []),
         }
+        if expression is not None:
+            msg["expression"] = expression
+        if syntax is not None:
+            msg["syntax"] = syntax
+        if element is not None:
+            msg["element"] = element
+        if recipe:
+            msg["recipe"] = [dict(step) for step in recipe]
         self._view._send(msg)  # noqa: SLF001
         return self._selection(tag)
 
@@ -470,7 +485,25 @@ class SelectionsManager:
         ]
         if len(resolved) == 0:
             raise ValueError("Persistent selections require non-empty atom indices.")
-        return self._store_selection_record(tag, resolved)
+        source = "query" if isinstance(selection, str) and syntax != "Indices" else "indices"
+        recipe = [
+            self._view._selection_recipe_step(  # noqa: SLF001
+                source=source,
+                op="replace",
+                atom_indices=resolved,
+                expression=selection if source == "query" else None,
+                syntax=syntax,
+                element=element,
+            )
+        ] if hasattr(self._view, "_selection_recipe_step") else None
+        return self._store_selection_record(
+            tag,
+            resolved,
+            expression=selection if source == "query" else None,
+            syntax=syntax,
+            element=element,
+            recipe=recipe,
+        )
 
     @signal(tags=["selection", "interaction"])
     @digest()
@@ -494,6 +527,7 @@ class SelectionsManager:
             chain_indices=list(event.get("chain_indices") or []),
             molecule_indices=list(event.get("molecule_indices") or []),
             entity_indices=list(event.get("entity_indices") or []),
+            recipe=[dict(step) for step in (event.get("recipe") or getattr(self._view, "_active_selection_recipe", []))],
         )
 
     @signal(tags=["selection"])

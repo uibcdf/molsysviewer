@@ -63,7 +63,9 @@ export type LastMeasurementSummary = {
 export type SavedSelectionSummary = {
     tag: string;
     atom_count: number;
+    element_level?: string;
 };
+
 
 export type RegionSummary = {
     tag: string;

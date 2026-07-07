@@ -222,8 +222,8 @@ test("GroupStrip badge click selects annotation and shift-click is forwarded", (
     try {
         const host = new FakeElement() as any;
         const selected: any[] = [];
-        const strip = new GroupStrip(host, "A", (items, additive) => {
-            selected.push({ items, additive });
+        const strip = new GroupStrip(host, "A", (items, op) => {
+            selected.push({ items, op });
         }, () => {}, () => {}, () => {}, () => {}, () => {});
         (strip as any).groupItems = [
             {
@@ -265,7 +265,7 @@ test("GroupStrip badge click selects annotation and shift-click is forwarded", (
                 tag: "notes",
                 text: "Catalytic",
             }],
-            additive: true,
+            op: "add",
         }]);
 
         strip.dispose();

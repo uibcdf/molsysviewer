@@ -70,6 +70,8 @@ export type ActiveSelectionPayload = {
     count_annotations: number;
 };
 
+export type ActiveSelectionSetOperation = "replace" | "add" | "subtract" | "intersect";
+
 export function buildGroupItemsFromStructure(structure: Structure): GroupSelectionItem[] {
     // Find the first atomic unit to access the shared model/hierarchy.
     const firstAtomicUnit = structure.units.find((unit) => unit.kind === 0);
@@ -419,6 +421,10 @@ export class ActiveSelectionController {
     private items: ActiveSelectionItem[] = [];
     private allAvailableItems: GroupSelectionItem[] = [];
     private anchorItem: ActiveSelectionItem | null = null;
+    private readonly undoStack: ActiveSelectionItem[][] = [];
+    private readonly redoStack: ActiveSelectionItem[][] = [];
+    private readonly historyLimit = 10;
+    private historyListener?: (state: { canUndo: boolean; canRedo: boolean }) => void;
 
     // The original in-memory items (with their non-enumerable shape ``_loci`` refs)
     // for callers that need the live JS objects (e.g. ``syncVisualSelection`` to
@@ -430,8 +436,45 @@ export class ActiveSelectionController {
 
     constructor(private readonly notify?: (msg: any) => void) {}
 
+    setHistoryListener(listener: (state: { canUndo: boolean; canRedo: boolean }) => void): void {
+        this.historyListener = listener;
+        this.emitHistoryState();
+    }
+
     setAllAvailableItems(items: GroupSelectionItem[]): void {
         this.allAvailableItems = items;
+    }
+
+    canUndo(): boolean {
+        return this.undoStack.length > 0;
+    }
+
+    canRedo(): boolean {
+        return this.redoStack.length > 0;
+    }
+
+    clearHistory(): void {
+        this.undoStack.length = 0;
+        this.redoStack.length = 0;
+        this.emitHistoryState();
+    }
+
+    undo(): void {
+        const previous = this.undoStack.pop();
+        if (!previous) return;
+        this.redoStack.push([...this.items]);
+        this.items = [...previous];
+        this.emit();
+        this.emitHistoryState();
+    }
+
+    redo(): void {
+        const next = this.redoStack.pop();
+        if (!next) return;
+        this.undoStack.push([...this.items]);
+        this.items = [...next];
+        this.emit();
+        this.emitHistoryState();
     }
 
     handlePrimaryClick(ev: any): void {
@@ -457,15 +500,15 @@ export class ActiveSelectionController {
             if (this.anchorItem.chain_name === current.chain_name) {
                 const rangeItems = this.getRangeItems(this.anchorItem, current);
                 if (rangeItems.length > 0) {
-                    this.setItems(rangeItems, true, true);
+                    this.setItems(rangeItems, "add", true);
                     // Do not update anchor on range selection to allow expanding the range
                     return;
                 }
             }
         }
 
-        // Default behavior: single or additive selection
-        this.setItems(pickedItems, shift);
+        // Default behavior: single or add/toggle selection
+        this.setItems(pickedItems, shift ? "add" : "replace");
         this.anchorItem = current;
     }
 
@@ -476,13 +519,13 @@ export class ActiveSelectionController {
             if (this.anchorItem.chain_name === item.chain_name) {
                 const rangeItems = this.getRangeItems(this.anchorItem, item);
                 if (rangeItems.length > 0) {
-                    this.setItems(rangeItems, true, true);
+                    this.setItems(rangeItems, "add", true);
                     return;
                 }
             }
         }
 
-        this.setItems([item], shift);
+        this.setItems([item], shift ? "add" : "replace");
         this.anchorItem = item;
     }
 
@@ -503,14 +546,25 @@ export class ActiveSelectionController {
         return this.allAvailableItems.slice(start, end + 1);
     }
 
-    setItems(items: ActiveSelectionItem[], additive = false, isRange = false): void {
+    setItems(items: ActiveSelectionItem[], op: ActiveSelectionSetOperation = "replace", isRange = false): void {
         if (items.length === 0) {
-            if (!additive) this.clear();
+            if (op === "replace" || op === "intersect") this.clear();
             return;
         }
-        if (!additive) {
-            this.items = [...items];
-            this.emit();
+        if (op === "replace") {
+            this.applyItems([...items]);
+            return;
+        }
+        if (op === "subtract") {
+            const removeKeys = new Set(items.map((item) => signature(item)));
+            const next = this.items.filter((item) => !removeKeys.has(signature(item)));
+            this.applyItems(next);
+            return;
+        }
+        if (op === "intersect") {
+            const keepKeys = new Set(items.map((item) => signature(item)));
+            const next = this.items.filter((item) => keepKeys.has(signature(item)));
+            this.applyItems(next);
             return;
         }
         const next = [...this.items];
@@ -529,13 +583,11 @@ export class ActiveSelectionController {
             next.push(item);
             indexByKey.set(key, next.length - 1);
         }
-        this.items = next;
-        this.emit();
+        this.applyItems(next);
     }
 
     clear(): void {
-        this.items = [];
-        this.emit();
+        this.applyItems([]);
     }
 
     setFromAtomIndices(atomIndices: number[], structure: Structure | null | undefined): void {
@@ -565,10 +617,37 @@ export class ActiveSelectionController {
         }
         const loci = StructureElement.Loci(structure, lociElements as any);
         const items = lociToGroupItems(loci);
-        this.setItems(items, false);
+        this.setItems(items, "replace");
     }
 
     private emit(): void {
         this.notify?.(buildPayload(this.items));
     }
+
+    private applyItems(next: ActiveSelectionItem[]): void {
+        if (sameItems(this.items, next)) {
+            this.emit();
+            return;
+        }
+        this.undoStack.push([...this.items]);
+        if (this.undoStack.length > this.historyLimit) {
+            this.undoStack.shift();
+        }
+        this.redoStack.length = 0;
+        this.items = [...next];
+        this.emit();
+        this.emitHistoryState();
+    }
+
+    private emitHistoryState(): void {
+        this.historyListener?.({ canUndo: this.canUndo(), canRedo: this.canRedo() });
+    }
+}
+
+function sameItems(a: ActiveSelectionItem[], b: ActiveSelectionItem[]): boolean {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+        if (signature(a[i]) !== signature(b[i])) return false;
+    }
+    return true;
 }

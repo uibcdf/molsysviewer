@@ -43,13 +43,23 @@ js/src/
 ## 🛠️ Build Process (summary)
 
 1. Edit TypeScript files inside `js/src/`.
-2. Run the build (`npm run build` or the project-specific command).
-3. The bundler (esbuild) produces updated versions of:
+2. For development rebuilds, run `npm run build:runtime` from
+   `molsysviewer/js/`. This regenerates the runtime bundle without rewriting
+   JS package version metadata.
+3. Use `npm run build` only for release/packaging flows where syncing the JS
+   package version from Python is intentional. It runs
+   `sync-python-version.mjs` first and may rewrite
+   `molsysviewer/js/package.json`, including `pythonVersion`.
+4. The bundler (esbuild) produces updated versions of:
 
    * `molsysviewer/viewer.js`
    * `molsysviewer/viewer.js.map`
 
 AI agents must never write directly to these generated outputs.
+If `npm run build` is used accidentally in a dirty working tree and only
+`pythonVersion` changes to a local version such as `X.Y.Z+...dirty`, do not
+commit that metadata churn; use `npm run build:runtime` for normal TS
+validation work instead.
 
 ## 🤖 General Development Rules for AI Agents
 
@@ -67,6 +77,10 @@ AI agents must never write directly to these generated outputs.
     - E2E in `molsysviewer/js/tests/e2e` (headless Playwright: load structure, create region, hide). By default it uses Playwright Chromium; you can force a local Chrome/Chromium with `PW_CHROMIUM_BIN=/path/to/chrome npm run test:e2e`. If launch is blocked by crashpad/sandbox/missing WebGL, the test is skipped with a warning. These are run manually (not in CI) in an environment with a browser and WebGL; do not use xvfb/mesa for E2E.
 11. The `sandbox/` directory is a scratch area for developer experiments. Changes there may be committed without review, and should not drive architectural decisions or test expectations.
 12. **Test-run discipline**: Run tests only when the implementation is believed to be correct — not speculatively. Before re-running after a failure, read the full traceback, form a diagnosis, and fix the root cause. One run per fix attempt: no blind iteration. Sequence: (a) run the specific test file first (`pytest tests/test_foo.py -x -q`); (b) after it's green, run the full suite once (`pytest tests/ --tb=no -q`) to check for regressions. Never run the full suite more than once per implementation task.
+13. For TypeScript runtime validation during development, prefer
+    `npm run build:runtime` over `npm run build`. The latter is a
+    release/packaging command because it synchronizes package versions from the
+    Python `versioningit` output.
 
 ## Developer documentation (where to look first)
 

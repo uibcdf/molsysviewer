@@ -17,73 +17,90 @@ class IndexMapper:
         selection: str | Any = "all",
         structure_indices: str | Any = "all",
         syntax: str = "MolSysMT",
+        *,
+        build_atoms: bool = True,
+        build_structures: bool = True,
     ):
         self.selection = selection
         self.structure_indices = structure_indices
         self.syntax = syntax
+        self.build_atoms = build_atoms
+        self.build_structures = build_structures
         self.degraded: bool = False
         self.degraded_reason: str | None = None
         self.last_dropped_indices: dict[str, list[int]] = {}
         self.last_translation_error: str | None = None
+        self.original_atoms: list[int] | None = None
+        self.original_structures: list[int] | None = None
 
         # 1. Atom Indices Mapping
-        try:
-            original_atoms = msm.select(molecular_system, selection=selection, syntax=syntax)
-            if isinstance(original_atoms, np.ndarray):
-                self.original_atoms = original_atoms.tolist()
-            else:
-                self.original_atoms = list(original_atoms)
-        except Exception as exc:
-            self.degraded = True
-            self.degraded_reason = f"msm.select failed while building atom index map: {exc}"
-            emit_suppressed_exception(
-                "IndexMapper.__init__.select",
-                exc,
-                context={"selection": repr(selection), "syntax": syntax},
-            )
-            warnings.warn(self.degraded_reason, RuntimeWarning, stacklevel=2)
+        if build_atoms:
             try:
-                n_atoms = int(msm.get(molecular_system, element="system", n_atoms=True))
-            except Exception as fallback_exc:
+                original_atoms = msm.select(molecular_system, selection=selection, syntax=syntax)
+                if isinstance(original_atoms, np.ndarray):
+                    self.original_atoms = original_atoms.tolist()
+                else:
+                    self.original_atoms = list(original_atoms)
+            except Exception as exc:
+                self.degraded = True
+                self.degraded_reason = f"msm.select failed while building atom index map: {exc}"
                 emit_suppressed_exception(
-                    "IndexMapper.__init__.n_atoms_fallback",
-                    fallback_exc,
+                    "IndexMapper.__init__.select",
+                    exc,
                     context={"selection": repr(selection), "syntax": syntax},
                 )
-                n_atoms = 1
-            self.original_atoms = list(range(n_atoms))
+                warnings.warn(self.degraded_reason, RuntimeWarning, stacklevel=2)
+                try:
+                    n_atoms = int(msm.get(molecular_system, element="system", n_atoms=True))
+                except Exception as fallback_exc:
+                    emit_suppressed_exception(
+                        "IndexMapper.__init__.n_atoms_fallback",
+                        fallback_exc,
+                        context={"selection": repr(selection), "syntax": syntax},
+                    )
+                    n_atoms = 1
+                self.original_atoms = list(range(n_atoms))
 
-        self.atom_to_local = {orig: local for local, orig in enumerate(self.original_atoms)}
+        self.atom_to_local = (
+            {orig: local for local, orig in enumerate(self.original_atoms)}
+            if self.original_atoms is not None
+            else {}
+        )
 
         # 2. Structure/Frame Indices Mapping
-        if structure_indices is None or (isinstance(structure_indices, str) and structure_indices == "all"):
-            try:
-                n_structures = int(msm.get(molecular_system, element="system", n_structures=True))
-            except Exception as system_exc:
-                emit_suppressed_exception(
-                    "IndexMapper.__init__.n_structures_system",
-                    system_exc,
-                    context={"structure_indices": repr(structure_indices)},
-                )
+        if build_structures:
+            if structure_indices is None or (isinstance(structure_indices, str) and structure_indices == "all"):
                 try:
-                    n_structures = int(msm.get(molecular_system, element="structure", n_structures=True))
-                except Exception as structure_exc:
+                    n_structures = int(msm.get(molecular_system, element="system", n_structures=True))
+                except Exception as system_exc:
                     emit_suppressed_exception(
-                        "IndexMapper.__init__.n_structures_structure",
-                        structure_exc,
+                        "IndexMapper.__init__.n_structures_system",
+                        system_exc,
                         context={"structure_indices": repr(structure_indices)},
                     )
-                    n_structures = 1
-            self.original_structures = list(range(n_structures))
-        else:
-            if isinstance(structure_indices, np.ndarray):
-                self.original_structures = structure_indices.tolist()
-            elif isinstance(structure_indices, (list, tuple, range)):
-                self.original_structures = list(structure_indices)
+                    try:
+                        n_structures = int(msm.get(molecular_system, element="structure", n_structures=True))
+                    except Exception as structure_exc:
+                        emit_suppressed_exception(
+                            "IndexMapper.__init__.n_structures_structure",
+                            structure_exc,
+                            context={"structure_indices": repr(structure_indices)},
+                        )
+                        n_structures = 1
+                self.original_structures = list(range(n_structures))
             else:
-                self.original_structures = [int(structure_indices)]
+                if isinstance(structure_indices, np.ndarray):
+                    self.original_structures = structure_indices.tolist()
+                elif isinstance(structure_indices, (list, tuple, range)):
+                    self.original_structures = list(structure_indices)
+                else:
+                    self.original_structures = [int(structure_indices)]
 
-        self.structure_to_local = {orig: local for local, orig in enumerate(self.original_structures)}
+        self.structure_to_local = (
+            {orig: local for local, orig in enumerate(self.original_structures)}
+            if self.original_structures is not None
+            else {}
+        )
 
     def _record_dropped_indices(self, context: str, dropped: list[int]) -> None:
         self.last_dropped_indices[context] = dropped
@@ -136,6 +153,8 @@ class IndexMapper:
 
     def to_original_atom(self, local_index: int | None) -> int | None:
         if local_index is None:
+            return None
+        if self.original_atoms is None:
             return None
         try:
             return self.original_atoms[int(local_index)]
@@ -200,6 +219,8 @@ class IndexMapper:
 
     def to_original_structure(self, local_index: int | None) -> int | None:
         if local_index is None:
+            return None
+        if self.original_structures is None:
             return None
         try:
             return self.original_structures[int(local_index)]
