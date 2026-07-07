@@ -210,14 +210,22 @@ management; no visibility controls.
 
 ### A. Active Selection card
 
-- **Quick toolbar:** `All · None · Invert` (global set ops on the current system).
+- **Quick toolbar:** `All · None · Invert` (global set ops on the current system) and
+  `↶ ↷` **undo / redo** of the active selection (bounded history, ~10 states) to
+  recover from an accidental clear/misclick. `Ctrl+Z`/`Ctrl+Y` only while the panel is
+  focused, to avoid clashing with the browser/Jupyter. Model: see §5.
 - **Stats:** `N atoms · N groups · N chains · <level>` (from `active_selection`
   level getters). Empty state: "No active selection."
 - **Expand to whole:** `group · component · molecule · chain · entity` — for each
   selected atom, include all atoms sharing that element. (Terminology is MolSysMT's:
   **group**, not "residue".) Backed by the level index getters.
 - **Persist:** `Save as…` (inline name → a **named selection**; the tag/name lives
-  here).
+  here). **Name-collision policy:** the backend already rejects a duplicate tag
+  (`view.selections.add*` raises `ValueError`), so the inline input catches it and
+  offers **Rename / Overwrite / Cancel** (Merge — union with the existing selection —
+  only as a secondary option; it is semantically ambiguous). Programmatic saves may
+  auto-increment (`pocket_1`, `pocket_2`). Note: selections and regions are **separate
+  registries**, so a selection and a region may share a name without colliding.
 - **Promote bridges:** `→ Region`, `→ Label (3D)` — create a region or a 3D
   annotation from the active selection. (These are bridges into other categories;
   kept here as a "promote" affordance, symmetric with each other.)
@@ -245,7 +253,9 @@ management; no visibility controls.
 
 - List rows sorted by tag: `name · N atoms · <level>`.
 - Click row = **activate (Replace)**. Per-row compose buttons `+ / − / ∩`.
-- Per-row menu: `Activate · Rename · → Region · → Label · Delete`.
+- Per-row menu: `Activate · Rename · → Region · → Label · Delete`. `Rename` and
+  `→ Region` follow the same collision policy as §4A (backend raises on a duplicate
+  tag; the UI offers Rename / Overwrite / Cancel).
 - Empty: "No saved selections yet."
 
 ---
@@ -286,6 +296,20 @@ Replay behaviour (target):
 
 "Live / dynamic" selections (re-evaluate per trajectory frame) are **deferred**;
 default is *frozen indices + stored expression*.
+
+**Undo / redo.** The active selection keeps a **bounded history** (~10 states) so an
+accidental clear/misclick is recoverable (§4A `↶ ↷`). Simplest implementation: a
+snapshot stack of `active_selection` payloads; it also aligns with the step **recipe**
+above (undo ≈ drop the last recorded step and re-evaluate). History is **session-only**
+— it is not part of a saved selection's provenance.
+
+**Persistence limit — non-element selections.** Saved selections (`view.selections`)
+are **reactivated by atom indices** (`setFromAtomIndices`): the record stores element
+indices (+ raw `items`) but **not** restorable shape/annotation identity, and
+`count_shapes`/`count_annotations` are `0` on that path. So a saved selection that
+included **shapes or 3D annotations does not restore them as such** — only its
+associated atom indices (if any) are replayed. To persist those as objects, save them
+in their own categories (regions / annotations), not as a named selection.
 
 ---
 
@@ -450,6 +474,20 @@ From a second collaborator review (2026-07-07), all adopted:
 - **Temporal-dimension** note added to the contract (`atom`/structural selection is
   orthogonal to frames; the player owns frame selection).
 
+From a third collaborator review (2026-07-07):
+
+- **Undo / redo** history for the active selection (§4A, §5) — adopted as a feature,
+  built on the step recipe.
+- **Name-collision policy** (§4A, §4C) — adopted; the backend already raises on a
+  duplicate tag. Corrected: selections and regions are **separate registries**, and
+  Merge is a secondary option, not the default.
+- **Persistence limit for shapes/annotations** (§5) — adopted as an honesty note;
+  reworded (the record keeps `items`, but reactivation is index-based and does not
+  restore shapes/annotations as objects).
+- **Opt-in hover telemetry** — valid but **tangential** to this subpanel; recorded as
+  a scalability note in the `hover_target` section of the contract (not here).
+  Corrected: the hover debounce is **60 ms**, not 21 ms.
+
 ## 10. Suggested implementation slices
 
 1. Query box + operation buttons + apply-time validation (biggest capability gain).
@@ -459,3 +497,5 @@ From a second collaborator review (2026-07-07), all adopted:
 4. Saved-selection manager upgrade (rename, compose, promote menu).
 5. Guided chips + cheat-sheet.
 6. Reproducibility (provenance recipe + expression persistence).
+7. Name-collision handling on Save / Rename / → Region (Rename / Overwrite / Cancel).
+8. Undo / redo history for the active selection (bounded snapshot stack).

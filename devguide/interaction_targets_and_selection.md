@@ -134,6 +134,18 @@ Current runtime note:
   - simple fields such as `kind` and `atom_indices`
 - richer behavior and stronger typed target semantics still remain ahead
 
+Scalability note (opt-in hover telemetry):
+
+- hover events are currently forwarded to the kernel on every debounced hover (the
+  frontend debounce is **60 ms**), i.e. ~16 messages/s during continuous hover
+- on remote / high-latency deployments (cloud JupyterHub) this can flood the Comm
+  channel and hurt overall responsiveness, while most sessions only use hover in the
+  frontend (tooltips)
+- **direction:** make kernel-side hover forwarding **opt-in** — only transmit when a
+  Python callback is registered (e.g. `view.on_hover(cb)`) or a flag is set (e.g.
+  `view.enable_hover_telemetry = True`). This is its own small optimization, tracked
+  here; it is not part of the selection-subpanel work
+
 ### `context_target`
 
 - defined by right click / context-menu invocation
