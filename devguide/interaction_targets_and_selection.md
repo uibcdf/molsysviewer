@@ -1,5 +1,48 @@
 # Interaction Targets and Selection
 
+## Status (audited 2026-07-07)
+
+This is a **living design contract**, not a finished/implemented spec. It is the
+authoritative *home* for the interaction-selection model, but its parts are at
+different maturity. Audited against the code on the date above (not just against the
+per-section "Current runtime note" blocks):
+
+**Implemented & verified**
+
+- Canvas gestures: plain click = Replace, `Shift`+click = Add/**toggle** (removes an
+  already-selected element), `Shift`+`Alt`+click = Range, click on empty = Clear
+  (`managers/active-selection.ts`).
+- `active_selection` object exposing `source_kind`, `element_level`, `target_level`,
+  `items`, the six index arrays (`atom/group/component/chain/molecule/entity_indices`)
+  and counts (`count_atoms/groups/shapes/annotations`) (`active_selection.py`).
+- `view.hover_target` and `view.context_target` exist as **query-only**
+  `InteractionTarget` objects (`info`, `is_empty`, `kind`, `atom_indices`, `tag`,
+  `text`, `page_x`, `page_y`) — `interaction_targets.py`.
+
+**Partial (decided but incomplete)**
+
+- **Mixed** selections: only `element + annotation` is exercised;
+  `count_shapes`/`count_annotations` stay `0` in the element `set()` path, and
+  `active_selection.set()` always emits `source_kind="element"`. Broader mixed
+  behaviour is intentionally incomplete.
+- Human-readable metadata: `component_*`/`molecule_*` naming less complete than the
+  contract target.
+- The **final public object model** is explicitly still a "runtime slice".
+
+**Open / not implemented**
+
+- **`picking_level`** as a public concept is listed under "Decided" but is **not in
+  the code** (no `picking_level` in Python or TS) — aspirational, not implemented.
+- **Subtract / Intersect** set operations (added to the vocabulary this session; see
+  the section below) — pending.
+- `tool_selection` as a first-class public object — open.
+- Persistent picking-level configuration, a `bond` target policy, and
+  `show_only`/`make_region` actions on `active_selection` — future direction.
+
+Treat "### Decided" as *design intent recorded here*, not a guarantee of
+implementation; the per-section "Current runtime note" blocks track what is actually
+live.
+
 ## Target Taxonomy
 
 Canvas interactions should distinguish these target sources:
