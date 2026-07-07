@@ -12,7 +12,7 @@ from molsysviewer import (
     AddonSpec,
     AddonStyleHelperSpec,
     AddonToolModeSpec,
-    AddonWorkbenchSectionSpec,
+    AddonSectionSpec,
     AddonWorkspaceSpec,
     MolSysView,
     addon_templates,
@@ -56,12 +56,12 @@ def test_global_addons_registry_supports_complete_fake_addon():
                 order=10,
             ),
         ),
-        workbench_sections=(
-            AddonWorkbenchSectionSpec(
+        addon_sections=(
+            AddonSectionSpec(
                 id="pockets",
                 title="Pockets",
                 entry="topomt.workbench.pockets",
-                target_panel="workbench",
+                target_panel="addons",
                 order=30,
             ),
         ),
@@ -120,7 +120,7 @@ def test_global_addons_registry_supports_complete_fake_addon():
     assert records[0]["workspaces"][0]["id"] == "topomt"
     assert records[0]["panels"][0]["id"] == "topo"
     assert records[0]["context_actions"][0]["id"] == "focus-pocket"
-    assert records[0]["workbench_sections"][0]["id"] == "pockets"
+    assert records[0]["addon_sections"][0]["id"] == "pockets"
     assert records[0]["shape_providers"][0]["id"] == "pocket-surface"
     assert records[0]["style_helpers"][0]["id"] == "topography-publication"
     assert records[0]["export_helpers"][0]["id"] == "topography-figure"
@@ -151,7 +151,7 @@ def test_global_addons_registry_supports_complete_fake_addon():
         }
     ]
     assert addons.context_action_specs()[0]["addon"] == "topomt"
-    assert addons.workbench_section_specs()[0]["target_panel"] == "workbench"
+    assert addons.addon_section_specs()[0]["target_panel"] == "addons"
     assert addons.shape_provider_specs()[0]["kinds"] == ["surface", "cavity"]
     assert addons.style_helper_specs()[0]["tags"] == ["topography-publication"]
     assert addons.export_helper_specs()[0]["formats"] == ["png", "html"]
@@ -619,17 +619,17 @@ def test_view_addons_refresh_context_items_from_active_selection_hook():
 def test_addon_template_module_is_importable_and_registerable():
     addons.clear()
     try:
-        addon = addons.register_module("molsysviewer.addon_templates.minimal_topomt")
-        assert addon.name == "topomt-template"
-        assert addons.available() == ["topomt-template"]
-        assert addons.workspace_specs()[0]["id"] == "topomt"
-        assert [item["id"] for item in addons.panel_specs()] == ["topo", "channels", "regions"]
-        assert [item["id"] for item in addons.context_action_specs()] == ["focus-pocket", "inspect-channel"]
-        assert [item["id"] for item in addons.workbench_section_specs()] == ["pockets", "channels"]
-        assert addons.shape_provider_specs()[0]["id"] == "pocket-surface"
-        assert addons.export_helper_specs()[0]["id"] == "topography-figure"
-        assert addons.lifecycle_for("topomt-template") is not None
-        assert addons.lifecycle_for("topomt-template").info() == {
+        addon = addons.register_module("molsysviewer.addon_templates.dummy_addon")
+        assert addon.name == "dummy"
+        assert addons.available() == ["dummy"]
+        assert addons.workspace_specs()[0]["id"] == "dummy"
+        assert [item["id"] for item in addons.panel_specs()] == ["main", "secondary"]
+        assert [item["id"] for item in addons.context_action_specs()] == ["focus-dummy", "inspect-dummy"]
+        assert [item["id"] for item in addons.addon_section_specs()] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+        assert addons.shape_provider_specs()[0]["id"] == "dummy-shape"
+        assert addons.export_helper_specs()[0]["id"] == "dummy-export"
+        assert addons.lifecycle_for("dummy") is not None
+        assert addons.lifecycle_for("dummy").info() == {
             "has_on_enable": True,
             "has_on_disable": True,
             "has_on_context_action": True,
@@ -648,7 +648,7 @@ def test_elasnetmt_addon_template_module_is_importable_and_registerable():
         assert addons.workspace_specs()[0]["id"] == "elasnetmt"
         assert [item["id"] for item in addons.panel_specs()] == ["model", "modes", "figures"]
         assert [item["id"] for item in addons.context_action_specs()] == ["show-contact-network", "show-mode-vectors"]
-        assert [item["id"] for item in addons.workbench_section_specs()] == ["modes", "network-overlays"]
+        assert [item["id"] for item in addons.addon_section_specs()] == ["modes", "network-overlays"]
         assert [item["id"] for item in addons.shape_provider_specs()] == ["contact-links", "mode-ellipsoids"]
         assert addons.export_helper_specs()[0]["id"] == "enm-figure"
         assert addons.lifecycle_for("elasnetmt-template") is not None
@@ -665,38 +665,39 @@ def test_elasnetmt_addon_template_module_is_importable_and_registerable():
 def test_addon_template_module_has_visible_runtime_lifecycle_flow():
     addons.clear()
     try:
-        addons.register_module("molsysviewer.addon_templates.minimal_topomt")
+        addons.register_module("molsysviewer.addon_templates.dummy_addon")
         view = MolSysView(debug_js=True)
 
-        assert view._topomt_template_enabled is True
-        assert ("enable", "topomt-template") in view._topomt_template_events
-        assert view._topomt_template_runtime["enabled"] is True
-        assert view._topomt_template_runtime["workspace"] == "topomt"
-        assert view._topomt_template_runtime["panels"] == ["topo", "channels", "regions"]
-        assert view._topomt_template_runtime["sections"] == ["pockets", "channels"]
-        assert view._topomt_template_runtime["context_actions"] == ["focus-pocket", "inspect-channel"]
-        assert view._topomt_template_runtime["export_helpers"] == ["topography-figure"]
+        assert view._dummy_addon_enabled is True
+        assert ("enable", "dummy") in view._dummy_addon_events
+        assert view.addons.dummy.enabled is True
+        assert view._dummy_addon_runtime["enabled"] is True
+        assert view._dummy_addon_runtime["workspace"] == "dummy"
+        assert view._dummy_addon_runtime["panels"] == ["main", "secondary"]
+        assert view._dummy_addon_runtime["sections"] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+        assert view._dummy_addon_runtime["context_actions"] == ["focus-dummy", "inspect-dummy"]
+        assert view._dummy_addon_runtime["export_helpers"] == ["dummy-export"]
 
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "interaction_context_action",
                 "action": "addon_context_action",
-                "addon": "topomt-template",
-                "addon_action_id": "focus-pocket",
-                "addon_action_title": "Focus Pocket",
+                "addon": "dummy",
+                "addon_action_id": "focus-dummy",
+                "addon_action_title": "Focus Dummy",
                 "context": {"kind": "structure", "atom_indices": [1, 2, 3]},
             }
         )
 
-        assert view._topomt_template_last_context_action["action_id"] == "focus-pocket"
-        assert view._topomt_template_last_context_action["payload"]["addon"] == "topomt-template"
-        assert view._topomt_template_runtime["last_context_action"]["action_id"] == "focus-pocket"
-        assert ("context", "focus-pocket") in view._topomt_template_events
+        assert view._dummy_addon_last_context_action["action_id"] == "focus-dummy"
+        assert view._dummy_addon_last_context_action["payload"]["addon"] == "dummy"
+        assert view._dummy_addon_runtime["last_context_action"]["action_id"] == "focus-dummy"
+        assert ("context", "focus-dummy") in view._dummy_addon_events
 
-        view.addons.disable("topomt-template")
-        assert view._topomt_template_enabled is False
-        assert view._topomt_template_runtime["enabled"] is False
-        assert ("disable", "topomt-template") in view._topomt_template_events
+        view.addons.disable("dummy")
+        assert view._dummy_addon_enabled is False
+        assert view._dummy_addon_runtime["enabled"] is False
+        assert ("disable", "dummy") in view._dummy_addon_events
     finally:
         addons.clear()
 
@@ -747,14 +748,14 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
     view._ready = True  # noqa: SLF001
     view.widget.send = lambda msg: sent.append(msg)  # type: ignore[assignment]
     try:
-        addons.register_module("molsysviewer.addon_templates.minimal_topomt")
-        view.addons.enable("topomt-template")
+        addons.register_module("molsysviewer.addon_templates.dummy_addon")
+        view.addons.enable("dummy")
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
-        assert addon_msg["addons"] == ["topomt-template"]
-        assert [item["id"] for item in addon_msg["panel_specs"]] == ["topo", "channels", "regions"]
-        assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-pocket", "inspect-channel"]
-        assert [item["id"] for item in addon_msg["workbench_sections"]] == ["pockets", "channels"]
-        assert [item["id"] for item in addon_msg["export_helper_specs"]] == ["topography-figure"]
+        assert addon_msg["addons"] == ["dummy"]
+        assert [item["id"] for item in addon_msg["panel_specs"]] == ["main", "secondary"]
+        assert [item["id"] for item in addon_msg["context_action_specs"]] == ["focus-dummy", "inspect-dummy"]
+        assert [item["id"] for item in addon_msg["addon_sections"]] == ["interactive", "inputs", "status", "secondary_overview", "secondary_details"]
+        assert [item["id"] for item in addon_msg["export_helper_specs"]] == ["dummy-export"]
     finally:
         addons.clear()
 
@@ -762,12 +763,17 @@ def test_addon_template_module_syncs_richer_runtime_summary_message():
 def test_addon_templates_helper_lists_and_registers_reference_addons():
     addons.clear()
     try:
-        assert addon_templates.list_reference_addons() == ["elasnetmt", "topomt"]
+        assert addon_templates.list_reference_addons() == ["dummy", "elasnetmt"]
         assert addon_templates.resolve_reference_addon("elasnetmt") == "molsysviewer.addon_templates.minimal_elasnetmt"
         assert addon_templates.resolve_reference_addon("minimal_elasnetmt") == "molsysviewer.addon_templates.minimal_elasnetmt"
-        assert addon_templates.resolve_reference_addon("topomt") == "molsysviewer.addon_templates.minimal_topomt"
-        assert addon_templates.resolve_reference_addon("minimal_topomt") == "molsysviewer.addon_templates.minimal_topomt"
+        assert addon_templates.resolve_reference_addon("dummy") == "molsysviewer.addon_templates.dummy_addon"
+        assert addon_templates.resolve_reference_addon("minimal_dummy") == "molsysviewer.addon_templates.dummy_addon"
 
+        addon = addon_templates.register_dummy_addon()
+        assert addon.name == "dummy"
+        assert addons.available() == ["dummy"]
+
+        addons.clear()
         addon = addon_templates.register_reference_addon("elasnetmt")
         assert addon.name == "elasnetmt-template"
         assert addons.available() == ["elasnetmt-template"]
@@ -782,8 +788,8 @@ def test_addon_templates_helper_can_register_all_reference_addons():
     addons.clear()
     try:
         registered = addon_templates.register_all_reference_addons()
-        assert [item.name for item in registered] == ["elasnetmt-template", "topomt-template"]
-        assert addons.available() == ["elasnetmt-template", "topomt-template"]
+        assert [item.name for item in registered] == ["dummy", "elasnetmt-template"]
+        assert addons.available() == ["dummy", "elasnetmt-template"]
     finally:
         addons.clear()
 
@@ -791,44 +797,44 @@ def test_addon_templates_helper_can_register_all_reference_addons():
 def test_addon_templates_helper_can_build_reference_demo_view():
     addons.clear()
     try:
-        view = addon_templates.build_reference_demo_view("topomt")
-        assert view.addons.enabled() == ["topomt-template"]
-        assert [item["id"] for item in view.addons.workspace_specs()] == ["topomt"]
-        assert [item["id"] for item in view.addons.panel_specs()] == ["topo", "channels", "regions"]
-        assert view._topomt_template_enabled is True
-        assert view._topomt_template_runtime["workspace"] == "topomt"
-        assert view._topomt_template_runtime["panels"] == ["topo", "channels", "regions"]
+        view = addon_templates.build_reference_demo_view("dummy")
+        assert view.addons.enabled() == ["dummy"]
+        assert [item["id"] for item in view.addons.workspace_specs()] == ["dummy"]
+        assert [item["id"] for item in view.addons.panel_specs()] == ["main", "secondary"]
+        assert view._dummy_addon_enabled is True
+        assert view._dummy_addon_runtime["workspace"] == "dummy"
+        assert view._dummy_addon_runtime["panels"] == ["main", "secondary"]
         messages = view._message_history  # noqa: SLF001
         assert next(msg for msg in reversed(messages) if msg.get("op") == "set_panel_mode") == {
             "op": "set_panel_mode",
-            "panel": "workbench",
+            "panel": "addons",
             "expanded": True,
         }
         assert next(msg for msg in reversed(messages) if msg.get("op") == "set_workspace") == {
             "op": "set_workspace",
-            "workspace": "topomt",
+            "workspace": "dummy",
         }
         assert next(msg for msg in reversed(messages) if msg.get("op") == "set_workspace_panel") == {
             "op": "set_workspace_panel",
-            "panel": "topo",
-            "workspace": "topomt",
+            "panel": "main",
+            "workspace": "dummy",
         }
 
         view._handle_frontend_event(  # noqa: SLF001
             {
                 "event": "panel_mode_state",
-                "panel": "workbench",
+                "panel": "addons",
                 "expanded": True,
-                "workspace": "topomt",
-                "workspace_panel": "topo",
+                "workspace": "dummy",
+                "workspace_panel": "main",
             }
         )
         runtime = view.workspace_runtime()
-        assert runtime["current_workspace"] == "topomt"
-        assert runtime["current_workspace_record"]["id"] == "topomt"
-        assert runtime["current_panel"]["id"] == "topo"
-        assert [item["id"] for item in runtime["current_panels"]] == ["topo", "channels", "regions"]
-        assert [item["id"] for item in runtime["current_sections"]] == ["pockets", "channels"]
+        assert runtime["current_workspace"] == "dummy"
+        assert runtime["current_workspace_record"]["id"] == "dummy"
+        assert runtime["current_panel"]["id"] == "main"
+        assert [item["id"] for item in runtime["current_panels"]] == ["main", "secondary"]
+        assert [item["id"] for item in runtime["current_sections"]] == ["interactive", "inputs", "status"]
     finally:
         addons.clear()
 
@@ -1058,6 +1064,50 @@ def test_view_handles_frontend_addon_context_action_event():
     addons.clear()
 
 
+def test_view_handles_addon_manager_context_actions():
+    addons.clear()
+    addons.register(
+        AddonSpec(
+            name="topomt",
+        )
+    )
+    view = MolSysView(debug_js=True)
+    assert view.addons.is_enabled("topomt") is True
+
+    # Test addon_disable
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_disable",
+        "name": "topomt",
+    })
+    assert view.addons.is_enabled("topomt") is False
+
+    # Test addon_enable
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_enable",
+        "name": "topomt",
+    })
+    assert view.addons.is_enabled("topomt") is True
+
+    # Test addon_rescan
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_rescan",
+    })
+
+    # Test addon_register_module with a failing import (recorded failure)
+    view._handle_frontend_event({
+        "event": "interaction_context_action",
+        "action": "addon_register_module",
+        "name": "non_existent_addon_module_test",
+    })
+    failures = view.addons.discovery_failures()
+    assert any(f["source"] == "non_existent_addon_module_test" for f in failures)
+
+    addons.clear()
+
+
 def test_view_addons_sync_runtime_summary_message():
     addons.clear()
     view = MolSysView()
@@ -1084,8 +1134,8 @@ def test_view_addons_sync_runtime_summary_message():
                         target_kinds=("structure", "shape"),
                     ),
                 ),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(
+                addon_sections=(
+                    AddonSectionSpec(
                         id="pockets",
                         title="Pockets",
                         entry="topomt.workbench.pockets",
@@ -1107,7 +1157,7 @@ def test_view_addons_sync_runtime_summary_message():
         assert addon_msg["workspace_specs"][0]["title"] == "TopoMT"
         assert addon_msg["panel_specs"][0]["title"] == "Topo"
         assert addon_msg["context_action_specs"][0]["id"] == "focus-pocket"
-        assert addon_msg["workbench_sections"][0]["title"] == "Pockets"
+        assert addon_msg["addon_sections"][0]["title"] == "Pockets"
         assert addon_msg["export_helper_specs"][0]["title"] == "Topography Figure Export"
 
         view.addons.disable("topomt")
@@ -1116,7 +1166,7 @@ def test_view_addons_sync_runtime_summary_message():
         assert addon_msg["workspace_specs"] == []
         assert addon_msg["panel_specs"] == []
         assert addon_msg["context_action_specs"] == []
-        assert addon_msg["workbench_sections"] == []
+        assert addon_msg["addon_sections"] == []
         assert addon_msg["export_helper_specs"] == []
     finally:
         addons.clear()
@@ -1156,8 +1206,8 @@ def test_view_addons_materialize_workbench_and_export_entry_payloads():
                 name="runtime-addon",
                 workspaces=(AddonWorkspaceSpec(id="runtime", title="Runtime", entry_panel="panel"),),
                 panels=(AddonPanelSpec(id="panel", title="Panel", entry="runtime.panel"),),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(
+                addon_sections=(
+                    AddonSectionSpec(
                         id="summary",
                         title="Summary",
                         entry="fake_addon_runtime.workbench",
@@ -1180,7 +1230,7 @@ def test_view_addons_materialize_workbench_and_export_entry_payloads():
         assert sections[0]["runtime_payload"]["item_subtitle"] == "runtime from python entry"
 
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
-        assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "0 overlays"
+        assert addon_msg["addon_sections"][0]["runtime_payload"]["item_title"] == "0 overlays"
         assert addon_msg["export_helper_specs"][0]["runtime_payload"]["figure_recipe"]["overlay_count"] == 0
     finally:
         addons.clear()
@@ -1220,8 +1270,8 @@ def test_view_addons_refresh_runtime_summary_after_context_action():
                         target_kinds=("structure",),
                     ),
                 ),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(
+                addon_sections=(
+                    AddonSectionSpec(
                         id="summary",
                         title="Summary",
                         entry="fake_addon_runtime_refresh.workbench",
@@ -1242,7 +1292,7 @@ def test_view_addons_refresh_runtime_summary_after_context_action():
         )
 
         addon_msg = next(msg for msg in reversed(sent) if msg.get("op") == "set_addon_runtime_summary")
-        assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "1 overlays"
+        assert addon_msg["addon_sections"][0]["runtime_payload"]["item_title"] == "1 overlays"
     finally:
         addons.clear()
         sys.modules.pop(module.__name__, None)

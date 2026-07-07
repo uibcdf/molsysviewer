@@ -206,23 +206,45 @@ class LoadMixin:
 
         if mode != "add":
             if mode == "append_structures":
-                self.append_structures(
+                msm.append_structures(
+                    self._molsys,
                     molecular_system,
                     selection=selection,
                     structure_indices=structure_indices,
                     syntax=syntax,
+                    in_place=True,
                     skip_digestion=True,
                 )
+                self.apply_system_edit(self._molsys)
                 return
             raise ValueError(f"Unsupported load mode: {mode!r}")
 
-        self.add(
+        added_molsys = msm.convert(
             molecular_system,
+            to_form="molsysmt.MolSys",
             selection=selection,
             structure_indices=structure_indices,
             syntax=syntax,
-            label=label,
             skip_digestion=True,
+        )
+        added_n_atoms = int(added_molsys.get_n_atoms())
+        visible = self.visible_atom_indices
+        msm.add(
+            self._molsys,
+            added_molsys,
+            selection="all",
+            structure_indices="all",
+            keep_ids=True,
+            in_place=True,
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        self.apply_system_edit(
+            self._molsys,
+            label=label,
+            visible_atom_indices=visible,
+            load_blocks="append",
+            appended_n_atoms=added_n_atoms,
         )
         self._ensure_load_regions_after_addition()
 

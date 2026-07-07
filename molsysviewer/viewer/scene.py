@@ -334,10 +334,7 @@ class SceneMixin:
             skip_digestion=True,
         )
         visible = self.visible_atom_indices
-        self._rebuild_view_from_current_molsys(
-            label=self._last_label,
-            visible_atom_indices=visible,
-        )
+        self.apply_system_edit(self._molsys, visible_atom_indices=visible)
 
     @signal(tags=["viewer"])
     @digest()
@@ -475,4 +472,3 @@ for _name, _value in SceneMixin.__dict__.items():
             _value.__module__ = "molsysviewer.viewer"
         except Exception:
             pass
-

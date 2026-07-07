@@ -9,6 +9,7 @@ import pytest
 
 pytest.importorskip("molsysmt")
 from molsysviewer.demo import demo
+from _edit_helpers import apply_append_structures, apply_remove
 
 
 # ---------------------------------------------------------------------------
@@ -24,7 +25,7 @@ def test_hidden_region_stays_sticky_after_rebuild_and_global_show():
     region.hide(skip_digestion=True)
 
     # Trigger rebuild
-    view.remove(selection="atom_index < 3", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 3")
 
     rebuilt = view.regions["pocket"]
     assert rebuilt._hidden is True, "region must still be hidden post-rebuild"  # noqa: SLF001
@@ -47,7 +48,7 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
     region = view.new_region(atom_indices=[3, 4, 5], tag="site", skip_digestion=True)
     region.hide(skip_digestion=True)
 
-    view.remove(selection="atom_index < 2", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 2")
 
     pre_hide_count = sum(
         1 for m in view._message_history  # noqa: SLF001
@@ -76,7 +77,7 @@ def test_scene_look_state_survives_rebuild_and_export():
     view.scene.set_legend([{"label": "site", "color": 0x0072B2}], position="bottom-left")
     view.focus_with_fade([2, 3], fade=0.7, skip_digestion=True)
 
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     by_op = {msg.get("op"): msg for msg in view._message_history}  # noqa: SLF001
     assert by_op["set_background_color"]["color"] == 0xFFFFFF
@@ -106,7 +107,7 @@ def test_scene_focus_fade_is_dropped_when_focus_atoms_are_removed():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.focus_with_fade([0], fade=0.7, skip_digestion=True)
-    view.remove(selection=[0], skip_digestion=True)
+    apply_remove(view, selection=[0])
 
     assert "focus_fade" not in view._scene_look  # noqa: SLF001
     assert not any(msg.get("op") == "set_focus_fade" for msg in view._message_history)  # noqa: SLF001
@@ -119,7 +120,7 @@ def test_player_state_survives_rebuild_and_export():
     view.player.go_to_structure(2, skip_digestion=True)
     view.player.play(fps=10, mode="ping-pong", direction="backward", step_size=2, skip_digestion=True)
 
-    view.remove(selection="atom_index < 2", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 2")
 
     frame_msg = next(
         msg for msg in view._message_history  # noqa: SLF001
@@ -195,7 +196,7 @@ def test_annotation_retag_survives_rebuild():
     assert hist_entry["options"]["layer_tag"] == "updated_layer"
 
     # Trigger rebuild
-    view.remove(selection="atom_index < 2", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 2")
 
     # After rebuild the add_label message in _message_history must carry the updated layer_tag
     replayed = next(
@@ -218,7 +219,7 @@ def test_selection_history_remapped_after_rebuild():
     view.selections.add(tag="pair", atom_indices=[10, 11], skip_digestion=True)
 
     # Remove first 3 atoms — indices shift by -3
-    view.remove(selection="atom_index < 3", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 3")
 
     save_msg = next(
         m for m in view._message_history  # noqa: SLF001
@@ -241,7 +242,7 @@ def test_set_global_representation_replayed_across_two_rebuilds():
     view.styles.apply(representation="cartoon", skip_digestion=True)
 
     # First rebuild
-    view.remove(selection="atom_index < 2", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 2")
 
     repr_after_first = [
         m for m in view._message_history  # noqa: SLF001
@@ -251,7 +252,7 @@ def test_set_global_representation_replayed_across_two_rebuilds():
     assert repr_after_first[0]["representation"] == "cartoon"
 
     # Second rebuild
-    view.remove(selection="atom_index < 2", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 2")
 
     repr_after_second = [
         m for m in view._message_history  # noqa: SLF001
@@ -281,10 +282,10 @@ def test_export_messages_ordered_after_remove_then_append():
     view._last_camera_snapshot = {"target": [1.0, 0.0, 0.0], "position": [0.0, 0.0, 10.0], "up": [0.0, 1.0, 0.0]}  # noqa: SLF001
 
     # First rebuild: remove some atoms
-    view.remove(selection="atom_index < 3", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 3")
 
     # Second rebuild: append back the original structures
-    view.append_structures(view.molsys, skip_digestion=True)
+    apply_append_structures(view, view.molsys)
 
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
@@ -310,10 +311,10 @@ def test_export_messages_region_atom_indices_remapped_after_rebuild_chain():
     view.new_region(atom_indices=atom_indices_before, tag="stable", skip_digestion=True)
 
     # Remove atoms 0..2 — indices shift by -3
-    view.remove(selection="atom_index < 3", skip_digestion=True)
+    apply_remove(view, selection="atom_index < 3")
 
     # Second rebuild: append structures
-    view.append_structures(view.molsys, skip_digestion=True)
+    apply_append_structures(view, view.molsys)
 
     messages = view._build_export_messages()  # noqa: SLF001
     region_msg = next(m for m in messages if m.get("op") == "create_region" and m.get("tag") == "stable")

@@ -11,11 +11,16 @@ view.set_global_representation("backbone")   # protein backbone only
 view.set_global_representation("cartoon")    # ribbon/helix/sheet
 ```
 
-**Hide water and ions.** They are usually the largest atom count:
+**Load a lighter system.** Waters and ions are usually the largest atom count.
+For one-off rendering performance, trim the molecular system with MolSysMT and
+reload the viewer:
 
 ```python
-view.remove(selection="resname HOH")
-view.remove(selection="ion")
+import molsysmt as msm
+
+trimmed = msm.remove(view.molsys, selection="resname HOH", to_form="molsysmt.MolSys")
+trimmed = msm.remove(trimmed, selection="ion", to_form="molsysmt.MolSys")
+view.load(trimmed, mode="replace")
 ```
 
 **Lower surface resolution.** When using pocket or channel overlays:

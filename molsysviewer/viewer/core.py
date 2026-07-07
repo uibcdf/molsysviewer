@@ -587,6 +587,37 @@ class MolSysView(
                     )
                     self._sync_addons_runtime()
                     return
+                if action == "addon_enable":
+                    name = content.get("name")
+                    if isinstance(name, str) and name.strip():
+                        self.addons.enable(name.strip())
+                        self._sync_addons_runtime()
+                    return
+                elif action == "addon_disable":
+                    name = content.get("name")
+                    if isinstance(name, str) and name.strip():
+                        self.addons.disable(name.strip())
+                        self._sync_addons_runtime()
+                    return
+                elif action == "addon_rescan":
+                    try:
+                        self.addons._host.discover(include_known_modules=True)
+                    except Exception:
+                        pass
+                    self._sync_addons_runtime()
+                    return
+                elif action == "addon_register_module":
+                    name = content.get("name")
+                    if isinstance(name, str) and name.strip():
+                        name_stripped = name.strip()
+                        try:
+                            addon = self.addons._host.register_module(name_stripped)
+                            self.addons.enable(addon.name)
+                        except Exception as exc:
+                            self.addons._host._record_discovery_failure(name_stripped, exc)
+                        self._sync_addons_runtime()
+                    return
+
                 if action == "create_region_from_selection":
                     raw_tag = content.get("tag")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
@@ -621,6 +652,20 @@ class MolSysView(
                     if region is None:
                         raise ValueError(f"No region found with tag {tag!r}.")
                     region.rename(new_tag.strip(), skip_digestion=True)
+                elif action == "set_region_representation":
+                    tag = content.get("tag")
+                    repr_type = content.get("representation")
+                    params = content.get("params")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("set_region_representation requires non-empty tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    region.set_representation(
+                        representation=repr_type,
+                        skip_digestion=True,
+                        **(params if isinstance(params, dict) else {})
+                    )
                 elif action == "create_section_from_selection":
                     atom_indices = list(self.active_selection.atom_indices)
                     if len(atom_indices) == 0:
@@ -648,7 +693,21 @@ class MolSysView(
                     atom_indices = list(self.active_selection.atom_indices)
                     if len(atom_indices) == 0:
                         raise ValueError("remove_selection requires a non-empty active selection.")
-                    self.remove(selection=atom_indices, skip_digestion=True)
+                    # Molecular editing lives in the MolSysMT addon; core only dispatches.
+                    # If the addon is unavailable the action is a no-op (no core fallback).
+                    self.addons.handle_context_action(
+                        "molsysmt",
+                        "remove-selected-atoms",
+                        {
+                            "event": "interaction_context_action",
+                            "action": "remove_selection",
+                            "addon": "molsysmt",
+                            "addon_action_id": "remove-selected-atoms",
+                            "atom_indices": atom_indices,
+                            "context": content.get("context", {}),
+                        },
+                        skip_digestion=True,
+                    )
                     self.active_selection.clear(skip_digestion=True)
                 elif action == "activate_selection":
                     tag = content.get("tag")
@@ -660,6 +719,11 @@ class MolSysView(
                     if not isinstance(tag, str) or tag.strip() == "":
                         raise ValueError("save_selection requires non-empty tag.")
                     self.active_selection.save(tag=tag.strip(), skip_digestion=True)
+                elif action == "delete_selection":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_selection requires non-empty tag.")
+                    self.selections.delete(tag.strip(), skip_digestion=True)
                 elif action == "add_label_from_selection":
                     text = content.get("text")
                     if not isinstance(text, str) or text.strip() == "":
@@ -698,6 +762,8 @@ class MolSysView(
                     if layer is None:
                         raise ValueError(f"No layer found for measurement tag {tag!r}.")
                     layer.hide(skip_digestion=True)
+                elif action == "export_html":
+                    self.export.html("molsysviewer_export.html")
             except Exception as exc:
                 self._send_backend_error_ack(content, exc)
                 return
@@ -902,6 +968,8 @@ class MolSysView(
             panel_id = content.get("panel")
             if isinstance(addon_name, str) and isinstance(panel_id, str):
                 self._mount_addon_panel(addon_name.strip(), panel_id.strip())
+            else:
+                self._unmount_addon_panel()
         elif event == "panel_unmount":
             self._unmount_addon_panel()
         elif event == "addon_panel_action":
@@ -1195,6 +1263,28 @@ class MolSysView(
         updated["atom_indices"] = remapped
         return updated
 
+    def _remap_atom_color_map(self, atom_index_map: dict[int, int] | None) -> None:
+        if not self._atom_color_map:
+            return
+        if atom_index_map is None:
+            remapped = dict(self._atom_color_map)
+        else:
+            remapped = {
+                atom_index_map[old_index]: color
+                for old_index, color in self._atom_color_map.items()
+                if old_index in atom_index_map
+            }
+        self._atom_color_map = remapped
+        if remapped:
+            self._send_replay(
+                {
+                    "op": "set_atom_colors",
+                    "atom_indices": list(remapped.keys()),
+                    "colors": list(remapped.values()),
+                    "replace": True,
+                }
+            )
+
     def _rebuild_view_from_current_molsys(
         self,
         *,
@@ -1271,6 +1361,8 @@ class MolSysView(
                 skip_digestion=True,
                 **getattr(self.whole, "_repr_params", {}),
             )
+
+        self._remap_atom_color_map(atom_index_map)
 
         if self._global_hidden:
             self._send({"op": "hide_global", "target": "global"})
@@ -1361,6 +1453,82 @@ class MolSysView(
             self._send_replay(msg)
 
         self._update_visibility_in_frontend()
+
+    @signal(tags=["edit"])
+    def apply_system_edit(
+        self,
+        new_molsys,
+        *,
+        atom_index_map: dict[int, int] | None = None,
+        label: str | None = None,
+        visible_atom_indices: list[int] | None = None,
+        load_blocks: str = "keep",
+        appended_n_atoms: int | None = None,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Replace the loaded molecular system and reconcile viewer state.
+
+        This is a low-level integration primitive for addons and advanced
+        callers. Molecular edit semantics belong to MolSysMT or an addon; this
+        method only applies the resulting system to the live viewer and remaps
+        viewer-owned state such as regions, selections, shapes, annotations,
+        measurements, visibility, per-atom colors, and the load-block accounting.
+
+        Parameters
+        ----------
+        new_molsys
+            Molecular system that should become the view's current system.
+        atom_index_map
+            Optional ``{old_atom_index: new_atom_index}`` map. Use ``None`` for
+            edits where atom identity and indices are unchanged.
+        label
+            Optional label for the rebuilt payload. Defaults to the current
+            view label.
+        visible_atom_indices
+            Optional list of visible atom indices in the pre-edit system. When
+            omitted, the current visibility state is captured before replacing
+            the system.
+        load_blocks
+            Load-block accounting policy after the edit: ``"keep"`` (default,
+            leave the blocks as-is, e.g. coordinate/attribute edits), ``"collapse"``
+            (one block for the current whole, e.g. after a removal), or
+            ``"append"`` (record a new block; requires ``appended_n_atoms``, e.g.
+            after an addition). Callers should not manage load blocks through
+            private helpers.
+        appended_n_atoms
+            Number of atoms appended by the edit; required when
+            ``load_blocks="append"``.
+        """
+        if new_molsys is None:
+            raise ValueError("apply_system_edit(...) requires a molecular system.")
+        if load_blocks not in ("keep", "collapse", "append"):
+            raise ValueError(
+                f"apply_system_edit(load_blocks={load_blocks!r}) must be 'keep', 'collapse', or 'append'."
+            )
+
+        visible = self.visible_atom_indices if visible_atom_indices is None else visible_atom_indices
+        effective_label = self._last_label if label is None else label
+        self._molsys = new_molsys
+        self.molecular_system = new_molsys
+        if label is not None:
+            self._last_label = label
+        self._rebuild_view_from_current_molsys(
+            label=effective_label,
+            atom_index_map=atom_index_map,
+            visible_atom_indices=visible,
+        )
+
+        # Reconcile load-block accounting so callers (view.add/remove and addons)
+        # do not have to touch the private load-block helpers.
+        if load_blocks == "collapse":
+            self._collapse_load_blocks_to_current_whole()
+        elif load_blocks == "append":
+            if appended_n_atoms is None:
+                raise ValueError("apply_system_edit(load_blocks='append') requires appended_n_atoms.")
+            if not self._load_blocks:
+                prior = max(int(self._molsys.get_n_atoms()) - int(appended_n_atoms), 0)
+                self._register_initial_load_block(n_atoms=prior, label=None)
+            self._append_load_block(n_atoms=int(appended_n_atoms), label=effective_label)
 
     def _local_structure_index_for_player(self) -> int:
         index = int(self._current_structure_index)

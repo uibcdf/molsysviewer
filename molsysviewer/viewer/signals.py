@@ -99,7 +99,7 @@ def workspace_catalog_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]
         try:
             workspace_specs = view.addons.workspace_specs(skip_digestion=True)
             panel_specs = view.addons.panel_specs(skip_digestion=True)
-            workbench_specs = view.addons.workbench_section_specs(skip_digestion=True)
+            workbench_specs = view.addons.addon_section_specs(skip_digestion=True)
             for workspace in workspace_specs:
                 workspace_id = workspace.get("id")
                 addon_name = workspace.get("addon")
@@ -113,7 +113,7 @@ def workspace_catalog_signal_extra(args: tuple[Any, ...], kwargs: dict[str, Any]
                 workbench_section_count = sum(
                     1
                     for item in workbench_specs
-                    if item.get("addon") == addon_name and item.get("target_panel", "workbench") == "workbench"
+                    if item.get("addon") == addon_name and item.get("target_panel", "addons") == "addons"
                 )
                 if panel_count + workbench_section_count > 0:
                     workspace_count += 1

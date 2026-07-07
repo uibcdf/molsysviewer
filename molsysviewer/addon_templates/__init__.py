@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 REFERENCE_ADDON_MODULES: dict[str, str] = {
     "elasnetmt": "molsysviewer.addon_templates.minimal_elasnetmt",
     "minimal_elasnetmt": "molsysviewer.addon_templates.minimal_elasnetmt",
-    "topomt": "molsysviewer.addon_templates.minimal_topomt",
-    "minimal_topomt": "molsysviewer.addon_templates.minimal_topomt",
+    "dummy": "molsysviewer.addon_templates.dummy_addon",
+    "minimal_dummy": "molsysviewer.addon_templates.dummy_addon",
 }
 
 
@@ -70,6 +70,14 @@ def import_reference_module(name: str):
     return import_module(resolve_reference_addon(name))
 
 
+def register_dummy_addon(
+    *,
+    registry: "GlobalAddonsRegistry | None" = None,
+) -> "AddonSpec":
+    """Register the generic dummy/tester add-on into the registry."""
+    return register_reference_addon("dummy", registry=registry)
+
+
 def build_reference_demo_view(
     name: str,
     *,
@@ -88,7 +96,7 @@ def build_reference_demo_view(
     addon = register_reference_addon(name, registry=registry)
     view = demo[demo_key]
     if expand_workbench:
-        view.set_panel_mode(panel="workbench", expanded=True, skip_digestion=True)
+        view.set_panel_mode(panel="addons", expanded=True, skip_digestion=True)
         workspace = addon.workspaces[0] if len(addon.workspaces) > 0 else None
         if workspace is not None:
             view.set_workspace(workspace.id, skip_digestion=True)
@@ -102,6 +110,7 @@ __all__ = [
     "list_reference_addons",
     "resolve_reference_addon",
     "register_reference_addon",
+    "register_dummy_addon",
     "register_all_reference_addons",
     "import_reference_module",
     "build_reference_demo_view",

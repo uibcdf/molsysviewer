@@ -7,7 +7,7 @@ from molsysviewer.addons import (
     AddonPanelSpec,
     AddonShapeProviderSpec,
     AddonSpec,
-    AddonWorkbenchSectionSpec,
+    AddonSectionSpec,
     AddonWorkspaceSpec,
 )
 
@@ -67,19 +67,19 @@ addon = AddonSpec(
             order=20,
         ),
     ),
-    workbench_sections=(
-        AddonWorkbenchSectionSpec(
+    addon_sections=(
+        AddonSectionSpec(
             id="modes",
             title="Modes",
             entry="molsysviewer_elasnetmt.workbench.modes",
-            target_panel="workbench",
+            target_panel="addons",
             order=30,
         ),
-        AddonWorkbenchSectionSpec(
+        AddonSectionSpec(
             id="network-overlays",
             title="Network Overlays",
             entry="molsysviewer_elasnetmt.workbench.network_overlays",
-            target_panel="workbench",
+            target_panel="addons",
             order=40,
         ),
     ),

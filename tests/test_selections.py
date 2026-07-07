@@ -1,4 +1,5 @@
 from molsysviewer import demo
+from _edit_helpers import apply_remove
 
 
 def _seed_group_selection(view, group_index=1):
@@ -126,7 +127,7 @@ def test_persistent_selection_records_are_exported_and_remapped_on_remove():
     assert selection_msg["tag"] == "picked"
     assert selection_msg["atom_indices"] == atom_indices
 
-    view.remove(selection="group_index==0")
+    apply_remove(view, selection="group_index==0")
     selection_info = view.selections.info("picked")
     assert selection_info["group_indices"] == [0]
     assert selection_info["atom_indices"] == list(range(0, 10))

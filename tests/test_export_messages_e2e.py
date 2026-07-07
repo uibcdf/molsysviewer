@@ -1,5 +1,5 @@
 from molsysviewer import demo
-from molsysviewer import addons, AddonExportHelperSpec, AddonPanelSpec, AddonSpec, AddonWorkbenchSectionSpec, AddonWorkspaceSpec
+from molsysviewer import addons, AddonExportHelperSpec, AddonPanelSpec, AddonSpec, AddonSectionSpec, AddonWorkspaceSpec
 from types import ModuleType
 import sys
 
@@ -138,8 +138,8 @@ def test_build_export_messages_include_materialized_addon_runtime_summary():
                 name="runtime-addon",
                 workspaces=(AddonWorkspaceSpec(id="runtime", title="Runtime", entry_panel="panel"),),
                 panels=(AddonPanelSpec(id="panel", title="Panel", entry="runtime.panel"),),
-                workbench_sections=(
-                    AddonWorkbenchSectionSpec(
+                addon_sections=(
+                    AddonSectionSpec(
                         id="summary",
                         title="Summary",
                         entry="fake_addon_export_runtime.workbench",
@@ -160,7 +160,7 @@ def test_build_export_messages_include_materialized_addon_runtime_summary():
         messages = view._build_export_messages()  # noqa: SLF001
         addon_msg = next(msg for msg in reversed(messages) if msg.get("op") == "set_addon_runtime_summary")
 
-        assert addon_msg["workbench_sections"][0]["runtime_payload"]["item_title"] == "Runtime section"
+        assert addon_msg["addon_sections"][0]["runtime_payload"]["item_title"] == "Runtime section"
         assert addon_msg["export_helper_specs"][0]["runtime_payload"]["figure_recipe"]["workspace"] == "runtime"
     finally:
         addons.clear()

@@ -190,7 +190,7 @@ export class HelpOverlay {
         ]));
 
         grid.appendChild(makeSection("Keyboard", [
-            ["N", "Open / close Navigate"],
+            ["N", "Open / close Studio"],
             ["W", "Open / close Workbench"],
             ["V", "Toggle canvas visibility"],
             ["H", "Toggle this help"],

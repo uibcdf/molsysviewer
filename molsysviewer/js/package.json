@@ -41,5 +41,5 @@
     "playwright": "^1.57.0",
     "typescript": "^5.6.0"
   },
-  "pythonVersion": "0.14.0+3.g7e16f6d.dirty"
+  "pythonVersion": "0.14.0"
 }

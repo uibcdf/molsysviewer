@@ -284,3 +284,25 @@ def test_trajectory_frame_changed_syncs_player_index_and_play_state():
     assert view.player.is_playing is False
     assert view._player_state["is_playing"] is False  # noqa: SLF001
 
+
+def test_set_region_representation_context_action():
+    view = MolSysView()
+    region = Region(view, "ligand", "all", atom_indices=[1, 2, 3])
+    view._regions["ligand"] = region  # noqa: SLF001
+
+    event = {
+        "event": "interaction_context_action",
+        "action": "set_region_representation",
+        "tag": "ligand",
+        "representation": "licorice",
+        "params": {"color_scheme": "chain-id"}
+    }
+    view._handle_frontend_event(event)  # noqa: SLF001
+
+    sent_msgs = [msg for msg in view._message_history if msg.get("op") == "set_region_representation"]  # noqa: SLF001
+    assert len(sent_msgs) == 1
+    assert sent_msgs[0]["tag"] == "ligand"
+    assert sent_msgs[0]["representation"] == "ball-and-stick"
+    assert sent_msgs[0]["params"] == {"color_scheme": "chain-id"}
+
+

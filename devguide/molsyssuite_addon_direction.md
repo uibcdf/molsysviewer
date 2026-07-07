@@ -94,7 +94,7 @@ So the relationship is:
 - every non-core workspace would come from an add-on
 - but many smaller add-ons should remain lighter:
   - context actions
-  - workbench sections
+  - addon sections
   - export helpers
   - tool modes
   - shapes/overlays
@@ -109,7 +109,7 @@ The main visible form of a **small** add-on should normally be:
 
 - one or a few local contributions
   - context actions
-  - workbench sections
+  - addon sections
   - export helpers
   - shapes
   - tool modes
@@ -144,7 +144,7 @@ Healthy registration targets include:
 - one or more panels
 - context-menu actions
 - shape/overlay producers or adapters
-- workbench summary sections or summary providers
+- addon summary sections or summary providers
 - scene-style helpers or presets specific to that domain
 - figure/export helpers for that domain
 - optional tool modes
@@ -200,10 +200,10 @@ into two levels:
   - host-level registry
 - `view.addons`
   - view-local projection of the host registry
-- `AddonSpec`
+- `AddonWorkspaceSpec`
 - `AddonPanelSpec`
 - `AddonContextActionSpec`
-- `AddonWorkbenchSectionSpec`
+- `AddonSectionSpec`
 - `AddonShapeProviderSpec`
 - `AddonStyleHelperSpec`
 - `AddonExportHelperSpec`
@@ -238,7 +238,7 @@ That template should now be understood as more than a one-panel placeholder:
 
 - one workspace
 - several panels
-- several workbench/runtime contributions
+- several addon/runtime contributions
 - more than one context action
 - one export helper
 - visible lifecycle state on the `view`
@@ -402,7 +402,7 @@ In other words:
 These questions remain intentionally open for later evaluation:
 
 - should large add-ons contribute primarily as their own future workspaces
-  while smaller add-ons continue using `Workbench`/context/export surfaces?
+  while smaller add-ons continue using `Add-ons`/context/export surfaces?
 - what should a minimal future workspace spec contain beyond:
   - id
   - title
