@@ -60,6 +60,7 @@ export class GroupPanel {
     // Right column: Content Sections
     private readonly rightColumn: HTMLDivElement;
     private readonly systemSection: HTMLDivElement;
+    private readonly systemStripsRow: HTMLDivElement;
     private readonly selectionSection: HTMLDivElement;
     private readonly regionsSection: HTMLDivElement;
     private readonly overlaysSection: HTMLDivElement;
@@ -292,13 +293,25 @@ export class GroupPanel {
         this.viewportSection = this.createSection("viewport");
         this.settingsSection = this.createSection("settings");
 
-        // Set system panel layout specificity
+        // System tab: a compact palette header on top, horizontal sequence strips below.
         Object.assign(this.systemSection.style, {
+            flexDirection: "column",
+            overflowX: "hidden",
+            overflowY: "hidden",
+            gap: "6px",
+        });
+        this.systemSection.appendChild(this.makeSystemHeader());
+        this.systemStripsRow = document.createElement("div");
+        Object.assign(this.systemStripsRow.style, {
+            display: "flex",
             flexDirection: "row",
+            flex: "1 1 0",
+            minHeight: "0",
             overflowX: "auto",
             overflowY: "hidden",
             paddingBottom: "8px",
         });
+        this.systemSection.appendChild(this.systemStripsRow);
 
         // Add tabs
         this.addTab("system", "System", "None");
@@ -669,7 +682,7 @@ export class GroupPanel {
         for (const [chain, chainItems] of grouped.entries()) {
             let strip = this.strips.get(chain);
             if (!strip) {
-                strip = new GroupStrip(this.systemSection, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
+                strip = new GroupStrip(this.systemStripsRow, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
                 this.strips.set(chain, strip);
             }
             strip.setColorScheme(this.activeColorScheme);
@@ -712,38 +725,57 @@ export class GroupPanel {
         text.textContent = title;
         header.appendChild(text);
 
-        if (title === "Structure") {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.innerHTML = "🎨";
-            btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
-            Object.assign(btn.style, {
-                background: "transparent",
-                border: "none",
-                color: "rgba(244,244,245,0.6)",
-                cursor: "pointer",
-                padding: "2px 4px",
-                fontSize: "12px",
-                outline: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-            });
-            btn.addEventListener("mouseenter", () => {
-                btn.style.color = "rgba(244,244,245,0.95)";
-            });
-            btn.addEventListener("mouseleave", () => {
-                btn.style.color = "rgba(244,244,245,0.6)";
-            });
-            
-            btn.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                this.toggleColorSchemeMenu(btn);
-            });
-            header.appendChild(btn);
-        }
         return header;
+    }
+
+    // Compact header for the System tab, hosting the residue color-scheme (🎨) toggle.
+    // The palette button used to live in a section titled "Structure"; the navigate-panel
+    // redesign renamed that section to the "System" tab, so it is re-anchored here.
+    private makeSystemHeader(): HTMLDivElement {
+        const header = document.createElement("div");
+        Object.assign(header.style, {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: "relative",
+            width: "100%",
+            flex: "0 0 auto",
+        });
+        header.appendChild(this.makeColorSchemeButton());
+        return header;
+    }
+
+    private makeColorSchemeButton(): HTMLButtonElement {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.innerHTML = "🎨";
+        btn.title = "Residue color scheme";
+        btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
+        Object.assign(btn.style, {
+            background: "transparent",
+            border: "none",
+            color: "rgba(244,244,245,0.6)",
+            cursor: "pointer",
+            padding: "2px 4px",
+            fontSize: "12px",
+            outline: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        });
+        btn.addEventListener("mouseenter", () => {
+            btn.style.color = "rgba(244,244,245,0.95)";
+        });
+        btn.addEventListener("mouseleave", () => {
+            btn.style.color = "rgba(244,244,245,0.6)";
+        });
+        btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.toggleColorSchemeMenu(btn);
+        });
+        return btn;
     }
 
     private toggleColorSchemeMenu(button: HTMLElement): void {

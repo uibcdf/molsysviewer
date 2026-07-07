@@ -570,3 +570,19 @@ test("GroupPanel header nav button triggers navigate-to-workbench callback", () 
         restore();
     }
 });
+
+test("GroupPanel mounts the residue color-scheme (palette) toggle in the System tab", () => {
+    // Regression: the 🎨 palette button was gated on a section titled "Structure",
+    // which the navigate-panel redesign renamed to the "System" tab — silently
+    // orphaning the button. It must mount in the System tab content on construction.
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const root = host.children[0];
+        const toggle = findFirstByAttribute(root, "data-molsysviewer-color-scheme-toggle", "true");
+        assert.ok(toggle, "the color-scheme (palette) toggle should be mounted in the System tab");
+    } finally {
+        restore();
+    }
+});
