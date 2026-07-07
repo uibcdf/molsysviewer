@@ -104,6 +104,7 @@ export class GroupPanel {
     private runtimeVisibleOverride: boolean | null = null;
     private readonly sharedShell: boolean;
     private visible = false;
+    private activeColorScheme: "neutral" | "physicochemical" = "neutral";
 
     constructor(
         private readonly host: HTMLElement,
@@ -116,6 +117,7 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
         private readonly onAction: ((action: string, details?: any) => void) | undefined,
+        private readonly onChangeColorScheme?: (scheme: "neutral" | "physicochemical") => void,
         options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any },
     ) {
         this.model = options?.model;
@@ -631,7 +633,7 @@ export class GroupPanel {
         this.onExpandedChange?.(this.expanded);
     }
 
-    private render(): void {
+    render(): void {
         this.captureCollapseState();
         const grouped = new Map<string, GroupSelectionItem[]>();
         const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
@@ -670,6 +672,7 @@ export class GroupPanel {
                 strip = new GroupStrip(this.systemSection, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
                 this.strips.set(chain, strip);
             }
+            strip.setColorScheme(this.activeColorScheme);
             strip.setData(this.structure, chainItems);
             strip.setCollapseState(this.collapseStateByChain.get(chain));
             strip.updateSelection(this.currentSelection);
@@ -694,12 +697,128 @@ export class GroupPanel {
             fontSize: "13px",
             fontWeight: "700",
             color: "#f4f4f5",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            position: "relative",
+            width: "100%",
             borderBottom: "1px solid rgba(255,255,255,0.06)",
             paddingBottom: "6px",
             marginBottom: "6px",
         });
-        header.textContent = title;
+
+        const text = document.createElement("span");
+        text.textContent = title;
+        header.appendChild(text);
+
+        if (title === "Structure") {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.innerHTML = "🎨";
+            btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
+            Object.assign(btn.style, {
+                background: "transparent",
+                border: "none",
+                color: "rgba(244,244,245,0.6)",
+                cursor: "pointer",
+                padding: "2px 4px",
+                fontSize: "12px",
+                outline: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            });
+            btn.addEventListener("mouseenter", () => {
+                btn.style.color = "rgba(244,244,245,0.95)";
+            });
+            btn.addEventListener("mouseleave", () => {
+                btn.style.color = "rgba(244,244,245,0.6)";
+            });
+            
+            btn.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.toggleColorSchemeMenu(btn);
+            });
+            header.appendChild(btn);
+        }
         return header;
+    }
+
+    private toggleColorSchemeMenu(button: HTMLElement): void {
+        const existing = this.root.querySelector("[data-molsysviewer-color-scheme-menu]");
+        if (existing) {
+            existing.remove();
+            return;
+        }
+
+        const dropdown = document.createElement("div");
+        dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
+        Object.assign(dropdown.style, {
+            position: "absolute",
+            top: "20px",
+            right: "0",
+            background: "#18181b",
+            border: "1px solid #3f3f46",
+            borderRadius: "4px",
+            zIndex: "100",
+            padding: "4px 0",
+            boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
+            display: "flex",
+            flexDirection: "column",
+            minWidth: "140px",
+        });
+
+        const makeOption = (label: string, value: "neutral" | "physicochemical") => {
+            const opt = document.createElement("button");
+            opt.type = "button";
+            opt.setAttribute("data-molsysviewer-color-scheme-option", value);
+            opt.textContent = label;
+            const active = this.activeColorScheme === value;
+            Object.assign(opt.style, {
+                background: active ? "rgba(255,255,255,0.08)" : "transparent",
+                border: "none",
+                color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
+                padding: "6px 12px",
+                fontSize: "11px",
+                textAlign: "left",
+                cursor: "pointer",
+                fontWeight: active ? "700" : "400",
+            });
+            opt.addEventListener("mouseenter", () => {
+                opt.style.background = "rgba(255,255,255,0.12)";
+                opt.style.color = "#ffffff";
+            });
+            opt.addEventListener("mouseleave", () => {
+                opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
+                opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
+            });
+            opt.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropdown.remove();
+                if (this.activeColorScheme !== value) {
+                    this.activeColorScheme = value;
+                    this.render();
+                    this.onChangeColorScheme?.(value);
+                }
+            });
+            return opt;
+        };
+
+        dropdown.appendChild(makeOption("Neutral", "neutral"));
+        dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
+
+        button.parentElement?.appendChild(dropdown);
+
+        const onOutsideClick = (e: MouseEvent) => {
+            if (!dropdown.contains(e.target as Node) && e.target !== button) {
+                dropdown.remove();
+                window.removeEventListener("click", onOutsideClick);
+            }
+        };
+        setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
     }
 
     // ── 1. Selection Section Rendering ───────────────────────

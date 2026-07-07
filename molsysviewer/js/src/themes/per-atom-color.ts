@@ -51,6 +51,10 @@ export const MsvPerAtomColorThemeProvider: ColorTheme.Provider<{}, typeof MsvPer
 
 // ── Map mutation helpers ──────────────────────────────────────────────────────
 
+export function getPerAtomColor(atomIndex: number): number | undefined {
+    return _perAtomColorMap.get(atomIndex);
+}
+
 export function setPerAtomColors(atomIndices: number[], colorInts: number[], replace = true): void {
     if (replace) _perAtomColorMap.clear();
     const len = Math.min(atomIndices.length, colorInts.length);

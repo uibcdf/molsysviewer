@@ -74,6 +74,11 @@ BUILTIN_SCENE_STYLES: dict[str, Style] = {
         name="Cartoon Chain",
         params={"color_scheme": "chain_default"},
     ),
+    "physicochemical": Style(
+        representation="cartoon",
+        name="Physicochemical",
+        params={"color_scheme": "physicochemical"},
+    ),
     "ball-and-stick-element-cpk": Style(
         representation="ball-and-stick",
         name="Ball And Stick Element CPK",
@@ -128,6 +133,10 @@ STRUCTURAL_COLOR_SCHEMES: dict[str, dict[str, Any]] = {
     "chain_default": {
         "molstar_theme": "chain-id",
         "description": "Color polymers by chain identifier.",
+    },
+    "physicochemical": {
+        "molstar_theme": "msv-physicochemical",
+        "description": "Color by residue physicochemical properties.",
     },
     "residue_name": {
         "molstar_theme": "residue-name",
@@ -185,6 +194,7 @@ ADVANCED_MOLSTAR_COLOR_THEMES: dict[str, dict[str, Any]] = {
     "molecule-type": {"category": "residue"},
     "polymer-id": {"category": "chain"},
     "polymer-index": {"category": "chain"},
+    "msv-physicochemical": {"category": "residue"},
     "residue-name": {"category": "residue"},
     "secondary-structure": {"category": "residue"},
     "sequence-id": {"category": "residue"},

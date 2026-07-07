@@ -121,6 +121,7 @@ export class StateHandlers {
                 molecule_type: "molecule-type",
                 entity_default: "entity-id",
                 illustrative_default: "illustrative",
+                physicochemical: "msv-physicochemical",
             } as Record<string, string>)[scheme];
             if (mapped) {
                 return {
