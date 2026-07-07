@@ -515,6 +515,28 @@ def _load_addon_lifecycle_from_module(module: ModuleType) -> AddonLifecycleSpec 
     )
 
 
+def _lifecycle_from_callable(loaded: Any) -> AddonLifecycleSpec | None:
+    """Recover lifecycle hooks from the module that defines a callable entry point.
+
+    Callable entry points (``package:get_addon``) hand back only the callable, so
+    the lifecycle hooks defined alongside it in its module would otherwise be lost.
+    Mirror ``register_module`` by loading them from the callable's defining module.
+    Returns ``None`` when the module cannot be resolved so discovery keeps working.
+    """
+    import sys
+
+    module_name = getattr(loaded, "__module__", None)
+    if not module_name:
+        return None
+    module = sys.modules.get(module_name)
+    if module is None:
+        try:
+            module = import_module(module_name)
+        except Exception:
+            return None
+    return _load_addon_lifecycle_from_module(module)
+
+
 @dataclass(frozen=True)
 class AddonSpec:
     name: str
@@ -825,7 +847,10 @@ class GlobalAddonsRegistry(_AddonAggregationMixin):
                     if isinstance(loaded, ModuleType):
                         addon = self.register_module(loaded)
                     else:
-                        addon = self.register(_coerce_addon_spec(loaded, source))
+                        addon = self.register(
+                            _coerce_addon_spec(loaded, source),
+                            lifecycle=_lifecycle_from_callable(loaded),
+                        )
                         if module_name is not None:
                             self._module_sources[addon.name] = module_name
                 else:

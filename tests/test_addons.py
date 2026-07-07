@@ -488,6 +488,53 @@ def test_addons_registry_discovers_entry_point_addons(monkeypatch):
     addons.clear()
 
 
+def test_addons_registry_loads_lifecycle_for_callable_entry_point(monkeypatch):
+    # A ``package:get_addon`` entry point resolves to a callable, not a module.
+    # Its lifecycle hooks live in the callable's defining module and must still be
+    # discovered — otherwise the addon shows up in the UI without its hooks.
+    addons.clear()
+    module = ModuleType("molsysviewer_callable_addon")
+
+    spec = AddonSpec(
+        name="callable-addon",
+        package="molsysviewer-callable-addon",
+        panels=(AddonPanelSpec(id="cp", title="Callable Panel", entry="cp.panel"),),
+    )
+
+    def get_addon():
+        return spec
+
+    get_addon.__module__ = module.__name__
+
+    def on_enable(view):
+        pass
+
+    module.get_addon = get_addon
+    module.on_enable = on_enable
+    sys.modules[module.__name__] = module
+
+    class FakeEntryPoint:
+        name = "callable-addon"
+        value = "molsysviewer_callable_addon:get_addon"
+
+        def load(self):
+            return get_addon
+
+    monkeypatch.setattr(addons_module, "KNOWN_ADDON_MODULES", ())
+    monkeypatch.setattr(addons_module, "metadata_entry_points", lambda: {"molsysviewer.addons": [FakeEntryPoint()]})
+
+    try:
+        discovered = addons.discover()
+        assert [item.name for item in discovered] == ["callable-addon"]
+        lifecycle = addons.lifecycle_for("callable-addon")
+        assert lifecycle is not None
+        assert lifecycle.on_enable is on_enable
+        assert addons.discovery_failures() == []
+    finally:
+        sys.modules.pop(module.__name__, None)
+        addons.clear()
+
+
 def test_addons_registry_emits_smonitor_warning_on_discovery_failure(monkeypatch):
     import smonitor
     addons.clear()
