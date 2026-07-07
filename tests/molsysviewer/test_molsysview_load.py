@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
 import pytest
 
 from molsysviewer import MolSysView
@@ -31,21 +28,12 @@ END
 
 
 def _import_molsysmt():
-    """Import molsysmt, adding the sibling repo path if needed."""
+    """Import molsysmt or skip the integration test if it is not installed."""
     try:
         import molsysmt as msm  # type: ignore
         return msm
     except ImportError:
-        repo_root = Path(__file__).resolve().parents[2]
-        sibling_repo = repo_root.parent / "molsysmt"
-        if sibling_repo.exists():
-            sys.path.insert(0, str(sibling_repo))
-            try:
-                import molsysmt as msm  # type: ignore
-                return msm
-            except ImportError:
-                pass
-    pytest.skip("molsysmt not available for load() integration test")
+        pytest.skip("molsysmt not available for load() integration test")
 
 
 def test_molsysview_load_uses_molsysmt_payload():

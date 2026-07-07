@@ -112,7 +112,6 @@ jobs:
     - name: Run tests
       shell: bash -l {0}
       run: |
-        export PYTHONPATH=$PYTHONPATH:$(pwd)
         # pytest -n logical -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
         pytest -v --cov-config=.coveragerc --cov=molsysviewer --cov-report=xml --junitxml=junit.xml --color=yes
 
