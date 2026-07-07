@@ -181,6 +181,33 @@ Current runtime note:
 - `Shift + left click` adds to the active selection
 - left click in empty canvas, if no drag occurred, should clear the active selection
 
+### Set-operation vocabulary (shared across surfaces)
+
+`active_selection` is one shared state written by several peer input surfaces (the
+3D canvas, the sequence strips, the Studio → Selection subpanel, and later the
+add-on). The set operations they apply are a **cross-cutting vocabulary owned by this
+contract**, not by any single surface:
+
+- **Replace · Add · Subtract · Intersect · Invert** (plus All / None).
+
+Currently implemented (canvas / strips, in `managers/active-selection.ts`):
+
+- **Replace** — plain left click.
+- **Add / toggle** — `Shift + left click`; the additive path *removes* an element
+  that is already selected, so per-item de-selection already exists.
+- **Range** — `Shift + Alt + left click`.
+- **Clear** — left click on empty canvas.
+
+**Pending extension:** **Subtract** and **Intersect** at the *group* level (e.g.
+"subtract all HIS", "intersect with a saved selection") are not yet part of the
+contract. They cannot be expressed by a single canvas click, so surfaces expose them
+via explicit controls — see the Studio → Selection subpanel proposal
+(`pending_proposals/studio_selection_subpanel.md`). No new *click* modifier is
+planned (`Alt`+click is avoided; Linux window managers commonly capture it).
+
+Design principle for all surfaces: the operation is chosen at the moment of acting,
+never as a persistent global "mode".
+
 ### Why mixed selection is accepted from the start
 
 - elements and shapes are both meaningful inspection targets
