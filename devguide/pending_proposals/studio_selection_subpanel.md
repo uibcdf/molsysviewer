@@ -301,7 +301,11 @@ default is *frozen indices + stored expression*.
 accidental clear/misclick is recoverable (§4A `↶ ↷`). Simplest implementation: a
 snapshot stack of `active_selection` payloads; it also aligns with the step **recipe**
 above (undo ≈ drop the last recorded step and re-evaluate). History is **session-only**
-— it is not part of a saved selection's provenance.
+— it is not part of a saved selection's provenance. **History Invalidation:** When the
+molecular system is rebuilt or edited (via `apply_system_edit` or load actions), the
+frontend selection history stack must be **cleared immediately** to prevent restoring
+invalid or corrupted atom indices.
+
 
 **Persistence limit — non-element selections.** Saved selections (`view.selections`)
 are **reactivated by atom indices** (`setFromAtomIndices`): the record stores element
