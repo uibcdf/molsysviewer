@@ -40,16 +40,30 @@ The Python side is intentionally layered:
 
 ## Live Edit and Rebuild
 
-Live structural edits (`set`, `add`, `append_structures`, `remove`) are a core architectural path.
+Editing the molecular system lives **outside** the viewer core. The viewer exposes a
+single public reconciliation primitive,
+`view.apply_system_edit(new_molsys, atom_index_map=…, load_blocks="keep"|"collapse"|"append")`.
+The MolSysMT addon (`view.addons.molsysmt.basic.*`) owns the edit *semantics*
+(`set`/`add`/`remove`/`append_structures`) and drives them through that primitive;
+the viewer's own loader sugar `view.load(mode="add"|"append_structures")` routes
+through it as well.
 
-- the underlying MolSysMT object is mutated on the Python side;
-- the viewer is rebuilt from current molecular state;
+When `apply_system_edit` runs:
+
+- the reconciled MolSysMT object becomes the viewer's current molecular state;
+- the viewer is rebuilt from that state;
 - regions/layers/tags are replayed;
 - visibility is restored;
 - atom-index based state is remapped when topology changes;
 - the resulting `_message_history` must remain replay-safe for export and popup flows.
 
-This rebuild path is now a regression-tested contract, not an implementation detail.
+This rebuild path is a regression-tested contract, not an implementation detail.
+
+**Coordination invariant.** Any code that edits the molecular system — including
+addons — must go through `view.apply_system_edit(...)`. The viewer must not regrow
+public molecular-system *editing* mutators (`set`/`add`/`remove`/`append_structures`).
+This does not constrain representation/visual state: `view.whole.set_representation`,
+colors, and styles remain first-class public viewer API.
 
 ## Visibility Model
 
