@@ -134,6 +134,10 @@ which are compliant, because none is a *persistent* mode).
   model, not selection management.
 - **Focus / zoom-to-selection** — a camera action; deferred (the API supports
   `active_selection.focus()`, but placement is TBD).
+- **Frame / structure (trajectory) selection** — the subpanel operates on **atom
+  identity** only (projected across all frames); choosing specific structures /
+  frames is the trajectory player's responsibility (`player.py`). See the temporal
+  note in `interaction_targets_and_selection.md`.
 - **Add-on `Basic → Selection`** — postponed; §7 lays out the five surfaces.
 
 ---
@@ -229,9 +233,13 @@ management; no visibility controls.
   `select` syntax** (`"… within <X> angstroms of …"`), *not* a contacts computation.
 - **Cheat-sheet** `[?]`: collapsible card with common examples (by atom name, group,
   chain, molecule_type, `within`, `bonded to`).
-- **Validation on apply:** the expression is validated by sending it to
-  `view.select`; a `NotSupportedSyntaxError` is surfaced inline (no client-side
-  grammar parser — see §6.3).
+- **Live validation + preview (as-you-type):** the input is debounced (~250 ms) and
+  the expression sent to `view.select`; a small indicator shows the match count
+  (`✓ 142 atoms`), `0 atoms`, or `✗ invalid syntax` (surfacing MolSysMT's
+  `NotSupportedSyntaxError`). Requests are **cancelable** — stale responses are
+  discarded — and no client-side grammar parser is used (see §6.3). The same path
+  validates on apply. (Spatial predicates like `within … of …` are heavier to
+  resolve; the debounce + cancellation keep the kernel responsive.)
 
 ### C. Saved Selections manager
 
@@ -265,9 +273,16 @@ Replay behaviour (target):
 - **Interaction-based** selections replay by **remapping indices** via
   `atom_index_map` during `apply_system_edit` rebuilds (the mechanism the viewer
   already uses to survive edits).
-- **Composed** selections (a sequence of query/interaction ops) store an ordered
-  **recipe** of operations; best-effort replay re-applies it. The simple, common
-  case (one named query selection) is fully reproducible once provenance is stored.
+- **Composed** selections (a sequence of steps) store an ordered **recipe**; replay
+  re-applies **each step with its recorded operation**, in order — query steps
+  re-evaluate from their expression, interaction steps remap their static indices via
+  `atom_index_map`, and each is combined with the running result using that step's own
+  op (replace / add / subtract / intersect). Worked example: step 1, query
+  `molecule_type=='protein'` (add) → re-evaluates on the new topology; step 2,
+  `Shift`-click atoms `[12, 14]` (add) → remaps those two indices; the result is their
+  union. Query and interaction steps are **never** treated as one another. The simple,
+  common case (one named query selection) is fully reproducible once provenance is
+  stored.
 
 "Live / dynamic" selections (re-evaluate per trajectory frame) are **deferred**;
 default is *frozen indices + stored expression*.
@@ -308,8 +323,22 @@ New ops resolve on the Python side so provenance is known there:
   inline message, no state change. (Note: MolSysMT's `element` level is *not* a query
   parameter here — it belongs to the Expand feature below, which promotes the
   atom-level active selection to whole groups/chains/etc.)
-- `expand_selection {level}`: use the active selection's `<level>_indices` getter to
-  re-`set` at that level.
+- `expand_selection {level}`: expand the active atom selection to whole `level`
+  (`group | component | molecule | chain | entity`) using **raw indices, never a query
+  string**. Reuse the level index `active_selection` already exposes, then one `get`:
+
+  ```python
+  idx = getattr(view.active_selection, f"{level}_indices")   # already deduped
+  atoms = msm.get(view.molsys, element=level, selection=idx, atom_index=True)  # list[list[int]]
+  view.active_selection.set(sorted({a for sub in atoms for a in sub}))
+  ```
+
+  Verified return shapes (empirically, 2026-07-07): `group_index` at `element='atom'`
+  is a flat list; `atom_index` at `element='group'` is a **list-of-lists** — flatten
+  it. This avoids formatting a giant `'group_index in [...]'` string through the parser
+  (which would stall on large systems). Operate in the **molecular-system index space**
+  that `active_selection.set` expects — mind the `IndexMapper` when only a subset of
+  the system is loaded.
 - `invert_selection`: `all` minus current (`view.molsys.get_n_atoms()`); `select_all`
   / `select_none` analogous.
 - `rename_selection {tag, new_tag}` → `view.selections[tag].set_tag(new_tag)`.
@@ -339,7 +368,9 @@ Python source. Instead:
    `group_name in` suggest residue names present; after `chain_name ==` the chains
    present. High value, feasible client-side.
 3. **Chips + cheat-sheet** as the guided fallback (§4B).
-4. **Apply-time validation** via `view.select` error surfacing (no client parser).
+4. **Live validation + preview** (as-you-type): debounced (~250 ms), **cancelable**
+   requests to `view.select` return a match count (`✓ N atoms`) or a syntax error
+   inline — no client parser. The same path runs on apply.
 
 If true autocomplete is wanted later, expose a molsysmt-side `suggest/complete`
 endpoint so the grammar stays single-sourced in Python.
@@ -406,6 +437,18 @@ Changed / corrected:
 - **Autocompletion** scoped to a feasible tiered plan (the draft assumed full
   autocomplete + validation without addressing grammar cost).
 - Scope trimmed to **selection management**; visibility/focus explicitly deferred.
+
+From a second collaborator review (2026-07-07), all adopted:
+
+- **Live query preview** (as-you-type, debounced + cancelable) replacing apply-only
+  validation (§4B, §6.3).
+- **Index-based expansion** (§6.2) — the raw-indices principle was correct; the
+  proposed `msm.get(..., group_atoms=True)` argument does **not** exist, so the call
+  was replaced with an empirically verified one (`element='group', atom_index=True`
+  → list-of-lists).
+- **Recipe replay** generalised to *each step with its own operation* (§5).
+- **Temporal-dimension** note added to the contract (`atom`/structural selection is
+  orthogonal to frames; the player owns frame selection).
 
 ## 10. Suggested implementation slices
 

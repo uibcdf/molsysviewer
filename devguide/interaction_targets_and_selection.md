@@ -251,6 +251,23 @@ planned (`Alt`+click is avoided; Linux window managers commonly capture it).
 Design principle for all surfaces: the operation is chosen at the moment of acting,
 never as a persistent global "mode".
 
+### Temporal dimension (structures / frames)
+
+A MolSysMT system has a temporal dimension: multiple **structures** (trajectory
+frames or NMR models), addressed by `structure_indices` (a real parameter of
+`view.select`). `active_selection` is deliberately **atom / structural-identity**
+based, orthogonal to that dimension:
+
+- a selection is a set of atoms, **projected across all structures/frames** by
+  default during visualization;
+- choosing *which* structures/frames are shown is the **trajectory player's**
+  responsibility (`player.py`), not the selection surfaces;
+- keeping these orthogonal avoids cardinality collisions (an atom selection does not
+  multiply by the number of frames).
+
+Selection surfaces (including the Studio → Selection subpanel) therefore operate only
+on the atom/structural axis; the temporal axis is out of their scope.
+
 ### Why mixed selection is accepted from the start
 
 - elements and shapes are both meaningful inspection targets
