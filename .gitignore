@@ -95,8 +95,10 @@ molsysviewer/labextension/*.map
 # molsysviewer/labextension/index.js.map
 
 # Bundles generados por esbuild/rollup/webpack
+# viewer.js SÍ se versiona: la doc web (molsysviewer y molsysmt) embebe vistas que lo cargan.
 #molsysviewer/viewer.js
-#molsysviewer/viewer.js.map
+# viewer.js.map (sourcemap de depuración) NO se versiona ni se empaqueta: la doc no lo necesita para renderizar.
+molsysviewer/viewer.js.map
 
 # ==========================================================
 # OS-specific + editor files
