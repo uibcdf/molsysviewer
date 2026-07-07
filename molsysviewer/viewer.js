@@ -150199,7 +150199,7 @@ var FloatingPanelShell = class {
 };
 
 // src/ui/group-panel.ts
-var GroupPanel = class {
+var GroupPanel = class _GroupPanel {
   constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onAction, onChangeColorScheme, options) {
     this.host = host;
     this.onSelect = onSelect;
@@ -150255,6 +150255,7 @@ var GroupPanel = class {
     this.runtimeVisibleOverride = null;
     this.visible = false;
     this.activeColorScheme = "neutral";
+    _GroupPanel.ensureSelectionDesignSystemStyles();
     this.model = options?.model;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
@@ -150435,6 +150436,103 @@ var GroupPanel = class {
     this.renderRegionsSection();
     this.renderOverlaysSection();
     this.renderViewportSection();
+  }
+  static {
+    this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
+  }
+  static ensureSelectionDesignSystemStyles() {
+    if (typeof document === "undefined") return;
+    if (document.getElementById?.(_GroupPanel.SELECTION_STYLE_ID)) return;
+    if (!document.head) return;
+    const style = document.createElement("style");
+    style.id = _GroupPanel.SELECTION_STYLE_ID;
+    style.textContent = `
+[data-molsysviewer-group-panel] {
+    --bg-sidebar: #12131a;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --accent-indigo: #6366f1;
+    --accent-indigo-soft: rgba(99, 102, 241, 0.16);
+    --accent-indigo-border: rgba(129, 140, 248, 0.34);
+    --accent-indigo-glow: 0 0 12px rgba(99, 102, 241, 0.25);
+    --text-primary: #f4f4f5;
+    --text-secondary: rgba(244, 244, 245, 0.68);
+    --text-muted: rgba(244, 244, 245, 0.48);
+}
+
+[data-molsysviewer-group-panel-section="selection"] {
+    background: var(--bg-sidebar);
+}
+
+[data-molsysviewer-selection-active-card],
+[data-molsysviewer-selection-query-composer="true"] {
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012)) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.055);
+    backdrop-filter: blur(12px);
+}
+
+[data-molsysviewer-selection-query-composer="true"]:focus-within {
+    border-color: rgba(99, 102, 241, 0.36) !important;
+    box-shadow: var(--accent-indigo-glow), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+[data-molsysviewer-selection-query-input="true"]:focus,
+[data-molsysviewer-selection-query-syntax="true"]:focus,
+[data-molsysviewer-selection-spatial-distance="true"]:focus {
+    border-color: rgba(99, 102, 241, 0.46) !important;
+    box-shadow: var(--accent-indigo-glow);
+    outline: none;
+}
+
+[data-molsysviewer-selection-query-preset] {
+    background: var(--accent-indigo-soft) !important;
+    border-color: var(--accent-indigo-border) !important;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+[data-molsysviewer-selection-query-preset]:hover {
+    background: rgba(99, 102, 241, 0.24) !important;
+    border-color: rgba(165, 180, 252, 0.48) !important;
+    transform: translateY(-1px);
+}
+
+[data-molsysviewer-saved-selection-list] {
+    background: transparent;
+}
+
+[data-molsysviewer-saved-selection-card] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[data-molsysviewer-saved-selection-card]:hover,
+[data-molsysviewer-saved-selection-card][data-molsysviewer-selection-row-hover="true"] {
+    background: var(--bg-card-hover) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    transform: translateY(-1px);
+}
+
+[data-molsysviewer-saved-selection-card][data-molsysviewer-selection-row-active="true"] {
+    border-left: 3px solid var(--accent-indigo) !important;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, rgba(255,255,255,0.03) 100%) !important;
+}
+
+[data-molsysviewer-selection-query-preview-status="ok"] {
+    text-shadow: 0 0 10px rgba(134, 239, 172, 0.18);
+}
+
+[data-molsysviewer-selection-query-preview-status="error"] {
+    text-shadow: 0 0 10px rgba(252, 165, 165, 0.16);
+}
+`;
+    document.head.appendChild(style);
   }
   createSection(key2) {
     const section = document.createElement("div");
@@ -150973,6 +151071,7 @@ var GroupPanel = class {
     this.selectionSection.replaceChildren();
     this.selectionSection.appendChild(this.makeSectionHeader("Active Selection"));
     const activeContainer = document.createElement("div");
+    activeContainer.setAttribute("data-molsysviewer-selection-active-card", "true");
     Object.assign(activeContainer.style, {
       display: "flex",
       flexDirection: "column",
@@ -151131,6 +151230,7 @@ var GroupPanel = class {
     this.selectionSection.appendChild(this.renderSelectionQueryComposer());
     this.selectionSection.appendChild(this.makeSectionHeader("Saved Selections"));
     const savedList = document.createElement("div");
+    savedList.setAttribute("data-molsysviewer-saved-selection-list", "true");
     Object.assign(savedList.style, {
       display: "flex",
       flexDirection: "column",
@@ -151156,9 +151256,11 @@ var GroupPanel = class {
           cursor: "pointer"
         });
         card.addEventListener("mouseenter", () => {
+          card.setAttribute("data-molsysviewer-selection-row-hover", "true");
           card.style.background = "rgba(255,255,255,0.09)";
         });
         card.addEventListener("mouseleave", () => {
+          card.setAttribute("data-molsysviewer-selection-row-hover", "false");
           card.style.background = "rgba(255,255,255,0.05)";
         });
         card.addEventListener("click", (e) => {

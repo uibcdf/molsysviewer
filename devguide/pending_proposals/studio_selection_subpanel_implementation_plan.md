@@ -67,7 +67,7 @@ delegates to (1) §6.
 | 5 | Guided chips + cheat-sheet | M | 1 | ☑ | 2026-07-07 | — | preset chips + collapsible examples; typeahead deferred |
 | 6 | Undo / redo | M | — | ☑ | 2026-07-07 | — | TS bounded history + scoped shortcuts; invalidated on load/rebuild |
 | 7 | Reproducibility (provenance) | L | 0, 1 | ☑ | 2026-07-07 | — | saved-selection provenance + active recipe replay/remap; tests/build green |
-| 8 | CSS design system | S | 1, 4 | ☐ | — | — | cosmetic layer |
+| 8 | CSS design system | S | 1, 4 | ☑ | 2026-07-07 | — | scoped design tokens + active/query/saved styling; tests/build green |
 | 9 | Feature-complete / integration | M | 0–8 | ☐ | — | — | e2e + docs closeout |
 
 Size: **S** ≈ hours · **M** ≈ 1–2 days · **L** ≈ 3–5 days.
@@ -313,11 +313,19 @@ Progress note 2026-07-07:
 
 **Size:** S · **Depends on:** 1, 4 · Refs: UI §4.
 
-- [ ] Frontend: apply the **tokens** (`--bg-sidebar`, `--accent-indigo`,
+- [x] Frontend: apply the **tokens** (`--bg-sidebar`, `--accent-indigo`,
       `--accent-indigo-glow`, …), glassmorphic active card, focus glow on the query
       input, saved-row hover/active animations.
-- [ ] Ensure the **dark-mode aesthetic** matches the rest of the viewer.
+- [x] Ensure the **dark-mode aesthetic** matches the rest of the viewer.
 - **Acceptance:** the subpanel matches the UI spec's look and renders in the viewer's theme.
+
+  Progress note 2026-07-07: implemented as an idempotent scoped style block injected
+  by `GroupPanel` under `data-molsysviewer-*` selectors, so the design layer can
+  coexist with the existing inline layout styles. The Selection section now has
+  dark-mode design tokens, glassmorphic active/query cards, focus glow on query and
+  spatial inputs, preset chip hover treatment, and saved-selection row hover/active
+  styling anchors. Validation: `npm run test:js`, `npm run build:runtime`, and
+  `python -m pytest tests/ --tb=no -q` passed.
 
 ---
 

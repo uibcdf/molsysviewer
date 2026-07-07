@@ -197,10 +197,14 @@ test("GroupPanel renders active, saved, and region summaries", () => {
         const root = host.children[0];
         const selectionSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "selection");
         const regionsSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "regions");
+        const activeCard = findFirstByAttribute(root, "data-molsysviewer-selection-active-card", "true");
+        const savedList = findFirstByAttribute(root, "data-molsysviewer-saved-selection-list", "true");
         const summaryItems = collectByAttribute(root, "data-molsysviewer-group-panel-summary-item", "true").map((node) => firstText(node));
 
         assert.ok(selectionSection);
         assert.ok(regionsSection);
+        assert.ok(activeCard);
+        assert.ok(savedList);
         assert.ok(summaryItems.some((txt) => txt.includes("2 atoms")));
         assert.ok(summaryItems.includes("site_a"));
         assert.ok(summaryItems.includes("binding"));
