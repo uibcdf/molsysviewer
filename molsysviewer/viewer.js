@@ -151213,6 +151213,11 @@ var GroupPanel = class _GroupPanel {
       const clearBtn = this.makeButton("Clear", () => this.onSelect([], "replace"));
       const saveBtn = this.makeButton("Save", () => showForm("save"));
       const regionBtn = this.makeButton("Create Region", () => showForm("region"));
+      clearBtn.setAttribute("data-molsysviewer-selection-clear", "true");
+      saveBtn.setAttribute("data-molsysviewer-selection-save", "true");
+      regionBtn.setAttribute("data-molsysviewer-selection-to-region", "true");
+      inlineForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
+      inlineInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
       btnRow.appendChild(clearBtn);
       btnRow.appendChild(saveBtn);
       btnRow.appendChild(regionBtn);

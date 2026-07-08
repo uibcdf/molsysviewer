@@ -68,7 +68,7 @@ delegates to (1) §6.
 | 6 | Undo / redo | M | — | ☑ | 2026-07-07 | — | TS bounded history + scoped shortcuts; invalidated on load/rebuild |
 | 7 | Reproducibility (provenance) | L | 0, 1 | ☑ | 2026-07-07 | — | saved-selection provenance + active recipe replay/remap; tests/build green |
 | 8 | CSS design system | S | 1, 4 | ☑ | 2026-07-07 | — | scoped design tokens + active/query/saved styling; tests/build green |
-| 9 | Feature-complete / integration | M | 0–8 | ☐ | — | — | e2e + docs closeout |
+| 9 | Feature-complete / integration | M | 0–8 | ◐ | 2026-07-08 | — | e2e + docs implemented; final validation pending |
 
 Size: **S** ≈ hours · **M** ≈ 1–2 days · **L** ≈ 3–5 days.
 Status legend: ☐ Not started · ◐ In progress · ☑ Done · ✗ Dropped.
@@ -333,24 +333,36 @@ Progress note 2026-07-07:
 
 **Size:** M · **Depends on:** 0–8 · The global closeout.
 
-- [ ] **End-to-end walkthrough** (ideally an e2e in `js/tests/e2e/`): build a selection
+- [x] **End-to-end walkthrough implemented** (`js/tests/e2e/selection-subpanel.e2e.ts`):
+      build a selection
       by query → compose with a click and a saved selection (union/subtract) → expand to
-      chain → save → rename → promote to region → undo/redo. All green.
-- [ ] Update the **three reference documents**: flip the contract's Subtract/Intersect
+      chain → save → rename → promote to region → undo/redo. Browser execution remains
+      pending on a host where Chromium and WebGL can start.
+- [x] Update the **three reference documents**: flip the contract's Subtract/Intersect
       from "pending" to "done" (Phase 0); tick blueprint §10 slices; note the subpanel
       as implemented.
-- [ ] Full Python suite + `npm run test:js` + `npm run build:runtime` green; `viewer.js`
+- [x] Full Python suite + `npm run test:js` + `npm run build:runtime` green; `viewer.js`
       regenerated.
 - **Acceptance:** the subpanel delivers the five capabilities of blueprint §1.2 end to
   end, on a real system, with tests guarding each.
+
+  Progress note 2026-07-08: the browser integration walkthrough uses a real Mol*
+  controller and molecular payload, while simulating the Python host's response
+  messages. This deliberately tests the frontend/transport contract without claiming
+  to run a Python kernel in Playwright. The real backend half remains covered by
+  `tests/test_active_selection.py` and `tests/test_selections.py`. Validation:
+  `npm run test:js` passed (145/145), `npm run build:runtime` passed, and
+  `python -m pytest tests/ --tb=no -q` passed (3 skipped). The targeted E2E compiled
+  successfully but reported `Chromium launch failed; skipping Selection subpanel
+  test`; therefore Phase 9 remains in progress until the browser walkthrough runs.
 
 ---
 
 ## Cross-cutting (every phase)
 
-- [ ] Rebuild the bundle after TS changes:
+- [x] Rebuild the bundle after TS changes:
       `cd molsysviewer/js && npm run build:runtime` (regenerates `viewer.js`);
       never edit it by hand. Use `npm run build` only for release/packaging
       version sync.
-- [ ] Keep the Python suite + `npm run test:js` green; add tests with each phase.
-- [ ] Update the dashboard row + Risks table as each phase lands.
+- [x] Keep the Python suite + `npm run test:js` green; add tests with each phase.
+- [x] Update the dashboard row + Risks table as each phase lands.

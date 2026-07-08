@@ -251,7 +251,7 @@ Currently implemented (canvas / strips, in `managers/active-selection.ts`):
 - **Range** — `Shift + Alt + left click`.
 - **Clear** — left click on empty canvas.
 
-Defined extension (Studio → Selection Phase 0):
+Implemented extension (Studio → Selection Phase 0):
 
 - **Subtract** — remove every incoming item from `active_selection`, using the same
   item identity used by Add/toggle. Aggregate index arrays are recomputed from the
@@ -265,7 +265,7 @@ Defined extension (Studio → Selection Phase 0):
   `universe_atom_indices - current_atom_indices`.
 
 Subtract and Intersect cannot be expressed by a single canvas click, so surfaces
-expose them via explicit controls — see the Studio → Selection subpanel proposal
+expose them via explicit controls — implemented by the Studio → Selection subpanel
 (`pending_proposals/studio_selection_subpanel.md`). No new *click* modifier is
 planned (`Alt`+click is avoided; Linux window managers commonly capture it).
 

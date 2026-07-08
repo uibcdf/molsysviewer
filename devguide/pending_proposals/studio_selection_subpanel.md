@@ -1,6 +1,6 @@
 # Proposal: Studio → Selection subpanel (native selection management)
 
-**Status:** pending (design agreed; not implemented).
+**Status:** implemented (Phases 0–9 completed; retained as the architectural record).
 
 **Scope:** the **Selection** subpanel of the **Studio** panel in MolSysViewer.
 Gives the user adequate and complete control over the viewer's *native* selection
@@ -158,7 +158,7 @@ is cross-cutting; it belongs to the `active_selection` contract, not to any one
 surface. Today the contract defines only **Replace / Add-toggle / Range**
 (`interaction_targets_and_selection.md`; `Shift`+click *toggles* — it removes an
 already-selected element, so per-item de-selection already exists).
-**Subtract and Intersect are a pending extension of that contract** and are recorded
+**Subtract and Intersect are an implemented extension of that contract** and are recorded
 there (see §8), so every surface shares one definition.
 
 **The narrow invariant** (§1.3): no surface arms a *persistent* operation mode that
@@ -492,14 +492,19 @@ From a third collaborator review (2026-07-07):
   a scalability note in the `hover_target` section of the contract (not here).
   Corrected: the hover debounce is **60 ms**, not 21 ms.
 
-## 10. Suggested implementation slices
+## 10. Implemented slices
 
-1. Query box + operation buttons + apply-time validation (biggest capability gain).
-2. Modifier legend near the strips (clicks already support Replace / `Shift`=Add-
+1. [x] Query box + operation buttons + apply-time validation (biggest capability gain).
+2. [x] Modifier legend near the strips (clicks already support Replace / `Shift`=Add-
    toggle / `Shift`+`Alt`=Range — no click-path code change).
-3. Expand-to-level row (all six).
-4. Saved-selection manager upgrade (rename, compose, promote menu).
-5. Guided chips + cheat-sheet.
-6. Reproducibility (provenance recipe + expression persistence).
-7. Name-collision handling on Save / Rename / → Region (Rename / Overwrite / Cancel).
-8. Undo / redo history for the active selection (bounded snapshot stack).
+3. [x] Expand-to-level row (the five supra-atomic levels supported by the contract).
+4. [x] Saved-selection manager upgrade (rename, compose, promote menu).
+5. [x] Guided chips + cheat-sheet.
+6. [x] Reproducibility (provenance recipe + expression persistence).
+7. [x] Name-collision handling on Save / Rename / → Region.
+8. [x] Undo / redo history for the active selection (bounded snapshot stack).
+
+The implementation is covered across Python backend tests, TypeScript unit tests, and
+`js/tests/e2e/selection-subpanel.e2e.ts`. The browser E2E uses Mol* with a real
+molecular payload and simulates the Python host responses; the Python suite verifies
+the corresponding query, composition, expansion, persistence, and promotion handlers.

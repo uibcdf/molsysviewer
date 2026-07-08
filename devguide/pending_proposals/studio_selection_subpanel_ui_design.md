@@ -1,6 +1,6 @@
 # Proposal: Studio → Selection Subpanel UI Design & Implementation Spec
 
-**Status:** pending (design agreed; not implemented).  
+**Status:** implemented (retained as the UI/UX reference).
 **Scope:** UI/UX styling, layout structure, and frontend-backend synchronization for the **Selection Subpanel** of the **Studio** panel in MolSysViewer.
 
 This document serves as the high-fidelity visual and UX specification, supplementing the core architectural blueprint in `studio_selection_subpanel.md`.
