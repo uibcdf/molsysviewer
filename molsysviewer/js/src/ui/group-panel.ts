@@ -1102,6 +1102,29 @@ export class GroupPanel {
         }
         activeContainer.appendChild(historyRow);
 
+        const quickRow = document.createElement("div");
+        Object.assign(quickRow.style, {
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: "6px",
+        });
+        const allBtn = this.makeButton("All", () =>
+            this.onAction?.("set_active_selection_operation", { operation: "all" })
+        );
+        allBtn.setAttribute("data-molsysviewer-selection-all", "true");
+        const noneBtn = this.makeButton("None", () =>
+            this.onAction?.("set_active_selection_operation", { operation: "none" })
+        );
+        noneBtn.setAttribute("data-molsysviewer-selection-none", "true");
+        const invertBtn = this.makeButton("Invert", () =>
+            this.onAction?.("set_active_selection_operation", { operation: "invert" })
+        );
+        invertBtn.setAttribute("data-molsysviewer-selection-invert", "true");
+        quickRow.appendChild(allBtn);
+        quickRow.appendChild(noneBtn);
+        quickRow.appendChild(invertBtn);
+        activeContainer.appendChild(quickRow);
+
         if (this.currentSelection.count_atoms > 0) {
             const countLabel = document.createElement("div");
             countLabel.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
@@ -1169,11 +1192,19 @@ export class GroupPanel {
             inlineForm.appendChild(inlineCancel);
             activeContainer.appendChild(inlineForm);
 
-            const showForm = (mode: "save" | "region") => {
+            const showForm = (mode: "save" | "region" | "label") => {
                 inlineForm.style.display = "flex";
                 inlineInput.value = "";
-                inlineInput.placeholder = mode === "save" ? "Selection name..." : "Region name...";
-                inlineConfirm.textContent = mode === "save" ? "Save" : "Create";
+                inlineInput.placeholder = mode === "save"
+                    ? "Selection name..."
+                    : mode === "region"
+                        ? "Region name..."
+                        : "Label text...";
+                inlineConfirm.textContent = mode === "save"
+                    ? "Save"
+                    : mode === "region"
+                        ? "Create"
+                        : "Add Label";
 
                 // Remove previous listeners
                 const newConfirm = inlineConfirm.cloneNode(true) as HTMLButtonElement;
@@ -1197,7 +1228,7 @@ export class GroupPanel {
                         } else {
                             this.onAction?.("save_selection", { tag });
                         }
-                    } else {
+                    } else if (mode === "region") {
                         const exists = this.regions.some(r => r.tag === tag);
                         if (exists) {
                             const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${tag}" already exists. Overwrite?`) : true;
@@ -1210,6 +1241,8 @@ export class GroupPanel {
                         } else {
                             this.onAction?.("create_region_from_selection", { tag });
                         }
+                    } else {
+                        this.onAction?.("add_label_from_selection", { text: tag });
                     }
                     inlineForm.style.display = "none";
                 });
@@ -1222,15 +1255,18 @@ export class GroupPanel {
             const clearBtn = this.makeButton("Clear", () => this.onSelect([], "replace"));
             const saveBtn = this.makeButton("Save", () => showForm("save"));
             const regionBtn = this.makeButton("Create Region", () => showForm("region"));
+            const labelBtn = this.makeButton("Add Label", () => showForm("label"));
             clearBtn.setAttribute("data-molsysviewer-selection-clear", "true");
             saveBtn.setAttribute("data-molsysviewer-selection-save", "true");
             regionBtn.setAttribute("data-molsysviewer-selection-to-region", "true");
+            labelBtn.setAttribute("data-molsysviewer-selection-to-label", "true");
             inlineForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
             inlineInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
 
             btnRow.appendChild(clearBtn);
             btnRow.appendChild(saveBtn);
             btnRow.appendChild(regionBtn);
+            btnRow.appendChild(labelBtn);
         } else {
             const emptyLabel = document.createElement("div");
             Object.assign(emptyLabel.style, {
@@ -1697,11 +1733,11 @@ export class GroupPanel {
         const buttonRow = document.createElement("div");
         Object.assign(buttonRow.style, {
             display: "grid",
-            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
             gap: "6px",
         });
         const hasExpression = this.selectionQueryExpression.trim().length > 0;
-        const apply = (op: "replace" | "add" | "subtract" | "intersect" | "invert") => {
+        const apply = (op: "replace" | "add" | "subtract" | "intersect") => {
             const expression = this.selectionQueryExpression.trim();
             if (!expression) return;
             this.onAction?.("apply_selection_query", {
@@ -1718,9 +1754,7 @@ export class GroupPanel {
         subtractBtn.setAttribute("data-molsysviewer-selection-query-apply", "subtract");
         const intersectBtn = this.makeButton("Intersect", () => apply("intersect"));
         intersectBtn.setAttribute("data-molsysviewer-selection-query-apply", "intersect");
-        const invertBtn = this.makeButton("Invert", () => apply("invert"));
-        invertBtn.setAttribute("data-molsysviewer-selection-query-apply", "invert");
-        for (const btn of [selectBtn, unionBtn, subtractBtn, intersectBtn, invertBtn]) {
+        for (const btn of [selectBtn, unionBtn, subtractBtn, intersectBtn]) {
             btn.disabled = !hasExpression;
             if (!hasExpression) {
                 btn.style.opacity = "0.42";

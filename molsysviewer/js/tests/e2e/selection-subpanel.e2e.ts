@@ -85,6 +85,17 @@ async function run() {
         await page.locator('[data-molsysviewer-group-panel-toggle="true"]').click();
         await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
 
+        // Active-selection quick operations are independent of the query composer.
+        await page.locator('[data-molsysviewer-selection-all="true"]').click();
+        assert.strictEqual((await latestAction(page, "set_active_selection_operation")).operation, "all");
+        await setActiveSelection(page, [0, 1, 2, 3, 4, 5]);
+        await page.locator('[data-molsysviewer-selection-none="true"]').click();
+        assert.strictEqual((await latestAction(page, "set_active_selection_operation")).operation, "none");
+        await setActiveSelection(page, []);
+        await page.locator('[data-molsysviewer-selection-invert="true"]').click();
+        assert.strictEqual((await latestAction(page, "set_active_selection_operation")).operation, "invert");
+        await setActiveSelection(page, [0, 1, 2, 3, 4, 5]);
+
         // Query request and backend response.
         const query = page.locator('[data-molsysviewer-selection-query-input="true"]');
         await query.fill("atom_index in [0, 1]");
@@ -174,6 +185,15 @@ async function run() {
             { selection_tag: promote.selection_tag, tag: promote.tag },
             { selection_tag: "active_chain", tag: "active_chain_region" },
         );
+
+        // Promote the active selection directly to a label.
+        await page.locator('[data-molsysviewer-selection-to-label="true"]').click();
+        await page.locator('[data-molsysviewer-selection-inline-input="true"]').fill("Active chain");
+        await page.locator('[data-molsysviewer-selection-inline-form="true"] button')
+            .filter({ hasText: "Add Label" })
+            .click();
+        const label = await latestAction(page, "add_label_from_selection");
+        assert.strictEqual(label.text, "Active chain");
 
         // Undo and redo are frontend-local and emit the restored selection.
         await page.locator('[data-molsysviewer-selection-undo="true"]').click();

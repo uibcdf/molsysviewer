@@ -131,7 +131,7 @@ Progress note 2026-07-07:
   `interaction_context_action`.
 - Validation so far: `python -m pytest tests/test_active_selection.py -x -q`,
   `npm run test:js`, `npm run build:runtime`, and `python -m pytest tests/ --tb=no -q`
-  passed. After the dedicated preview-event refactor and query `Invert`, the
+  passed. After the dedicated preview-event refactor, the
   targeted Python and JS tests were rerun and passed (`npm run test:js`: 137/137).
 - Second slice: preview now exposes explicit idle/pending/ok/empty/error UI states,
   empty queries disable operation buttons, and Python covers invalid apply/preview
@@ -142,7 +142,8 @@ Progress note 2026-07-07:
 
 - [x] Frontend (`js/src/ui/group-panel.ts`, `renderSelectionSection`): build **Section
       B** — query input + syntax dropdown (`MolSysMT | Indices`) + operation buttons
-      `Select / +Union / −Subtract / ∩Intersect / ⤩Invert`.
+      `Select / +Union / −Subtract / ∩Intersect`. `Invert` belongs to the active
+      selection toolbar and never depends on query-box contents.
 - [x] Frontend: **live validation badge** — debounce ~250 ms, **cancelable** request
       (discard stale responses), render `✓ N atoms` / `0 atoms` / `✗ invalid syntax`.
       Note: preview = resolve + count, same cost as applying minus the `set` (see R1).
@@ -184,9 +185,9 @@ Progress note 2026-07-07:
       string**: `msm.get(view.molsys, element=level, selection=<level>_indices,
       atom_index=True)` (returns **list-of-lists** → flatten) →
       `active_selection.set(list)`. Operate in the molecular-system index space (R2).
-- [x] Frontend + backend: **spatial expander** — distance input (Å) → build the native
-      MolSysMT query `"all within <X> angstroms of (current)"` → route through
-      `view.select` (**not** contacts).
+- [x] Frontend + backend: **spatial expander** — distance input (Å) → use the same
+      `msm.structure.get_contacts` primitive as MolSysMT's native `within` parser,
+      passing current atom indices directly instead of embedding them in a query.
 - **Acceptance:** expanding a partial selection to `group` returns whole groups;
   large-selection expansion does not stall; spatial expansion matches a manual `within`
   query. Python tests per level + spatial + one **subset-loaded** case (R2).
@@ -194,25 +195,21 @@ Progress note 2026-07-07:
   Progress note 2026-07-07: first vertical slice implemented. Hierarchical expansion
   computes level indices from `active_selection.atom_indices` instead of trusting
   possibly incomplete cached level arrays, then uses `msm.get(..., atom_index=True)`
-  and flattens list-of-lists. Spatial expansion routes through native MolSysMT
-  selection syntax:
-  `all within <distance> angstroms of atom_index in <current_atoms>`.
+  and flattens list-of-lists. Spatial expansion preserves native MolSysMT `within`
+  semantics through the indexed contact primitive, avoiding a query string
+  proportional to the active-selection size.
 
-  Local spatial validation note: invoking real `within` in this checkout currently
-  triggers MolSysMT/Numba cache import failure while importing
-  `molsysmt.structure.get_sasa`:
-  `RuntimeError: cannot cache function '_is_orthogonal': no locator available for
-  file '/home/diego/repos@uibcdf/molsysmt/molsysmt/lib/structure/get_sasa.py'`.
-  No repository-wide Numba workaround has been added; the spatial unit test verifies
-  routing/query construction without invoking that failing import.
+  Follow-up validation 2026-07-08: the real MolSysMT `within` expression and the
+  direct indexed `get_contacts` implementation run against `demo["dialanine"]` and
+  return the same atom indices. The earlier local Numba-cache limitation no longer
+  reproduces; no environment workaround was added.
 
   Validation run on 2026-07-07:
   `python -m pytest tests/test_active_selection.py -x -q`, `npm run test:js`,
   `npm run build:runtime`, and `python -m pytest tests/ --tb=no -q` passed.
   Follow-up slice: explicit subset-loaded R2 regression added. Expanding a local
   subset selection now preserves original atom indices in Python while sending local
-  atom indices to the frontend. Remaining before closing the phase: real `within`
-  validation once the local MolSysMT/Numba cache issue is resolved.
+  atom indices to the frontend.
 
 ---
 
@@ -351,10 +348,18 @@ Progress note 2026-07-07:
   messages. This deliberately tests the frontend/transport contract without claiming
   to run a Python kernel in Playwright. The real backend half remains covered by
   `tests/test_active_selection.py` and `tests/test_selections.py`. Validation:
-  `npm run test:js` passed (145/145), `npm run build:runtime` passed, and
+  `npm run test:js` passed (146/146), `npm run build:runtime` passed, and
   `python -m pytest tests/ --tb=no -q` passed (3 skipped). The targeted E2E compiled
   successfully but reported `Chromium launch failed; skipping Selection subpanel
   test`; therefore Phase 9 remains in progress until the browser walkthrough runs.
+
+  Follow-up conformance pass 2026-07-08: active-card `All / None / Invert` and
+  `→ Label` controls were added; query Invert was removed so complement always targets
+  the current active selection. Query recipes are now assigned explicitly after
+  `active_selection.set()` rather than relying on its reset side effect. Hierarchy
+  metadata is fetched in one multi-attribute `msm.get` call, and spatial expansion
+  passes index arrays directly to MolSysMT's `get_contacts` primitive. Python, TS, and
+  E2E coverage were extended for these contracts.
 
 ---
 

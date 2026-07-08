@@ -44,11 +44,7 @@ A developer implementing the subpanel should construct the HTML/TS hierarchy mat
 │                                                                               │
 │  Presets: (protein ✕) (water ✕) (backbone ✕) (sidechain ✕) (ligand ✕)         │
 │                                                                               │
-│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ ┌─────────────┐  │
-│  │     + Union     │ │   - Subtract    │ │   ∩ Intersect   │ │  ⤩ Invert   │  │
-│  │ Add matching to │ │ Remove matching │ │ Keep only comm. │ │ Select other│  │
-│  │ current selection││  from current   │ │  with current   │ │    atoms    │  │
-│  └─────────────────┘ └─────────────────┘ └─────────────────┘ └─────────────┘  │
+│  [ Select ]       [ + Union ]       [ - Subtract ]       [ ∩ Intersect ]      │
 │                                                                               │
 │  Validation Status: "✓ Matches: 45 atoms" (Updates dynamically on debounce)   │
 │                                                                               │
@@ -88,9 +84,9 @@ A developer implementing the subpanel should construct the HTML/TS hierarchy mat
 *   **Validation Badge:** Debounces query input (250ms delay). Sends a preview message to the backend. If valid, displays the green checkmark and matching count. If invalid, displays a red cross and "Invalid syntax" without throwing console exceptions.
 *   **Preset Chips:** Includes `protein`, `water`, `backbone`, `sidechain`, and `ligand`. Clicking a chip injects its exact string representation into the query input field.
 *   **Cheat Sheet (`[?]`):** Expands a sliding list showing syntax examples for quick copy-pasting.
-*   **Expansion buttons:** 
+*   **Expansion buttons:**
     *   *Hierarchical:* Expand active selection to whole groups/components/chains.
-    *   *Spatial:* Perform a distance expander. The input distance (in Ångstroms) is evaluated as a native MolSysMT selection query (e.g., `all within X of selection`) routed through `view.select()` as defined in the core proposal (avoiding separate backend contact calculations).
+    *   *Spatial:* Perform a distance expander with native MolSysMT `within` semantics. It calls the same `msm.structure.get_contacts` primitive used by that parser, passing atom-index arrays instead of interpolating a large query string.
 
 ### C. Saved Selections Manager
 *   **Saved Rows:** Displays named selections sorted alphabetically.

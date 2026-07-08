@@ -237,8 +237,10 @@ management; no visibility controls.
   `∩ Intersect` — apply the resolved query to the active selection with that op.
 - **Guided chips** (insert exact syntax into the box, teaching by example):
   `protein` → `molecule_type=="protein"`, `water`, `backbone`, `sidechain`,
-  `ligand`, and a **`within X Å of selection`** helper. NOTE: distance is **native
-  `select` syntax** (`"… within <X> angstroms of …"`), *not* a contacts computation.
+  `ligand`, and a **`within X Å of selection`** helper. Free-form distance expressions
+  remain native `select` syntax. The dedicated spatial expander calls the same
+  `msm.structure.get_contacts` primitive used internally by MolSysMT's `within`
+  parser, passing atom-index arrays directly instead of constructing a huge query.
 - **Cheat-sheet** `[?]`: collapsible card with common examples (by atom name, group,
   chain, molecule_type, `within`, `bonded to`).
 - **Live validation + preview (as-you-type):** the input is debounced (~250 ms) and
@@ -452,9 +454,10 @@ surfaces of §7).
 
 Changed / corrected:
 
-- **Distance** is native `select` syntax (`within … of …`), **not**
-  `msm.structure.get_contacts`; it is a query, not a separate spatial-compute
-  "expander".
+- **Distance** preserves native `within … of …` semantics. Free-form expressions use
+  `view.select`; the dedicated active-selection expander calls MolSysMT's underlying
+  `msm.structure.get_contacts` primitive directly with index arrays. This is the same
+  computation as the parser path without serializing the active atom list.
 - **Expansion to all five** supra-atomic levels (`group, component, molecule, chain,
   entity`) — the draft had three — using MolSysMT's level vocabulary (**group**, not
   "residue").

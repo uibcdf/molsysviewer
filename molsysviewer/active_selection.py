@@ -198,16 +198,19 @@ class ActiveSelection:
 
         # Derive the full per-level metadata from _molsys (in-memory MolSys) — a
         # read-only query; never against the original input (view.molecular_system).
-        level_indices: dict[str, list[int]] = {}
-        for level in ("group", "component", "chain", "molecule", "entity"):
-            values = msm.get(
-                molsys,
-                element="atom",
-                selection=atom_indices,
-                skip_digestion=True,
-                **{f"{level}_index": True},
-            )
-            level_indices[level] = sorted({int(v) for v in values})
+        levels = ("group", "component", "chain", "molecule", "entity")
+        metadata = msm.get(
+            molsys,
+            element="atom",
+            selection=atom_indices,
+            output_type="dictionary",
+            skip_digestion=True,
+            **{f"{level}_index": True for level in levels},
+        )
+        level_indices = {
+            level: sorted({int(value) for value in metadata[f"{level}_index"]})
+            for level in levels
+        }
 
         # _molsys index space == frontend index space, so send the atoms as-is.
         self._view._send({  # noqa: SLF001

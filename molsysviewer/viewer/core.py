@@ -530,13 +530,17 @@ class MolSysView(
     def _set_active_selection_recipe(self, recipe: Any) -> None:
         self._active_selection_recipe = self._copy_selection_recipe(recipe)
 
-    def _append_active_selection_recipe_step(self, step: dict[str, Any], op: str) -> None:
-        if op in {"replace", "invert"} or not self._active_selection_recipe:
-            recipe = [dict(step)]
-        else:
-            recipe = self._copy_selection_recipe(self._active_selection_recipe)
-            recipe.append(dict(step))
-        self._set_active_selection_recipe(recipe)
+    def _selection_recipe_after_step(
+        self,
+        previous_recipe: Any,
+        step: dict[str, Any],
+        op: str,
+    ) -> list[dict[str, Any]]:
+        if op == "replace":
+            return [dict(step)]
+        recipe = self._copy_selection_recipe(previous_recipe)
+        recipe.append(dict(step))
+        return recipe
 
     def _resolve_selection_recipe_step(
         self,
@@ -584,7 +588,7 @@ class MolSysView(
             op = str(step.get("op") or "replace")
             if op == "invert":
                 n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
-                result = _combine(incoming, incoming, "invert", universe=range(n_atoms))
+                result = _combine(result, [], "invert", universe=range(n_atoms))
             elif op in {"replace", "add", "subtract", "intersect"}:
                 result = _combine(result, incoming, op)  # type: ignore[arg-type]
             else:
@@ -597,18 +601,11 @@ class MolSysView(
         expression = content.get("expression")
         syntax = str(content.get("syntax") or "MolSysMT")
         op = str(content.get("op") or "replace")
-        if op not in {"replace", "add", "subtract", "intersect", "invert"}:
+        if op not in {"replace", "add", "subtract", "intersect"}:
             raise ValueError(f"Unsupported selection query operation: {op!r}.")
         incoming = self._parse_selection_query_indices(expression, syntax)
         previous_recipe = self._copy_selection_recipe(self._active_selection_recipe)
-        if op == "invert":
-            n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
-            result = _combine(incoming, [], "invert", universe=range(n_atoms))
-        else:
-            result = _combine(self.active_selection.atom_indices, incoming, op)  # type: ignore[arg-type]
-        self.active_selection.set(result, skip_digestion=True)
-        if op not in {"replace", "invert"}:
-            self._set_active_selection_recipe(previous_recipe)
+        result = _combine(self.active_selection.atom_indices, incoming, op)  # type: ignore[arg-type]
         source = "indices" if syntax == "Indices" else "query"
         step = self._selection_recipe_step(
             source=source,
@@ -618,7 +615,45 @@ class MolSysView(
             syntax=syntax,
             element="atom",
         )
-        self._append_active_selection_recipe_step(step, op)
+        next_recipe = self._selection_recipe_after_step(previous_recipe, step, op)
+        self.active_selection.set(result, skip_digestion=True)
+        self._set_active_selection_recipe(next_recipe)
+
+    def _apply_active_selection_operation(self, operation: str) -> None:
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        n_atoms = int(self._molsys.get_n_atoms())
+        previous_recipe = self._copy_selection_recipe(self._active_selection_recipe)
+        if operation == "all":
+            result = list(range(n_atoms))
+            step = self._selection_recipe_step(
+                source="indices",
+                op="replace",
+                atom_indices=result,
+                syntax="Indices",
+            )
+            next_recipe = [step]
+        elif operation == "none":
+            result = []
+            next_recipe = []
+        elif operation == "invert":
+            result = _combine(
+                self.active_selection.atom_indices,
+                [],
+                "invert",
+                universe=range(n_atoms),
+            )
+            step = self._selection_recipe_step(
+                source="indices",
+                op="invert",
+                atom_indices=[],
+                syntax="Indices",
+            )
+            next_recipe = self._selection_recipe_after_step(previous_recipe, step, "invert")
+        else:
+            raise ValueError(f"Unsupported active selection operation: {operation!r}.")
+        self.active_selection.set(result, skip_digestion=True)
+        self._set_active_selection_recipe(next_recipe)
 
     def _preview_selection_query_action(self, content: Mapping[str, Any]) -> None:
         request_id = content.get("request_id")
@@ -712,17 +747,16 @@ class MolSysView(
         if distance <= 0:
             raise ValueError("spatial expand_selection requires distance_angstroms > 0.")
 
-        distance_text = f"{distance:g}"
-        selection = f"all within {distance_text} angstroms of atom_index in {current_atoms}"
-        expanded_atoms = [
-            int(item)
-            for item in self.select(
-                selection=selection,
-                syntax="MolSysMT",
-                element="atom",
-                skip_digestion=True,
-            )
-        ]
+        n_atoms = int(self._molsys.get_n_atoms()) if self._molsys is not None else 0
+        all_atoms = list(range(n_atoms))
+        contact_map = msm.structure.get_contacts(
+            self._molsys,
+            selection=all_atoms,
+            selection_2=current_atoms,
+            threshold=f"{distance:g} angstroms",
+            pbc=False,
+        )
+        expanded_atoms = np.asarray(all_atoms)[np.where(contact_map.any(axis=2)[0])[0]].tolist()
         self.active_selection.set(expanded_atoms, skip_digestion=True)
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
@@ -1036,6 +1070,8 @@ class MolSysView(
                     saved.add_label(text=text.strip(), tag=label_tag, skip_digestion=True)
                 elif action == "apply_selection_query":
                     self._apply_selection_query_action(content)
+                elif action == "set_active_selection_operation":
+                    self._apply_active_selection_operation(str(content.get("operation") or ""))
                 elif action == "preview_selection_query":
                     self._preview_selection_query_action(content)
                 elif action == "expand_selection":

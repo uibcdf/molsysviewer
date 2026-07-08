@@ -1,3 +1,4 @@
+import molsysmt as msm
 import pytest
 
 from molsysviewer import demo
@@ -135,22 +136,65 @@ def test_context_action_apply_selection_query_combines_with_active_selection():
 
     assert view.active_selection.atom_indices == group_1
 
+    with pytest.raises(ValueError, match="Unsupported selection query operation"):
+        view._apply_selection_query_action(  # noqa: SLF001
+            {
+                "expression": group_1,
+                "syntax": "Indices",
+                "op": "invert",
+            }
+        )
+    assert view.active_selection.atom_indices == group_1
+
+
+def test_active_selection_all_none_invert_operations_and_recipe():
+    view = demo["dialanine"]
+    group_0 = list(view.select(selection="group_index==0"))
+    n_atoms = int(view._molsys.get_n_atoms())  # noqa: SLF001
+    view.active_selection.set(group_0)
+
     view._handle_frontend_event(  # noqa: SLF001
         {
             "event": "interaction_context_action",
-            "action": "apply_selection_query",
-            "expression": group_1,
-            "syntax": "Indices",
-            "op": "invert",
+            "action": "set_active_selection_operation",
+            "operation": "invert",
         }
     )
 
-    assert set(view.active_selection.atom_indices).isdisjoint(group_1)
-    assert len(view.active_selection.atom_indices) == int(view._molsys.get_n_atoms()) - len(group_1)  # noqa: SLF001
-    recipe = view._active_selection_recipe  # noqa: SLF001
-    assert recipe[-1]["source"] == "indices"
-    assert recipe[-1]["op"] == "invert"
-    assert recipe[-1]["atom_indices"] == group_1
+    assert view.active_selection.atom_indices == [
+        atom_index for atom_index in range(n_atoms) if atom_index not in set(group_0)
+    ]
+    assert [step["op"] for step in view._active_selection_recipe] == ["replace", "invert"]  # noqa: SLF001
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "set_active_selection_operation",
+            "operation": "none",
+        }
+    )
+    assert view.active_selection.is_empty() is True
+    assert view._active_selection_recipe == []  # noqa: SLF001
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "set_active_selection_operation",
+            "operation": "invert",
+        }
+    )
+    assert view.active_selection.atom_indices == list(range(n_atoms))
+    assert view._active_selection_recipe[-1]["op"] == "invert"  # noqa: SLF001
+
+    view._handle_frontend_event(  # noqa: SLF001
+        {
+            "event": "interaction_context_action",
+            "action": "set_active_selection_operation",
+            "operation": "all",
+        }
+    )
+    assert view.active_selection.atom_indices == list(range(n_atoms))
+    assert [step["op"] for step in view._active_selection_recipe] == ["replace"]  # noqa: SLF001
 
 
 def test_context_action_apply_selection_query_records_composable_recipe():
@@ -311,19 +355,17 @@ def test_context_action_expand_selection_rejects_empty_or_unknown_level():
     assert "Unsupported selection expansion level" in sent[-1]["error_message"]
 
 
-def test_context_action_spatial_expand_selection_routes_through_native_query(monkeypatch):
+def test_context_action_spatial_expand_selection_matches_native_within():
     view = demo["dialanine"]
     view.active_selection.set([0, 1])
-    captured = {}
-
-    def fake_select(*, selection, syntax="MolSysMT", element="atom", skip_digestion=False, **_kwargs):
-        captured["selection"] = selection
-        captured["syntax"] = syntax
-        captured["element"] = element
-        captured["skip_digestion"] = skip_digestion
-        return [0, 1, 2, 3]
-
-    monkeypatch.setattr(view, "select", fake_select)
+    expected = list(
+        view.select(
+            selection="all within 4 angstroms of atom_index in [0, 1]",
+            syntax="MolSysMT",
+            element="atom",
+            skip_digestion=True,
+        )
+    )
 
     view._handle_frontend_event(  # noqa: SLF001
         {
@@ -334,13 +376,30 @@ def test_context_action_spatial_expand_selection_routes_through_native_query(mon
         }
     )
 
-    assert captured == {
-        "selection": "all within 4 angstroms of atom_index in [0, 1]",
-        "syntax": "MolSysMT",
-        "element": "atom",
-        "skip_digestion": True,
-    }
-    assert view.active_selection.atom_indices == [0, 1, 2, 3]
+    assert view.active_selection.atom_indices == expected
+
+
+def test_active_selection_set_fetches_correct_hierarchy_metadata():
+    view = demo["dialanine"]
+    view.active_selection.set([0, 1])
+
+    expected = msm.get(
+        view._molsys,  # noqa: SLF001
+        element="atom",
+        selection=[0, 1],
+        output_type="dictionary",
+        group_index=True,
+        component_index=True,
+        chain_index=True,
+        molecule_index=True,
+        entity_index=True,
+        skip_digestion=True,
+    )
+    assert view.active_selection.group_indices == sorted(set(expected["group_index"]))
+    assert view.active_selection.component_indices == sorted(set(expected["component_index"]))
+    assert view.active_selection.chain_indices == sorted(set(expected["chain_index"]))
+    assert view.active_selection.molecule_indices == sorted(set(expected["molecule_index"]))
+    assert view.active_selection.entity_indices == sorted(set(expected["entity_index"]))
 
 
 def test_context_action_expand_selection_uses_loaded_index_space_for_subset():

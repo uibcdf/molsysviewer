@@ -236,10 +236,12 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
         const root = host.children[0];
         const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
         const union = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "add");
-        const invert = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "invert");
         assert.ok(input);
         assert.ok(union);
-        assert.ok(invert);
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "invert"),
+            null,
+        );
 
         input.value = "group_index==1";
         input.dispatch("input");
@@ -254,15 +256,72 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
             },
         });
 
-        invert?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.strictEqual(actions.at(-1).details.op, "invert");
-
         (panel as any).selectionQueryPreviewRequest = 3;
         panel.updateSelectionQueryPreview({ request_id: 2, ok: true, count: 99 });
         panel.updateSelectionQueryPreview({ request_id: 3, ok: true, count: 2 });
         const preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
         assert.strictEqual(firstText(preview), "✓ 2 atoms");
         assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "ok");
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel active card exposes All None Invert and Label controls", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: any[] = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+        panel.updateSelection({
+            event: "interaction_active_selection_changed",
+            source_kind: "element",
+            target_level: "group",
+            element_level: "atom",
+            items: [],
+            atom_indices: [0, 1],
+            group_indices: [0],
+            component_indices: [0],
+            chain_indices: [0],
+            molecule_indices: [0],
+            entity_indices: [0],
+            count_atoms: 2,
+            count_groups: 1,
+            count_shapes: 0,
+            count_annotations: 0,
+        });
+
+        const root = host.children[0];
+        const all = findFirstByAttribute(root, "data-molsysviewer-selection-all", "true");
+        const none = findFirstByAttribute(root, "data-molsysviewer-selection-none", "true");
+        const invert = findFirstByAttribute(root, "data-molsysviewer-selection-invert", "true");
+        const label = findFirstByAttribute(root, "data-molsysviewer-selection-to-label", "true");
+        assert.ok(all);
+        assert.ok(none);
+        assert.ok(invert);
+        assert.ok(label);
+
+        all?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        none?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        invert?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions, [
+            { action: "set_active_selection_operation", details: { operation: "all" } },
+            { action: "set_active_selection_operation", details: { operation: "none" } },
+            { action: "set_active_selection_operation", details: { operation: "invert" } },
+        ]);
 
         panel.dispose();
     } finally {
