@@ -150714,6 +150714,1010 @@ var RegionsPanel = class {
   }
 };
 
+// src/ui/panels/selection-panel.ts
+var SelectionPanel = class _SelectionPanel {
+  constructor(ctx, onSelect, onActivateSavedSelection, regionExists) {
+    this.ctx = ctx;
+    this.onSelect = onSelect;
+    this.onActivateSavedSelection = onActivateSavedSelection;
+    this.regionExists = regionExists;
+    this.key = "selection";
+    this.host = null;
+    // Domain state
+    this.currentSelection = { count_atoms: 0 };
+    this.savedSelections = [];
+    // View state
+    this.selectionQueryExpression = "";
+    this.selectionQuerySyntax = "MolSysMT";
+    this.selectionQueryPreviewRequest = 0;
+    this.selectionQueryPreviewTimer = null;
+    this.selectionQueryPreview = null;
+    this.selectionCheatSheetOpen = false;
+    this.selectionSpatialDistance = "4.0";
+    this.selectionCanUndo = false;
+    this.selectionCanRedo = false;
+  }
+  static {
+    this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
+  }
+  mount(host) {
+    this.host = host;
+    host.tabIndex = 0;
+    host.setAttribute("data-molsysviewer-selection-panel", "true");
+    host.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
+    _SelectionPanel.ensureDesignSystemStyles();
+    this.render();
+  }
+  updateSelection(selection) {
+    this.currentSelection = selection;
+    this.ctx.setBadge(selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None");
+    this.render();
+  }
+  updateHistory(state) {
+    this.selectionCanUndo = state.canUndo;
+    this.selectionCanRedo = state.canRedo;
+    this.render();
+  }
+  setSavedSelections(items) {
+    this.savedSelections = [...items];
+    this.render();
+  }
+  /** Route a query preview belonging to this panel's (debounced) composer. */
+  updatePreview(preview) {
+    const requestId = typeof preview.request_id === "number" ? preview.request_id : void 0;
+    if (requestId !== void 0 && requestId !== this.selectionQueryPreviewRequest) return;
+    this.selectionQueryPreview = preview;
+    this.render();
+  }
+  static ensureDesignSystemStyles() {
+    if (typeof document === "undefined") return;
+    if (document.getElementById?.(_SelectionPanel.SELECTION_STYLE_ID)) return;
+    if (!document.head) return;
+    const style = document.createElement("style");
+    style.id = _SelectionPanel.SELECTION_STYLE_ID;
+    style.textContent = `
+[data-molsysviewer-group-panel] {
+    --bg-sidebar: #12131a;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --accent-indigo: #6366f1;
+    --accent-indigo-soft: rgba(99, 102, 241, 0.16);
+    --accent-indigo-border: rgba(129, 140, 248, 0.34);
+    --accent-indigo-glow: 0 0 12px rgba(99, 102, 241, 0.25);
+    --text-primary: #f4f4f5;
+    --text-secondary: rgba(244, 244, 245, 0.68);
+    --text-muted: rgba(244, 244, 245, 0.48);
+}
+
+[data-molsysviewer-group-panel-section="selection"] {
+    background: var(--bg-sidebar);
+}
+
+[data-molsysviewer-selection-active-card],
+[data-molsysviewer-selection-query-composer="true"] {
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012)) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.055);
+    backdrop-filter: blur(12px);
+}
+
+[data-molsysviewer-selection-query-composer="true"]:focus-within {
+    border-color: rgba(99, 102, 241, 0.36) !important;
+    box-shadow: var(--accent-indigo-glow), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+[data-molsysviewer-selection-query-input="true"]:focus,
+[data-molsysviewer-selection-query-syntax="true"]:focus,
+[data-molsysviewer-selection-spatial-distance="true"]:focus {
+    border-color: rgba(99, 102, 241, 0.46) !important;
+    box-shadow: var(--accent-indigo-glow);
+    outline: none;
+}
+
+[data-molsysviewer-selection-query-preset] {
+    background: var(--accent-indigo-soft) !important;
+    border-color: var(--accent-indigo-border) !important;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+[data-molsysviewer-selection-query-preset]:hover {
+    background: rgba(99, 102, 241, 0.24) !important;
+    border-color: rgba(165, 180, 252, 0.48) !important;
+    transform: translateY(-1px);
+}
+
+[data-molsysviewer-saved-selection-list] {
+    background: transparent;
+}
+
+[data-molsysviewer-saved-selection-card] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[data-molsysviewer-saved-selection-card]:hover,
+[data-molsysviewer-saved-selection-card][data-molsysviewer-selection-row-hover="true"] {
+    background: var(--bg-card-hover) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    transform: translateY(-1px);
+}
+
+[data-molsysviewer-saved-selection-card][data-molsysviewer-selection-row-active="true"] {
+    border-left: 3px solid var(--accent-indigo) !important;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, rgba(255,255,255,0.03) 100%) !important;
+}
+
+[data-molsysviewer-selection-query-preview-status="ok"] {
+    text-shadow: 0 0 10px rgba(134, 239, 172, 0.18);
+}
+
+[data-molsysviewer-selection-query-preview-status="error"] {
+    text-shadow: 0 0 10px rgba(252, 165, 165, 0.16);
+}
+
+[data-molsysviewer-group-panel-section="regions"] {
+    background: var(--bg-sidebar);
+}
+
+[data-molsysviewer-region-create],
+[data-molsysviewer-region-boolean-composer],
+[data-molsysviewer-region-card] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+[data-molsysviewer-region-card] {
+    transition: background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease,
+        transform 0.16s ease;
+}
+
+[data-molsysviewer-region-card]:hover {
+    background: var(--bg-card-hover) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    transform: translateY(-1px);
+}
+
+[data-molsysviewer-region-overlap] {
+    color: #facc15 !important;
+    border-color: rgba(250, 204, 21, 0.34) !important;
+    background: rgba(250, 204, 21, 0.08) !important;
+}
+
+[data-molsysviewer-region-boolean-composer][data-molsysviewer-region-boolean-attention="true"] {
+    border-color: var(--accent-indigo) !important;
+    box-shadow: var(--accent-indigo-glow);
+    animation: molsysviewer-region-attention 0.9s ease;
+}
+
+@keyframes molsysviewer-region-attention {
+    0%, 100% { box-shadow: none; }
+    45% { box-shadow: var(--accent-indigo-glow); }
+}
+
+[data-molsysviewer-region-style-composer] {
+    border-color: var(--accent-indigo-border) !important;
+    background: rgba(99, 102, 241, 0.055) !important;
+}
+
+[data-molsysviewer-region-style-opacity] {
+    accent-color: var(--accent-indigo);
+}
+
+[data-molsysviewer-region-inspect-panel] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 10px;
+    padding: 8px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.14);
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+[data-molsysviewer-region-inspect-center] {
+    grid-column: 1 / -1;
+    font-variant-numeric: tabular-nums;
+}
+`;
+    document.head.appendChild(style);
+  }
+  handleSelectionPanelKeydown(event) {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    if (this.isEditableTarget(event.target)) return;
+    const key2 = event.key.toLowerCase();
+    if (key2 === "z" && !event.shiftKey) {
+      if (!this.selectionCanUndo) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.ctx.onAction("undo_active_selection");
+    } else if (key2 === "y" || key2 === "z" && event.shiftKey) {
+      if (!this.selectionCanRedo) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.ctx.onAction("redo_active_selection");
+    }
+  }
+  isEditableTarget(target) {
+    const node = target;
+    if (!node) return false;
+    const tagName = node.tagName?.toLowerCase();
+    return tagName === "input" || tagName === "textarea" || tagName === "select" || node.isContentEditable === true;
+  }
+  render() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Active Selection"));
+    const activeContainer = document.createElement("div");
+    activeContainer.setAttribute("data-molsysviewer-selection-active-card", "true");
+    Object.assign(activeContainer.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      padding: "10px",
+      borderRadius: "8px",
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.05)"
+    });
+    this.host.appendChild(activeContainer);
+    const historyRow = document.createElement("div");
+    Object.assign(historyRow.style, {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center"
+    });
+    const undoBtn = makeButton("\u21B6 Undo", () => this.ctx.onAction("undo_active_selection"));
+    undoBtn.setAttribute("data-molsysviewer-selection-undo", "true");
+    undoBtn.disabled = !this.selectionCanUndo;
+    const redoBtn = makeButton("\u21B7 Redo", () => this.ctx.onAction("redo_active_selection"));
+    redoBtn.setAttribute("data-molsysviewer-selection-redo", "true");
+    redoBtn.disabled = !this.selectionCanRedo;
+    for (const btn of [undoBtn, redoBtn]) {
+      btn.style.flex = "0 0 auto";
+      if (btn.disabled) {
+        btn.style.opacity = "0.42";
+        btn.style.cursor = "not-allowed";
+      }
+      historyRow.appendChild(btn);
+    }
+    activeContainer.appendChild(historyRow);
+    const quickRow = document.createElement("div");
+    Object.assign(quickRow.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      gap: "6px"
+    });
+    const allBtn = makeButton(
+      "All",
+      () => this.ctx.onAction("set_active_selection_operation", { operation: "all" })
+    );
+    allBtn.setAttribute("data-molsysviewer-selection-all", "true");
+    const noneBtn = makeButton(
+      "None",
+      () => this.ctx.onAction("set_active_selection_operation", { operation: "none" })
+    );
+    noneBtn.setAttribute("data-molsysviewer-selection-none", "true");
+    const invertBtn = makeButton(
+      "Invert",
+      () => this.ctx.onAction("set_active_selection_operation", { operation: "invert" })
+    );
+    invertBtn.setAttribute("data-molsysviewer-selection-invert", "true");
+    quickRow.appendChild(allBtn);
+    quickRow.appendChild(noneBtn);
+    quickRow.appendChild(invertBtn);
+    activeContainer.appendChild(quickRow);
+    if (this.currentSelection.count_atoms > 0) {
+      const countLabel2 = document.createElement("div");
+      countLabel2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+      Object.assign(countLabel2.style, {
+        fontSize: "12px",
+        color: "#e4e4e7",
+        fontWeight: "500"
+      });
+      countLabel2.textContent = `${this.currentSelection.count_atoms} atoms selected (${this.currentSelection.source_kind} level)`;
+      activeContainer.appendChild(countLabel2);
+      const btnRow = document.createElement("div");
+      Object.assign(btnRow.style, {
+        display: "flex",
+        gap: "8px"
+      });
+      activeContainer.appendChild(btnRow);
+      const inlineForm = document.createElement("div");
+      Object.assign(inlineForm.style, {
+        display: "none",
+        flexDirection: "row",
+        gap: "6px",
+        marginTop: "6px"
+      });
+      const inlineInput = document.createElement("input");
+      inlineInput.type = "text";
+      Object.assign(inlineInput.style, {
+        flex: "1 1 0",
+        background: "rgba(0,0,0,0.2)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "6px",
+        padding: "6px 8px",
+        color: "#fff",
+        fontSize: "11px",
+        outline: "none"
+      });
+      const inlineConfirm = document.createElement("button");
+      Object.assign(inlineConfirm.style, {
+        background: "#6366f1",
+        border: "0",
+        borderRadius: "6px",
+        padding: "6px 10px",
+        color: "#fff",
+        fontSize: "11px",
+        fontWeight: "600",
+        cursor: "pointer"
+      });
+      const inlineCancel = document.createElement("button");
+      inlineCancel.textContent = "Cancel";
+      Object.assign(inlineCancel.style, {
+        background: "rgba(255,255,255,0.08)",
+        border: "0",
+        borderRadius: "6px",
+        padding: "6px 10px",
+        color: "#e4e4e7",
+        fontSize: "11px",
+        cursor: "pointer"
+      });
+      inlineForm.appendChild(inlineInput);
+      inlineForm.appendChild(inlineConfirm);
+      inlineForm.appendChild(inlineCancel);
+      activeContainer.appendChild(inlineForm);
+      const showForm = (mode) => {
+        inlineForm.style.display = "flex";
+        inlineInput.value = "";
+        inlineInput.placeholder = mode === "save" ? "Selection name..." : mode === "region" ? "Region name..." : "Label text...";
+        inlineConfirm.textContent = mode === "save" ? "Save" : mode === "region" ? "Create" : "Add Label";
+        const newConfirm = inlineConfirm.cloneNode(true);
+        const newCancel = inlineCancel.cloneNode(true);
+        inlineConfirm.replaceWith(newConfirm);
+        inlineCancel.replaceWith(newCancel);
+        newConfirm.addEventListener("click", () => {
+          const tag = inlineInput.value.trim();
+          if (!tag) return;
+          if (mode === "save") {
+            const exists = this.savedSelections.some((s) => s.tag === tag);
+            if (exists) {
+              const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
+              if (doOverwrite) {
+                this.ctx.onAction("delete_selection", { tag });
+                this.ctx.onAction("save_selection", { tag });
+              } else {
+                return;
+              }
+            } else {
+              this.ctx.onAction("save_selection", { tag });
+            }
+          } else if (mode === "region") {
+            const exists = this.regionExists(tag);
+            if (exists) {
+              const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${tag}" already exists. Overwrite?`) : true;
+              if (doOverwrite) {
+                this.ctx.onAction("delete_region", { tag });
+                this.ctx.onAction("create_region_from_selection", { tag });
+              } else {
+                return;
+              }
+            } else {
+              this.ctx.onAction("create_region_from_selection", { tag });
+            }
+          } else {
+            this.ctx.onAction("add_label_from_selection", { text: tag });
+          }
+          inlineForm.style.display = "none";
+        });
+        newCancel.addEventListener("click", () => {
+          inlineForm.style.display = "none";
+        });
+        inlineInput.focus?.();
+      };
+      const clearBtn = makeButton("Clear", () => this.onSelect([], "replace"));
+      const saveBtn = makeButton("Save", () => showForm("save"));
+      const regionBtn = makeButton("Create Region", () => showForm("region"));
+      const labelBtn = makeButton("Add Label", () => showForm("label"));
+      clearBtn.setAttribute("data-molsysviewer-selection-clear", "true");
+      saveBtn.setAttribute("data-molsysviewer-selection-save", "true");
+      regionBtn.setAttribute("data-molsysviewer-selection-to-region", "true");
+      labelBtn.setAttribute("data-molsysviewer-selection-to-label", "true");
+      inlineForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
+      inlineInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
+      btnRow.appendChild(clearBtn);
+      btnRow.appendChild(saveBtn);
+      btnRow.appendChild(regionBtn);
+      btnRow.appendChild(labelBtn);
+    } else {
+      const emptyLabel = document.createElement("div");
+      Object.assign(emptyLabel.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.48)",
+        textAlign: "center",
+        padding: "6px 0"
+      });
+      emptyLabel.textContent = "No active selection.";
+      activeContainer.appendChild(emptyLabel);
+    }
+    this.host.appendChild(this.renderSelectionQueryComposer());
+    this.host.appendChild(makeSectionHeader("Saved Selections"));
+    const savedList = document.createElement("div");
+    savedList.setAttribute("data-molsysviewer-saved-selection-list", "true");
+    Object.assign(savedList.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    this.host.appendChild(savedList);
+    if (this.savedSelections.length > 0) {
+      const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+      for (const item2 of sorted) {
+        const card = document.createElement("div");
+        card.setAttribute("data-molsysviewer-group-panel-row", "true");
+        card.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+        card.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        Object.assign(card.style, {
+          display: "flex",
+          flexDirection: "column",
+          padding: "8px 10px",
+          borderRadius: "8px",
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          gap: "6px",
+          transition: "background 0.1s ease",
+          cursor: "pointer"
+        });
+        card.addEventListener("mouseenter", () => {
+          card.setAttribute("data-molsysviewer-selection-row-hover", "true");
+          card.style.background = "rgba(255,255,255,0.09)";
+        });
+        card.addEventListener("mouseleave", () => {
+          card.setAttribute("data-molsysviewer-selection-row-hover", "false");
+          card.style.background = "rgba(255,255,255,0.05)";
+        });
+        card.addEventListener("click", (e) => {
+          if (e && e.target && e.target !== card) {
+            return;
+          }
+          e?.preventDefault();
+          e?.stopPropagation();
+          this.onActivateSavedSelection(item2.tag);
+        });
+        const topRow = document.createElement("div");
+        Object.assign(topRow.style, {
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        });
+        const title = document.createElement("div");
+        Object.assign(title.style, {
+          fontSize: "12px",
+          fontWeight: "600",
+          color: "#f4f4f5",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        });
+        title.textContent = item2.tag;
+        const subtitle = document.createElement("span");
+        Object.assign(subtitle.style, {
+          fontSize: "10px",
+          color: "rgba(244,244,245,0.56)",
+          marginLeft: "6px",
+          fontWeight: "normal"
+        });
+        const levelText = item2.element_level ? ` \xB7 ${item2.element_level} level` : " \xB7 group level";
+        subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
+        title.appendChild(subtitle);
+        topRow.appendChild(title);
+        card.appendChild(topRow);
+        const btnRow = document.createElement("div");
+        btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
+        Object.assign(btnRow.style, {
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "4px"
+        });
+        const inlineForm = document.createElement("div");
+        Object.assign(inlineForm.style, {
+          display: "none",
+          flexDirection: "row",
+          gap: "6px",
+          marginTop: "2px"
+        });
+        const inlineInput = document.createElement("input");
+        inlineInput.type = "text";
+        Object.assign(inlineInput.style, {
+          flex: "1 1 0",
+          background: "rgba(0,0,0,0.2)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "6px",
+          padding: "4px 6px",
+          color: "#fff",
+          fontSize: "11px",
+          outline: "none"
+        });
+        card.appendChild(inlineForm);
+        const showForm = (mode) => {
+          btnRow.style.display = "none";
+          inlineForm.replaceChildren();
+          inlineInput.value = "";
+          inlineInput.placeholder = mode === "rename" ? "New name..." : mode === "region" ? "Region name..." : "Label text...";
+          const inlineConfirm = document.createElement("button");
+          inlineConfirm.type = "button";
+          inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Label";
+          Object.assign(inlineConfirm.style, {
+            background: "#6366f1",
+            border: "0",
+            borderRadius: "6px",
+            padding: "4px 8px",
+            color: "#fff",
+            fontSize: "11px",
+            fontWeight: "600",
+            cursor: "pointer"
+          });
+          const inlineCancel = document.createElement("button");
+          inlineCancel.type = "button";
+          inlineCancel.textContent = "Cancel";
+          Object.assign(inlineCancel.style, {
+            background: "rgba(255,255,255,0.08)",
+            border: "0",
+            borderRadius: "6px",
+            padding: "4px 8px",
+            color: "#e4e4e7",
+            fontSize: "11px",
+            cursor: "pointer"
+          });
+          inlineConfirm.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const val = inlineInput.value.trim();
+            if (!val) return;
+            if (mode === "rename") {
+              const exists = this.savedSelections.some((s) => s.tag === val);
+              if (exists) {
+                if (val === item2.tag) {
+                  inlineForm.style.display = "none";
+                  btnRow.style.display = "flex";
+                  return;
+                }
+                const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${val}" already exists. Overwrite?`) : true;
+                if (doOverwrite) {
+                  this.ctx.onAction("delete_selection", { tag: val });
+                  this.ctx.onAction("rename_selection", { tag: item2.tag, new_tag: val });
+                } else {
+                  return;
+                }
+              } else {
+                this.ctx.onAction("rename_selection", { tag: item2.tag, new_tag: val });
+              }
+            } else if (mode === "region") {
+              const exists = this.regionExists(val);
+              if (exists) {
+                const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
+                if (doOverwrite) {
+                  this.ctx.onAction("delete_region", { tag: val });
+                  this.ctx.onAction("create_region_from_saved_selection", { selection_tag: item2.tag, tag: val });
+                } else {
+                  return;
+                }
+              } else {
+                this.ctx.onAction("create_region_from_saved_selection", { selection_tag: item2.tag, tag: val });
+              }
+            } else if (mode === "label") {
+              this.ctx.onAction("create_label_from_saved_selection", { selection_tag: item2.tag, text: val });
+            }
+            inlineForm.style.display = "none";
+            btnRow.style.display = "flex";
+          });
+          inlineCancel.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            inlineForm.style.display = "none";
+            btnRow.style.display = "flex";
+          });
+          inlineForm.appendChild(inlineInput);
+          inlineForm.appendChild(inlineConfirm);
+          inlineForm.appendChild(inlineCancel);
+          inlineForm.style.display = "flex";
+          inlineInput.focus?.();
+        };
+        const activateBtn = makeButton("Activate", () => this.onActivateSavedSelection(item2.tag));
+        activateBtn.setAttribute("data-molsysviewer-saved-selection-activate", item2.tag);
+        const unionBtn = makeButton("+Union", () => this.ctx.onAction("compose_saved_selection", { tag: item2.tag, op: "add" }));
+        unionBtn.setAttribute("data-molsysviewer-saved-selection-compose-add", item2.tag);
+        const subBtn = makeButton("-Sub", () => this.ctx.onAction("compose_saved_selection", { tag: item2.tag, op: "subtract" }));
+        subBtn.setAttribute("data-molsysviewer-saved-selection-compose-subtract", item2.tag);
+        const intBtn = makeButton("\u2229Int", () => this.ctx.onAction("compose_saved_selection", { tag: item2.tag, op: "intersect" }));
+        intBtn.setAttribute("data-molsysviewer-saved-selection-compose-intersect", item2.tag);
+        const renameBtn = makeButton("Rename", () => showForm("rename"));
+        renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item2.tag);
+        const regionBtn = makeButton("\u2192Region", () => showForm("region"));
+        regionBtn.setAttribute("data-molsysviewer-saved-selection-to-region", item2.tag);
+        const labelBtn = makeButton("\u2192Label", () => showForm("label"));
+        labelBtn.setAttribute("data-molsysviewer-saved-selection-to-label", item2.tag);
+        const deleteBtn = makeButton("\u{1F5D1}", () => this.ctx.onAction("delete_selection", { tag: item2.tag }));
+        deleteBtn.setAttribute("data-molsysviewer-saved-selection-delete", item2.tag);
+        for (const btn of [activateBtn, unionBtn, subBtn, intBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
+          btn.style.flex = "0 1 auto";
+          btn.style.padding = "3px 6px";
+          btn.style.fontSize = "10px";
+          btnRow.appendChild(btn);
+        }
+        card.appendChild(btnRow);
+        savedList.appendChild(card);
+      }
+    } else {
+      const emptyLabel = document.createElement("div");
+      Object.assign(emptyLabel.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.48)",
+        paddingLeft: "4px"
+      });
+      emptyLabel.textContent = "No saved selections yet.";
+      savedList.appendChild(emptyLabel);
+    }
+  }
+  renderSelectionQueryComposer() {
+    const container = document.createElement("div");
+    container.setAttribute("data-molsysviewer-selection-query-composer", "true");
+    Object.assign(container.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      padding: "10px",
+      borderRadius: "8px",
+      background: "rgba(255,255,255,0.03)",
+      border: "1px solid rgba(255,255,255,0.05)"
+    });
+    const title = document.createElement("div");
+    Object.assign(title.style, {
+      fontSize: "12px",
+      fontWeight: "700",
+      color: "#f4f4f5"
+    });
+    title.textContent = "Select by Query";
+    container.appendChild(title);
+    const inputRow = document.createElement("div");
+    Object.assign(inputRow.style, {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center"
+    });
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = this.selectionQueryExpression;
+    input.placeholder = this.selectionQuerySyntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+    input.setAttribute("data-molsysviewer-selection-query-input", "true");
+    Object.assign(input.style, {
+      flex: "1 1 0",
+      minWidth: "0",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#fff",
+      fontSize: "11px",
+      outline: "none"
+    });
+    input.addEventListener("input", () => {
+      this.selectionQueryExpression = input.value;
+      this.scheduleSelectionQueryPreview();
+    });
+    const syntax = document.createElement("select");
+    syntax.setAttribute("data-molsysviewer-selection-query-syntax", "true");
+    for (const item2 of ["MolSysMT", "Indices"]) {
+      const option = document.createElement("option");
+      option.value = item2;
+      option.textContent = item2;
+      option.selected = item2 === this.selectionQuerySyntax;
+      syntax.appendChild(option);
+    }
+    Object.assign(syntax.style, {
+      flex: "0 0 auto",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      outline: "none"
+    });
+    syntax.addEventListener("change", () => {
+      this.selectionQuerySyntax = syntax.value === "Indices" ? "Indices" : "MolSysMT";
+      this.scheduleSelectionQueryPreview();
+      this.render();
+    });
+    inputRow.appendChild(input);
+    inputRow.appendChild(syntax);
+    const helpBtn = makeButton("?", () => {
+      this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
+      this.render();
+    });
+    helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
+    helpBtn.setAttribute("data-molsysviewer-selection-cheatsheet-toggle", "true");
+    Object.assign(helpBtn.style, {
+      flex: "0 0 30px",
+      width: "30px",
+      padding: "6px 0",
+      fontWeight: "700"
+    });
+    inputRow.appendChild(helpBtn);
+    container.appendChild(inputRow);
+    const presetRow = document.createElement("div");
+    presetRow.setAttribute("data-molsysviewer-selection-query-presets", "true");
+    Object.assign(presetRow.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "5px",
+      alignItems: "center"
+    });
+    const presetLabel = document.createElement("span");
+    Object.assign(presetLabel.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.52)",
+      marginRight: "2px"
+    });
+    presetLabel.textContent = "Presets";
+    presetRow.appendChild(presetLabel);
+    const presets = [
+      { label: "protein", expression: 'molecule_type=="protein"' },
+      { label: "water", expression: 'molecule_type=="water"' },
+      { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
+      { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
+      { label: "ligand", expression: 'molecule_type=="small molecule"' }
+    ];
+    for (const preset of presets) {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.textContent = preset.label;
+      chip.title = preset.expression;
+      chip.setAttribute("data-molsysviewer-selection-query-preset", preset.label);
+      Object.assign(chip.style, {
+        background: "rgba(99,102,241,0.12)",
+        border: "1px solid rgba(129,140,248,0.24)",
+        borderRadius: "999px",
+        padding: "3px 8px",
+        color: "#c7d2fe",
+        fontSize: "10px",
+        lineHeight: "14px",
+        cursor: "pointer"
+      });
+      chip.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        this.selectionQuerySyntax = "MolSysMT";
+        this.selectionQueryExpression = preset.expression;
+        this.scheduleSelectionQueryPreview();
+      });
+      presetRow.appendChild(chip);
+    }
+    container.appendChild(presetRow);
+    if (this.selectionCheatSheetOpen) {
+      const cheatSheet = document.createElement("div");
+      cheatSheet.setAttribute("data-molsysviewer-selection-cheatsheet", "true");
+      Object.assign(cheatSheet.style, {
+        display: "grid",
+        gridTemplateColumns: "1fr",
+        gap: "4px",
+        padding: "8px",
+        borderRadius: "6px",
+        background: "rgba(0,0,0,0.18)",
+        border: "1px solid rgba(255,255,255,0.08)"
+      });
+      const examples = [
+        ["Atom name", 'atom_name=="CA"'],
+        ["Group index", "group_index in [10, 15]"],
+        ["Chain", 'chain_id=="A"'],
+        ["Protein", 'molecule_type=="protein"'],
+        ["Nearby", "all within 5 angstroms of atom_index in [0]"],
+        ["Bonded", "bonded to atom_index in [0]"]
+      ];
+      for (const [label2, expression] of examples) {
+        const row = document.createElement("button");
+        row.type = "button";
+        row.setAttribute("data-molsysviewer-selection-cheatsheet-example", label2);
+        Object.assign(row.style, {
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "8px",
+          width: "100%",
+          background: "transparent",
+          border: "0",
+          padding: "3px 2px",
+          color: "#e4e4e7",
+          fontSize: "10px",
+          textAlign: "left",
+          cursor: "pointer"
+        });
+        const name = document.createElement("span");
+        name.textContent = label2;
+        name.style.color = "rgba(244,244,245,0.62)";
+        const code = document.createElement("code");
+        code.textContent = expression;
+        Object.assign(code.style, {
+          color: "#c7d2fe",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        });
+        row.appendChild(name);
+        row.appendChild(code);
+        row.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.selectionQuerySyntax = "MolSysMT";
+          this.selectionQueryExpression = expression;
+          this.scheduleSelectionQueryPreview();
+        });
+        cheatSheet.appendChild(row);
+      }
+      container.appendChild(cheatSheet);
+    }
+    const buttonRow = document.createElement("div");
+    Object.assign(buttonRow.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+      gap: "6px"
+    });
+    const hasExpression = this.selectionQueryExpression.trim().length > 0;
+    const apply = (op4) => {
+      const expression = this.selectionQueryExpression.trim();
+      if (!expression) return;
+      this.ctx.onAction("apply_selection_query", {
+        expression,
+        syntax: this.selectionQuerySyntax,
+        op: op4
+      });
+    };
+    const selectBtn = makeButton("Select", () => apply("replace"));
+    selectBtn.setAttribute("data-molsysviewer-selection-query-apply", "replace");
+    const unionBtn = makeButton("+Union", () => apply("add"));
+    unionBtn.setAttribute("data-molsysviewer-selection-query-apply", "add");
+    const subtractBtn = makeButton("-Subtract", () => apply("subtract"));
+    subtractBtn.setAttribute("data-molsysviewer-selection-query-apply", "subtract");
+    const intersectBtn = makeButton("Intersect", () => apply("intersect"));
+    intersectBtn.setAttribute("data-molsysviewer-selection-query-apply", "intersect");
+    for (const btn of [selectBtn, unionBtn, subtractBtn, intersectBtn]) {
+      btn.disabled = !hasExpression;
+      if (!hasExpression) {
+        btn.style.opacity = "0.42";
+        btn.style.cursor = "not-allowed";
+      }
+      buttonRow.appendChild(btn);
+    }
+    container.appendChild(buttonRow);
+    const preview = document.createElement("div");
+    preview.setAttribute("data-molsysviewer-selection-query-preview", "true");
+    Object.assign(preview.style, {
+      minHeight: "14px",
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    if (!this.selectionQueryExpression.trim()) {
+      preview.textContent = "Enter a query to preview atom matches.";
+      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "idle");
+    } else if (this.selectionQueryPreview?.status === "pending") {
+      preview.textContent = "Checking query...";
+      preview.style.color = "rgba(244,244,245,0.72)";
+      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "pending");
+    } else if (this.selectionQueryPreview?.ok === true) {
+      const count3 = Number(this.selectionQueryPreview.count ?? 0);
+      preview.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
+      preview.style.color = count3 > 0 ? "#86efac" : "#facc15";
+      preview.setAttribute("data-molsysviewer-selection-query-preview-status", count3 > 0 ? "ok" : "empty");
+    } else if (this.selectionQueryPreview?.ok === false) {
+      preview.textContent = `\u2717 ${this.selectionQueryPreview.error_message ?? "invalid syntax"}`;
+      preview.style.color = "#fca5a5";
+      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "error");
+    } else {
+      preview.textContent = "Checking query...";
+      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "pending");
+    }
+    container.appendChild(preview);
+    const expandPanel = document.createElement("div");
+    expandPanel.setAttribute("data-molsysviewer-selection-expander-panel", "true");
+    Object.assign(expandPanel.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      paddingTop: "2px"
+    });
+    const levelRow = document.createElement("div");
+    Object.assign(levelRow.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+      gap: "6px"
+    });
+    for (const level of ["group", "component", "molecule", "chain", "entity"]) {
+      const btn = makeButton(level, () => this.ctx.onAction("expand_selection", { level }));
+      btn.setAttribute("data-molsysviewer-selection-expand-level", level);
+      btn.disabled = this.currentSelection.count_atoms <= 0;
+      if (btn.disabled) {
+        btn.style.opacity = "0.42";
+        btn.style.cursor = "not-allowed";
+      }
+      levelRow.appendChild(btn);
+    }
+    expandPanel.appendChild(levelRow);
+    const spatialRow = document.createElement("div");
+    Object.assign(spatialRow.style, {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center"
+    });
+    const spatialInput = document.createElement("input");
+    spatialInput.type = "number";
+    spatialInput.value = this.selectionSpatialDistance;
+    spatialInput.setAttribute("data-molsysviewer-selection-spatial-distance", "true");
+    Object.assign(spatialInput.style, {
+      flex: "0 0 72px",
+      minWidth: "0",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#fff",
+      fontSize: "11px",
+      outline: "none"
+    });
+    spatialInput.addEventListener("input", () => {
+      this.selectionSpatialDistance = spatialInput.value;
+    });
+    const spatialBtn = makeButton("Within \xC5", () => {
+      const distance = Number.parseFloat(this.selectionSpatialDistance);
+      if (!Number.isFinite(distance) || distance <= 0) return;
+      this.ctx.onAction("expand_selection", {
+        level: "spatial",
+        distance_angstroms: distance
+      });
+    });
+    spatialBtn.setAttribute("data-molsysviewer-selection-expand-spatial", "true");
+    spatialBtn.disabled = this.currentSelection.count_atoms <= 0;
+    if (spatialBtn.disabled) {
+      spatialBtn.style.opacity = "0.42";
+      spatialBtn.style.cursor = "not-allowed";
+    }
+    spatialRow.appendChild(spatialInput);
+    spatialRow.appendChild(spatialBtn);
+    expandPanel.appendChild(spatialRow);
+    container.appendChild(expandPanel);
+    return container;
+  }
+  scheduleSelectionQueryPreview() {
+    if (this.selectionQueryPreviewTimer !== null) {
+      clearTimeout(this.selectionQueryPreviewTimer);
+      this.selectionQueryPreviewTimer = null;
+    }
+    this.selectionQueryPreview = null;
+    const expression = this.selectionQueryExpression.trim();
+    if (!expression) {
+      this.render();
+      return;
+    }
+    const requestId = this.selectionQueryPreviewRequest + 1;
+    this.selectionQueryPreviewRequest = requestId;
+    this.selectionQueryPreview = { request_id: requestId, status: "pending" };
+    this.render();
+    this.selectionQueryPreviewTimer = setTimeout(() => {
+      this.selectionQueryPreviewTimer = null;
+      this.ctx.onAction("selection_query_preview_request", {
+        request_id: requestId,
+        expression,
+        syntax: this.selectionQuerySyntax
+      });
+    }, 250);
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -152027,7 +153031,7 @@ var FloatingPanelShell = class {
 };
 
 // src/ui/group-panel.ts
-var GroupPanel = class _GroupPanel {
+var GroupPanel = class {
   constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onAction, onChangeColorScheme, options) {
     this.host = host;
     this.onSelect = onSelect;
@@ -152064,20 +153068,9 @@ var GroupPanel = class _GroupPanel {
     this.annotationMessages = [];
     this.currentContextTarget = null;
     this.collapseStateByChain = /* @__PURE__ */ new Map();
-    this.savedSelections = [];
-    this.selectionQueryExpression = "";
-    this.selectionQuerySyntax = "MolSysMT";
-    this.selectionQueryPreviewRequest = 0;
-    this.selectionQueryPreviewTimer = null;
-    this.selectionQueryPreview = null;
-    this.selectionCheatSheetOpen = false;
-    this.selectionSpatialDistance = "4.0";
-    this.selectionCanUndo = false;
-    this.selectionCanRedo = false;
     this.runtimeVisibleOverride = null;
     this.visible = false;
     this.activeColorScheme = "neutral";
-    _GroupPanel.ensureSelectionDesignSystemStyles();
     this.model = options?.model;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
@@ -152235,11 +153228,9 @@ var GroupPanel = class _GroupPanel {
       ]
     });
     this.selectionSection = this.createSection("selection");
-    this.selectionSection.tabIndex = 0;
-    this.selectionSection.setAttribute("data-molsysviewer-selection-panel", "true");
-    this.selectionSection.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
     this.regionsSection = this.createSection("regions");
     this.regionsPanel = new RegionsPanel(this.makePanelContext("regions"), this.onFocusRegion);
+    this.selectionPanel = new SelectionPanel(this.makePanelContext("selection"), this.onSelect, this.onActivateSavedSelection, (tag) => this.regionsPanel.hasRegion(tag));
     this.measuresSection = this.createSection("measures");
     this.measuresPanel = new InspectorListPanel("measures", this.makePanelContext("measures"), {
       header: "Measurements (Distances)",
@@ -152303,7 +153294,7 @@ var GroupPanel = class _GroupPanel {
     this.addTab("viewport", "Viewport", "Dark");
     this.addTab("export", "Export", "None");
     this.switchTab("system");
-    this.renderSelectionSection();
+    this.selectionPanel.mount(this.selectionSection);
     this.regionsPanel.mount(this.regionsSection);
     this.wholePanel.mount(this.wholeSection);
     this.measuresPanel.mount(this.measuresSection);
@@ -152312,168 +153303,6 @@ var GroupPanel = class _GroupPanel {
     this.layersPanel.mount(this.layersSection);
     this.viewportPanel.mount(this.viewportSection);
     this.exportPanel.mount(this.exportSection);
-  }
-  static {
-    this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
-  }
-  static ensureSelectionDesignSystemStyles() {
-    if (typeof document === "undefined") return;
-    if (document.getElementById?.(_GroupPanel.SELECTION_STYLE_ID)) return;
-    if (!document.head) return;
-    const style = document.createElement("style");
-    style.id = _GroupPanel.SELECTION_STYLE_ID;
-    style.textContent = `
-[data-molsysviewer-group-panel] {
-    --bg-sidebar: #12131a;
-    --bg-card: rgba(255, 255, 255, 0.03);
-    --bg-card-hover: rgba(255, 255, 255, 0.06);
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --accent-indigo: #6366f1;
-    --accent-indigo-soft: rgba(99, 102, 241, 0.16);
-    --accent-indigo-border: rgba(129, 140, 248, 0.34);
-    --accent-indigo-glow: 0 0 12px rgba(99, 102, 241, 0.25);
-    --text-primary: #f4f4f5;
-    --text-secondary: rgba(244, 244, 245, 0.68);
-    --text-muted: rgba(244, 244, 245, 0.48);
-}
-
-[data-molsysviewer-group-panel-section="selection"] {
-    background: var(--bg-sidebar);
-}
-
-[data-molsysviewer-selection-active-card],
-[data-molsysviewer-selection-query-composer="true"] {
-    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012)) !important;
-    border: 1px solid var(--border-subtle) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.055);
-    backdrop-filter: blur(12px);
-}
-
-[data-molsysviewer-selection-query-composer="true"]:focus-within {
-    border-color: rgba(99, 102, 241, 0.36) !important;
-    box-shadow: var(--accent-indigo-glow), inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-[data-molsysviewer-selection-query-input="true"]:focus,
-[data-molsysviewer-selection-query-syntax="true"]:focus,
-[data-molsysviewer-selection-spatial-distance="true"]:focus {
-    border-color: rgba(99, 102, 241, 0.46) !important;
-    box-shadow: var(--accent-indigo-glow);
-    outline: none;
-}
-
-[data-molsysviewer-selection-query-preset] {
-    background: var(--accent-indigo-soft) !important;
-    border-color: var(--accent-indigo-border) !important;
-    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
-}
-
-[data-molsysviewer-selection-query-preset]:hover {
-    background: rgba(99, 102, 241, 0.24) !important;
-    border-color: rgba(165, 180, 252, 0.48) !important;
-    transform: translateY(-1px);
-}
-
-[data-molsysviewer-saved-selection-list] {
-    background: transparent;
-}
-
-[data-molsysviewer-saved-selection-card] {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-subtle) !important;
-    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-[data-molsysviewer-saved-selection-card]:hover,
-[data-molsysviewer-saved-selection-card][data-molsysviewer-selection-row-hover="true"] {
-    background: var(--bg-card-hover) !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
-    transform: translateY(-1px);
-}
-
-[data-molsysviewer-saved-selection-card][data-molsysviewer-selection-row-active="true"] {
-    border-left: 3px solid var(--accent-indigo) !important;
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, rgba(255,255,255,0.03) 100%) !important;
-}
-
-[data-molsysviewer-selection-query-preview-status="ok"] {
-    text-shadow: 0 0 10px rgba(134, 239, 172, 0.18);
-}
-
-[data-molsysviewer-selection-query-preview-status="error"] {
-    text-shadow: 0 0 10px rgba(252, 165, 165, 0.16);
-}
-
-[data-molsysviewer-group-panel-section="regions"] {
-    background: var(--bg-sidebar);
-}
-
-[data-molsysviewer-region-create],
-[data-molsysviewer-region-boolean-composer],
-[data-molsysviewer-region-card] {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-subtle) !important;
-}
-
-[data-molsysviewer-region-card] {
-    transition: background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease,
-        transform 0.16s ease;
-}
-
-[data-molsysviewer-region-card]:hover {
-    background: var(--bg-card-hover) !important;
-    border-color: rgba(255, 255, 255, 0.14) !important;
-    transform: translateY(-1px);
-}
-
-[data-molsysviewer-region-overlap] {
-    color: #facc15 !important;
-    border-color: rgba(250, 204, 21, 0.34) !important;
-    background: rgba(250, 204, 21, 0.08) !important;
-}
-
-[data-molsysviewer-region-boolean-composer][data-molsysviewer-region-boolean-attention="true"] {
-    border-color: var(--accent-indigo) !important;
-    box-shadow: var(--accent-indigo-glow);
-    animation: molsysviewer-region-attention 0.9s ease;
-}
-
-@keyframes molsysviewer-region-attention {
-    0%, 100% { box-shadow: none; }
-    45% { box-shadow: var(--accent-indigo-glow); }
-}
-
-[data-molsysviewer-region-style-composer] {
-    border-color: var(--accent-indigo-border) !important;
-    background: rgba(99, 102, 241, 0.055) !important;
-}
-
-[data-molsysviewer-region-style-opacity] {
-    accent-color: var(--accent-indigo);
-}
-
-[data-molsysviewer-region-inspect-panel] {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 5px 10px;
-    padding: 8px;
-    border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.14);
-    color: var(--text-secondary);
-    font-size: 10px;
-}
-
-[data-molsysviewer-region-inspect-center] {
-    grid-column: 1 / -1;
-    font-variant-numeric: tabular-nums;
-}
-`;
-    document.head.appendChild(style);
   }
   createSection(key2) {
     const section = document.createElement("div");
@@ -152627,52 +153456,18 @@ var GroupPanel = class _GroupPanel {
     for (const strip of this.strips.values()) {
       strip.updateSelection(selection);
     }
-    const badge = this.tabs.get("selection")?.badge;
-    if (badge) {
-      badge.textContent = selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None";
-    }
-    this.renderSelectionSection();
+    this.selectionPanel.updateSelection(selection);
     this.regionsPanel.setCurrentSelection(selection);
   }
   updateSelectionHistoryState(state) {
-    this.selectionCanUndo = state.canUndo;
-    this.selectionCanRedo = state.canRedo;
-    this.renderSelectionSection();
+    this.selectionPanel.updateHistory(state);
   }
   setSavedSelections(items) {
-    this.savedSelections = [...items];
-    this.renderSelectionSection();
+    this.selectionPanel.setSavedSelections(items);
   }
   updateSelectionQueryPreview(preview) {
-    if (this.regionsPanel.updatePreview(preview)) {
-      return;
-    }
-    const requestId = typeof preview.request_id === "number" ? preview.request_id : void 0;
-    if (requestId !== void 0 && requestId !== this.selectionQueryPreviewRequest) return;
-    this.selectionQueryPreview = preview;
-    this.renderSelectionSection();
-  }
-  handleSelectionPanelKeydown(event) {
-    if (!(event.ctrlKey || event.metaKey)) return;
-    if (this.isEditableTarget(event.target)) return;
-    const key2 = event.key.toLowerCase();
-    if (key2 === "z" && !event.shiftKey) {
-      if (!this.selectionCanUndo) return;
-      event.preventDefault();
-      event.stopPropagation();
-      this.onAction?.("undo_active_selection");
-    } else if (key2 === "y" || key2 === "z" && event.shiftKey) {
-      if (!this.selectionCanRedo) return;
-      event.preventDefault();
-      event.stopPropagation();
-      this.onAction?.("redo_active_selection");
-    }
-  }
-  isEditableTarget(target) {
-    const node = target;
-    if (!node) return false;
-    const tagName = node.tagName?.toLowerCase();
-    return tagName === "input" || tagName === "textarea" || tagName === "select" || node.isContentEditable === true;
+    if (this.regionsPanel.updatePreview(preview)) return;
+    this.selectionPanel.updatePreview(preview);
   }
   setRegions(items) {
     this.regionsPanel.setRegions(items);
@@ -152992,771 +153787,6 @@ var GroupPanel = class _GroupPanel {
     setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
   }
   // ── 1. Selection Section Rendering ───────────────────────
-  renderSelectionSection() {
-    this.selectionSection.replaceChildren();
-    this.selectionSection.appendChild(this.makeSectionHeader("Active Selection"));
-    const activeContainer = document.createElement("div");
-    activeContainer.setAttribute("data-molsysviewer-selection-active-card", "true");
-    Object.assign(activeContainer.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)"
-    });
-    this.selectionSection.appendChild(activeContainer);
-    const historyRow = document.createElement("div");
-    Object.assign(historyRow.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    const undoBtn = this.makeButton("\u21B6 Undo", () => this.onAction?.("undo_active_selection"));
-    undoBtn.setAttribute("data-molsysviewer-selection-undo", "true");
-    undoBtn.disabled = !this.selectionCanUndo;
-    const redoBtn = this.makeButton("\u21B7 Redo", () => this.onAction?.("redo_active_selection"));
-    redoBtn.setAttribute("data-molsysviewer-selection-redo", "true");
-    redoBtn.disabled = !this.selectionCanRedo;
-    for (const btn of [undoBtn, redoBtn]) {
-      btn.style.flex = "0 0 auto";
-      if (btn.disabled) {
-        btn.style.opacity = "0.42";
-        btn.style.cursor = "not-allowed";
-      }
-      historyRow.appendChild(btn);
-    }
-    activeContainer.appendChild(historyRow);
-    const quickRow = document.createElement("div");
-    Object.assign(quickRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    const allBtn = this.makeButton(
-      "All",
-      () => this.onAction?.("set_active_selection_operation", { operation: "all" })
-    );
-    allBtn.setAttribute("data-molsysviewer-selection-all", "true");
-    const noneBtn = this.makeButton(
-      "None",
-      () => this.onAction?.("set_active_selection_operation", { operation: "none" })
-    );
-    noneBtn.setAttribute("data-molsysviewer-selection-none", "true");
-    const invertBtn = this.makeButton(
-      "Invert",
-      () => this.onAction?.("set_active_selection_operation", { operation: "invert" })
-    );
-    invertBtn.setAttribute("data-molsysviewer-selection-invert", "true");
-    quickRow.appendChild(allBtn);
-    quickRow.appendChild(noneBtn);
-    quickRow.appendChild(invertBtn);
-    activeContainer.appendChild(quickRow);
-    if (this.currentSelection.count_atoms > 0) {
-      const countLabel2 = document.createElement("div");
-      countLabel2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-      Object.assign(countLabel2.style, {
-        fontSize: "12px",
-        color: "#e4e4e7",
-        fontWeight: "500"
-      });
-      countLabel2.textContent = `${this.currentSelection.count_atoms} atoms selected (${this.currentSelection.source_kind} level)`;
-      activeContainer.appendChild(countLabel2);
-      const btnRow = document.createElement("div");
-      Object.assign(btnRow.style, {
-        display: "flex",
-        gap: "8px"
-      });
-      activeContainer.appendChild(btnRow);
-      const inlineForm = document.createElement("div");
-      Object.assign(inlineForm.style, {
-        display: "none",
-        flexDirection: "row",
-        gap: "6px",
-        marginTop: "6px"
-      });
-      const inlineInput = document.createElement("input");
-      inlineInput.type = "text";
-      Object.assign(inlineInput.style, {
-        flex: "1 1 0",
-        background: "rgba(0,0,0,0.2)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "6px",
-        padding: "6px 8px",
-        color: "#fff",
-        fontSize: "11px",
-        outline: "none"
-      });
-      const inlineConfirm = document.createElement("button");
-      Object.assign(inlineConfirm.style, {
-        background: "#6366f1",
-        border: "0",
-        borderRadius: "6px",
-        padding: "6px 10px",
-        color: "#fff",
-        fontSize: "11px",
-        fontWeight: "600",
-        cursor: "pointer"
-      });
-      const inlineCancel = document.createElement("button");
-      inlineCancel.textContent = "Cancel";
-      Object.assign(inlineCancel.style, {
-        background: "rgba(255,255,255,0.08)",
-        border: "0",
-        borderRadius: "6px",
-        padding: "6px 10px",
-        color: "#e4e4e7",
-        fontSize: "11px",
-        cursor: "pointer"
-      });
-      inlineForm.appendChild(inlineInput);
-      inlineForm.appendChild(inlineConfirm);
-      inlineForm.appendChild(inlineCancel);
-      activeContainer.appendChild(inlineForm);
-      const showForm = (mode) => {
-        inlineForm.style.display = "flex";
-        inlineInput.value = "";
-        inlineInput.placeholder = mode === "save" ? "Selection name..." : mode === "region" ? "Region name..." : "Label text...";
-        inlineConfirm.textContent = mode === "save" ? "Save" : mode === "region" ? "Create" : "Add Label";
-        const newConfirm = inlineConfirm.cloneNode(true);
-        const newCancel = inlineCancel.cloneNode(true);
-        inlineConfirm.replaceWith(newConfirm);
-        inlineCancel.replaceWith(newCancel);
-        newConfirm.addEventListener("click", () => {
-          const tag = inlineInput.value.trim();
-          if (!tag) return;
-          if (mode === "save") {
-            const exists = this.savedSelections.some((s) => s.tag === tag);
-            if (exists) {
-              const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
-              if (doOverwrite) {
-                this.onAction?.("delete_selection", { tag });
-                this.onAction?.("save_selection", { tag });
-              } else {
-                return;
-              }
-            } else {
-              this.onAction?.("save_selection", { tag });
-            }
-          } else if (mode === "region") {
-            const exists = this.regionsPanel.hasRegion(tag);
-            if (exists) {
-              const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${tag}" already exists. Overwrite?`) : true;
-              if (doOverwrite) {
-                this.onAction?.("delete_region", { tag });
-                this.onAction?.("create_region_from_selection", { tag });
-              } else {
-                return;
-              }
-            } else {
-              this.onAction?.("create_region_from_selection", { tag });
-            }
-          } else {
-            this.onAction?.("add_label_from_selection", { text: tag });
-          }
-          inlineForm.style.display = "none";
-        });
-        newCancel.addEventListener("click", () => {
-          inlineForm.style.display = "none";
-        });
-        inlineInput.focus?.();
-      };
-      const clearBtn = this.makeButton("Clear", () => this.onSelect([], "replace"));
-      const saveBtn = this.makeButton("Save", () => showForm("save"));
-      const regionBtn = this.makeButton("Create Region", () => showForm("region"));
-      const labelBtn = this.makeButton("Add Label", () => showForm("label"));
-      clearBtn.setAttribute("data-molsysviewer-selection-clear", "true");
-      saveBtn.setAttribute("data-molsysviewer-selection-save", "true");
-      regionBtn.setAttribute("data-molsysviewer-selection-to-region", "true");
-      labelBtn.setAttribute("data-molsysviewer-selection-to-label", "true");
-      inlineForm.setAttribute("data-molsysviewer-selection-inline-form", "true");
-      inlineInput.setAttribute("data-molsysviewer-selection-inline-input", "true");
-      btnRow.appendChild(clearBtn);
-      btnRow.appendChild(saveBtn);
-      btnRow.appendChild(regionBtn);
-      btnRow.appendChild(labelBtn);
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        textAlign: "center",
-        padding: "6px 0"
-      });
-      emptyLabel.textContent = "No active selection.";
-      activeContainer.appendChild(emptyLabel);
-    }
-    this.selectionSection.appendChild(this.renderSelectionQueryComposer());
-    this.selectionSection.appendChild(this.makeSectionHeader("Saved Selections"));
-    const savedList = document.createElement("div");
-    savedList.setAttribute("data-molsysviewer-saved-selection-list", "true");
-    Object.assign(savedList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.selectionSection.appendChild(savedList);
-    if (this.savedSelections.length > 0) {
-      const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
-      for (const item2 of sorted) {
-        const card = document.createElement("div");
-        card.setAttribute("data-molsysviewer-group-panel-row", "true");
-        card.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-        card.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
-        Object.assign(card.style, {
-          display: "flex",
-          flexDirection: "column",
-          padding: "8px 10px",
-          borderRadius: "8px",
-          background: "rgba(255,255,255,0.05)",
-          border: "1px solid rgba(255,255,255,0.06)",
-          gap: "6px",
-          transition: "background 0.1s ease",
-          cursor: "pointer"
-        });
-        card.addEventListener("mouseenter", () => {
-          card.setAttribute("data-molsysviewer-selection-row-hover", "true");
-          card.style.background = "rgba(255,255,255,0.09)";
-        });
-        card.addEventListener("mouseleave", () => {
-          card.setAttribute("data-molsysviewer-selection-row-hover", "false");
-          card.style.background = "rgba(255,255,255,0.05)";
-        });
-        card.addEventListener("click", (e) => {
-          if (e && e.target && e.target !== card) {
-            return;
-          }
-          e?.preventDefault();
-          e?.stopPropagation();
-          this.onActivateSavedSelection(item2.tag);
-        });
-        const topRow = document.createElement("div");
-        Object.assign(topRow.style, {
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        });
-        const title = document.createElement("div");
-        Object.assign(title.style, {
-          fontSize: "12px",
-          fontWeight: "600",
-          color: "#f4f4f5",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        });
-        title.textContent = item2.tag;
-        const subtitle = document.createElement("span");
-        Object.assign(subtitle.style, {
-          fontSize: "10px",
-          color: "rgba(244,244,245,0.56)",
-          marginLeft: "6px",
-          fontWeight: "normal"
-        });
-        const levelText = item2.element_level ? ` \xB7 ${item2.element_level} level` : " \xB7 group level";
-        subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
-        title.appendChild(subtitle);
-        topRow.appendChild(title);
-        card.appendChild(topRow);
-        const btnRow = document.createElement("div");
-        btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
-        Object.assign(btnRow.style, {
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "4px"
-        });
-        const inlineForm = document.createElement("div");
-        Object.assign(inlineForm.style, {
-          display: "none",
-          flexDirection: "row",
-          gap: "6px",
-          marginTop: "2px"
-        });
-        const inlineInput = document.createElement("input");
-        inlineInput.type = "text";
-        Object.assign(inlineInput.style, {
-          flex: "1 1 0",
-          background: "rgba(0,0,0,0.2)",
-          border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: "6px",
-          padding: "4px 6px",
-          color: "#fff",
-          fontSize: "11px",
-          outline: "none"
-        });
-        card.appendChild(inlineForm);
-        const showForm = (mode) => {
-          btnRow.style.display = "none";
-          inlineForm.replaceChildren();
-          inlineInput.value = "";
-          inlineInput.placeholder = mode === "rename" ? "New name..." : mode === "region" ? "Region name..." : "Label text...";
-          const inlineConfirm = document.createElement("button");
-          inlineConfirm.type = "button";
-          inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Label";
-          Object.assign(inlineConfirm.style, {
-            background: "#6366f1",
-            border: "0",
-            borderRadius: "6px",
-            padding: "4px 8px",
-            color: "#fff",
-            fontSize: "11px",
-            fontWeight: "600",
-            cursor: "pointer"
-          });
-          const inlineCancel = document.createElement("button");
-          inlineCancel.type = "button";
-          inlineCancel.textContent = "Cancel";
-          Object.assign(inlineCancel.style, {
-            background: "rgba(255,255,255,0.08)",
-            border: "0",
-            borderRadius: "6px",
-            padding: "4px 8px",
-            color: "#e4e4e7",
-            fontSize: "11px",
-            cursor: "pointer"
-          });
-          inlineConfirm.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const val = inlineInput.value.trim();
-            if (!val) return;
-            if (mode === "rename") {
-              const exists = this.savedSelections.some((s) => s.tag === val);
-              if (exists) {
-                if (val === item2.tag) {
-                  inlineForm.style.display = "none";
-                  btnRow.style.display = "flex";
-                  return;
-                }
-                const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${val}" already exists. Overwrite?`) : true;
-                if (doOverwrite) {
-                  this.onAction?.("delete_selection", { tag: val });
-                  this.onAction?.("rename_selection", { tag: item2.tag, new_tag: val });
-                } else {
-                  return;
-                }
-              } else {
-                this.onAction?.("rename_selection", { tag: item2.tag, new_tag: val });
-              }
-            } else if (mode === "region") {
-              const exists = this.regionsPanel.hasRegion(val);
-              if (exists) {
-                const doOverwrite = typeof confirm === "function" ? confirm(`A region named "${val}" already exists. Overwrite?`) : true;
-                if (doOverwrite) {
-                  this.onAction?.("delete_region", { tag: val });
-                  this.onAction?.("create_region_from_saved_selection", { selection_tag: item2.tag, tag: val });
-                } else {
-                  return;
-                }
-              } else {
-                this.onAction?.("create_region_from_saved_selection", { selection_tag: item2.tag, tag: val });
-              }
-            } else if (mode === "label") {
-              this.onAction?.("create_label_from_saved_selection", { selection_tag: item2.tag, text: val });
-            }
-            inlineForm.style.display = "none";
-            btnRow.style.display = "flex";
-          });
-          inlineCancel.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            inlineForm.style.display = "none";
-            btnRow.style.display = "flex";
-          });
-          inlineForm.appendChild(inlineInput);
-          inlineForm.appendChild(inlineConfirm);
-          inlineForm.appendChild(inlineCancel);
-          inlineForm.style.display = "flex";
-          inlineInput.focus?.();
-        };
-        const activateBtn = this.makeButton("Activate", () => this.onActivateSavedSelection(item2.tag));
-        activateBtn.setAttribute("data-molsysviewer-saved-selection-activate", item2.tag);
-        const unionBtn = this.makeButton("+Union", () => this.onAction?.("compose_saved_selection", { tag: item2.tag, op: "add" }));
-        unionBtn.setAttribute("data-molsysviewer-saved-selection-compose-add", item2.tag);
-        const subBtn = this.makeButton("-Sub", () => this.onAction?.("compose_saved_selection", { tag: item2.tag, op: "subtract" }));
-        subBtn.setAttribute("data-molsysviewer-saved-selection-compose-subtract", item2.tag);
-        const intBtn = this.makeButton("\u2229Int", () => this.onAction?.("compose_saved_selection", { tag: item2.tag, op: "intersect" }));
-        intBtn.setAttribute("data-molsysviewer-saved-selection-compose-intersect", item2.tag);
-        const renameBtn = this.makeButton("Rename", () => showForm("rename"));
-        renameBtn.setAttribute("data-molsysviewer-saved-selection-rename", item2.tag);
-        const regionBtn = this.makeButton("\u2192Region", () => showForm("region"));
-        regionBtn.setAttribute("data-molsysviewer-saved-selection-to-region", item2.tag);
-        const labelBtn = this.makeButton("\u2192Label", () => showForm("label"));
-        labelBtn.setAttribute("data-molsysviewer-saved-selection-to-label", item2.tag);
-        const deleteBtn = this.makeButton("\u{1F5D1}", () => this.onAction?.("delete_selection", { tag: item2.tag }));
-        deleteBtn.setAttribute("data-molsysviewer-saved-selection-delete", item2.tag);
-        for (const btn of [activateBtn, unionBtn, subBtn, intBtn, renameBtn, regionBtn, labelBtn, deleteBtn]) {
-          btn.style.flex = "0 1 auto";
-          btn.style.padding = "3px 6px";
-          btn.style.fontSize = "10px";
-          btnRow.appendChild(btn);
-        }
-        card.appendChild(btnRow);
-        savedList.appendChild(card);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No saved selections yet.";
-      savedList.appendChild(emptyLabel);
-    }
-  }
-  renderSelectionQueryComposer() {
-    const container = document.createElement("div");
-    container.setAttribute("data-molsysviewer-selection-query-composer", "true");
-    Object.assign(container.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)"
-    });
-    const title = document.createElement("div");
-    Object.assign(title.style, {
-      fontSize: "12px",
-      fontWeight: "700",
-      color: "#f4f4f5"
-    });
-    title.textContent = "Select by Query";
-    container.appendChild(title);
-    const inputRow = document.createElement("div");
-    Object.assign(inputRow.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = this.selectionQueryExpression;
-    input.placeholder = this.selectionQuerySyntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
-    input.setAttribute("data-molsysviewer-selection-query-input", "true");
-    Object.assign(input.style, {
-      flex: "1 1 0",
-      minWidth: "0",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#fff",
-      fontSize: "11px",
-      outline: "none"
-    });
-    input.addEventListener("input", () => {
-      this.selectionQueryExpression = input.value;
-      this.scheduleSelectionQueryPreview();
-    });
-    const syntax = document.createElement("select");
-    syntax.setAttribute("data-molsysviewer-selection-query-syntax", "true");
-    for (const item2 of ["MolSysMT", "Indices"]) {
-      const option = document.createElement("option");
-      option.value = item2;
-      option.textContent = item2;
-      option.selected = item2 === this.selectionQuerySyntax;
-      syntax.appendChild(option);
-    }
-    Object.assign(syntax.style, {
-      flex: "0 0 auto",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      outline: "none"
-    });
-    syntax.addEventListener("change", () => {
-      this.selectionQuerySyntax = syntax.value === "Indices" ? "Indices" : "MolSysMT";
-      this.scheduleSelectionQueryPreview();
-      this.renderSelectionSection();
-    });
-    inputRow.appendChild(input);
-    inputRow.appendChild(syntax);
-    const helpBtn = this.makeButton("?", () => {
-      this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
-      this.renderSelectionSection();
-    });
-    helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
-    helpBtn.setAttribute("data-molsysviewer-selection-cheatsheet-toggle", "true");
-    Object.assign(helpBtn.style, {
-      flex: "0 0 30px",
-      width: "30px",
-      padding: "6px 0",
-      fontWeight: "700"
-    });
-    inputRow.appendChild(helpBtn);
-    container.appendChild(inputRow);
-    const presetRow = document.createElement("div");
-    presetRow.setAttribute("data-molsysviewer-selection-query-presets", "true");
-    Object.assign(presetRow.style, {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "5px",
-      alignItems: "center"
-    });
-    const presetLabel = document.createElement("span");
-    Object.assign(presetLabel.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.52)",
-      marginRight: "2px"
-    });
-    presetLabel.textContent = "Presets";
-    presetRow.appendChild(presetLabel);
-    const presets = [
-      { label: "protein", expression: 'molecule_type=="protein"' },
-      { label: "water", expression: 'molecule_type=="water"' },
-      { label: "backbone", expression: 'atom_name in ["N", "CA", "C", "O"]' },
-      { label: "sidechain", expression: 'atom_name not in ["N", "CA", "C", "O"]' },
-      { label: "ligand", expression: 'molecule_type=="small molecule"' }
-    ];
-    for (const preset of presets) {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.textContent = preset.label;
-      chip.title = preset.expression;
-      chip.setAttribute("data-molsysviewer-selection-query-preset", preset.label);
-      Object.assign(chip.style, {
-        background: "rgba(99,102,241,0.12)",
-        border: "1px solid rgba(129,140,248,0.24)",
-        borderRadius: "999px",
-        padding: "3px 8px",
-        color: "#c7d2fe",
-        fontSize: "10px",
-        lineHeight: "14px",
-        cursor: "pointer"
-      });
-      chip.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        this.selectionQuerySyntax = "MolSysMT";
-        this.selectionQueryExpression = preset.expression;
-        this.scheduleSelectionQueryPreview();
-      });
-      presetRow.appendChild(chip);
-    }
-    container.appendChild(presetRow);
-    if (this.selectionCheatSheetOpen) {
-      const cheatSheet = document.createElement("div");
-      cheatSheet.setAttribute("data-molsysviewer-selection-cheatsheet", "true");
-      Object.assign(cheatSheet.style, {
-        display: "grid",
-        gridTemplateColumns: "1fr",
-        gap: "4px",
-        padding: "8px",
-        borderRadius: "6px",
-        background: "rgba(0,0,0,0.18)",
-        border: "1px solid rgba(255,255,255,0.08)"
-      });
-      const examples = [
-        ["Atom name", 'atom_name=="CA"'],
-        ["Group index", "group_index in [10, 15]"],
-        ["Chain", 'chain_id=="A"'],
-        ["Protein", 'molecule_type=="protein"'],
-        ["Nearby", "all within 5 angstroms of atom_index in [0]"],
-        ["Bonded", "bonded to atom_index in [0]"]
-      ];
-      for (const [label2, expression] of examples) {
-        const row = document.createElement("button");
-        row.type = "button";
-        row.setAttribute("data-molsysviewer-selection-cheatsheet-example", label2);
-        Object.assign(row.style, {
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "8px",
-          width: "100%",
-          background: "transparent",
-          border: "0",
-          padding: "3px 2px",
-          color: "#e4e4e7",
-          fontSize: "10px",
-          textAlign: "left",
-          cursor: "pointer"
-        });
-        const name = document.createElement("span");
-        name.textContent = label2;
-        name.style.color = "rgba(244,244,245,0.62)";
-        const code = document.createElement("code");
-        code.textContent = expression;
-        Object.assign(code.style, {
-          color: "#c7d2fe",
-          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
-        });
-        row.appendChild(name);
-        row.appendChild(code);
-        row.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          this.selectionQuerySyntax = "MolSysMT";
-          this.selectionQueryExpression = expression;
-          this.scheduleSelectionQueryPreview();
-        });
-        cheatSheet.appendChild(row);
-      }
-      container.appendChild(cheatSheet);
-    }
-    const buttonRow = document.createElement("div");
-    Object.assign(buttonRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    const hasExpression = this.selectionQueryExpression.trim().length > 0;
-    const apply = (op4) => {
-      const expression = this.selectionQueryExpression.trim();
-      if (!expression) return;
-      this.onAction?.("apply_selection_query", {
-        expression,
-        syntax: this.selectionQuerySyntax,
-        op: op4
-      });
-    };
-    const selectBtn = this.makeButton("Select", () => apply("replace"));
-    selectBtn.setAttribute("data-molsysviewer-selection-query-apply", "replace");
-    const unionBtn = this.makeButton("+Union", () => apply("add"));
-    unionBtn.setAttribute("data-molsysviewer-selection-query-apply", "add");
-    const subtractBtn = this.makeButton("-Subtract", () => apply("subtract"));
-    subtractBtn.setAttribute("data-molsysviewer-selection-query-apply", "subtract");
-    const intersectBtn = this.makeButton("Intersect", () => apply("intersect"));
-    intersectBtn.setAttribute("data-molsysviewer-selection-query-apply", "intersect");
-    for (const btn of [selectBtn, unionBtn, subtractBtn, intersectBtn]) {
-      btn.disabled = !hasExpression;
-      if (!hasExpression) {
-        btn.style.opacity = "0.42";
-        btn.style.cursor = "not-allowed";
-      }
-      buttonRow.appendChild(btn);
-    }
-    container.appendChild(buttonRow);
-    const preview = document.createElement("div");
-    preview.setAttribute("data-molsysviewer-selection-query-preview", "true");
-    Object.assign(preview.style, {
-      minHeight: "14px",
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)"
-    });
-    if (!this.selectionQueryExpression.trim()) {
-      preview.textContent = "Enter a query to preview atom matches.";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "idle");
-    } else if (this.selectionQueryPreview?.status === "pending") {
-      preview.textContent = "Checking query...";
-      preview.style.color = "rgba(244,244,245,0.72)";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "pending");
-    } else if (this.selectionQueryPreview?.ok === true) {
-      const count3 = Number(this.selectionQueryPreview.count ?? 0);
-      preview.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
-      preview.style.color = count3 > 0 ? "#86efac" : "#facc15";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", count3 > 0 ? "ok" : "empty");
-    } else if (this.selectionQueryPreview?.ok === false) {
-      preview.textContent = `\u2717 ${this.selectionQueryPreview.error_message ?? "invalid syntax"}`;
-      preview.style.color = "#fca5a5";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "error");
-    } else {
-      preview.textContent = "Checking query...";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "pending");
-    }
-    container.appendChild(preview);
-    const expandPanel = document.createElement("div");
-    expandPanel.setAttribute("data-molsysviewer-selection-expander-panel", "true");
-    Object.assign(expandPanel.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      paddingTop: "2px"
-    });
-    const levelRow = document.createElement("div");
-    Object.assign(levelRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    for (const level of ["group", "component", "molecule", "chain", "entity"]) {
-      const btn = this.makeButton(level, () => this.onAction?.("expand_selection", { level }));
-      btn.setAttribute("data-molsysviewer-selection-expand-level", level);
-      btn.disabled = this.currentSelection.count_atoms <= 0;
-      if (btn.disabled) {
-        btn.style.opacity = "0.42";
-        btn.style.cursor = "not-allowed";
-      }
-      levelRow.appendChild(btn);
-    }
-    expandPanel.appendChild(levelRow);
-    const spatialRow = document.createElement("div");
-    Object.assign(spatialRow.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    const spatialInput = document.createElement("input");
-    spatialInput.type = "number";
-    spatialInput.value = this.selectionSpatialDistance;
-    spatialInput.setAttribute("data-molsysviewer-selection-spatial-distance", "true");
-    Object.assign(spatialInput.style, {
-      flex: "0 0 72px",
-      minWidth: "0",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#fff",
-      fontSize: "11px",
-      outline: "none"
-    });
-    spatialInput.addEventListener("input", () => {
-      this.selectionSpatialDistance = spatialInput.value;
-    });
-    const spatialBtn = this.makeButton("Within \xC5", () => {
-      const distance = Number.parseFloat(this.selectionSpatialDistance);
-      if (!Number.isFinite(distance) || distance <= 0) return;
-      this.onAction?.("expand_selection", {
-        level: "spatial",
-        distance_angstroms: distance
-      });
-    });
-    spatialBtn.setAttribute("data-molsysviewer-selection-expand-spatial", "true");
-    spatialBtn.disabled = this.currentSelection.count_atoms <= 0;
-    if (spatialBtn.disabled) {
-      spatialBtn.style.opacity = "0.42";
-      spatialBtn.style.cursor = "not-allowed";
-    }
-    spatialRow.appendChild(spatialInput);
-    spatialRow.appendChild(spatialBtn);
-    expandPanel.appendChild(spatialRow);
-    container.appendChild(expandPanel);
-    return container;
-  }
-  scheduleSelectionQueryPreview() {
-    if (this.selectionQueryPreviewTimer !== null) {
-      clearTimeout(this.selectionQueryPreviewTimer);
-      this.selectionQueryPreviewTimer = null;
-    }
-    this.selectionQueryPreview = null;
-    const expression = this.selectionQueryExpression.trim();
-    if (!expression) {
-      this.renderSelectionSection();
-      return;
-    }
-    const requestId = this.selectionQueryPreviewRequest + 1;
-    this.selectionQueryPreviewRequest = requestId;
-    this.selectionQueryPreview = { request_id: requestId, status: "pending" };
-    this.renderSelectionSection();
-    this.selectionQueryPreviewTimer = setTimeout(() => {
-      this.selectionQueryPreviewTimer = null;
-      this.onAction?.("selection_query_preview_request", {
-        request_id: requestId,
-        expression,
-        syntax: this.selectionQuerySyntax
-      });
-    }, 250);
-  }
   // ── 2. Regions Section Rendering ─────────────────────────
   // ── 5. Viewport Section Rendering ────────────────────────
   // ── Helper UI Constructors ──────────────────────────────

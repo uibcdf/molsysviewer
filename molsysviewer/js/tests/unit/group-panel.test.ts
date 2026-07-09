@@ -256,7 +256,7 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
             },
         });
 
-        (panel as any).selectionQueryPreviewRequest = 3;
+        (panel as any).selectionPanel.selectionQueryPreviewRequest = 3;
         panel.updateSelectionQueryPreview({ request_id: 2, ok: true, count: 99 });
         panel.updateSelectionQueryPreview({ request_id: 3, ok: true, count: 2 });
         const preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
@@ -358,7 +358,7 @@ test("GroupPanel selection query preview shows pending and error states", () => 
         assert.strictEqual(firstText(preview), "Checking query...");
         assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "pending");
 
-        (panel as any).selectionQueryPreviewRequest = 1;
+        (panel as any).selectionPanel.selectionQueryPreviewRequest = 1;
         panel.updateSelectionQueryPreview({ request_id: 1, ok: false, error_message: "invalid syntax" });
         preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
         assert.strictEqual(firstText(preview), "✗ invalid syntax");
@@ -438,10 +438,10 @@ test("GroupPanel selection query presets inject exact MolSysMT syntax", () => {
 
         const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
         assert.strictEqual(input.value, 'molecule_type=="water"');
-        assert.strictEqual((panel as any).selectionQuerySyntax, "MolSysMT");
+        assert.strictEqual((panel as any).selectionPanel.selectionQuerySyntax, "MolSysMT");
 
-        (panel as any).selectionQueryPreviewRequest = 1;
-        assert.deepStrictEqual((panel as any).selectionQueryPreview, {
+        (panel as any).selectionPanel.selectionQueryPreviewRequest = 1;
+        assert.deepStrictEqual((panel as any).selectionPanel.selectionQueryPreview, {
             request_id: 1,
             status: "pending",
         });
@@ -495,8 +495,8 @@ test("GroupPanel selection query cheat-sheet toggles and injects examples", () =
         chainExample?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
         assert.strictEqual(input.value, 'chain_id=="A"');
-        assert.strictEqual((panel as any).selectionQuerySyntax, "MolSysMT");
-        assert.deepStrictEqual((panel as any).selectionQueryPreview, {
+        assert.strictEqual((panel as any).selectionPanel.selectionQuerySyntax, "MolSysMT");
+        assert.deepStrictEqual((panel as any).selectionPanel.selectionQueryPreview, {
             request_id: 1,
             status: "pending",
         });
