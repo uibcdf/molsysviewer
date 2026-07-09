@@ -137,7 +137,8 @@ which are compliant, because none is a *persistent* mode).
   Canvas / strips gestures are peer surfaces, not owned here (§3.2).
 - MolSysMT-syntax **query box** plus guided, viewer-friendly affordances.
 - Hierarchical **expansion** to whole groups / components / molecules / chains /
-  entities (the five supra-atomic levels; `atom` is the identity).
+  entities (the five supra-atomic levels; `atom` is the identity), exposed through
+  the canvas / strips right-click context menu for the active selection.
 - Named-selection persistence and management (save / rename / activate / delete /
   compose).
 - **Promote** bridges: → Region, → 3D annotation label.
@@ -231,9 +232,6 @@ management; no visibility controls.
   focused, to avoid clashing with the browser/Jupyter. Model: see §5.
 - **Stats:** `N atoms · N groups · N chains · <level>` (from `active_selection`
   level getters). Empty state: "No active selection."
-- **Expand to whole:** `group · component · molecule · chain · entity` — for each
-  selected atom, include all atoms sharing that element. (Terminology is MolSysMT's:
-  **group**, not "residue".) Backed by the level index getters.
 - **Persist:** `Save as…` (inline name → a **named selection**; the tag/name lives
   here). **Name-collision policy:** the backend already rejects a duplicate tag
   (`view.selections.add*` raises `ValueError`), so the inline input catches it and
@@ -252,19 +250,27 @@ management; no visibility controls.
   `∩ Intersect` — apply the resolved query to the active selection with that op.
 - **Guided chips** (insert exact syntax into the box, teaching by example):
   `protein` → `molecule_type=="protein"`, `water`, `backbone`, `sidechain`,
-  `ligand`, and a **`within X Å of selection`** helper. Free-form distance expressions
-  remain native `select` syntax. The dedicated spatial expander calls the same
-  `msm.structure.get_contacts` primitive used internally by MolSysMT's `within`
-  parser, passing atom-index arrays directly instead of constructing a huge query.
+  `ligand`. Free-form distance expressions remain native `select` syntax.
 - **Cheat-sheet** `[?]`: collapsible card with common examples (by atom name, group,
   chain, molecule_type, `within`, `bonded to`).
-- **Live validation + preview (as-you-type):** the input is debounced (~250 ms) and
-  the expression sent to `view.select`; a small indicator shows the match count
-  (`✓ 142 atoms`), `0 atoms`, or `✗ invalid syntax` (surfacing MolSysMT's
-  `NotSupportedSyntaxError`). Requests are **cancelable** — stale responses are
-  discarded — and no client-side grammar parser is used (see §6.3). The same path
-  validates on apply. (Spatial predicates like `within … of …` are heavier to
-  resolve; the debounce + cancellation keep the kernel responsive.)
+- **Manual validation + preview:** typing is local only and leaves the status idle.
+  The preview request is sent only when the user clicks `Check` or presses `Enter`
+  in the input. A small indicator shows the match count (`✓ 142 atoms`), `0 atoms`,
+  or `✗ invalid syntax` (surfacing MolSysMT errors). Stale responses are discarded
+  by request id and no client-side grammar parser is used (see §6.3). Apply buttons
+  do not require a prior `Check`; the backend still validates on apply.
+
+### B2. Context-menu expanders
+
+Right-click with a non-empty active selection exposes:
+
+- **Expand selection to…** `Group / Component / Molecule / Chain / Entity`.
+- **Spatial expansion…** preset buttons `Within 3 Å`, `Within 5 Å`, `Within 8 Å`.
+
+These emit the existing `expand_selection` action. Hierarchical expansion uses raw
+index mappings; spatial expansion calls the same `msm.structure.get_contacts`
+primitive used internally by MolSysMT's `within` parser, passing atom-index arrays
+instead of constructing a huge query string.
 
 ### C. Saved Selections manager
 
@@ -413,9 +419,10 @@ Python source. Instead:
    `group_name in` suggest residue names present; after `chain_name ==` the chains
    present. High value, feasible client-side.
 3. **Chips + cheat-sheet** as the guided fallback (§4B).
-4. **Live validation + preview** (as-you-type): debounced (~250 ms), **cancelable**
-   requests to `view.select` return a match count (`✓ N atoms`) or a syntax error
-   inline — no client parser. The same path runs on apply.
+4. **Manual validation + preview**: `Check` / `Enter` sends a request to
+   `view.select` and returns a match count (`✓ N atoms`) or a syntax error inline.
+   Typing alone does not contact Python. Stale responses are rejected by request id;
+   no client parser is introduced. Apply still validates through the backend.
 
 If true autocomplete is wanted later, expose a molsysmt-side `suggest/complete`
 endpoint so the grammar stays single-sourced in Python.
@@ -486,8 +493,10 @@ Changed / corrected:
 
 From a second collaborator review (2026-07-07), all adopted:
 
-- **Live query preview** (as-you-type, debounced + cancelable) replacing apply-only
-  validation (§4B, §6.3).
+- **Manual query preview** (`Check` / `Enter`, request-id guarded) replacing
+  per-keystroke validation after smoke tests showed the live debounce produced noisy
+  errors and unnecessary kernel traffic while the user typed incomplete expressions
+  (§4B, §6.3).
 - **Index-based expansion** (§6.2) — the raw-indices principle was correct; the
   proposed `msm.get(..., group_atoms=True)` argument does **not** exist, so the call
   was replaced with an empirically verified one (`element='group', atom_index=True`

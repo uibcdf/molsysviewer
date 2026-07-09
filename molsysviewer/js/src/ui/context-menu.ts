@@ -33,6 +33,7 @@ export type ContextMenuAction =
     | "save_selection"
     | "remove_selection"
     | "clear_selection"
+    | "expand_selection"
     | "create_region_from_selection"
     | "create_section_from_selection"
     | "add_label_from_selection"
@@ -51,6 +52,8 @@ export type ContextActionDetails = {
     text?: string;
     tag?: string;
     new_tag?: string;
+    level?: "group" | "component" | "molecule" | "chain" | "entity" | "spatial";
+    distance_angstroms?: number;
     camera_forward?: [number, number, number];
     label_style?: { color?: string; size_em?: number };
 };
@@ -370,6 +373,7 @@ export class ViewerContextMenu {
             section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
             section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
             section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
+            this.appendSelectionExpanders(section);
             // "Remove Selected Atoms" is contributed by the MolSysMT addon as a
             // context item (molecular editing is not a viewer-core action).
             section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
@@ -600,6 +604,48 @@ export class ViewerContextMenu {
             this.close();
         });
         return button;
+    }
+
+    private appendSelectionExpanders(section: HTMLDivElement): void {
+        const expandTitle = document.createElement("div");
+        expandTitle.textContent = "Expand selection to...";
+        Object.assign(expandTitle.style, {
+            padding: "8px 8px 4px 8px",
+            opacity: "0.6",
+            fontSize: "11px",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            fontWeight: "600",
+        });
+        section.appendChild(expandTitle);
+
+        for (const level of ["group", "component", "molecule", "chain", "entity"] as const) {
+            section.appendChild(this.makeActionButton(
+                level[0].toUpperCase() + level.slice(1),
+                "expand_selection",
+                { level },
+            ));
+        }
+
+        const spatialTitle = document.createElement("div");
+        spatialTitle.textContent = "Spatial expansion...";
+        Object.assign(spatialTitle.style, {
+            padding: "8px 8px 4px 8px",
+            opacity: "0.6",
+            fontSize: "11px",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            fontWeight: "600",
+        });
+        section.appendChild(spatialTitle);
+
+        for (const distance of [3, 5, 8] as const) {
+            section.appendChild(this.makeActionButton(
+                `Within ${distance} Å`,
+                "expand_selection",
+                { level: "spatial", distance_angstroms: distance },
+            ));
+        }
     }
 
     private makeSavedSelectionButton(selection: SavedSelectionSummary): HTMLButtonElement {

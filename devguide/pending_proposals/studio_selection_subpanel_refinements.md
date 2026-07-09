@@ -1,7 +1,8 @@
 # Proposal: Selection Subpanel Refinements (Manual Checking & Context Menu Expanders)
 
-**Status:** Proposed — **paused** (2026-07-08), deferred while the Regions subpanel is
-prioritized (`studio_region_subpanel.md`).  
+**Status:** Implemented (2026-07-09) — manual query verification and context-menu
+selection expanders are in place. Browser E2E source was updated and compile-checked;
+real browser execution remains part of the broader Selection Phase 9 validation.
 **Author:** Antigravity AI & Diego  
 **Date:** 2026-07-08  
 
@@ -15,6 +16,13 @@ Based on real-world smoke tests of the Studio Selection subpanel in Jupyter note
 2.  **Cluttered and misallocated expanders:** The Supra-atomic supra-atomic levels (`group`, `component`, etc.) and the Spatial expander (`within Å`) were placed inside the static sidebar. This cluttered the layout and deviated from direct-canvas interaction. These operations naturally belong in the 3D viewer's context menu (right-click).
 
 This proposal outlines the design changes and a step-by-step implementation plan to resolve both issues.
+
+**Implementation note (2026-07-09):** `SelectionPanel` now reuses the shared
+`ManualQueryComposer` (`Check` / `Enter`, idle while typing), the sidebar expander
+panel was removed, and `ViewerContextMenu` now exposes hierarchical expansion plus
+3 / 5 / 8 Å spatial presets for the active selection. Validation: `npm run test:js`
+passed (156 tests), `npm run build:runtime` passed, and `selection-subpanel.e2e.ts`
+compiled with esbuild to `/tmp` without running a browser.
 
 ---
 

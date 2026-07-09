@@ -146407,6 +146407,7 @@ var ViewerContextMenu = class {
       section.appendChild(this.makeActionButton("Create Region from Selection", "create_region_from_selection"));
       section.appendChild(this.makeActionButton("Create Section from Selection", "create_section_from_selection"));
       section.appendChild(this.makeActionButton("Add Label from Selection", "add_label_from_selection"));
+      this.appendSelectionExpanders(section);
       section.appendChild(this.makeActionButton("Clear Selection", "clear_selection"));
       this.scrollEl.appendChild(section);
     }
@@ -146616,6 +146617,44 @@ var ViewerContextMenu = class {
       this.close();
     });
     return button;
+  }
+  appendSelectionExpanders(section) {
+    const expandTitle = document.createElement("div");
+    expandTitle.textContent = "Expand selection to...";
+    Object.assign(expandTitle.style, {
+      padding: "8px 8px 4px 8px",
+      opacity: "0.6",
+      fontSize: "11px",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      fontWeight: "600"
+    });
+    section.appendChild(expandTitle);
+    for (const level of ["group", "component", "molecule", "chain", "entity"]) {
+      section.appendChild(this.makeActionButton(
+        level[0].toUpperCase() + level.slice(1),
+        "expand_selection",
+        { level }
+      ));
+    }
+    const spatialTitle = document.createElement("div");
+    spatialTitle.textContent = "Spatial expansion...";
+    Object.assign(spatialTitle.style, {
+      padding: "8px 8px 4px 8px",
+      opacity: "0.6",
+      fontSize: "11px",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      fontWeight: "600"
+    });
+    section.appendChild(spatialTitle);
+    for (const distance of [3, 5, 8]) {
+      section.appendChild(this.makeActionButton(
+        `Within ${distance} \xC5`,
+        "expand_selection",
+        { level: "spatial", distance_angstroms: distance }
+      ));
+    }
   }
   makeSavedSelectionButton(selection) {
     const label2 = `${selection.tag} \xB7 ${selection.atom_count} atom${selection.atom_count === 1 ? "" : "s"}`;
@@ -149014,9 +149053,10 @@ var ExportPanel = class extends BasePanel {
 
 // src/ui/query-composer.ts
 var ManualQueryComposer = class _ManualQueryComposer {
-  constructor(scope, onRequest) {
+  constructor(scope, onRequest, onChange) {
     this.scope = scope;
     this.onRequest = onRequest;
+    this.onChange = onChange;
     this.expression = "";
     this.syntax = "MolSysMT";
     this.preview = null;
@@ -149054,6 +149094,7 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.preview = null;
       this.activeRequestId = null;
       this.renderStatus();
+      this.onChange?.();
     });
     this.input.addEventListener("keydown", (event) => {
       if (event.key !== "Enter") return;
@@ -149065,6 +149106,17 @@ var ManualQueryComposer = class _ManualQueryComposer {
     this.checkButton.type = "button";
     this.checkButton.textContent = "Check";
     this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
+    Object.assign(this.checkButton.style, {
+      flex: "0 0 auto",
+      background: "rgba(255,255,255,0.06)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 9px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      fontWeight: "600",
+      cursor: "pointer"
+    });
     this.checkButton.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -149072,6 +149124,16 @@ var ManualQueryComposer = class _ManualQueryComposer {
     });
     this.syntaxSelect = document.createElement("select");
     this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
+    Object.assign(this.syntaxSelect.style, {
+      flex: "0 0 auto",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      outline: "none"
+    });
     for (const value of ["MolSysMT", "Indices"]) {
       const option = document.createElement("option");
       option.value = value;
@@ -149084,6 +149146,7 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.preview = null;
       this.activeRequestId = null;
       this.renderStatus();
+      this.onChange?.();
     });
     row.appendChild(this.input);
     row.appendChild(this.checkButton);
@@ -149107,6 +149170,19 @@ var ManualQueryComposer = class _ManualQueryComposer {
   }
   value() {
     return { expression: this.expression.trim(), syntax: this.syntax };
+  }
+  setExpression(expression, syntax) {
+    this.expression = expression;
+    this.input.value = expression;
+    if (syntax) {
+      this.syntax = syntax;
+      this.syntaxSelect.value = syntax;
+      this.input.placeholder = syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+    }
+    this.preview = null;
+    this.activeRequestId = null;
+    this.renderStatus();
+    this.onChange?.();
   }
   isVerifiedNonEmpty() {
     return this.preview?.ok === true && Number(this.preview.count ?? 0) > 0;
@@ -150136,13 +150212,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.currentSelection = { count_atoms: 0 };
     this.savedSelections = [];
     // View state
-    this.selectionQueryExpression = "";
-    this.selectionQuerySyntax = "MolSysMT";
-    this.selectionQueryPreviewRequest = 0;
-    this.selectionQueryPreviewTimer = null;
-    this.selectionQueryPreview = null;
+    this.selectionQueryComposer = null;
     this.selectionCheatSheetOpen = false;
-    this.selectionSpatialDistance = "4.0";
     this.selectionCanUndo = false;
     this.selectionCanRedo = false;
   }
@@ -150170,12 +150241,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.savedSelections = [...items];
     this.scheduleRender();
   }
-  /** Route a query preview belonging to this panel's (debounced) composer. */
+  /** Route a query preview belonging to this panel's manual composer. */
   updatePreview(preview) {
-    const requestId = typeof preview.request_id === "number" ? preview.request_id : void 0;
-    if (requestId !== void 0 && requestId !== this.selectionQueryPreviewRequest) return;
-    this.selectionQueryPreview = preview;
-    this.scheduleRender();
+    if (this.selectionQueryComposer?.updatePreview(preview)) {
+      this.scheduleRender();
+    }
   }
   static ensureDesignSystemStyles() {
     if (typeof document === "undefined") return;
@@ -150215,9 +150285,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     box-shadow: var(--accent-indigo-glow), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-[data-molsysviewer-selection-query-input="true"]:focus,
-[data-molsysviewer-selection-query-syntax="true"]:focus,
-[data-molsysviewer-selection-spatial-distance="true"]:focus {
+[data-molsysviewer-query-input="selection"]:focus,
+[data-molsysviewer-query-syntax="selection"]:focus {
     border-color: rgba(99, 102, 241, 0.46) !important;
     box-shadow: var(--accent-indigo-glow);
     outline: none;
@@ -150261,11 +150330,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, rgba(255,255,255,0.03) 100%) !important;
 }
 
-[data-molsysviewer-selection-query-preview-status="ok"] {
+[data-molsysviewer-query-status="selection"][data-molsysviewer-query-status-value="ok"] {
     text-shadow: 0 0 10px rgba(134, 239, 172, 0.18);
 }
 
-[data-molsysviewer-selection-query-preview-status="error"] {
+[data-molsysviewer-query-status="selection"][data-molsysviewer-query-status-value="error"] {
     text-shadow: 0 0 10px rgba(252, 165, 165, 0.16);
 }
 
@@ -150793,58 +150862,14 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     });
     title.textContent = "Select by Query";
     container.appendChild(title);
+    const composer = this.getSelectionQueryComposer();
+    container.appendChild(composer.element());
     const inputRow = document.createElement("div");
     Object.assign(inputRow.style, {
       display: "flex",
       gap: "6px",
       alignItems: "center"
     });
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = this.selectionQueryExpression;
-    input.placeholder = this.selectionQuerySyntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
-    input.setAttribute("data-molsysviewer-selection-query-input", "true");
-    Object.assign(input.style, {
-      flex: "1 1 0",
-      minWidth: "0",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#fff",
-      fontSize: "11px",
-      outline: "none"
-    });
-    input.addEventListener("input", () => {
-      this.selectionQueryExpression = input.value;
-      this.scheduleSelectionQueryPreview();
-    });
-    const syntax = document.createElement("select");
-    syntax.setAttribute("data-molsysviewer-selection-query-syntax", "true");
-    for (const item2 of ["MolSysMT", "Indices"]) {
-      const option = document.createElement("option");
-      option.value = item2;
-      option.textContent = item2;
-      option.selected = item2 === this.selectionQuerySyntax;
-      syntax.appendChild(option);
-    }
-    Object.assign(syntax.style, {
-      flex: "0 0 auto",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      outline: "none"
-    });
-    syntax.addEventListener("change", () => {
-      this.selectionQuerySyntax = syntax.value === "Indices" ? "Indices" : "MolSysMT";
-      this.scheduleSelectionQueryPreview();
-      this.scheduleRender();
-    });
-    inputRow.appendChild(input);
-    inputRow.appendChild(syntax);
     const helpBtn = makeButton("?", () => {
       this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
       this.scheduleRender();
@@ -150901,9 +150926,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       chip.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        this.selectionQuerySyntax = "MolSysMT";
-        this.selectionQueryExpression = preset.expression;
-        this.scheduleSelectionQueryPreview();
+        composer.setExpression(preset.expression, "MolSysMT");
       });
       presetRow.appendChild(chip);
     }
@@ -150962,9 +150985,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         row.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          this.selectionQuerySyntax = "MolSysMT";
-          this.selectionQueryExpression = expression;
-          this.scheduleSelectionQueryPreview();
+          composer.setExpression(expression, "MolSysMT");
         });
         cheatSheet.appendChild(row);
       }
@@ -150976,13 +150997,13 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
       gap: "6px"
     });
-    const hasExpression = this.selectionQueryExpression.trim().length > 0;
+    const hasExpression = composer.value().expression.length > 0;
     const apply = (op4) => {
-      const expression = this.selectionQueryExpression.trim();
+      const { expression, syntax } = composer.value();
       if (!expression) return;
       this.ctx.onAction("apply_selection_query", {
         expression,
-        syntax: this.selectionQuerySyntax,
+        syntax,
         op: op4
       });
     };
@@ -151003,126 +151024,15 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       buttonRow.appendChild(btn);
     }
     container.appendChild(buttonRow);
-    const preview = document.createElement("div");
-    preview.setAttribute("data-molsysviewer-selection-query-preview", "true");
-    Object.assign(preview.style, {
-      minHeight: "14px",
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)"
-    });
-    if (!this.selectionQueryExpression.trim()) {
-      preview.textContent = "Enter a query to preview atom matches.";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "idle");
-    } else if (this.selectionQueryPreview?.status === "pending") {
-      preview.textContent = "Checking query...";
-      preview.style.color = "rgba(244,244,245,0.72)";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "pending");
-    } else if (this.selectionQueryPreview?.ok === true) {
-      const count3 = Number(this.selectionQueryPreview.count ?? 0);
-      preview.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
-      preview.style.color = count3 > 0 ? "#86efac" : "#facc15";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", count3 > 0 ? "ok" : "empty");
-    } else if (this.selectionQueryPreview?.ok === false) {
-      preview.textContent = `\u2717 ${this.selectionQueryPreview.error_message ?? "invalid syntax"}`;
-      preview.style.color = "#fca5a5";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "error");
-    } else {
-      preview.textContent = "Checking query...";
-      preview.setAttribute("data-molsysviewer-selection-query-preview-status", "pending");
-    }
-    container.appendChild(preview);
-    const expandPanel = document.createElement("div");
-    expandPanel.setAttribute("data-molsysviewer-selection-expander-panel", "true");
-    Object.assign(expandPanel.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      paddingTop: "2px"
-    });
-    const levelRow = document.createElement("div");
-    Object.assign(levelRow.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-      gap: "6px"
-    });
-    for (const level of ["group", "component", "molecule", "chain", "entity"]) {
-      const btn = makeButton(level, () => this.ctx.onAction("expand_selection", { level }));
-      btn.setAttribute("data-molsysviewer-selection-expand-level", level);
-      btn.disabled = this.currentSelection.count_atoms <= 0;
-      if (btn.disabled) {
-        btn.style.opacity = "0.42";
-        btn.style.cursor = "not-allowed";
-      }
-      levelRow.appendChild(btn);
-    }
-    expandPanel.appendChild(levelRow);
-    const spatialRow = document.createElement("div");
-    Object.assign(spatialRow.style, {
-      display: "flex",
-      gap: "6px",
-      alignItems: "center"
-    });
-    const spatialInput = document.createElement("input");
-    spatialInput.type = "number";
-    spatialInput.value = this.selectionSpatialDistance;
-    spatialInput.setAttribute("data-molsysviewer-selection-spatial-distance", "true");
-    Object.assign(spatialInput.style, {
-      flex: "0 0 72px",
-      minWidth: "0",
-      background: "rgba(0,0,0,0.2)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "6px 8px",
-      color: "#fff",
-      fontSize: "11px",
-      outline: "none"
-    });
-    spatialInput.addEventListener("input", () => {
-      this.selectionSpatialDistance = spatialInput.value;
-    });
-    const spatialBtn = makeButton("Within \xC5", () => {
-      const distance = Number.parseFloat(this.selectionSpatialDistance);
-      if (!Number.isFinite(distance) || distance <= 0) return;
-      this.ctx.onAction("expand_selection", {
-        level: "spatial",
-        distance_angstroms: distance
-      });
-    });
-    spatialBtn.setAttribute("data-molsysviewer-selection-expand-spatial", "true");
-    spatialBtn.disabled = this.currentSelection.count_atoms <= 0;
-    if (spatialBtn.disabled) {
-      spatialBtn.style.opacity = "0.42";
-      spatialBtn.style.cursor = "not-allowed";
-    }
-    spatialRow.appendChild(spatialInput);
-    spatialRow.appendChild(spatialBtn);
-    expandPanel.appendChild(spatialRow);
-    container.appendChild(expandPanel);
     return container;
   }
-  scheduleSelectionQueryPreview() {
-    if (this.selectionQueryPreviewTimer !== null) {
-      clearTimeout(this.selectionQueryPreviewTimer);
-      this.selectionQueryPreviewTimer = null;
+  getSelectionQueryComposer() {
+    if (this.selectionQueryComposer === null) {
+      this.selectionQueryComposer = new ManualQueryComposer("selection", (details) => {
+        this.ctx.onAction("selection_query_preview_request", details);
+      }, () => this.scheduleRender());
     }
-    this.selectionQueryPreview = null;
-    const expression = this.selectionQueryExpression.trim();
-    if (!expression) {
-      this.scheduleRender();
-      return;
-    }
-    const requestId = this.selectionQueryPreviewRequest + 1;
-    this.selectionQueryPreviewRequest = requestId;
-    this.selectionQueryPreview = { request_id: requestId, status: "pending" };
-    this.scheduleRender();
-    this.selectionQueryPreviewTimer = setTimeout(() => {
-      this.selectionQueryPreviewTimer = null;
-      this.ctx.onAction("selection_query_preview_request", {
-        request_id: requestId,
-        expression,
-        syntax: this.selectionQuerySyntax
-      });
-    }, 250);
+    return this.selectionQueryComposer;
   }
 };
 
@@ -155773,7 +155683,7 @@ var MolSysViewerController = class _MolSysViewerController {
         this.notify?.({ event: "interaction_context_action", action, tag, new_tag });
         return;
       }
-      if (action === "delete_annotation" || action === "delete_shape" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "addon_context_action") {
+      if (action === "delete_annotation" || action === "delete_shape" || action === "save_selection" || action === "remove_selection" || action === "create_region_from_selection" || action === "create_section_from_selection" || action === "add_label_from_selection" || action === "expand_selection" || action === "addon_context_action") {
         return;
       }
       this.startMeasurementTool(action, details?.endpoint_policy);

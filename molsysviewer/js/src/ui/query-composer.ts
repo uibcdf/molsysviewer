@@ -27,6 +27,7 @@ export class ManualQueryComposer {
             expression: string;
             syntax: QuerySyntax;
         }) => void,
+        private readonly onChange?: () => void,
     ) {
         this.root = document.createElement("div");
         this.root.setAttribute("data-molsysviewer-query-composer", scope);
@@ -63,6 +64,7 @@ export class ManualQueryComposer {
             this.preview = null;
             this.activeRequestId = null;
             this.renderStatus();
+            this.onChange?.();
         });
         this.input.addEventListener("keydown", (event) => {
             if (event.key !== "Enter") return;
@@ -75,6 +77,17 @@ export class ManualQueryComposer {
         this.checkButton.type = "button";
         this.checkButton.textContent = "Check";
         this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
+        Object.assign(this.checkButton.style, {
+            flex: "0 0 auto",
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "6px",
+            padding: "6px 9px",
+            color: "#f4f4f5",
+            fontSize: "11px",
+            fontWeight: "600",
+            cursor: "pointer",
+        });
         this.checkButton.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -83,6 +96,16 @@ export class ManualQueryComposer {
 
         this.syntaxSelect = document.createElement("select");
         this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
+        Object.assign(this.syntaxSelect.style, {
+            flex: "0 0 auto",
+            background: "rgba(0,0,0,0.2)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "6px",
+            padding: "6px 8px",
+            color: "#f4f4f5",
+            fontSize: "11px",
+            outline: "none",
+        });
         for (const value of ["MolSysMT", "Indices"] as const) {
             const option = document.createElement("option");
             option.value = value;
@@ -95,6 +118,7 @@ export class ManualQueryComposer {
             this.preview = null;
             this.activeRequestId = null;
             this.renderStatus();
+            this.onChange?.();
         });
 
         row.appendChild(this.input);
@@ -119,6 +143,20 @@ export class ManualQueryComposer {
 
     value(): { expression: string; syntax: QuerySyntax } {
         return { expression: this.expression.trim(), syntax: this.syntax };
+    }
+
+    setExpression(expression: string, syntax?: QuerySyntax): void {
+        this.expression = expression;
+        this.input.value = expression;
+        if (syntax) {
+            this.syntax = syntax;
+            this.syntaxSelect.value = syntax;
+            this.input.placeholder = syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+        }
+        this.preview = null;
+        this.activeRequestId = null;
+        this.renderStatus();
+        this.onChange?.();
     }
 
     isVerifiedNonEmpty(): boolean {

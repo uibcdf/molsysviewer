@@ -237,7 +237,7 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
 
         (panel as any).switchTab("selection");
         const root = host.children[0];
-        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const input = findFirstByAttribute(root, "data-molsysviewer-query-input", "selection") as any;
         const union = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "add");
         assert.ok(input);
         assert.ok(union);
@@ -248,7 +248,9 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
 
         input.value = "group_index==1";
         input.dispatch("input");
-        union?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const enabledUnion = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "add");
+        assert.strictEqual((enabledUnion as any).disabled, false);
+        enabledUnion?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
         assert.deepStrictEqual(actions.at(-1), {
             action: "apply_selection_query",
@@ -259,12 +261,18 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
             },
         });
 
-        (panel as any).selectionPanel.selectionQueryPreviewRequest = 3;
-        panel.updateSelectionQueryPreview({ request_id: 2, ok: true, count: 99 });
-        panel.updateSelectionQueryPreview({ request_id: 3, ok: true, count: 2 });
-        const preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
-        assert.strictEqual(firstText(preview), "✓ 2 atoms");
-        assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "ok");
+        const check = findFirstByAttribute(root, "data-molsysviewer-query-check", "selection");
+        assert.ok(check);
+        check?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const previewRequest = actions.at(-1);
+        assert.strictEqual(previewRequest.action, "selection_query_preview_request");
+        assert.strictEqual(previewRequest.details.expression, "group_index==1");
+        assert.strictEqual(previewRequest.details.syntax, "MolSysMT");
+        panel.updateSelectionQueryPreview({ request_id: previewRequest.details.request_id - 1, ok: true, count: 99 });
+        panel.updateSelectionQueryPreview({ request_id: previewRequest.details.request_id, ok: true, count: 2 });
+        const status = findFirstByAttribute(root, "data-molsysviewer-query-status", "selection");
+        assert.strictEqual(firstText(status), "✓ 2 atoms");
+        assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "ok");
 
         panel.dispose();
     } finally {
@@ -352,22 +360,28 @@ test("GroupPanel selection query preview shows pending and error states", () => 
 
         (panel as any).switchTab("selection");
         const root = host.children[0];
-        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const input = findFirstByAttribute(root, "data-molsysviewer-query-input", "selection") as any;
         const select = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
         assert.strictEqual(select.disabled, true);
 
         input.value = "bad query";
         input.dispatch("input");
 
-        let preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
-        assert.strictEqual(firstText(preview), "Checking query...");
-        assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "pending");
+        let status = findFirstByAttribute(root, "data-molsysviewer-query-status", "selection");
+        assert.strictEqual(firstText(status), "Press Enter or Check to verify.");
+        assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "idle");
 
-        (panel as any).selectionPanel.selectionQueryPreviewRequest = 1;
-        panel.updateSelectionQueryPreview({ request_id: 1, ok: false, error_message: "invalid syntax" });
-        preview = findFirstByAttribute(root, "data-molsysviewer-selection-query-preview");
-        assert.strictEqual(firstText(preview), "✗ invalid syntax");
-        assert.strictEqual(preview?.getAttribute("data-molsysviewer-selection-query-preview-status"), "error");
+        const check = findFirstByAttribute(root, "data-molsysviewer-query-check", "selection");
+        check?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        status = findFirstByAttribute(root, "data-molsysviewer-query-status", "selection");
+        assert.strictEqual(firstText(status), "Checking query...");
+        assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "pending");
+
+        const requestId = (panel as any).selectionPanel.selectionQueryComposer.activeRequestId;
+        panel.updateSelectionQueryPreview({ request_id: requestId, ok: false, error_message: "invalid syntax" });
+        status = findFirstByAttribute(root, "data-molsysviewer-query-status", "selection");
+        assert.strictEqual(firstText(status), "✗ invalid syntax");
+        assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "error");
 
         const enabledSelect = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
         assert.strictEqual(enabledSelect.disabled, false);
@@ -378,7 +392,7 @@ test("GroupPanel selection query preview shows pending and error states", () => 
     }
 });
 
-test("GroupPanel selection query preview uses a dedicated query-only action", async () => {
+test("GroupPanel selection query preview uses a dedicated query-only action", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
@@ -397,21 +411,20 @@ test("GroupPanel selection query preview uses a dedicated query-only action", as
         );
 
         const root = host.children[0];
-        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const input = findFirstByAttribute(root, "data-molsysviewer-query-input", "selection") as any;
         assert.ok(input);
         input.value = "group_index==1";
         input.dispatch("input");
+        assert.deepStrictEqual(actions, []);
 
-        await new Promise((resolve) => setTimeout(resolve, 270));
+        const check = findFirstByAttribute(root, "data-molsysviewer-query-check", "selection");
+        assert.ok(check);
+        check?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "selection_query_preview_request",
-            details: {
-                request_id: 1,
-                expression: "group_index==1",
-                syntax: "MolSysMT",
-            },
-        });
+        assert.strictEqual(actions.at(-1).action, "selection_query_preview_request");
+        assert.strictEqual(actions.at(-1).details.expression, "group_index==1");
+        assert.strictEqual(actions.at(-1).details.syntax, "MolSysMT");
+        assert.strictEqual(typeof actions.at(-1).details.request_id, "number");
     } finally {
         restore();
     }
@@ -442,15 +455,10 @@ test("GroupPanel selection query presets inject exact MolSysMT syntax", () => {
 
         water?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
 
-        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const input = findFirstByAttribute(root, "data-molsysviewer-query-input", "selection") as any;
         assert.strictEqual(input.value, 'molecule_type=="water"');
-        assert.strictEqual((panel as any).selectionPanel.selectionQuerySyntax, "MolSysMT");
-
-        (panel as any).selectionPanel.selectionQueryPreviewRequest = 1;
-        assert.deepStrictEqual((panel as any).selectionPanel.selectionQueryPreview, {
-            request_id: 1,
-            status: "pending",
-        });
+        const status = findFirstByAttribute(root, "data-molsysviewer-query-status", "selection");
+        assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "idle");
 
         const select = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
         assert.strictEqual(select.disabled, false);
@@ -500,13 +508,10 @@ test("GroupPanel selection query cheat-sheet toggles and injects examples", () =
         assert.ok(chainExample);
 
         chainExample?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
+        const input = findFirstByAttribute(root, "data-molsysviewer-query-input", "selection") as any;
         assert.strictEqual(input.value, 'chain_id=="A"');
-        assert.strictEqual((panel as any).selectionPanel.selectionQuerySyntax, "MolSysMT");
-        assert.deepStrictEqual((panel as any).selectionPanel.selectionQueryPreview, {
-            request_id: 1,
-            status: "pending",
-        });
+        const status = findFirstByAttribute(root, "data-molsysviewer-query-status", "selection");
+        assert.strictEqual(status?.getAttribute("data-molsysviewer-query-status-value"), "idle");
 
         panel.dispose();
     } finally {
@@ -514,11 +519,10 @@ test("GroupPanel selection query cheat-sheet toggles and injects examples", () =
     }
 });
 
-test("GroupPanel selection expanders emit hierarchical and spatial actions", () => {
+test("GroupPanel selection sidebar no longer renders expanders", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
-        const actions: any[] = [];
         const panel = new GroupPanel(
             host,
             () => {},
@@ -529,7 +533,7 @@ test("GroupPanel selection expanders emit hierarchical and spatial actions", () 
             () => {},
             () => {},
             () => {},
-            (action, details) => { actions.push({ action, details }); },
+            () => {},
         );
         panel.updateSelection({
             event: "interaction_active_selection_changed",
@@ -550,26 +554,9 @@ test("GroupPanel selection expanders emit hierarchical and spatial actions", () 
         });
 
         const root = host.children[0];
-        const group = findFirstByAttribute(root, "data-molsysviewer-selection-expand-level", "group");
-        const distance = findFirstByAttribute(root, "data-molsysviewer-selection-spatial-distance") as any;
-        const spatial = findFirstByAttribute(root, "data-molsysviewer-selection-expand-spatial");
-        assert.ok(group);
-        assert.ok(distance);
-        assert.ok(spatial);
-
-        group.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "expand_selection",
-            details: { level: "group" },
-        });
-
-        distance.value = "6.5";
-        distance.dispatch("input");
-        spatial.dispatch("click", { preventDefault() {}, stopPropagation() {} });
-        assert.deepStrictEqual(actions.at(-1), {
-            action: "expand_selection",
-            details: { level: "spatial", distance_angstroms: 6.5 },
-        });
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-selection-expander-panel"), null);
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-selection-expand-level", "group"), null);
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-selection-expand-spatial"), null);
 
         panel.dispose();
     } finally {

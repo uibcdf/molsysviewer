@@ -1116,6 +1116,7 @@ export class MolSysViewerController {
                 || action === "create_region_from_selection"
                 || action === "create_section_from_selection"
                 || action === "add_label_from_selection"
+                || action === "expand_selection"
                 || action === "addon_context_action"
             ) {
                 return;

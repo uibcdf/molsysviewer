@@ -3,7 +3,6 @@ import { Structure } from "molstar/lib/mol-model/structure";
 import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
-import { ManualQueryComposer } from "./query-composer";
 import {
     makeButton,
     makeCheckboxRow,

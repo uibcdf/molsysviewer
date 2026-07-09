@@ -97,8 +97,17 @@ async function run() {
         await setActiveSelection(page, [0, 1, 2, 3, 4, 5]);
 
         // Query request and backend response.
-        const query = page.locator('[data-molsysviewer-selection-query-input="true"]');
+        const query = page.locator('[data-molsysviewer-query-input="selection"]');
         await query.fill("atom_index in [0, 1]");
+        assert.strictEqual(
+            await page.evaluate(() =>
+                ((window as any).__messages || []).some((message: any) =>
+                    message.event === "selection_query_preview_request"
+                )
+            ),
+            false,
+        );
+        await page.locator('[data-molsysviewer-query-check="selection"]').click();
         await page.waitForFunction(() =>
             ((window as any).__messages || []).some((message: any) =>
                 message.event === "selection_query_preview_request"
@@ -138,8 +147,10 @@ async function run() {
         assert.deepStrictEqual({ tag: subtract.tag, op: subtract.op }, { tag: "tail", op: "subtract" });
         await setActiveSelection(page, [0, 1, 2]);
 
-        // Expand to chain, then save and apply the backend echoes.
-        await page.locator('[data-molsysviewer-selection-expand-level="chain"]').click();
+        // Expand to chain from the context menu, then save and apply the backend echoes.
+        await page.locator('[data-molsysviewer-group-item="true"]').first().click({ button: "right" });
+        await page.waitForSelector('[data-molsysviewer-context-menu="true"]');
+        await page.locator('[data-molsysviewer-context-menu="true"] button').filter({ hasText: "Chain" }).click();
         const expand = await latestAction(page, "expand_selection");
         assert.strictEqual(expand.level, "chain");
         await setActiveSelection(page, [0, 1, 2]);

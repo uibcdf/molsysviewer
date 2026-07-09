@@ -200,6 +200,93 @@ test("ViewerContextMenu renders active selection section and selection actions",
     }
 });
 
+test("ViewerContextMenu exposes selection expanders from the context menu", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; target: any; details?: any }> = [];
+        const notifications: any[] = [];
+        const menu = new ViewerContextMenu(host, (msg) => {
+            notifications.push(msg);
+        }, (action, target, details) => {
+            actions.push({ action, target, details });
+        });
+        const selection = {
+            event: "interaction_active_selection_changed",
+            source_kind: "element",
+            element_level: "atom",
+            target_level: "none",
+            items: [],
+            atom_indices: [0, 1, 2, 3],
+            group_indices: [0, 1],
+            component_indices: [],
+            chain_indices: [0],
+            molecule_indices: [],
+            entity_indices: [0],
+            count_atoms: 4,
+            count_groups: 2,
+            count_shapes: 0,
+            count_annotations: 0,
+        };
+        const target = { event: "interaction_context_menu", kind: "structure" as const, atom_indices: [0, 1], group_name: "ALA", chain_name: "A" };
+
+        menu.open(target, 10, 20, selection);
+        let root = (menu as any).root as FakeElement;
+        let texts = collectTexts(root);
+        assert.ok(texts.includes("Expand selection to..."));
+        assert.ok(texts.includes("Group"));
+        assert.ok(texts.includes("Component"));
+        assert.ok(texts.includes("Molecule"));
+        assert.ok(texts.includes("Chain"));
+        assert.ok(texts.includes("Entity"));
+        assert.ok(texts.includes("Spatial expansion..."));
+        assert.ok(texts.includes("Within 3 Å"));
+        assert.ok(texts.includes("Within 5 Å"));
+        assert.ok(texts.includes("Within 8 Å"));
+
+        findNodeByText(root, "Group")!.dispatch("click");
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "expand_selection",
+            target,
+            details: { level: "group" },
+        });
+        assert.deepStrictEqual(notifications.at(-1), {
+            event: "interaction_context_action",
+            action: "expand_selection",
+            context: target,
+            level: "group",
+        });
+
+        menu.open(target, 10, 20, selection);
+        root = (menu as any).root as FakeElement;
+        findNodeByText(root, "Within 5 Å")!.dispatch("click");
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "expand_selection",
+            target,
+            details: { level: "spatial", distance_angstroms: 5 },
+        });
+        assert.deepStrictEqual(notifications.at(-1), {
+            event: "interaction_context_action",
+            action: "expand_selection",
+            context: target,
+            level: "spatial",
+            distance_angstroms: 5,
+        });
+
+        menu.open({ event: "interaction_context_menu", kind: "empty" }, 10, 20, selection);
+        root = (menu as any).root as FakeElement;
+        texts = collectTexts(root);
+        assert.ok(texts.includes("Expand selection to..."));
+        assert.ok(texts.includes("Clear Selection"));
+        findNodeByText(root, "Clear Selection")!.dispatch("click");
+        assert.strictEqual(actions.at(-1)?.action, "clear_selection");
+
+        menu.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("ViewerContextMenu hides legacy remove action when MolSysMT addon item is available", () => {
     const restore = installFakeDom();
     try {

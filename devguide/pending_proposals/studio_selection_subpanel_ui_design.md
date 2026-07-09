@@ -41,21 +41,23 @@ A developer implementing the subpanel should construct the HTML/TS hierarchy mat
 
 ┌── [Section B] SELECT BY QUERY (Query Composer & Helpers) ─────────────────────┐
 │                                                                               │
-│  🔍 [ Enter MolSysMT query...                                            ] ❓  │
-│       Syntax: [ MolSysMT | Indices ▼ ]                                        │
+│  🔍 [ Enter MolSysMT query...                           ] [Check] [Syntax ▼] │
+│  [?]                                                                          │
 │                                                                               │
 │  Presets: (protein ✕) (water ✕) (backbone ✕) (sidechain ✕) (ligand ✕)         │
 │                                                                               │
 │  [ Select ]       [ + Union ]       [ - Subtract ]       [ ∩ Intersect ]      │
 │                                                                               │
-│  Validation Status: "✓ Matches: 45 atoms" (Updates dynamically on debounce)   │
-│                                                                               │
-│  Hierarchical Expanders:                                                      │
-│  [ Group ]  [ Component ]  [ Molecule ]  [ Chain ]  [ Entity ]                │
-│                                                                               │
-│  Spatial Expander:                                                            │
-│  Distance: [ 5.0 ] Å   [ Expand Selection ]                                   │
+│  Validation Status: "Press Enter or Check to verify"                          │
 └───────────────────────────────────────────────────────────────────────────────┘
+
+Selection expanders are available from the right-click context menu when the active
+selection is non-empty:
+
+```
+Expand selection to...  Group · Component · Molecule · Chain · Entity
+Spatial expansion...    Within 3 Å · Within 5 Å · Within 8 Å
+```
 
 ┌── [Section C] SAVED SELECTIONS (Gestor de Favoritos) ─────────────────────────┐
 │                                                                               │
@@ -83,12 +85,10 @@ A developer implementing the subpanel should construct the HTML/TS hierarchy mat
 
 ### B. Query Composer (Select by Query)
 *   **Syntax Selector:** Dropdown letting the user switch between `MolSysMT` query strings and explicit `Indices` list formats.
-*   **Validation Badge:** Debounces query input (250ms delay). Sends a preview message to the backend. If valid, displays the green checkmark and matching count. If invalid, displays a red cross and "Invalid syntax" without throwing console exceptions.
+*   **Validation Status:** Typing is local and idle. The `Check` button or `Enter` sends a preview message to the backend. If valid, displays the green checkmark and matching count. If invalid, displays a red cross and "Invalid syntax" without throwing console exceptions. Stale responses are rejected by request id.
 *   **Preset Chips:** Includes `protein`, `water`, `backbone`, `sidechain`, and `ligand`. Clicking a chip injects its exact string representation into the query input field.
 *   **Cheat Sheet (`[?]`):** Expands a sliding list showing syntax examples for quick copy-pasting.
-*   **Expansion buttons:**
-    *   *Hierarchical:* Expand active selection to whole groups/components/chains.
-    *   *Spatial:* Perform a distance expander with native MolSysMT `within` semantics. It calls the same `msm.structure.get_contacts` primitive used by that parser, passing atom-index arrays instead of interpolating a large query string.
+*   **Expansion actions:** Moved out of the sidebar and into the canvas / strips right-click context menu. Hierarchical expansion covers whole groups/components/molecules/chains/entities. Spatial expansion ships as 3 / 5 / 8 Å presets and calls the same `msm.structure.get_contacts` primitive used by MolSysMT's `within` parser, passing atom-index arrays instead of interpolating a large query string.
 
 ### C. Saved Selections Manager
 *   **Saved Rows:** Displays named selections sorted alphabetically.
