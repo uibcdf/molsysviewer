@@ -149120,6 +149120,295 @@ var ManualQueryComposer = class _ManualQueryComposer {
   }
 };
 
+// src/ui/panels/ui-helpers.ts
+function makeSectionHeader(title) {
+  const header2 = document.createElement("div");
+  Object.assign(header2.style, {
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#f4f4f5",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    position: "relative",
+    width: "100%",
+    borderBottom: "1px solid rgba(255,255,255,0.06)",
+    paddingBottom: "6px",
+    marginBottom: "6px"
+  });
+  const text = document.createElement("span");
+  text.textContent = title;
+  header2.appendChild(text);
+  return header2;
+}
+function makeButton(text, onClick) {
+  const btn = document.createElement("button");
+  btn.textContent = text;
+  Object.assign(btn.style, {
+    flex: "1 1 0",
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "6px",
+    padding: "5px 8px",
+    color: "#f4f4f5",
+    fontSize: "11px",
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "all 0.15s ease",
+    textAlign: "center"
+  });
+  btn.addEventListener("mouseenter", () => {
+    btn.style.background = "rgba(255,255,255,0.12)";
+    btn.style.border = "1px solid rgba(255,255,255,0.16)";
+  });
+  btn.addEventListener("mouseleave", () => {
+    btn.style.background = "rgba(255,255,255,0.06)";
+    btn.style.border = "1px solid rgba(255,255,255,0.1)";
+  });
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  });
+  return btn;
+}
+function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
+  const row = document.createElement("div");
+  row.setAttribute("data-molsysviewer-group-panel-row", "true");
+  row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+  Object.assign(row.style, {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "6px 10px",
+    borderRadius: "8px",
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.06)",
+    gap: "8px",
+    transition: "background 0.1s ease"
+  });
+  row.addEventListener("mouseenter", () => {
+    row.style.background = "rgba(255,255,255,0.09)";
+  });
+  row.addEventListener("mouseleave", () => {
+    row.style.background = "rgba(255,255,255,0.05)";
+  });
+  const main = document.createElement("div");
+  Object.assign(main.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "2px",
+    flex: "1 1 0",
+    minWidth: "0",
+    cursor: onActivate ? "pointer" : "default"
+  });
+  if (onActivate) {
+    row.style.cursor = "pointer";
+    row.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onActivate();
+    });
+  }
+  const title = document.createElement("div");
+  Object.assign(title.style, {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#f4f4f5",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap"
+  });
+  title.textContent = titleText;
+  const subtitle = document.createElement("div");
+  Object.assign(subtitle.style, {
+    fontSize: "10px",
+    color: "rgba(244,244,245,0.56)",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap"
+  });
+  subtitle.textContent = subtitleText;
+  main.appendChild(title);
+  main.appendChild(subtitle);
+  row.appendChild(main);
+  const actions = document.createElement("div");
+  Object.assign(actions.style, {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    flex: "0 0 auto"
+  });
+  row.appendChild(actions);
+  if (onStyle) {
+    const styleBtn = document.createElement("button");
+    styleBtn.type = "button";
+    styleBtn.textContent = "\u{1F3A8}";
+    styleBtn.title = "Style & Color";
+    Object.assign(styleBtn.style, {
+      background: "transparent",
+      border: "0",
+      color: "rgba(244,244,245,0.55)",
+      fontSize: "11px",
+      cursor: "pointer",
+      padding: "2px 6px",
+      borderRadius: "4px"
+    });
+    styleBtn.addEventListener("mouseenter", () => {
+      styleBtn.style.color = "#10b981";
+    });
+    styleBtn.addEventListener("mouseleave", () => {
+      styleBtn.style.color = "rgba(244,244,245,0.55)";
+    });
+    styleBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onStyle();
+    });
+    actions.appendChild(styleBtn);
+  }
+  if (visibility?.onToggleVisibility) {
+    const eyeBtn = document.createElement("button");
+    eyeBtn.type = "button";
+    eyeBtn.textContent = visibility.hidden ? "\u29BB" : "\u{1F441}";
+    eyeBtn.title = visibility.hidden ? "Show" : "Hide";
+    Object.assign(eyeBtn.style, {
+      background: "transparent",
+      border: "0",
+      color: visibility.hidden ? "rgba(244,244,245,0.36)" : "#6366f1",
+      fontSize: "12px",
+      cursor: "pointer",
+      padding: "2px 6px",
+      borderRadius: "4px"
+    });
+    eyeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      visibility.onToggleVisibility?.(!visibility.hidden);
+    });
+    actions.appendChild(eyeBtn);
+  }
+  if (onDelete) {
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.textContent = "\u2715";
+    delBtn.title = "Delete";
+    Object.assign(delBtn.style, {
+      background: "transparent",
+      border: "0",
+      color: "rgba(244,244,245,0.48)",
+      fontSize: "12px",
+      cursor: "pointer",
+      padding: "2px 6px",
+      borderRadius: "4px",
+      transition: "color 0.1s ease"
+    });
+    delBtn.addEventListener("mouseenter", () => {
+      delBtn.style.color = "#ef4444";
+    });
+    delBtn.addEventListener("mouseleave", () => {
+      delBtn.style.color = "rgba(244,244,245,0.48)";
+    });
+    delBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onDelete();
+    });
+    actions.appendChild(delBtn);
+  }
+  return row;
+}
+function makeSettingsCard(titleText) {
+  const card = document.createElement("div");
+  Object.assign(card.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    padding: "10px",
+    borderRadius: "8px",
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.05)"
+  });
+  const header2 = document.createElement("div");
+  Object.assign(header2.style, {
+    fontSize: "11px",
+    fontWeight: "700",
+    color: "rgba(244,244,245,0.48)",
+    textTransform: "uppercase",
+    borderBottom: "1px solid rgba(255,255,255,0.04)",
+    paddingBottom: "4px",
+    marginBottom: "2px"
+  });
+  header2.textContent = titleText;
+  card.appendChild(header2);
+  return card;
+}
+function makeStyledSelect(options, selectedValue, onChange) {
+  const select = document.createElement("select");
+  Object.assign(select.style, {
+    background: "rgba(0,0,0,0.28)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "6px",
+    padding: "3px 6px",
+    color: "#f4f4f5",
+    fontSize: "11px",
+    fontWeight: "500",
+    outline: "none",
+    cursor: "pointer"
+  });
+  for (const opt of options) {
+    const value = typeof opt === "string" ? opt : opt.value;
+    const label2 = typeof opt === "string" ? opt : opt.label;
+    const el = document.createElement("option");
+    el.value = value;
+    el.textContent = label2;
+    el.selected = value === selectedValue;
+    select.appendChild(el);
+  }
+  select.addEventListener("change", () => {
+    onChange(select.value);
+  });
+  return select;
+}
+function makeCheckboxRow(labelText, checked, onChange) {
+  const row = document.createElement("div");
+  Object.assign(row.style, {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    cursor: "pointer"
+  });
+  const label2 = document.createElement("span");
+  label2.textContent = labelText;
+  Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+  row.appendChild(label2);
+  const cb2 = document.createElement("input");
+  cb2.type = "checkbox";
+  cb2.checked = checked;
+  Object.assign(cb2.style, {
+    cursor: "pointer",
+    outline: "none"
+  });
+  const toggle = () => {
+    cb2.checked = !cb2.checked;
+    onChange(cb2.checked);
+  };
+  row.addEventListener("click", (e) => {
+    if (e.target !== cb2) {
+      e.preventDefault();
+      toggle();
+    }
+  });
+  cb2.addEventListener("change", () => {
+    onChange(cb2.checked);
+  });
+  row.appendChild(cb2);
+  return row;
+}
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -151263,25 +151552,7 @@ var GroupPanel = class _GroupPanel {
     }
   }
   makeSectionHeader(title) {
-    const header2 = document.createElement("div");
-    Object.assign(header2.style, {
-      fontSize: "13px",
-      fontWeight: "700",
-      color: "#f4f4f5",
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      position: "relative",
-      width: "100%",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      paddingBottom: "6px",
-      marginBottom: "6px"
-    });
-    const text = document.createElement("span");
-    text.textContent = title;
-    header2.appendChild(text);
-    return header2;
+    return makeSectionHeader(title);
   }
   // Compact header for the System tab, hosting the residue color-scheme (🎨) toggle.
   // The palette button used to live in a section titled "Structure"; the navigate-panel
@@ -153472,270 +153743,19 @@ var GroupPanel = class _GroupPanel {
   }
   // ── Helper UI Constructors ──────────────────────────────
   makeButton(text, onClick) {
-    const btn = document.createElement("button");
-    btn.textContent = text;
-    Object.assign(btn.style, {
-      flex: "1 1 0",
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.1)",
-      borderRadius: "6px",
-      padding: "5px 8px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      fontWeight: "600",
-      cursor: "pointer",
-      transition: "all 0.15s ease",
-      textAlign: "center"
-    });
-    btn.addEventListener("mouseenter", () => {
-      btn.style.background = "rgba(255,255,255,0.12)";
-      btn.style.border = "1px solid rgba(255,255,255,0.16)";
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.background = "rgba(255,255,255,0.06)";
-      btn.style.border = "1px solid rgba(255,255,255,0.1)";
-    });
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onClick();
-    });
-    return btn;
+    return makeButton(text, onClick);
   }
   makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
-    const row = document.createElement("div");
-    row.setAttribute("data-molsysviewer-group-panel-row", "true");
-    row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-    Object.assign(row.style, {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "6px 10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.05)",
-      border: "1px solid rgba(255,255,255,0.06)",
-      gap: "8px",
-      transition: "background 0.1s ease"
-    });
-    row.addEventListener("mouseenter", () => {
-      row.style.background = "rgba(255,255,255,0.09)";
-    });
-    row.addEventListener("mouseleave", () => {
-      row.style.background = "rgba(255,255,255,0.05)";
-    });
-    const main = document.createElement("div");
-    Object.assign(main.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "2px",
-      flex: "1 1 0",
-      minWidth: "0",
-      cursor: onActivate ? "pointer" : "default"
-    });
-    if (onActivate) {
-      row.style.cursor = "pointer";
-      row.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onActivate();
-      });
-    }
-    const title = document.createElement("div");
-    Object.assign(title.style, {
-      fontSize: "12px",
-      fontWeight: "600",
-      color: "#f4f4f5",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
-    });
-    title.textContent = titleText;
-    const subtitle = document.createElement("div");
-    Object.assign(subtitle.style, {
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
-    });
-    subtitle.textContent = subtitleText;
-    main.appendChild(title);
-    main.appendChild(subtitle);
-    row.appendChild(main);
-    const actions = document.createElement("div");
-    Object.assign(actions.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-      flex: "0 0 auto"
-    });
-    row.appendChild(actions);
-    if (onStyle) {
-      const styleBtn = document.createElement("button");
-      styleBtn.type = "button";
-      styleBtn.textContent = "\u{1F3A8}";
-      styleBtn.title = "Style & Color";
-      Object.assign(styleBtn.style, {
-        background: "transparent",
-        border: "0",
-        color: "rgba(244,244,245,0.55)",
-        fontSize: "11px",
-        cursor: "pointer",
-        padding: "2px 6px",
-        borderRadius: "4px"
-      });
-      styleBtn.addEventListener("mouseenter", () => {
-        styleBtn.style.color = "#10b981";
-      });
-      styleBtn.addEventListener("mouseleave", () => {
-        styleBtn.style.color = "rgba(244,244,245,0.55)";
-      });
-      styleBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onStyle();
-      });
-      actions.appendChild(styleBtn);
-    }
-    if (visibility?.onToggleVisibility) {
-      const eyeBtn = document.createElement("button");
-      eyeBtn.type = "button";
-      eyeBtn.textContent = visibility.hidden ? "\u29BB" : "\u{1F441}";
-      eyeBtn.title = visibility.hidden ? "Show" : "Hide";
-      Object.assign(eyeBtn.style, {
-        background: "transparent",
-        border: "0",
-        color: visibility.hidden ? "rgba(244,244,245,0.36)" : "#6366f1",
-        fontSize: "12px",
-        cursor: "pointer",
-        padding: "2px 6px",
-        borderRadius: "4px"
-      });
-      eyeBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        visibility.onToggleVisibility?.(!visibility.hidden);
-      });
-      actions.appendChild(eyeBtn);
-    }
-    if (onDelete) {
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.textContent = "\u2715";
-      delBtn.title = "Delete";
-      Object.assign(delBtn.style, {
-        background: "transparent",
-        border: "0",
-        color: "rgba(244,244,245,0.48)",
-        fontSize: "12px",
-        cursor: "pointer",
-        padding: "2px 6px",
-        borderRadius: "4px",
-        transition: "color 0.1s ease"
-      });
-      delBtn.addEventListener("mouseenter", () => {
-        delBtn.style.color = "#ef4444";
-      });
-      delBtn.addEventListener("mouseleave", () => {
-        delBtn.style.color = "rgba(244,244,245,0.48)";
-      });
-      delBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onDelete();
-      });
-      actions.appendChild(delBtn);
-    }
-    return row;
+    return makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle);
   }
   makeSettingsCard(titleText) {
-    const card = document.createElement("div");
-    Object.assign(card.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      padding: "10px",
-      borderRadius: "8px",
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.05)"
-    });
-    const header2 = document.createElement("div");
-    Object.assign(header2.style, {
-      fontSize: "11px",
-      fontWeight: "700",
-      color: "rgba(244,244,245,0.48)",
-      textTransform: "uppercase",
-      borderBottom: "1px solid rgba(255,255,255,0.04)",
-      paddingBottom: "4px",
-      marginBottom: "2px"
-    });
-    header2.textContent = titleText;
-    card.appendChild(header2);
-    return card;
+    return makeSettingsCard(titleText);
   }
   makeCheckboxRow(labelText, checked, onChange) {
-    const row = document.createElement("div");
-    Object.assign(row.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%",
-      cursor: "pointer"
-    });
-    const label2 = document.createElement("span");
-    label2.textContent = labelText;
-    Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    row.appendChild(label2);
-    const cb2 = document.createElement("input");
-    cb2.type = "checkbox";
-    cb2.checked = checked;
-    Object.assign(cb2.style, {
-      cursor: "pointer",
-      outline: "none"
-    });
-    const toggle = () => {
-      cb2.checked = !cb2.checked;
-      onChange(cb2.checked);
-    };
-    row.addEventListener("click", (e) => {
-      if (e.target !== cb2) {
-        e.preventDefault();
-        toggle();
-      }
-    });
-    cb2.addEventListener("change", () => {
-      onChange(cb2.checked);
-    });
-    row.appendChild(cb2);
-    return row;
+    return makeCheckboxRow(labelText, checked, onChange);
   }
   makeStyledSelect(options, selectedValue, onChange) {
-    const select = document.createElement("select");
-    Object.assign(select.style, {
-      background: "rgba(0,0,0,0.28)",
-      border: "1px solid rgba(255,255,255,0.12)",
-      borderRadius: "6px",
-      padding: "3px 6px",
-      color: "#f4f4f5",
-      fontSize: "11px",
-      fontWeight: "500",
-      outline: "none",
-      cursor: "pointer"
-    });
-    for (const opt of options) {
-      const value = typeof opt === "string" ? opt : opt.value;
-      const label2 = typeof opt === "string" ? opt : opt.label;
-      const el = document.createElement("option");
-      el.value = value;
-      el.textContent = label2;
-      el.selected = value === selectedValue;
-      select.appendChild(el);
-    }
-    select.addEventListener("change", () => {
-      onChange(select.value);
-    });
-    return select;
+    return makeStyledSelect(options, selectedValue, onChange);
   }
   renderSettingsSection() {
     this.settingsSection.replaceChildren();
@@ -159212,7 +159232,7 @@ var HelpOverlay = class {
 };
 
 // src/ui/controls.ts
-var makeButton = (label2, onClick) => {
+var makeButton2 = (label2, onClick) => {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.textContent = label2;
@@ -159636,7 +159656,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
         step: currentStep
       });
     }
-  }) : makeButton("\u25B6 / \u23F8", () => {
+  }) : makeButton2("\u25B6 / \u23F8", () => {
     const isPlaying = c8.trajectory.getTrajectoryState().isPlaying;
     if (isPlaying) {
       c8.stopTrajectoryPlayback();
@@ -159666,11 +159686,11 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     btnPlayPause.style.lineHeight = "18px";
     btnPlayPause.style.minWidth = "28px";
     btnPlayPause.style.width = "28px";
-    btnPrev = makeButton("\u2212", () => {
+    btnPrev = makeButton2("\u2212", () => {
       c8.stepTrajectory(-currentStep);
       sendSync({ op: "step_trajectory", by: -currentStep });
     });
-    btnNext = makeButton("+", () => {
+    btnNext = makeButton2("+", () => {
       c8.stepTrajectory(currentStep);
       sendSync({ op: "step_trajectory", by: currentStep });
     });
@@ -159871,7 +159891,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     mkIcon(ICON_HELP, "Help (H)", () => helpOverlay.toggle());
   } else if (overlay) {
     const mk = (label3, handler) => {
-      const b8 = makeButton(label3, handler);
+      const b8 = makeButton2(label3, handler);
       b8.style.pointerEvents = "auto";
       overlay.appendChild(b8);
       return b8;
