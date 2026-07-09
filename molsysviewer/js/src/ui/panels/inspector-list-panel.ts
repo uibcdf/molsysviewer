@@ -2,27 +2,39 @@ import type { NavigateItem } from "../group-panel";
 import { PanelContext, StudioPanel } from "./types";
 import { makeRowElement, makeSectionHeader } from "./ui-helpers";
 
+export interface InspectorListConfig {
+    /** Section header text. */
+    header: string;
+    /** Fallback subtitle when an item has none. */
+    subtitleFallback: string;
+    /** Text shown when the list is empty. */
+    emptyText: string;
+}
+
 /**
- * Studio → Shapes subpanel.
+ * Generic Studio inspector/manager subpanel: a flat list of scene objects
+ * (`NavigateItem`), each carrying its own activate/visibility/delete callbacks.
  *
- * A pure inspector/manager: it lists the scene's 3D shapes (`view.shapes`).
- * Each item already carries its own activate/visibility/delete callbacks, so
- * the panel only renders and keeps its tab badge in sync. First panel migrated
- * to the panel-per-module architecture (proof of the pattern).
+ * Shared by the Shapes, Measures, and Annotations subpanels — three views that
+ * differ only in their labels. Owns its own item slice and keeps its tab badge
+ * (the item count) in sync.
  */
-export class ShapesPanel implements StudioPanel {
-    readonly key = "shapes";
+export class InspectorListPanel implements StudioPanel {
     private host: HTMLElement | null = null;
     private items: NavigateItem[] = [];
 
-    constructor(private readonly ctx: PanelContext) {}
+    constructor(
+        readonly key: string,
+        private readonly ctx: PanelContext,
+        private readonly config: InspectorListConfig,
+    ) {}
 
     mount(host: HTMLElement): void {
         this.host = host;
         this.render();
     }
 
-    /** Domain slice: the current list of shapes. */
+    /** Domain slice: the current list of items. */
     setItems(items: NavigateItem[]): void {
         this.items = [...items];
         this.ctx.setBadge(String(this.items.length));
@@ -32,7 +44,7 @@ export class ShapesPanel implements StudioPanel {
     private render(): void {
         if (!this.host) return;
         this.host.replaceChildren();
-        this.host.appendChild(makeSectionHeader("3D Shapes"));
+        this.host.appendChild(makeSectionHeader(this.config.header));
 
         const list = document.createElement("div");
         Object.assign(list.style, {
@@ -46,7 +58,7 @@ export class ShapesPanel implements StudioPanel {
             for (const item of this.items) {
                 list.appendChild(makeRowElement(
                     item.title,
-                    item.subtitle || "Geometry",
+                    item.subtitle || this.config.subtitleFallback,
                     item.onActivate,
                     item.onDelete,
                     { hidden: item.hidden, onToggleVisibility: item.onToggleVisibility },
@@ -59,7 +71,7 @@ export class ShapesPanel implements StudioPanel {
                 color: "rgba(244,244,245,0.48)",
                 paddingLeft: "4px",
             });
-            empty.textContent = "No shapes yet.";
+            empty.textContent = this.config.emptyText;
             list.appendChild(empty);
         }
     }

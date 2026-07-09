@@ -149409,11 +149409,12 @@ function makeCheckboxRow(labelText, checked, onChange) {
   return row;
 }
 
-// src/ui/panels/shapes-panel.ts
-var ShapesPanel = class {
-  constructor(ctx) {
+// src/ui/panels/inspector-list-panel.ts
+var InspectorListPanel = class {
+  constructor(key2, ctx, config2) {
+    this.key = key2;
     this.ctx = ctx;
-    this.key = "shapes";
+    this.config = config2;
     this.host = null;
     this.items = [];
   }
@@ -149421,7 +149422,7 @@ var ShapesPanel = class {
     this.host = host;
     this.render();
   }
-  /** Domain slice: the current list of shapes. */
+  /** Domain slice: the current list of items. */
   setItems(items) {
     this.items = [...items];
     this.ctx.setBadge(String(this.items.length));
@@ -149430,7 +149431,7 @@ var ShapesPanel = class {
   render() {
     if (!this.host) return;
     this.host.replaceChildren();
-    this.host.appendChild(makeSectionHeader("3D Shapes"));
+    this.host.appendChild(makeSectionHeader(this.config.header));
     const list3 = document.createElement("div");
     Object.assign(list3.style, {
       display: "flex",
@@ -149442,7 +149443,7 @@ var ShapesPanel = class {
       for (const item2 of this.items) {
         list3.appendChild(makeRowElement(
           item2.title,
-          item2.subtitle || "Geometry",
+          item2.subtitle || this.config.subtitleFallback,
           item2.onActivate,
           item2.onDelete,
           { hidden: item2.hidden, onToggleVisibility: item2.onToggleVisibility }
@@ -149455,7 +149456,7 @@ var ShapesPanel = class {
         color: "rgba(244,244,245,0.48)",
         paddingLeft: "4px"
       });
-      empty2.textContent = "No shapes yet.";
+      empty2.textContent = this.config.emptyText;
       list3.appendChild(empty2);
     }
   }
@@ -150814,8 +150815,6 @@ var GroupPanel = class _GroupPanel {
     this.collapseStateByChain = /* @__PURE__ */ new Map();
     this.savedSelections = [];
     this.regions = [];
-    this.annotations = [];
-    this.measurements = [];
     this.sceneState = {};
     this.selectionQueryExpression = "";
     this.selectionQuerySyntax = "MolSysMT";
@@ -151002,9 +151001,23 @@ var GroupPanel = class _GroupPanel {
     this.selectionSection.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
     this.regionsSection = this.createSection("regions");
     this.measuresSection = this.createSection("measures");
+    this.measuresPanel = new InspectorListPanel("measures", this.makePanelContext("measures"), {
+      header: "Measurements (Distances)",
+      subtitleFallback: "Distance line",
+      emptyText: "No measurements yet."
+    });
     this.annotationsSection = this.createSection("annotations");
+    this.annotationsPanel = new InspectorListPanel("annotations", this.makePanelContext("annotations"), {
+      header: "Annotations (Labels)",
+      subtitleFallback: "Annotation",
+      emptyText: "No annotations yet."
+    });
     this.shapesSection = this.createSection("shapes");
-    this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
+    this.shapesPanel = new InspectorListPanel("shapes", this.makePanelContext("shapes"), {
+      header: "3D Shapes",
+      subtitleFallback: "Geometry",
+      emptyText: "No shapes yet."
+    });
     this.layersSection = this.createSection("layers");
     this.viewportSection = this.createSection("viewport");
     this.exportSection = this.createSection("export");
@@ -151041,8 +151054,8 @@ var GroupPanel = class _GroupPanel {
     this.renderSelectionSection();
     this.renderRegionsSection();
     this.renderWholeSection();
-    this.renderMeasuresSection();
-    this.renderAnnotationsSection();
+    this.measuresPanel.mount(this.measuresSection);
+    this.annotationsPanel.mount(this.annotationsSection);
     this.shapesPanel.mount(this.shapesSection);
     this.renderLayersSection();
     this.renderViewportSection();
@@ -151460,24 +151473,10 @@ var GroupPanel = class _GroupPanel {
     };
   }
   setAnnotations(items) {
-    this.annotations = [...items];
-    this.updateBadges();
-    this.renderAnnotationsSection();
+    this.annotationsPanel.setItems(items);
   }
   setMeasurements(items) {
-    this.measurements = [...items];
-    this.updateBadges();
-    this.renderMeasuresSection();
-  }
-  updateBadges() {
-    const measuresBadge = this.tabs.get("measures")?.badge;
-    if (measuresBadge) {
-      measuresBadge.textContent = String(this.measurements.length);
-    }
-    const annotationsBadge = this.tabs.get("annotations")?.badge;
-    if (annotationsBadge) {
-      annotationsBadge.textContent = String(this.annotations.length);
-    }
+    this.measuresPanel.setItems(items);
   }
   setScene(state) {
     this.sceneState = { ...state };
@@ -153163,76 +153162,6 @@ var GroupPanel = class _GroupPanel {
     }
     card.appendChild(list3);
     this.wholeSection.appendChild(card);
-  }
-  renderMeasuresSection() {
-    this.measuresSection.replaceChildren();
-    this.measuresSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
-    const measurementsList = document.createElement("div");
-    Object.assign(measurementsList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.measuresSection.appendChild(measurementsList);
-    if (this.measurements.length > 0) {
-      for (const item2 of this.measurements) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Distance line",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        measurementsList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No measurements yet.";
-      measurementsList.appendChild(emptyLabel);
-    }
-  }
-  renderAnnotationsSection() {
-    this.annotationsSection.replaceChildren();
-    this.annotationsSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
-    const annotationsList = document.createElement("div");
-    Object.assign(annotationsList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.annotationsSection.appendChild(annotationsList);
-    if (this.annotations.length > 0) {
-      for (const item2 of this.annotations) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Annotation",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        annotationsList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No annotations yet.";
-      annotationsList.appendChild(emptyLabel);
-    }
   }
   renderLayersSection() {
     this.layersSection.replaceChildren();
