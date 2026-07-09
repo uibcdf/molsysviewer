@@ -150655,13 +150655,18 @@ var GroupPanel = class _GroupPanel {
     });
     this.body.appendChild(this.rightColumn);
     this.systemSection = this.createSection("system");
+    this.wholeSection = this.createSection("whole");
     this.selectionSection = this.createSection("selection");
     this.selectionSection.tabIndex = 0;
     this.selectionSection.setAttribute("data-molsysviewer-selection-panel", "true");
     this.selectionSection.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
     this.regionsSection = this.createSection("regions");
-    this.overlaysSection = this.createSection("overlays");
+    this.measuresSection = this.createSection("measures");
+    this.annotationsSection = this.createSection("annotations");
+    this.shapesSection = this.createSection("shapes");
+    this.layersSection = this.createSection("layers");
     this.viewportSection = this.createSection("viewport");
+    this.exportSection = this.createSection("export");
     this.settingsSection = this.createSection("settings");
     Object.assign(this.systemSection.style, {
       flexDirection: "column",
@@ -150682,15 +150687,25 @@ var GroupPanel = class _GroupPanel {
     });
     this.systemSection.appendChild(this.systemStripsRow);
     this.addTab("system", "System", "None");
+    this.addTab("whole", "Whole", "None");
     this.addTab("selection", "Selection", "None");
     this.addTab("regions", "Regions", "0");
-    this.addTab("overlays", "Overlays", "0");
+    this.addTab("measures", "Measures", "0");
+    this.addTab("annotations", "Annotations", "0");
+    this.addTab("shapes", "Shapes", "0");
+    this.addTab("layers", "Layers", "0");
     this.addTab("viewport", "Viewport", "Dark");
+    this.addTab("export", "Export", "None");
     this.switchTab("system");
     this.renderSelectionSection();
     this.renderRegionsSection();
-    this.renderOverlaysSection();
+    this.renderWholeSection();
+    this.renderMeasuresSection();
+    this.renderAnnotationsSection();
+    this.renderShapesSection();
+    this.renderLayersSection();
     this.renderViewportSection();
+    this.renderExportSection();
   }
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
@@ -150942,10 +150957,15 @@ var GroupPanel = class _GroupPanel {
       }
     }
     this.systemSection.style.display = key2 === "system" ? "flex" : "none";
+    this.wholeSection.style.display = key2 === "whole" ? "flex" : "none";
     this.selectionSection.style.display = key2 === "selection" ? "flex" : "none";
     this.regionsSection.style.display = key2 === "regions" ? "flex" : "none";
-    this.overlaysSection.style.display = key2 === "overlays" ? "flex" : "none";
+    this.measuresSection.style.display = key2 === "measures" ? "flex" : "none";
+    this.annotationsSection.style.display = key2 === "annotations" ? "flex" : "none";
+    this.shapesSection.style.display = key2 === "shapes" ? "flex" : "none";
+    this.layersSection.style.display = key2 === "layers" ? "flex" : "none";
     this.viewportSection.style.display = key2 === "viewport" ? "flex" : "none";
+    this.exportSection.style.display = key2 === "export" ? "flex" : "none";
     this.settingsSection.style.display = key2 === "settings" ? "flex" : "none";
     if (key2 === "settings") {
       this.renderSettingsSection();
@@ -151087,24 +151107,31 @@ var GroupPanel = class _GroupPanel {
   }
   setShapes(items) {
     this.shapes = [...items];
-    this.updateOverlaysBadge();
-    this.renderOverlaysSection();
+    this.updateBadges();
+    this.renderShapesSection();
   }
   setAnnotations(items) {
     this.annotations = [...items];
-    this.updateOverlaysBadge();
-    this.renderOverlaysSection();
+    this.updateBadges();
+    this.renderAnnotationsSection();
   }
   setMeasurements(items) {
     this.measurements = [...items];
-    this.updateOverlaysBadge();
-    this.renderOverlaysSection();
+    this.updateBadges();
+    this.renderMeasuresSection();
   }
-  updateOverlaysBadge() {
-    const count3 = this.shapes.length + this.annotations.length + this.measurements.length;
-    const badge = this.tabs.get("overlays")?.badge;
-    if (badge) {
-      badge.textContent = String(count3);
+  updateBadges() {
+    const measuresBadge = this.tabs.get("measures")?.badge;
+    if (measuresBadge) {
+      measuresBadge.textContent = String(this.measurements.length);
+    }
+    const annotationsBadge = this.tabs.get("annotations")?.badge;
+    if (annotationsBadge) {
+      annotationsBadge.textContent = String(this.annotations.length);
+    }
+    const shapesBadge = this.tabs.get("shapes")?.badge;
+    if (shapesBadge) {
+      shapesBadge.textContent = String(this.shapes.length);
     }
   }
   setScene(state) {
@@ -151115,6 +151142,7 @@ var GroupPanel = class _GroupPanel {
       if (state.isSpinActive) badge.textContent += " \xB7 Spin";
     }
     this.renderViewportSection();
+    this.renderExportSection();
   }
   updateContextTarget(target) {
     this.currentContextTarget = target;
@@ -152771,83 +152799,54 @@ var GroupPanel = class _GroupPanel {
     return panel;
   }
   // ── 3. Overlays Section Rendering ────────────────────────
-  renderOverlaysSection() {
-    this.overlaysSection.replaceChildren();
-    this.overlaysSection.appendChild(this.makeSectionHeader("Scene Overlays"));
-    this.overlaysSection.appendChild(this.makeSectionHeader("3D Shapes"));
-    const shapesList = document.createElement("div");
-    Object.assign(shapesList.style, {
+  renderWholeSection() {
+    this.wholeSection.replaceChildren();
+    this.wholeSection.appendChild(this.makeSectionHeader("Whole Structure"));
+    const card = this.makeSettingsCard("Feature Roadmap");
+    const desc = document.createElement("div");
+    Object.assign(desc.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      lineHeight: "1.5",
+      marginBottom: "8px"
+    });
+    desc.textContent = "This subpanel will house visual configuration controls for the baseline molecular structure (view.whole). Planned features include:";
+    card.appendChild(desc);
+    const list3 = document.createElement("ul");
+    Object.assign(list3.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      lineHeight: "1.6",
+      paddingLeft: "16px",
+      margin: "0",
       display: "flex",
       flexDirection: "column",
-      gap: "6px",
-      marginBottom: "12px"
+      gap: "4px"
     });
-    this.overlaysSection.appendChild(shapesList);
-    if (this.shapes.length > 0) {
-      for (const item2 of this.shapes) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Geometry",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        shapesList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No shapes yet.";
-      shapesList.appendChild(emptyLabel);
+    const items = [
+      "Presets & Representation Styles: Choose from 12 styles (cartoon, ribbon, spacefill, licorice, ball & stick, etc.)",
+      "Structure Opacity: Fine-tune baseline alpha transparency across the global scene",
+      "Render Quality: Adjust geometric details for high-performance viewing or production exports",
+      "Base Coloring: Select standard or custom uniform color palettes for the whole system"
+    ];
+    for (const itemText of items) {
+      const li = document.createElement("li");
+      li.textContent = itemText;
+      list3.appendChild(li);
     }
-    this.overlaysSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
-    const annotationsList = document.createElement("div");
-    Object.assign(annotationsList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      marginBottom: "12px"
-    });
-    this.overlaysSection.appendChild(annotationsList);
-    if (this.annotations.length > 0) {
-      for (const item2 of this.annotations) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Annotation",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        annotationsList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No annotations yet.";
-      annotationsList.appendChild(emptyLabel);
-    }
-    this.overlaysSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
+    card.appendChild(list3);
+    this.wholeSection.appendChild(card);
+  }
+  renderMeasuresSection() {
+    this.measuresSection.replaceChildren();
+    this.measuresSection.appendChild(this.makeSectionHeader("Measurements (Distances)"));
     const measurementsList = document.createElement("div");
     Object.assign(measurementsList.style, {
       display: "flex",
       flexDirection: "column",
       gap: "6px"
     });
-    this.overlaysSection.appendChild(measurementsList);
+    this.measuresSection.appendChild(measurementsList);
     if (this.measurements.length > 0) {
       for (const item2 of this.measurements) {
         const row = this.makeRowElement(
@@ -152872,6 +152871,113 @@ var GroupPanel = class _GroupPanel {
       emptyLabel.textContent = "No measurements yet.";
       measurementsList.appendChild(emptyLabel);
     }
+  }
+  renderAnnotationsSection() {
+    this.annotationsSection.replaceChildren();
+    this.annotationsSection.appendChild(this.makeSectionHeader("Annotations (Labels)"));
+    const annotationsList = document.createElement("div");
+    Object.assign(annotationsList.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    this.annotationsSection.appendChild(annotationsList);
+    if (this.annotations.length > 0) {
+      for (const item2 of this.annotations) {
+        const row = this.makeRowElement(
+          item2.title,
+          item2.subtitle || "Annotation",
+          item2.onActivate,
+          item2.onDelete,
+          {
+            hidden: item2.hidden,
+            onToggleVisibility: item2.onToggleVisibility
+          }
+        );
+        annotationsList.appendChild(row);
+      }
+    } else {
+      const emptyLabel = document.createElement("div");
+      Object.assign(emptyLabel.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.48)",
+        paddingLeft: "4px"
+      });
+      emptyLabel.textContent = "No annotations yet.";
+      annotationsList.appendChild(emptyLabel);
+    }
+  }
+  renderShapesSection() {
+    this.shapesSection.replaceChildren();
+    this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
+    const shapesList = document.createElement("div");
+    Object.assign(shapesList.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    this.shapesSection.appendChild(shapesList);
+    if (this.shapes.length > 0) {
+      for (const item2 of this.shapes) {
+        const row = this.makeRowElement(
+          item2.title,
+          item2.subtitle || "Geometry",
+          item2.onActivate,
+          item2.onDelete,
+          {
+            hidden: item2.hidden,
+            onToggleVisibility: item2.onToggleVisibility
+          }
+        );
+        shapesList.appendChild(row);
+      }
+    } else {
+      const emptyLabel = document.createElement("div");
+      Object.assign(emptyLabel.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.48)",
+        paddingLeft: "4px"
+      });
+      emptyLabel.textContent = "No shapes yet.";
+      shapesList.appendChild(emptyLabel);
+    }
+  }
+  renderLayersSection() {
+    this.layersSection.replaceChildren();
+    this.layersSection.appendChild(this.makeSectionHeader("Logical Layers"));
+    const card = this.makeSettingsCard("Feature Roadmap");
+    const desc = document.createElement("div");
+    Object.assign(desc.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      lineHeight: "1.5",
+      marginBottom: "8px"
+    });
+    desc.textContent = "This subpanel will act as a logical group tag organizer (view.layers). Planned features include:";
+    card.appendChild(desc);
+    const list3 = document.createElement("ul");
+    Object.assign(list3.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      lineHeight: "1.6",
+      paddingLeft: "16px",
+      margin: "0",
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px"
+    });
+    const items = [
+      "Group Tag Registry: View and list all active grouping tags across layers",
+      "Bulk Actions: Toggle visibility or delete whole categories of annotations/measures in one click",
+      "Layer Assignments: Map structural representations and custom shapes to target layers dynamically"
+    ];
+    for (const itemText of items) {
+      const li = document.createElement("li");
+      li.textContent = itemText;
+      list3.appendChild(li);
+    }
+    card.appendChild(list3);
+    this.layersSection.appendChild(card);
   }
   renderStyleComposer(item2) {
     const tag = item2.tag;
@@ -153165,7 +153271,7 @@ var GroupPanel = class _GroupPanel {
   // ── 5. Viewport Section Rendering ────────────────────────
   renderViewportSection() {
     this.viewportSection.replaceChildren();
-    this.viewportSection.appendChild(this.makeSectionHeader("Viewport & Export Settings"));
+    this.viewportSection.appendChild(this.makeSectionHeader("Viewport Settings"));
     const grid = document.createElement("div");
     Object.assign(grid.style, {
       display: "grid",
@@ -153264,6 +153370,18 @@ var GroupPanel = class _GroupPanel {
     fogSliderRow.appendChild(fogSliderLabel);
     fogSliderRow.appendChild(fogSlider);
     cameraCard.appendChild(fogSliderRow);
+  }
+  renderExportSection() {
+    this.exportSection.replaceChildren();
+    this.exportSection.appendChild(this.makeSectionHeader("Export Settings"));
+    const grid = document.createElement("div");
+    Object.assign(grid.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      gap: "10px",
+      paddingBottom: "10px"
+    });
+    this.exportSection.appendChild(grid);
     const exportCard = this.makeSettingsCard("Figure Export");
     grid.appendChild(exportCard);
     const currentPreset = this.sceneState.figurePreset || "publication-light";
