@@ -1,6 +1,21 @@
 # Proposal: Studio → Selection subpanel (native selection management)
 
-**Status:** implemented (Phases 0–9 completed; retained as the architectural record).
+**Status:** **paused** (2026-07-08) — Phases 0–8 implemented; Phase 9
+(feature-complete / browser e2e validation) **pending**. Retained as the architectural
+record. Work paused to prioritize the **Regions** subpanel (`studio_region_subpanel.md`).
+
+> **Pause / reconciliation note (2026-07-08).** A code audit had flagged three gaps
+> (active-card `All / None / Invert`, active-card `→ Label`, and `Invert` targeting the
+> query result instead of the active selection). These were **all resolved** in the
+> 2026-07-08 conformance pass and **verified in code**: `group-panel.ts` renders
+> active-card `All / None / Invert` (→ `set_active_selection_operation`) and `→ Label`;
+> the query-composer `Invert` was removed; `core.py._apply_active_selection_operation`
+> computes `invert` as the complement of `active_selection.atom_indices`; the query
+> recipe is assigned explicitly after `active_selection.set()`; hierarchy metadata uses a
+> single `msm.get`; spatial expansion passes index arrays to `msm.structure.get_contacts`.
+> The **only** remaining item is running the browser e2e walkthrough on a host with
+> Chromium + WebGL (Phase 9). No code/documentation discrepancy remains; only that final
+> validation is outstanding.
 
 **Scope:** the **Selection** subpanel of the **Studio** panel in MolSysViewer.
 Gives the user adequate and complete control over the viewer's *native* selection

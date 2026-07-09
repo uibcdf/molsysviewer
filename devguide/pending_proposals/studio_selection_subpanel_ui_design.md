@@ -1,6 +1,8 @@
 # Proposal: Studio → Selection Subpanel UI Design & Implementation Spec
 
-**Status:** implemented (retained as the UI/UX reference).
+**Status:** **paused** (2026-07-08) — UI implemented (Phases 0–8); retained as the
+UI/UX reference. Phase 9 browser e2e validation pending. See the pause / reconciliation
+note in `studio_selection_subpanel.md`.
 **Scope:** UI/UX styling, layout structure, and frontend-backend synchronization for the **Selection Subpanel** of the **Studio** panel in MolSysViewer.
 
 This document serves as the high-fidelity visual and UX specification, supplementing the core architectural blueprint in `studio_selection_subpanel.md`.

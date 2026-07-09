@@ -1,6 +1,7 @@
 # Proposal: Selection Subpanel Refinements (Manual Checking & Context Menu Expanders)
 
-**Status:** Proposed  
+**Status:** Proposed — **paused** (2026-07-08), deferred while the Regions subpanel is
+prioritized (`studio_region_subpanel.md`).  
 **Author:** Antigravity AI & Diego  
 **Date:** 2026-07-08  
 

@@ -1,6 +1,10 @@
 # Implementation Plan: Studio → Selection subpanel
 
-**Status:** in progress.
+**Status:** **paused** (2026-07-08) — Phases 0–8 ☑; Phase 9 ◐ (browser e2e validation
+pending). Work paused to prioritize the Regions subpanel. The earlier code-audit findings
+were resolved in the 2026-07-08 conformance pass and verified in code — see the pause /
+reconciliation note in `studio_selection_subpanel.md`. Resume by running the Phase 9
+browser walkthrough on a Chromium + WebGL host.
 **Purpose:** a meticulous, checkable, phase-by-phase plan to implement the Studio →
 Selection subpanel. Update the checkboxes, the **Progress dashboard**, and the **Risks**
 table as work lands.
@@ -68,7 +72,7 @@ delegates to (1) §6.
 | 6 | Undo / redo | M | — | ☑ | 2026-07-07 | — | TS bounded history + scoped shortcuts; invalidated on load/rebuild |
 | 7 | Reproducibility (provenance) | L | 0, 1 | ☑ | 2026-07-07 | — | saved-selection provenance + active recipe replay/remap; tests/build green |
 | 8 | CSS design system | S | 1, 4 | ☑ | 2026-07-07 | — | scoped design tokens + active/query/saved styling; tests/build green |
-| 9 | Feature-complete / integration | M | 0–8 | ◐ | 2026-07-08 | — | e2e + docs implemented; final validation pending |
+| 9 | Feature-complete / integration | M | 0–8 | ◐ (paused) | 2026-07-08 | — | e2e + docs implemented; conformance pass done; **paused** — only browser e2e run (Chromium+WebGL) pending |
 
 Size: **S** ≈ hours · **M** ≈ 1–2 days · **L** ≈ 3–5 days.
 Status legend: ☐ Not started · ◐ In progress · ☑ Done · ✗ Dropped.
