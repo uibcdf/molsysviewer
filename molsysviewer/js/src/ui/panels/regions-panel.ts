@@ -2,7 +2,7 @@ import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import { ManualQueryComposer } from "../query-composer";
 import type { RegionDetails, RegionSummary, SelectionQueryPreview } from "../group-panel";
 import { BasePanel } from "./base-panel";
-import { PanelContext } from "./types";
+import { PanelAction, PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 
 /**
@@ -31,7 +31,7 @@ export class RegionsPanel extends BasePanel {
     private regionCreateRepresentation = "";
     private regionSplitLevel: "chain" | "molecule" | "entity" = "chain";
     private regionRenameTag: string | null = null;
-    private regionCreateCollision: { action: string; details: Record<string, unknown>; tag: string } | null = null;
+    private regionCreateCollision: { action: PanelAction; details: Record<string, unknown>; tag: string } | null = null;
     private regionRenameCollisionTag: string | null = null;
     private regionBooleanA = "";
     private regionBooleanB = "";
@@ -228,7 +228,7 @@ export class RegionsPanel extends BasePanel {
         optionsRow.appendChild(representation);
         container.appendChild(optionsRow);
 
-        const createWithCollision = (action: string, details: Record<string, unknown>) => {
+        const createWithCollision = (action: PanelAction, details: Record<string, unknown>) => {
             const tag = this.regionCreateTag.trim();
             const emit = () => {
                 this.ctx.onAction(action, {
@@ -943,7 +943,7 @@ export class RegionsPanel extends BasePanel {
         attributeRow.appendChild(resetColors);
         container.appendChild(makeControlRow("Color by", attributeRow));
 
-        const buildStyleAction = () => {
+        const buildStyleAction = (): { action: PanelAction; details: Record<string, unknown> } => {
             const selectedPreset = presetSelect.value;
             const selectedRepresentation = representationSelect.value;
             if (!selectedPreset && !selectedRepresentation) {
