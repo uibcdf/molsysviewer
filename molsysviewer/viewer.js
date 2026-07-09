@@ -148620,26 +148620,54 @@ function makeCheckboxRow(labelText, checked, onChange) {
   return row;
 }
 
-// src/ui/panels/inspector-list-panel.ts
-var InspectorListPanel = class {
-  constructor(key2, ctx, config2) {
-    this.key = key2;
-    this.ctx = ctx;
-    this.config = config2;
+// src/ui/panels/base-panel.ts
+var BasePanel = class {
+  constructor() {
     this.host = null;
-    this.items = [];
+    this.panelVisible = false;
+    this.dirty = true;
   }
   mount(host) {
     this.host = host;
-    this.render();
+    this.onMount();
+    this.dirty = true;
+    this.flush();
+  }
+  setVisible(visible) {
+    this.panelVisible = visible;
+    if (visible) this.flush();
+  }
+  /** Request a repaint: paints now if visible, otherwise defers until shown. */
+  scheduleRender() {
+    this.dirty = true;
+    if (this.panelVisible) this.flush();
+  }
+  flush() {
+    if (!this.host || !this.dirty) return;
+    this.dirty = false;
+    this.paint();
+  }
+  /** One-time setup on mount, before the first paint. Override as needed. */
+  onMount() {
+  }
+};
+
+// src/ui/panels/inspector-list-panel.ts
+var InspectorListPanel = class extends BasePanel {
+  constructor(key2, ctx, config2) {
+    super();
+    this.key = key2;
+    this.ctx = ctx;
+    this.config = config2;
+    this.items = [];
   }
   /** Domain slice: the current list of items. */
   setItems(items) {
     this.items = [...items];
     this.ctx.setBadge(String(this.items.length));
-    this.render();
+    this.scheduleRender();
   }
-  render() {
+  paint() {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader(this.config.header));
@@ -148674,17 +148702,13 @@ var InspectorListPanel = class {
 };
 
 // src/ui/panels/roadmap-panel.ts
-var RoadmapPanel = class {
+var RoadmapPanel = class extends BasePanel {
   constructor(key2, config2) {
+    super();
     this.key = key2;
     this.config = config2;
-    this.host = null;
   }
-  mount(host) {
-    this.host = host;
-    this.render();
-  }
-  render() {
+  paint() {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader(this.config.header));
@@ -148720,25 +148744,21 @@ var RoadmapPanel = class {
 };
 
 // src/ui/panels/viewport-panel.ts
-var ViewportPanel = class {
+var ViewportPanel = class extends BasePanel {
   constructor(ctx) {
+    super();
     this.ctx = ctx;
     this.key = "viewport";
-    this.host = null;
     this.state = {};
-  }
-  mount(host) {
-    this.host = host;
-    this.render();
   }
   setScene(state) {
     this.state = { ...state };
     let badge = state.isDarkMode ? "Dark" : "Light";
     if (state.isSpinActive) badge += " \xB7 Spin";
     this.ctx.setBadge(badge);
-    this.render();
+    this.scheduleRender();
   }
-  render() {
+  paint() {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Viewport Settings"));
@@ -148844,22 +148864,18 @@ var ViewportPanel = class {
 };
 
 // src/ui/panels/export-panel.ts
-var ExportPanel = class {
+var ExportPanel = class extends BasePanel {
   constructor(ctx) {
+    super();
     this.ctx = ctx;
     this.key = "export";
-    this.host = null;
     this.state = {};
-  }
-  mount(host) {
-    this.host = host;
-    this.render();
   }
   setScene(state) {
     this.state = { ...state };
-    this.render();
+    this.scheduleRender();
   }
-  render() {
+  paint() {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Export Settings"));
@@ -149113,12 +149129,12 @@ var ManualQueryComposer = class _ManualQueryComposer {
 };
 
 // src/ui/panels/regions-panel.ts
-var RegionsPanel = class {
+var RegionsPanel = class extends BasePanel {
   constructor(ctx, onFocusRegion) {
+    super();
     this.ctx = ctx;
     this.onFocusRegion = onFocusRegion;
     this.key = "regions";
-    this.host = null;
     // Domain state (pushed from the controller)
     this.regions = [];
     this.regionStyleRepresentations = [];
@@ -149146,10 +149162,6 @@ var RegionsPanel = class {
     this.regionBooleanAttention = false;
     this.regionBooleanComposerElement = null;
   }
-  mount(host) {
-    this.host = host;
-    this.render();
-  }
   setRegions(items) {
     this.regions = [...items];
     const tags = this.regions.map((item2) => item2.tag);
@@ -149167,7 +149179,7 @@ var RegionsPanel = class {
       }
     }
     this.ctx.setBadge(String(items.length));
-    this.render();
+    this.scheduleRender();
   }
   setStyleOptions(options) {
     this.regionStyleRepresentations = [...options.representations];
@@ -149179,12 +149191,12 @@ var RegionsPanel = class {
       return;
     }
     this.regionDetails.set(details.tag, details);
-    this.render();
+    this.scheduleRender();
   }
   /** Route a query preview; returns true if it belonged to this panel's composer. */
   updatePreview(preview) {
     if (this.regionQueryComposer?.updatePreview(preview)) {
-      this.render();
+      this.scheduleRender();
       return true;
     }
     return false;
@@ -149192,14 +149204,14 @@ var RegionsPanel = class {
   setCurrentSelection(selection) {
     this.currentSelection = selection;
     if (this.regionCreateOrigin === "active") {
-      this.render();
+      this.scheduleRender();
     }
   }
   /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */
   hasRegion(tag) {
     return this.regions.some((region) => region.tag === tag);
   }
-  render() {
+  paint() {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Create & Global Actions"));
@@ -149264,7 +149276,7 @@ var RegionsPanel = class {
     ]) {
       const button = makeButton(label2, () => {
         this.regionCreateOrigin = origin;
-        this.render();
+        this.scheduleRender();
       });
       button.setAttribute("data-molsysviewer-region-create-origin", origin);
       if (this.regionCreateOrigin === origin) {
@@ -149322,7 +149334,7 @@ var RegionsPanel = class {
       };
       if (tag && this.regions.some((region) => region.tag === tag)) {
         this.regionCreateCollision = { action, details, tag };
-        this.render();
+        this.scheduleRender();
         return;
       }
       emit();
@@ -149385,7 +149397,7 @@ var RegionsPanel = class {
       collision.textContent = `"${this.regionCreateCollision.tag}" already exists.`;
       const rename = makeButton("Rename", () => {
         this.regionCreateCollision = null;
-        this.render();
+        this.scheduleRender();
       });
       rename.setAttribute("data-molsysviewer-region-collision-rename", "create");
       const overwrite = makeButton("Overwrite", () => {
@@ -149403,7 +149415,7 @@ var RegionsPanel = class {
       overwrite.setAttribute("data-molsysviewer-region-collision-overwrite", "create");
       const cancel = makeButton("Cancel", () => {
         this.regionCreateCollision = null;
-        this.render();
+        this.scheduleRender();
       });
       cancel.setAttribute("data-molsysviewer-region-collision-cancel", "create");
       collision.appendChild(rename);
@@ -149467,7 +149479,7 @@ var RegionsPanel = class {
         this.regionBooleanOperation = "difference";
         this.regionComposeCollision = null;
         this.regionBooleanAttention = true;
-        this.render();
+        this.scheduleRender();
         this.regionBooleanComposerElement?.scrollIntoView?.({
           behavior: "smooth",
           block: "nearest"
@@ -149520,24 +149532,24 @@ var RegionsPanel = class {
     reset.setAttribute("data-molsysviewer-region-reset", item2.tag);
     const rename = makeButton("Rename", () => {
       this.regionRenameTag = item2.tag;
-      this.render();
+      this.scheduleRender();
     });
     rename.setAttribute("data-molsysviewer-region-rename", item2.tag);
     const style = makeButton("Style", () => {
       this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
-      this.render();
+      this.scheduleRender();
     });
     style.setAttribute("data-molsysviewer-region-style", item2.tag);
     const inspect = makeButton("Inspect", () => {
       if (this.regionInspectOpen.has(item2.tag)) {
         this.regionInspectOpen.delete(item2.tag);
         this.regionDetailsRequests.delete(item2.tag);
-        this.render();
+        this.scheduleRender();
         return;
       }
       this.regionInspectOpen.add(item2.tag);
       this.requestRegionDetails(item2.tag);
-      this.render();
+      this.scheduleRender();
     });
     inspect.setAttribute("data-molsysviewer-region-inspect", item2.tag);
     for (const button of [isolate, complement2, rename, duplicate, reset, style, inspect]) {
@@ -149562,13 +149574,13 @@ var RegionsPanel = class {
         const newTag = input.value.trim();
         if (!newTag || newTag === item2.tag) {
           this.regionRenameTag = null;
-          this.render();
+          this.scheduleRender();
           return;
         }
         const collision = this.regions.some((region) => region.tag === newTag);
         if (collision) {
           this.regionRenameCollisionTag = newTag;
-          this.render();
+          this.scheduleRender();
           return;
         }
         this.ctx.onAction("rename_region", { tag: item2.tag, new_tag: newTag });
@@ -149584,7 +149596,7 @@ var RegionsPanel = class {
       submit.setAttribute("data-molsysviewer-region-rename-confirm", item2.tag);
       const cancel = makeButton("Cancel", () => {
         this.regionRenameTag = null;
-        this.render();
+        this.scheduleRender();
       });
       form.appendChild(input);
       form.appendChild(submit);
@@ -149597,7 +149609,7 @@ var RegionsPanel = class {
         collision.textContent = `"${collisionTag}" already exists.`;
         const chooseRename = makeButton("Rename", () => {
           this.regionRenameCollisionTag = null;
-          this.render();
+          this.scheduleRender();
         });
         chooseRename.setAttribute("data-molsysviewer-region-collision-rename", "rename");
         const overwrite = makeButton("Overwrite", () => {
@@ -149610,7 +149622,7 @@ var RegionsPanel = class {
         const cancelCollision = makeButton("Cancel", () => {
           this.regionRenameTag = null;
           this.regionRenameCollisionTag = null;
-          this.render();
+          this.scheduleRender();
         });
         cancelCollision.setAttribute("data-molsysviewer-region-collision-cancel", "rename");
         collision.appendChild(chooseRename);
@@ -149654,7 +149666,7 @@ var RegionsPanel = class {
       this.regionBooleanA = value;
       if (this.regionBooleanB === value) {
         this.regionBooleanB = tags.find((tag) => tag !== value) ?? "";
-        this.render();
+        this.scheduleRender();
       }
     });
     left.setAttribute("data-molsysviewer-region-boolean-a", "true");
@@ -149698,7 +149710,7 @@ var RegionsPanel = class {
       };
       if (tag && tags.includes(tag)) {
         this.regionComposeCollision = { tag, details };
-        this.render();
+        this.scheduleRender();
         return;
       }
       this.ctx.onAction("compose_regions", details);
@@ -149717,7 +149729,7 @@ var RegionsPanel = class {
       collision.textContent = `"${this.regionComposeCollision.tag}" already exists.`;
       const rename = makeButton("Rename", () => {
         this.regionComposeCollision = null;
-        this.render();
+        this.scheduleRender();
       });
       const overwrite = makeButton("Overwrite", () => {
         const pending = this.regionComposeCollision;
@@ -149732,7 +149744,7 @@ var RegionsPanel = class {
       overwrite.setAttribute("data-molsysviewer-region-boolean-overwrite", "true");
       const cancel = makeButton("Cancel", () => {
         this.regionComposeCollision = null;
-        this.render();
+        this.scheduleRender();
       });
       collision.appendChild(rename);
       collision.appendChild(overwrite);
@@ -149777,7 +149789,7 @@ var RegionsPanel = class {
     panel.appendChild(centerRow);
     const refresh = makeButton("Refresh", () => {
       this.requestRegionDetails(tag);
-      this.render();
+      this.scheduleRender();
     });
     refresh.setAttribute("data-molsysviewer-region-inspect-refresh", tag);
     refresh.title = "Refresh details for the current trajectory frame.";
@@ -150039,7 +150051,7 @@ var RegionsPanel = class {
     });
     const cancelBtn = makeButton("Cancel", () => {
       this.activeStyleRegionTag = null;
-      this.render();
+      this.scheduleRender();
     });
     cancelBtn.setAttribute("data-molsysviewer-region-style-cancel", tag);
     Object.assign(cancelBtn.style, {
@@ -150051,7 +150063,7 @@ var RegionsPanel = class {
       const next = buildStyleAction();
       this.ctx.onAction(next.action, next.details);
       this.activeStyleRegionTag = null;
-      this.render();
+      this.scheduleRender();
     });
     applyBtn.setAttribute("data-molsysviewer-region-style-apply", tag);
     Object.assign(applyBtn.style, {
@@ -150077,14 +150089,14 @@ var RegionsPanel = class {
 };
 
 // src/ui/panels/selection-panel.ts
-var SelectionPanel = class _SelectionPanel {
+var SelectionPanel = class _SelectionPanel extends BasePanel {
   constructor(ctx, onSelect, onActivateSavedSelection, regionExists) {
+    super();
     this.ctx = ctx;
     this.onSelect = onSelect;
     this.onActivateSavedSelection = onActivateSavedSelection;
     this.regionExists = regionExists;
     this.key = "selection";
-    this.host = null;
     // Domain state
     this.currentSelection = { count_atoms: 0 };
     this.savedSelections = [];
@@ -150102,34 +150114,33 @@ var SelectionPanel = class _SelectionPanel {
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
   }
-  mount(host) {
-    this.host = host;
+  onMount() {
+    const host = this.host;
     host.tabIndex = 0;
     host.setAttribute("data-molsysviewer-selection-panel", "true");
     host.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
     _SelectionPanel.ensureDesignSystemStyles();
-    this.render();
   }
   updateSelection(selection) {
     this.currentSelection = selection;
     this.ctx.setBadge(selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None");
-    this.render();
+    this.scheduleRender();
   }
   updateHistory(state) {
     this.selectionCanUndo = state.canUndo;
     this.selectionCanRedo = state.canRedo;
-    this.render();
+    this.scheduleRender();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
-    this.render();
+    this.scheduleRender();
   }
   /** Route a query preview belonging to this panel's (debounced) composer. */
   updatePreview(preview) {
     const requestId = typeof preview.request_id === "number" ? preview.request_id : void 0;
     if (requestId !== void 0 && requestId !== this.selectionQueryPreviewRequest) return;
     this.selectionQueryPreview = preview;
-    this.render();
+    this.scheduleRender();
   }
   static ensureDesignSystemStyles() {
     if (typeof document === "undefined") return;
@@ -150312,7 +150323,7 @@ var SelectionPanel = class _SelectionPanel {
     const tagName = node.tagName?.toLowerCase();
     return tagName === "input" || tagName === "textarea" || tagName === "select" || node.isContentEditable === true;
   }
-  render() {
+  paint() {
     if (!this.host) return;
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Active Selection"));
@@ -150795,13 +150806,13 @@ var SelectionPanel = class _SelectionPanel {
     syntax.addEventListener("change", () => {
       this.selectionQuerySyntax = syntax.value === "Indices" ? "Indices" : "MolSysMT";
       this.scheduleSelectionQueryPreview();
-      this.render();
+      this.scheduleRender();
     });
     inputRow.appendChild(input);
     inputRow.appendChild(syntax);
     const helpBtn = makeButton("?", () => {
       this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
-      this.render();
+      this.scheduleRender();
     });
     helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
     helpBtn.setAttribute("data-molsysviewer-selection-cheatsheet-toggle", "true");
@@ -151062,13 +151073,13 @@ var SelectionPanel = class _SelectionPanel {
     this.selectionQueryPreview = null;
     const expression = this.selectionQueryExpression.trim();
     if (!expression) {
-      this.render();
+      this.scheduleRender();
       return;
     }
     const requestId = this.selectionQueryPreviewRequest + 1;
     this.selectionQueryPreviewRequest = requestId;
     this.selectionQueryPreview = { request_id: requestId, status: "pending" };
-    this.render();
+    this.scheduleRender();
     this.selectionQueryPreviewTimer = setTimeout(() => {
       this.selectionQueryPreviewTimer = null;
       this.ctx.onAction("selection_query_preview_request", {
@@ -151748,6 +151759,10 @@ var SystemPanel = class {
       count_shapes: 0,
       count_annotations: 0
     };
+  }
+  // System renders its strips on setStructure (not on visibility), so tab
+  // visibility does not gate its rendering.
+  setVisible(_visible) {
   }
   mount(host) {
     this.host = host;
@@ -153381,6 +153396,7 @@ var GroupPanel = class {
     this.onChangeColorScheme = onChangeColorScheme;
     this.activeTab = "system";
     this.tabs = /* @__PURE__ */ new Map();
+    this.panels = /* @__PURE__ */ new Map();
     this.expanded = false;
     this.runtimeVisibleOverride = null;
     this.visible = false;
@@ -153593,27 +153609,24 @@ var GroupPanel = class {
         if (naturalVisible) this.applyExpandedState();
       }
     });
-    this.systemPanel.mount(this.systemSection);
-    this.addTab("system", "System", "None");
-    this.addTab("whole", "Whole", "None");
-    this.addTab("selection", "Selection", "None");
-    this.addTab("regions", "Regions", "0");
-    this.addTab("measures", "Measures", "0");
-    this.addTab("annotations", "Annotations", "0");
-    this.addTab("shapes", "Shapes", "0");
-    this.addTab("layers", "Layers", "0");
-    this.addTab("viewport", "Viewport", "Dark");
-    this.addTab("export", "Export", "None");
+    const registry = [
+      ["system", "System", "None", this.systemSection, this.systemPanel],
+      ["whole", "Whole", "None", this.wholeSection, this.wholePanel],
+      ["selection", "Selection", "None", this.selectionSection, this.selectionPanel],
+      ["regions", "Regions", "0", this.regionsSection, this.regionsPanel],
+      ["measures", "Measures", "0", this.measuresSection, this.measuresPanel],
+      ["annotations", "Annotations", "0", this.annotationsSection, this.annotationsPanel],
+      ["shapes", "Shapes", "0", this.shapesSection, this.shapesPanel],
+      ["layers", "Layers", "0", this.layersSection, this.layersPanel],
+      ["viewport", "Viewport", "Dark", this.viewportSection, this.viewportPanel],
+      ["export", "Export", "None", this.exportSection, this.exportPanel]
+    ];
+    for (const [key2, title, badge, section, panel] of registry) {
+      this.addTab(key2, title, badge);
+      panel.mount(section);
+      this.panels.set(key2, { section, panel });
+    }
     this.switchTab("system");
-    this.selectionPanel.mount(this.selectionSection);
-    this.regionsPanel.mount(this.regionsSection);
-    this.wholePanel.mount(this.wholeSection);
-    this.measuresPanel.mount(this.measuresSection);
-    this.annotationsPanel.mount(this.annotationsSection);
-    this.shapesPanel.mount(this.shapesSection);
-    this.layersPanel.mount(this.layersSection);
-    this.viewportPanel.mount(this.viewportSection);
-    this.exportPanel.mount(this.exportSection);
   }
   createSection(key2) {
     const section = document.createElement("div");
@@ -153702,16 +153715,11 @@ var GroupPanel = class {
         badge.style.color = "rgba(244,244,245,0.48)";
       }
     }
-    this.systemSection.style.display = key2 === "system" ? "flex" : "none";
-    this.wholeSection.style.display = key2 === "whole" ? "flex" : "none";
-    this.selectionSection.style.display = key2 === "selection" ? "flex" : "none";
-    this.regionsSection.style.display = key2 === "regions" ? "flex" : "none";
-    this.measuresSection.style.display = key2 === "measures" ? "flex" : "none";
-    this.annotationsSection.style.display = key2 === "annotations" ? "flex" : "none";
-    this.shapesSection.style.display = key2 === "shapes" ? "flex" : "none";
-    this.layersSection.style.display = key2 === "layers" ? "flex" : "none";
-    this.viewportSection.style.display = key2 === "viewport" ? "flex" : "none";
-    this.exportSection.style.display = key2 === "export" ? "flex" : "none";
+    for (const [tabKey, entry] of this.panels.entries()) {
+      const isActive = tabKey === key2;
+      entry.section.style.display = isActive ? "flex" : "none";
+      entry.panel.setVisible(isActive);
+    }
     this.settingsSection.style.display = key2 === "settings" ? "flex" : "none";
     if (key2 === "settings") {
       this.renderSettingsSection();

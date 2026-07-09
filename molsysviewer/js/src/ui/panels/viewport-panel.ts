@@ -1,5 +1,6 @@
 import type { SceneState } from "../group-panel";
-import { PanelContext, StudioPanel } from "./types";
+import { BasePanel } from "./base-panel";
+import { PanelContext } from "./types";
 import { makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeStyledSelect } from "./ui-helpers";
 
 /**
@@ -7,16 +8,12 @@ import { makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeStyledSelect 
  * (background, spin/swing, projection mode, fog). Reads the current
  * `SceneState` pushed from the controller and emits scene actions.
  */
-export class ViewportPanel implements StudioPanel {
+export class ViewportPanel extends BasePanel {
     readonly key = "viewport";
-    private host: HTMLElement | null = null;
     private state: SceneState = {};
 
-    constructor(private readonly ctx: PanelContext) {}
-
-    mount(host: HTMLElement): void {
-        this.host = host;
-        this.render();
+    constructor(private readonly ctx: PanelContext) {
+        super();
     }
 
     setScene(state: SceneState): void {
@@ -24,10 +21,10 @@ export class ViewportPanel implements StudioPanel {
         let badge = state.isDarkMode ? "Dark" : "Light";
         if (state.isSpinActive) badge += " · Spin";
         this.ctx.setBadge(badge);
-        this.render();
+        this.scheduleRender();
     }
 
-    private render(): void {
+    protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
         this.host.appendChild(makeSectionHeader("Viewport Settings"));

@@ -1,4 +1,4 @@
-import { StudioPanel } from "./types";
+import { BasePanel } from "./base-panel";
 import { makeSectionHeader, makeSettingsCard } from "./ui-helpers";
 
 export interface RoadmapConfig {
@@ -19,20 +19,15 @@ export interface RoadmapConfig {
  * When a subpanel gains real content it graduates to its own dedicated module;
  * this keeps the placeholder out of `GroupPanel` in the meantime.
  */
-export class RoadmapPanel implements StudioPanel {
-    private host: HTMLElement | null = null;
-
+export class RoadmapPanel extends BasePanel {
     constructor(
         readonly key: string,
         private readonly config: RoadmapConfig,
-    ) {}
-
-    mount(host: HTMLElement): void {
-        this.host = host;
-        this.render();
+    ) {
+        super();
     }
 
-    private render(): void {
+    protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
         this.host.appendChild(makeSectionHeader(this.config.header));

@@ -1,5 +1,6 @@
 import type { SceneState } from "../group-panel";
-import { PanelContext, StudioPanel } from "./types";
+import { BasePanel } from "./base-panel";
+import { PanelContext } from "./types";
 import { makeButton, makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeStyledSelect } from "./ui-helpers";
 
 /**
@@ -7,24 +8,20 @@ import { makeButton, makeCheckboxRow, makeSectionHeader, makeSettingsCard, makeS
  * resolution scale, transparency, and standalone HTML export). Reads the
  * current `SceneState` and emits export actions.
  */
-export class ExportPanel implements StudioPanel {
+export class ExportPanel extends BasePanel {
     readonly key = "export";
-    private host: HTMLElement | null = null;
     private state: SceneState = {};
 
-    constructor(private readonly ctx: PanelContext) {}
-
-    mount(host: HTMLElement): void {
-        this.host = host;
-        this.render();
+    constructor(private readonly ctx: PanelContext) {
+        super();
     }
 
     setScene(state: SceneState): void {
         this.state = { ...state };
-        this.render();
+        this.scheduleRender();
     }
 
-    private render(): void {
+    protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
         this.host.appendChild(makeSectionHeader("Export Settings"));

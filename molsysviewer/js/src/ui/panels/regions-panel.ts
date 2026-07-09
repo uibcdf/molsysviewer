@@ -1,7 +1,8 @@
 import type { ActiveSelectionPayload } from "../../managers/active-selection";
 import { ManualQueryComposer } from "../query-composer";
 import type { RegionDetails, RegionSummary, SelectionQueryPreview } from "../group-panel";
-import { PanelContext, StudioPanel } from "./types";
+import { BasePanel } from "./base-panel";
+import { PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
 
 /**
@@ -13,9 +14,8 @@ import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
  * updateDetails, updatePreview, setCurrentSelection) and talks to the host only
  * through the injected PanelContext plus an onFocusRegion callback.
  */
-export class RegionsPanel implements StudioPanel {
+export class RegionsPanel extends BasePanel {
     readonly key = "regions";
-    private host: HTMLElement | null = null;
 
     // Domain state (pushed from the controller)
     private regions: RegionSummary[] = [];
@@ -48,11 +48,8 @@ export class RegionsPanel implements StudioPanel {
     constructor(
         private readonly ctx: PanelContext,
         private readonly onFocusRegion: (tag: string) => void,
-    ) {}
-
-    mount(host: HTMLElement): void {
-        this.host = host;
-        this.render();
+    ) {
+        super();
     }
 
     setRegions(items: RegionSummary[]): void {
@@ -72,7 +69,7 @@ export class RegionsPanel implements StudioPanel {
             }
         }
         this.ctx.setBadge(String(items.length));
-        this.render();
+        this.scheduleRender();
     }
 
     setStyleOptions(options: { representations: string[]; presets: string[] }): void {
@@ -90,13 +87,13 @@ export class RegionsPanel implements StudioPanel {
             return;
         }
         this.regionDetails.set(details.tag, details);
-        this.render();
+        this.scheduleRender();
     }
 
     /** Route a query preview; returns true if it belonged to this panel's composer. */
     updatePreview(preview: SelectionQueryPreview): boolean {
         if (this.regionQueryComposer?.updatePreview(preview)) {
-            this.render();
+            this.scheduleRender();
             return true;
         }
         return false;
@@ -105,7 +102,7 @@ export class RegionsPanel implements StudioPanel {
     setCurrentSelection(selection: ActiveSelectionPayload): void {
         this.currentSelection = selection;
         if (this.regionCreateOrigin === "active") {
-            this.render();
+            this.scheduleRender();
         }
     }
 
@@ -114,7 +111,7 @@ export class RegionsPanel implements StudioPanel {
         return this.regions.some(region => region.tag === tag);
     }
 
-    render(): void {
+    protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
         this.host.appendChild(makeSectionHeader("Create & Global Actions"));
@@ -184,7 +181,7 @@ export class RegionsPanel implements StudioPanel {
         ] as const) {
             const button = makeButton(label, () => {
                 this.regionCreateOrigin = origin;
-                this.render();
+                this.scheduleRender();
             });
             button.setAttribute("data-molsysviewer-region-create-origin", origin);
             if (this.regionCreateOrigin === origin) {
@@ -246,7 +243,7 @@ export class RegionsPanel implements StudioPanel {
             };
             if (tag && this.regions.some(region => region.tag === tag)) {
                 this.regionCreateCollision = { action, details, tag };
-                this.render();
+                this.scheduleRender();
                 return;
             }
             emit();
@@ -315,7 +312,7 @@ export class RegionsPanel implements StudioPanel {
             collision.textContent = `"${this.regionCreateCollision.tag}" already exists.`;
             const rename = makeButton("Rename", () => {
                 this.regionCreateCollision = null;
-                this.render();
+                this.scheduleRender();
             });
             rename.setAttribute("data-molsysviewer-region-collision-rename", "create");
             const overwrite = makeButton("Overwrite", () => {
@@ -335,7 +332,7 @@ export class RegionsPanel implements StudioPanel {
             overwrite.setAttribute("data-molsysviewer-region-collision-overwrite", "create");
             const cancel = makeButton("Cancel", () => {
                 this.regionCreateCollision = null;
-                this.render();
+                this.scheduleRender();
             });
             cancel.setAttribute("data-molsysviewer-region-collision-cancel", "create");
             collision.appendChild(rename);
@@ -403,7 +400,7 @@ export class RegionsPanel implements StudioPanel {
                 this.regionBooleanOperation = "difference";
                 this.regionComposeCollision = null;
                 this.regionBooleanAttention = true;
-                this.render();
+                this.scheduleRender();
                 this.regionBooleanComposerElement?.scrollIntoView?.({
                     behavior: "smooth",
                     block: "nearest",
@@ -451,24 +448,24 @@ export class RegionsPanel implements StudioPanel {
         reset.setAttribute("data-molsysviewer-region-reset", item.tag);
         const rename = makeButton("Rename", () => {
             this.regionRenameTag = item.tag;
-            this.render();
+            this.scheduleRender();
         });
         rename.setAttribute("data-molsysviewer-region-rename", item.tag);
         const style = makeButton("Style", () => {
             this.activeStyleRegionTag = this.activeStyleRegionTag === item.tag ? null : item.tag;
-            this.render();
+            this.scheduleRender();
         });
         style.setAttribute("data-molsysviewer-region-style", item.tag);
         const inspect = makeButton("Inspect", () => {
             if (this.regionInspectOpen.has(item.tag)) {
                 this.regionInspectOpen.delete(item.tag);
                 this.regionDetailsRequests.delete(item.tag);
-                this.render();
+                this.scheduleRender();
                 return;
             }
             this.regionInspectOpen.add(item.tag);
             this.requestRegionDetails(item.tag);
-            this.render();
+            this.scheduleRender();
         });
         inspect.setAttribute("data-molsysviewer-region-inspect", item.tag);
         for (const button of [isolate, complement, rename, duplicate, reset, style, inspect]) {
@@ -494,13 +491,13 @@ export class RegionsPanel implements StudioPanel {
                 const newTag = input.value.trim();
                 if (!newTag || newTag === item.tag) {
                     this.regionRenameTag = null;
-                    this.render();
+                    this.scheduleRender();
                     return;
                 }
                 const collision = this.regions.some(region => region.tag === newTag);
                 if (collision) {
                     this.regionRenameCollisionTag = newTag;
-                    this.render();
+                    this.scheduleRender();
                     return;
                 }
                 this.ctx.onAction("rename_region", { tag: item.tag, new_tag: newTag });
@@ -516,7 +513,7 @@ export class RegionsPanel implements StudioPanel {
             submit.setAttribute("data-molsysviewer-region-rename-confirm", item.tag);
             const cancel = makeButton("Cancel", () => {
                 this.regionRenameTag = null;
-                this.render();
+                this.scheduleRender();
             });
             form.appendChild(input);
             form.appendChild(submit);
@@ -530,7 +527,7 @@ export class RegionsPanel implements StudioPanel {
                 collision.textContent = `"${collisionTag}" already exists.`;
                 const chooseRename = makeButton("Rename", () => {
                     this.regionRenameCollisionTag = null;
-                    this.render();
+                    this.scheduleRender();
                 });
                 chooseRename.setAttribute("data-molsysviewer-region-collision-rename", "rename");
                 const overwrite = makeButton("Overwrite", () => {
@@ -543,7 +540,7 @@ export class RegionsPanel implements StudioPanel {
                 const cancelCollision = makeButton("Cancel", () => {
                     this.regionRenameTag = null;
                     this.regionRenameCollisionTag = null;
-                    this.render();
+                    this.scheduleRender();
                 });
                 cancelCollision.setAttribute("data-molsysviewer-region-collision-cancel", "rename");
                 collision.appendChild(chooseRename);
@@ -589,7 +586,7 @@ export class RegionsPanel implements StudioPanel {
             this.regionBooleanA = value;
             if (this.regionBooleanB === value) {
                 this.regionBooleanB = tags.find(tag => tag !== value) ?? "";
-                this.render();
+                this.scheduleRender();
             }
         });
         left.setAttribute("data-molsysviewer-region-boolean-a", "true");
@@ -636,7 +633,7 @@ export class RegionsPanel implements StudioPanel {
             };
             if (tag && tags.includes(tag)) {
                 this.regionComposeCollision = { tag, details };
-                this.render();
+                this.scheduleRender();
                 return;
             }
             this.ctx.onAction("compose_regions", details);
@@ -656,7 +653,7 @@ export class RegionsPanel implements StudioPanel {
             collision.textContent = `"${this.regionComposeCollision.tag}" already exists.`;
             const rename = makeButton("Rename", () => {
                 this.regionComposeCollision = null;
-                this.render();
+                this.scheduleRender();
             });
             const overwrite = makeButton("Overwrite", () => {
                 const pending = this.regionComposeCollision;
@@ -671,7 +668,7 @@ export class RegionsPanel implements StudioPanel {
             overwrite.setAttribute("data-molsysviewer-region-boolean-overwrite", "true");
             const cancel = makeButton("Cancel", () => {
                 this.regionComposeCollision = null;
-                this.render();
+                this.scheduleRender();
             });
             collision.appendChild(rename);
             collision.appendChild(overwrite);
@@ -718,7 +715,7 @@ export class RegionsPanel implements StudioPanel {
         panel.appendChild(centerRow);
         const refresh = makeButton("Refresh", () => {
             this.requestRegionDetails(tag);
-            this.render();
+            this.scheduleRender();
         });
         refresh.setAttribute("data-molsysviewer-region-inspect-refresh", tag);
         refresh.title = "Refresh details for the current trajectory frame.";
@@ -1002,7 +999,7 @@ export class RegionsPanel implements StudioPanel {
 
         const cancelBtn = makeButton("Cancel", () => {
             this.activeStyleRegionTag = null;
-            this.render();
+            this.scheduleRender();
         });
         cancelBtn.setAttribute("data-molsysviewer-region-style-cancel", tag);
         Object.assign(cancelBtn.style, {
@@ -1015,7 +1012,7 @@ export class RegionsPanel implements StudioPanel {
             const next = buildStyleAction();
             this.ctx.onAction(next.action, next.details);
             this.activeStyleRegionTag = null;
-            this.render();
+            this.scheduleRender();
         });
         applyBtn.setAttribute("data-molsysviewer-region-style-apply", tag);
         Object.assign(applyBtn.style, {

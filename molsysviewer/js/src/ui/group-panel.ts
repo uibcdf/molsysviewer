@@ -12,7 +12,7 @@ import {
     makeSettingsCard,
     makeStyledSelect,
 } from "./panels/ui-helpers";
-import { PanelContext } from "./panels/types";
+import { PanelContext, StudioPanel } from "./panels/types";
 import { InspectorListPanel } from "./panels/inspector-list-panel";
 import { RoadmapPanel } from "./panels/roadmap-panel";
 import { ViewportPanel } from "./panels/viewport-panel";
@@ -111,6 +111,7 @@ export class GroupPanel {
     private readonly regionsPanel: RegionsPanel;
     private readonly selectionPanel: SelectionPanel;
     private readonly systemPanel: SystemPanel;
+    private readonly panels = new Map<TabKey, { section: HTMLDivElement; panel: StudioPanel }>();
 
     // Right column: Content Sections
     private readonly rightColumn: HTMLDivElement;
@@ -383,33 +384,28 @@ export class GroupPanel {
                 if (naturalVisible) this.applyExpandedState();
             },
         });
-        this.systemPanel.mount(this.systemSection);
+        // Register the subpanels and build their tabs, mounting each into its
+        // section. Adding a subpanel is a single registry entry.
+        const registry: Array<[TabKey, string, string, HTMLDivElement, StudioPanel]> = [
+            ["system", "System", "None", this.systemSection, this.systemPanel],
+            ["whole", "Whole", "None", this.wholeSection, this.wholePanel],
+            ["selection", "Selection", "None", this.selectionSection, this.selectionPanel],
+            ["regions", "Regions", "0", this.regionsSection, this.regionsPanel],
+            ["measures", "Measures", "0", this.measuresSection, this.measuresPanel],
+            ["annotations", "Annotations", "0", this.annotationsSection, this.annotationsPanel],
+            ["shapes", "Shapes", "0", this.shapesSection, this.shapesPanel],
+            ["layers", "Layers", "0", this.layersSection, this.layersPanel],
+            ["viewport", "Viewport", "Dark", this.viewportSection, this.viewportPanel],
+            ["export", "Export", "None", this.exportSection, this.exportPanel],
+        ];
+        for (const [key, title, badge, section, panel] of registry) {
+            this.addTab(key, title, badge);
+            panel.mount(section);
+            this.panels.set(key, { section, panel });
+        }
 
-        // Add tabs
-        this.addTab("system", "System", "None");
-        this.addTab("whole", "Whole", "None");
-        this.addTab("selection", "Selection", "None");
-        this.addTab("regions", "Regions", "0");
-        this.addTab("measures", "Measures", "0");
-        this.addTab("annotations", "Annotations", "0");
-        this.addTab("shapes", "Shapes", "0");
-        this.addTab("layers", "Layers", "0");
-        this.addTab("viewport", "Viewport", "Dark");
-        this.addTab("export", "Export", "None");
-
-        // Switch to system tab by default
+        // Show the default tab.
         this.switchTab("system");
-
-        // Render empty sections initially
-        this.selectionPanel.mount(this.selectionSection);
-        this.regionsPanel.mount(this.regionsSection);
-        this.wholePanel.mount(this.wholeSection);
-        this.measuresPanel.mount(this.measuresSection);
-        this.annotationsPanel.mount(this.annotationsSection);
-        this.shapesPanel.mount(this.shapesSection);
-        this.layersPanel.mount(this.layersSection);
-        this.viewportPanel.mount(this.viewportSection);
-        this.exportPanel.mount(this.exportSection);
     }
 
     private createSection(key: TabKey): HTMLDivElement {
@@ -509,17 +505,12 @@ export class GroupPanel {
             }
         }
 
-        // Toggle sections visibility
-        this.systemSection.style.display = key === "system" ? "flex" : "none";
-        this.wholeSection.style.display = key === "whole" ? "flex" : "none";
-        this.selectionSection.style.display = key === "selection" ? "flex" : "none";
-        this.regionsSection.style.display = key === "regions" ? "flex" : "none";
-        this.measuresSection.style.display = key === "measures" ? "flex" : "none";
-        this.annotationsSection.style.display = key === "annotations" ? "flex" : "none";
-        this.shapesSection.style.display = key === "shapes" ? "flex" : "none";
-        this.layersSection.style.display = key === "layers" ? "flex" : "none";
-        this.viewportSection.style.display = key === "viewport" ? "flex" : "none";
-        this.exportSection.style.display = key === "export" ? "flex" : "none";
+        // Toggle section visibility via the registry, driving render-on-show.
+        for (const [tabKey, entry] of this.panels.entries()) {
+            const isActive = tabKey === key;
+            entry.section.style.display = isActive ? "flex" : "none";
+            entry.panel.setVisible(isActive);
+        }
         this.settingsSection.style.display = key === "settings" ? "flex" : "none";
 
         if (key === "settings") {

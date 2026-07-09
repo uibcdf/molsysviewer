@@ -25,6 +25,8 @@ export interface PanelContext {
 export interface StudioPanel {
     /** Stable tab key, matching the sidebar registration. */
     readonly key: string;
-    /** Build the panel's DOM into `host` (called once). */
+    /** Attach the panel to its section host (called once). */
     mount(host: HTMLElement): void;
+    /** Tell the panel whether it is the visible tab (drives render-on-show). */
+    setVisible(visible: boolean): void;
 }

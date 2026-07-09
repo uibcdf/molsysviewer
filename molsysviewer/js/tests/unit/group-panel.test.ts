@@ -194,6 +194,8 @@ test("GroupPanel renders active, saved, and region summaries", () => {
         panel.setSavedSelections([{ tag: "site_a", atom_count: 2 }]);
         panel.setRegions([{ tag: "binding", atom_count: 2, hidden: true }]);
 
+        (panel as any).switchTab("selection");
+        (panel as any).switchTab("regions");
         const root = host.children[0];
         const selectionSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "selection");
         const regionsSection = findFirstByAttribute(root, "data-molsysviewer-group-panel-section", "regions");
@@ -233,6 +235,7 @@ test("GroupPanel selection query composer emits apply actions and accepts curren
             (action, details) => { actions.push({ action, details }); },
         );
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
         const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
         const union = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "add");
@@ -304,6 +307,7 @@ test("GroupPanel active card exposes All None Invert and Label controls", () => 
             count_annotations: 0,
         });
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
         const all = findFirstByAttribute(root, "data-molsysviewer-selection-all", "true");
         const none = findFirstByAttribute(root, "data-molsysviewer-selection-none", "true");
@@ -346,6 +350,7 @@ test("GroupPanel selection query preview shows pending and error states", () => 
             () => {},
         );
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
         const input = findFirstByAttribute(root, "data-molsysviewer-selection-query-input") as any;
         const select = findFirstByAttribute(root, "data-molsysviewer-selection-query-apply", "replace") as any;
@@ -430,6 +435,7 @@ test("GroupPanel selection query presets inject exact MolSysMT syntax", () => {
             (action, details) => { actions.push({ action, details }); },
         );
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
         const water = findFirstByAttribute(root, "data-molsysviewer-selection-query-preset", "water");
         assert.ok(water);
@@ -481,6 +487,7 @@ test("GroupPanel selection query cheat-sheet toggles and injects examples", () =
             () => {},
         );
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
         const toggle = findFirstByAttribute(root, "data-molsysviewer-selection-cheatsheet-toggle", "true");
         assert.ok(toggle);
@@ -669,6 +676,7 @@ test("GroupPanel exposes active selection undo redo buttons and scoped shortcuts
             (action, details) => { actions.push({ action, details }); },
         );
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
         let undo = findFirstByAttribute(root, "data-molsysviewer-selection-undo", "true") as any;
         let redo = findFirstByAttribute(root, "data-molsysviewer-selection-redo", "true") as any;
@@ -765,6 +773,8 @@ test("GroupPanel saved and region summaries trigger their primary actions", () =
         panel.setSavedSelections([{ tag: "site_a", atom_count: 2 }]);
         panel.setRegions([{ tag: "binding", atom_count: 2, hidden: false }]);
 
+        (panel as any).switchTab("selection");
+        (panel as any).switchTab("regions");
         const root = host.children[0];
         const summaryItems = collectByAttribute(root, "data-molsysviewer-group-panel-summary-item", "true");
         const savedItem = summaryItems.find((node) => firstText(node) === "site_a");
@@ -800,6 +810,7 @@ test("GroupPanel region create composer covers active, checked query, split, and
             () => {},
             (action, details) => actions.push({ action, details }),
         );
+        (panel as any).switchTab("regions");
         const root = host.children[0];
 
         const initiallyDisabled = findFirstByAttribute(
@@ -909,6 +920,7 @@ test("GroupPanel region cards expose lifecycle actions and explicit collision ch
                 overlap_tags: ["binding"],
             },
         ]);
+        (panel as any).switchTab("regions");
         const root = host.children[0];
 
         assert.strictEqual(
@@ -989,6 +1001,7 @@ test("GroupPanel region style composer emits presets, release-only opacity, and 
             representation_params: { alpha: 0.4, quality: "high", sizeFactor: 0.8 },
             available_attributes: ["b_factor"],
         }]);
+        (panel as any).switchTab("regions");
         const root = host.children[0];
         findFirstByAttribute(root, "data-molsysviewer-region-style", "binding")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
@@ -1114,6 +1127,7 @@ test("GroupPanel region boolean composer supports ordered operations and overlap
             { tag: "pocket", atom_count: 8, hidden: false, overlap_tags: ["backbone"] },
             { tag: "backbone", atom_count: 4, hidden: false, overlap_tags: ["pocket"] },
         ]);
+        (panel as any).switchTab("regions");
         const root = host.children[0];
         findFirstByAttribute(root, "data-molsysviewer-region-overlap", "pocket")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
@@ -1204,6 +1218,7 @@ test("GroupPanel region inspect fetches lazily and rejects stale details", () =>
             (action, details) => actions.push({ action, details }),
         );
         panel.setRegions([{ tag: "site", atom_count: 3, hidden: false }]);
+        (panel as any).switchTab("regions");
         const root = host.children[0];
         findFirstByAttribute(root, "data-molsysviewer-region-inspect", "site")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
@@ -1306,6 +1321,7 @@ test("GroupPanel saved selections card actions and inline forms", () => {
         panel.setStructure(structure);
         panel.setSavedSelections([{ tag: "site_a", atom_count: 2, element_level: "group" }]);
 
+        (panel as any).switchTab("selection");
         const root = host.children[0];
 
         // 1. Activate

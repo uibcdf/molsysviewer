@@ -1,6 +1,7 @@
 import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation } from "../../managers/active-selection";
 import type { SavedSelectionSummary, SelectionQueryPreview, SelectionQuerySyntax } from "../group-panel";
-import { PanelContext, StudioPanel } from "./types";
+import { BasePanel } from "./base-panel";
+import { PanelContext } from "./types";
 import { makeButton, makeSectionHeader } from "./ui-helpers";
 
 /**
@@ -13,10 +14,9 @@ import { makeButton, makeSectionHeader } from "./ui-helpers";
  * and talks to the host through the injected PanelContext plus onSelect,
  * onActivateSavedSelection and a regionExists bridge callback.
  */
-export class SelectionPanel implements StudioPanel {
+export class SelectionPanel extends BasePanel {
     readonly key = "selection";
     private static readonly SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
-    private host: HTMLElement | null = null;
 
     // Domain state
     private currentSelection: ActiveSelectionPayload = { count_atoms: 0 } as ActiveSelectionPayload;
@@ -38,32 +38,33 @@ export class SelectionPanel implements StudioPanel {
         private readonly onSelect: (items: ActiveSelectionItem[], op: ActiveSelectionSetOperation) => void,
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly regionExists: (tag: string) => boolean,
-    ) {}
+    ) {
+        super();
+    }
 
-    mount(host: HTMLElement): void {
-        this.host = host;
+    protected onMount(): void {
+        const host = this.host!;
         host.tabIndex = 0;
         host.setAttribute("data-molsysviewer-selection-panel", "true");
         host.addEventListener("keydown", (event) => this.handleSelectionPanelKeydown(event));
         SelectionPanel.ensureDesignSystemStyles();
-        this.render();
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {
         this.currentSelection = selection;
         this.ctx.setBadge(selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None");
-        this.render();
+        this.scheduleRender();
     }
 
     updateHistory(state: { canUndo: boolean; canRedo: boolean }): void {
         this.selectionCanUndo = state.canUndo;
         this.selectionCanRedo = state.canRedo;
-        this.render();
+        this.scheduleRender();
     }
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.savedSelections = [...items];
-        this.render();
+        this.scheduleRender();
     }
 
     /** Route a query preview belonging to this panel's (debounced) composer. */
@@ -71,7 +72,7 @@ export class SelectionPanel implements StudioPanel {
         const requestId = typeof preview.request_id === "number" ? preview.request_id : undefined;
         if (requestId !== undefined && requestId !== this.selectionQueryPreviewRequest) return;
         this.selectionQueryPreview = preview;
-        this.render();
+        this.scheduleRender();
     }
 
     static ensureDesignSystemStyles(): void {
@@ -259,7 +260,7 @@ export class SelectionPanel implements StudioPanel {
         return tagName === "input" || tagName === "textarea" || tagName === "select" || node.isContentEditable === true;
     }
 
-    render(): void {
+    protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
 
@@ -794,7 +795,7 @@ export class SelectionPanel implements StudioPanel {
         syntax.addEventListener("change", () => {
             this.selectionQuerySyntax = syntax.value === "Indices" ? "Indices" : "MolSysMT";
             this.scheduleSelectionQueryPreview();
-            this.render();
+            this.scheduleRender();
         });
 
         inputRow.appendChild(input);
@@ -802,7 +803,7 @@ export class SelectionPanel implements StudioPanel {
 
         const helpBtn = makeButton("?", () => {
             this.selectionCheatSheetOpen = !this.selectionCheatSheetOpen;
-            this.render();
+            this.scheduleRender();
         });
         helpBtn.title = this.selectionCheatSheetOpen ? "Hide selection query examples" : "Show selection query examples";
         helpBtn.setAttribute("data-molsysviewer-selection-cheatsheet-toggle", "true");
@@ -1075,13 +1076,13 @@ export class SelectionPanel implements StudioPanel {
         this.selectionQueryPreview = null;
         const expression = this.selectionQueryExpression.trim();
         if (!expression) {
-            this.render();
+            this.scheduleRender();
             return;
         }
         const requestId = this.selectionQueryPreviewRequest + 1;
         this.selectionQueryPreviewRequest = requestId;
         this.selectionQueryPreview = { request_id: requestId, status: "pending" };
-        this.render();
+        this.scheduleRender();
         this.selectionQueryPreviewTimer = setTimeout(() => {
             this.selectionQueryPreviewTimer = null;
             this.ctx.onAction("selection_query_preview_request", {

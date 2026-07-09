@@ -78,6 +78,10 @@ export class SystemPanel implements StudioPanel {
         private readonly callbacks: SystemPanelCallbacks,
     ) {}
 
+    // System renders its strips on setStructure (not on visibility), so tab
+    // visibility does not gate its rendering.
+    setVisible(_visible: boolean): void {}
+
     mount(host: HTMLElement): void {
         this.host = host;
         Object.assign(host.style, {

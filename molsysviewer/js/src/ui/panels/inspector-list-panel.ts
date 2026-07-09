@@ -1,5 +1,6 @@
 import type { NavigateItem } from "../group-panel";
-import { PanelContext, StudioPanel } from "./types";
+import { BasePanel } from "./base-panel";
+import { PanelContext } from "./types";
 import { makeRowElement, makeSectionHeader } from "./ui-helpers";
 
 export interface InspectorListConfig {
@@ -19,29 +20,25 @@ export interface InspectorListConfig {
  * differ only in their labels. Owns its own item slice and keeps its tab badge
  * (the item count) in sync.
  */
-export class InspectorListPanel implements StudioPanel {
-    private host: HTMLElement | null = null;
+export class InspectorListPanel extends BasePanel {
     private items: NavigateItem[] = [];
 
     constructor(
         readonly key: string,
         private readonly ctx: PanelContext,
         private readonly config: InspectorListConfig,
-    ) {}
-
-    mount(host: HTMLElement): void {
-        this.host = host;
-        this.render();
+    ) {
+        super();
     }
 
     /** Domain slice: the current list of items. */
     setItems(items: NavigateItem[]): void {
         this.items = [...items];
         this.ctx.setBadge(String(this.items.length));
-        this.render();
+        this.scheduleRender();
     }
 
-    private render(): void {
+    protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren();
         this.host.appendChild(makeSectionHeader(this.config.header));
