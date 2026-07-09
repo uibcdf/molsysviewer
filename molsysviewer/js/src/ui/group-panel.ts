@@ -13,6 +13,8 @@ import {
     makeSettingsCard,
     makeStyledSelect,
 } from "./panels/ui-helpers";
+import { PanelContext } from "./panels/types";
+import { ShapesPanel } from "./panels/shapes-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -94,6 +96,9 @@ export class GroupPanel {
     private activeTab: TabKey = "system";
     private readonly tabs: Map<TabKey, { button: HTMLButtonElement; badge: HTMLSpanElement }> = new Map();
 
+    // Migrated subpanels (panel-per-module architecture)
+    private readonly shapesPanel: ShapesPanel;
+
     // Right column: Content Sections
     private readonly rightColumn: HTMLDivElement;
     private readonly systemSection: HTMLDivElement;
@@ -136,7 +141,6 @@ export class GroupPanel {
     private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
     private savedSelections: SavedSelectionSummary[] = [];
     private regions: RegionSummary[] = [];
-    private shapes: NavigateItem[] = [];
     private annotations: NavigateItem[] = [];
     private measurements: NavigateItem[] = [];
     private sceneState: SceneState = {};
@@ -537,6 +541,7 @@ export class GroupPanel {
         this.measuresSection = this.createSection("measures");
         this.annotationsSection = this.createSection("annotations");
         this.shapesSection = this.createSection("shapes");
+        this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
         this.layersSection = this.createSection("layers");
         this.viewportSection = this.createSection("viewport");
         this.exportSection = this.createSection("export");
@@ -583,7 +588,7 @@ export class GroupPanel {
         this.renderWholeSection();
         this.renderMeasuresSection();
         this.renderAnnotationsSection();
-        this.renderShapesSection();
+        this.shapesPanel.mount(this.shapesSection);
         this.renderLayersSection();
         this.renderViewportSection();
         this.renderExportSection();
@@ -871,9 +876,18 @@ export class GroupPanel {
     }
 
     setShapes(items: NavigateItem[]): void {
-        this.shapes = [...items];
-        this.updateBadges();
-        this.renderShapesSection();
+        this.shapesPanel.setItems(items);
+    }
+
+    /** Build the narrow context injected into a migrated subpanel. */
+    private makePanelContext(key: TabKey): PanelContext {
+        return {
+            onAction: (action, details) => this.onAction?.(action, details),
+            setBadge: (text) => {
+                const badge = this.tabs.get(key)?.badge;
+                if (badge) badge.textContent = text;
+            },
+        };
     }
 
     setAnnotations(items: NavigateItem[]): void {
@@ -896,10 +910,6 @@ export class GroupPanel {
         const annotationsBadge = this.tabs.get("annotations")?.badge;
         if (annotationsBadge) {
             annotationsBadge.textContent = String(this.annotations.length);
-        }
-        const shapesBadge = this.tabs.get("shapes")?.badge;
-        if (shapesBadge) {
-            shapesBadge.textContent = String(this.shapes.length);
         }
     }
 
@@ -2797,44 +2807,6 @@ export class GroupPanel {
             });
             emptyLabel.textContent = "No annotations yet.";
             annotationsList.appendChild(emptyLabel);
-        }
-    }
-
-    private renderShapesSection(): void {
-        this.shapesSection.replaceChildren();
-        this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
-
-        const shapesList = document.createElement("div");
-        Object.assign(shapesList.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-        });
-        this.shapesSection.appendChild(shapesList);
-
-        if (this.shapes.length > 0) {
-            for (const item of this.shapes) {
-                const row = this.makeRowElement(
-                    item.title,
-                    item.subtitle || "Geometry",
-                    item.onActivate,
-                    item.onDelete,
-                    {
-                        hidden: item.hidden,
-                        onToggleVisibility: item.onToggleVisibility
-                    }
-                );
-                shapesList.appendChild(row);
-            }
-        } else {
-            const emptyLabel = document.createElement("div");
-            Object.assign(emptyLabel.style, {
-                fontSize: "11px",
-                color: "rgba(244,244,245,0.48)",
-                paddingLeft: "4px",
-            });
-            emptyLabel.textContent = "No shapes yet.";
-            shapesList.appendChild(emptyLabel);
         }
     }
 

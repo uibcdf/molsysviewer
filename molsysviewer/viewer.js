@@ -149409,6 +149409,58 @@ function makeCheckboxRow(labelText, checked, onChange) {
   return row;
 }
 
+// src/ui/panels/shapes-panel.ts
+var ShapesPanel = class {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.key = "shapes";
+    this.host = null;
+    this.items = [];
+  }
+  mount(host) {
+    this.host = host;
+    this.render();
+  }
+  /** Domain slice: the current list of shapes. */
+  setItems(items) {
+    this.items = [...items];
+    this.ctx.setBadge(String(this.items.length));
+    this.render();
+  }
+  render() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("3D Shapes"));
+    const list3 = document.createElement("div");
+    Object.assign(list3.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    this.host.appendChild(list3);
+    if (this.items.length > 0) {
+      for (const item2 of this.items) {
+        list3.appendChild(makeRowElement(
+          item2.title,
+          item2.subtitle || "Geometry",
+          item2.onActivate,
+          item2.onDelete,
+          { hidden: item2.hidden, onToggleVisibility: item2.onToggleVisibility }
+        ));
+      }
+    } else {
+      const empty2 = document.createElement("div");
+      Object.assign(empty2.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.48)",
+        paddingLeft: "4px"
+      });
+      empty2.textContent = "No shapes yet.";
+      list3.appendChild(empty2);
+    }
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -150762,7 +150814,6 @@ var GroupPanel = class _GroupPanel {
     this.collapseStateByChain = /* @__PURE__ */ new Map();
     this.savedSelections = [];
     this.regions = [];
-    this.shapes = [];
     this.annotations = [];
     this.measurements = [];
     this.sceneState = {};
@@ -150953,6 +151004,7 @@ var GroupPanel = class _GroupPanel {
     this.measuresSection = this.createSection("measures");
     this.annotationsSection = this.createSection("annotations");
     this.shapesSection = this.createSection("shapes");
+    this.shapesPanel = new ShapesPanel(this.makePanelContext("shapes"));
     this.layersSection = this.createSection("layers");
     this.viewportSection = this.createSection("viewport");
     this.exportSection = this.createSection("export");
@@ -150991,7 +151043,7 @@ var GroupPanel = class _GroupPanel {
     this.renderWholeSection();
     this.renderMeasuresSection();
     this.renderAnnotationsSection();
-    this.renderShapesSection();
+    this.shapesPanel.mount(this.shapesSection);
     this.renderLayersSection();
     this.renderViewportSection();
     this.renderExportSection();
@@ -151395,9 +151447,17 @@ var GroupPanel = class _GroupPanel {
     this.renderRegionsSection();
   }
   setShapes(items) {
-    this.shapes = [...items];
-    this.updateBadges();
-    this.renderShapesSection();
+    this.shapesPanel.setItems(items);
+  }
+  /** Build the narrow context injected into a migrated subpanel. */
+  makePanelContext(key2) {
+    return {
+      onAction: (action, details) => this.onAction?.(action, details),
+      setBadge: (text) => {
+        const badge = this.tabs.get(key2)?.badge;
+        if (badge) badge.textContent = text;
+      }
+    };
   }
   setAnnotations(items) {
     this.annotations = [...items];
@@ -151417,10 +151477,6 @@ var GroupPanel = class _GroupPanel {
     const annotationsBadge = this.tabs.get("annotations")?.badge;
     if (annotationsBadge) {
       annotationsBadge.textContent = String(this.annotations.length);
-    }
-    const shapesBadge = this.tabs.get("shapes")?.badge;
-    if (shapesBadge) {
-      shapesBadge.textContent = String(this.shapes.length);
     }
   }
   setScene(state) {
@@ -153176,41 +153232,6 @@ var GroupPanel = class _GroupPanel {
       });
       emptyLabel.textContent = "No annotations yet.";
       annotationsList.appendChild(emptyLabel);
-    }
-  }
-  renderShapesSection() {
-    this.shapesSection.replaceChildren();
-    this.shapesSection.appendChild(this.makeSectionHeader("3D Shapes"));
-    const shapesList = document.createElement("div");
-    Object.assign(shapesList.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px"
-    });
-    this.shapesSection.appendChild(shapesList);
-    if (this.shapes.length > 0) {
-      for (const item2 of this.shapes) {
-        const row = this.makeRowElement(
-          item2.title,
-          item2.subtitle || "Geometry",
-          item2.onActivate,
-          item2.onDelete,
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: item2.onToggleVisibility
-          }
-        );
-        shapesList.appendChild(row);
-      }
-    } else {
-      const emptyLabel = document.createElement("div");
-      Object.assign(emptyLabel.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.48)",
-        paddingLeft: "4px"
-      });
-      emptyLabel.textContent = "No shapes yet.";
-      shapesList.appendChild(emptyLabel);
     }
   }
   renderLayersSection() {
