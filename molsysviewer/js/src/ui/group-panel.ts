@@ -16,6 +16,8 @@ import {
 import { PanelContext } from "./panels/types";
 import { InspectorListPanel } from "./panels/inspector-list-panel";
 import { RoadmapPanel } from "./panels/roadmap-panel";
+import { ViewportPanel } from "./panels/viewport-panel";
+import { ExportPanel } from "./panels/export-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -103,6 +105,8 @@ export class GroupPanel {
     private readonly annotationsPanel: InspectorListPanel;
     private readonly wholePanel: RoadmapPanel;
     private readonly layersPanel: RoadmapPanel;
+    private readonly viewportPanel: ViewportPanel;
+    private readonly exportPanel: ExportPanel;
 
     // Right column: Content Sections
     private readonly rightColumn: HTMLDivElement;
@@ -146,7 +150,6 @@ export class GroupPanel {
     private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
     private savedSelections: SavedSelectionSummary[] = [];
     private regions: RegionSummary[] = [];
-    private sceneState: SceneState = {};
     private selectionQueryExpression = "";
     private selectionQuerySyntax: SelectionQuerySyntax = "MolSysMT";
     private selectionQueryPreviewRequest = 0;
@@ -582,7 +585,9 @@ export class GroupPanel {
             ],
         });
         this.viewportSection = this.createSection("viewport");
+        this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
         this.exportSection = this.createSection("export");
+        this.exportPanel = new ExportPanel(this.makePanelContext("export"));
         this.settingsSection = this.createSection("settings");
 
         // System tab: a compact palette header on top, horizontal sequence strips below.
@@ -628,8 +633,8 @@ export class GroupPanel {
         this.annotationsPanel.mount(this.annotationsSection);
         this.shapesPanel.mount(this.shapesSection);
         this.layersPanel.mount(this.layersSection);
-        this.renderViewportSection();
-        this.renderExportSection();
+        this.viewportPanel.mount(this.viewportSection);
+        this.exportPanel.mount(this.exportSection);
     }
 
     private createSection(key: TabKey): HTMLDivElement {
@@ -937,17 +942,8 @@ export class GroupPanel {
     }
 
     setScene(state: SceneState): void {
-        this.sceneState = { ...state };
-
-        // Update sidebar Viewport badge
-        const badge = this.tabs.get("viewport")?.badge;
-        if (badge) {
-            badge.textContent = state.isDarkMode ? "Dark" : "Light";
-            if (state.isSpinActive) badge.textContent += " · Spin";
-        }
-
-        this.renderViewportSection();
-        this.renderExportSection();
+        this.viewportPanel.setScene(state);
+        this.exportPanel.setScene(state);
     }
 
     updateContextTarget(target: ContextMenuTarget | null): void {
@@ -3027,240 +3023,6 @@ export class GroupPanel {
     }
 
     // ── 5. Viewport Section Rendering ────────────────────────
-    private renderViewportSection(): void {
-        this.viewportSection.replaceChildren();
-        this.viewportSection.appendChild(this.makeSectionHeader("Viewport Settings"));
-
-        const grid = document.createElement("div");
-        Object.assign(grid.style, {
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-            gap: "10px",
-            paddingBottom: "10px",
-        });
-        this.viewportSection.appendChild(grid);
-
-        // A. Viewport Card
-        const viewportCard = this.makeSettingsCard("Viewport Settings");
-        grid.appendChild(viewportCard);
-
-        // A1. Background toggle
-        const bgRow = document.createElement("div");
-        Object.assign(bgRow.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-        });
-        const bgLabel = document.createElement("span");
-        bgLabel.textContent = "Background";
-        Object.assign(bgLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-        const bgSelect = this.makeStyledSelect(["Dark", "Light"], this.sceneState.isDarkMode ? "Dark" : "Light", (val) => {
-            this.onAction?.("toggle_background", { mode: val.toLowerCase() });
-        });
-        bgRow.appendChild(bgLabel);
-        bgRow.appendChild(bgSelect);
-        viewportCard.appendChild(bgRow);
-
-        // A2. Spin toggle
-        viewportCard.appendChild(this.makeCheckboxRow("Auto-Rotate (Spin)", !!this.sceneState.isSpinActive, () => {
-            this.onAction?.("toggle_spin");
-        }));
-
-        // A3. Swing toggle
-        viewportCard.appendChild(this.makeCheckboxRow("Oscillate (Swing)", !!this.sceneState.isSwingActive, () => {
-            this.onAction?.("toggle_swing");
-        }));
-
-        // B. Camera Card
-        const cameraCard = this.makeSettingsCard("Camera Projection");
-        grid.appendChild(cameraCard);
-
-        // B1. Projection Mode
-        const projRow = document.createElement("div");
-        Object.assign(projRow.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-        });
-        const projLabel = document.createElement("span");
-        projLabel.textContent = "Projection";
-        Object.assign(projLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-        const projSelect = this.makeStyledSelect(["Perspective", "Orthographic"],
-            this.sceneState.cameraMode === "orthographic" ? "Orthographic" : "Perspective", (val) => {
-                this.onAction?.("set_camera_mode", { mode: val.toLowerCase() });
-            }
-        );
-        projRow.appendChild(projLabel);
-        projRow.appendChild(projSelect);
-        cameraCard.appendChild(projRow);
-
-        // B2. Fog enabled
-        const fogEnabled = !!this.sceneState.fogEnabled;
-        const fogIntensity = typeof this.sceneState.fogIntensity === "number" ? this.sceneState.fogIntensity : 0.5;
-
-        cameraCard.appendChild(this.makeCheckboxRow("Fog Enabled", fogEnabled, (checked) => {
-            this.onAction?.("set_fog", { enable: checked, intensity: fogIntensity });
-        }));
-
-        // B3. Fog intensity slider
-        const fogSliderRow = document.createElement("div");
-        Object.assign(fogSliderRow.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            width: "100%",
-            marginTop: "2px",
-        });
-        const fogSliderLabel = document.createElement("div");
-        Object.assign(fogSliderLabel.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: "10px",
-            color: "rgba(244,244,245,0.56)",
-        });
-        fogSliderLabel.innerHTML = `<span>Fog Intensity</span><span>${Math.round(fogIntensity * 100)}%</span>`;
-
-        const fogSlider = document.createElement("input");
-        fogSlider.type = "range";
-        fogSlider.min = "0.0";
-        fogSlider.max = "1.0";
-        fogSlider.step = "0.05";
-        fogSlider.value = String(fogIntensity);
-        fogSlider.disabled = !fogEnabled;
-        Object.assign(fogSlider.style, {
-            width: "100%",
-            height: "4px",
-            borderRadius: "2px",
-            background: "rgba(255,255,255,0.12)",
-            outline: "none",
-            cursor: fogEnabled ? "pointer" : "not-allowed",
-            opacity: fogEnabled ? "1" : "0.5",
-        });
-        fogSlider.addEventListener("change", () => {
-            const intensity = parseFloat(fogSlider.value);
-            this.onAction?.("set_fog", { enable: fogEnabled, intensity });
-        });
-
-        fogSliderRow.appendChild(fogSliderLabel);
-        fogSliderRow.appendChild(fogSlider);
-        cameraCard.appendChild(fogSliderRow);
-    }
-
-    private renderExportSection(): void {
-        this.exportSection.replaceChildren();
-        this.exportSection.appendChild(this.makeSectionHeader("Export Settings"));
-
-        const grid = document.createElement("div");
-        Object.assign(grid.style, {
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-            gap: "10px",
-            paddingBottom: "10px",
-        });
-        this.exportSection.appendChild(grid);
-
-        // C. Figure Export Card
-        const exportCard = this.makeSettingsCard("Figure Export");
-        grid.appendChild(exportCard);
-
-        const currentPreset = this.sceneState.figurePreset || "publication-light";
-        const currentScale = typeof this.sceneState.figureScale === "number" ? this.sceneState.figureScale : 2.0;
-        const currentVariants = this.sceneState.figureVariants || ["dark", "transparent"];
-        const isTransparent = currentVariants.includes("transparent");
-
-        const updateFigureSpec = (preset: string, scale: number, trans: boolean) => {
-            const variants = ["dark"];
-            if (trans) variants.push("transparent");
-            this.onAction?.("set_figure_spec", {
-                figure_preset: preset,
-                figure_scale: scale,
-                figure_variants: variants,
-            });
-        };
-
-        // C1. Preset selector
-        const presetRow = document.createElement("div");
-        Object.assign(presetRow.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-        });
-        const presetLabel = document.createElement("span");
-        presetLabel.textContent = "Preset";
-        Object.assign(presetLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-        const presetSelect = this.makeStyledSelect(["Light", "Dark"],
-            currentPreset.includes("dark") ? "Dark" : "Light", (val) => {
-                const presetVal = val === "Dark" ? "publication-dark" : "publication-light";
-                updateFigureSpec(presetVal, currentScale, isTransparent);
-            }
-        );
-        presetRow.appendChild(presetLabel);
-        presetRow.appendChild(presetSelect);
-        exportCard.appendChild(presetRow);
-
-        // C2. Resolution Scale dropdown
-        const scaleRow = document.createElement("div");
-        Object.assign(scaleRow.style, {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-        });
-        const scaleLabel = document.createElement("span");
-        scaleLabel.textContent = "Resolution Scale";
-        Object.assign(scaleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-        const scaleSelect = this.makeStyledSelect(["1.0x", "2.0x", "3.0x", "4.0x"], `${currentScale.toFixed(1)}x`, (val) => {
-            const scaleVal = parseFloat(val.replace("x", ""));
-            updateFigureSpec(currentPreset, scaleVal, isTransparent);
-        });
-        scaleRow.appendChild(scaleLabel);
-        scaleRow.appendChild(scaleSelect);
-        exportCard.appendChild(scaleRow);
-
-        // C3. Transparency checkbox
-        exportCard.appendChild(this.makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
-            updateFigureSpec(currentPreset, currentScale, checked);
-        }));
-
-        // C4. Download button
-        const downloadRow = document.createElement("div");
-        Object.assign(downloadRow.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            width: "100%",
-            marginTop: "6px",
-        });
-        const downloadButton = this.makeButton("Download Image File", () => {
-            this.onAction?.("download_image");
-        });
-        downloadRow.appendChild(downloadButton);
-        exportCard.appendChild(downloadRow);
-
-        // D. Data & State Card
-        const dataCard = this.makeSettingsCard("Data & State");
-        grid.appendChild(dataCard);
-
-        const htmlRow = document.createElement("div");
-        Object.assign(htmlRow.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-            width: "100%",
-        });
-        const htmlLabel = document.createElement("span");
-        htmlLabel.textContent = "Save standalone view as HTML page";
-        Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
-        const htmlButton = this.makeButton("Download HTML View", () => {
-            this.onAction?.("export_html");
-        });
-        htmlRow.appendChild(htmlLabel);
-        htmlRow.appendChild(htmlButton);
-        dataCard.appendChild(htmlRow);
-    }
 
     // ── Helper UI Constructors ──────────────────────────────
     private makeButton(text: string, onClick: () => void): HTMLButtonElement {

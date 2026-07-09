@@ -149508,6 +149508,248 @@ var RoadmapPanel = class {
   }
 };
 
+// src/ui/panels/viewport-panel.ts
+var ViewportPanel = class {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.key = "viewport";
+    this.host = null;
+    this.state = {};
+  }
+  mount(host) {
+    this.host = host;
+    this.render();
+  }
+  setScene(state) {
+    this.state = { ...state };
+    let badge = state.isDarkMode ? "Dark" : "Light";
+    if (state.isSpinActive) badge += " \xB7 Spin";
+    this.ctx.setBadge(badge);
+    this.render();
+  }
+  render() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Viewport Settings"));
+    const grid = document.createElement("div");
+    Object.assign(grid.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      gap: "10px",
+      paddingBottom: "10px"
+    });
+    this.host.appendChild(grid);
+    const viewportCard = makeSettingsCard("Viewport Settings");
+    grid.appendChild(viewportCard);
+    const bgRow = document.createElement("div");
+    Object.assign(bgRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
+    const bgLabel = document.createElement("span");
+    bgLabel.textContent = "Background";
+    Object.assign(bgLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+    const bgSelect = makeStyledSelect(["Dark", "Light"], this.state.isDarkMode ? "Dark" : "Light", (val) => {
+      this.ctx.onAction("toggle_background", { mode: val.toLowerCase() });
+    });
+    bgRow.appendChild(bgLabel);
+    bgRow.appendChild(bgSelect);
+    viewportCard.appendChild(bgRow);
+    viewportCard.appendChild(makeCheckboxRow("Auto-Rotate (Spin)", !!this.state.isSpinActive, () => {
+      this.ctx.onAction("toggle_spin");
+    }));
+    viewportCard.appendChild(makeCheckboxRow("Oscillate (Swing)", !!this.state.isSwingActive, () => {
+      this.ctx.onAction("toggle_swing");
+    }));
+    const cameraCard = makeSettingsCard("Camera Projection");
+    grid.appendChild(cameraCard);
+    const projRow = document.createElement("div");
+    Object.assign(projRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
+    const projLabel = document.createElement("span");
+    projLabel.textContent = "Projection";
+    Object.assign(projLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+    const projSelect = makeStyledSelect(
+      ["Perspective", "Orthographic"],
+      this.state.cameraMode === "orthographic" ? "Orthographic" : "Perspective",
+      (val) => {
+        this.ctx.onAction("set_camera_mode", { mode: val.toLowerCase() });
+      }
+    );
+    projRow.appendChild(projLabel);
+    projRow.appendChild(projSelect);
+    cameraCard.appendChild(projRow);
+    const fogEnabled = !!this.state.fogEnabled;
+    const fogIntensity = typeof this.state.fogIntensity === "number" ? this.state.fogIntensity : 0.5;
+    cameraCard.appendChild(makeCheckboxRow("Fog Enabled", fogEnabled, (checked) => {
+      this.ctx.onAction("set_fog", { enable: checked, intensity: fogIntensity });
+    }));
+    const fogSliderRow = document.createElement("div");
+    Object.assign(fogSliderRow.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+      width: "100%",
+      marginTop: "2px"
+    });
+    const fogSliderLabel = document.createElement("div");
+    Object.assign(fogSliderLabel.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    fogSliderLabel.innerHTML = `<span>Fog Intensity</span><span>${Math.round(fogIntensity * 100)}%</span>`;
+    const fogSlider = document.createElement("input");
+    fogSlider.type = "range";
+    fogSlider.min = "0.0";
+    fogSlider.max = "1.0";
+    fogSlider.step = "0.05";
+    fogSlider.value = String(fogIntensity);
+    fogSlider.disabled = !fogEnabled;
+    Object.assign(fogSlider.style, {
+      width: "100%",
+      height: "4px",
+      borderRadius: "2px",
+      background: "rgba(255,255,255,0.12)",
+      outline: "none",
+      cursor: fogEnabled ? "pointer" : "not-allowed",
+      opacity: fogEnabled ? "1" : "0.5"
+    });
+    fogSlider.addEventListener("change", () => {
+      const intensity = parseFloat(fogSlider.value);
+      this.ctx.onAction("set_fog", { enable: fogEnabled, intensity });
+    });
+    fogSliderRow.appendChild(fogSliderLabel);
+    fogSliderRow.appendChild(fogSlider);
+    cameraCard.appendChild(fogSliderRow);
+  }
+};
+
+// src/ui/panels/export-panel.ts
+var ExportPanel = class {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.key = "export";
+    this.host = null;
+    this.state = {};
+  }
+  mount(host) {
+    this.host = host;
+    this.render();
+  }
+  setScene(state) {
+    this.state = { ...state };
+    this.render();
+  }
+  render() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Export Settings"));
+    const grid = document.createElement("div");
+    Object.assign(grid.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      gap: "10px",
+      paddingBottom: "10px"
+    });
+    this.host.appendChild(grid);
+    const exportCard = makeSettingsCard("Figure Export");
+    grid.appendChild(exportCard);
+    const currentPreset = this.state.figurePreset || "publication-light";
+    const currentScale = typeof this.state.figureScale === "number" ? this.state.figureScale : 2;
+    const currentVariants = this.state.figureVariants || ["dark", "transparent"];
+    const isTransparent = currentVariants.includes("transparent");
+    const updateFigureSpec = (preset, scale, trans) => {
+      const variants = ["dark"];
+      if (trans) variants.push("transparent");
+      this.ctx.onAction("set_figure_spec", {
+        figure_preset: preset,
+        figure_scale: scale,
+        figure_variants: variants
+      });
+    };
+    const presetRow = document.createElement("div");
+    Object.assign(presetRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
+    const presetLabel = document.createElement("span");
+    presetLabel.textContent = "Preset";
+    Object.assign(presetLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+    const presetSelect = makeStyledSelect(
+      ["Light", "Dark"],
+      currentPreset.includes("dark") ? "Dark" : "Light",
+      (val) => {
+        const presetVal = val === "Dark" ? "publication-dark" : "publication-light";
+        updateFigureSpec(presetVal, currentScale, isTransparent);
+      }
+    );
+    presetRow.appendChild(presetLabel);
+    presetRow.appendChild(presetSelect);
+    exportCard.appendChild(presetRow);
+    const scaleRow = document.createElement("div");
+    Object.assign(scaleRow.style, {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%"
+    });
+    const scaleLabel = document.createElement("span");
+    scaleLabel.textContent = "Resolution Scale";
+    Object.assign(scaleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
+    const scaleSelect = makeStyledSelect(["1.0x", "2.0x", "3.0x", "4.0x"], `${currentScale.toFixed(1)}x`, (val) => {
+      const scaleVal = parseFloat(val.replace("x", ""));
+      updateFigureSpec(currentPreset, scaleVal, isTransparent);
+    });
+    scaleRow.appendChild(scaleLabel);
+    scaleRow.appendChild(scaleSelect);
+    exportCard.appendChild(scaleRow);
+    exportCard.appendChild(makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
+      updateFigureSpec(currentPreset, currentScale, checked);
+    }));
+    const downloadRow = document.createElement("div");
+    Object.assign(downloadRow.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px",
+      width: "100%",
+      marginTop: "6px"
+    });
+    const downloadButton = makeButton("Download Image File", () => {
+      this.ctx.onAction("download_image");
+    });
+    downloadRow.appendChild(downloadButton);
+    exportCard.appendChild(downloadRow);
+    const dataCard = makeSettingsCard("Data & State");
+    grid.appendChild(dataCard);
+    const htmlRow = document.createElement("div");
+    Object.assign(htmlRow.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px",
+      width: "100%"
+    });
+    const htmlLabel = document.createElement("span");
+    htmlLabel.textContent = "Save standalone view as HTML page";
+    Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
+    const htmlButton = makeButton("Download HTML View", () => {
+      this.ctx.onAction("export_html");
+    });
+    htmlRow.appendChild(htmlLabel);
+    htmlRow.appendChild(htmlButton);
+    dataCard.appendChild(htmlRow);
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -150861,7 +151103,6 @@ var GroupPanel = class _GroupPanel {
     this.collapseStateByChain = /* @__PURE__ */ new Map();
     this.savedSelections = [];
     this.regions = [];
-    this.sceneState = {};
     this.selectionQueryExpression = "";
     this.selectionQuerySyntax = "MolSysMT";
     this.selectionQueryPreviewRequest = 0;
@@ -151087,7 +151328,9 @@ var GroupPanel = class _GroupPanel {
       ]
     });
     this.viewportSection = this.createSection("viewport");
+    this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
     this.exportSection = this.createSection("export");
+    this.exportPanel = new ExportPanel(this.makePanelContext("export"));
     this.settingsSection = this.createSection("settings");
     Object.assign(this.systemSection.style, {
       flexDirection: "column",
@@ -151125,8 +151368,8 @@ var GroupPanel = class _GroupPanel {
     this.annotationsPanel.mount(this.annotationsSection);
     this.shapesPanel.mount(this.shapesSection);
     this.layersPanel.mount(this.layersSection);
-    this.renderViewportSection();
-    this.renderExportSection();
+    this.viewportPanel.mount(this.viewportSection);
+    this.exportPanel.mount(this.exportSection);
   }
   static {
     this.SELECTION_STYLE_ID = "molsysviewer-selection-panel-design-system";
@@ -151546,14 +151789,8 @@ var GroupPanel = class _GroupPanel {
     this.measuresPanel.setItems(items);
   }
   setScene(state) {
-    this.sceneState = { ...state };
-    const badge = this.tabs.get("viewport")?.badge;
-    if (badge) {
-      badge.textContent = state.isDarkMode ? "Dark" : "Light";
-      if (state.isSpinActive) badge.textContent += " \xB7 Spin";
-    }
-    this.renderViewportSection();
-    this.renderExportSection();
+    this.viewportPanel.setScene(state);
+    this.exportPanel.setScene(state);
   }
   updateContextTarget(target) {
     this.currentContextTarget = target;
@@ -153482,207 +153719,6 @@ var GroupPanel = class _GroupPanel {
     return container;
   }
   // ── 5. Viewport Section Rendering ────────────────────────
-  renderViewportSection() {
-    this.viewportSection.replaceChildren();
-    this.viewportSection.appendChild(this.makeSectionHeader("Viewport Settings"));
-    const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-      gap: "10px",
-      paddingBottom: "10px"
-    });
-    this.viewportSection.appendChild(grid);
-    const viewportCard = this.makeSettingsCard("Viewport Settings");
-    grid.appendChild(viewportCard);
-    const bgRow = document.createElement("div");
-    Object.assign(bgRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const bgLabel = document.createElement("span");
-    bgLabel.textContent = "Background";
-    Object.assign(bgLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const bgSelect = this.makeStyledSelect(["Dark", "Light"], this.sceneState.isDarkMode ? "Dark" : "Light", (val) => {
-      this.onAction?.("toggle_background", { mode: val.toLowerCase() });
-    });
-    bgRow.appendChild(bgLabel);
-    bgRow.appendChild(bgSelect);
-    viewportCard.appendChild(bgRow);
-    viewportCard.appendChild(this.makeCheckboxRow("Auto-Rotate (Spin)", !!this.sceneState.isSpinActive, () => {
-      this.onAction?.("toggle_spin");
-    }));
-    viewportCard.appendChild(this.makeCheckboxRow("Oscillate (Swing)", !!this.sceneState.isSwingActive, () => {
-      this.onAction?.("toggle_swing");
-    }));
-    const cameraCard = this.makeSettingsCard("Camera Projection");
-    grid.appendChild(cameraCard);
-    const projRow = document.createElement("div");
-    Object.assign(projRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const projLabel = document.createElement("span");
-    projLabel.textContent = "Projection";
-    Object.assign(projLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const projSelect = this.makeStyledSelect(
-      ["Perspective", "Orthographic"],
-      this.sceneState.cameraMode === "orthographic" ? "Orthographic" : "Perspective",
-      (val) => {
-        this.onAction?.("set_camera_mode", { mode: val.toLowerCase() });
-      }
-    );
-    projRow.appendChild(projLabel);
-    projRow.appendChild(projSelect);
-    cameraCard.appendChild(projRow);
-    const fogEnabled = !!this.sceneState.fogEnabled;
-    const fogIntensity = typeof this.sceneState.fogIntensity === "number" ? this.sceneState.fogIntensity : 0.5;
-    cameraCard.appendChild(this.makeCheckboxRow("Fog Enabled", fogEnabled, (checked) => {
-      this.onAction?.("set_fog", { enable: checked, intensity: fogIntensity });
-    }));
-    const fogSliderRow = document.createElement("div");
-    Object.assign(fogSliderRow.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      marginTop: "2px"
-    });
-    const fogSliderLabel = document.createElement("div");
-    Object.assign(fogSliderLabel.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      fontSize: "10px",
-      color: "rgba(244,244,245,0.56)"
-    });
-    fogSliderLabel.innerHTML = `<span>Fog Intensity</span><span>${Math.round(fogIntensity * 100)}%</span>`;
-    const fogSlider = document.createElement("input");
-    fogSlider.type = "range";
-    fogSlider.min = "0.0";
-    fogSlider.max = "1.0";
-    fogSlider.step = "0.05";
-    fogSlider.value = String(fogIntensity);
-    fogSlider.disabled = !fogEnabled;
-    Object.assign(fogSlider.style, {
-      width: "100%",
-      height: "4px",
-      borderRadius: "2px",
-      background: "rgba(255,255,255,0.12)",
-      outline: "none",
-      cursor: fogEnabled ? "pointer" : "not-allowed",
-      opacity: fogEnabled ? "1" : "0.5"
-    });
-    fogSlider.addEventListener("change", () => {
-      const intensity = parseFloat(fogSlider.value);
-      this.onAction?.("set_fog", { enable: fogEnabled, intensity });
-    });
-    fogSliderRow.appendChild(fogSliderLabel);
-    fogSliderRow.appendChild(fogSlider);
-    cameraCard.appendChild(fogSliderRow);
-  }
-  renderExportSection() {
-    this.exportSection.replaceChildren();
-    this.exportSection.appendChild(this.makeSectionHeader("Export Settings"));
-    const grid = document.createElement("div");
-    Object.assign(grid.style, {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-      gap: "10px",
-      paddingBottom: "10px"
-    });
-    this.exportSection.appendChild(grid);
-    const exportCard = this.makeSettingsCard("Figure Export");
-    grid.appendChild(exportCard);
-    const currentPreset = this.sceneState.figurePreset || "publication-light";
-    const currentScale = typeof this.sceneState.figureScale === "number" ? this.sceneState.figureScale : 2;
-    const currentVariants = this.sceneState.figureVariants || ["dark", "transparent"];
-    const isTransparent = currentVariants.includes("transparent");
-    const updateFigureSpec = (preset, scale, trans) => {
-      const variants = ["dark"];
-      if (trans) variants.push("transparent");
-      this.onAction?.("set_figure_spec", {
-        figure_preset: preset,
-        figure_scale: scale,
-        figure_variants: variants
-      });
-    };
-    const presetRow = document.createElement("div");
-    Object.assign(presetRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const presetLabel = document.createElement("span");
-    presetLabel.textContent = "Preset";
-    Object.assign(presetLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const presetSelect = this.makeStyledSelect(
-      ["Light", "Dark"],
-      currentPreset.includes("dark") ? "Dark" : "Light",
-      (val) => {
-        const presetVal = val === "Dark" ? "publication-dark" : "publication-light";
-        updateFigureSpec(presetVal, currentScale, isTransparent);
-      }
-    );
-    presetRow.appendChild(presetLabel);
-    presetRow.appendChild(presetSelect);
-    exportCard.appendChild(presetRow);
-    const scaleRow = document.createElement("div");
-    Object.assign(scaleRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const scaleLabel = document.createElement("span");
-    scaleLabel.textContent = "Resolution Scale";
-    Object.assign(scaleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-    const scaleSelect = this.makeStyledSelect(["1.0x", "2.0x", "3.0x", "4.0x"], `${currentScale.toFixed(1)}x`, (val) => {
-      const scaleVal = parseFloat(val.replace("x", ""));
-      updateFigureSpec(currentPreset, scaleVal, isTransparent);
-    });
-    scaleRow.appendChild(scaleLabel);
-    scaleRow.appendChild(scaleSelect);
-    exportCard.appendChild(scaleRow);
-    exportCard.appendChild(this.makeCheckboxRow("Transparent Background", isTransparent, (checked) => {
-      updateFigureSpec(currentPreset, currentScale, checked);
-    }));
-    const downloadRow = document.createElement("div");
-    Object.assign(downloadRow.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-      width: "100%",
-      marginTop: "6px"
-    });
-    const downloadButton = this.makeButton("Download Image File", () => {
-      this.onAction?.("download_image");
-    });
-    downloadRow.appendChild(downloadButton);
-    exportCard.appendChild(downloadRow);
-    const dataCard = this.makeSettingsCard("Data & State");
-    grid.appendChild(dataCard);
-    const htmlRow = document.createElement("div");
-    Object.assign(htmlRow.style, {
-      display: "flex",
-      flexDirection: "column",
-      gap: "6px",
-      width: "100%"
-    });
-    const htmlLabel = document.createElement("span");
-    htmlLabel.textContent = "Save standalone view as HTML page";
-    Object.assign(htmlLabel.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
-    const htmlButton = this.makeButton("Download HTML View", () => {
-      this.onAction?.("export_html");
-    });
-    htmlRow.appendChild(htmlLabel);
-    htmlRow.appendChild(htmlButton);
-    dataCard.appendChild(htmlRow);
-  }
   // ── Helper UI Constructors ──────────────────────────────
   makeButton(text, onClick) {
     return makeButton(text, onClick);
