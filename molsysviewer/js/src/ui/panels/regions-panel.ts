@@ -26,6 +26,8 @@ export class RegionsPanel extends BasePanel {
     // View state (owned locally)
     private activeStyleRegionTag: string | null = null;
     private regionQueryComposer: ManualQueryComposer | null = null;
+    /** Live ref to the create-from-query button, so typing updates only it. */
+    private queryCreateButton: HTMLButtonElement | null = null;
     private regionCreateOrigin: "active" | "query" | "split" = "active";
     private regionCreateTag = "";
     private regionCreateRepresentation = "";
@@ -93,10 +95,26 @@ export class RegionsPanel extends BasePanel {
     /** Route a query preview; returns true if it belonged to this panel's composer. */
     updatePreview(preview: SelectionQueryPreview): boolean {
         if (this.regionQueryComposer?.updatePreview(preview)) {
-            this.scheduleRender();
+            // The composer repaints its own status line; only the create button
+            // depends on verification, so update it in place, not the whole panel.
+            this.syncQueryCreateButton();
             return true;
         }
         return false;
+    }
+
+    /**
+     * Enable/disable the create-from-query button from the composer's verification
+     * state. Typing invalidates the preview, so this must run on every composer
+     * change — in place, without repainting the panel.
+     */
+    private syncQueryCreateButton(): void {
+        const button = this.queryCreateButton;
+        if (!button) return;
+        const verified = this.regionQueryComposer?.isVerifiedNonEmpty() ?? false;
+        button.disabled = !verified;
+        button.style.opacity = verified ? "1" : "0.42";
+        button.style.cursor = verified ? "pointer" : "not-allowed";
     }
 
     setCurrentSelection(selection: ActiveSelectionPayload): void {
@@ -150,12 +168,14 @@ export class RegionsPanel extends BasePanel {
         if (this.regionQueryComposer === null) {
             this.regionQueryComposer = new ManualQueryComposer("region", (details) => {
                 this.ctx.onAction("selection_query_preview_request", details);
-            });
+            }, () => this.syncQueryCreateButton());
         }
         return this.regionQueryComposer;
     }
 
     private renderRegionCreateSection(): HTMLDivElement {
+        // Only the "query" origin renders the create-from-query button.
+        this.queryCreateButton = null;
         const container = document.createElement("div");
         container.setAttribute("data-molsysviewer-region-create", "true");
         Object.assign(container.style, {
@@ -270,11 +290,8 @@ export class RegionsPanel extends BasePanel {
                 createWithCollision("create_region_from_query", query);
             });
             create.setAttribute("data-molsysviewer-region-create-query", "true");
-            create.disabled = !composer.isVerifiedNonEmpty();
-            if (create.disabled) {
-                create.style.opacity = "0.42";
-                create.style.cursor = "not-allowed";
-            }
+            this.queryCreateButton = create;
+            this.syncQueryCreateButton();
             container.appendChild(create);
         } else {
             const splitRow = document.createElement("div");

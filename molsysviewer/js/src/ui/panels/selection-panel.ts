@@ -24,6 +24,8 @@ export class SelectionPanel extends BasePanel {
 
     // View state
     private selectionQueryComposer: ManualQueryComposer | null = null;
+    /** Live refs to the query operation buttons, so typing updates only them. */
+    private queryOpButtons: HTMLButtonElement[] = [];
     private selectionCheatSheetOpen = false;
     private selectionCanUndo = false;
     private selectionCanRedo = false;
@@ -64,9 +66,9 @@ export class SelectionPanel extends BasePanel {
 
     /** Route a query preview belonging to this panel's manual composer. */
     updatePreview(preview: SelectionQueryPreview): void {
-        if (this.selectionQueryComposer?.updatePreview(preview)) {
-            this.scheduleRender();
-        }
+        // The composer owns and repaints its own status line; the rest of the
+        // panel does not depend on the preview, so no panel repaint is needed.
+        this.selectionQueryComposer?.updatePreview(preview);
     }
 
     static ensureDesignSystemStyles(): void {
@@ -878,7 +880,6 @@ export class SelectionPanel extends BasePanel {
             gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
             gap: "6px",
         });
-        const hasExpression = composer.value().expression.length > 0;
         const apply = (op: "replace" | "add" | "subtract" | "intersect") => {
             const { expression, syntax } = composer.value();
             if (!expression) return;
@@ -896,24 +897,37 @@ export class SelectionPanel extends BasePanel {
         subtractBtn.setAttribute("data-molsysviewer-selection-query-apply", "subtract");
         const intersectBtn = makeButton("Intersect", () => apply("intersect"));
         intersectBtn.setAttribute("data-molsysviewer-selection-query-apply", "intersect");
-        for (const btn of [selectBtn, unionBtn, subtractBtn, intersectBtn]) {
-            btn.disabled = !hasExpression;
-            if (!hasExpression) {
-                btn.style.opacity = "0.42";
-                btn.style.cursor = "not-allowed";
-            }
+        this.queryOpButtons = [selectBtn, unionBtn, subtractBtn, intersectBtn];
+        for (const btn of this.queryOpButtons) {
             buttonRow.appendChild(btn);
         }
+        this.syncQueryOpButtons();
         container.appendChild(buttonRow);
 
         return container;
+    }
+
+    /**
+     * Enable/disable the query operation buttons from the composer's current text.
+     *
+     * Typing must not repaint the panel: the composer owns its own input and status
+     * line, and the only thing that depends on the typed text is these four buttons.
+     * So we mutate them in place instead of scheduling a full render.
+     */
+    private syncQueryOpButtons(): void {
+        const hasExpression = (this.selectionQueryComposer?.value().expression.length ?? 0) > 0;
+        for (const btn of this.queryOpButtons) {
+            btn.disabled = !hasExpression;
+            btn.style.opacity = hasExpression ? "1" : "0.42";
+            btn.style.cursor = hasExpression ? "pointer" : "not-allowed";
+        }
     }
 
     private getSelectionQueryComposer(): ManualQueryComposer {
         if (this.selectionQueryComposer === null) {
             this.selectionQueryComposer = new ManualQueryComposer("selection", (details) => {
                 this.ctx.onAction("selection_query_preview_request", details);
-            }, () => this.scheduleRender());
+            }, () => this.syncQueryOpButtons());
         }
         return this.selectionQueryComposer;
     }

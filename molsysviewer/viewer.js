@@ -149254,6 +149254,8 @@ var RegionsPanel = class extends BasePanel {
     // View state (owned locally)
     this.activeStyleRegionTag = null;
     this.regionQueryComposer = null;
+    /** Live ref to the create-from-query button, so typing updates only it. */
+    this.queryCreateButton = null;
     this.regionCreateOrigin = "active";
     this.regionCreateTag = "";
     this.regionCreateRepresentation = "";
@@ -149307,10 +149309,23 @@ var RegionsPanel = class extends BasePanel {
   /** Route a query preview; returns true if it belonged to this panel's composer. */
   updatePreview(preview) {
     if (this.regionQueryComposer?.updatePreview(preview)) {
-      this.scheduleRender();
+      this.syncQueryCreateButton();
       return true;
     }
     return false;
+  }
+  /**
+   * Enable/disable the create-from-query button from the composer's verification
+   * state. Typing invalidates the preview, so this must run on every composer
+   * change — in place, without repainting the panel.
+   */
+  syncQueryCreateButton() {
+    const button = this.queryCreateButton;
+    if (!button) return;
+    const verified = this.regionQueryComposer?.isVerifiedNonEmpty() ?? false;
+    button.disabled = !verified;
+    button.style.opacity = verified ? "1" : "0.42";
+    button.style.cursor = verified ? "pointer" : "not-allowed";
   }
   setCurrentSelection(selection) {
     this.currentSelection = selection;
@@ -149358,11 +149373,12 @@ var RegionsPanel = class extends BasePanel {
     if (this.regionQueryComposer === null) {
       this.regionQueryComposer = new ManualQueryComposer("region", (details) => {
         this.ctx.onAction("selection_query_preview_request", details);
-      });
+      }, () => this.syncQueryCreateButton());
     }
     return this.regionQueryComposer;
   }
   renderRegionCreateSection() {
+    this.queryCreateButton = null;
     const container = document.createElement("div");
     container.setAttribute("data-molsysviewer-region-create", "true");
     Object.assign(container.style, {
@@ -149471,11 +149487,8 @@ var RegionsPanel = class extends BasePanel {
         createWithCollision("create_region_from_query", query2);
       });
       create3.setAttribute("data-molsysviewer-region-create-query", "true");
-      create3.disabled = !composer.isVerifiedNonEmpty();
-      if (create3.disabled) {
-        create3.style.opacity = "0.42";
-        create3.style.cursor = "not-allowed";
-      }
+      this.queryCreateButton = create3;
+      this.syncQueryCreateButton();
       container.appendChild(create3);
     } else {
       const splitRow = document.createElement("div");
@@ -150213,6 +150226,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     this.savedSelections = [];
     // View state
     this.selectionQueryComposer = null;
+    /** Live refs to the query operation buttons, so typing updates only them. */
+    this.queryOpButtons = [];
     this.selectionCheatSheetOpen = false;
     this.selectionCanUndo = false;
     this.selectionCanRedo = false;
@@ -150243,9 +150258,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   }
   /** Route a query preview belonging to this panel's manual composer. */
   updatePreview(preview) {
-    if (this.selectionQueryComposer?.updatePreview(preview)) {
-      this.scheduleRender();
-    }
+    this.selectionQueryComposer?.updatePreview(preview);
   }
   static ensureDesignSystemStyles() {
     if (typeof document === "undefined") return;
@@ -150997,7 +151010,6 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
       gap: "6px"
     });
-    const hasExpression = composer.value().expression.length > 0;
     const apply = (op4) => {
       const { expression, syntax } = composer.value();
       if (!expression) return;
@@ -151015,22 +151027,34 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     subtractBtn.setAttribute("data-molsysviewer-selection-query-apply", "subtract");
     const intersectBtn = makeButton("Intersect", () => apply("intersect"));
     intersectBtn.setAttribute("data-molsysviewer-selection-query-apply", "intersect");
-    for (const btn of [selectBtn, unionBtn, subtractBtn, intersectBtn]) {
-      btn.disabled = !hasExpression;
-      if (!hasExpression) {
-        btn.style.opacity = "0.42";
-        btn.style.cursor = "not-allowed";
-      }
+    this.queryOpButtons = [selectBtn, unionBtn, subtractBtn, intersectBtn];
+    for (const btn of this.queryOpButtons) {
       buttonRow.appendChild(btn);
     }
+    this.syncQueryOpButtons();
     container.appendChild(buttonRow);
     return container;
+  }
+  /**
+   * Enable/disable the query operation buttons from the composer's current text.
+   *
+   * Typing must not repaint the panel: the composer owns its own input and status
+   * line, and the only thing that depends on the typed text is these four buttons.
+   * So we mutate them in place instead of scheduling a full render.
+   */
+  syncQueryOpButtons() {
+    const hasExpression = (this.selectionQueryComposer?.value().expression.length ?? 0) > 0;
+    for (const btn of this.queryOpButtons) {
+      btn.disabled = !hasExpression;
+      btn.style.opacity = hasExpression ? "1" : "0.42";
+      btn.style.cursor = hasExpression ? "pointer" : "not-allowed";
+    }
   }
   getSelectionQueryComposer() {
     if (this.selectionQueryComposer === null) {
       this.selectionQueryComposer = new ManualQueryComposer("selection", (details) => {
         this.ctx.onAction("selection_query_preview_request", details);
-      }, () => this.scheduleRender());
+      }, () => this.syncQueryOpButtons());
     }
     return this.selectionQueryComposer;
   }
