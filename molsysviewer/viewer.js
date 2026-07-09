@@ -149462,6 +149462,52 @@ var InspectorListPanel = class {
   }
 };
 
+// src/ui/panels/roadmap-panel.ts
+var RoadmapPanel = class {
+  constructor(key2, config2) {
+    this.key = key2;
+    this.config = config2;
+    this.host = null;
+  }
+  mount(host) {
+    this.host = host;
+    this.render();
+  }
+  render() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader(this.config.header));
+    const card = makeSettingsCard(this.config.cardTitle);
+    const desc = document.createElement("div");
+    Object.assign(desc.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      lineHeight: "1.5",
+      marginBottom: "8px"
+    });
+    desc.textContent = this.config.description;
+    card.appendChild(desc);
+    const list3 = document.createElement("ul");
+    Object.assign(list3.style, {
+      fontSize: "11px",
+      color: "rgba(244,244,245,0.7)",
+      lineHeight: "1.6",
+      paddingLeft: "16px",
+      margin: "0",
+      display: "flex",
+      flexDirection: "column",
+      gap: "4px"
+    });
+    for (const itemText of this.config.items) {
+      const li = document.createElement("li");
+      li.textContent = itemText;
+      list3.appendChild(li);
+    }
+    card.appendChild(list3);
+    this.host.appendChild(card);
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -150995,6 +151041,17 @@ var GroupPanel = class _GroupPanel {
     this.body.appendChild(this.rightColumn);
     this.systemSection = this.createSection("system");
     this.wholeSection = this.createSection("whole");
+    this.wholePanel = new RoadmapPanel("whole", {
+      header: "Whole Structure",
+      cardTitle: "Feature Roadmap",
+      description: "This subpanel will house visual configuration controls for the baseline molecular structure (view.whole). Planned features include:",
+      items: [
+        "Presets & Representation Styles: Choose from 12 styles (cartoon, ribbon, spacefill, licorice, ball & stick, etc.)",
+        "Structure Opacity: Fine-tune baseline alpha transparency across the global scene",
+        "Render Quality: Adjust geometric details for high-performance viewing or production exports",
+        "Base Coloring: Select standard or custom uniform color palettes for the whole system"
+      ]
+    });
     this.selectionSection = this.createSection("selection");
     this.selectionSection.tabIndex = 0;
     this.selectionSection.setAttribute("data-molsysviewer-selection-panel", "true");
@@ -151019,6 +151076,16 @@ var GroupPanel = class _GroupPanel {
       emptyText: "No shapes yet."
     });
     this.layersSection = this.createSection("layers");
+    this.layersPanel = new RoadmapPanel("layers", {
+      header: "Logical Layers",
+      cardTitle: "Feature Roadmap",
+      description: "This subpanel will act as a logical group tag organizer (view.layers). Planned features include:",
+      items: [
+        "Group Tag Registry: View and list all active grouping tags across layers",
+        "Bulk Actions: Toggle visibility or delete whole categories of annotations/measures in one click",
+        "Layer Assignments: Map structural representations and custom shapes to target layers dynamically"
+      ]
+    });
     this.viewportSection = this.createSection("viewport");
     this.exportSection = this.createSection("export");
     this.settingsSection = this.createSection("settings");
@@ -151053,11 +151120,11 @@ var GroupPanel = class _GroupPanel {
     this.switchTab("system");
     this.renderSelectionSection();
     this.renderRegionsSection();
-    this.renderWholeSection();
+    this.wholePanel.mount(this.wholeSection);
     this.measuresPanel.mount(this.measuresSection);
     this.annotationsPanel.mount(this.annotationsSection);
     this.shapesPanel.mount(this.shapesSection);
-    this.renderLayersSection();
+    this.layersPanel.mount(this.layersSection);
     this.renderViewportSection();
     this.renderExportSection();
   }
@@ -153125,81 +153192,6 @@ var GroupPanel = class _GroupPanel {
     return panel;
   }
   // ── 3. Overlays Section Rendering ────────────────────────
-  renderWholeSection() {
-    this.wholeSection.replaceChildren();
-    this.wholeSection.appendChild(this.makeSectionHeader("Whole Structure"));
-    const card = this.makeSettingsCard("Feature Roadmap");
-    const desc = document.createElement("div");
-    Object.assign(desc.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.7)",
-      lineHeight: "1.5",
-      marginBottom: "8px"
-    });
-    desc.textContent = "This subpanel will house visual configuration controls for the baseline molecular structure (view.whole). Planned features include:";
-    card.appendChild(desc);
-    const list3 = document.createElement("ul");
-    Object.assign(list3.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.7)",
-      lineHeight: "1.6",
-      paddingLeft: "16px",
-      margin: "0",
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px"
-    });
-    const items = [
-      "Presets & Representation Styles: Choose from 12 styles (cartoon, ribbon, spacefill, licorice, ball & stick, etc.)",
-      "Structure Opacity: Fine-tune baseline alpha transparency across the global scene",
-      "Render Quality: Adjust geometric details for high-performance viewing or production exports",
-      "Base Coloring: Select standard or custom uniform color palettes for the whole system"
-    ];
-    for (const itemText of items) {
-      const li = document.createElement("li");
-      li.textContent = itemText;
-      list3.appendChild(li);
-    }
-    card.appendChild(list3);
-    this.wholeSection.appendChild(card);
-  }
-  renderLayersSection() {
-    this.layersSection.replaceChildren();
-    this.layersSection.appendChild(this.makeSectionHeader("Logical Layers"));
-    const card = this.makeSettingsCard("Feature Roadmap");
-    const desc = document.createElement("div");
-    Object.assign(desc.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.7)",
-      lineHeight: "1.5",
-      marginBottom: "8px"
-    });
-    desc.textContent = "This subpanel will act as a logical group tag organizer (view.layers). Planned features include:";
-    card.appendChild(desc);
-    const list3 = document.createElement("ul");
-    Object.assign(list3.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.7)",
-      lineHeight: "1.6",
-      paddingLeft: "16px",
-      margin: "0",
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px"
-    });
-    const items = [
-      "Group Tag Registry: View and list all active grouping tags across layers",
-      "Bulk Actions: Toggle visibility or delete whole categories of annotations/measures in one click",
-      "Layer Assignments: Map structural representations and custom shapes to target layers dynamically"
-    ];
-    for (const itemText of items) {
-      const li = document.createElement("li");
-      li.textContent = itemText;
-      list3.appendChild(li);
-    }
-    card.appendChild(list3);
-    this.layersSection.appendChild(card);
-  }
   renderStyleComposer(item2) {
     const tag = item2.tag;
     const container = document.createElement("div");
