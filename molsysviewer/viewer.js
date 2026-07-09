@@ -148331,644 +148331,6 @@ function sameItems(a8, b8) {
   return true;
 }
 
-// src/themes/physicochemical-color.ts
-var ResidueToClass = {
-  // Three letter codes
-  "GLY": "aliphatic",
-  "ALA": "aliphatic",
-  "VAL": "aliphatic",
-  "LEU": "aliphatic",
-  "ILE": "aliphatic",
-  "PRO": "aliphatic",
-  "PHE": "aromatic",
-  "TYR": "aromatic",
-  "TRP": "aromatic",
-  "ASP": "acidic",
-  "GLU": "acidic",
-  "LYS": "basic",
-  "ARG": "basic",
-  "HIS": "basic",
-  "SER": "hydroxylic",
-  "THR": "hydroxylic",
-  "CYS": "sulfur-containing",
-  "MET": "sulfur-containing",
-  "ASN": "amidic",
-  "GLN": "amidic",
-  // One letter codes
-  "G": "aliphatic",
-  "A": "aliphatic",
-  "V": "aliphatic",
-  "L": "aliphatic",
-  "I": "aliphatic",
-  "P": "aliphatic",
-  "F": "aromatic",
-  "Y": "aromatic",
-  "W": "aromatic",
-  "D": "acidic",
-  "E": "acidic",
-  "K": "basic",
-  "R": "basic",
-  "H": "basic",
-  "S": "hydroxylic",
-  "T": "hydroxylic",
-  "C": "sulfur-containing",
-  "M": "sulfur-containing",
-  "N": "amidic",
-  "Q": "amidic"
-};
-var PhysicochemicalColorsHex = {
-  aliphatic: "#ef4444",
-  aromatic: "#10b981",
-  acidic: "#f59e0b",
-  basic: "#0ea5e9",
-  hydroxylic: "#ec4899",
-  "sulfur-containing": "#eab308",
-  amidic: "#2563eb"
-};
-var PhysicochemicalColorsInt = {
-  aliphatic: 15680580,
-  aromatic: 1096065,
-  acidic: 16096779,
-  basic: 959977,
-  hydroxylic: 15485081,
-  "sulfur-containing": 15381256,
-  amidic: 2450411
-};
-var DEFAULT_COLOR2 = Color(11184810);
-var MsvPhysicochemicalColorThemeName = "msv-physicochemical";
-function getAtomicCompId3(unit2, element) {
-  return unit2.model.atomicHierarchy.atoms.label_comp_id.value(element);
-}
-function getCoarseCompId3(unit2, element) {
-  const seqIdBegin = unit2.coarseElements.seq_id_begin.value(element);
-  const seqIdEnd = unit2.coarseElements.seq_id_end.value(element);
-  if (seqIdBegin === seqIdEnd) {
-    const entityKey = unit2.coarseElements.entityKey[element];
-    const seq = unit2.model.sequence.byEntityKey[entityKey].sequence;
-    return seq.compId.value(seqIdBegin - 1);
-  }
-  return void 0;
-}
-function getPhysicochemicalColor(compId3) {
-  const upper = compId3.toUpperCase();
-  const cls = ResidueToClass[upper];
-  if (cls && PhysicochemicalColorsInt[cls] !== void 0) {
-    return Color(PhysicochemicalColorsInt[cls]);
-  }
-  return DEFAULT_COLOR2;
-}
-function factory2(_ctx, _props) {
-  function color(location2) {
-    if (element_exports.Location.is(location2)) {
-      if (Unit.isAtomic(location2.unit)) {
-        const compId3 = getAtomicCompId3(location2.unit, location2.element);
-        return getPhysicochemicalColor(compId3);
-      } else {
-        const compId3 = getCoarseCompId3(location2.unit, location2.element);
-        if (compId3) return getPhysicochemicalColor(compId3);
-      }
-    } else if (Bond.isLocation(location2)) {
-      if (Unit.isAtomic(location2.aUnit)) {
-        const compId3 = getAtomicCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
-        return getPhysicochemicalColor(compId3);
-      } else {
-        const compId3 = getCoarseCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
-        if (compId3) return getPhysicochemicalColor(compId3);
-      }
-    }
-    return DEFAULT_COLOR2;
-  }
-  return {
-    factory: factory2,
-    granularity: "groupInstance",
-    color,
-    props: {}
-  };
-}
-var MsvPhysicochemicalColorThemeProvider = {
-  name: MsvPhysicochemicalColorThemeName,
-  label: "MSV Physicochemical Class",
-  category: ColorTheme.Category.Residue,
-  factory: factory2,
-  getParams: () => ({}),
-  defaultValues: {},
-  isApplicable: (ctx) => !!ctx.structure
-};
-
-// src/ui/group-strip.ts
-function selectionKey(item2) {
-  const molPart = item2.molecule_indices?.join(",") ?? "0";
-  const compPart = item2.component_indices?.join(",") ?? "0";
-  const chainPart = item2.chain_indices?.join(",") ?? "0";
-  const groupPart = item2.group_indices?.join(",") ?? "0";
-  if (item2.source_kind === "annotation") {
-    return `${molPart}:${compPart}:${chainPart}:${groupPart}:annotation:${item2.tag ?? ""}`;
-  }
-  return `${molPart}:${compPart}:${chainPart}:${groupPart}`;
-}
-function makeLociForItem(structure, item2) {
-  const target = new Set(item2.atom_indices);
-  const lociElements = [];
-  for (const unit2 of structure.units) {
-    if (!Unit.isAtomic(unit2)) continue;
-    const elements = unit2.elements;
-    const count3 = OrderedSet2.size(elements);
-    const matched = [];
-    for (let i = 0; i < count3; i++) {
-      if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
-    }
-    if (matched.length > 0) {
-      lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
-    }
-  }
-  if (lociElements.length === 0) return null;
-  return element_exports.Loci(structure, lociElements);
-}
-function buildHierarchyCaption(kind, index, name) {
-  const prefix2 = kind === "molecule" ? "M" : "C";
-  const cleanName = typeof name === "string" ? name.trim() : "";
-  if (cleanName.length === 0) return `${prefix2}${index}`;
-  return `${prefix2} ${cleanName}`;
-}
-var GroupStrip = class {
-  constructor(host, chainLabel, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext) {
-    this.host = host;
-    this.chainLabel = chainLabel;
-    this.onSelect = onSelect;
-    this.onInteraction = onInteraction;
-    this.onFocus = onFocus;
-    this.onHover = onHover;
-    this.onContext = onContext;
-    this.onAnnotationContext = onAnnotationContext;
-    this.groupItems = [];
-    this.selectedElementKeys = /* @__PURE__ */ new Set();
-    this.selectedAnnotationKeys = /* @__PURE__ */ new Set();
-    this.annotationRecords = /* @__PURE__ */ new Map();
-    this.collapsedMolecules = /* @__PURE__ */ new Set();
-    this.collapsedComponents = /* @__PURE__ */ new Set();
-    this.currentContextTarget = null;
-    this.activeColorScheme = "neutral";
-    this.root = document.createElement("div");
-    this.root.setAttribute("data-molsysviewer-group-strip", "true");
-    Object.assign(this.root.style, {
-      minWidth: "120px",
-      maxWidth: "150px",
-      height: "100%",
-      minHeight: "0",
-      overflowY: "hidden",
-      overflowX: "hidden",
-      display: "flex",
-      flex: "0 0 auto",
-      paddingRight: "4px"
-    });
-    this.section = document.createElement("div");
-    Object.assign(this.section.style, {
-      marginBottom: "10px",
-      display: "flex",
-      flexDirection: "column",
-      minHeight: "0",
-      height: "100%",
-      width: "100%"
-    });
-    this.title = document.createElement("div");
-    this.title.setAttribute("data-molsysviewer-group-strip-title", this.chainLabel);
-    Object.assign(this.title.style, {
-      fontWeight: "700",
-      marginBottom: "6px",
-      opacity: "0.9"
-    });
-    this.title.textContent = `Chain ${this.chainLabel}`;
-    this.row = document.createElement("div");
-    this.row.setAttribute("data-molsysviewer-group-strip-row", "true");
-    Object.assign(this.row.style, {
-      display: "flex",
-      flexDirection: "column",
-      flexWrap: "nowrap",
-      gap: "6px",
-      overflowY: "auto",
-      overflowX: "hidden",
-      minHeight: "0",
-      flex: "1 1 auto",
-      scrollbarWidth: "thin",
-      scrollbarColor: "rgba(255, 255, 255, 0.15) transparent"
-    });
-    this.section.appendChild(this.title);
-    this.section.appendChild(this.row);
-    this.root.appendChild(this.section);
-    this.host.appendChild(this.root);
-  }
-  setColorScheme(scheme) {
-    if (this.activeColorScheme !== scheme) {
-      this.activeColorScheme = scheme;
-      this.render();
-    }
-  }
-  setData(structure, items) {
-    this.structure = structure;
-    this.groupItems = items;
-    if (!structure) this.annotationRecords.clear();
-    this.render();
-  }
-  updateSelection(selection) {
-    const nextElements = /* @__PURE__ */ new Set();
-    const nextAnnotations = /* @__PURE__ */ new Set();
-    for (const item2 of selection.items ?? []) {
-      if (item2?.source_kind === "element" && item2?.element_level === "group") {
-        nextElements.add(selectionKey(item2));
-      } else if (item2?.source_kind === "annotation" && item2?.annotation_kind === "label") {
-        nextAnnotations.add(selectionKey(item2));
-      }
-    }
-    const selectionChanged = nextElements.size !== this.selectedElementKeys.size || [...nextElements].some((k) => !this.selectedElementKeys.has(k));
-    this.selectedElementKeys = nextElements;
-    this.selectedAnnotationKeys = nextAnnotations;
-    this.render();
-    if (selectionChanged && nextElements.size > 0) {
-      const btn = this.row.querySelector?.("[data-group-item-selected]");
-      btn?.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
-    }
-  }
-  updateContextTarget(target) {
-    this.currentContextTarget = target;
-    this.render();
-  }
-  getCollapseState() {
-    return {
-      molecules: Array.from(this.collapsedMolecules.values()).sort((a8, b8) => a8 - b8),
-      components: Array.from(this.collapsedComponents.values()).sort()
-    };
-  }
-  setCollapseState(state) {
-    this.collapsedMolecules.clear();
-    this.collapsedComponents.clear();
-    for (const molecule of state?.molecules ?? []) {
-      if (typeof molecule === "number") this.collapsedMolecules.add(molecule);
-    }
-    for (const component of state?.components ?? []) {
-      if (typeof component === "string") this.collapsedComponents.add(component);
-    }
-    this.render();
-  }
-  addLabelOverlay(msg) {
-    const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
-    const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
-    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
-    if (!text || atomIndices.length === 0 || this.groupItems.length === 0) return;
-    const key2 = this.findSelectionKeyFromAtomIndices(atomIndices);
-    if (!key2) return;
-    const records = this.annotationRecords.get(key2) ?? [];
-    records.push({ tag, text });
-    this.annotationRecords.set(key2, records);
-    this.render();
-  }
-  clearAnnotationOverlays() {
-    if (this.annotationRecords.size === 0) return;
-    this.annotationRecords.clear();
-    this.render();
-  }
-  clearAnnotationOverlaysByTag(tag) {
-    if (!tag) {
-      this.clearAnnotationOverlays();
-      return;
-    }
-    let changed = false;
-    for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.filter((record2) => record2.tag !== tag);
-      if (next.length === records.length) continue;
-      changed = true;
-      if (next.length === 0) {
-        this.annotationRecords.delete(key2);
-      } else {
-        this.annotationRecords.set(key2, next);
-      }
-    }
-    if (changed) this.render();
-  }
-  retagAnnotationOverlays(oldTag, newTag) {
-    let changed = false;
-    for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.map((record2) => {
-        if (record2.tag !== oldTag) return record2;
-        changed = true;
-        return { ...record2, tag: newTag };
-      });
-      this.annotationRecords.set(key2, next);
-    }
-    if (changed) this.render();
-  }
-  focusItem(item2) {
-    if (!this.structure) return null;
-    return makeLociForItem(this.structure, item2);
-  }
-  dispose() {
-    this.root.remove();
-  }
-  render() {
-    this.row.replaceChildren();
-    this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
-    if (!this.structure || this.groupItems.length === 0) return;
-    const hierarchy = /* @__PURE__ */ new Map();
-    const moleculeNames = /* @__PURE__ */ new Map();
-    const componentNames = /* @__PURE__ */ new Map();
-    for (const item2 of this.groupItems) {
-      const moleculeIndices = Array.isArray(item2.molecule_indices) ? item2.molecule_indices : [];
-      const componentIndices = Array.isArray(item2.component_indices) ? item2.component_indices : [];
-      const molId = moleculeIndices[0] ?? 0;
-      const compId3 = componentIndices[0] ?? 0;
-      if (!hierarchy.has(molId)) hierarchy.set(molId, /* @__PURE__ */ new Map());
-      if (!hierarchy.get(molId).has(compId3)) hierarchy.get(molId).set(compId3, []);
-      hierarchy.get(molId).get(compId3).push(item2);
-      if (item2.molecule_name) moleculeNames.set(molId, item2.molecule_name);
-      if (item2.component_name) componentNames.set(compId3, item2.component_name);
-    }
-    const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
-    for (const [molId, components] of hierarchy.entries()) {
-      const molBox = document.createElement("div");
-      const molColor = COLORS[molId % COLORS.length];
-      const moleculeCollapsed = this.collapsedMolecules.has(molId);
-      Object.assign(molBox.style, {
-        display: "flex",
-        flexDirection: "column",
-        gap: "4px",
-        paddingLeft: "8px",
-        marginLeft: "2px",
-        borderLeft: `3px solid ${molColor}88`,
-        borderRadius: "4px 0 0 4px",
-        marginBottom: "8px",
-        position: "relative"
-      });
-      molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
-      const molCaption = document.createElement("div");
-      molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
-      molCaption.textContent = `${moleculeCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
-      Object.assign(molCaption.style, {
-        alignSelf: "flex-start",
-        marginLeft: "2px",
-        marginBottom: "2px",
-        padding: "2px 7px",
-        borderRadius: "999px",
-        background: `${molColor}28`,
-        color: molColor,
-        fontSize: "10px",
-        fontWeight: "700",
-        letterSpacing: "0.03em",
-        textTransform: "uppercase",
-        maxWidth: "100%",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-        cursor: "pointer"
-      });
-      molCaption.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (this.collapsedMolecules.has(molId)) {
-          this.collapsedMolecules.delete(molId);
-        } else {
-          this.collapsedMolecules.add(molId);
-        }
-        this.render();
-      });
-      molBox.appendChild(molCaption);
-      const molHandle = document.createElement("div");
-      molHandle.setAttribute("data-molsysviewer-group-strip-molecule-handle", String(molId));
-      Object.assign(molHandle.style, {
-        position: "absolute",
-        left: "-10px",
-        top: "0",
-        bottom: "0",
-        width: "14px",
-        cursor: "pointer",
-        zIndex: "2"
-      });
-      molHandle.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const mouseEvent = event;
-        const allItems = Array.from(components.values()).flat();
-        if (allItems.length > 0) {
-          this.onInteraction(allItems[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
-          if (allItems.length > 1) {
-            this.onSelect(allItems, "add");
-          }
-        }
-      });
-      molBox.appendChild(molHandle);
-      if (moleculeCollapsed) {
-        this.row.appendChild(molBox);
-        continue;
-      }
-      for (const [compId3, items] of components.entries()) {
-        const compBox = document.createElement("div");
-        const componentKey2 = `${molId}:${compId3}`;
-        const componentCollapsed = this.collapsedComponents.has(componentKey2);
-        Object.assign(compBox.style, {
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-          paddingLeft: "8px",
-          marginLeft: "2px",
-          borderLeft: "1.5px solid rgba(255,255,255,0.22)",
-          borderRadius: "2px 0 0 2px",
-          position: "relative"
-        });
-        compBox.title = `Component: ${componentNames.get(compId3) ?? compId3}`;
-        const compCaption = document.createElement("div");
-        compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId3));
-        compCaption.textContent = `${componentCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("component", compId3, componentNames.get(compId3))}`;
-        Object.assign(compCaption.style, {
-          alignSelf: "flex-start",
-          marginLeft: "2px",
-          marginBottom: "2px",
-          padding: "1px 5px",
-          borderRadius: "999px",
-          background: "rgba(255,255,255,0.08)",
-          color: "rgba(244,244,245,0.72)",
-          fontSize: "9px",
-          fontWeight: "600",
-          letterSpacing: "0.03em",
-          textTransform: "uppercase",
-          maxWidth: "100%",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          cursor: "pointer"
-        });
-        compCaption.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (this.collapsedComponents.has(componentKey2)) {
-            this.collapsedComponents.delete(componentKey2);
-          } else {
-            this.collapsedComponents.add(componentKey2);
-          }
-          this.render();
-        });
-        compBox.appendChild(compCaption);
-        const compHandle = document.createElement("div");
-        compHandle.setAttribute("data-molsysviewer-group-strip-component-handle", String(compId3));
-        Object.assign(compHandle.style, {
-          position: "absolute",
-          left: "-8px",
-          top: "0",
-          bottom: "0",
-          width: "10px",
-          cursor: "pointer",
-          zIndex: "3"
-        });
-        compHandle.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          const mouseEvent = event;
-          if (items.length > 0) {
-            this.onInteraction(items[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
-            if (items.length > 1) {
-              this.onSelect(items, "add");
-            }
-          }
-        });
-        compBox.appendChild(compHandle);
-        if (componentCollapsed) {
-          molBox.appendChild(compBox);
-          continue;
-        }
-        for (const item2 of items) {
-          const key2 = selectionKey(item2);
-          const button = document.createElement("button");
-          button.type = "button";
-          button.setAttribute("data-molsysviewer-group-item", "true");
-          button.setAttribute("data-chain-name", item2.chain_name ?? "");
-          button.setAttribute("data-group-name", item2.group_name ?? "");
-          const selected = this.selectedElementKeys.has(key2);
-          const contextSelected = this.currentContextTarget?.kind === "structure" && Array.isArray(this.currentContextTarget.atom_indices) && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key2;
-          const firstAtomIndex = item2.atom_indices[0];
-          const customColorInt = firstAtomIndex !== void 0 ? getPerAtomColor(firstAtomIndex) : void 0;
-          let colorHex = null;
-          if (customColorInt !== void 0) {
-            colorHex = "#" + customColorInt.toString(16).padStart(6, "0");
-          } else if (this.activeColorScheme === "physicochemical") {
-            const groupNameUpper = (item2.group_name ?? "").split(" ")[0]?.toUpperCase() ?? "";
-            const residueClass = ResidueToClass[groupNameUpper];
-            if (residueClass) {
-              colorHex = PhysicochemicalColorsHex[residueClass];
-            }
-          }
-          Object.assign(button.style, {
-            padding: "4px 8px",
-            borderRadius: "999px",
-            border: selected ? colorHex ? `1px solid ${colorHex}` : "1px solid rgba(255,255,255,0.38)" : contextSelected ? "1px solid rgba(251, 191, 36, 0.48)" : colorHex ? `1px solid ${colorHex}50` : "1px solid rgba(255,255,255,0.12)",
-            background: selected ? colorHex ? `${colorHex}55` : "rgba(255,255,255,0.18)" : contextSelected ? "rgba(251, 191, 36, 0.12)" : colorHex ? `${colorHex}22` : "rgba(255,255,255,0.06)",
-            boxShadow: contextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
-            color: "inherit",
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-            font: "inherit",
-            width: "100%",
-            textAlign: "left",
-            fontSize: "11px"
-          });
-          if (selected) button.setAttribute("data-group-item-selected", "true");
-          const text = document.createElement("span");
-          text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
-          button.appendChild(text);
-          const annotationRecords = this.annotationRecords.get(key2) ?? [];
-          if (annotationRecords.length > 0) {
-            const badge = document.createElement("span");
-            const primary = annotationRecords[0];
-            const annotationSelected = this.selectedAnnotationKeys.has(`${key2}:annotation:${primary.tag ?? ""}`);
-            const annotationContextSelected = this.currentContextTarget?.kind === "annotation" && this.currentContextTarget.tag === primary.tag;
-            badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
-            Object.assign(badge.style, {
-              marginLeft: "6px",
-              padding: "1px 6px",
-              borderRadius: "999px",
-              background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : annotationContextSelected ? "rgba(251, 191, 36, 0.16)" : "rgba(110, 231, 183, 0.18)",
-              color: annotationSelected ? "#fde68a" : annotationContextSelected ? "#fcd34d" : "#b7f7dd",
-              fontSize: "10px",
-              fontWeight: "700",
-              boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none"
-            });
-            button.appendChild(badge);
-            button.title = annotationRecords.map((record2) => record2.text).join("\n");
-            badge.addEventListener("click", (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              this.onSelect([{
-                source_kind: "annotation",
-                annotation_kind: "label",
-                atom_indices: item2.atom_indices,
-                group_indices: item2.group_indices,
-                component_indices: item2.component_indices,
-                chain_indices: item2.chain_indices,
-                molecule_indices: item2.molecule_indices,
-                entity_indices: item2.entity_indices,
-                tag: primary.tag,
-                text: primary.text
-              }], event.shiftKey ? "add" : "replace");
-            });
-            badge.addEventListener("contextmenu", (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              this.onAnnotationContext(
-                {
-                  event: "interaction_context_menu",
-                  kind: "annotation",
-                  atom_indices: item2.atom_indices,
-                  tag: primary.tag,
-                  text: primary.text
-                },
-                event.pageX,
-                event.pageY
-              );
-            });
-          }
-          button.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const mouseEvent = event;
-            this.onInteraction(item2, { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
-          });
-          button.addEventListener("dblclick", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.onFocus(item2);
-          });
-          button.addEventListener("mouseenter", () => {
-            this.onHover(item2);
-          });
-          button.addEventListener("mouseleave", () => {
-            this.onHover(null);
-          });
-          button.addEventListener("contextmenu", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.onContext(item2, event.pageX, event.pageY);
-          });
-          compBox.appendChild(button);
-        }
-        molBox.appendChild(compBox);
-      }
-      this.row.appendChild(molBox);
-    }
-  }
-  findSelectionKeyFromAtomIndices(atomIndices) {
-    const input = [...atomIndices].sort((a8, b8) => a8 - b8);
-    for (const item2 of this.groupItems) {
-      if (item2.atom_indices.length !== input.length) continue;
-      const own = [...item2.atom_indices].sort((a8, b8) => a8 - b8);
-      let same = true;
-      for (let i = 0; i < own.length; i++) {
-        if (own[i] !== input[i]) {
-          same = false;
-          break;
-        }
-      }
-      if (same) return selectionKey(item2);
-    }
-    return null;
-  }
-};
-
 // src/ui/panels/ui-helpers.ts
 function makeSectionHeader(title) {
   const header2 = document.createElement("div");
@@ -151718,6 +151080,979 @@ var SelectionPanel = class _SelectionPanel {
   }
 };
 
+// src/themes/physicochemical-color.ts
+var ResidueToClass = {
+  // Three letter codes
+  "GLY": "aliphatic",
+  "ALA": "aliphatic",
+  "VAL": "aliphatic",
+  "LEU": "aliphatic",
+  "ILE": "aliphatic",
+  "PRO": "aliphatic",
+  "PHE": "aromatic",
+  "TYR": "aromatic",
+  "TRP": "aromatic",
+  "ASP": "acidic",
+  "GLU": "acidic",
+  "LYS": "basic",
+  "ARG": "basic",
+  "HIS": "basic",
+  "SER": "hydroxylic",
+  "THR": "hydroxylic",
+  "CYS": "sulfur-containing",
+  "MET": "sulfur-containing",
+  "ASN": "amidic",
+  "GLN": "amidic",
+  // One letter codes
+  "G": "aliphatic",
+  "A": "aliphatic",
+  "V": "aliphatic",
+  "L": "aliphatic",
+  "I": "aliphatic",
+  "P": "aliphatic",
+  "F": "aromatic",
+  "Y": "aromatic",
+  "W": "aromatic",
+  "D": "acidic",
+  "E": "acidic",
+  "K": "basic",
+  "R": "basic",
+  "H": "basic",
+  "S": "hydroxylic",
+  "T": "hydroxylic",
+  "C": "sulfur-containing",
+  "M": "sulfur-containing",
+  "N": "amidic",
+  "Q": "amidic"
+};
+var PhysicochemicalColorsHex = {
+  aliphatic: "#ef4444",
+  aromatic: "#10b981",
+  acidic: "#f59e0b",
+  basic: "#0ea5e9",
+  hydroxylic: "#ec4899",
+  "sulfur-containing": "#eab308",
+  amidic: "#2563eb"
+};
+var PhysicochemicalColorsInt = {
+  aliphatic: 15680580,
+  aromatic: 1096065,
+  acidic: 16096779,
+  basic: 959977,
+  hydroxylic: 15485081,
+  "sulfur-containing": 15381256,
+  amidic: 2450411
+};
+var DEFAULT_COLOR2 = Color(11184810);
+var MsvPhysicochemicalColorThemeName = "msv-physicochemical";
+function getAtomicCompId3(unit2, element) {
+  return unit2.model.atomicHierarchy.atoms.label_comp_id.value(element);
+}
+function getCoarseCompId3(unit2, element) {
+  const seqIdBegin = unit2.coarseElements.seq_id_begin.value(element);
+  const seqIdEnd = unit2.coarseElements.seq_id_end.value(element);
+  if (seqIdBegin === seqIdEnd) {
+    const entityKey = unit2.coarseElements.entityKey[element];
+    const seq = unit2.model.sequence.byEntityKey[entityKey].sequence;
+    return seq.compId.value(seqIdBegin - 1);
+  }
+  return void 0;
+}
+function getPhysicochemicalColor(compId3) {
+  const upper = compId3.toUpperCase();
+  const cls = ResidueToClass[upper];
+  if (cls && PhysicochemicalColorsInt[cls] !== void 0) {
+    return Color(PhysicochemicalColorsInt[cls]);
+  }
+  return DEFAULT_COLOR2;
+}
+function factory2(_ctx, _props) {
+  function color(location2) {
+    if (element_exports.Location.is(location2)) {
+      if (Unit.isAtomic(location2.unit)) {
+        const compId3 = getAtomicCompId3(location2.unit, location2.element);
+        return getPhysicochemicalColor(compId3);
+      } else {
+        const compId3 = getCoarseCompId3(location2.unit, location2.element);
+        if (compId3) return getPhysicochemicalColor(compId3);
+      }
+    } else if (Bond.isLocation(location2)) {
+      if (Unit.isAtomic(location2.aUnit)) {
+        const compId3 = getAtomicCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+        return getPhysicochemicalColor(compId3);
+      } else {
+        const compId3 = getCoarseCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+        if (compId3) return getPhysicochemicalColor(compId3);
+      }
+    }
+    return DEFAULT_COLOR2;
+  }
+  return {
+    factory: factory2,
+    granularity: "groupInstance",
+    color,
+    props: {}
+  };
+}
+var MsvPhysicochemicalColorThemeProvider = {
+  name: MsvPhysicochemicalColorThemeName,
+  label: "MSV Physicochemical Class",
+  category: ColorTheme.Category.Residue,
+  factory: factory2,
+  getParams: () => ({}),
+  defaultValues: {},
+  isApplicable: (ctx) => !!ctx.structure
+};
+
+// src/ui/group-strip.ts
+function selectionKey(item2) {
+  const molPart = item2.molecule_indices?.join(",") ?? "0";
+  const compPart = item2.component_indices?.join(",") ?? "0";
+  const chainPart = item2.chain_indices?.join(",") ?? "0";
+  const groupPart = item2.group_indices?.join(",") ?? "0";
+  if (item2.source_kind === "annotation") {
+    return `${molPart}:${compPart}:${chainPart}:${groupPart}:annotation:${item2.tag ?? ""}`;
+  }
+  return `${molPart}:${compPart}:${chainPart}:${groupPart}`;
+}
+function makeLociForItem(structure, item2) {
+  const target = new Set(item2.atom_indices);
+  const lociElements = [];
+  for (const unit2 of structure.units) {
+    if (!Unit.isAtomic(unit2)) continue;
+    const elements = unit2.elements;
+    const count3 = OrderedSet2.size(elements);
+    const matched = [];
+    for (let i = 0; i < count3; i++) {
+      if (target.has(OrderedSet2.getAt(elements, i))) matched.push(i);
+    }
+    if (matched.length > 0) {
+      lociElements.push({ unit: unit2, indices: SortedArray.ofSortedArray(matched) });
+    }
+  }
+  if (lociElements.length === 0) return null;
+  return element_exports.Loci(structure, lociElements);
+}
+function buildHierarchyCaption(kind, index, name) {
+  const prefix2 = kind === "molecule" ? "M" : "C";
+  const cleanName = typeof name === "string" ? name.trim() : "";
+  if (cleanName.length === 0) return `${prefix2}${index}`;
+  return `${prefix2} ${cleanName}`;
+}
+var GroupStrip = class {
+  constructor(host, chainLabel, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext) {
+    this.host = host;
+    this.chainLabel = chainLabel;
+    this.onSelect = onSelect;
+    this.onInteraction = onInteraction;
+    this.onFocus = onFocus;
+    this.onHover = onHover;
+    this.onContext = onContext;
+    this.onAnnotationContext = onAnnotationContext;
+    this.groupItems = [];
+    this.selectedElementKeys = /* @__PURE__ */ new Set();
+    this.selectedAnnotationKeys = /* @__PURE__ */ new Set();
+    this.annotationRecords = /* @__PURE__ */ new Map();
+    this.collapsedMolecules = /* @__PURE__ */ new Set();
+    this.collapsedComponents = /* @__PURE__ */ new Set();
+    this.currentContextTarget = null;
+    this.activeColorScheme = "neutral";
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-group-strip", "true");
+    Object.assign(this.root.style, {
+      minWidth: "120px",
+      maxWidth: "150px",
+      height: "100%",
+      minHeight: "0",
+      overflowY: "hidden",
+      overflowX: "hidden",
+      display: "flex",
+      flex: "0 0 auto",
+      paddingRight: "4px"
+    });
+    this.section = document.createElement("div");
+    Object.assign(this.section.style, {
+      marginBottom: "10px",
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "0",
+      height: "100%",
+      width: "100%"
+    });
+    this.title = document.createElement("div");
+    this.title.setAttribute("data-molsysviewer-group-strip-title", this.chainLabel);
+    Object.assign(this.title.style, {
+      fontWeight: "700",
+      marginBottom: "6px",
+      opacity: "0.9"
+    });
+    this.title.textContent = `Chain ${this.chainLabel}`;
+    this.row = document.createElement("div");
+    this.row.setAttribute("data-molsysviewer-group-strip-row", "true");
+    Object.assign(this.row.style, {
+      display: "flex",
+      flexDirection: "column",
+      flexWrap: "nowrap",
+      gap: "6px",
+      overflowY: "auto",
+      overflowX: "hidden",
+      minHeight: "0",
+      flex: "1 1 auto",
+      scrollbarWidth: "thin",
+      scrollbarColor: "rgba(255, 255, 255, 0.15) transparent"
+    });
+    this.section.appendChild(this.title);
+    this.section.appendChild(this.row);
+    this.root.appendChild(this.section);
+    this.host.appendChild(this.root);
+  }
+  setColorScheme(scheme) {
+    if (this.activeColorScheme !== scheme) {
+      this.activeColorScheme = scheme;
+      this.render();
+    }
+  }
+  setData(structure, items) {
+    this.structure = structure;
+    this.groupItems = items;
+    if (!structure) this.annotationRecords.clear();
+    this.render();
+  }
+  updateSelection(selection) {
+    const nextElements = /* @__PURE__ */ new Set();
+    const nextAnnotations = /* @__PURE__ */ new Set();
+    for (const item2 of selection.items ?? []) {
+      if (item2?.source_kind === "element" && item2?.element_level === "group") {
+        nextElements.add(selectionKey(item2));
+      } else if (item2?.source_kind === "annotation" && item2?.annotation_kind === "label") {
+        nextAnnotations.add(selectionKey(item2));
+      }
+    }
+    const selectionChanged = nextElements.size !== this.selectedElementKeys.size || [...nextElements].some((k) => !this.selectedElementKeys.has(k));
+    this.selectedElementKeys = nextElements;
+    this.selectedAnnotationKeys = nextAnnotations;
+    this.render();
+    if (selectionChanged && nextElements.size > 0) {
+      const btn = this.row.querySelector?.("[data-group-item-selected]");
+      btn?.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
+    }
+  }
+  updateContextTarget(target) {
+    this.currentContextTarget = target;
+    this.render();
+  }
+  getCollapseState() {
+    return {
+      molecules: Array.from(this.collapsedMolecules.values()).sort((a8, b8) => a8 - b8),
+      components: Array.from(this.collapsedComponents.values()).sort()
+    };
+  }
+  setCollapseState(state) {
+    this.collapsedMolecules.clear();
+    this.collapsedComponents.clear();
+    for (const molecule of state?.molecules ?? []) {
+      if (typeof molecule === "number") this.collapsedMolecules.add(molecule);
+    }
+    for (const component of state?.components ?? []) {
+      if (typeof component === "string") this.collapsedComponents.add(component);
+    }
+    this.render();
+  }
+  addLabelOverlay(msg) {
+    const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
+    const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
+    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+    if (!text || atomIndices.length === 0 || this.groupItems.length === 0) return;
+    const key2 = this.findSelectionKeyFromAtomIndices(atomIndices);
+    if (!key2) return;
+    const records = this.annotationRecords.get(key2) ?? [];
+    records.push({ tag, text });
+    this.annotationRecords.set(key2, records);
+    this.render();
+  }
+  clearAnnotationOverlays() {
+    if (this.annotationRecords.size === 0) return;
+    this.annotationRecords.clear();
+    this.render();
+  }
+  clearAnnotationOverlaysByTag(tag) {
+    if (!tag) {
+      this.clearAnnotationOverlays();
+      return;
+    }
+    let changed = false;
+    for (const [key2, records] of this.annotationRecords.entries()) {
+      const next = records.filter((record2) => record2.tag !== tag);
+      if (next.length === records.length) continue;
+      changed = true;
+      if (next.length === 0) {
+        this.annotationRecords.delete(key2);
+      } else {
+        this.annotationRecords.set(key2, next);
+      }
+    }
+    if (changed) this.render();
+  }
+  retagAnnotationOverlays(oldTag, newTag) {
+    let changed = false;
+    for (const [key2, records] of this.annotationRecords.entries()) {
+      const next = records.map((record2) => {
+        if (record2.tag !== oldTag) return record2;
+        changed = true;
+        return { ...record2, tag: newTag };
+      });
+      this.annotationRecords.set(key2, next);
+    }
+    if (changed) this.render();
+  }
+  focusItem(item2) {
+    if (!this.structure) return null;
+    return makeLociForItem(this.structure, item2);
+  }
+  dispose() {
+    this.root.remove();
+  }
+  render() {
+    this.row.replaceChildren();
+    this.root.style.display = !this.structure || this.groupItems.length === 0 ? "none" : "block";
+    if (!this.structure || this.groupItems.length === 0) return;
+    const hierarchy = /* @__PURE__ */ new Map();
+    const moleculeNames = /* @__PURE__ */ new Map();
+    const componentNames = /* @__PURE__ */ new Map();
+    for (const item2 of this.groupItems) {
+      const moleculeIndices = Array.isArray(item2.molecule_indices) ? item2.molecule_indices : [];
+      const componentIndices = Array.isArray(item2.component_indices) ? item2.component_indices : [];
+      const molId = moleculeIndices[0] ?? 0;
+      const compId3 = componentIndices[0] ?? 0;
+      if (!hierarchy.has(molId)) hierarchy.set(molId, /* @__PURE__ */ new Map());
+      if (!hierarchy.get(molId).has(compId3)) hierarchy.get(molId).set(compId3, []);
+      hierarchy.get(molId).get(compId3).push(item2);
+      if (item2.molecule_name) moleculeNames.set(molId, item2.molecule_name);
+      if (item2.component_name) componentNames.set(compId3, item2.component_name);
+    }
+    const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899"];
+    for (const [molId, components] of hierarchy.entries()) {
+      const molBox = document.createElement("div");
+      const molColor = COLORS[molId % COLORS.length];
+      const moleculeCollapsed = this.collapsedMolecules.has(molId);
+      Object.assign(molBox.style, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+        paddingLeft: "8px",
+        marginLeft: "2px",
+        borderLeft: `3px solid ${molColor}88`,
+        borderRadius: "4px 0 0 4px",
+        marginBottom: "8px",
+        position: "relative"
+      });
+      molBox.title = `Molecule: ${moleculeNames.get(molId) ?? molId}`;
+      const molCaption = document.createElement("div");
+      molCaption.setAttribute("data-molsysviewer-group-strip-molecule-caption", String(molId));
+      molCaption.textContent = `${moleculeCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("molecule", molId, moleculeNames.get(molId))}`;
+      Object.assign(molCaption.style, {
+        alignSelf: "flex-start",
+        marginLeft: "2px",
+        marginBottom: "2px",
+        padding: "2px 7px",
+        borderRadius: "999px",
+        background: `${molColor}28`,
+        color: molColor,
+        fontSize: "10px",
+        fontWeight: "700",
+        letterSpacing: "0.03em",
+        textTransform: "uppercase",
+        maxWidth: "100%",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        cursor: "pointer"
+      });
+      molCaption.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.collapsedMolecules.has(molId)) {
+          this.collapsedMolecules.delete(molId);
+        } else {
+          this.collapsedMolecules.add(molId);
+        }
+        this.render();
+      });
+      molBox.appendChild(molCaption);
+      const molHandle = document.createElement("div");
+      molHandle.setAttribute("data-molsysviewer-group-strip-molecule-handle", String(molId));
+      Object.assign(molHandle.style, {
+        position: "absolute",
+        left: "-10px",
+        top: "0",
+        bottom: "0",
+        width: "14px",
+        cursor: "pointer",
+        zIndex: "2"
+      });
+      molHandle.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const mouseEvent = event;
+        const allItems = Array.from(components.values()).flat();
+        if (allItems.length > 0) {
+          this.onInteraction(allItems[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
+          if (allItems.length > 1) {
+            this.onSelect(allItems, "add");
+          }
+        }
+      });
+      molBox.appendChild(molHandle);
+      if (moleculeCollapsed) {
+        this.row.appendChild(molBox);
+        continue;
+      }
+      for (const [compId3, items] of components.entries()) {
+        const compBox = document.createElement("div");
+        const componentKey2 = `${molId}:${compId3}`;
+        const componentCollapsed = this.collapsedComponents.has(componentKey2);
+        Object.assign(compBox.style, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+          paddingLeft: "8px",
+          marginLeft: "2px",
+          borderLeft: "1.5px solid rgba(255,255,255,0.22)",
+          borderRadius: "2px 0 0 2px",
+          position: "relative"
+        });
+        compBox.title = `Component: ${componentNames.get(compId3) ?? compId3}`;
+        const compCaption = document.createElement("div");
+        compCaption.setAttribute("data-molsysviewer-group-strip-component-caption", String(compId3));
+        compCaption.textContent = `${componentCollapsed ? "\u25B6" : "\u25BC"} ${buildHierarchyCaption("component", compId3, componentNames.get(compId3))}`;
+        Object.assign(compCaption.style, {
+          alignSelf: "flex-start",
+          marginLeft: "2px",
+          marginBottom: "2px",
+          padding: "1px 5px",
+          borderRadius: "999px",
+          background: "rgba(255,255,255,0.08)",
+          color: "rgba(244,244,245,0.72)",
+          fontSize: "9px",
+          fontWeight: "600",
+          letterSpacing: "0.03em",
+          textTransform: "uppercase",
+          maxWidth: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          cursor: "pointer"
+        });
+        compCaption.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (this.collapsedComponents.has(componentKey2)) {
+            this.collapsedComponents.delete(componentKey2);
+          } else {
+            this.collapsedComponents.add(componentKey2);
+          }
+          this.render();
+        });
+        compBox.appendChild(compCaption);
+        const compHandle = document.createElement("div");
+        compHandle.setAttribute("data-molsysviewer-group-strip-component-handle", String(compId3));
+        Object.assign(compHandle.style, {
+          position: "absolute",
+          left: "-8px",
+          top: "0",
+          bottom: "0",
+          width: "10px",
+          cursor: "pointer",
+          zIndex: "3"
+        });
+        compHandle.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const mouseEvent = event;
+          if (items.length > 0) {
+            this.onInteraction(items[0], { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
+            if (items.length > 1) {
+              this.onSelect(items, "add");
+            }
+          }
+        });
+        compBox.appendChild(compHandle);
+        if (componentCollapsed) {
+          molBox.appendChild(compBox);
+          continue;
+        }
+        for (const item2 of items) {
+          const key2 = selectionKey(item2);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.setAttribute("data-molsysviewer-group-item", "true");
+          button.setAttribute("data-chain-name", item2.chain_name ?? "");
+          button.setAttribute("data-group-name", item2.group_name ?? "");
+          const selected = this.selectedElementKeys.has(key2);
+          const contextSelected = this.currentContextTarget?.kind === "structure" && Array.isArray(this.currentContextTarget.atom_indices) && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key2;
+          const firstAtomIndex = item2.atom_indices[0];
+          const customColorInt = firstAtomIndex !== void 0 ? getPerAtomColor(firstAtomIndex) : void 0;
+          let colorHex = null;
+          if (customColorInt !== void 0) {
+            colorHex = "#" + customColorInt.toString(16).padStart(6, "0");
+          } else if (this.activeColorScheme === "physicochemical") {
+            const groupNameUpper = (item2.group_name ?? "").split(" ")[0]?.toUpperCase() ?? "";
+            const residueClass = ResidueToClass[groupNameUpper];
+            if (residueClass) {
+              colorHex = PhysicochemicalColorsHex[residueClass];
+            }
+          }
+          Object.assign(button.style, {
+            padding: "4px 8px",
+            borderRadius: "999px",
+            border: selected ? colorHex ? `1px solid ${colorHex}` : "1px solid rgba(255,255,255,0.38)" : contextSelected ? "1px solid rgba(251, 191, 36, 0.48)" : colorHex ? `1px solid ${colorHex}50` : "1px solid rgba(255,255,255,0.12)",
+            background: selected ? colorHex ? `${colorHex}55` : "rgba(255,255,255,0.18)" : contextSelected ? "rgba(251, 191, 36, 0.12)" : colorHex ? `${colorHex}22` : "rgba(255,255,255,0.06)",
+            boxShadow: contextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
+            color: "inherit",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            font: "inherit",
+            width: "100%",
+            textAlign: "left",
+            fontSize: "11px"
+          });
+          if (selected) button.setAttribute("data-group-item-selected", "true");
+          const text = document.createElement("span");
+          text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
+          button.appendChild(text);
+          const annotationRecords = this.annotationRecords.get(key2) ?? [];
+          if (annotationRecords.length > 0) {
+            const badge = document.createElement("span");
+            const primary = annotationRecords[0];
+            const annotationSelected = this.selectedAnnotationKeys.has(`${key2}:annotation:${primary.tag ?? ""}`);
+            const annotationContextSelected = this.currentContextTarget?.kind === "annotation" && this.currentContextTarget.tag === primary.tag;
+            badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
+            Object.assign(badge.style, {
+              marginLeft: "6px",
+              padding: "1px 6px",
+              borderRadius: "999px",
+              background: annotationSelected ? "rgba(250, 204, 21, 0.22)" : annotationContextSelected ? "rgba(251, 191, 36, 0.16)" : "rgba(110, 231, 183, 0.18)",
+              color: annotationSelected ? "#fde68a" : annotationContextSelected ? "#fcd34d" : "#b7f7dd",
+              fontSize: "10px",
+              fontWeight: "700",
+              boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none"
+            });
+            button.appendChild(badge);
+            button.title = annotationRecords.map((record2) => record2.text).join("\n");
+            badge.addEventListener("click", (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              this.onSelect([{
+                source_kind: "annotation",
+                annotation_kind: "label",
+                atom_indices: item2.atom_indices,
+                group_indices: item2.group_indices,
+                component_indices: item2.component_indices,
+                chain_indices: item2.chain_indices,
+                molecule_indices: item2.molecule_indices,
+                entity_indices: item2.entity_indices,
+                tag: primary.tag,
+                text: primary.text
+              }], event.shiftKey ? "add" : "replace");
+            });
+            badge.addEventListener("contextmenu", (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              this.onAnnotationContext(
+                {
+                  event: "interaction_context_menu",
+                  kind: "annotation",
+                  atom_indices: item2.atom_indices,
+                  tag: primary.tag,
+                  text: primary.text
+                },
+                event.pageX,
+                event.pageY
+              );
+            });
+          }
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const mouseEvent = event;
+            this.onInteraction(item2, { shift: mouseEvent.shiftKey, alt: mouseEvent.altKey });
+          });
+          button.addEventListener("dblclick", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onFocus(item2);
+          });
+          button.addEventListener("mouseenter", () => {
+            this.onHover(item2);
+          });
+          button.addEventListener("mouseleave", () => {
+            this.onHover(null);
+          });
+          button.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onContext(item2, event.pageX, event.pageY);
+          });
+          compBox.appendChild(button);
+        }
+        molBox.appendChild(compBox);
+      }
+      this.row.appendChild(molBox);
+    }
+  }
+  findSelectionKeyFromAtomIndices(atomIndices) {
+    const input = [...atomIndices].sort((a8, b8) => a8 - b8);
+    for (const item2 of this.groupItems) {
+      if (item2.atom_indices.length !== input.length) continue;
+      const own = [...item2.atom_indices].sort((a8, b8) => a8 - b8);
+      let same = true;
+      for (let i = 0; i < own.length; i++) {
+        if (own[i] !== input[i]) {
+          same = false;
+          break;
+        }
+      }
+      if (same) return selectionKey(item2);
+    }
+    return null;
+  }
+};
+
+// src/ui/panels/system-panel.ts
+var SystemPanel = class {
+  constructor(ctx, callbacks) {
+    this.ctx = ctx;
+    this.callbacks = callbacks;
+    this.key = "system";
+    this.host = null;
+    this.stripsRow = null;
+    this.strips = /* @__PURE__ */ new Map();
+    this.activeColorScheme = "neutral";
+    this.currentContextTarget = null;
+    this.annotationMessages = [];
+    this.collapseStateByChain = /* @__PURE__ */ new Map();
+    this.currentSelection = {
+      event: "interaction_active_selection_changed",
+      source_kind: "empty",
+      target_level: "none",
+      element_level: "none",
+      items: [],
+      atom_indices: [],
+      group_indices: [],
+      component_indices: [],
+      chain_indices: [],
+      molecule_indices: [],
+      entity_indices: [],
+      count_atoms: 0,
+      count_groups: 0,
+      count_shapes: 0,
+      count_annotations: 0
+    };
+  }
+  mount(host) {
+    this.host = host;
+    Object.assign(host.style, {
+      flexDirection: "column",
+      overflowX: "hidden",
+      overflowY: "hidden",
+      gap: "6px"
+    });
+    host.appendChild(this.makeSystemHeader());
+    this.stripsRow = document.createElement("div");
+    Object.assign(this.stripsRow.style, {
+      display: "flex",
+      flexDirection: "row",
+      flex: "1 1 0",
+      minHeight: "0",
+      overflowX: "auto",
+      overflowY: "hidden",
+      paddingBottom: "8px"
+    });
+    host.appendChild(this.stripsRow);
+  }
+  // ── Domain state pushed from the host ──────────────────────
+  setStructure(structure) {
+    this.structure = structure;
+    if (!structure) this.annotationMessages.length = 0;
+    this.rebuild();
+  }
+  updateSelection(selection) {
+    this.currentSelection = selection;
+    for (const strip of this.strips.values()) {
+      strip.updateSelection(selection);
+    }
+  }
+  updateContextTarget(target) {
+    this.currentContextTarget = target;
+    for (const strip of this.strips.values()) {
+      strip.updateContextTarget(target);
+    }
+  }
+  addLabelOverlay(msg) {
+    this.annotationMessages.push(msg);
+    for (const strip of this.strips.values()) {
+      strip.addLabelOverlay(msg);
+    }
+  }
+  clearAnnotationOverlays() {
+    this.annotationMessages.length = 0;
+    for (const strip of this.strips.values()) {
+      strip.clearAnnotationOverlays();
+    }
+  }
+  clearAnnotationOverlaysByTag(tag) {
+    if (!tag) {
+      this.clearAnnotationOverlays();
+      return;
+    }
+    for (let index = this.annotationMessages.length - 1; index >= 0; index--) {
+      if (this.annotationMessages[index].tag === tag || this.annotationMessages[index].options?.tag === tag) {
+        this.annotationMessages.splice(index, 1);
+      }
+    }
+    for (const strip of this.strips.values()) {
+      strip.clearAnnotationOverlaysByTag(tag);
+    }
+  }
+  retagAnnotationOverlays(oldTag, newTag) {
+    for (const message of this.annotationMessages) {
+      if (message.tag === oldTag) message.tag = newTag;
+      if (message.options?.tag === oldTag) message.options.tag = newTag;
+    }
+    for (const strip of this.strips.values()) {
+      strip.retagAnnotationOverlays(oldTag, newTag);
+    }
+  }
+  focusItem(item2) {
+    const chainName = item2.source_kind === "element" ? item2.chain_name ?? "?" : "?";
+    return this.strips.get(chainName)?.focusItem(item2) ?? null;
+  }
+  captureCollapseState() {
+    for (const [chain2, strip] of this.strips.entries()) {
+      this.collapseStateByChain.set(chain2, strip.getCollapseState());
+    }
+  }
+  dispose() {
+    this.captureCollapseState();
+    for (const strip of this.strips.values()) strip.dispose();
+    this.strips.clear();
+  }
+  // ── Strip lifecycle ────────────────────────────────────────
+  /** Rebuild the strips for the current structure; reports natural visibility via onRebuilt. */
+  rebuild() {
+    if (!this.stripsRow) return;
+    this.captureCollapseState();
+    const grouped = /* @__PURE__ */ new Map();
+    const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
+    for (const item2 of items) {
+      const chain2 = item2.chain_name ?? "?";
+      if (!grouped.has(chain2)) grouped.set(chain2, []);
+      grouped.get(chain2).push(item2);
+    }
+    const nextChains = new Set(grouped.keys());
+    for (const [chain2, strip] of this.strips.entries()) {
+      if (nextChains.has(chain2)) continue;
+      this.collapseStateByChain.set(chain2, strip.getCollapseState());
+      strip.dispose();
+      this.strips.delete(chain2);
+    }
+    const naturalVisible = Boolean(this.structure) && grouped.size > 0;
+    this.ctx.setBadge(
+      naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None"
+    );
+    if (this.structure && grouped.size > 0) {
+      for (const [chain2, chainItems] of grouped.entries()) {
+        let strip = this.strips.get(chain2);
+        if (!strip) {
+          strip = new GroupStrip(
+            this.stripsRow,
+            chain2,
+            this.callbacks.onSelect,
+            this.callbacks.onInteraction,
+            this.callbacks.onFocus,
+            this.callbacks.onHover,
+            this.callbacks.onContext,
+            this.callbacks.onAnnotationContext
+          );
+          this.strips.set(chain2, strip);
+        }
+        strip.setColorScheme(this.activeColorScheme);
+        strip.setData(this.structure, chainItems);
+        strip.setCollapseState(this.collapseStateByChain.get(chain2));
+        strip.updateSelection(this.currentSelection);
+        strip.updateContextTarget(this.currentContextTarget);
+        strip.clearAnnotationOverlays();
+        for (const message of this.annotationMessages) {
+          strip.addLabelOverlay(message);
+        }
+      }
+    }
+    this.callbacks.onRebuilt(naturalVisible);
+  }
+  // ── Header / color-scheme menu ─────────────────────────────
+  makeSystemHeader() {
+    const header2 = document.createElement("div");
+    Object.assign(header2.style, {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      position: "relative",
+      width: "100%",
+      flex: "0 0 auto",
+      gap: "8px"
+    });
+    header2.appendChild(this.makeModifierLegend());
+    header2.appendChild(this.makeColorSchemeButton());
+    return header2;
+  }
+  makeModifierLegend() {
+    const legend = document.createElement("div");
+    legend.setAttribute("data-molsysviewer-selection-modifier-legend", "true");
+    Object.assign(legend.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      alignItems: "center",
+      gap: "6px",
+      minWidth: "0",
+      color: "rgba(244,244,245,0.56)",
+      fontSize: "10px",
+      lineHeight: "1.2"
+    });
+    const entries3 = [
+      ["Click", "Replace"],
+      ["Shift", "Add/toggle"],
+      ["Shift+Alt", "Range"]
+    ];
+    for (const [key2, label2] of entries3) {
+      const item2 = document.createElement("span");
+      item2.setAttribute("data-molsysviewer-selection-modifier-legend-item", key2);
+      Object.assign(item2.style, {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "4px",
+        whiteSpace: "nowrap"
+      });
+      const keyEl = document.createElement("span");
+      Object.assign(keyEl.style, {
+        padding: "1px 4px",
+        borderRadius: "4px",
+        background: "rgba(255,255,255,0.06)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        color: "rgba(244,244,245,0.82)",
+        fontWeight: "700"
+      });
+      keyEl.textContent = key2;
+      const labelEl = document.createElement("span");
+      labelEl.textContent = label2;
+      item2.appendChild(keyEl);
+      item2.appendChild(labelEl);
+      legend.appendChild(item2);
+    }
+    return legend;
+  }
+  makeColorSchemeButton() {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = "\u{1F3A8}";
+    btn.title = "Residue color scheme";
+    btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
+    Object.assign(btn.style, {
+      background: "transparent",
+      border: "none",
+      color: "rgba(244,244,245,0.6)",
+      cursor: "pointer",
+      padding: "2px 4px",
+      fontSize: "12px",
+      outline: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    });
+    btn.addEventListener("mouseenter", () => {
+      btn.style.color = "rgba(244,244,245,0.95)";
+    });
+    btn.addEventListener("mouseleave", () => {
+      btn.style.color = "rgba(244,244,245,0.6)";
+    });
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.toggleColorSchemeMenu(btn);
+    });
+    return btn;
+  }
+  toggleColorSchemeMenu(button) {
+    const existing = this.host?.querySelector("[data-molsysviewer-color-scheme-menu]");
+    if (existing) {
+      existing.remove();
+      return;
+    }
+    const dropdown = document.createElement("div");
+    dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
+    Object.assign(dropdown.style, {
+      position: "absolute",
+      top: "20px",
+      right: "0",
+      background: "#18181b",
+      border: "1px solid #3f3f46",
+      borderRadius: "4px",
+      zIndex: "100",
+      padding: "4px 0",
+      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
+      display: "flex",
+      flexDirection: "column",
+      minWidth: "140px"
+    });
+    const makeOption = (label2, value) => {
+      const opt = document.createElement("button");
+      opt.type = "button";
+      opt.setAttribute("data-molsysviewer-color-scheme-option", value);
+      opt.textContent = label2;
+      const active = this.activeColorScheme === value;
+      Object.assign(opt.style, {
+        background: active ? "rgba(255,255,255,0.08)" : "transparent",
+        border: "none",
+        color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
+        padding: "6px 12px",
+        fontSize: "11px",
+        textAlign: "left",
+        cursor: "pointer",
+        fontWeight: active ? "700" : "400"
+      });
+      opt.addEventListener("mouseenter", () => {
+        opt.style.background = "rgba(255,255,255,0.12)";
+        opt.style.color = "#ffffff";
+      });
+      opt.addEventListener("mouseleave", () => {
+        opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
+        opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
+      });
+      opt.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropdown.remove();
+        if (this.activeColorScheme !== value) {
+          this.activeColorScheme = value;
+          this.rebuild();
+          this.callbacks.onChangeColorScheme?.(value);
+        }
+      });
+      return opt;
+    };
+    dropdown.appendChild(makeOption("Neutral", "neutral"));
+    dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
+    button.parentElement?.appendChild(dropdown);
+    const onOutsideClick = (e) => {
+      if (!dropdown.contains(e.target) && e.target !== button) {
+        dropdown.remove();
+        window.removeEventListener("click", onOutsideClick);
+      }
+    };
+    setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -153046,31 +153381,9 @@ var GroupPanel = class {
     this.onChangeColorScheme = onChangeColorScheme;
     this.activeTab = "system";
     this.tabs = /* @__PURE__ */ new Map();
-    this.strips = /* @__PURE__ */ new Map();
     this.expanded = false;
-    this.currentSelection = {
-      event: "interaction_active_selection_changed",
-      source_kind: "empty",
-      target_level: "none",
-      element_level: "none",
-      items: [],
-      atom_indices: [],
-      group_indices: [],
-      component_indices: [],
-      chain_indices: [],
-      molecule_indices: [],
-      entity_indices: [],
-      count_atoms: 0,
-      count_groups: 0,
-      count_shapes: 0,
-      count_annotations: 0
-    };
-    this.annotationMessages = [];
-    this.currentContextTarget = null;
-    this.collapseStateByChain = /* @__PURE__ */ new Map();
     this.runtimeVisibleOverride = null;
     this.visible = false;
-    this.activeColorScheme = "neutral";
     this.model = options?.model;
     const floating = options?.floating || !!options?.sharedShell;
     this.sharedShell = !!options?.sharedShell;
@@ -153265,24 +153578,22 @@ var GroupPanel = class {
     this.exportSection = this.createSection("export");
     this.exportPanel = new ExportPanel(this.makePanelContext("export"));
     this.settingsSection = this.createSection("settings");
-    Object.assign(this.systemSection.style, {
-      flexDirection: "column",
-      overflowX: "hidden",
-      overflowY: "hidden",
-      gap: "6px"
+    this.systemPanel = new SystemPanel(this.makePanelContext("system"), {
+      onSelect: this.onSelect,
+      onInteraction: this.onInteraction,
+      onFocus: this.onFocus,
+      onHover: this.onHover,
+      onContext: this.onContext,
+      onAnnotationContext: this.onAnnotationContext,
+      onChangeColorScheme: this.onChangeColorScheme,
+      onRebuilt: (naturalVisible) => {
+        this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
+        this.updateBodyDisplay();
+        if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
+        if (naturalVisible) this.applyExpandedState();
+      }
     });
-    this.systemSection.appendChild(this.makeSystemHeader());
-    this.systemStripsRow = document.createElement("div");
-    Object.assign(this.systemStripsRow.style, {
-      display: "flex",
-      flexDirection: "row",
-      flex: "1 1 0",
-      minHeight: "0",
-      overflowX: "auto",
-      overflowY: "hidden",
-      paddingBottom: "8px"
-    });
-    this.systemSection.appendChild(this.systemStripsRow);
+    this.systemPanel.mount(this.systemSection);
     this.addTab("system", "System", "None");
     this.addTab("whole", "Whole", "None");
     this.addTab("selection", "Selection", "None");
@@ -153407,10 +153718,8 @@ var GroupPanel = class {
     }
   }
   setStructure(structure) {
-    this.structure = structure;
-    if (!structure) this.annotationMessages.length = 0;
     this.switchTab("system");
-    this.render();
+    this.systemPanel.setStructure(structure);
   }
   get panelContentWidth() {
     return this.shell.width;
@@ -153452,10 +153761,7 @@ var GroupPanel = class {
     }
   }
   updateSelection(selection) {
-    this.currentSelection = selection;
-    for (const strip of this.strips.values()) {
-      strip.updateSelection(selection);
-    }
+    this.systemPanel.updateSelection(selection);
     this.selectionPanel.updateSelection(selection);
     this.regionsPanel.setCurrentSelection(selection);
   }
@@ -153502,54 +153808,25 @@ var GroupPanel = class {
     this.exportPanel.setScene(state);
   }
   updateContextTarget(target) {
-    this.currentContextTarget = target;
-    for (const strip of this.strips.values()) {
-      strip.updateContextTarget(target);
-    }
+    this.systemPanel.updateContextTarget(target);
   }
   addLabelOverlay(msg) {
-    this.annotationMessages.push(msg);
-    for (const strip of this.strips.values()) {
-      strip.addLabelOverlay(msg);
-    }
+    this.systemPanel.addLabelOverlay(msg);
   }
   clearAnnotationOverlays() {
-    this.annotationMessages.length = 0;
-    for (const strip of this.strips.values()) {
-      strip.clearAnnotationOverlays();
-    }
+    this.systemPanel.clearAnnotationOverlays();
   }
   clearAnnotationOverlaysByTag(tag) {
-    if (!tag) {
-      this.clearAnnotationOverlays();
-      return;
-    }
-    for (let index = this.annotationMessages.length - 1; index >= 0; index--) {
-      if (this.annotationMessages[index].tag === tag || this.annotationMessages[index].options?.tag === tag) {
-        this.annotationMessages.splice(index, 1);
-      }
-    }
-    for (const strip of this.strips.values()) {
-      strip.clearAnnotationOverlaysByTag(tag);
-    }
+    this.systemPanel.clearAnnotationOverlaysByTag(tag);
   }
   retagAnnotationOverlays(oldTag, newTag) {
-    for (const message of this.annotationMessages) {
-      if (message.tag === oldTag) message.tag = newTag;
-      if (message.options?.tag === oldTag) message.options.tag = newTag;
-    }
-    for (const strip of this.strips.values()) {
-      strip.retagAnnotationOverlays(oldTag, newTag);
-    }
+    this.systemPanel.retagAnnotationOverlays(oldTag, newTag);
   }
   focusItem(item2) {
-    const chainName = item2.source_kind === "element" ? item2.chain_name ?? "?" : "?";
-    return this.strips.get(chainName)?.focusItem(item2) ?? null;
+    return this.systemPanel.focusItem(item2);
   }
   dispose() {
-    this.captureCollapseState();
-    for (const strip of this.strips.values()) strip.dispose();
-    this.strips.clear();
+    this.systemPanel.dispose();
     if (!this.sharedShell) {
       this.shell.dispose();
     }
@@ -153570,54 +153847,7 @@ var GroupPanel = class {
     this.onExpandedChange?.(this.expanded);
   }
   render() {
-    this.captureCollapseState();
-    const grouped = /* @__PURE__ */ new Map();
-    const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
-    for (const item2 of items) {
-      const chain2 = item2.chain_name ?? "?";
-      if (!grouped.has(chain2)) grouped.set(chain2, []);
-      grouped.get(chain2).push(item2);
-    }
-    const nextChains = new Set(grouped.keys());
-    for (const [chain2, strip] of this.strips.entries()) {
-      if (nextChains.has(chain2)) continue;
-      this.collapseStateByChain.set(chain2, strip.getCollapseState());
-      strip.dispose();
-      this.strips.delete(chain2);
-    }
-    const naturalVisible = Boolean(this.structure) && grouped.size > 0;
-    this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
-    this.updateBodyDisplay();
-    if (!this.sharedShell && !this.visible && this.expanded) {
-      this.expanded = false;
-    }
-    const badge = this.tabs.get("system")?.badge;
-    if (badge) {
-      badge.textContent = naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None";
-    }
-    if (!this.structure || grouped.size === 0) return;
-    for (const [chain2, chainItems] of grouped.entries()) {
-      let strip = this.strips.get(chain2);
-      if (!strip) {
-        strip = new GroupStrip(this.systemStripsRow, chain2, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
-        this.strips.set(chain2, strip);
-      }
-      strip.setColorScheme(this.activeColorScheme);
-      strip.setData(this.structure, chainItems);
-      strip.setCollapseState(this.collapseStateByChain.get(chain2));
-      strip.updateSelection(this.currentSelection);
-      strip.updateContextTarget(this.currentContextTarget);
-      strip.clearAnnotationOverlays();
-      for (const message of this.annotationMessages) {
-        strip.addLabelOverlay(message);
-      }
-    }
-    this.applyExpandedState();
-  }
-  captureCollapseState() {
-    for (const [chain2, strip] of this.strips.entries()) {
-      this.collapseStateByChain.set(chain2, strip.getCollapseState());
-    }
+    this.systemPanel.rebuild();
   }
   makeSectionHeader(title) {
     return makeSectionHeader(title);
@@ -153625,167 +153855,6 @@ var GroupPanel = class {
   // Compact header for the System tab, hosting the residue color-scheme (🎨) toggle.
   // The palette button used to live in a section titled "Structure"; the navigate-panel
   // redesign renamed that section to the "System" tab, so it is re-anchored here.
-  makeSystemHeader() {
-    const header2 = document.createElement("div");
-    Object.assign(header2.style, {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      position: "relative",
-      width: "100%",
-      flex: "0 0 auto",
-      gap: "8px"
-    });
-    header2.appendChild(this.makeModifierLegend());
-    header2.appendChild(this.makeColorSchemeButton());
-    return header2;
-  }
-  makeModifierLegend() {
-    const legend = document.createElement("div");
-    legend.setAttribute("data-molsysviewer-selection-modifier-legend", "true");
-    Object.assign(legend.style, {
-      display: "flex",
-      flexWrap: "wrap",
-      alignItems: "center",
-      gap: "6px",
-      minWidth: "0",
-      color: "rgba(244,244,245,0.56)",
-      fontSize: "10px",
-      lineHeight: "1.2"
-    });
-    const entries3 = [
-      ["Click", "Replace"],
-      ["Shift", "Add/toggle"],
-      ["Shift+Alt", "Range"]
-    ];
-    for (const [key2, label2] of entries3) {
-      const item2 = document.createElement("span");
-      item2.setAttribute("data-molsysviewer-selection-modifier-legend-item", key2);
-      Object.assign(item2.style, {
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "4px",
-        whiteSpace: "nowrap"
-      });
-      const keyEl = document.createElement("span");
-      Object.assign(keyEl.style, {
-        padding: "1px 4px",
-        borderRadius: "4px",
-        background: "rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        color: "rgba(244,244,245,0.82)",
-        fontWeight: "700"
-      });
-      keyEl.textContent = key2;
-      const labelEl = document.createElement("span");
-      labelEl.textContent = label2;
-      item2.appendChild(keyEl);
-      item2.appendChild(labelEl);
-      legend.appendChild(item2);
-    }
-    return legend;
-  }
-  makeColorSchemeButton() {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.innerHTML = "\u{1F3A8}";
-    btn.title = "Residue color scheme";
-    btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
-    Object.assign(btn.style, {
-      background: "transparent",
-      border: "none",
-      color: "rgba(244,244,245,0.6)",
-      cursor: "pointer",
-      padding: "2px 4px",
-      fontSize: "12px",
-      outline: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    });
-    btn.addEventListener("mouseenter", () => {
-      btn.style.color = "rgba(244,244,245,0.95)";
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.color = "rgba(244,244,245,0.6)";
-    });
-    btn.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.toggleColorSchemeMenu(btn);
-    });
-    return btn;
-  }
-  toggleColorSchemeMenu(button) {
-    const existing = this.root.querySelector("[data-molsysviewer-color-scheme-menu]");
-    if (existing) {
-      existing.remove();
-      return;
-    }
-    const dropdown = document.createElement("div");
-    dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
-    Object.assign(dropdown.style, {
-      position: "absolute",
-      top: "20px",
-      right: "0",
-      background: "#18181b",
-      border: "1px solid #3f3f46",
-      borderRadius: "4px",
-      zIndex: "100",
-      padding: "4px 0",
-      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
-      display: "flex",
-      flexDirection: "column",
-      minWidth: "140px"
-    });
-    const makeOption = (label2, value) => {
-      const opt = document.createElement("button");
-      opt.type = "button";
-      opt.setAttribute("data-molsysviewer-color-scheme-option", value);
-      opt.textContent = label2;
-      const active = this.activeColorScheme === value;
-      Object.assign(opt.style, {
-        background: active ? "rgba(255,255,255,0.08)" : "transparent",
-        border: "none",
-        color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
-        padding: "6px 12px",
-        fontSize: "11px",
-        textAlign: "left",
-        cursor: "pointer",
-        fontWeight: active ? "700" : "400"
-      });
-      opt.addEventListener("mouseenter", () => {
-        opt.style.background = "rgba(255,255,255,0.12)";
-        opt.style.color = "#ffffff";
-      });
-      opt.addEventListener("mouseleave", () => {
-        opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
-        opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
-      });
-      opt.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropdown.remove();
-        if (this.activeColorScheme !== value) {
-          this.activeColorScheme = value;
-          this.render();
-          this.onChangeColorScheme?.(value);
-        }
-      });
-      return opt;
-    };
-    dropdown.appendChild(makeOption("Neutral", "neutral"));
-    dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
-    button.parentElement?.appendChild(dropdown);
-    const onOutsideClick = (e) => {
-      if (!dropdown.contains(e.target) && e.target !== button) {
-        dropdown.remove();
-        window.removeEventListener("click", onOutsideClick);
-      }
-    };
-    setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
-  }
   // ── 1. Selection Section Rendering ───────────────────────
   // ── 2. Regions Section Rendering ─────────────────────────
   // ── 5. Viewport Section Rendering ────────────────────────

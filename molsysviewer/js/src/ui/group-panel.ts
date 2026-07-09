@@ -1,9 +1,8 @@
 import { Structure } from "molstar/lib/mol-model/structure";
 
-import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation, GroupSelectionItem, buildGroupItemsFromStructure } from "../managers/active-selection";
+import { ActiveSelectionItem, ActiveSelectionPayload, ActiveSelectionSetOperation } from "../managers/active-selection";
 import { AddLabelMessage } from "../messages/viewer-messages";
 import { ContextMenuTarget } from "./context-menu";
-import { GroupStrip } from "./group-strip";
 import { ManualQueryComposer } from "./query-composer";
 import {
     makeButton,
@@ -20,6 +19,7 @@ import { ViewportPanel } from "./panels/viewport-panel";
 import { ExportPanel } from "./panels/export-panel";
 import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
+import { SystemPanel } from "./panels/system-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -48,12 +48,12 @@ export type SceneState = {
     fogIntensity?: number;
 };
 
-type OnSelect = (items: ActiveSelectionItem[], op: ActiveSelectionSetOperation) => void;
-type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
-type OnFocus = (item: ActiveSelectionItem) => void;
-type OnHover = (item: ActiveSelectionItem | null) => void;
-type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
-type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
+export type OnSelect = (items: ActiveSelectionItem[], op: ActiveSelectionSetOperation) => void;
+export type OnInteraction = (item: ActiveSelectionItem, modifiers: { shift: boolean; alt: boolean }) => void;
+export type OnFocus = (item: ActiveSelectionItem) => void;
+export type OnHover = (item: ActiveSelectionItem | null) => void;
+export type OnContext = (item: ActiveSelectionItem, pageX: number, pageY: number) => void;
+export type OnAnnotationContext = (target: ContextMenuTarget, pageX: number, pageY: number) => void;
 export type SavedSelectionSummary = { tag: string; atom_count: number; element_level?: string };
 export type RegionSummary = {
     tag: string;
@@ -110,11 +110,11 @@ export class GroupPanel {
     private readonly exportPanel: ExportPanel;
     private readonly regionsPanel: RegionsPanel;
     private readonly selectionPanel: SelectionPanel;
+    private readonly systemPanel: SystemPanel;
 
     // Right column: Content Sections
     private readonly rightColumn: HTMLDivElement;
     private readonly systemSection: HTMLDivElement;
-    private readonly systemStripsRow: HTMLDivElement;
     private readonly wholeSection: HTMLDivElement;
     private readonly selectionSection: HTMLDivElement;
     private readonly regionsSection: HTMLDivElement;
@@ -127,29 +127,7 @@ export class GroupPanel {
     private readonly settingsSection: HTMLDivElement;
     private readonly model?: any;
 
-    private readonly strips = new Map<string, GroupStrip>();
-    private structure?: Structure;
     private expanded = false;
-    private currentSelection: ActiveSelectionPayload = {
-        event: "interaction_active_selection_changed",
-        source_kind: "empty",
-        target_level: "none",
-        element_level: "none",
-        items: [],
-        atom_indices: [],
-        group_indices: [],
-        component_indices: [],
-        chain_indices: [],
-        molecule_indices: [],
-        entity_indices: [],
-        count_atoms: 0,
-        count_groups: 0,
-        count_shapes: 0,
-        count_annotations: 0,
-    };
-    private readonly annotationMessages: AddLabelMessage[] = [];
-    private currentContextTarget: ContextMenuTarget | null = null;
-    private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
 
     private onExpandedChange?: (expanded: boolean) => void;
     private onNavigateToWorkbench?: () => void;
@@ -157,7 +135,6 @@ export class GroupPanel {
     private runtimeVisibleOverride: boolean | null = null;
     private readonly sharedShell: boolean;
     private visible = false;
-    private activeColorScheme: "neutral" | "physicochemical" = "neutral";
 
 
     constructor(
@@ -391,25 +368,22 @@ export class GroupPanel {
         this.exportPanel = new ExportPanel(this.makePanelContext("export"));
         this.settingsSection = this.createSection("settings");
 
-        // System tab: a compact palette header on top, horizontal sequence strips below.
-        Object.assign(this.systemSection.style, {
-            flexDirection: "column",
-            overflowX: "hidden",
-            overflowY: "hidden",
-            gap: "6px",
+        this.systemPanel = new SystemPanel(this.makePanelContext("system"), {
+            onSelect: this.onSelect,
+            onInteraction: this.onInteraction,
+            onFocus: this.onFocus,
+            onHover: this.onHover,
+            onContext: this.onContext,
+            onAnnotationContext: this.onAnnotationContext,
+            onChangeColorScheme: this.onChangeColorScheme,
+            onRebuilt: (naturalVisible: boolean) => {
+                this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
+                this.updateBodyDisplay();
+                if (!this.sharedShell && !this.visible && this.expanded) this.expanded = false;
+                if (naturalVisible) this.applyExpandedState();
+            },
         });
-        this.systemSection.appendChild(this.makeSystemHeader());
-        this.systemStripsRow = document.createElement("div");
-        Object.assign(this.systemStripsRow.style, {
-            display: "flex",
-            flexDirection: "row",
-            flex: "1 1 0",
-            minHeight: "0",
-            overflowX: "auto",
-            overflowY: "hidden",
-            paddingBottom: "8px",
-        });
-        this.systemSection.appendChild(this.systemStripsRow);
+        this.systemPanel.mount(this.systemSection);
 
         // Add tabs
         this.addTab("system", "System", "None");
@@ -554,12 +528,8 @@ export class GroupPanel {
     }
 
     setStructure(structure: Structure | undefined): void {
-        this.structure = structure;
-        if (!structure) this.annotationMessages.length = 0;
-
-        // Reset to system tab on reload
         this.switchTab("system");
-        this.render();
+        this.systemPanel.setStructure(structure);
     }
 
     get panelContentWidth(): number {
@@ -612,11 +582,7 @@ export class GroupPanel {
     }
 
     updateSelection(selection: ActiveSelectionPayload): void {
-        this.currentSelection = selection;
-        for (const strip of this.strips.values()) {
-            strip.updateSelection(selection);
-        }
-
+        this.systemPanel.updateSelection(selection);
         this.selectionPanel.updateSelection(selection);
         this.regionsPanel.setCurrentSelection(selection);
     }
@@ -677,60 +643,31 @@ export class GroupPanel {
     }
 
     updateContextTarget(target: ContextMenuTarget | null): void {
-        this.currentContextTarget = target;
-        for (const strip of this.strips.values()) {
-            strip.updateContextTarget(target);
-        }
+        this.systemPanel.updateContextTarget(target);
     }
 
     addLabelOverlay(msg: AddLabelMessage): void {
-        this.annotationMessages.push(msg);
-        for (const strip of this.strips.values()) {
-            strip.addLabelOverlay(msg);
-        }
+        this.systemPanel.addLabelOverlay(msg);
     }
 
     clearAnnotationOverlays(): void {
-        this.annotationMessages.length = 0;
-        for (const strip of this.strips.values()) {
-            strip.clearAnnotationOverlays();
-        }
+        this.systemPanel.clearAnnotationOverlays();
     }
 
     clearAnnotationOverlaysByTag(tag?: string): void {
-        if (!tag) {
-            this.clearAnnotationOverlays();
-            return;
-        }
-        for (let index = this.annotationMessages.length - 1; index >= 0; index--) {
-            if (this.annotationMessages[index].tag === tag || this.annotationMessages[index].options?.tag === tag) {
-                this.annotationMessages.splice(index, 1);
-            }
-        }
-        for (const strip of this.strips.values()) {
-            strip.clearAnnotationOverlaysByTag(tag);
-        }
+        this.systemPanel.clearAnnotationOverlaysByTag(tag);
     }
 
     retagAnnotationOverlays(oldTag: string, newTag: string): void {
-        for (const message of this.annotationMessages) {
-            if (message.tag === oldTag) message.tag = newTag;
-            if (message.options?.tag === oldTag) message.options.tag = newTag;
-        }
-        for (const strip of this.strips.values()) {
-            strip.retagAnnotationOverlays(oldTag, newTag);
-        }
+        this.systemPanel.retagAnnotationOverlays(oldTag, newTag);
     }
 
     focusItem(item: ActiveSelectionItem) {
-        const chainName = item.source_kind === "element" ? (item.chain_name ?? "?") : "?";
-        return this.strips.get(chainName)?.focusItem(item) ?? null;
+        return this.systemPanel.focusItem(item);
     }
 
     dispose(): void {
-        this.captureCollapseState();
-        for (const strip of this.strips.values()) strip.dispose();
-        this.strips.clear();
+        this.systemPanel.dispose();
         if (!this.sharedShell) {
             this.shell.dispose();
         }
@@ -754,62 +691,9 @@ export class GroupPanel {
     }
 
     render(): void {
-        this.captureCollapseState();
-        const grouped = new Map<string, GroupSelectionItem[]>();
-        const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
-        for (const item of items) {
-            const chain = item.chain_name ?? "?";
-            if (!grouped.has(chain)) grouped.set(chain, []);
-            grouped.get(chain)!.push(item);
-        }
-
-        const nextChains = new Set(grouped.keys());
-        for (const [chain, strip] of this.strips.entries()) {
-            if (nextChains.has(chain)) continue;
-            this.collapseStateByChain.set(chain, strip.getCollapseState());
-            strip.dispose();
-            this.strips.delete(chain);
-        }
-
-        const naturalVisible = Boolean(this.structure) && grouped.size > 0;
-        this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
-        this.updateBodyDisplay();
-        if (!this.sharedShell && !this.visible && this.expanded) {
-            this.expanded = false;
-        }
-
-        // Update sidebar System badge
-        const badge = this.tabs.get("system")?.badge;
-        if (badge) {
-            badge.textContent = naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None";
-        }
-
-        if (!this.structure || grouped.size === 0) return;
-
-        for (const [chain, chainItems] of grouped.entries()) {
-            let strip = this.strips.get(chain);
-            if (!strip) {
-                strip = new GroupStrip(this.systemStripsRow, chain, this.onSelect, this.onInteraction, this.onFocus, this.onHover, this.onContext, this.onAnnotationContext);
-                this.strips.set(chain, strip);
-            }
-            strip.setColorScheme(this.activeColorScheme);
-            strip.setData(this.structure, chainItems);
-            strip.setCollapseState(this.collapseStateByChain.get(chain));
-            strip.updateSelection(this.currentSelection);
-            strip.updateContextTarget(this.currentContextTarget);
-            strip.clearAnnotationOverlays();
-            for (const message of this.annotationMessages) {
-                strip.addLabelOverlay(message);
-            }
-        }
-        this.applyExpandedState();
+        this.systemPanel.rebuild();
     }
 
-    private captureCollapseState(): void {
-        for (const [chain, strip] of this.strips.entries()) {
-            this.collapseStateByChain.set(chain, strip.getCollapseState());
-        }
-    }
 
     private makeSectionHeader(title: string): HTMLDivElement {
         return makeSectionHeader(title);
@@ -818,179 +702,9 @@ export class GroupPanel {
     // Compact header for the System tab, hosting the residue color-scheme (🎨) toggle.
     // The palette button used to live in a section titled "Structure"; the navigate-panel
     // redesign renamed that section to the "System" tab, so it is re-anchored here.
-    private makeSystemHeader(): HTMLDivElement {
-        const header = document.createElement("div");
-        Object.assign(header.style, {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            position: "relative",
-            width: "100%",
-            flex: "0 0 auto",
-            gap: "8px",
-        });
-        header.appendChild(this.makeModifierLegend());
-        header.appendChild(this.makeColorSchemeButton());
-        return header;
-    }
 
-    private makeModifierLegend(): HTMLDivElement {
-        const legend = document.createElement("div");
-        legend.setAttribute("data-molsysviewer-selection-modifier-legend", "true");
-        Object.assign(legend.style, {
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            gap: "6px",
-            minWidth: "0",
-            color: "rgba(244,244,245,0.56)",
-            fontSize: "10px",
-            lineHeight: "1.2",
-        });
 
-        const entries: Array<[string, string]> = [
-            ["Click", "Replace"],
-            ["Shift", "Add/toggle"],
-            ["Shift+Alt", "Range"],
-        ];
-        for (const [key, label] of entries) {
-            const item = document.createElement("span");
-            item.setAttribute("data-molsysviewer-selection-modifier-legend-item", key);
-            Object.assign(item.style, {
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px",
-                whiteSpace: "nowrap",
-            });
 
-            const keyEl = document.createElement("span");
-            Object.assign(keyEl.style, {
-                padding: "1px 4px",
-                borderRadius: "4px",
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: "rgba(244,244,245,0.82)",
-                fontWeight: "700",
-            });
-            keyEl.textContent = key;
-
-            const labelEl = document.createElement("span");
-            labelEl.textContent = label;
-
-            item.appendChild(keyEl);
-            item.appendChild(labelEl);
-            legend.appendChild(item);
-        }
-        return legend;
-    }
-
-    private makeColorSchemeButton(): HTMLButtonElement {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.innerHTML = "🎨";
-        btn.title = "Residue color scheme";
-        btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
-        Object.assign(btn.style, {
-            background: "transparent",
-            border: "none",
-            color: "rgba(244,244,245,0.6)",
-            cursor: "pointer",
-            padding: "2px 4px",
-            fontSize: "12px",
-            outline: "none",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-        });
-        btn.addEventListener("mouseenter", () => {
-            btn.style.color = "rgba(244,244,245,0.95)";
-        });
-        btn.addEventListener("mouseleave", () => {
-            btn.style.color = "rgba(244,244,245,0.6)";
-        });
-        btn.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.toggleColorSchemeMenu(btn);
-        });
-        return btn;
-    }
-
-    private toggleColorSchemeMenu(button: HTMLElement): void {
-        const existing = this.root.querySelector("[data-molsysviewer-color-scheme-menu]");
-        if (existing) {
-            existing.remove();
-            return;
-        }
-
-        const dropdown = document.createElement("div");
-        dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
-        Object.assign(dropdown.style, {
-            position: "absolute",
-            top: "20px",
-            right: "0",
-            background: "#18181b",
-            border: "1px solid #3f3f46",
-            borderRadius: "4px",
-            zIndex: "100",
-            padding: "4px 0",
-            boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
-            display: "flex",
-            flexDirection: "column",
-            minWidth: "140px",
-        });
-
-        const makeOption = (label: string, value: "neutral" | "physicochemical") => {
-            const opt = document.createElement("button");
-            opt.type = "button";
-            opt.setAttribute("data-molsysviewer-color-scheme-option", value);
-            opt.textContent = label;
-            const active = this.activeColorScheme === value;
-            Object.assign(opt.style, {
-                background: active ? "rgba(255,255,255,0.08)" : "transparent",
-                border: "none",
-                color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
-                padding: "6px 12px",
-                fontSize: "11px",
-                textAlign: "left",
-                cursor: "pointer",
-                fontWeight: active ? "700" : "400",
-            });
-            opt.addEventListener("mouseenter", () => {
-                opt.style.background = "rgba(255,255,255,0.12)";
-                opt.style.color = "#ffffff";
-            });
-            opt.addEventListener("mouseleave", () => {
-                opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
-                opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
-            });
-            opt.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropdown.remove();
-                if (this.activeColorScheme !== value) {
-                    this.activeColorScheme = value;
-                    this.render();
-                    this.onChangeColorScheme?.(value);
-                }
-            });
-            return opt;
-        };
-
-        dropdown.appendChild(makeOption("Neutral", "neutral"));
-        dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
-
-        button.parentElement?.appendChild(dropdown);
-
-        const onOutsideClick = (e: MouseEvent) => {
-            if (!dropdown.contains(e.target as Node) && e.target !== button) {
-                dropdown.remove();
-                window.removeEventListener("click", onOutsideClick);
-            }
-        };
-        setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
-    }
 
     // ── 1. Selection Section Rendering ───────────────────────
 
