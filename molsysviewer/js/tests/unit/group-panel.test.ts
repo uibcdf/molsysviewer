@@ -783,6 +783,482 @@ test("GroupPanel saved and region summaries trigger their primary actions", () =
     }
 });
 
+test("GroupPanel region create composer covers active, checked query, split, and global actions", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        const root = host.children[0];
+
+        const initiallyDisabled = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-create-active",
+            "true",
+        );
+        assert.strictEqual(initiallyDisabled?.disabled, true);
+
+        panel.updateSelection({
+            count_atoms: 2,
+            atom_indices: [0, 1],
+        } as any);
+        const activeCreate = findFirstByAttribute(root, "data-molsysviewer-region-create-active", "true");
+        assert.strictEqual(activeCreate?.disabled, false);
+        activeCreate?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "create_region_from_selection",
+            details: {},
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-region-create-origin", "query")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const queryInput = findFirstByAttribute(root, "data-molsysviewer-query-input", "region") as any;
+        queryInput.value = "group_index == 0";
+        queryInput.dispatch("input");
+        assert.strictEqual(actions.filter(item => item.action === "selection_query_preview_request").length, 0);
+
+        findFirstByAttribute(root, "data-molsysviewer-query-check", "region")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const previewRequest = actions.at(-1);
+        assert.strictEqual(previewRequest.action, "selection_query_preview_request");
+        panel.updateSelectionQueryPreview({
+            request_id: previewRequest.details.request_id,
+            ok: true,
+            count: 3,
+        });
+        const queryCreate = findFirstByAttribute(root, "data-molsysviewer-region-create-query", "true");
+        assert.strictEqual(queryCreate?.disabled, false);
+        queryCreate?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "create_region_from_query",
+            details: {
+                expression: "group_index == 0",
+                syntax: "MolSysMT",
+            },
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-region-create-origin", "split")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        findFirstByAttribute(root, "data-molsysviewer-region-split", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "make_regions_by",
+            details: { element: "chain" },
+        });
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-region-create-tag", "true"),
+            null,
+        );
+
+        findFirstByAttribute(root, "data-molsysviewer-region-show-all", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        findFirstByAttribute(root, "data-molsysviewer-region-hide-all", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.slice(-2), [
+            { action: "show_all_regions", details: undefined },
+            { action: "hide_all_regions", details: undefined },
+        ]);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel region cards expose lifecycle actions and explicit collision choices", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        panel.setRegions([
+            {
+                tag: "binding",
+                atom_count: 8,
+                hidden: false,
+                representation: "line",
+                overlap_tags: ["catalytic"],
+            },
+            {
+                tag: "catalytic",
+                atom_count: 3,
+                hidden: false,
+                representation: "ball-and-stick",
+                overlap_tags: ["binding"],
+            },
+        ]);
+        const root = host.children[0];
+
+        assert.strictEqual(
+            findFirstByAttribute(root, "data-molsysviewer-region-overlap", "binding")?.title,
+            "Overlaps: catalytic",
+        );
+        for (const [attribute, action] of [
+            ["data-molsysviewer-region-visibility", "toggle_region_visibility"],
+            ["data-molsysviewer-region-isolate", "show_only_region"],
+            ["data-molsysviewer-region-complement", "create_complementary_region"],
+            ["data-molsysviewer-region-duplicate", "duplicate_region"],
+            ["data-molsysviewer-region-reset", "reset_region_representation"],
+            ["data-molsysviewer-region-delete", "delete_region"],
+        ]) {
+            findFirstByAttribute(root, attribute, "binding")
+                ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+            assert.deepStrictEqual(actions.at(-1), { action, details: { tag: "binding" } });
+        }
+
+        findFirstByAttribute(root, "data-molsysviewer-region-rename", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const renameInput = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-rename-input",
+            "binding",
+        ) as any;
+        renameInput.value = "catalytic";
+        findFirstByAttribute(root, "data-molsysviewer-region-rename-confirm", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.ok(findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-rename-collision",
+            "catalytic",
+        ));
+        findFirstByAttribute(root, "data-molsysviewer-region-collision-overwrite", "rename")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.slice(-2), [
+            { action: "delete_region", details: { tag: "catalytic" } },
+            { action: "rename_region", details: { tag: "binding", new_tag: "catalytic" } },
+        ]);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel region style composer emits presets, release-only opacity, and gated colors", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        panel.setRegionStyleOptions({
+            representations: [
+                "backbone", "ball-and-stick", "carbohydrate", "cartoon",
+                "ellipsoid", "gaussian-surface", "gaussian-volume", "line",
+                "molecular-surface", "point", "putty", "spacefill",
+            ],
+            presets: ["atomic-detail", "auto", "coarse-surface", "empty", "polymer-and-ligand", "polymer-cartoon"],
+        });
+        panel.setRegions([{
+            tag: "binding",
+            atom_count: 8,
+            hidden: false,
+            representation: "line",
+            representation_params: { alpha: 0.4, quality: "high", sizeFactor: 0.8 },
+            available_attributes: ["b_factor"],
+        }]);
+        const root = host.children[0];
+        findFirstByAttribute(root, "data-molsysviewer-region-style", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        const representation = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-representation",
+            "binding",
+        ) as any;
+        const preset = findFirstByAttribute(root, "data-molsysviewer-region-style-preset", "binding") as any;
+        const opacity = findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "binding") as any;
+        const opacityValue = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-opacity-value",
+            "binding",
+        );
+        const quality = findFirstByAttribute(root, "data-molsysviewer-region-style-quality", "binding") as any;
+        const colorScheme = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-color-scheme",
+            "binding",
+        ) as any;
+        const uniformColor = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-uniform-color",
+            "binding",
+        ) as any;
+        const attribute = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-color-attribute",
+            "binding",
+        ) as any;
+
+        assert.strictEqual(representation.children.length, 13);
+        assert.strictEqual(preset.children.length, 7);
+        assert.strictEqual(attribute.children.length, 2);
+        representation.value = "cartoon";
+        preset.value = "";
+        quality.value = "high";
+        colorScheme.value = "";
+        opacity.value = "0.65";
+        const beforeInput = actions.length;
+        opacity.dispatch("input");
+        assert.strictEqual(actions.length, beforeInput);
+        assert.strictEqual(opacityValue?.textContent, "0.65");
+        opacity.dispatch("change");
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_region_representation",
+            details: {
+                tag: "binding",
+                representation: "line",
+                params: { alpha: 0.65, quality: "high", sizeFactor: 0.8 },
+            },
+        });
+
+        preset.value = "polymer-cartoon";
+        preset.dispatch("change");
+        assert.strictEqual(representation.value, "");
+        colorScheme.value = "uniform";
+        colorScheme.dispatch("change");
+        uniformColor.value = "#112233";
+        quality.value = "highest";
+        findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_region_representation",
+            details: {
+                tag: "binding",
+                preset: "polymer-cartoon",
+                params: {
+                    alpha: 0.65,
+                    quality: "highest",
+                    sizeFactor: 0.8,
+                    color: "#112233",
+                },
+            },
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-region-style", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const nextAttribute = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-color-attribute",
+            "binding",
+        ) as any;
+        nextAttribute.value = "b_factor";
+        nextAttribute.dispatch("change");
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "color_region_by_attribute",
+            details: { tag: "binding", attribute: "b_factor" },
+        });
+        findFirstByAttribute(root, "data-molsysviewer-region-style-reset-colors", "binding")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "reset_region_colors",
+            details: { tag: "binding" },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel region boolean composer supports ordered operations and overlap prefill", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        panel.setRegions([
+            { tag: "pocket", atom_count: 8, hidden: false, overlap_tags: ["backbone"] },
+            { tag: "backbone", atom_count: 4, hidden: false, overlap_tags: ["pocket"] },
+        ]);
+        const root = host.children[0];
+        findFirstByAttribute(root, "data-molsysviewer-region-overlap", "pocket")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const composer = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-boolean-composer",
+            "true",
+        );
+        assert.strictEqual(
+            composer?.getAttribute("data-molsysviewer-region-boolean-current-a"),
+            "pocket",
+        );
+        assert.strictEqual(
+            composer?.getAttribute("data-molsysviewer-region-boolean-current-b"),
+            "backbone",
+        );
+        assert.strictEqual(
+            composer?.getAttribute("data-molsysviewer-region-boolean-current-operation"),
+            "difference",
+        );
+        assert.strictEqual(
+            composer?.getAttribute("data-molsysviewer-region-boolean-attention"),
+            "true",
+        );
+
+        const output = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-boolean-output",
+            "true",
+        ) as any;
+        output.value = "sidechains";
+        output.dispatch("input");
+        findFirstByAttribute(root, "data-molsysviewer-region-boolean-create", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "compose_regions",
+            details: {
+                tag_a: "pocket",
+                tag_b: "backbone",
+                op: "difference",
+                new_tag: "sidechains",
+            },
+        });
+
+        output.value = "backbone";
+        output.dispatch("input");
+        findFirstByAttribute(root, "data-molsysviewer-region-boolean-create", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.ok(findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-boolean-collision",
+            "backbone",
+        ));
+        findFirstByAttribute(root, "data-molsysviewer-region-boolean-overwrite", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "compose_regions",
+            details: {
+                tag_a: "pocket",
+                tag_b: "backbone",
+                op: "difference",
+                new_tag: "backbone",
+                overwrite: true,
+            },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel region inspect fetches lazily and rejects stale details", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        panel.setRegions([{ tag: "site", atom_count: 3, hidden: false }]);
+        const root = host.children[0];
+        findFirstByAttribute(root, "data-molsysviewer-region-inspect", "site")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const request = actions.at(-1);
+        assert.strictEqual(request.action, "get_region_details");
+        assert.strictEqual(request.details.tag, "site");
+        assert.strictEqual(
+            firstText(findFirstByAttribute(root, "data-molsysviewer-region-inspect-panel", "site")),
+            "Loading...",
+        );
+
+        panel.updateRegionDetails({
+            request_id: request.details.request_id + 1,
+            tag: "site",
+            atom_count: 99,
+            group_count: 99,
+            chain_count: 99,
+            center_nm: [9, 9, 9],
+            structure_index: 9,
+        });
+        assert.strictEqual(
+            firstText(findFirstByAttribute(root, "data-molsysviewer-region-inspect-panel", "site")),
+            "Loading...",
+        );
+
+        panel.updateRegionDetails({
+            request_id: request.details.request_id,
+            tag: "site",
+            atom_count: 3,
+            group_count: 2,
+            chain_count: 1,
+            center_nm: [0.1, 0.2, 0.3],
+            structure_index: 4,
+        });
+        const details = findFirstByAttribute(root, "data-molsysviewer-region-inspect-panel", "site");
+        assert.strictEqual(details?.getAttribute("data-molsysviewer-region-inspect-frame"), "4");
+        assert.strictEqual(
+            findFirstByAttribute(
+                root,
+                "data-molsysviewer-region-inspect-center",
+                "true",
+            )?.textContent,
+            "center [nm]: 0.100, 0.200, 0.300",
+        );
+        findFirstByAttribute(root, "data-molsysviewer-region-inspect-refresh", "site")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(actions.at(-1).action, "get_region_details");
+        assert.ok(actions.at(-1).details.request_id > request.details.request_id);
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel saved selections card actions and inline forms", () => {
     const restore = installFakeDom();
     try {

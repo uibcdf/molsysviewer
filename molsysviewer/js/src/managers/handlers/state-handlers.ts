@@ -30,6 +30,9 @@ import {
     SetFocusFadeMessage,
     SetLayerTagMessage,
     SetRegionRepresentationMessage,
+    SetRegionsVisibilityMessage,
+    SetRegionSummariesMessage,
+    BatchRegionOperationsMessage,
     ShowGlobalMessage,
     ShowLayerMessage,
     ShowRegionMessage,
@@ -58,6 +61,11 @@ export interface RegionSummary {
     atom_count: number;
     selection?: string;
     hidden: boolean;
+    representation?: string;
+    preset?: string;
+    representation_params: Record<string, unknown>;
+    overlap_tags: string[];
+    available_attributes: string[];
 }
 
 export interface StateCallbacks {
@@ -71,12 +79,14 @@ export interface StateCallbacks {
 
 export class StateHandlers {
     private readonly regionIndex = new Map<string, RegionEntry>();
+    private backendRegionSummaries: RegionSummary[] | null = null;
     private readonly layerMeta = new Map<string, { kind?: string; meta?: Record<string, unknown> }>();
     private readonly tagIndex = new Map<string, Set<StateTransform.Ref>>();
     private readonly globalReprs = new Set<StateTransform.Ref>();
     private readonly pendingGlobalOps: Array<{ hide: boolean; target: "global" | "all" }> = [];
     private readonly pendingLayerVisibility = new Map<string, boolean>();
     private readonly pendingRegions: CreateRegionMessage[] = [];
+    private regionStyleOptions = { representations: [] as string[], presets: [] as string[] };
     private pendingVisibility?: number[];
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
@@ -204,6 +214,15 @@ export class StateHandlers {
     }
 
     getRegionSummaries(): RegionSummary[] {
+        if (this.backendRegionSummaries !== null) {
+            return this.backendRegionSummaries.map(item => ({
+                ...item,
+                atom_indices: [...item.atom_indices],
+                overlap_tags: [...item.overlap_tags],
+                available_attributes: [...item.available_attributes],
+                representation_params: { ...item.representation_params },
+            }));
+        }
         return Array.from(this.regionIndex.entries())
             .map(([tag, entry]) => ({
                 tag,
@@ -211,6 +230,9 @@ export class StateHandlers {
                 atom_count: entry.atomIndices.length,
                 selection: entry.selection,
                 hidden: !!entry.hidden,
+                representation_params: {},
+                overlap_tags: [],
+                available_attributes: [],
             }))
             .sort((a, b) => a.tag.localeCompare(b.tag));
     }
@@ -512,6 +534,11 @@ export class StateHandlers {
             if (repr?.ref) entry.representations.push(repr.ref);
         }
 
+        const alpha = msg.params?.alpha;
+        if ((msg.preset || msg.user_preset) && typeof alpha === "number") {
+            await this.applyAlphaToRepresentations(entry.representations, alpha);
+        }
+
         // Restore visibility state.
         if (entry.hidden) {
             entry.representations.forEach(ref =>
@@ -526,6 +553,78 @@ export class StateHandlers {
 
     async hideRegion(msg: HideRegionMessage) {
         await this.toggleRegionVisibility(msg.tag, true);
+    }
+
+    async setRegionsVisibility(msg: SetRegionsVisibilityMessage) {
+        const tags = Array.isArray(msg.tags) ? msg.tags : Array.from(this.regionIndex.keys());
+        await Promise.all(tags.map(tag => this.toggleRegionVisibility(tag, !!msg.hidden)));
+    }
+
+    setRegionSummaries(msg: SetRegionSummariesMessage) {
+        const regions = Array.isArray(msg.regions) ? msg.regions : [];
+        this.regionStyleOptions = {
+            representations: Array.isArray(msg.representations)
+                ? msg.representations.filter((value): value is string => typeof value === "string")
+                : [],
+            presets: Array.isArray(msg.presets)
+                ? msg.presets.filter((value): value is string => typeof value === "string")
+                : [],
+        };
+        this.backendRegionSummaries = regions
+            .filter(item => typeof item?.tag === "string")
+            .map(item => ({
+                tag: item.tag,
+                atom_indices: Array.isArray(item.atom_indices)
+                    ? item.atom_indices.filter((value): value is number => typeof value === "number")
+                    : [],
+                atom_count: typeof item.atom_count === "number"
+                    ? item.atom_count
+                    : Array.isArray(item.atom_indices) ? item.atom_indices.length : 0,
+                selection: typeof item.selection === "string" ? item.selection : undefined,
+                hidden: !!item.hidden,
+                representation: typeof item.representation === "string" ? item.representation : undefined,
+                preset: typeof item.preset === "string" ? item.preset : undefined,
+                representation_params: item.representation_params && typeof item.representation_params === "object"
+                    ? { ...item.representation_params }
+                    : {},
+                overlap_tags: Array.isArray(item.overlap_tags)
+                    ? item.overlap_tags.filter((value): value is string => typeof value === "string")
+                    : [],
+                available_attributes: Array.isArray(item.available_attributes)
+                    ? item.available_attributes.filter((value): value is string => typeof value === "string")
+                    : [],
+            }))
+            .sort((left, right) => left.tag.localeCompare(right.tag));
+    }
+
+    getRegionStyleOptions(): { representations: string[]; presets: string[] } {
+        return {
+            representations: [...this.regionStyleOptions.representations],
+            presets: [...this.regionStyleOptions.presets],
+        };
+    }
+
+    async applyRegionOperations(msg: BatchRegionOperationsMessage) {
+        const operations = Array.isArray(msg.operations) ? msg.operations : [];
+        for (const operation of operations) {
+            switch (operation.op) {
+                case "create_region":
+                    await this.createRegion(operation as unknown as CreateRegionMessage);
+                    break;
+                case "set_region_representation":
+                    await this.setRegionRepresentation(operation as unknown as SetRegionRepresentationMessage);
+                    break;
+                case "show_region":
+                    await this.showRegion(operation as unknown as ShowRegionMessage);
+                    break;
+                case "hide_region":
+                    await this.hideRegion(operation as unknown as HideRegionMessage);
+                    break;
+                default:
+                    console.warn("[MolSysViewer] unsupported batched region op:", operation.op);
+                    break;
+            }
+        }
     }
 
     async deleteRegion(msg: DeleteRegionMessage) {
@@ -805,6 +904,7 @@ export class StateHandlers {
             this.tagIndex.clear();
         }
         this.regionIndex.clear();
+        this.backendRegionSummaries = null;
         this.layerMeta.clear();
         if (this.globalReprs.size > 0) {
             await Promise.all(Array.from(this.globalReprs).map(ref => this.removeStateObject(ref)));
@@ -1029,6 +1129,20 @@ export class StateHandlers {
             if (sel?.ref) refs.push(sel.ref);
         });
         return refs;
+    }
+
+    private async applyAlphaToRepresentations(refs: StateTransform.Ref[], alpha: number) {
+        if (refs.length === 0) return;
+        const update = this.plugin.state.data.build();
+        for (const ref of refs) {
+            update.to(ref).update(
+                StateTransforms.Representation.StructureRepresentation3D,
+                (params: any) => {
+                    params.type.params.alpha = alpha;
+                },
+            );
+        }
+        await update.commit({ doNotUpdateCurrent: true });
     }
 
     private async removeStateObject(ref?: StateObjectRef) {

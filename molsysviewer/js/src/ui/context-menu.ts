@@ -73,6 +73,10 @@ export type RegionSummary = {
     atom_count: number;
     selection?: string;
     hidden: boolean;
+    representation?: string;
+    preset?: string;
+    overlap_tags?: string[];
+    available_attributes?: string[];
 };
 
 export type AddonContextActionSummary = {

@@ -144885,12 +144885,14 @@ var StateHandlers = class {
     this.plugin = plugin;
     this.callbacks = callbacks;
     this.regionIndex = /* @__PURE__ */ new Map();
+    this.backendRegionSummaries = null;
     this.layerMeta = /* @__PURE__ */ new Map();
     this.tagIndex = /* @__PURE__ */ new Map();
     this.globalReprs = /* @__PURE__ */ new Set();
     this.pendingGlobalOps = [];
     this.pendingLayerVisibility = /* @__PURE__ */ new Map();
     this.pendingRegions = [];
+    this.regionStyleOptions = { representations: [], presets: [] };
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
@@ -144995,12 +144997,24 @@ var StateHandlers = class {
     this.registerTaggedRef(ref, tag, "shape");
   }
   getRegionSummaries() {
+    if (this.backendRegionSummaries !== null) {
+      return this.backendRegionSummaries.map((item2) => ({
+        ...item2,
+        atom_indices: [...item2.atom_indices],
+        overlap_tags: [...item2.overlap_tags],
+        available_attributes: [...item2.available_attributes],
+        representation_params: { ...item2.representation_params }
+      }));
+    }
     return Array.from(this.regionIndex.entries()).map(([tag, entry]) => ({
       tag,
       atom_indices: [...entry.atomIndices],
       atom_count: entry.atomIndices.length,
       selection: entry.selection,
-      hidden: !!entry.hidden
+      hidden: !!entry.hidden,
+      representation_params: {},
+      overlap_tags: [],
+      available_attributes: []
     })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   async updateVisibility(msg) {
@@ -145241,6 +145255,10 @@ var StateHandlers = class {
       );
       if (repr?.ref) entry.representations.push(repr.ref);
     }
+    const alpha = msg.params?.alpha;
+    if ((msg.preset || msg.user_preset) && typeof alpha === "number") {
+      await this.applyAlphaToRepresentations(entry.representations, alpha);
+    }
     if (entry.hidden) {
       entry.representations.forEach(
         (ref) => setSubtreeVisibility(this.plugin.state.data, ref, true)
@@ -145252,6 +145270,57 @@ var StateHandlers = class {
   }
   async hideRegion(msg) {
     await this.toggleRegionVisibility(msg.tag, true);
+  }
+  async setRegionsVisibility(msg) {
+    const tags = Array.isArray(msg.tags) ? msg.tags : Array.from(this.regionIndex.keys());
+    await Promise.all(tags.map((tag) => this.toggleRegionVisibility(tag, !!msg.hidden)));
+  }
+  setRegionSummaries(msg) {
+    const regions = Array.isArray(msg.regions) ? msg.regions : [];
+    this.regionStyleOptions = {
+      representations: Array.isArray(msg.representations) ? msg.representations.filter((value) => typeof value === "string") : [],
+      presets: Array.isArray(msg.presets) ? msg.presets.filter((value) => typeof value === "string") : []
+    };
+    this.backendRegionSummaries = regions.filter((item2) => typeof item2?.tag === "string").map((item2) => ({
+      tag: item2.tag,
+      atom_indices: Array.isArray(item2.atom_indices) ? item2.atom_indices.filter((value) => typeof value === "number") : [],
+      atom_count: typeof item2.atom_count === "number" ? item2.atom_count : Array.isArray(item2.atom_indices) ? item2.atom_indices.length : 0,
+      selection: typeof item2.selection === "string" ? item2.selection : void 0,
+      hidden: !!item2.hidden,
+      representation: typeof item2.representation === "string" ? item2.representation : void 0,
+      preset: typeof item2.preset === "string" ? item2.preset : void 0,
+      representation_params: item2.representation_params && typeof item2.representation_params === "object" ? { ...item2.representation_params } : {},
+      overlap_tags: Array.isArray(item2.overlap_tags) ? item2.overlap_tags.filter((value) => typeof value === "string") : [],
+      available_attributes: Array.isArray(item2.available_attributes) ? item2.available_attributes.filter((value) => typeof value === "string") : []
+    })).sort((left, right) => left.tag.localeCompare(right.tag));
+  }
+  getRegionStyleOptions() {
+    return {
+      representations: [...this.regionStyleOptions.representations],
+      presets: [...this.regionStyleOptions.presets]
+    };
+  }
+  async applyRegionOperations(msg) {
+    const operations = Array.isArray(msg.operations) ? msg.operations : [];
+    for (const operation of operations) {
+      switch (operation.op) {
+        case "create_region":
+          await this.createRegion(operation);
+          break;
+        case "set_region_representation":
+          await this.setRegionRepresentation(operation);
+          break;
+        case "show_region":
+          await this.showRegion(operation);
+          break;
+        case "hide_region":
+          await this.hideRegion(operation);
+          break;
+        default:
+          console.warn("[MolSysViewer] unsupported batched region op:", operation.op);
+          break;
+      }
+    }
   }
   async deleteRegion(msg) {
     const tag = msg.tag ?? "region";
@@ -145498,6 +145567,7 @@ var StateHandlers = class {
       this.tagIndex.clear();
     }
     this.regionIndex.clear();
+    this.backendRegionSummaries = null;
     this.layerMeta.clear();
     if (this.globalReprs.size > 0) {
       await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
@@ -145697,6 +145767,19 @@ var StateHandlers = class {
       if (sel?.ref) refs.push(sel.ref);
     });
     return refs;
+  }
+  async applyAlphaToRepresentations(refs, alpha) {
+    if (refs.length === 0) return;
+    const update10 = this.plugin.state.data.build();
+    for (const ref of refs) {
+      update10.to(ref).update(
+        StateTransforms.Representation.StructureRepresentation3D,
+        (params) => {
+          params.type.params.alpha = alpha;
+        }
+      );
+    }
+    await update10.commit({ doNotUpdateCurrent: true });
   }
   async removeStateObject(ref) {
     const resolvedRef = StateObjectRef.resolveRef(ref);
@@ -148886,6 +148969,157 @@ var GroupStrip = class {
   }
 };
 
+// src/ui/query-composer.ts
+var ManualQueryComposer = class _ManualQueryComposer {
+  constructor(scope, onRequest) {
+    this.scope = scope;
+    this.onRequest = onRequest;
+    this.expression = "";
+    this.syntax = "MolSysMT";
+    this.preview = null;
+    this.activeRequestId = null;
+    this.root = document.createElement("div");
+    this.root.setAttribute("data-molsysviewer-query-composer", scope);
+    Object.assign(this.root.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "6px"
+    });
+    const row = document.createElement("div");
+    Object.assign(row.style, {
+      display: "flex",
+      gap: "6px",
+      alignItems: "center"
+    });
+    this.input = document.createElement("input");
+    this.input.type = "text";
+    this.input.placeholder = 'molecule_type=="protein"';
+    this.input.setAttribute("data-molsysviewer-query-input", scope);
+    Object.assign(this.input.style, {
+      flex: "1 1 0",
+      minWidth: "0",
+      background: "rgba(0,0,0,0.2)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "6px 8px",
+      color: "#fff",
+      fontSize: "11px",
+      outline: "none"
+    });
+    this.input.addEventListener("input", () => {
+      this.expression = this.input.value;
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+    });
+    this.input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.check();
+    });
+    this.checkButton = document.createElement("button");
+    this.checkButton.type = "button";
+    this.checkButton.textContent = "Check";
+    this.checkButton.setAttribute("data-molsysviewer-query-check", scope);
+    this.checkButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.check();
+    });
+    this.syntaxSelect = document.createElement("select");
+    this.syntaxSelect.setAttribute("data-molsysviewer-query-syntax", scope);
+    for (const value of ["MolSysMT", "Indices"]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      this.syntaxSelect.appendChild(option);
+    }
+    this.syntaxSelect.addEventListener("change", () => {
+      this.syntax = this.syntaxSelect.value === "Indices" ? "Indices" : "MolSysMT";
+      this.input.placeholder = this.syntax === "Indices" ? "0, 1, 2" : 'molecule_type=="protein"';
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+    });
+    row.appendChild(this.input);
+    row.appendChild(this.checkButton);
+    row.appendChild(this.syntaxSelect);
+    this.root.appendChild(row);
+    this.status = document.createElement("div");
+    this.status.setAttribute("data-molsysviewer-query-status", scope);
+    Object.assign(this.status.style, {
+      minHeight: "14px",
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    this.root.appendChild(this.status);
+    this.renderStatus();
+  }
+  static {
+    this.nextRequestId = 1e6;
+  }
+  element() {
+    return this.root;
+  }
+  value() {
+    return { expression: this.expression.trim(), syntax: this.syntax };
+  }
+  isVerifiedNonEmpty() {
+    return this.preview?.ok === true && Number(this.preview.count ?? 0) > 0;
+  }
+  updatePreview(preview) {
+    if (this.activeRequestId === null || preview.request_id !== this.activeRequestId) {
+      return false;
+    }
+    this.preview = preview;
+    this.renderStatus();
+    return true;
+  }
+  check() {
+    const expression = this.expression.trim();
+    if (!expression) {
+      this.preview = null;
+      this.activeRequestId = null;
+      this.renderStatus();
+      return;
+    }
+    const requestId = _ManualQueryComposer.nextRequestId++;
+    this.activeRequestId = requestId;
+    this.preview = { request_id: requestId, status: "pending" };
+    this.renderStatus();
+    this.onRequest({
+      request_id: requestId,
+      expression,
+      syntax: this.syntax
+    });
+  }
+  renderStatus() {
+    if (!this.expression.trim()) {
+      this.status.textContent = "Enter a query, then press Enter or Check.";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
+      this.status.style.color = "rgba(244,244,245,0.56)";
+    } else if (this.preview?.status === "pending") {
+      this.status.textContent = "Checking query...";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "pending");
+      this.status.style.color = "rgba(244,244,245,0.72)";
+    } else if (this.preview?.ok === true) {
+      const count3 = Number(this.preview.count ?? 0);
+      this.status.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", count3 > 0 ? "ok" : "empty");
+      this.status.style.color = count3 > 0 ? "#86efac" : "#facc15";
+    } else if (this.preview?.ok === false) {
+      this.status.textContent = `\u2717 ${this.preview.error_message ?? "invalid syntax"}`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", "error");
+      this.status.style.color = "#fca5a5";
+    } else {
+      this.status.textContent = "Press Enter or Check to verify.";
+      this.status.setAttribute("data-molsysviewer-query-status-value", "idle");
+      this.status.style.color = "rgba(244,244,245,0.56)";
+    }
+  }
+};
+
 // src/ui/panel-shell.ts
 var PanelShell = class {
   constructor(host, options) {
@@ -150252,6 +150486,27 @@ var GroupPanel = class _GroupPanel {
     this.selectionSpatialDistance = "4.0";
     this.selectionCanUndo = false;
     this.selectionCanRedo = false;
+    this.regionQueryComposer = null;
+    this.regionCreateOrigin = "active";
+    this.regionCreateTag = "";
+    this.regionCreateRepresentation = "";
+    this.regionSplitLevel = "chain";
+    this.regionRenameTag = null;
+    this.regionCreateCollision = null;
+    this.regionRenameCollisionTag = null;
+    this.regionStyleRepresentations = [];
+    this.regionStylePresets = [];
+    this.regionBooleanA = "";
+    this.regionBooleanB = "";
+    this.regionBooleanOperation = "union";
+    this.regionBooleanOutput = "";
+    this.regionComposeCollision = null;
+    this.regionInspectOpen = /* @__PURE__ */ new Set();
+    this.regionDetails = /* @__PURE__ */ new Map();
+    this.regionDetailsRequests = /* @__PURE__ */ new Map();
+    this.nextRegionDetailsRequest = 1;
+    this.regionBooleanAttention = false;
+    this.regionBooleanComposerElement = null;
     this.runtimeVisibleOverride = null;
     this.visible = false;
     this.activeColorScheme = "neutral";
@@ -150531,6 +150786,71 @@ var GroupPanel = class _GroupPanel {
 [data-molsysviewer-selection-query-preview-status="error"] {
     text-shadow: 0 0 10px rgba(252, 165, 165, 0.16);
 }
+
+[data-molsysviewer-group-panel-section="regions"] {
+    background: var(--bg-sidebar);
+}
+
+[data-molsysviewer-region-create],
+[data-molsysviewer-region-boolean-composer],
+[data-molsysviewer-region-card] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+[data-molsysviewer-region-card] {
+    transition: background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease,
+        transform 0.16s ease;
+}
+
+[data-molsysviewer-region-card]:hover {
+    background: var(--bg-card-hover) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    transform: translateY(-1px);
+}
+
+[data-molsysviewer-region-overlap] {
+    color: #facc15 !important;
+    border-color: rgba(250, 204, 21, 0.34) !important;
+    background: rgba(250, 204, 21, 0.08) !important;
+}
+
+[data-molsysviewer-region-boolean-composer][data-molsysviewer-region-boolean-attention="true"] {
+    border-color: var(--accent-indigo) !important;
+    box-shadow: var(--accent-indigo-glow);
+    animation: molsysviewer-region-attention 0.9s ease;
+}
+
+@keyframes molsysviewer-region-attention {
+    0%, 100% { box-shadow: none; }
+    45% { box-shadow: var(--accent-indigo-glow); }
+}
+
+[data-molsysviewer-region-style-composer] {
+    border-color: var(--accent-indigo-border) !important;
+    background: rgba(99, 102, 241, 0.055) !important;
+}
+
+[data-molsysviewer-region-style-opacity] {
+    accent-color: var(--accent-indigo);
+}
+
+[data-molsysviewer-region-inspect-panel] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 10px;
+    padding: 8px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.14);
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+[data-molsysviewer-region-inspect-center] {
+    grid-column: 1 / -1;
+    font-variant-numeric: tabular-nums;
+}
 `;
     document.head.appendChild(style);
   }
@@ -150686,6 +151006,9 @@ var GroupPanel = class _GroupPanel {
       badge.textContent = selection.count_atoms > 0 ? `${selection.count_atoms} atoms` : "None";
     }
     this.renderSelectionSection();
+    if (this.regionCreateOrigin === "active") {
+      this.renderRegionsSection();
+    }
   }
   updateSelectionHistoryState(state) {
     this.selectionCanUndo = state.canUndo;
@@ -150697,6 +151020,10 @@ var GroupPanel = class _GroupPanel {
     this.renderSelectionSection();
   }
   updateSelectionQueryPreview(preview) {
+    if (this.regionQueryComposer?.updatePreview(preview)) {
+      this.renderRegionsSection();
+      return;
+    }
     const requestId = typeof preview.request_id === "number" ? preview.request_id : void 0;
     if (requestId !== void 0 && requestId !== this.selectionQueryPreviewRequest) return;
     this.selectionQueryPreview = preview;
@@ -150726,10 +151053,36 @@ var GroupPanel = class _GroupPanel {
   }
   setRegions(items) {
     this.regions = [...items];
+    const tags = this.regions.map((item2) => item2.tag);
+    if (!tags.includes(this.regionBooleanA)) {
+      this.regionBooleanA = tags[0] ?? "";
+    }
+    if (!tags.includes(this.regionBooleanB) || this.regionBooleanB === this.regionBooleanA) {
+      this.regionBooleanB = tags.find((tag) => tag !== this.regionBooleanA) ?? "";
+    }
+    for (const tag of [...this.regionInspectOpen]) {
+      if (!tags.includes(tag)) {
+        this.regionInspectOpen.delete(tag);
+        this.regionDetails.delete(tag);
+        this.regionDetailsRequests.delete(tag);
+      }
+    }
     const badge = this.tabs.get("regions")?.badge;
     if (badge) {
       badge.textContent = String(items.length);
     }
+    this.renderRegionsSection();
+  }
+  setRegionStyleOptions(options) {
+    this.regionStyleRepresentations = [...options.representations];
+    this.regionStylePresets = [...options.presets];
+  }
+  updateRegionDetails(details) {
+    const expectedRequest = this.regionDetailsRequests.get(details.tag);
+    if (expectedRequest === void 0 || details.request_id !== expectedRequest || !this.regionInspectOpen.has(details.tag)) {
+      return;
+    }
+    this.regionDetails.set(details.tag, details);
     this.renderRegionsSection();
   }
   setShapes(items) {
@@ -151835,8 +152188,13 @@ var GroupPanel = class _GroupPanel {
   // ── 2. Regions Section Rendering ─────────────────────────
   renderRegionsSection() {
     this.regionsSection.replaceChildren();
+    this.regionsSection.appendChild(this.makeSectionHeader("Create & Global Actions"));
+    this.regionsSection.appendChild(this.renderRegionCreateSection());
+    this.regionsSection.appendChild(this.makeSectionHeader("Boolean Composition"));
+    this.regionsSection.appendChild(this.renderRegionBooleanComposer());
     this.regionsSection.appendChild(this.makeSectionHeader("Regions"));
     const list3 = document.createElement("div");
+    list3.setAttribute("data-molsysviewer-region-list", "true");
     Object.assign(list3.style, {
       display: "flex",
       flexDirection: "column",
@@ -151846,30 +152204,7 @@ var GroupPanel = class _GroupPanel {
     if (this.regions.length > 0) {
       const sorted = [...this.regions].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
-        const itemContainer = document.createElement("div");
-        Object.assign(itemContainer.style, {
-          display: "flex",
-          flexDirection: "column"
-        });
-        list3.appendChild(itemContainer);
-        const row = this.makeRowElement(
-          item2.tag,
-          item2.hidden ? `${item2.atom_count} atoms \xB7 hidden` : `${item2.atom_count} atoms`,
-          () => this.onFocusRegion(item2.tag),
-          () => this.onAction?.("delete_region", { tag: item2.tag }),
-          {
-            hidden: item2.hidden,
-            onToggleVisibility: () => this.onAction?.("toggle_region_visibility", { tag: item2.tag })
-          },
-          () => {
-            this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
-            this.renderRegionsSection();
-          }
-        );
-        itemContainer.appendChild(row);
-        if (this.activeStyleRegionTag === item2.tag) {
-          itemContainer.appendChild(this.renderStyleComposer(item2.tag));
-        }
+        list3.appendChild(this.renderRegionCard(item2));
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -151881,6 +152216,559 @@ var GroupPanel = class _GroupPanel {
       emptyLabel.textContent = "No regions yet.";
       list3.appendChild(emptyLabel);
     }
+  }
+  getRegionQueryComposer() {
+    if (this.regionQueryComposer === null) {
+      this.regionQueryComposer = new ManualQueryComposer("region", (details) => {
+        this.onAction?.("selection_query_preview_request", details);
+      });
+    }
+    return this.regionQueryComposer;
+  }
+  renderRegionCreateSection() {
+    const container = document.createElement("div");
+    container.setAttribute("data-molsysviewer-region-create", "true");
+    Object.assign(container.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      padding: "10px",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: "8px",
+      background: "rgba(255,255,255,0.03)"
+    });
+    const originRow = document.createElement("div");
+    Object.assign(originRow.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      gap: "6px"
+    });
+    for (const [origin, label2] of [
+      ["active", "Active"],
+      ["query", "Query"],
+      ["split", "Split"]
+    ]) {
+      const button = this.makeButton(label2, () => {
+        this.regionCreateOrigin = origin;
+        this.renderRegionsSection();
+      });
+      button.setAttribute("data-molsysviewer-region-create-origin", origin);
+      if (this.regionCreateOrigin === origin) {
+        button.style.borderColor = "rgba(99,102,241,0.7)";
+        button.style.background = "rgba(99,102,241,0.18)";
+      }
+      originRow.appendChild(button);
+    }
+    container.appendChild(originRow);
+    const optionsRow = document.createElement("div");
+    Object.assign(optionsRow.style, {
+      display: "grid",
+      gridTemplateColumns: this.regionCreateOrigin === "split" ? "minmax(110px, 1fr)" : "minmax(0, 1fr) minmax(110px, 0.7fr)",
+      gap: "6px"
+    });
+    const tagInput = document.createElement("input");
+    tagInput.type = "text";
+    tagInput.value = this.regionCreateTag;
+    tagInput.placeholder = "Name (optional)";
+    tagInput.setAttribute("data-molsysviewer-region-create-tag", "true");
+    tagInput.addEventListener("input", () => {
+      this.regionCreateTag = tagInput.value;
+    });
+    const representation = this.makeStyledSelect(
+      [
+        { value: "", label: "Base" },
+        "cartoon",
+        "backbone",
+        "ball-and-stick",
+        "line",
+        "spacefill",
+        "putty"
+      ],
+      this.regionCreateRepresentation,
+      (value) => {
+        this.regionCreateRepresentation = value;
+      }
+    );
+    representation.setAttribute("data-molsysviewer-region-create-representation", "true");
+    if (this.regionCreateOrigin !== "split") {
+      optionsRow.appendChild(tagInput);
+    }
+    optionsRow.appendChild(representation);
+    container.appendChild(optionsRow);
+    const createWithCollision = (action, details) => {
+      const tag = this.regionCreateTag.trim();
+      const emit = () => {
+        this.onAction?.(action, {
+          ...details,
+          ...tag ? { tag } : {},
+          ...this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
+        });
+        this.regionCreateTag = "";
+        this.regionCreateCollision = null;
+      };
+      if (tag && this.regions.some((region) => region.tag === tag)) {
+        this.regionCreateCollision = { action, details, tag };
+        this.renderRegionsSection();
+        return;
+      }
+      emit();
+    };
+    if (this.regionCreateOrigin === "active") {
+      const create3 = this.makeButton("Create from active selection", () => {
+        createWithCollision("create_region_from_selection", {});
+      });
+      create3.setAttribute("data-molsysviewer-region-create-active", "true");
+      create3.disabled = this.currentSelection.count_atoms <= 0;
+      if (create3.disabled) {
+        create3.style.opacity = "0.42";
+        create3.style.cursor = "not-allowed";
+        create3.title = "Select atoms before creating a region.";
+      }
+      container.appendChild(create3);
+    } else if (this.regionCreateOrigin === "query") {
+      const composer = this.getRegionQueryComposer();
+      container.appendChild(composer.element());
+      const create3 = this.makeButton("Create from query", () => {
+        const query2 = composer.value();
+        if (!query2.expression || !composer.isVerifiedNonEmpty()) return;
+        createWithCollision("create_region_from_query", query2);
+      });
+      create3.setAttribute("data-molsysviewer-region-create-query", "true");
+      create3.disabled = !composer.isVerifiedNonEmpty();
+      if (create3.disabled) {
+        create3.style.opacity = "0.42";
+        create3.style.cursor = "not-allowed";
+      }
+      container.appendChild(create3);
+    } else {
+      const splitRow = document.createElement("div");
+      Object.assign(splitRow.style, {
+        display: "flex",
+        gap: "6px"
+      });
+      const level = this.makeStyledSelect(
+        ["chain", "molecule", "entity"],
+        this.regionSplitLevel,
+        (value) => {
+          this.regionSplitLevel = value === "molecule" ? "molecule" : value === "entity" ? "entity" : "chain";
+        }
+      );
+      level.setAttribute("data-molsysviewer-region-split-level", "true");
+      const split = this.makeButton("Split", () => {
+        this.onAction?.("make_regions_by", {
+          element: this.regionSplitLevel,
+          ...this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
+        });
+      });
+      split.setAttribute("data-molsysviewer-region-split", "true");
+      splitRow.appendChild(level);
+      splitRow.appendChild(split);
+      container.appendChild(splitRow);
+    }
+    if (this.regionCreateCollision !== null) {
+      const collision = document.createElement("div");
+      collision.setAttribute("data-molsysviewer-region-create-collision", this.regionCreateCollision.tag);
+      collision.textContent = `"${this.regionCreateCollision.tag}" already exists.`;
+      const rename = this.makeButton("Rename", () => {
+        this.regionCreateCollision = null;
+        this.renderRegionsSection();
+      });
+      rename.setAttribute("data-molsysviewer-region-collision-rename", "create");
+      const overwrite = this.makeButton("Overwrite", () => {
+        const pending = this.regionCreateCollision;
+        if (pending === null) return;
+        this.onAction?.("delete_region", { tag: pending.tag });
+        this.onAction?.(pending.action, {
+          ...pending.details,
+          tag: pending.tag,
+          ...this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
+        });
+        this.regionCreateTag = "";
+        this.regionCreateCollision = null;
+      });
+      overwrite.setAttribute("data-molsysviewer-region-collision-overwrite", "create");
+      const cancel = this.makeButton("Cancel", () => {
+        this.regionCreateCollision = null;
+        this.renderRegionsSection();
+      });
+      cancel.setAttribute("data-molsysviewer-region-collision-cancel", "create");
+      collision.appendChild(rename);
+      collision.appendChild(overwrite);
+      collision.appendChild(cancel);
+      container.appendChild(collision);
+    }
+    const globalRow = document.createElement("div");
+    Object.assign(globalRow.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+      gap: "6px",
+      paddingTop: "2px"
+    });
+    const showAll = this.makeButton("Show all", () => this.onAction?.("show_all_regions"));
+    showAll.setAttribute("data-molsysviewer-region-show-all", "true");
+    const hideAll = this.makeButton("Hide all", () => this.onAction?.("hide_all_regions"));
+    hideAll.setAttribute("data-molsysviewer-region-hide-all", "true");
+    globalRow.appendChild(showAll);
+    globalRow.appendChild(hideAll);
+    container.appendChild(globalRow);
+    return container;
+  }
+  renderRegionCard(item2) {
+    const card = document.createElement("div");
+    card.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    Object.assign(card.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "7px",
+      padding: "9px 10px",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: "8px",
+      background: "rgba(255,255,255,0.035)",
+      opacity: item2.hidden ? "0.58" : "1"
+    });
+    const header2 = document.createElement("div");
+    Object.assign(header2.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px"
+    });
+    const focus = this.makeButton(item2.tag, () => this.onFocusRegion(item2.tag));
+    focus.setAttribute("data-molsysviewer-region-focus", item2.tag);
+    focus.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+    focus.style.flex = "1 1 auto";
+    focus.style.textAlign = "left";
+    const hint = document.createElement("span");
+    hint.textContent = `${item2.atom_count} atoms \xB7 ${item2.preset ?? item2.representation ?? "base"}`;
+    Object.assign(hint.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.58)"
+    });
+    focus.appendChild(hint);
+    header2.appendChild(focus);
+    if ((item2.overlap_tags?.length ?? 0) > 0 && !item2.hidden) {
+      const overlap = this.makeButton("\u26A0", () => {
+        this.regionBooleanA = item2.tag;
+        this.regionBooleanB = item2.overlap_tags[0];
+        this.regionBooleanOperation = "difference";
+        this.regionComposeCollision = null;
+        this.regionBooleanAttention = true;
+        this.renderRegionsSection();
+        this.regionBooleanComposerElement?.scrollIntoView?.({
+          behavior: "smooth",
+          block: "nearest"
+        });
+      });
+      overlap.setAttribute("data-molsysviewer-region-overlap", item2.tag);
+      overlap.title = `Overlaps: ${item2.overlap_tags.join(", ")}`;
+      overlap.setAttribute("aria-label", overlap.title);
+      header2.appendChild(overlap);
+    }
+    const visibility = this.makeButton(
+      item2.hidden ? "Show" : "Hide",
+      () => this.onAction?.("toggle_region_visibility", { tag: item2.tag })
+    );
+    visibility.setAttribute("data-molsysviewer-region-visibility", item2.tag);
+    const remove3 = this.makeButton(
+      "Delete",
+      () => this.onAction?.("delete_region", { tag: item2.tag })
+    );
+    remove3.setAttribute("data-molsysviewer-region-delete", item2.tag);
+    header2.appendChild(visibility);
+    header2.appendChild(remove3);
+    card.appendChild(header2);
+    const actions = document.createElement("div");
+    actions.setAttribute("data-molsysviewer-region-actions", item2.tag);
+    Object.assign(actions.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "4px"
+    });
+    const isolate = this.makeButton(
+      "Isolate",
+      () => this.onAction?.("show_only_region", { tag: item2.tag })
+    );
+    isolate.setAttribute("data-molsysviewer-region-isolate", item2.tag);
+    const complement2 = this.makeButton(
+      "Complement",
+      () => this.onAction?.("create_complementary_region", { tag: item2.tag })
+    );
+    complement2.setAttribute("data-molsysviewer-region-complement", item2.tag);
+    const duplicate = this.makeButton(
+      "Duplicate",
+      () => this.onAction?.("duplicate_region", { tag: item2.tag })
+    );
+    duplicate.setAttribute("data-molsysviewer-region-duplicate", item2.tag);
+    const reset = this.makeButton(
+      "Reset repr",
+      () => this.onAction?.("reset_region_representation", { tag: item2.tag })
+    );
+    reset.setAttribute("data-molsysviewer-region-reset", item2.tag);
+    const rename = this.makeButton("Rename", () => {
+      this.regionRenameTag = item2.tag;
+      this.renderRegionsSection();
+    });
+    rename.setAttribute("data-molsysviewer-region-rename", item2.tag);
+    const style = this.makeButton("Style", () => {
+      this.activeStyleRegionTag = this.activeStyleRegionTag === item2.tag ? null : item2.tag;
+      this.renderRegionsSection();
+    });
+    style.setAttribute("data-molsysviewer-region-style", item2.tag);
+    const inspect = this.makeButton("Inspect", () => {
+      if (this.regionInspectOpen.has(item2.tag)) {
+        this.regionInspectOpen.delete(item2.tag);
+        this.regionDetailsRequests.delete(item2.tag);
+        this.renderRegionsSection();
+        return;
+      }
+      this.regionInspectOpen.add(item2.tag);
+      this.requestRegionDetails(item2.tag);
+      this.renderRegionsSection();
+    });
+    inspect.setAttribute("data-molsysviewer-region-inspect", item2.tag);
+    for (const button of [isolate, complement2, rename, duplicate, reset, style, inspect]) {
+      button.style.fontSize = "10px";
+      button.style.padding = "3px 6px";
+      actions.appendChild(button);
+    }
+    card.appendChild(actions);
+    if (this.regionRenameTag === item2.tag) {
+      const form = document.createElement("div");
+      form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
+      Object.assign(form.style, {
+        display: "flex",
+        gap: "6px"
+      });
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = item2.tag;
+      input.setAttribute("data-molsysviewer-region-rename-input", item2.tag);
+      input.style.flex = "1 1 0";
+      const confirmRename = () => {
+        const newTag = input.value.trim();
+        if (!newTag || newTag === item2.tag) {
+          this.regionRenameTag = null;
+          this.renderRegionsSection();
+          return;
+        }
+        const collision = this.regions.some((region) => region.tag === newTag);
+        if (collision) {
+          this.regionRenameCollisionTag = newTag;
+          this.renderRegionsSection();
+          return;
+        }
+        this.onAction?.("rename_region", { tag: item2.tag, new_tag: newTag });
+        this.regionRenameTag = null;
+        this.regionRenameCollisionTag = null;
+      };
+      input.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        confirmRename();
+      });
+      const submit = this.makeButton("Rename", confirmRename);
+      submit.setAttribute("data-molsysviewer-region-rename-confirm", item2.tag);
+      const cancel = this.makeButton("Cancel", () => {
+        this.regionRenameTag = null;
+        this.renderRegionsSection();
+      });
+      form.appendChild(input);
+      form.appendChild(submit);
+      form.appendChild(cancel);
+      card.appendChild(form);
+      if (this.regionRenameCollisionTag !== null) {
+        const collisionTag = this.regionRenameCollisionTag;
+        const collision = document.createElement("div");
+        collision.setAttribute("data-molsysviewer-region-rename-collision", collisionTag);
+        collision.textContent = `"${collisionTag}" already exists.`;
+        const chooseRename = this.makeButton("Rename", () => {
+          this.regionRenameCollisionTag = null;
+          this.renderRegionsSection();
+        });
+        chooseRename.setAttribute("data-molsysviewer-region-collision-rename", "rename");
+        const overwrite = this.makeButton("Overwrite", () => {
+          this.onAction?.("delete_region", { tag: collisionTag });
+          this.onAction?.("rename_region", { tag: item2.tag, new_tag: collisionTag });
+          this.regionRenameTag = null;
+          this.regionRenameCollisionTag = null;
+        });
+        overwrite.setAttribute("data-molsysviewer-region-collision-overwrite", "rename");
+        const cancelCollision = this.makeButton("Cancel", () => {
+          this.regionRenameTag = null;
+          this.regionRenameCollisionTag = null;
+          this.renderRegionsSection();
+        });
+        cancelCollision.setAttribute("data-molsysviewer-region-collision-cancel", "rename");
+        collision.appendChild(chooseRename);
+        collision.appendChild(overwrite);
+        collision.appendChild(cancelCollision);
+        card.appendChild(collision);
+      }
+    }
+    if (this.activeStyleRegionTag === item2.tag) {
+      card.appendChild(this.renderStyleComposer(item2));
+    }
+    if (this.regionInspectOpen.has(item2.tag)) {
+      card.appendChild(this.renderRegionInspect(item2.tag));
+    }
+    return card;
+  }
+  renderRegionBooleanComposer() {
+    const container = document.createElement("div");
+    this.regionBooleanComposerElement = container;
+    container.setAttribute("data-molsysviewer-region-boolean-composer", "true");
+    container.setAttribute(
+      "data-molsysviewer-region-boolean-attention",
+      String(this.regionBooleanAttention)
+    );
+    container.setAttribute("data-molsysviewer-region-boolean-current-a", this.regionBooleanA);
+    container.setAttribute("data-molsysviewer-region-boolean-current-b", this.regionBooleanB);
+    container.setAttribute(
+      "data-molsysviewer-region-boolean-current-operation",
+      this.regionBooleanOperation
+    );
+    Object.assign(container.style, {
+      display: "grid",
+      gridTemplateColumns: "minmax(0, 1fr) minmax(120px, 0.8fr) minmax(0, 1fr)",
+      gap: "6px",
+      padding: "10px",
+      border: "1px solid rgba(255,255,255,0.08)",
+      borderRadius: "8px"
+    });
+    const tags = this.regions.map((item2) => item2.tag);
+    const left = this.makeStyledSelect(tags, this.regionBooleanA, (value) => {
+      this.regionBooleanA = value;
+      if (this.regionBooleanB === value) {
+        this.regionBooleanB = tags.find((tag) => tag !== value) ?? "";
+        this.renderRegionsSection();
+      }
+    });
+    left.setAttribute("data-molsysviewer-region-boolean-a", "true");
+    const operation = this.makeStyledSelect(
+      [
+        { value: "union", label: "Union (A \u222A B)" },
+        { value: "intersection", label: "Intersection (A \u2229 B)" },
+        { value: "difference", label: "Difference (A \u2212 B)" }
+      ],
+      this.regionBooleanOperation,
+      (value) => {
+        this.regionBooleanOperation = value === "intersection" ? "intersection" : value === "difference" ? "difference" : "union";
+      }
+    );
+    operation.setAttribute("data-molsysviewer-region-boolean-operation", "true");
+    const right = this.makeStyledSelect(tags, this.regionBooleanB, (value) => {
+      this.regionBooleanB = value;
+    });
+    right.setAttribute("data-molsysviewer-region-boolean-b", "true");
+    container.appendChild(left);
+    container.appendChild(operation);
+    container.appendChild(right);
+    const output = document.createElement("input");
+    output.type = "text";
+    output.placeholder = "Output name (optional)";
+    output.value = this.regionBooleanOutput;
+    output.setAttribute("data-molsysviewer-region-boolean-output", "true");
+    output.addEventListener("input", () => {
+      this.regionBooleanOutput = output.value;
+    });
+    const create3 = this.makeButton("Create", () => {
+      if (!this.regionBooleanA || !this.regionBooleanB || this.regionBooleanA === this.regionBooleanB) {
+        return;
+      }
+      const tag = this.regionBooleanOutput.trim();
+      const details = {
+        tag_a: this.regionBooleanA,
+        tag_b: this.regionBooleanB,
+        op: this.regionBooleanOperation,
+        ...tag ? { new_tag: tag } : {}
+      };
+      if (tag && tags.includes(tag)) {
+        this.regionComposeCollision = { tag, details };
+        this.renderRegionsSection();
+        return;
+      }
+      this.onAction?.("compose_regions", details);
+      this.regionBooleanOutput = "";
+    });
+    create3.disabled = tags.length < 2 || !this.regionBooleanA || !this.regionBooleanB;
+    create3.setAttribute("data-molsysviewer-region-boolean-create", "true");
+    container.appendChild(output);
+    container.appendChild(create3);
+    if (this.regionComposeCollision !== null) {
+      const collision = document.createElement("div");
+      collision.setAttribute(
+        "data-molsysviewer-region-boolean-collision",
+        this.regionComposeCollision.tag
+      );
+      collision.textContent = `"${this.regionComposeCollision.tag}" already exists.`;
+      const rename = this.makeButton("Rename", () => {
+        this.regionComposeCollision = null;
+        this.renderRegionsSection();
+      });
+      const overwrite = this.makeButton("Overwrite", () => {
+        const pending = this.regionComposeCollision;
+        if (pending === null) return;
+        this.onAction?.("compose_regions", {
+          ...pending.details,
+          overwrite: true
+        });
+        this.regionBooleanOutput = "";
+        this.regionComposeCollision = null;
+      });
+      overwrite.setAttribute("data-molsysviewer-region-boolean-overwrite", "true");
+      const cancel = this.makeButton("Cancel", () => {
+        this.regionComposeCollision = null;
+        this.renderRegionsSection();
+      });
+      collision.appendChild(rename);
+      collision.appendChild(overwrite);
+      collision.appendChild(cancel);
+      container.appendChild(collision);
+    }
+    return container;
+  }
+  requestRegionDetails(tag) {
+    this.regionDetails.delete(tag);
+    const requestId = this.nextRegionDetailsRequest++;
+    this.regionDetailsRequests.set(tag, requestId);
+    this.onAction?.("get_region_details", {
+      tag,
+      request_id: requestId
+    });
+  }
+  renderRegionInspect(tag) {
+    const panel = document.createElement("div");
+    panel.setAttribute("data-molsysviewer-region-inspect-panel", tag);
+    const details = this.regionDetails.get(tag);
+    if (!details) {
+      panel.textContent = "Loading...";
+      return panel;
+    }
+    const center2 = details.center_nm.map((value) => Number(value).toFixed(3)).join(", ");
+    panel.setAttribute("data-molsysviewer-region-inspect-frame", String(details.structure_index));
+    for (const [key2, value] of [
+      ["atoms", String(details.atom_count)],
+      ["groups", String(details.group_count)],
+      ["chains", String(details.chain_count)],
+      ["frame", String(details.structure_index)]
+    ]) {
+      const metric = document.createElement("div");
+      metric.setAttribute("data-molsysviewer-region-inspect-metric", key2);
+      metric.textContent = `${key2}: ${value}`;
+      panel.appendChild(metric);
+    }
+    const centerRow = document.createElement("div");
+    centerRow.setAttribute("data-molsysviewer-region-inspect-center", "true");
+    centerRow.textContent = `center [nm]: ${center2}`;
+    panel.appendChild(centerRow);
+    const refresh = this.makeButton("Refresh", () => {
+      this.requestRegionDetails(tag);
+      this.renderRegionsSection();
+    });
+    refresh.setAttribute("data-molsysviewer-region-inspect-refresh", tag);
+    refresh.title = "Refresh details for the current trajectory frame.";
+    panel.appendChild(refresh);
+    return panel;
   }
   // ── 3. Overlays Section Rendering ────────────────────────
   renderOverlaysSection() {
@@ -151985,8 +152873,10 @@ var GroupPanel = class _GroupPanel {
       measurementsList.appendChild(emptyLabel);
     }
   }
-  renderStyleComposer(tag) {
+  renderStyleComposer(item2) {
+    const tag = item2.tag;
     const container = document.createElement("div");
+    container.setAttribute("data-molsysviewer-region-style-composer", tag);
     Object.assign(container.style, {
       display: "flex",
       flexDirection: "column",
@@ -151998,58 +152888,155 @@ var GroupPanel = class _GroupPanel {
       marginTop: "4px",
       marginBottom: "4px"
     });
-    const styleRow = document.createElement("div");
-    Object.assign(styleRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
+    const makeControlRow = (label2, control) => {
+      const row = document.createElement("div");
+      Object.assign(row.style, {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: "8px",
+        width: "100%"
+      });
+      const text = document.createElement("span");
+      text.textContent = label2;
+      Object.assign(text.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.7)"
+      });
+      row.appendChild(text);
+      row.appendChild(control);
+      return row;
+    };
+    const fallbackRepresentations = [
+      "backbone",
+      "ball-and-stick",
+      "carbohydrate",
+      "cartoon",
+      "ellipsoid",
+      "gaussian-surface",
+      "gaussian-volume",
+      "line",
+      "molecular-surface",
+      "point",
+      "putty",
+      "spacefill"
+    ];
+    const fallbackPresets = [
+      "atomic-detail",
+      "auto",
+      "coarse-surface",
+      "empty",
+      "polymer-and-ligand",
+      "polymer-cartoon"
+    ];
+    const representations = this.regionStyleRepresentations.length > 0 ? this.regionStyleRepresentations : fallbackRepresentations;
+    const presets = this.regionStylePresets.length > 0 ? this.regionStylePresets : fallbackPresets;
+    const params = item2.representation_params ?? {};
+    const draftHeading = document.createElement("div");
+    draftHeading.textContent = "Style draft";
+    draftHeading.setAttribute("data-molsysviewer-region-style-draft-heading", tag);
+    Object.assign(draftHeading.style, {
+      fontSize: "10px",
+      fontWeight: "600",
+      color: "rgba(244,244,245,0.55)"
     });
-    const styleLabel = document.createElement("span");
-    styleLabel.textContent = "Representation Style";
-    Object.assign(styleLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
-    const styleSelect = this.makeStyledSelect(
-      ["Cartoon", "Sticks", "CPK", "Trace", "Putty"],
-      "Cartoon",
+    container.appendChild(draftHeading);
+    let representationSelect;
+    let presetSelect;
+    representationSelect = this.makeStyledSelect(
+      [{ value: "", label: "Base" }, ...representations],
+      item2.preset ? "" : item2.representation ?? "",
+      (value) => {
+        if (value) presetSelect.value = "";
+      }
+    );
+    representationSelect.setAttribute("data-molsysviewer-region-style-representation", tag);
+    presetSelect = this.makeStyledSelect(
+      [{ value: "", label: "No preset" }, ...presets],
+      item2.preset ?? "",
+      (value) => {
+        if (value) representationSelect.value = "";
+      }
+    );
+    presetSelect.setAttribute("data-molsysviewer-region-style-preset", tag);
+    container.appendChild(makeControlRow("Representation", representationSelect));
+    container.appendChild(makeControlRow("Preset", presetSelect));
+    const immediateHeading = document.createElement("div");
+    immediateHeading.textContent = "Immediate adjustments";
+    immediateHeading.setAttribute("data-molsysviewer-region-style-immediate-heading", tag);
+    Object.assign(immediateHeading.style, {
+      fontSize: "10px",
+      fontWeight: "600",
+      color: "rgba(244,244,245,0.55)",
+      paddingTop: "2px"
+    });
+    const opacityWrap = document.createElement("div");
+    Object.assign(opacityWrap.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px"
+    });
+    const opacity = document.createElement("input");
+    opacity.type = "range";
+    opacity.min = "0";
+    opacity.max = "1";
+    opacity.step = "0.05";
+    opacity.value = String(typeof params.alpha === "number" ? params.alpha : 1);
+    opacity.setAttribute("data-molsysviewer-region-style-opacity", tag);
+    const opacityValue = document.createElement("span");
+    opacityValue.textContent = Number(opacity.value).toFixed(2);
+    opacityValue.setAttribute("data-molsysviewer-region-style-opacity-value", tag);
+    opacity.addEventListener("input", () => {
+      opacityValue.textContent = Number(opacity.value).toFixed(2);
+    });
+    opacityWrap.appendChild(opacity);
+    opacityWrap.appendChild(opacityValue);
+    const opacityRow = makeControlRow("Opacity", opacityWrap);
+    const qualityValues = ["auto", "lowest", "lower", "low", "medium", "high", "higher", "highest", "custom"];
+    const quality = this.makeStyledSelect(
+      qualityValues,
+      typeof params.quality === "string" ? params.quality : "auto",
       () => {
       }
     );
-    styleRow.appendChild(styleLabel);
-    styleRow.appendChild(styleSelect);
-    container.appendChild(styleRow);
-    const colorRow = document.createElement("div");
-    Object.assign(colorRow.style, {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%"
-    });
-    const colorLabel = document.createElement("span");
-    colorLabel.textContent = "Color Scheme";
-    Object.assign(colorLabel.style, { fontSize: "11px", color: "rgba(244,244,245,0.7)" });
+    quality.setAttribute("data-molsysviewer-region-style-quality", tag);
+    container.appendChild(makeControlRow("Quality", quality));
     const customColorInput = document.createElement("input");
     customColorInput.type = "color";
     customColorInput.value = "#3b82f6";
+    customColorInput.setAttribute("data-molsysviewer-region-style-uniform-color", tag);
     Object.assign(customColorInput.style, {
-      width: "20px",
-      height: "20px",
+      width: "24px",
+      height: "24px",
       border: "1px solid rgba(255,255,255,0.25)",
-      borderRadius: "50%",
+      borderRadius: "4px",
       padding: "0",
       background: "transparent",
       cursor: "pointer",
-      display: "none",
       boxSizing: "border-box",
       overflow: "hidden",
       outline: "none"
     });
-    const colorSelect = this.makeStyledSelect(
-      ["Element (CPK)", "Chain ID", "Secondary Structure", "Hydrophobicity", "Custom Color"],
-      "Element (CPK)",
+    const colorScheme = this.makeStyledSelect(
+      [
+        { value: "", label: "Keep current" },
+        { value: "element_cpk", label: "Element (CPK)" },
+        { value: "chain_default", label: "Chain" },
+        { value: "secondary_structure_default", label: "Secondary structure" },
+        { value: "physicochemical", label: "Physicochemical" },
+        { value: "residue_name", label: "Residue name" },
+        { value: "molecule_type", label: "Molecule type" },
+        { value: "entity_default", label: "Entity" },
+        { value: "illustrative_default", label: "Illustrative" },
+        { value: "uniform", label: "Uniform color" }
+      ],
+      typeof params.color_scheme === "string" ? params.color_scheme : "",
       (val) => {
-        customColorInput.style.display = val === "Custom Color" ? "inline-block" : "none";
+        customColorInput.style.display = val === "uniform" ? "inline-block" : "none";
       }
     );
+    colorScheme.setAttribute("data-molsysviewer-region-style-color-scheme", tag);
+    customColorInput.style.display = colorScheme.value === "uniform" ? "inline-block" : "none";
     const colorRight = document.createElement("div");
     Object.assign(colorRight.style, {
       display: "flex",
@@ -152057,10 +153044,79 @@ var GroupPanel = class _GroupPanel {
       gap: "6px"
     });
     colorRight.appendChild(customColorInput);
-    colorRight.appendChild(colorSelect);
-    colorRow.appendChild(colorLabel);
-    colorRow.appendChild(colorRight);
-    container.appendChild(colorRow);
+    colorRight.appendChild(colorScheme);
+    container.appendChild(makeControlRow("Color", colorRight));
+    container.appendChild(immediateHeading);
+    container.appendChild(opacityRow);
+    const attributeRow = document.createElement("div");
+    Object.assign(attributeRow.style, {
+      display: "flex",
+      alignItems: "center",
+      gap: "6px"
+    });
+    const attribute = this.makeStyledSelect(
+      [
+        { value: "", label: "None" },
+        ...item2.available_attributes ?? []
+      ],
+      "",
+      (value) => {
+        if (!value) return;
+        this.onAction?.("color_region_by_attribute", {
+          tag,
+          attribute: value
+        });
+      }
+    );
+    attribute.setAttribute("data-molsysviewer-region-style-color-attribute", tag);
+    const resetColors = this.makeButton(
+      "Reset colors",
+      () => this.onAction?.("reset_region_colors", { tag })
+    );
+    resetColors.setAttribute("data-molsysviewer-region-style-reset-colors", tag);
+    attributeRow.appendChild(attribute);
+    attributeRow.appendChild(resetColors);
+    container.appendChild(makeControlRow("Color by", attributeRow));
+    const buildStyleAction = () => {
+      const selectedPreset = presetSelect.value;
+      const selectedRepresentation = representationSelect.value;
+      if (!selectedPreset && !selectedRepresentation) {
+        return { action: "reset_region_representation", details: { tag } };
+      }
+      const nextParams = {
+        ...params,
+        alpha: Number(opacity.value),
+        quality: quality.value
+      };
+      if (colorScheme.value === "uniform") {
+        delete nextParams.color_scheme;
+        delete nextParams.molstar_color_theme;
+        nextParams.color = customColorInput.value;
+      } else if (colorScheme.value) {
+        delete nextParams.color;
+        delete nextParams.molstar_color_theme;
+        nextParams.color_scheme = colorScheme.value;
+      }
+      return {
+        action: "set_region_representation",
+        details: {
+          tag,
+          ...selectedPreset ? { preset: selectedPreset } : { representation: selectedRepresentation },
+          params: nextParams
+        }
+      };
+    };
+    opacity.addEventListener("change", () => {
+      if (!item2.representation && !item2.preset) return;
+      this.onAction?.("set_region_representation", {
+        tag,
+        ...item2.preset ? { preset: item2.preset } : { representation: item2.representation },
+        params: {
+          ...params,
+          alpha: Number(opacity.value)
+        }
+      });
+    });
     const actionsRow = document.createElement("div");
     Object.assign(actionsRow.style, {
       display: "flex",
@@ -152073,35 +153129,19 @@ var GroupPanel = class _GroupPanel {
       this.activeStyleRegionTag = null;
       this.renderRegionsSection();
     });
+    cancelBtn.setAttribute("data-molsysviewer-region-style-cancel", tag);
     Object.assign(cancelBtn.style, {
       flex: "0 0 auto",
       fontSize: "10px",
       padding: "3px 8px"
     });
     const applyBtn = this.makeButton("Apply Style", () => {
-      const chosenStyleMap = {
-        "Cartoon": "cartoon",
-        "Sticks": "licorice",
-        "CPK": "spacefill",
-        "Trace": "backbone",
-        "Putty": "putty"
-      };
-      const repr = chosenStyleMap[styleSelect.value] || "cartoon";
-      const chosenColor = colorSelect.value;
-      let scheme = void 0;
-      if (chosenColor === "Element (CPK)") scheme = "element";
-      else if (chosenColor === "Chain ID") scheme = "chain-id";
-      else if (chosenColor === "Secondary Structure") scheme = "secondary-structure";
-      else if (chosenColor === "Hydrophobicity") scheme = "hydrophobicity";
-      else if (chosenColor === "Custom Color") scheme = customColorInput.value;
-      this.onAction?.("set_region_representation", {
-        tag,
-        representation: repr,
-        params: scheme ? { color_scheme: scheme } : {}
-      });
+      const next = buildStyleAction();
+      this.onAction?.(next.action, next.details);
       this.activeStyleRegionTag = null;
       this.renderRegionsSection();
     });
+    applyBtn.setAttribute("data-molsysviewer-region-style-apply", tag);
     Object.assign(applyBtn.style, {
       flex: "0 0 auto",
       fontSize: "10px",
@@ -152566,10 +153606,12 @@ var GroupPanel = class _GroupPanel {
       cursor: "pointer"
     });
     for (const opt of options) {
+      const value = typeof opt === "string" ? opt : opt.value;
+      const label2 = typeof opt === "string" ? opt : opt.label;
       const el = document.createElement("option");
-      el.value = opt;
-      el.textContent = opt;
-      el.selected = opt === selectedValue;
+      el.value = value;
+      el.textContent = label2;
+      el.selected = value === selectedValue;
       select.appendChild(el);
     }
     select.addEventListener("change", () => {
@@ -155584,6 +156626,18 @@ var MolSysViewerController = class _MolSysViewerController {
         case "hide_region":
           await this.state.hideRegion(msg);
           break;
+        case "set_regions_visibility":
+          await this.state.setRegionsVisibility(msg);
+          break;
+        case "set_region_summaries":
+          this.state.setRegionSummaries(msg);
+          break;
+        case "region_details":
+          this.groupPanel.updateRegionDetails(msg);
+          break;
+        case "batch_region_operations":
+          await this.state.applyRegionOperations(msg);
+          break;
         case "delete_region": {
           await this.state.deleteRegion(msg);
           const tag = msg.tag || "region";
@@ -156489,11 +157543,17 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   refreshNavigatePanel() {
     this.groupPanel.setSavedSelections(this.savedSelections);
+    this.groupPanel.setRegionStyleOptions(this.state.getRegionStyleOptions());
     this.groupPanel.setRegions(
       this.state.getRegionSummaries().map((item2) => ({
         tag: item2.tag,
         atom_count: item2.atom_count,
-        hidden: item2.hidden
+        hidden: item2.hidden,
+        representation: item2.representation,
+        preset: item2.preset,
+        representation_params: item2.representation_params,
+        overlap_tags: item2.overlap_tags,
+        available_attributes: item2.available_attributes
       }))
     );
     this.refreshPanelWorkspaceChrome();

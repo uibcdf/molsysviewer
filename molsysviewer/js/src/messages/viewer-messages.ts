@@ -448,6 +448,35 @@ export type HideRegionMessage = {
     tag?: string;
 };
 
+export type SetRegionsVisibilityMessage = {
+    op: "set_regions_visibility";
+    tags?: string[];
+    hidden: boolean;
+};
+
+export type SetRegionSummariesMessage = {
+    op: "set_region_summaries";
+    regions?: Array<{
+        tag: string;
+        atom_indices?: number[];
+        atom_count?: number;
+        selection?: string;
+        hidden?: boolean;
+        representation?: string | null;
+        preset?: string | null;
+        representation_params?: Record<string, unknown>;
+        overlap_tags?: string[];
+        available_attributes?: string[];
+    }>;
+    representations?: string[];
+    presets?: string[];
+};
+
+export type BatchRegionOperationsMessage = {
+    op: "batch_region_operations";
+    operations?: Array<Record<string, unknown>>;
+};
+
 export type DeleteRegionMessage = {
     op: "delete_region";
     tag?: string;
@@ -758,6 +787,9 @@ export type ViewerMessage =
     SetRegionRepresentationMessage |
     ShowRegionMessage |
     HideRegionMessage |
+    SetRegionsVisibilityMessage |
+    SetRegionSummariesMessage |
+    BatchRegionOperationsMessage |
     DeleteRegionMessage |
     RenameRegionMessage |
     CreateLayerMessage |

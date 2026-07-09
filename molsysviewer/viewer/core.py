@@ -248,7 +248,10 @@ class MolSysView(
         self._rendered_transactions_acks: set = set()
         self._last_rendered_transaction: str | int | None = None
 
-        self._regions: RegionsManager = RegionsManager()
+        self._regions: RegionsManager = RegionsManager(self)
+        self._region_batch_depth = 0
+        self._region_batch_operations: list[dict[str, Any]] = []
+        self._region_batch_summary_dirty = False
         self._layers: Dict[str, Layer] = {}
         self._scene_objects: Dict[str, SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
@@ -774,6 +777,7 @@ class MolSysView(
             # Clear pending messages since they were already synced and processed
             # via initial_messages trait on startup.
             self._pending_messages.clear()
+            self._sync_region_summaries_runtime()
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is
@@ -921,8 +925,136 @@ class MolSysView(
 
                 if action == "create_region_from_selection":
                     raw_tag = content.get("tag")
+                    representation = content.get("representation")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
-                    self.new_region_from_active_selection(tag=region_tag, skip_digestion=True)
+                    self.new_region_from_active_selection(
+                        tag=region_tag,
+                        representation=representation,
+                        skip_digestion=True,
+                    )
+                elif action == "create_region_from_query":
+                    expression = content.get("expression")
+                    syntax = str(content.get("syntax") or "MolSysMT")
+                    raw_tag = content.get("tag")
+                    representation = content.get("representation")
+                    region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
+                    if expression is None or (isinstance(expression, str) and not expression.strip()):
+                        raise ValueError("create_region_from_query requires a non-empty expression.")
+                    self.new_region(
+                        selection=expression,
+                        syntax=syntax,
+                        tag=region_tag,
+                        representation=representation,
+                        skip_digestion=True,
+                    )
+                elif action == "make_regions_by":
+                    element = str(content.get("element") or "").strip().lower()
+                    selection = content.get("selection", "all")
+                    representation = content.get("representation")
+                    self.make_regions_by(
+                        element,
+                        selection=selection,
+                        representation=representation,
+                        skip_digestion=True,
+                    )
+                elif action == "show_only_region":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    self._regions[tag.strip()].show_only(skip_digestion=True)
+                elif action == "create_complementary_region":
+                    tag = content.get("tag")
+                    raw_new_tag = content.get("new_tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    new_tag = raw_new_tag.strip() if isinstance(raw_new_tag, str) and raw_new_tag.strip() else None
+                    self._regions[tag.strip()].new_complementary_region(
+                        tag=new_tag,
+                        skip_digestion=True,
+                    )
+                elif action == "compose_regions":
+                    tag_a = content.get("tag_a")
+                    tag_b = content.get("tag_b")
+                    operation = str(content.get("op") or "").strip().lower()
+                    raw_new_tag = content.get("new_tag")
+                    if not isinstance(tag_a, str) or tag_a.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag_a!r}.")
+                    if not isinstance(tag_b, str) or tag_b.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag_b!r}.")
+                    new_tag = raw_new_tag.strip() if isinstance(raw_new_tag, str) and raw_new_tag.strip() else None
+                    left = self._regions[tag_a.strip()]
+                    right = self._regions[tag_b.strip()]
+                    overwrite = bool(content.get("overwrite", False))
+                    operation_tag = new_tag
+                    if overwrite and new_tag in self._regions:
+                        operation_tag = self._unique_region_tag(f"{new_tag}__compose")
+                    if operation == "union":
+                        result = left.union(right, tag=operation_tag, skip_digestion=True)
+                    elif operation == "intersection":
+                        result = left.intersection(right, tag=operation_tag, skip_digestion=True)
+                    elif operation == "difference":
+                        result = left.difference(right, tag=operation_tag, skip_digestion=True)
+                    else:
+                        raise ValueError(f"Unsupported region composition operation: {operation!r}.")
+                    if overwrite and new_tag in self._regions:
+                        self._regions[new_tag].delete(skip_digestion=True)
+                        result.rename(new_tag, skip_digestion=True)
+                elif action == "reset_region_representation":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    self._regions[tag.strip()].reset_representation(skip_digestion=True)
+                elif action == "color_region_by_attribute":
+                    tag = content.get("tag")
+                    attribute = content.get("attribute")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    if not isinstance(attribute, str) or not attribute.strip():
+                        raise ValueError("color_region_by_attribute requires a non-empty attribute.")
+                    self._regions[tag.strip()].set_color_by_attribute(
+                        attribute.strip(),
+                        element=str(content.get("element") or "atom"),
+                        palette=content.get("palette", "viridis"),
+                        value_range=content.get("value_range"),
+                        replace=bool(content.get("replace", False)),
+                        skip_digestion=True,
+                    )
+                elif action == "reset_region_colors":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    self._regions[tag.strip()].reset_colors(skip_digestion=True)
+                elif action == "duplicate_region":
+                    tag = content.get("tag")
+                    raw_new_tag = content.get("new_tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    new_tag = raw_new_tag.strip() if isinstance(raw_new_tag, str) and raw_new_tag.strip() else None
+                    self._regions[tag.strip()].duplicate(tag=new_tag, skip_digestion=True)
+                elif action == "show_all_regions":
+                    self.regions.show_all(skip_digestion=True)
+                elif action == "hide_all_regions":
+                    self.regions.hide_all(skip_digestion=True)
+                elif action == "get_region_details":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    region = self._regions[tag.strip()]
+                    center = region.get_center(
+                        structure_indices=[self.current_structure_index],
+                        skip_digestion=True,
+                    )
+                    details = {
+                        "op": "region_details",
+                        "request_id": content.get("request_id"),
+                        "tag": region.tag,
+                        "atom_count": len(region.atom_indices or ()),
+                        "group_count": len(region._scoped_indices_for_element("group") or []),  # noqa: SLF001
+                        "chain_count": len(region._scoped_indices_for_element("chain") or []),  # noqa: SLF001
+                        "center_nm": puw.get_value(center, to_unit="nm").tolist(),
+                        "structure_index": self.current_structure_index,
+                    }
+                    self._send_runtime_only(details)
                 elif action == "toggle_region_visibility":
                     tag = content.get("tag")
                     if not isinstance(tag, str) or tag.strip() == "":
@@ -956,6 +1088,7 @@ class MolSysView(
                 elif action == "set_region_representation":
                     tag = content.get("tag")
                     repr_type = content.get("representation")
+                    preset = content.get("preset")
                     params = content.get("params")
                     if not isinstance(tag, str) or tag.strip() == "":
                         raise ValueError("set_region_representation requires non-empty tag.")
@@ -964,6 +1097,7 @@ class MolSysView(
                         raise ValueError(f"No region found with tag {tag!r}.")
                     region.set_representation(
                         representation=repr_type,
+                        preset=preset,
                         skip_digestion=True,
                         **(params if isinstance(params, dict) else {})
                     )

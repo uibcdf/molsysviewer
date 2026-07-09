@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 import warnings
+from contextlib import contextmanager
 from typing import Any, Mapping
 
 import molsysmt as msm
@@ -17,6 +18,11 @@ from .presets import normalize_representation_preset, resolve_user_preset
 
 
 class RegionsMixin:
+    _REGION_ATTRIBUTE_CANDIDATES = ("b_factor", "occupancy", "partial_charge", "formal_charge")
+    _TRANSIENT_REGION_TAG = re.compile(
+        r"^(?:(?:orientation|plane)-(?:region)?\d+|focus\d+)$"
+    )
+
     def _enrich_interaction_payload(self, payload: dict) -> dict:
         if payload.get("kind") != "structure":
             return payload
@@ -168,6 +174,125 @@ class RegionsMixin:
     def _unregister_region(self, tag: str) -> None:
         self._regions.pop(tag, None)
 
+    def _set_all_regions_visibility(self, *, hidden: bool) -> None:
+        tags: list[str] = []
+        for tag, region in self._regions.items():
+            if not getattr(region, "_active", False):
+                continue
+            region._hidden = bool(hidden)  # noqa: SLF001
+            tags.append(tag)
+        self._send(
+            {
+                "op": "set_regions_visibility",
+                "tags": tags,
+                "hidden": bool(hidden),
+            }
+        )
+        self._sync_region_summaries_runtime()
+
+    def _send_region_operation(self, message: dict[str, Any]) -> None:
+        if getattr(self, "_region_batch_depth", 0) > 0:
+            self._region_batch_operations.append(dict(message))
+            return
+        self._send(message)
+
+    @contextmanager
+    def _batch_region_updates(self):
+        outermost = getattr(self, "_region_batch_depth", 0) == 0
+        if outermost:
+            self._region_batch_operations = []
+            self._region_batch_summary_dirty = False
+        self._region_batch_depth += 1
+        failed = False
+        try:
+            yield
+        except Exception:
+            failed = True
+            raise
+        finally:
+            self._region_batch_depth -= 1
+            if outermost:
+                operations = list(self._region_batch_operations)
+                summary_dirty = bool(self._region_batch_summary_dirty)
+                self._region_batch_operations = []
+                self._region_batch_summary_dirty = False
+                if not failed and operations:
+                    self._send(
+                        {
+                            "op": "batch_region_operations",
+                            "operations": operations,
+                        }
+                    )
+                if not failed and summary_dirty:
+                    self._sync_region_summaries_runtime()
+
+    def _available_region_attributes(self) -> list[str]:
+        if self._molsys is None:
+            return []
+        available = set(
+            msm.get_attributes(
+                self._molsys,
+                include_none=False,
+                output_type="list",
+                skip_digestion=True,
+            )
+        )
+        return [name for name in self._REGION_ATTRIBUTE_CANDIDATES if name in available]
+
+    def _region_summary_records(self) -> list[dict[str, Any]]:
+        available_attributes = self._available_region_attributes()
+        manageable = {
+            tag: region
+            for tag, region in self._regions.items()
+            if not self._TRANSIENT_REGION_TAG.fullmatch(tag)
+        }
+        visual_sets = {
+            tag: set(region.atom_indices or ())
+            for tag, region in manageable.items()
+            if self._region_has_visible_representation(region) and region.atom_indices is not None
+        }
+        overlap_map = {tag: [] for tag in manageable}
+        visual_tags = sorted(visual_sets)
+        for index, left_tag in enumerate(visual_tags):
+            left_atoms = visual_sets[left_tag]
+            for right_tag in visual_tags[index + 1:]:
+                if left_atoms.isdisjoint(visual_sets[right_tag]):
+                    continue
+                overlap_map[left_tag].append(right_tag)
+                overlap_map[right_tag].append(left_tag)
+
+        records: list[dict[str, Any]] = []
+        for tag, region in sorted(manageable.items()):
+            atom_indices = list(region.atom_indices or ())
+            records.append(
+                {
+                    "tag": tag,
+                    "atom_indices": atom_indices,
+                    "atom_count": len(atom_indices),
+                    "selection": region.selection if isinstance(region.selection, str) else None,
+                    "hidden": bool(region._hidden),  # noqa: SLF001
+                    "representation": region.representation,
+                    "preset": region.preset,
+                    "representation_params": dict(region.repr_params),
+                    "overlap_tags": overlap_map[tag],
+                    "available_attributes": list(available_attributes),
+                }
+            )
+        return records
+
+    def _sync_region_summaries_runtime(self) -> None:
+        if getattr(self, "_region_batch_depth", 0) > 0:
+            self._region_batch_summary_dirty = True
+            return
+        self._send_runtime_only(
+            {
+                "op": "set_region_summaries",
+                "regions": self._region_summary_records(),
+                "representations": self.representations,
+                "presets": self.presets,
+            }
+        )
+
     def _region_has_visible_representation(self, region: Region) -> bool:
         return (
             bool(getattr(region, "_active", False))
@@ -237,6 +362,8 @@ class RegionsMixin:
     ) -> Region:
         """Create a new region (structural subset) with an optional representation."""
         tag = tag or self._next_region_tag()
+        if tag in self._regions:
+            raise ValueError(f"A region with tag {tag!r} already exists.")
         representation = self._normalize_representation_type(representation)
 
         if atom_indices is None and complement_of_regions is not None:
@@ -394,20 +521,23 @@ class RegionsMixin:
         """Create one region per selected hierarchy element and return them by tag."""
         representation = self._normalize_representation_type(representation)
         allowed = {
+            "group": "group_index",
+            "component": "component_index",
             "chain": "chain_index",
             "molecule": "molecule_index",
             "entity": "entity_index",
         }
         if element not in allowed:
             raise ValueError(f"Unsupported element for make_regions_by: {element!r}. Allowed: {sorted(allowed)}")
-        return self._split_into_regions(
-            selection=selection,
-            structure_indices=structure_indices,
-            syntax=syntax,
-            element_label=element,
-            index_attribute=allowed[element],
-            representation=representation,
-        )
+        with self._batch_region_updates():
+            return self._split_into_regions(
+                selection=selection,
+                structure_indices=structure_indices,
+                syntax=syntax,
+                element_label=element,
+                index_attribute=allowed[element],
+                representation=representation,
+            )
 
 
 RegionsMixin.__module__ = "molsysviewer.viewer"

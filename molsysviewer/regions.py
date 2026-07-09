@@ -231,7 +231,7 @@ class Region:
         if not self._active:
             return
         msg = {"op": op, "tag": self.tag, **payload}
-        self._view._send(msg)  # noqa: SLF001
+        self._view._send_region_operation(msg)  # noqa: SLF001
 
     def _send_create(self) -> None:
         atom_indices = None
@@ -244,6 +244,7 @@ class Region:
             representation=self.representation,
             params=self.repr_params,
         )
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     # --- public API ---
 
@@ -623,6 +624,132 @@ class Region:
             user_preset=user_preset_payload,
             params=self.repr_params,
         )
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @signal(tags=["region", "representation"])
+    @digest()
+    def reset_representation(self, skip_digestion: bool = False) -> None:
+        """Revert this region to the viewer's base representation."""
+        self.representation = None
+        self.preset = None
+        self.repr_params = {}
+        self._send(
+            "set_region_representation",
+            representation=None,
+            preset=None,
+            user_preset=None,
+            params={},
+        )
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @signal(tags=["region", "color"])
+    @digest()
+    def set_color_by_attribute(
+        self,
+        attribute: str,
+        *,
+        element: str = "atom",
+        palette: Any = "viridis",
+        value_range: Any = None,
+        replace: bool = False,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Color this region by a scalar attribute already present in the system."""
+        if self.atom_indices is None:
+            raise ValueError("set_color_by_attribute requires known atom_indices for this region.")
+        molsys = self._view._molsys  # noqa: SLF001
+        if molsys is None:
+            raise ValueError("No molecular system loaded.")
+
+        available = set(msm.get_attributes(molsys, output_type="list", skip_digestion=True))
+        requested = str(attribute).strip()
+        aliases = {"bfactor": "b_factor"}
+        resolved = aliases.get(requested, requested)
+        if requested == "charge":
+            resolved = "partial_charge" if "partial_charge" in available else "formal_charge"
+        if resolved not in available:
+            raise ValueError(f"Attribute {attribute!r} is not available in the loaded molecular system.")
+
+        scoped_indices = self._scoped_indices_for_element(element)
+        if scoped_indices is None:
+            raise ValueError(f"Cannot resolve attribute {resolved!r} at element level {element!r}.")
+        values = msm.get(
+            molsys,
+            element=element,
+            selection=scoped_indices,
+            structure_indices=[int(self._view.current_structure_index)],
+            output_type="values",
+            skip_digestion=True,
+            **{resolved: True},
+        )
+
+        from . import pyunitwizard as puw
+        import numpy as np
+
+        raw_values = puw.get_value(values) if puw.is_quantity(values) else values
+        array = np.asarray(raw_values)
+        array = np.squeeze(array)
+        if array.ndim != 1 or array.shape[0] != len(scoped_indices):
+            raise ValueError(
+                f"Attribute {resolved!r} did not produce one scalar per {element} in this region."
+            )
+        if any(value is None for value in array.tolist()):
+            raise ValueError(f"Attribute {resolved!r} contains missing values in this region.")
+        try:
+            scalar_values = array.astype(float).tolist()
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Attribute {resolved!r} is not scalar numeric data.") from exc
+
+        self.set_color_by_values(
+            scalar_values,
+            element=element,
+            palette=palette,
+            value_range=value_range,
+            replace=replace,
+            skip_digestion=True,
+        )
+
+    @signal(tags=["region"])
+    @digest()
+    def duplicate(
+        self,
+        *,
+        tag: str | None = None,
+        representation: str | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> "Region":
+        """Create a new region with the same atoms and visual specification."""
+        atom_indices = self._require_atom_indices()
+        duplicate_tag = tag or self._view._unique_region_tag(f"{self.tag}_copy")  # noqa: SLF001
+        params = dict(self.repr_params)
+        params.update(repr_params)
+        duplicate = self._view.new_region(  # noqa: SLF001
+            selection=self.selection,
+            atom_indices=list(atom_indices),
+            tag=duplicate_tag,
+            skip_digestion=True,
+        )
+        target_representation = representation if representation is not None else self.representation
+        if target_representation is not None or self.preset is not None or params:
+            duplicate.set_representation(
+                target_representation,
+                preset=self.preset if representation is None else None,
+                skip_digestion=True,
+                **params,
+            )
+        return duplicate
+
+    @signal(tags=["region"])
+    @digest()
+    def overlaps(self, skip_digestion: bool = False) -> list[str]:
+        """Return visible represented regions that overlap this region."""
+        if self.atom_indices is None:
+            return []
+        return self._view._overlapping_visual_region_tags(  # noqa: SLF001
+            self.atom_indices,
+            exclude_tag=self.tag,
+        )
 
     @signal(tags=["region"])
     @digest()
@@ -636,7 +763,7 @@ class Region:
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded. Load a system before creating complementary regions.")
         comp_tag = tag or f"Global-{self.tag}"
-        total_atoms = int(self._view._molsys._get_n_atoms())  # type: ignore[attr-defined]  # noqa: SLF001
+        total_atoms = int(self._view._molsys.get_n_atoms())  # noqa: SLF001
         complement = [i for i in range(total_atoms) if i not in set(self.atom_indices)]
         return self._view.new_region(  # noqa: SLF001
             atom_indices=complement,
@@ -650,6 +777,7 @@ class Region:
         """Show this region (all attached representations)."""
         self._hidden = False
         self._send("show_region")
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     @signal(tags=["region", "visibility"])
     @digest()
@@ -657,6 +785,7 @@ class Region:
         """Hide this region (all attached representations)."""
         self._hidden = True
         self._send("hide_region")
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     @signal(tags=["region", "visibility"])
     @digest()
@@ -675,6 +804,7 @@ class Region:
         self._active = False
         self._send("delete_region")
         self._view._unregister_region(self.tag)  # noqa: SLF001
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     @signal(tags=["region"])
     @digest()
@@ -687,6 +817,7 @@ class Region:
         self.tag = new_tag
         self._view._regions[new_tag] = self  # noqa: SLF001
         self._view._regions.pop(old_tag, None)  # noqa: SLF001
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     # --- Scalar colour mapping ---
 
@@ -754,6 +885,28 @@ class Region:
 
 class RegionsManager(dict):
     """Dict-like registry of :class:`Region` objects with an :meth:`info` helper."""
+
+    def __init__(self, view: Any) -> None:
+        super().__init__()
+        self._view = view
+
+    @signal(tags=["region", "visibility"])
+    @digest()
+    def show_all(self, skip_digestion: bool = False) -> None:
+        """Show every active region."""
+        self._view._set_all_regions_visibility(hidden=False)  # noqa: SLF001
+
+    @signal(tags=["region", "visibility"])
+    @digest()
+    def hide_all(self, skip_digestion: bool = False) -> None:
+        """Hide every active region."""
+        self._view._set_all_regions_visibility(hidden=True)  # noqa: SLF001
+
+    @signal(tags=["region"])
+    @digest()
+    def overlaps(self, skip_digestion: bool = False) -> dict[str, list[str]]:
+        """Return overlap tags for every managed region."""
+        return {tag: region.overlaps(skip_digestion=True) for tag, region in self.items()}
 
     def info(self, tag: str | None = None) -> dict[str, Any] | List[dict[str, Any]]:
         """Return compact metadata for one region (by *tag*) or all regions."""

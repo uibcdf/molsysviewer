@@ -95,6 +95,137 @@ test("state handler stores pending layer visibility when layer refs do not exist
     assert.strictEqual(pending.get("layer-pending"), false);
 });
 
+test("state handler applies one batch region visibility message to every tag", async () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    const calls: Array<{ tag: string | undefined; hidden: boolean }> = [];
+    (handler as any).toggleRegionVisibility = async (tag: string | undefined, hidden: boolean) => {
+        calls.push({ tag, hidden });
+    };
+
+    await handler.setRegionsVisibility({
+        op: "set_regions_visibility",
+        tags: ["first", "second"],
+        hidden: true,
+    });
+
+    assert.deepStrictEqual(calls, [
+        { tag: "first", hidden: true },
+        { tag: "second", hidden: true },
+    ]);
+});
+
+test("state handler accepts authoritative enriched region summaries", () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    handler.setRegionSummaries({
+        op: "set_region_summaries",
+        representations: ["line", "cartoon"],
+        presets: ["auto"],
+        regions: [{
+            tag: "site",
+            atom_indices: [0, 1],
+            atom_count: 2,
+            hidden: false,
+            representation: "line",
+            preset: null,
+            representation_params: { alpha: 0.5 },
+            overlap_tags: ["backbone"],
+            available_attributes: ["b_factor"],
+        }],
+    });
+
+    assert.deepStrictEqual(handler.getRegionSummaries(), [{
+        tag: "site",
+        atom_indices: [0, 1],
+        atom_count: 2,
+        hidden: false,
+        representation: "line",
+        preset: undefined,
+        selection: undefined,
+        representation_params: { alpha: 0.5 },
+        overlap_tags: ["backbone"],
+        available_attributes: ["b_factor"],
+    }]);
+    assert.deepStrictEqual(handler.getRegionStyleOptions(), {
+        representations: ["line", "cartoon"],
+        presets: ["auto"],
+    });
+});
+
+test("state handler applies batched region operations in order", async () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    const calls: string[] = [];
+    (handler as any).createRegion = async (message: any) => calls.push(`create:${message.tag}`);
+    (handler as any).setRegionRepresentation = async (message: any) => calls.push(`style:${message.tag}`);
+
+    await handler.applyRegionOperations({
+        op: "batch_region_operations",
+        operations: [
+            { op: "create_region", tag: "A", atom_indices: [0] },
+            { op: "set_region_representation", tag: "A", representation: "line" },
+            { op: "create_region", tag: "B", atom_indices: [1] },
+        ],
+    });
+
+    assert.deepStrictEqual(calls, ["create:A", "style:A", "create:B"]);
+});
+
+test("state handler applies preset alpha to every generated representation", async () => {
+    const updated: Array<{ ref: string; alpha: number }> = [];
+    let commits = 0;
+    const update: any = {
+        to(ref: string) {
+            return {
+                update(_transform: unknown, mutate: (params: any) => void) {
+                    const params = { type: { params: {} } };
+                    mutate(params);
+                    updated.push({ ref, alpha: params.type.params.alpha });
+                    return update;
+                },
+            };
+        },
+        async commit(options: any) {
+            commits += 1;
+            assert.deepStrictEqual(options, { doNotUpdateCurrent: true });
+        },
+    };
+    const handler = new StateHandlers({
+        state: { data: { build: () => update } },
+    } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: () => {},
+    });
+
+    await (handler as any).applyAlphaToRepresentations(["repr-a", "repr-b"], 0.35);
+
+    assert.deepStrictEqual(updated, [
+        { ref: "repr-a", alpha: 0.35 },
+        { ref: "repr-b", alpha: 0.35 },
+    ]);
+    assert.strictEqual(commits, 1);
+});
+
 test("state handler queues global visibility ops when structure is not ready", async () => {
     const plugin: any = { state: { data: {} } };
     const handler = new StateHandlers(plugin, {
