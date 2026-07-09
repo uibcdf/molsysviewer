@@ -1,6 +1,6 @@
 # Implementation Plan: Studio → Regions subpanel
 
-**Status:** implemented (all phases complete; 2026-07-09).
+**Status:** implemented (Phases 0-D complete; post-Phase-D browser E2E validation pending).
 **Purpose:** a meticulous, checkable, phase-by-phase plan to implement the Studio →
 Regions subpanel. Update the checkboxes, the **Progress dashboard**, and the **Risks**
 table as work lands.
@@ -58,7 +58,8 @@ to (1) §6. Region-specific vocabulary aligns with (3) so the two subpanels feel
 | A | Create, isolate & lifecycle | L | 0 | ☑ | 2026-07-09 | — | shared manual query composer; three create origins; lifecycle cards; explicit collision choices; global batch actions |
 | B | Enriched style composer | M | 0 | ☑ | 2026-07-09 | — | backend-provided reps/presets; release-only opacity; quality; curated/uniform/attribute color |
 | C | Boolean composer & inspection | M | 0, A | ☑ | 2026-07-09 | — | ordered boolean composer; overlap prefill; safe overwrite; lazy frame-aware inspect |
-| D | CSS + integration / e2e | S | A, B, C | ☑ | 2026-07-09 | — | shared tokens; inspect refresh; overlap focus; E2E walkthrough; docs implemented |
+| D | CSS + integration / e2e | S | A, B, C | ☑ | 2026-07-09 | `6f66da07` | shared tokens; inspect refresh; overlap focus; E2E walkthrough implemented; docs updated |
+| Post-D | Real browser E2E validation | S | D | ☐ | — | — | run the Regions walkthrough on Chromium + WebGL and record the result |
 
 Size: **S** ≈ hours · **M** ≈ 1–2 days · **L** ≈ 3–5 days.
 Status legend: ☐ Not started · ◐ In progress · ☑ Done · ✗ Dropped.
@@ -281,7 +282,8 @@ then land the event handlers and the extended summary; the UI phases build on th
 - [x] Frontend: apply the **region tokens** (`.region-card`, `.region-overlap-badge`,
       `.region-opacity-slider`, `.region-style-composer`), reusing the shared Selection
       tokens; dark-mode/theme-aware.
-- [x] **End-to-end walkthrough** (`js/tests/e2e/region-subpanel.e2e.ts`): create from
+- [x] **Implement and integrate the end-to-end walkthrough**
+      (`js/tests/e2e/region-subpanel.e2e.ts`): create from
       query → split by chain → style (opacity + color-by-attribute) → isolate → compose
       (difference) → complement → rename → inspect → delete. Browser execution as
       feasible (Chromium/WebGL), otherwise transport-contract simulation like the
@@ -304,6 +306,28 @@ then land the event handlers and the extended summary; the UI phases build on th
   a local CI-style run. Final validation: region flow tests passed (24), JavaScript
   tests passed (155/155), `npm run build:runtime` passed, the dedicated E2E bundle
   compiled, and the full Python suite passed with 3 skips.
+
+---
+
+## Post-Phase D — Real browser E2E validation
+
+**Status:** pending · **Depends on:** D.
+
+- [ ] On a host with a real Chromium/Chrome installation and working WebGL, run:
+
+  ```bash
+  cd molsysviewer/js
+  npm run test:e2e:regions
+  ```
+
+- [ ] Confirm the walkthrough completes without browser errors or a WebGL-related skip.
+- [ ] Manually inspect the Regions subpanel for layout overflow, overlap-badge
+      scroll/highlight feedback, style controls, boolean composition, and Inspect refresh.
+- [ ] Record the browser version, graphics/WebGL environment, command result, and any
+      findings in this section.
+
+This is validation of already implemented code, not an additional implementation
+phase. A compile-only E2E check or a controlled headless skip does not close it.
 
 ---
 
