@@ -199,27 +199,19 @@ the rebuild path (`core.py`) still double-building.
 `test_apply_system_edit_replays_visual_region_as_bare_create_then_style`. Each was confirmed by
 actually reverting the fix and running the suite.
 
-**Not yet committed.** The work lives uncommitted in the phase worktree on top of the *rejected*
-commit `0c36549e`.
+**Landed as `68522ae6` on `main`,** verified independently after the fact: the rejected commit
+`0c36549e` is not an ancestor; both formerly-untracked test files are tracked; `viewer.js` is
+byte-identical after a fresh `npm run build:runtime`; and all four suites are green on `main`
+(`pytest` rc 0, `test:js` 160/160, `build:runtime` rc 0, `test:perf` rc 0 with
+`unknownMs 0.30`, `hideMs 0.10`, `groupNodes 9500`).
 
-#### Landing checklist
+The landing also added a **plugin-level** regression the audit had asked for:
+`state handler styles a newly-created bare region without rebuilding its component`. Confirmed by
+mutation — replacing the component-reuse condition with `if (true)` fails that test and no other.
 
-Rule 7 says the phase lands on `main` as one clean commit. Before that:
-
-1. **`0c36549e` must not reach `main`.** It is the rejected version. Land the worktree's *files*,
-   not that commit — squash, or `git checkout` the paths.
-2. **Two untracked files must be added**, or the phase lands incomplete:
-   `js/tests/unit/viewer-controller-message-refresh.test.ts` and
-   `js/tests/perf/message-toll.perf.ts`.
-3. **`message_toll_performance.md` has diverged.** The worktree copy carries the Layer 4
-   deferral; the `main` copy does not. Reconcile in favour of the worktree's §4.
-4. **`main`'s working tree holds unrelated WIP** — tooltip/badge changes to `group-panel.ts`,
-   `system-panel.ts`, `group-panel.test.ts`, plus a regenerated `viewer.js`, plus an untracked
-   `studio_custom_styles_presets.md` that nobody has explained. Separate these first; Phase 0
-   must not land dragging them.
-5. Rebuild `viewer.js` from the merged tree (`npm run build:runtime`) rather than reusing either
-   side's binary.
-6. Re-run all four suites on `main` after landing, not only in the worktree.
+Housekeeping left open: `npm run test:perf` emits an untracked `tests/perf/message-toll.perf.js`,
+while its `tests/e2e/*.e2e.js` siblings are committed. Pick one convention; ignoring both is the
+better one.
 
 ---
 
@@ -624,7 +616,7 @@ none were reported by a failing test.
 
 | Phase | Title | Size | Status | Date | Commit | Audit note |
 |------:|-------|:----:|--------|------|--------|-----------|
-| 0 | Perf: toll + double build | M | ☑ | 2026-07-10 | *(pending clean commit)* | **Passed on the third pass.** See note below. |
+| 0 | Perf: toll + double build | M | ☑ | 2026-07-10 | `68522ae6` | **Passed on the third pass.** See note below. |
 | 1 | GATE: close Decision 2 | S | ☐ | — | — | — |
 | 2 | Contract A: representation | L | ☐ | — | — | — |
 | 3 | Whole API + rebuild bugs | M | ☐ | — | — | — |
