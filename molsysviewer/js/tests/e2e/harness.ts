@@ -24,6 +24,7 @@ declare global {
         profileExclusiveOwnershipMask: typeof profileExclusiveOwnershipMask;
         profileRegionVisibilityControl: typeof profileRegionVisibilityControl;
         probeExclusiveOwnershipPicking: typeof probeExclusiveOwnershipPicking;
+        probeGlobalRepresentationOwnershipMask: typeof probeGlobalRepresentationOwnershipMask;
     } | undefined;
 }
 
@@ -96,6 +97,16 @@ type ExclusiveOwnershipInvariantProbe = {
     wholeOwnedAtomsTransparent: boolean;
     regionOwnedAtomsOpaque: boolean;
     wholeUnownedAtomsOpaque: boolean;
+};
+
+type GlobalRepresentationOwnershipMaskProbe = {
+    globalRepresentationRefs: string[];
+    wholeComponentRepresentationCount: number;
+    wholeTransparencyRecords: TransparencyRecord[];
+    regionTransparencyRecords: TransparencyRecord[];
+    expectedMaskedAtoms: number;
+    wholeOwnedAtomsTransparent: boolean;
+    regionOwnedAtomsOpaque: boolean;
 };
 
 type PickingProbeCaseName = "owned-region-visible" | "unowned-region-visible" | "owned-region-hidden";
@@ -414,6 +425,48 @@ function transparencyRecords(plugin: any, components: any[], expectedAtomIndices
                     atomSetMatchesExpected: sameAtomIndices(transparentAtomIndices, expectedAtomIndices),
                 });
             }
+        }
+    }
+    return records;
+}
+
+function transparencyRecordsForRepresentationRefs(plugin: any, refs: string[], expectedAtomIndices: number[]): TransparencyRecord[] {
+    const records: TransparencyRecord[] = [];
+    const state = plugin.state.data;
+    for (const representationRef of refs) {
+        const cell = state.cells.get(representationRef);
+        const sourceData = cell && cell.obj && cell.obj.data ? cell.obj.data.sourceData : undefined;
+        if (!sourceData) continue;
+        const transparencyCells = state.select(
+            StateSelection.Generators.ofTransformer(
+                StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle,
+                representationRef,
+            ).withTag("transparency-controls"),
+        );
+        for (const transparencyCell of transparencyCells) {
+            const layers = transparencyCell.params && transparencyCell.params.values
+                ? transparencyCell.params.values.layers
+                : [];
+            if (!Array.isArray(layers) || layers.length === 0) continue;
+            let atomCount = 0;
+            const layerValues: number[] = [];
+            const transparentAtomIndices: number[] = [];
+            for (const layer of layers) {
+                if (!layer || !layer.bundle) continue;
+                layerValues.push(Number(layer.value));
+                const atomIndices = bundleAtomIndices(layer.bundle, sourceData.root);
+                atomCount += atomIndices.length;
+                transparentAtomIndices.push(...atomIndices);
+            }
+            transparentAtomIndices.sort((left, right) => left - right);
+            records.push({
+                componentRef: "__global_repr__",
+                representationRef,
+                layerCount: layers.length,
+                layerValues,
+                atomCount,
+                atomSetMatchesExpected: sameAtomIndices(transparentAtomIndices, expectedAtomIndices),
+            });
         }
     }
     return records;
@@ -823,6 +876,60 @@ export async function probeExclusiveOwnershipPicking(
     };
 }
 
+export async function probeGlobalRepresentationOwnershipMask(
+    controller: MolSysViewerController,
+    options: { atoms: number; ownedAtoms: number; globalMessage: Record<string, unknown> },
+): Promise<GlobalRepresentationOwnershipMaskProbe> {
+    const profiled = controller as ProfileController;
+    const atoms = Math.trunc(options.atoms);
+    const ownedAtoms = Math.trunc(options.ownedAtoms);
+    if (atoms <= 2 || ownedAtoms <= 0 || ownedAtoms >= atoms) {
+        throw new Error("Invalid global representation ownership mask probe options.");
+    }
+    const owned = atomRange(0, ownedAtoms);
+    await profiled.handleMessage({ op: "create_region", tag: "__global_mask_region__", atom_indices: owned });
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__global_mask_region__",
+        representation: "ball-and-stick",
+    });
+    await profiled.handleMessage({
+        op: "set_global_representation",
+        ...options.globalMessage,
+    } as any);
+
+    const globalRepresentationRefs = Array.from(((profiled.state as any).globalReprs ?? []) as Iterable<string>)
+        .filter((ref): ref is string => typeof ref === "string");
+    const expectedAtomIndices = atomRange(0, ownedAtoms);
+    const wholeTransparencyRecords = transparencyRecordsForRepresentationRefs(
+        profiled.plugin,
+        globalRepresentationRefs,
+        expectedAtomIndices,
+    );
+    const regionComponentRef = getRegionComponentRef(profiled, "__global_mask_region__");
+    const wholeComponents = getWholeComponents(profiled);
+    const wholeComponentRepresentationCount = wholeComponents.reduce(
+        (total, component) => total + (Array.isArray(component.representations) ? component.representations.length : 0),
+        0,
+    );
+    const regionComponents = wholeComponents.filter((component) => {
+        const [ref] = componentRefs([component]);
+        return regionComponentRef !== null && ref === regionComponentRef;
+    });
+    const regionTransparencyRecords = transparencyRecords(profiled.plugin, regionComponents, expectedAtomIndices);
+    return {
+        globalRepresentationRefs,
+        wholeComponentRepresentationCount,
+        wholeTransparencyRecords,
+        regionTransparencyRecords,
+        expectedMaskedAtoms: ownedAtoms,
+        wholeOwnedAtomsTransparent: sumRecordAtoms(wholeTransparencyRecords) === ownedAtoms
+            && recordsAreFullyTransparent(wholeTransparencyRecords)
+            && wholeTransparencyRecords.every((record) => record.atomSetMatchesExpected),
+        regionOwnedAtomsOpaque: sumRecordAtoms(regionTransparencyRecords) === 0 && regionTransparencyRecords.length === 0,
+    };
+}
+
 if (typeof window !== "undefined") {
     (window as any).Harness = {
         createController,
@@ -830,5 +937,6 @@ if (typeof window !== "undefined") {
         profileExclusiveOwnershipMask,
         profileRegionVisibilityControl,
         probeExclusiveOwnershipPicking,
+        probeGlobalRepresentationOwnershipMask,
     };
 }

@@ -1,14 +1,16 @@
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
-import { StateObjectRef, StateObjectSelector, StateTransform } from "molstar/lib/mol-state";
+import { StateObjectRef, StateObjectSelector, StateSelection, StateTransform } from "molstar/lib/mol-state";
 import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
 import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
 import { StructureSelection } from "molstar/lib/mol-model/structure/query";
+import { Loci, isEmptyLoci } from "molstar/lib/mol-model/loci";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 import { PresetStructureRepresentations } from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
 import { createStructureRepresentationParams } from "molstar/lib/mol-plugin-state/helpers/structure-representation-params";
+import { Transparency } from "molstar/lib/mol-theme/transparency";
 import {
     clearStructureTransparency,
     setStructureTransparency,
@@ -48,6 +50,7 @@ import {
 } from "../../themes/per-atom-color";
 
 const DEFAULT_GLOBAL_REPRESENTATION = "cartoon";
+const TRANSPARENCY_MANAGER_TAG = "transparency-controls";
 type RegionRepresentationState = "none" | "inherit" | "own";
 
 interface RegionEntry {
@@ -358,6 +361,90 @@ export class StateHandlers {
         await setStructureTransparency(this.plugin, components, value, async () => loci);
     }
 
+    private currentGlobalRepresentationRefs(): StateTransform.Ref[] {
+        const refs: StateTransform.Ref[] = [];
+        this.globalReprs.forEach(ref => {
+            const resolved = StateObjectRef.resolveRef(ref);
+            if (resolved && this.plugin.state.data.cells.has(resolved)) refs.push(resolved);
+        });
+        return refs;
+    }
+
+    private filteredTransparencyBundle(layers: Array<{ bundle: StructureElement.Bundle; value: number }>, structure: Structure) {
+        const transparency = Transparency.ofBundle(layers, structure.root) as Transparency<StructureElement.Loci>;
+        const merged = Transparency.merge(transparency) as Transparency<StructureElement.Loci>;
+        const filtered = Transparency.filter(merged, structure) as Transparency<StructureElement.Loci>;
+        return Transparency.toBundle(filtered);
+    }
+
+    private async applyTransparencyToRepresentationRefs(
+        refs: StateTransform.Ref[],
+        atomIndices: number[] | undefined,
+        value: number,
+    ) {
+        const rootStructure = this.callbacks.getStructure();
+        if (!rootStructure || refs.length === 0 || !Array.isArray(atomIndices) || atomIndices.length === 0) return;
+        const selection = this.buildSelectionFromAtomIndices(rootStructure, atomIndices);
+        if (!selection || StructureSelection.isEmpty(selection)) return;
+        const loci = StructureSelection.toLociWithSourceUnits(selection);
+        if (Loci.isEmpty(loci) || isEmptyLoci(loci)) return;
+        const layer = {
+            bundle: StructureElement.Bundle.fromLoci(loci),
+            value,
+        };
+        const state = this.plugin.state.data;
+        const update = state.build();
+        for (const ref of refs) {
+            const reprCell = state.cells.get(ref);
+            const reprStructure = (reprCell?.obj?.data?.sourceData as Structure | undefined) ?? rootStructure;
+            const transparencyCell = state.select(
+                StateSelection.Generators
+                    .ofTransformer(StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle, ref)
+                    .withTag(TRANSPARENCY_MANAGER_TAG),
+            )[0];
+            if (transparencyCell) {
+                const existingLayers = transparencyCell.params?.values.layers ?? [];
+                const layers = [...existingLayers, layer];
+                update.to(transparencyCell).update(this.filteredTransparencyBundle(layers, reprStructure));
+            } else {
+                update.to(ref).apply(
+                    StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle,
+                    this.filteredTransparencyBundle([layer], reprStructure),
+                    { tags: TRANSPARENCY_MANAGER_TAG },
+                );
+            }
+        }
+        await update.commit({ doNotUpdateCurrent: true });
+    }
+
+    private async clearTransparencyFromRepresentationRefs(refs: StateTransform.Ref[]) {
+        if (refs.length === 0) return;
+        const state = this.plugin.state.data;
+        const update = state.build();
+        for (const ref of refs) {
+            const transparencyCell = state.select(
+                StateSelection.Generators
+                    .ofTransformer(StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle, ref)
+                    .withTag(TRANSPARENCY_MANAGER_TAG),
+            )[0];
+            if (transparencyCell) update.delete(transparencyCell.transform.ref);
+        }
+        await update.commit({ doNotUpdateCurrent: true });
+    }
+
+    private async applyWholeTransparencyLayer(
+        wholeComponents: StructureComponentRef[],
+        atomIndices: number[] | undefined,
+        value: number,
+    ) {
+        const globalRefs = this.currentGlobalRepresentationRefs();
+        if (globalRefs.length > 0) {
+            await this.applyTransparencyToRepresentationRefs(globalRefs, atomIndices, value);
+        } else {
+            await this.applyTransparencyLayer(wholeComponents, atomIndices, value);
+        }
+    }
+
     private async applyComposedTransparency() {
         const structure = this.callbacks.getStructure();
         if (!structure) return;
@@ -384,15 +471,16 @@ export class StateHandlers {
 
         if (requiresFullRebuild) {
             await clearStructureTransparency(this.plugin, all);
+            await this.clearTransparencyFromRepresentationRefs(this.currentGlobalRepresentationRefs());
 
             if (Array.isArray(userHidden) && userHidden.length > 0) {
                 await this.applyTransparencyLayer(regions, userHidden, 1);
             }
             if (Array.isArray(faded) && faded.length > 0) {
-                await this.applyTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
+                await this.applyWholeTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
             }
             if (wholeHidden.length > 0) {
-                await this.applyTransparencyLayer(whole, wholeHidden, 1);
+                await this.applyWholeTransparencyLayer(whole, wholeHidden, 1);
             }
         } else {
             const previousOwned = this.previousOwnedOpaqueIndices;
@@ -403,7 +491,7 @@ export class StateHandlers {
             const removed = Array.from(previousOwned).filter(index => !nextOwned.has(index));
 
             if (added.length > 0) {
-                await this.applyTransparencyLayer(whole, added, 1);
+                await this.applyWholeTransparencyLayer(whole, added, 1);
             }
 
             if (!showOnlyWholeMaskActive && removed.length > 0) {
@@ -418,10 +506,10 @@ export class StateHandlers {
                     }
                 }
                 if (fadedReleased.length > 0) {
-                    await this.applyTransparencyLayer(whole, fadedReleased, Math.min(1, this.focusFadeValue));
+                    await this.applyWholeTransparencyLayer(whole, fadedReleased, Math.min(1, this.focusFadeValue));
                 }
                 if (clearReleased.length > 0) {
-                    await this.applyTransparencyLayer(whole, clearReleased, 0);
+                    await this.applyWholeTransparencyLayer(whole, clearReleased, 0);
                 }
             }
         }
@@ -1066,6 +1154,8 @@ export class StateHandlers {
             }
         }
         await this.repaintInheritedRegions();
+        this.transparencyInitialized = false;
+        await this.applyComposedTransparency();
     }
 
     async showGlobal(msg: ShowGlobalMessage) {

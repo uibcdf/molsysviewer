@@ -144881,6 +144881,7 @@ function clearPerAtomColors() {
 
 // src/managers/handlers/state-handlers.ts
 var DEFAULT_GLOBAL_REPRESENTATION = "cartoon";
+var TRANSPARENCY_MANAGER_TAG = "transparency-controls";
 var StateHandlers = class {
   constructor(plugin, callbacks) {
     this.plugin = plugin;
@@ -145106,6 +145107,73 @@ var StateHandlers = class {
     const loci = StructureSelection.toLociWithSourceUnits(selection);
     await setStructureTransparency(this.plugin, components, value, async () => loci);
   }
+  currentGlobalRepresentationRefs() {
+    const refs = [];
+    this.globalReprs.forEach((ref) => {
+      const resolved = StateObjectRef.resolveRef(ref);
+      if (resolved && this.plugin.state.data.cells.has(resolved)) refs.push(resolved);
+    });
+    return refs;
+  }
+  filteredTransparencyBundle(layers, structure) {
+    const transparency = Transparency.ofBundle(layers, structure.root);
+    const merged = Transparency.merge(transparency);
+    const filtered = Transparency.filter(merged, structure);
+    return Transparency.toBundle(filtered);
+  }
+  async applyTransparencyToRepresentationRefs(refs, atomIndices, value) {
+    const rootStructure = this.callbacks.getStructure();
+    if (!rootStructure || refs.length === 0 || !Array.isArray(atomIndices) || atomIndices.length === 0) return;
+    const selection = this.buildSelectionFromAtomIndices(rootStructure, atomIndices);
+    if (!selection || StructureSelection.isEmpty(selection)) return;
+    const loci = StructureSelection.toLociWithSourceUnits(selection);
+    if (Loci2.isEmpty(loci) || isEmptyLoci(loci)) return;
+    const layer = {
+      bundle: element_exports.Bundle.fromLoci(loci),
+      value
+    };
+    const state = this.plugin.state.data;
+    const update10 = state.build();
+    for (const ref of refs) {
+      const reprCell = state.cells.get(ref);
+      const reprStructure = reprCell?.obj?.data?.sourceData ?? rootStructure;
+      const transparencyCell = state.select(
+        StateSelection.Generators.ofTransformer(StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle, ref).withTag(TRANSPARENCY_MANAGER_TAG)
+      )[0];
+      if (transparencyCell) {
+        const existingLayers = transparencyCell.params?.values.layers ?? [];
+        const layers = [...existingLayers, layer];
+        update10.to(transparencyCell).update(this.filteredTransparencyBundle(layers, reprStructure));
+      } else {
+        update10.to(ref).apply(
+          StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle,
+          this.filteredTransparencyBundle([layer], reprStructure),
+          { tags: TRANSPARENCY_MANAGER_TAG }
+        );
+      }
+    }
+    await update10.commit({ doNotUpdateCurrent: true });
+  }
+  async clearTransparencyFromRepresentationRefs(refs) {
+    if (refs.length === 0) return;
+    const state = this.plugin.state.data;
+    const update10 = state.build();
+    for (const ref of refs) {
+      const transparencyCell = state.select(
+        StateSelection.Generators.ofTransformer(StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle, ref).withTag(TRANSPARENCY_MANAGER_TAG)
+      )[0];
+      if (transparencyCell) update10.delete(transparencyCell.transform.ref);
+    }
+    await update10.commit({ doNotUpdateCurrent: true });
+  }
+  async applyWholeTransparencyLayer(wholeComponents, atomIndices, value) {
+    const globalRefs = this.currentGlobalRepresentationRefs();
+    if (globalRefs.length > 0) {
+      await this.applyTransparencyToRepresentationRefs(globalRefs, atomIndices, value);
+    } else {
+      await this.applyTransparencyLayer(wholeComponents, atomIndices, value);
+    }
+  }
   async applyComposedTransparency() {
     const structure = this.callbacks.getStructure();
     if (!structure) return;
@@ -145122,14 +145190,15 @@ var StateHandlers = class {
     const requiresFullRebuild = !this.transparencyInitialized || userHiddenKey !== this.previousUserHiddenKey || fadedKey !== this.previousFadedKey || this.focusFadeValue !== this.previousFocusFadeValue || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask;
     if (requiresFullRebuild) {
       await clearStructureTransparency(this.plugin, all3);
+      await this.clearTransparencyFromRepresentationRefs(this.currentGlobalRepresentationRefs());
       if (Array.isArray(userHidden) && userHidden.length > 0) {
         await this.applyTransparencyLayer(regions, userHidden, 1);
       }
       if (Array.isArray(faded) && faded.length > 0) {
-        await this.applyTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
+        await this.applyWholeTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
       }
       if (wholeHidden.length > 0) {
-        await this.applyTransparencyLayer(whole, wholeHidden, 1);
+        await this.applyWholeTransparencyLayer(whole, wholeHidden, 1);
       }
     } else {
       const previousOwned = this.previousOwnedOpaqueIndices;
@@ -145139,7 +145208,7 @@ var StateHandlers = class {
       const added = ownedOpaque.filter((index) => !previousOwned.has(index));
       const removed = Array.from(previousOwned).filter((index) => !nextOwned.has(index));
       if (added.length > 0) {
-        await this.applyTransparencyLayer(whole, added, 1);
+        await this.applyWholeTransparencyLayer(whole, added, 1);
       }
       if (!showOnlyWholeMaskActive && removed.length > 0) {
         const fadedReleased = [];
@@ -145153,10 +145222,10 @@ var StateHandlers = class {
           }
         }
         if (fadedReleased.length > 0) {
-          await this.applyTransparencyLayer(whole, fadedReleased, Math.min(1, this.focusFadeValue));
+          await this.applyWholeTransparencyLayer(whole, fadedReleased, Math.min(1, this.focusFadeValue));
         }
         if (clearReleased.length > 0) {
-          await this.applyTransparencyLayer(whole, clearReleased, 0);
+          await this.applyWholeTransparencyLayer(whole, clearReleased, 0);
         }
       }
     }
@@ -145686,6 +145755,8 @@ var StateHandlers = class {
       }
     }
     await this.repaintInheritedRegions();
+    this.transparencyInitialized = false;
+    await this.applyComposedTransparency();
   }
   async showGlobal(msg) {
     await this.handleShowHideGlobal(false, msg.target ?? "global");
