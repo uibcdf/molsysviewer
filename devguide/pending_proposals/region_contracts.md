@@ -151,46 +151,131 @@ The `whole`'s own representation is not exported either.
 
 ---
 
-## Open decision — exclusive atom ownership (Decision 2)
+## Decision 2 — exclusive atom ownership: **ADOPTED** (2026-07-10)
 
-**Status: OPEN.** Gated by master-plan Phase 1. Contracts A and B below are written for the
-**current** model (the whole paints everything; regions paint on top). If ownership is adopted,
-both are amended — do not implement A or B before this gate closes.
+**Status: CLOSED.** Gate passed at master-plan Phase 1. Contracts A and B below were written for
+the *previous* model (the whole paints everything; regions paint on top). The clause replacements
+in §*Clause replacements* are **now in force**, and the three requirements in §*Requirements* are
+part of the contract, not advisory notes.
 
-**The proposal.** Each atom has exactly one visual owner: the topmost visible region with an own
-visual, else the `whole`. The `whole`'s Mol\* component is built as the complement of owned
-atoms.
+**The model.** Each atom has exactly one visual owner: the topmost visible region that draws it
+**opaquely**, else the `whole`. The whole masks its owned atoms to full transparency, **on its own
+component only**, and never rebuilds its component.
 
-**What it would buy.** Z-fighting becomes impossible rather than merely warned about (no
-duplicated geometry). Colour precedence and render order collapse into one `order` per region
-instead of two counters that can desynchronise. `show_only` becomes ownership rather than a
-special case. And §B.4's question — *what lies beneath a region's own colour layer* — answers
-itself: the owner's own structural theme.
+> ### ⚠ Corrected 2026-07-10 — how ownership is *realised* is not settled, and an earlier draft
+> of this section prescribed the wrong mechanism.
+>
+> This section used to say: *"the `whole`'s Mol\* component is built as the complement of owned
+> atoms."* **That prescription was wrong and has been withdrawn.** Phase 1's first benchmark
+> implemented it faithfully and measured, at n = 95,000 with a live rasteriser, **1,029 ms per
+> region visibility toggle** — of which **906 ms was `addRepresentation` alone**, i.e. rebuilding
+> the whole's mesh. The other three stages (`buildSelectionFromAtomIndices`,
+> `Bundle.fromSelection`, the `StructureComponent` commit) summed to 14 ms. The benchmark
+> measured the cost of that one implementation, not the cost of ownership.
+>
+> **The viewer already masks atoms without rebuilding anything.** `applyVisibility()` in
+> `js/src/managers/handlers/state-handlers.ts` ends with
+> `setStructureTransparency(this.plugin, components, 1, async () => loci)` — full transparency
+> over the hidden atoms, on the components that already exist. It backs `update_visibility`, and
+> therefore `view.isolate()` and `region.show_only()`.
+>
+> Measured on the same machine, harness and structure, ten toggles alternating an 85,500-atom
+> mask at n = 95,000:
+>
+> | mechanism | rasteriser paused | rasteriser live |
+> |---|---:|---:|
+> | rebuild the whole's component | 923.1 ms | 1,029.5 ms |
+> | **mask via per-atom transparency** | **12.1 ms** | **9.2 ms** |
+>
+> Two orders of magnitude, and below the 150 ms threshold. The mask mechanism is therefore the
+> candidate implementation, and the decision rule below must be applied to **its** numbers.
 
-**What it would cost.** The `whole`'s component must be rebuilt whenever any region's
-visibility, order or atom set changes. The first measurement was invalidated by the
-`handleMessage` toll (`message_toll_performance.md`); subtracting it indicatively gives ~900 ms
-to rebuild the complement of 85,500 atoms under software rasterisation — a difference of large
-numbers, not to be trusted.
+**What it would buy.** Z-fighting becomes impossible rather than merely warned about. Colour
+precedence and render order collapse into one `order` per region instead of two counters that can
+desynchronise. `show_only` becomes ownership rather than a special case. And §B.4's question —
+*what lies beneath a region's own colour layer* — answers itself: the owner's own structural theme.
 
-**Decision rule, agreed in advance.** Measured on a clean post-toll baseline, for one region
-visibility toggle at n = 95,000 atoms:
+Note the corrected claim: masking removes **duplicated drawing**, not **duplicated geometry**.
+The whole's mesh still contains the owned atoms, fully transparent. Z-fighting disappears because
+only one surface draws opaquely; memory does not drop. An earlier draft of this section claimed
+"no duplicated geometry". It is wrong.
 
-| toggle cost | outcome |
+**What it would cost — still open, and blocked on one design question.**
+`setStructureTransparency` is called today with `getComponents()`, i.e. **every** component of the
+structure. If the region components are among them, the same atom would be faded inside the region
+as well, and ownership would be unimplementable by this route without **per-component
+transparency**. That question must be answered before the numbers mean anything. The mask cost
+must also be measured at 10%, 50% and 90% ownership fractions: transparent geometry still costs
+fill and sorting, and the 9.2 ms above is a 10% measurement.
+
+**A further constraint on any mask-based implementation.** `currentVisibleIndices` is a single
+global visibility set already owned by `view.show/hide(selection)` and Python's `atom_mask`. An
+ownership mask must **compose** with the user's mask, not overwrite it.
+
+### The result (Phase 1, measured on a clean post-toll baseline)
+
+The decision rule, fixed in advance, was: **< 150 ms** per region visibility toggle at
+n = 95,000 ⇒ adopt fully; 150–500 ms ⇒ adopt with a deferred rebuild; **> 500 ms** ⇒ ownership
+between regions only.
+
+| n = 95,000, rasteriser live | per-toggle |
+|---|---:|
+| mask, 10% owned | 14.1 ms |
+| mask, 50% owned | 26.4 ms |
+| mask, 90% owned | **32.1 ms** |
+| *(reference)* rebuild the whole's component, 10% owned | 1,052 ms |
+| *(control)* today's `setSubtreeVisibility` | 0.1 ms |
+
+Worst case **32 ms**, a factor of five under the threshold. **Adopt fully.**
+
+The benchmark asserts the invariant before it times anything: the whole's component carries a
+transparency layer of value `1` over *exactly* the owned atom set, and the region's component
+carries none. Two earlier attempts were rejected — the first measured a component rebuild
+(`addRepresentation` was 906 of 923 ms, so it measured mesh generation, not ownership); the second
+passed `getComponents()`, which **includes the region's component**, so it faded the region rather
+than the whole.
+
+**Picking is safe, and this is verified in Mol\*'s source.** `mol-gl/renderer.ts` defines
+`pickingAlphaThreshold: PD.Numeric(0.5, …)` — *"The minimum opacity value needed for an object to
+be pickable."* A masked atom has effective alpha 0 and is discarded by the pick pass. Probed on all
+three cases, through the viewer's own hover/click/context-menu paths:
+
+| case | result |
 |---|---|
-| < 150 ms | adopt exclusive ownership fully |
-| 150–500 ms | adopt it, with a deferred/debounced rebuild of the whole |
-| > 500 ms | ownership **between regions only**; the whole stays underneath as today, and the ⚠ badge remains the answer to whole-vs-region overlap |
+| owned atom, region visible | picks the **region** |
+| unowned atom | picks the **whole** |
+| owned atom, region hidden, mask applied | picks **nothing** |
 
-**Measure only on a Phase-0 baseline.** The first attempt was invalidated twice over: by the
-`handleMessage` toll, and by the double component build of `message_toll_performance.md` §2b,
-which makes every region creation pay for a build it then throws away.
+### Requirements (in force, not advisory)
 
-### If ownership is adopted, these clauses are replaced
+**R-O1 — Ownership is by opaque drawing.** The whole masks a region's atoms **only if that region
+draws them opaquely**, i.e. its effective `alpha` reaches `pickingAlphaThreshold`. A translucent
+region does **not** take ownership of drawing: the whole keeps painting beneath it, which is
+exactly what translucency promises, and stays pickable.
 
-Written now so the implementer is never left interpreting "shaped accordingly".
+Without this clause, exclusive ownership **breaks the opacity slider**. A region at `alpha = 0.3`
+would reveal emptiness instead of the structure behind it, and its atoms would be simultaneously
+unpickable in the region (below threshold) and unpickable in the whole (masked to alpha 0) — an
+atom both invisible and unclickable. Blending between a translucent surface and what lies behind it
+is not z-fighting; it is what the user asked for.
 
-| Clause | Current model | Under exclusive ownership |
+**R-O2 — The mask is updated by deltas**, never recomputed in full. Contract R's `dynamic` regions
+re-evaluate their atom set per frame; a full mask recompute costs 26 ms at 50% ownership and the
+frame budget is 16 ms (`message_toll_performance.md` §5.1).
+
+**R-O3 — The ownership mask composes with the user's mask.** `currentVisibleIndices` is a single
+global visibility set already owned by `view.show/hide(selection)` and Python's `atom_mask`. The
+ownership mask must compose with it, never overwrite it.
+
+**R-O4 — `pickingAlphaThreshold` is not lowered to 0** by the viewer. At 0, a masked whole becomes
+pickable again and ownership silently breaks.
+
+### Clause replacements (now in force)
+
+The clauses written in Contracts A and B below describe the *previous* model. Where this table
+disagrees with them, **this table wins**. Read it before implementing §A or §B.
+
+| Clause | Previous model | **In force under exclusive ownership** |
 |---|---|---|
 | §A.2 rule 2 (state **None**) | region has a component but no representation child; the whole paints its atoms | unchanged |
 | §A.3 (`hide()` on state-**None**) | no-op that warns | unchanged — a region that owns nothing has nothing to hide |
@@ -199,11 +284,12 @@ Written now so the implementer is never left interpreting "shaped accordingly".
 | §B.4 (§ *what lies beneath*) | four-level resolution order | collapses to two: owner's layer, then owner's structural theme |
 | §B.5 (decorator theme) | required | still required, but only over the owner's own theme |
 | Overlap ⚠ badge | the only answer to z-fighting | becomes **informational**: z-fighting is impossible |
-| Whole's Mol\* component | all atoms | all atoms **minus** those owned by visible regions; rebuilt on any ownership change |
+| Whole's Mol\* component | all atoms, all drawn | all atoms, with those owned by visible regions **masked to full transparency** on the whole's component only. The component is **not** rebuilt. Geometry stays; drawing does not. |
 
-If ownership is adopted **between regions only** (the > 500 ms branch), all of the above applies
-between regions, and the whole keeps painting every atom underneath, so the ⚠ badge remains
-meaningful for whole-vs-region overlap and §B.4's four levels stand.
+One row is **not** replaced, and it is the subtle one. A region that draws **translucently** owns
+nothing (R-O1). For its atoms, the whole keeps painting, the four-level resolution of §B.4 still
+applies, and the ⚠ badge still means something. Ownership governs opaque drawing; translucency is
+the explicit request to see what lies beneath.
 
 ---
 
@@ -251,6 +337,9 @@ Hiding such a region "for real" would require subtracting its atoms from the
 whole's component — a larger redesign, explicitly **out of scope** (§Deferred).
 
 ### A.4 Operations that assume an own visual
+
+> **Superseded in part by Decision 2.** `show_only()` becomes pure ownership and no longer
+> delegates to `view.isolate`. See the clause-replacement table above.
 
 `show()`, `hide()`, `show_only()` and the style composer all act on a region's own
 representation. On a state-**None** region:
@@ -315,6 +404,11 @@ sends only the affected atoms to the frontend; the Mol\* per-atom colour theme
 (`themes/per-atom-color.ts`) stays as it is and keeps receiving a resolved map.
 
 ### B.2 Precedence — one `order`, not two (Contract O)
+
+> **Superseded in part by Decision 2.** For atoms drawn **opaquely** by a region, precedence is
+> subsumed by ownership: an atom's colour is its owner's. The rules below still govern atoms that
+> no region owns, and atoms under a **translucent** region (R-O1). `order` still decides which of
+> two overlapping opaque regions is the owner.
 
 1. Any region layer beats the whole's base layer.
 2. Between two overlapping region layers, **the most recently created or updated

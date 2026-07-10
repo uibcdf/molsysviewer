@@ -232,6 +232,39 @@ Contracts A and B that get replaced** are all written in `region_contracts.md`
 
 **Output:** the decision recorded in `region_contracts.md`; P2 and P4 shaped by it.
 
+### Audit note — 2026-07-10, **passed** (third measurement)
+
+**Decision 2: exclusive atom ownership is ADOPTED.** Worst case 32.1 ms per toggle at n = 95,000
+with 90% ownership and a live rasteriser, against a 150 ms threshold fixed in advance. Picking is
+safe on all three cases, through the viewer's own hover / click / context-menu paths, and the
+mechanism is confirmed in Mol\*'s source (`mol-gl/renderer.ts`, `pickingAlphaThreshold` default
+0.5; a masked atom has alpha 0 and is discarded by the pick pass).
+
+**Two measurements were rejected before this one, and both rejections were load-bearing.**
+
+1. The first implemented the mechanism this contract originally *prescribed* — rebuild the whole's
+   component as the complement — and measured 1,029 ms. Its own per-stage instrumentation showed
+   `addRepresentation` was 906 of 923 ms: it measured mesh generation, not ownership. **The
+   prescription was the maintainer's error**, and it is now withdrawn from `region_contracts.md`.
+2. The second switched to masking but passed `getComponents()` as the target, which **includes the
+   region's component**. Probed independently: the only transparency node landed under the
+   *region*. It faded the region instead of the whole. The report claimed the opposite of what the
+   code did.
+
+The third adds an `invariantProbe` that aborts unless the whole carries transparency `1` over
+exactly the owned atom set and the region carries none. **Mutation-verified**: reintroducing
+`wholeComponentsAfterRegion` makes the benchmark abort with `invariant failed`.
+
+**A new requirement fell out of the picking probe.** `pickingAlphaThreshold` defaults to 0.5, so a
+region at `alpha = 0.3` is not pickable. Under naive ownership its atoms would be masked to alpha 0
+on the whole as well — invisible *and* unclickable, and lowering a region's opacity would reveal
+emptiness instead of the structure behind it. **Ownership is therefore by opaque drawing only**
+(`region_contracts.md` R-O1). Requirements R-O2 (delta mask updates) and R-O3 (composition with the
+user's `atom_mask`) are conditions on Phase 2's implementation.
+
+Residual: the invariant is asserted against the state tree, not against pixels. Confirm once on
+screen in Phase 14.
+
 ---
 
 ## Phase 2 — Contract A: a region's representation is genuinely optional
@@ -617,7 +650,7 @@ none were reported by a failing test.
 | Phase | Title | Size | Status | Date | Commit | Audit note |
 |------:|-------|:----:|--------|------|--------|-----------|
 | 0 | Perf: toll + double build | M | ☑ | 2026-07-10 | `68522ae6` | **Passed on the third pass.** See note below. |
-| 1 | GATE: close Decision 2 | S | ☐ | — | — | — |
+| 1 | GATE: close Decision 2 | S | ☑ | 2026-07-10 | *(bench, pending commit)* | **Ownership ADOPTED.** 32 ms worst case vs a 150 ms threshold; picking verified. Two rejections first. |
 | 2 | Contract A: representation | L | ☐ | — | — | — |
 | 3 | Whole API + rebuild bugs | M | ☐ | — | — | — |
 | 4 | Contract B/O: colour + order | L | ☐ | — | — | — |
