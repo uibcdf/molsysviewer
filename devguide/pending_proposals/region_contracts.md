@@ -248,24 +248,71 @@ three cases, through the viewer's own hover/click/context-menu paths:
 
 ### Requirements (in force, not advisory)
 
-**R-O1 — Ownership is by opaque drawing.** The whole masks a region's atoms **only if that region
-draws them opaquely**, i.e. its effective `alpha` reaches `pickingAlphaThreshold`. A translucent
-region does **not** take ownership of drawing: the whole keeps painting beneath it, which is
-exactly what translucency promises, and stays pickable.
+**R-O1 — Ownership is by fully opaque drawing.** The whole masks a region's atoms **only if that
+region draws them fully opaquely**: `alpha` absent, or `alpha == 1`, on **every** representation
+the region owns (a preset generates several; one translucent surface makes the region translucent).
+Anything less is translucent and owns nothing: the whole keeps painting beneath it, which is exactly
+what translucency promises, and stays pickable.
 
 Without this clause, exclusive ownership **breaks the opacity slider**. A region at `alpha = 0.3`
 would reveal emptiness instead of the structure behind it, and its atoms would be simultaneously
-unpickable in the region (below threshold) and unpickable in the whole (masked to alpha 0) — an
-atom both invisible and unclickable. Blending between a translucent surface and what lies behind it
-is not z-fighting; it is what the user asked for.
+unpickable in the region (below `pickingAlphaThreshold`) and unpickable in the whole (masked to
+alpha 0) — an atom both invisible and unclickable.
+
+**Amended 2026-07-10.** An earlier wording made ownership conditional on
+`alpha >= pickingAlphaThreshold` (0.5). That is the *weakest* rule that fixes picking, and it breaks
+the opacity slider across the whole range (0.5, 1): a region at `alpha = 0.6` would own its atoms,
+the whole would be masked beneath it, and the user would see 0.6 over the **background** instead of
+over the structure they asked to see through to. Full opacity is the correct threshold: it satisfies
+the visual meaning of `alpha` *and* picking safety at once, and it does not couple a scene-graph
+invariant to a renderer parameter someone might change.
+
+Blending between a translucent surface and what lies behind it is not z-fighting. It is what the
+user asked for.
 
 **R-O2 — The mask is updated by deltas**, never recomputed in full. Contract R's `dynamic` regions
 re-evaluate their atom set per frame; a full mask recompute costs 26 ms at 50% ownership and the
 frame budget is 16 ms (`message_toll_performance.md` §5.1).
 
-**R-O3 — The ownership mask composes with the user's mask.** `currentVisibleIndices` is a single
-global visibility set already owned by `view.show/hide(selection)` and Python's `atom_mask`. The
-ownership mask must compose with it, never overwrite it.
+This is where the cost actually is. In the Phase 1 benchmark at n = 95,000, `buildSelectionMs` was
+13–23 ms of a 14–32 ms toggle: **constructing the selection dominates**, and a delta makes it small.
+
+Mol\* can express it. `mol-theme/transparency.ts` defines
+`Transparency = { kind, layers: ReadonlyArray<{ loci, value }> }` — **ordered layers with values**.
+A delta is a layer of `value: 1` over newly-owned atoms plus a layer of `value: 0` over released
+ones. Layers accumulate, so compact them every N operations. Check whether
+`mol-plugin-state/helpers/structure-transparency.ts` **appends** or **replaces** layers: if it
+replaces, R-O2 needs a new helper, and a "delta state, consolidated application" fallback must be
+documented as such and **not** claimed as R-O2.
+
+**R-O3 — The ownership mask composes with the user's mask, and with the focus fade.** There are
+**three** writers to the same transparency channel, not two:
+
+| writer | `state-handlers.ts` | value |
+|---|---|---|
+| `updateVisibility` (user's `show`/`hide`/`isolate`, Python's `atom_mask`) | `:327` | `1` |
+| `setFocusFade` (the soft spotlight of `styles.focus()`) | `:378` | `min(1, fade)` |
+| ownership mask *(new)* | — | `1` |
+
+Each currently calls `clearStructureTransparency` before writing (`:280`, `:340`), so **today the
+first two already destroy each other**: applying a partial visibility wipes the focus fade, and
+vice versa. That is a latent bug nobody has reported.
+
+Composition is over **values**, not over sets — the fade is a number, not a boolean. Exactly one
+method owns every transparency node. `currentVisibleIndices` remains the user's authority; ownership
+never mutates it. The final transparency is a derived composition, never a replacement of the
+visibility channel.
+
+Per component:
+
+- **region components** — the user's mask only;
+- **the whole's component** — `userHiddenAtoms ∪ ownedOpaqueAtoms`, composed with the focus fade;
+- state-**None** regions, and translucent regions of any state, own nothing.
+
+**Region-vs-region ownership is out of scope until `order` exists (Phase 4).** The whole's mask is a
+**union**, so which of two overlapping opaque regions is the owner does not change it. Phase 2 needs
+a set and its deltas — no `ownerByAtom`, no owner stacks. Overlapping opaque regions keep z-fighting
+with each other until `order` lands.
 
 **R-O4 — `pickingAlphaThreshold` is not lowered to 0** by the viewer. At 0, a masked whole becomes
 pickable again and ownership silently breaks.
@@ -279,7 +326,7 @@ disagrees with them, **this table wins**. Read it before implementing §A or §B
 |---|---|---|
 | §A.2 rule 2 (state **None**) | region has a component but no representation child; the whole paints its atoms | unchanged |
 | §A.3 (`hide()` on state-**None**) | no-op that warns | unchanged — a region that owns nothing has nothing to hide |
-| §A.4 (`show_only`) | delegates to `view.isolate`, reshapes the whole | becomes pure ownership: the region takes every atom; no `isolate` call |
+| §A.4 (`show_only`) | delegates to `view.isolate`, reshapes the whole | hide every other region, and mask the whole **entirely**. No `isolate` call. *(A region cannot "own" atoms outside its own set; an earlier wording said so and was wrong.)* |
 | §B.2 (precedence) | region layer beats base layer | **subsumed**: an atom's colour is its owner's, full stop |
 | §B.4 (§ *what lies beneath*) | four-level resolution order | collapses to two: owner's layer, then owner's structural theme |
 | §B.5 (decorator theme) | required | still required, but only over the owner's own theme |
