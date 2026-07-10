@@ -923,7 +923,62 @@ class MolSysView(
                         self._sync_addons_runtime()
                     return
 
-                if action == "create_region_from_selection":
+                if action == "set_whole_representation":
+                    params = content.get("params")
+                    self.whole.set_representation(
+                        content.get("representation"),
+                        preset=content.get("preset"),
+                        skip_digestion=True,
+                        **(params if isinstance(params, dict) else {}),
+                    )
+                elif action == "reset_whole_representation":
+                    self.whole.reset_representation(skip_digestion=True)
+                elif action == "set_whole_visibility":
+                    visible = content.get("visible")
+                    hidden = content.get("hidden")
+                    target_visible = bool(visible) if visible is not None else not bool(hidden)
+                    if target_visible:
+                        self.whole.show(skip_digestion=True)
+                    else:
+                        self.whole.hide(skip_digestion=True)
+                elif action == "focus_whole":
+                    self.whole.focus(skip_digestion=True)
+                elif action == "set_whole_color_scheme":
+                    scheme = content.get("scheme")
+                    if not isinstance(scheme, str) or not scheme.strip():
+                        raise ValueError("set_whole_color_scheme requires a non-empty scheme.")
+                    self.whole.set_color_scheme(scheme.strip(), skip_digestion=True)
+                elif action == "color_whole_by_attribute":
+                    attribute = content.get("attribute")
+                    if not isinstance(attribute, str) or not attribute.strip():
+                        raise ValueError("color_whole_by_attribute requires a non-empty attribute.")
+                    self.whole.set_color_by_attribute(
+                        attribute.strip(),
+                        element=str(content.get("element") or "atom"),
+                        palette=content.get("palette", "viridis"),
+                        value_range=content.get("value_range"),
+                        structure_indices=content.get("structure_indices"),
+                        replace=bool(content.get("replace", True)),
+                        skip_digestion=True,
+                    )
+                elif action == "reset_whole_colors":
+                    self.whole.reset_colors(skip_digestion=True)
+                elif action == "reset_all_colors":
+                    self.reset_all_colors(skip_digestion=True)
+                elif action == "get_whole_details":
+                    center = self.whole.get_center(
+                        structure_indices=[self.current_structure_index],
+                        skip_digestion=True,
+                    )
+                    details = {
+                        "op": "whole_details",
+                        "request_id": content.get("request_id"),
+                        "atom_count": int(self._molsys.get_n_atoms()) if self._molsys is not None else 0,
+                        "center_nm": puw.get_value(center, to_unit="nm").tolist(),
+                        "structure_index": self.current_structure_index,
+                    }
+                    self._send_runtime_only(details)
+                elif action == "create_region_from_selection":
                     raw_tag = content.get("tag")
                     representation = content.get("representation")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
@@ -1845,17 +1900,17 @@ class MolSysView(
             }
         )
 
-        if getattr(self.whole, "_preset", None) is not None or getattr(self.whole, "_representation", None) is not None:
+        if self.whole.preset is not None or self.whole.representation is not None:
             self.whole.set_representation(
-                getattr(self.whole, "_representation", None),
-                preset=getattr(self.whole, "_preset", None),
+                self.whole.representation,
+                preset=self.whole.preset,
                 skip_digestion=True,
-                **getattr(self.whole, "_repr_params", {}),
+                **self.whole.params,
             )
 
         self._remap_atom_color_map(atom_index_map)
 
-        if self._global_hidden:
+        if not self.whole.visible:
             self._send({"op": "hide_global", "target": "global"})
 
         for layer in list(self._layers.values()):
@@ -2077,6 +2132,18 @@ class MolSysView(
             return None
         # Use a plain list so the payload is JSON-serializable.
         return np.nonzero(self.structure_mask)[0].tolist()
+
+    @property
+    def scene_style_name(self) -> str | None:
+        """Name of the active scene style, if any."""
+        return getattr(self.styles, "active_name", None)
+
+    @signal(tags=["color", "viewer"])
+    @digest()
+    def reset_all_colors(self, skip_digestion: bool = False) -> None:
+        """Clear every per-atom colour override on the canvas."""
+        self._atom_color_map.clear()
+        self._send({"op": "clear_atom_colors"})
 
     def _update_visibility_in_frontend(self):
         if self.atom_mask is None:

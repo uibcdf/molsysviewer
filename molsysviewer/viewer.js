@@ -144230,6 +144230,46 @@ var ShapeHandlers = class {
   }
 };
 
+// src/themes/per-atom-color.ts
+var _perAtomColorMap = /* @__PURE__ */ new Map();
+var DEFAULT_COLOR = Color(11184810);
+var MsvPerAtomColorThemeName = "msv-per-atom";
+function factory(_ctx, _props) {
+  return {
+    factory,
+    granularity: "groupInstance",
+    color: (location2) => {
+      if (!element_exports.Location.is(location2)) return DEFAULT_COLOR;
+      const atomIndex = OrderedSet2.getAt(location2.unit.elements, location2.element);
+      const c8 = _perAtomColorMap.get(atomIndex);
+      return c8 !== void 0 ? Color(c8) : DEFAULT_COLOR;
+    },
+    props: {}
+  };
+}
+var MsvPerAtomColorThemeProvider = {
+  name: MsvPerAtomColorThemeName,
+  label: "MSV Per-Atom Color",
+  category: ColorTheme.Category.Atom,
+  factory,
+  getParams: () => ({}),
+  defaultValues: {},
+  isApplicable: (ctx) => !!ctx.structure
+};
+function getPerAtomColor(atomIndex) {
+  return _perAtomColorMap.get(atomIndex);
+}
+function setPerAtomColors(atomIndices, colorInts, replace = true) {
+  if (replace) _perAtomColorMap.clear();
+  const len = Math.min(atomIndices.length, colorInts.length);
+  for (let i = 0; i < len; i++) {
+    _perAtomColorMap.set(atomIndices[i], colorInts[i]);
+  }
+}
+function clearPerAtomColors() {
+  _perAtomColorMap.clear();
+}
+
 // src/managers/handlers/scene-handlers.ts
 var SceneHandlers = class {
   constructor(plugin, host, callbacks) {
@@ -144828,6 +144868,7 @@ var SceneHandlers = class {
     await this.callbacks.clearShapesByTag(msg.tag);
   }
   async clearAll() {
+    clearPerAtomColors();
     await this.clearScene({ op: "clear_scene", options: { shapes: true, styles: true, labels: true } });
     await this.callbacks.removeLoadedStructure();
     this.callbacks.notify({ event: "registry_cleared" });
@@ -144838,46 +144879,6 @@ var SceneHandlers = class {
     await clearStructureTransparency(this.plugin, components);
   }
 };
-
-// src/themes/per-atom-color.ts
-var _perAtomColorMap = /* @__PURE__ */ new Map();
-var DEFAULT_COLOR = Color(11184810);
-var MsvPerAtomColorThemeName = "msv-per-atom";
-function factory(_ctx, _props) {
-  return {
-    factory,
-    granularity: "groupInstance",
-    color: (location2) => {
-      if (!element_exports.Location.is(location2)) return DEFAULT_COLOR;
-      const atomIndex = OrderedSet2.getAt(location2.unit.elements, location2.element);
-      const c8 = _perAtomColorMap.get(atomIndex);
-      return c8 !== void 0 ? Color(c8) : DEFAULT_COLOR;
-    },
-    props: {}
-  };
-}
-var MsvPerAtomColorThemeProvider = {
-  name: MsvPerAtomColorThemeName,
-  label: "MSV Per-Atom Color",
-  category: ColorTheme.Category.Atom,
-  factory,
-  getParams: () => ({}),
-  defaultValues: {},
-  isApplicable: (ctx) => !!ctx.structure
-};
-function getPerAtomColor(atomIndex) {
-  return _perAtomColorMap.get(atomIndex);
-}
-function setPerAtomColors(atomIndices, colorInts, replace = true) {
-  if (replace) _perAtomColorMap.clear();
-  const len = Math.min(atomIndices.length, colorInts.length);
-  for (let i = 0; i < len; i++) {
-    _perAtomColorMap.set(atomIndices[i], colorInts[i]);
-  }
-}
-function clearPerAtomColors() {
-  _perAtomColorMap.clear();
-}
 
 // src/managers/handlers/state-handlers.ts
 var DEFAULT_GLOBAL_REPRESENTATION = "cartoon";

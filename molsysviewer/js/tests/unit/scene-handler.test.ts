@@ -2,6 +2,7 @@ import assert from "node:assert";
 import test from "node:test";
 
 import { SceneHandlers } from "../../src/managers/handlers/scene-handlers";
+import { getPerAtomColor, setPerAtomColors } from "../../src/themes/per-atom-color";
 
 test("scene clearScene obeys option flags and clearAll emits registry reset", async () => {
     const plugin: any = {};
@@ -39,6 +40,25 @@ test("scene clearScene obeys option flags and clearAll emits registry reset", as
     await handler.clearAll();
     assert.strictEqual(calls.removeLoadedStructure, 1);
     assert.ok(events.some((e) => e?.event === "registry_cleared"));
+});
+
+test("scene clearAll clears the per-atom color map", async () => {
+    const handler = new SceneHandlers({} as any, {} as any, {
+        clearShapes: async () => {},
+        clearLabels: async () => {},
+        getComponents: () => [],
+        clearShapesByTag: async () => {},
+        removeLoadedStructure: async () => {},
+        notify: (_msg: any) => {},
+    });
+
+    setPerAtomColors([0, 1], [0x111111, 0x222222], true);
+    assert.strictEqual(getPerAtomColor(0), 0x111111);
+
+    await handler.clearAll();
+
+    assert.strictEqual(getPerAtomColor(0), undefined);
+    assert.strictEqual(getPerAtomColor(1), undefined);
 });
 
 test("scene toggles spin and swing with mutual exclusion", async () => {

@@ -50,6 +50,16 @@ export type PanelAction =
     | "get_region_details"
     | "show_all_regions"
     | "hide_all_regions"
+    // Whole lifecycle & style
+    | "set_whole_representation"
+    | "reset_whole_representation"
+    | "set_whole_visibility"
+    | "focus_whole"
+    | "set_whole_color_scheme"
+    | "color_whole_by_attribute"
+    | "reset_whole_colors"
+    | "reset_all_colors"
+    | "get_whole_details"
     // Viewport / Export
     | "toggle_background"
     | "toggle_spin"

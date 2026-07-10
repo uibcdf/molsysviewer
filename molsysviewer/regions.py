@@ -661,6 +661,7 @@ class Region:
         element: str = "atom",
         palette: Any = "viridis",
         value_range: Any = None,
+        structure_indices: Any = None,
         replace: bool = False,
         skip_digestion: bool = False,
     ) -> None:
@@ -687,7 +688,11 @@ class Region:
             molsys,
             element=element,
             selection=scoped_indices,
-            structure_indices=[int(self._view.current_structure_index)],
+            structure_indices=(
+                [int(self._view.current_structure_index)]
+                if structure_indices is None
+                else structure_indices
+            ),
             output_type="values",
             skip_digestion=True,
             **{resolved: True},

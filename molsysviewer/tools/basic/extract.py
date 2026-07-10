@@ -51,17 +51,14 @@ def _import_extracted_state(
     result._section_counter = getattr(source, "_section_counter", 0)  # noqa: SLF001
 
     # Whole representation
-    if (
-        getattr(source.whole, "_preset", None) is not None
-        or getattr(source.whole, "_representation", None) is not None
-    ):
+    if source.whole.preset is not None or source.whole.representation is not None:
         result.whole.set_representation(
-            getattr(source.whole, "_representation", None),
-            preset=getattr(source.whole, "_preset", None),
+            source.whole.representation,
+            preset=source.whole.preset,
             skip_digestion=True,
-            **(getattr(source.whole, "_repr_params", {}) or {}),
+            **source.whole.params,
         )
-    if getattr(source, "_global_hidden", False):  # noqa: SLF001
+    if not source.whole.visible:
         result.whole.hide(skip_digestion=True)
 
     # ── Layers ─────────────────────────────────────────────────────────────

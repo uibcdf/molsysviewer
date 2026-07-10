@@ -29,10 +29,11 @@ class MolSysMTInterfaceMixin:
 
         return {
             "whole": {
-                "representation": getattr(self.whole, "_representation", None),
-                "preset": getattr(self.whole, "_preset", None),
-                "params": dict(getattr(self.whole, "_repr_params", {}) or {}),
-                "visible": not bool(self._global_hidden),
+                "representation": self.whole.representation,
+                "preset": self.whole.preset,
+                "params": self.whole.params,
+                "visible": self.whole.visible,
+                "scene_style_name": self.scene_style_name,
             },
             "loads": [
                 {

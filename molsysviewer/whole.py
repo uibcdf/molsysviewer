@@ -5,6 +5,7 @@ from typing import Any
 import molsysmt as msm
 from smonitor import signal
 
+from . import pyunitwizard as puw
 from ._private.arg_digestion import digest
 from .colors import expand_values_to_atoms, normalize_color
 
@@ -17,6 +18,41 @@ class Whole:
         self._representation: str | None = None
         self._preset: str | None = None
         self._repr_params: dict[str, Any] = {}
+        self._load_representation: str | None = None
+        self._load_preset: str | None = None
+        self._load_repr_params: dict[str, Any] = {}
+        self._color_scheme: str | None = None
+
+    @property
+    def representation(self) -> str | None:
+        """Current explicit representation type for the whole structure."""
+        return self._representation
+
+    @property
+    def preset(self) -> str | None:
+        """Current explicit representation preset for the whole structure."""
+        return self._preset
+
+    @property
+    def params(self) -> dict[str, Any]:
+        """Current representation parameters as a defensive copy."""
+        return dict(self._repr_params)
+
+    @property
+    def visible(self) -> bool:
+        """Whether the baseline/whole representation is currently visible."""
+        return not bool(self._view._global_hidden)  # noqa: SLF001
+
+    @property
+    def color_scheme(self) -> str | None:
+        """Current structural colour scheme owned by the whole structure."""
+        return self._color_scheme
+
+    @property
+    def scene_style_name(self) -> str | None:
+        """Name of the active scene style, if the current whole style came from one."""
+        styles = getattr(self._view, "styles", None)
+        return getattr(styles, "active_name", None)
 
     @signal(
         tags=["representation", "whole"],
@@ -28,8 +64,6 @@ class Whole:
     @digest()
     def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Set or update the global representation for the whole structure.
-
-        If the global representation was hidden, this call will show it again.
 
         Parameters
         ----------
@@ -50,8 +84,11 @@ class Whole:
         self._preset = normalized_preset
         self._representation = normalized_repr
         self._repr_params = params or {}
-        # Changing the representation implies showing the global view again.
-        self._view._global_hidden = False  # noqa: SLF001
+        scheme = self._repr_params.get("color_scheme")
+        if isinstance(scheme, str) and scheme.strip():
+            self._color_scheme = scheme.strip()
+        else:
+            self._color_scheme = None
         payload = {
             "op": "set_global_representation",
             "representation": normalized_repr,
@@ -63,6 +100,17 @@ class Whole:
         self._view._send(payload)  # noqa: SLF001
         if hasattr(self._view, "styles"):
             self._view.styles._clear_cached_name()  # noqa: SLF001
+
+    @signal(tags=["representation", "whole"])
+    @digest()
+    def reset_representation(self, skip_digestion: bool = False) -> None:
+        """Restore the whole representation to the load-time explicit style."""
+        self.set_representation(
+            self._load_representation,
+            preset=self._load_preset,
+            skip_digestion=True,
+            **dict(self._load_repr_params),
+        )
 
     @signal(tags=["visibility", "whole"])
     @digest()
@@ -155,7 +203,119 @@ class Whole:
             skip_digestion=True,
         )
 
+    @signal(tags=["whole", "query"])
+    @digest()
+    def get_center(
+        self,
+        structure_indices: str | Any = "all",
+        skip_digestion: bool = False,
+    ):
+        """Return the geometric centroid of the whole structure as a ``puw`` quantity in nm."""
+        if self._view._molsys is None:  # noqa: SLF001
+            raise ValueError("No molecular system loaded.")
+
+        import numpy as np
+
+        coords = msm.get(
+            self._view._molsys,  # noqa: SLF001
+            element="atom",
+            selection="all",
+            structure_indices=structure_indices,
+            coordinates=True,
+            output_type="values",
+            skip_digestion=True,
+        )
+        arr = np.asarray(puw.get_value(coords, to_unit="nm"), dtype=float)
+        if arr.ndim == 3:
+            centroid = arr.mean(axis=(0, 1))
+        else:
+            centroid = arr.mean(axis=0)
+        return puw.quantity(centroid.tolist(), "nm")
+
     # --- Scalar colour mapping ---
+
+    @signal(tags=["color", "whole"])
+    @digest()
+    def set_color_scheme(
+        self,
+        scheme: str,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Set the structural colour theme used by the whole representation."""
+        normalized = str(scheme).strip()
+        if not normalized:
+            raise ValueError("set_color_scheme requires a non-empty scheme.")
+        params = self.params
+        params["color_scheme"] = normalized
+        self._color_scheme = normalized
+        self.set_representation(
+            self.representation,
+            preset=self.preset,
+            skip_digestion=True,
+            **params,
+        )
+
+    @signal(tags=["color", "whole"])
+    @digest()
+    def set_color_by_attribute(
+        self,
+        attribute: str,
+        *,
+        element: str = "atom",
+        palette: Any = "viridis",
+        value_range: Any = None,
+        structure_indices: Any = None,
+        replace: bool = True,
+        skip_digestion: bool = False,
+    ) -> None:
+        """Color the whole structure by a scalar attribute already present in the system."""
+        molsys = self._view._molsys  # noqa: SLF001
+        if molsys is None:
+            raise ValueError("No molecular system loaded.")
+
+        available = set(msm.get_attributes(molsys, output_type="list", skip_digestion=True))
+        requested = str(attribute).strip()
+        resolved = requested if requested in available else requested.lower()
+        if resolved not in available:
+            raise ValueError(f"Attribute {attribute!r} is not available in the loaded molecular system.")
+
+        effective_structure_indices = (
+            [int(self._view.current_structure_index)]  # noqa: SLF001
+            if structure_indices is None
+            else structure_indices
+        )
+        values = msm.get(
+            molsys,
+            element=element,
+            selection="all",
+            structure_indices=effective_structure_indices,
+            output_type="values",
+            skip_digestion=True,
+            **{resolved: True},
+        )
+
+        import numpy as np
+
+        raw_values = puw.get_value(values) if puw.is_quantity(values) else values
+        array = np.asarray(raw_values)
+        array = np.squeeze(array)
+        if array.ndim != 1:
+            raise ValueError(f"Attribute {resolved!r} did not produce one scalar per {element}.")
+        if any(value is None for value in array.tolist()):
+            raise ValueError(f"Attribute {resolved!r} contains missing values.")
+        try:
+            scalar_values = array.astype(float).tolist()
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Attribute {resolved!r} is not scalar numeric data.") from exc
+
+        self.set_color_by_values(
+            scalar_values,
+            element=element,
+            palette=palette,
+            value_range=value_range,
+            replace=replace,
+            skip_digestion=True,
+        )
 
     @signal(tags=["color", "whole"])
     @digest()
@@ -165,6 +325,7 @@ class Whole:
         element: str = "atom",
         palette: Any = "viridis",
         value_range: Any = None,
+        replace: bool = True,
         skip_digestion: bool = False,
     ) -> None:
         """Map a scalar array to per-atom colors on the whole structure.
@@ -198,13 +359,15 @@ class Whole:
             value_range=value_range,
             scope_atom_indices=None,
         )
-        # Replace the entire map (whole = always replace)
-        self._view._atom_color_map = dict(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+        if replace:
+            self._view._atom_color_map = dict(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+        else:
+            self._view._atom_color_map.update(zip(atom_indices, per_atom_colors))  # noqa: SLF001
         self._view._send({  # noqa: SLF001
             "op": "set_atom_colors",
             "atom_indices": atom_indices,
             "colors": per_atom_colors,
-            "replace": True,
+            "replace": replace,
         })
 
     @signal(tags=["color", "whole"])

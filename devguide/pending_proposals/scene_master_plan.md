@@ -686,7 +686,7 @@ none were reported by a failing test.
 | 0 | Perf: toll + double build | M | ☑ | 2026-07-10 | `68522ae6` | **Passed on the third pass.** See note below. |
 | 1 | GATE: close Decision 2 | S | ☑ | 2026-07-10 | *(bench, pending commit)* | **Ownership ADOPTED.** 32 ms worst case vs a 150 ms threshold; picking verified. Two rejections first. |
 | 2 | Contract A: representation | L | ☑ | 2026-07-10 | *(this commit)* | **Passed on the second pass.** Ownership had zero tests until mutation exposed it. See note. |
-| 3 | Whole API + rebuild bugs | M | ☐ | — | — | — |
+| 3 | Whole API + rebuild bugs | M | ☑ | 2026-07-10 | *(this commit)* | **Passed.** Mechanical criterion clean; both rebuild bugs + orthogonality + new API mutation-verified. |
 | 4 | Contract B/O: colour + order | L | ☐ | — | — | — |
 | 5 | Contract R: recipes | L | ☐ | — | — | — |
 | 6 | Contract C: state v2 | M | ☐ | — | — | — |

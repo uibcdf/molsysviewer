@@ -9,6 +9,7 @@ import { Vec4 } from "molstar/lib/mol-math/linear-algebra/3d/vec4";
 import { Mat4 } from "molstar/lib/mol-math/linear-algebra/3d/mat4";
 import { Clip } from "molstar/lib/mol-util/clip";
 import { addTriangleFacesFromPython } from "../../shapes";
+import { clearPerAtomColors } from "../../themes/per-atom-color";
 import {
     ClearByTagMessage,
     ClearSceneMessage,
@@ -743,6 +744,7 @@ export class SceneHandlers {
     }
 
     async clearAll() {
+        clearPerAtomColors();
         await this.clearScene({ op: "clear_scene", options: { shapes: true, styles: true, labels: true } });
         await this.callbacks.removeLoadedStructure();
         this.callbacks.notify({ event: "registry_cleared" });

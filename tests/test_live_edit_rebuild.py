@@ -665,6 +665,22 @@ def test_remove_rebuild_remaps_and_replays_per_atom_colors():
     assert color_msg["colors"] == list(expected_colors.values())
 
 
+def test_remove_rebuild_preserves_hidden_styled_whole():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.whole.set_representation("cartoon", skip_digestion=True)
+    view.whole.hide(skip_digestion=True)
+
+    apply_remove(view, selection=[0])
+
+    assert view.whole.visible is False
+    ops = [msg.get("op") for msg in view._message_history]
+    assert ops[:2] == ["clear_all", "load_molsys_payload"]
+    assert "set_global_representation" in ops
+    assert ops.index("hide_global") > ops.index("set_global_representation")
+
+
 def test_remove_rebuild_remaps_dynamic_shape_frame_indices():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]

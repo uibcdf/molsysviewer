@@ -239,11 +239,16 @@ class StylesManager:
     def _clear_cached_name(self) -> None:
         self._last_applied_name = None
 
+    @property
+    def active_name(self) -> str | None:
+        """Name of the last applied scene style, if the current style still matches it."""
+        return self._last_applied_name
+
     def _current_style(self) -> Style | None:
         whole = self._view.whole
-        representation = getattr(whole, "_representation", None)
-        preset = getattr(whole, "_preset", None)
-        params = dict(getattr(whole, "_repr_params", {}) or {})
+        representation = whole.representation
+        preset = whole.preset
+        params = whole.params
 
         if representation is None and preset is None:
             return None

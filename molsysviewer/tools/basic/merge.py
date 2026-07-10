@@ -112,14 +112,14 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
         else None
     )
 
-    if getattr(primary.whole, "_preset", None) is not None or getattr(primary.whole, "_representation", None) is not None:
+    if primary.whole.preset is not None or primary.whole.representation is not None:
         result.whole.set_representation(
-            getattr(primary.whole, "_representation", None),
-            preset=getattr(primary.whole, "_preset", None),
+            primary.whole.representation,
+            preset=primary.whole.preset,
             skip_digestion=True,
-            **(getattr(primary.whole, "_repr_params", {}) or {}),
+            **primary.whole.params,
         )
-    if getattr(primary, "_global_hidden", False):  # noqa: SLF001
+    if not primary.whole.visible:
         result.whole.hide(skip_digestion=True)
 
     if result.atom_mask is not None:
