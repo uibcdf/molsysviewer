@@ -55,6 +55,10 @@ export class SystemPanel implements StudioPanel {
     private currentContextTarget: ContextMenuTarget | null = null;
     private readonly annotationMessages: AddLabelMessage[] = [];
     private readonly collapseStateByChain = new Map<string, { molecules: number[]; components: string[] }>();
+    // A chrome refresh must not rebuild a residue hierarchy that has not changed.
+    // The rows remain O(residues), but their DOM is reconciled on structure changes only.
+    private renderedStructure?: Structure;
+    private structureNeedsReconcile = true;
     private currentSelection: ActiveSelectionPayload = {
         event: "interaction_active_selection_changed",
         source_kind: "empty",
@@ -107,7 +111,9 @@ export class SystemPanel implements StudioPanel {
     // ── Domain state pushed from the host ──────────────────────
 
     setStructure(structure: Structure | undefined): void {
+        if (this.structure === structure) return;
         this.structure = structure;
+        this.structureNeedsReconcile = true;
         if (!structure) this.annotationMessages.length = 0;
         this.rebuild();
     }
@@ -187,6 +193,10 @@ export class SystemPanel implements StudioPanel {
     /** Rebuild the strips for the current structure; reports natural visibility via onRebuilt. */
     rebuild(): void {
         if (!this.stripsRow) return;
+        if (!this.structureNeedsReconcile && this.renderedStructure === this.structure) {
+            this.callbacks.onRebuilt(Boolean(this.structure) && this.strips.size > 0);
+            return;
+        }
         this.captureCollapseState();
 
         const grouped = new Map<string, GroupSelectionItem[]>();
@@ -242,6 +252,8 @@ export class SystemPanel implements StudioPanel {
         }
 
         this.callbacks.onRebuilt(naturalVisible);
+        this.renderedStructure = this.structure;
+        this.structureNeedsReconcile = false;
     }
 
     // ── Header / color-scheme menu ─────────────────────────────
@@ -399,6 +411,7 @@ export class SystemPanel implements StudioPanel {
                 dropdown.remove();
                 if (this.activeColorScheme !== value) {
                     this.activeColorScheme = value;
+                    this.structureNeedsReconcile = true;
                     this.rebuild();
                     this.callbacks.onChangeColorScheme?.(value);
                 }

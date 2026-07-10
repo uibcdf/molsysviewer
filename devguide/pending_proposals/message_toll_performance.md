@@ -178,6 +178,13 @@ needs either incremental reconciliation (diff, not teardown) or virtualisation (
 the rows in view). This is required for the viewer to be usable on ribosome-scale systems at
 all, independent of the toll.
 
+**Phase 0 scope note:** this phase removes the per-message toll and avoids rebuilding the
+strip when the structure object has not changed. It does **not** virtualise the strip or make
+structure-change reconciliation sublinear. The remaining model is still O(residues). The
+landed harness records and enforces the current ceiling for the 95,000-atom benchmark:
+`groupNodes <= 9,500` (one node per residue with 10 atoms/residue). Raising that ceiling is a
+regression unless Layer 4 is deliberately redesigned.
+
 ---
 
 ## 5. Acceptance criteria
@@ -189,7 +196,8 @@ all, independent of the toll.
 - `new_region(representation="cartoon")` performs **exactly one** `StructureComponent` commit.
   Assert on a spy (§2b).
 - Group-strip DOM node count stays bounded (Layer 4) or is explicitly documented as O(residues)
-  with a measured ceiling.
+  with a measured ceiling. For Phase 0 the documented ceiling is `groupNodes <= 9,500` at
+  n = 95,000 atoms.
 
 ### 5.1 Performance budgets (the harness enforces all of them)
 

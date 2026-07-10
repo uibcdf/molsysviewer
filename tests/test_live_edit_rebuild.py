@@ -278,6 +278,37 @@ def test_set_rebuild_updates_group_name_and_preserves_hidden_state():
     assert {"op": "hide_region", "tag": "frag"} in view._message_history
 
 
+def test_apply_system_edit_replays_visual_region_as_bare_create_then_style():
+    view = demo["dialanine"]
+    view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
+
+    view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="frag",
+        representation="sticks",
+        alpha=0.4,
+        skip_digestion=True,
+    )
+
+    apply_set(view, element="group", selection=[0], group_name="ACE2")
+
+    region_ops = [
+        msg for msg in view._message_history  # noqa: SLF001
+        if msg.get("tag") == "frag"
+        and msg.get("op") in {"create_region", "set_region_representation"}
+    ]
+    assert [msg["op"] for msg in region_ops] == ["create_region", "set_region_representation"]
+
+    create_msg = region_ops[0]
+    assert create_msg["atom_indices"] == [0, 1, 2]
+    assert "representation" not in create_msg
+    assert "params" not in create_msg
+
+    style_msg = region_ops[1]
+    assert style_msg["representation"] == "ball-and-stick"
+    assert style_msg["params"] == {"alpha": 0.4}
+
+
 def test_set_rebuild_updates_coordinates_with_quantity():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]

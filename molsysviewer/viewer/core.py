@@ -1868,14 +1868,16 @@ class MolSysView(
         for region in list(self._regions.values()):
             if not getattr(region, "_active", True):
                 continue
-            region._send_create()  # noqa: SLF001
             if getattr(region, "preset", None) is not None or region.representation is not None or region.repr_params:
+                region._send_create(include_visual=False)  # noqa: SLF001
                 region.set_representation(
                     region.representation,
                     preset=getattr(region, "preset", None),
                     skip_digestion=True,
                     **(region.repr_params or {}),
                 )
+            else:
+                region._send_create()  # noqa: SLF001
             if getattr(region, "_hidden", False):
                 region.hide(skip_digestion=True)
 

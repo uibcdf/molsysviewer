@@ -39,6 +39,52 @@ import { HoverTooltip } from "../ui/hover-tooltip";
 type SavedSelectionRecord = SavedSelectionSummary & { atom_indices: number[] };
 
 type InteractionKind = "hover" | "click" | "context";
+type PanelRefreshTarget = "navigate" | "addons";
+
+// A message is not a request to repaint every Studio surface. This map is the
+// audited bridge between protocol operations and the panels they invalidate.
+// Absent operations, including unknown ones, intentionally refresh nothing.
+const PANEL_REFRESH_BY_OPERATION: Partial<Record<ViewerMessage["op"], readonly PanelRefreshTarget[]>> = {
+    set_region_summaries: ["navigate"],
+    save_selection: ["navigate"],
+    set_selection_tag: ["navigate"],
+    delete_selection: ["navigate"],
+    clear_selections: ["navigate"],
+    add_label: ["addons"],
+    update_label: ["addons"],
+    add_distance_measurement: ["addons"],
+    add_angle_measurement: ["addons"],
+    add_dihedral_measurement: ["addons"],
+    add_sphere: ["addons"],
+    update_sphere: ["addons"],
+    add_network_links: ["addons"],
+    add_triangle_faces: ["addons"],
+    add_channel_tube: ["addons"],
+    add_tetrahedra: ["addons"],
+    add_anisotropy_ellipsoids: ["addons"],
+    add_pharmacophore_features: ["addons"],
+    add_displacement_vectors: ["addons"],
+    add_pocket_blob: ["addons"],
+    add_scalar_isosurface: ["addons"],
+    add_pocket_surface: ["addons"],
+    create_layer: ["addons"],
+    show_layer: ["addons"],
+    hide_layer: ["addons"],
+    delete_layer: ["addons"],
+    set_layer_tag: ["addons"],
+    clear_scene: ["addons"],
+    clear_all: ["addons"],
+    set_figure_spec: ["addons"],
+    set_user_preset: ["addons"],
+    set_canvas_visibility: ["addons"],
+    set_global_representation: ["addons"],
+    load_molsys_payload: ["addons"],
+    load_structure_from_string: ["addons"],
+    load_pdb_string: ["addons"],
+    load_structure_from_url: ["addons"],
+    load_pdb_id: ["addons"],
+    set_addon_runtime_summary: ["addons"],
+};
 type AddonRuntimeSummary = {
     name: string;
     workspaceTitles: string[];
@@ -2215,7 +2261,6 @@ export class MolSysViewerController {
                             break;
                         }
                     }
-                    this.refreshAddonsPanel();
                     break;
                 }
 
@@ -2421,9 +2466,11 @@ export class MolSysViewerController {
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
                     break;
             }
-            this.applyWorkbenchMessage(msg);
-            this.refreshNavigatePanel();
-            this.refreshAddonsPanel();
+            const refreshTargets = PANEL_REFRESH_BY_OPERATION[msg.op] ?? [];
+            if (refreshTargets.includes("addons")) this.applyWorkbenchMessage(msg);
+            if (refreshTargets.includes("navigate")) this.refreshNavigatePanel(false);
+            if (refreshTargets.includes("addons")) this.refreshAddonsPanel(false);
+            if (refreshTargets.length > 0) this.refreshPanelWorkspaceChrome();
             this.syncStripOverlaysForMessage(msg);
         } catch (error) {
             console.error("[MolSysViewer] Error handling message:", msg, error);
@@ -2432,7 +2479,7 @@ export class MolSysViewerController {
 
     // Helper accessors for internal state management
     
-    private getStructureData(): Structure | undefined {
+    getStructureData(): Structure | undefined {
         const structures = this.plugin.managers.structure.hierarchy.current.structures;
         const last = structures.length ? structures[structures.length - 1] : undefined;
         return last?.cell.obj?.data;
@@ -2442,6 +2489,14 @@ export class MolSysViewerController {
         const structures = this.plugin.managers.structure.hierarchy.current.structures;
         const last = structures.length ? structures[structures.length - 1] : undefined;
         return last?.components ?? [];
+    }
+
+    hasRegion(tag: string): boolean {
+        return this.state.hasRegion(tag);
+    }
+
+    isRegionHidden(tag: string): boolean | undefined {
+        return this.state.isRegionHidden(tag);
     }
 
     private captureCurrentStructure() {
@@ -2830,7 +2885,7 @@ export class MolSysViewerController {
         }
     }
 
-    private refreshAddonsPanel(): void {
+    private refreshAddonsPanel(refreshChrome = true): void {
         this.groupPanel.setAnnotations(
             Array.from(this.addonsAnnotations.entries())
                 .sort(([left], [right]) => left.localeCompare(right))
@@ -2964,7 +3019,6 @@ export class MolSysViewerController {
                     : null,
             );
         }
-        this.refreshPanelWorkspaceChrome();
         this.addonsPanel.setAddons(
             this.addonsList.map((item) => ({
                 ...item,
@@ -2973,6 +3027,7 @@ export class MolSysViewerController {
         );
         this.addonsPanel.setAddonDiagnostics(this.addonDiagnostics);
         this.addonsPanel.setAddonWorkbenchSections([]);
+        if (refreshChrome) this.refreshPanelWorkspaceChrome();
     }
 
     private buildAddonWorkspaceSummary(msg: any): WorkspaceRuntime[] {
@@ -3136,7 +3191,7 @@ export class MolSysViewerController {
             .sort((left, right) => left.source.localeCompare(right.source));
     }
 
-    private refreshNavigatePanel(): void {
+    private refreshNavigatePanel(refreshChrome = true): void {
         this.groupPanel.setSavedSelections(this.savedSelections);
         this.groupPanel.setRegionStyleOptions(this.state.getRegionStyleOptions());
         this.groupPanel.setRegions(
@@ -3151,7 +3206,7 @@ export class MolSysViewerController {
                 available_attributes: item.available_attributes,
             }))
         );
-        this.refreshPanelWorkspaceChrome();
+        if (refreshChrome) this.refreshPanelWorkspaceChrome();
     }
 
     private getWorkspaceOptions(): WorkspaceRuntime[] {

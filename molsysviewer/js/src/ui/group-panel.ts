@@ -572,6 +572,7 @@ export class GroupPanel {
     }
 
     setRuntimeVisible(visible: boolean | null): void {
+        if (this.runtimeVisibleOverride === visible) return;
         this.runtimeVisibleOverride = visible;
         this.render();
     }

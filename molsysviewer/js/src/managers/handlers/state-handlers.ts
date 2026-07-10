@@ -413,17 +413,33 @@ export class StateHandlers {
                 return;
             }
             
-            const reprType = msg.representation ?? "cartoon";
-            const repr = await this.plugin.builders.structure.representation.addRepresentation(
-                componentRef as any,
-                { type: reprType as any, typeParams: (msg.params ?? {}) as any },
-                { tag }
-            );
-            const reprRef = repr?.ref;
+            const hasVisualSpec =
+                msg.representation !== undefined
+                || (msg.params !== undefined && Object.keys(msg.params).length > 0);
+            const representations: StateTransform.Ref[] = [];
+            if (hasVisualSpec) {
+                const reprType = msg.representation ?? "cartoon";
+                const structuralColor = this.getStructuralColorThemeFromParams(
+                    reprType,
+                    msg.params,
+                );
+                const cleanParams = this.omitStructuralColorKeys(msg.params);
+                const repr = await this.plugin.builders.structure.representation.addRepresentation(
+                    componentRef as any,
+                    {
+                        type: reprType as any,
+                        typeParams: cleanParams as any,
+                        ...(structuralColor.color ? { color: structuralColor.color as any } : {}),
+                        ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams as any } : {}),
+                    },
+                    { tag }
+                );
+                if (repr?.ref) representations.push(repr.ref);
+            }
             
             this.regionIndex.set(tag, {
                 component: componentRef,
-                representations: reprRef ? [reprRef] : [],
+                representations,
                 atomIndices,
                 selection: msg.selection,
                 hidden: false,
@@ -444,33 +460,38 @@ export class StateHandlers {
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structure || !structureRef) return;
 
-        // Delete the entire component (cascades to all representation children).
-        // Removing only the representation refs with removeParentGhosts:true can
-        // silently delete the parent component when it becomes empty, leaving
-        // entry.component pointing at a dangling ref that subsequent addRepresentation
-        // calls fail against with revertOnError:false — the region then vanishes.
-        await this.removeStateObject(entry.component);
-        entry.component = undefined as any;
-        entry.representations = [];
+        let componentRef = StateObjectRef.resolveRef(entry.component);
+        if (!componentRef || entry.representations.length > 0) {
+            // Delete the entire component (cascades to all representation children).
+            // Removing only the representation refs with removeParentGhosts:true can
+            // silently delete the parent component when it becomes empty, leaving
+            // entry.component pointing at a dangling ref that subsequent addRepresentation
+            // calls fail against with revertOnError:false — the region then vanishes.
+            await this.removeStateObject(entry.component);
+            entry.component = undefined as any;
+            entry.representations = [];
 
-        // Rebuild the component from the stored atom indices.
-        const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
-        if (!selection) return;
+            // Rebuild the component from the stored atom indices.
+            const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
+            if (!selection) return;
 
-        const bundle = StructureElement.Bundle.fromSelection(selection);
-        const root = this.plugin.state.data.build().to(structureRef);
-        const component = root.apply(StateTransforms.Model.StructureComponent, {
-            type: { name: "bundle", params: bundle },
-            nullIfEmpty: true,
-            label: tag,
-        });
-        await component.commit({ revertOnError: false });
-        const componentRef = component.selector?.ref;
-        if (!component.selector?.isOk || !componentRef) {
-            console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
-            return;
+            const bundle = StructureElement.Bundle.fromSelection(selection);
+            const root = this.plugin.state.data.build().to(structureRef);
+            const component = root.apply(StateTransforms.Model.StructureComponent, {
+                type: { name: "bundle", params: bundle },
+                nullIfEmpty: true,
+                label: tag,
+            });
+            await component.commit({ revertOnError: false });
+            componentRef = component.selector?.ref;
+            if (!component.selector?.isOk || !componentRef) {
+                console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
+                return;
+            }
+            entry.component = componentRef;
+        } else {
+            entry.representations = [];
         }
-        entry.component = componentRef;
 
         const structuralColor = this.getStructuralColorThemeFromParams(
             msg.representation ?? undefined,
@@ -602,6 +623,14 @@ export class StateHandlers {
             representations: [...this.regionStyleOptions.representations],
             presets: [...this.regionStyleOptions.presets],
         };
+    }
+
+    hasRegion(tag: string): boolean {
+        return this.regionIndex.has(tag);
+    }
+
+    isRegionHidden(tag: string): boolean | undefined {
+        return this.regionIndex.get(tag)?.hidden;
     }
 
     async applyRegionOperations(msg: BatchRegionOperationsMessage) {

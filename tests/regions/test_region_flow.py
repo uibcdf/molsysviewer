@@ -144,6 +144,118 @@ def test_region_reset_representation_restores_base_visual_state():
     }
 
 
+def test_new_region_with_visual_spec_preserves_representation_semantics():
+    view = _empty_view()
+    view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="one-build",
+        representation="line",
+        color="red",
+        alpha=0.4,
+        skip_digestion=True,
+    )
+
+    operations = [
+        message
+        for message in view._message_history  # noqa: SLF001
+        if message.get("tag") == "one-build"
+        and message.get("op") in {"create_region", "set_region_representation"}
+    ]
+    assert operations[0] == {
+        "op": "create_region",
+        "tag": "one-build",
+        "selection": "all",
+        "atom_indices": [0, 1, 2],
+    }
+    assert operations[1]["op"] == "set_region_representation"
+    assert operations[1]["tag"] == "one-build"
+    assert operations[1]["representation"] == "line"
+    assert operations[1]["preset"] is None
+    assert operations[1]["user_preset"] is None
+    assert operations[1]["params"] == {
+        "alpha": 0.4,
+        "molstar_color_theme": {
+            "name": "uniform",
+            "params": {"value": 16711680},
+        },
+    }
+
+
+def test_new_region_with_visual_params_preserves_none_representation():
+    view = _empty_view()
+    region = view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="styled-default",
+        alpha=0.4,
+        skip_digestion=True,
+    )
+
+    assert region.representation is None
+    operations = [
+        message
+        for message in view._message_history  # noqa: SLF001
+        if message.get("tag") == "styled-default"
+        and message.get("op") in {"create_region", "set_region_representation"}
+    ]
+    assert operations == [
+        {
+            "op": "create_region",
+            "tag": "styled-default",
+            "selection": "all",
+            "atom_indices": [0, 1, 2],
+        },
+        {
+            "op": "set_region_representation",
+            "tag": "styled-default",
+            "representation": None,
+            "preset": None,
+            "user_preset": None,
+            "params": {"alpha": 0.4},
+        },
+    ]
+
+
+def test_rebuild_replays_visual_region_as_bare_create_then_style():
+    view = _empty_view()
+    view.new_region(
+        atom_indices=[0, 1, 2],
+        tag="rebuild-region",
+        representation="line",
+        alpha=0.4,
+        skip_digestion=True,
+    )
+    view._message_history.clear()  # noqa: SLF001
+
+    for region in list(view._regions.values()):  # noqa: SLF001
+        if not getattr(region, "_active", True):
+            continue
+        if getattr(region, "preset", None) is not None or region.representation is not None or region.repr_params:
+            region._send_create(include_visual=False)  # noqa: SLF001
+            region.set_representation(
+                region.representation,
+                preset=getattr(region, "preset", None),
+                skip_digestion=True,
+                **(region.repr_params or {}),
+            )
+        else:
+            region._send_create()  # noqa: SLF001
+
+    operations = [
+        message
+        for message in view._message_history  # noqa: SLF001
+        if message.get("tag") == "rebuild-region"
+        and message.get("op") in {"create_region", "set_region_representation"}
+    ]
+    assert operations[0] == {
+        "op": "create_region",
+        "tag": "rebuild-region",
+        "selection": "all",
+        "atom_indices": [0, 1, 2],
+    }
+    assert operations[1]["op"] == "set_region_representation"
+    assert operations[1]["representation"] == "line"
+
+
 def test_region_duplicate_preserves_atoms_and_visual_specification():
     view = _empty_view()
     region = view.new_region(

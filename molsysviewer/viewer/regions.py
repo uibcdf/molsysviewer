@@ -394,22 +394,28 @@ class RegionsMixin:
 
         atom_indices = [int(i) for i in atom_indices]
 
+        visual_representation = representation
+        visual_repr_params = dict(repr_params)
+        has_visual_spec = visual_representation is not None or bool(visual_repr_params)
+
         region = Region(
             self,
             tag,
             selection,
             atom_indices=atom_indices,
-            representation=representation,
-            repr_params=repr_params,
+            representation=None if has_visual_spec else representation,
+            repr_params={} if has_visual_spec else repr_params,
         )
         self._regions[tag] = region
-        region._send_create()
-        if representation is not None or repr_params:
+        if has_visual_spec:
+            region._send_create(include_visual=False)
             region.set_representation(
-                representation,
+                visual_representation,
                 skip_digestion=True,
-                **repr_params,
+                **visual_repr_params,
             )
+        else:
+            region._send_create()
         return region
 
     @signal(tags=["region", "selection"])

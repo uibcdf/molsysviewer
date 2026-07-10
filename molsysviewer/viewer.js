@@ -145150,16 +145150,30 @@ var StateHandlers = class {
         console.warn("[MolSysViewer] create_region: empty component for", tag);
         return;
       }
-      const reprType = msg.representation ?? "cartoon";
-      const repr = await this.plugin.builders.structure.representation.addRepresentation(
-        componentRef,
-        { type: reprType, typeParams: msg.params ?? {} },
-        { tag }
-      );
-      const reprRef = repr?.ref;
+      const hasVisualSpec = msg.representation !== void 0 || msg.params !== void 0 && Object.keys(msg.params).length > 0;
+      const representations = [];
+      if (hasVisualSpec) {
+        const reprType = msg.representation ?? "cartoon";
+        const structuralColor = this.getStructuralColorThemeFromParams(
+          reprType,
+          msg.params
+        );
+        const cleanParams = this.omitStructuralColorKeys(msg.params);
+        const repr = await this.plugin.builders.structure.representation.addRepresentation(
+          componentRef,
+          {
+            type: reprType,
+            typeParams: cleanParams,
+            ...structuralColor.color ? { color: structuralColor.color } : {},
+            ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}
+          },
+          { tag }
+        );
+        if (repr?.ref) representations.push(repr.ref);
+      }
       this.regionIndex.set(tag, {
         component: componentRef,
-        representations: reprRef ? [reprRef] : [],
+        representations,
         atomIndices,
         selection: msg.selection,
         hidden: false
@@ -145176,25 +145190,30 @@ var StateHandlers = class {
     const structure = this.callbacks.getStructure();
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structure || !structureRef) return;
-    await this.removeStateObject(entry.component);
-    entry.component = void 0;
-    entry.representations = [];
-    const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
-    if (!selection) return;
-    const bundle = element_exports.Bundle.fromSelection(selection);
-    const root = this.plugin.state.data.build().to(structureRef);
-    const component = root.apply(StateTransforms.Model.StructureComponent, {
-      type: { name: "bundle", params: bundle },
-      nullIfEmpty: true,
-      label: tag
-    });
-    await component.commit({ revertOnError: false });
-    const componentRef = component.selector?.ref;
-    if (!component.selector?.isOk || !componentRef) {
-      console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
-      return;
+    let componentRef = StateObjectRef.resolveRef(entry.component);
+    if (!componentRef || entry.representations.length > 0) {
+      await this.removeStateObject(entry.component);
+      entry.component = void 0;
+      entry.representations = [];
+      const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
+      if (!selection) return;
+      const bundle = element_exports.Bundle.fromSelection(selection);
+      const root = this.plugin.state.data.build().to(structureRef);
+      const component = root.apply(StateTransforms.Model.StructureComponent, {
+        type: { name: "bundle", params: bundle },
+        nullIfEmpty: true,
+        label: tag
+      });
+      await component.commit({ revertOnError: false });
+      componentRef = component.selector?.ref;
+      if (!component.selector?.isOk || !componentRef) {
+        console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
+        return;
+      }
+      entry.component = componentRef;
+    } else {
+      entry.representations = [];
     }
-    entry.component = componentRef;
     const structuralColor = this.getStructuralColorThemeFromParams(
       msg.representation ?? void 0,
       msg.params
@@ -145299,6 +145318,12 @@ var StateHandlers = class {
       representations: [...this.regionStyleOptions.representations],
       presets: [...this.regionStyleOptions.presets]
     };
+  }
+  hasRegion(tag) {
+    return this.regionIndex.has(tag);
+  }
+  isRegionHidden(tag) {
+    return this.regionIndex.get(tag)?.hidden;
   }
   async applyRegionOperations(msg) {
     const operations = Array.isArray(msg.operations) ? msg.operations : [];
@@ -151711,6 +151736,7 @@ var SystemPanel = class {
     this.currentContextTarget = null;
     this.annotationMessages = [];
     this.collapseStateByChain = /* @__PURE__ */ new Map();
+    this.structureNeedsReconcile = true;
     this.currentSelection = {
       event: "interaction_active_selection_changed",
       source_kind: "empty",
@@ -151756,7 +151782,9 @@ var SystemPanel = class {
   }
   // ── Domain state pushed from the host ──────────────────────
   setStructure(structure) {
+    if (this.structure === structure) return;
     this.structure = structure;
+    this.structureNeedsReconcile = true;
     if (!structure) this.annotationMessages.length = 0;
     this.rebuild();
   }
@@ -151825,6 +151853,10 @@ var SystemPanel = class {
   /** Rebuild the strips for the current structure; reports natural visibility via onRebuilt. */
   rebuild() {
     if (!this.stripsRow) return;
+    if (!this.structureNeedsReconcile && this.renderedStructure === this.structure) {
+      this.callbacks.onRebuilt(Boolean(this.structure) && this.strips.size > 0);
+      return;
+    }
     this.captureCollapseState();
     const grouped = /* @__PURE__ */ new Map();
     const items = this.structure ? buildGroupItemsFromStructure(this.structure) : [];
@@ -151872,6 +151904,8 @@ var SystemPanel = class {
       }
     }
     this.callbacks.onRebuilt(naturalVisible);
+    this.renderedStructure = this.structure;
+    this.structureNeedsReconcile = false;
   }
   // ── Header / color-scheme menu ─────────────────────────────
   makeSystemHeader() {
@@ -152018,6 +152052,7 @@ var SystemPanel = class {
         dropdown.remove();
         if (this.activeColorScheme !== value) {
           this.activeColorScheme = value;
+          this.structureNeedsReconcile = true;
           this.rebuild();
           this.callbacks.onChangeColorScheme?.(value);
         }
@@ -153741,6 +153776,7 @@ var GroupPanel = class {
     this.onNavigateToSettings = callback;
   }
   setRuntimeVisible(visible) {
+    if (this.runtimeVisibleOverride === visible) return;
     this.runtimeVisibleOverride = visible;
     this.render();
   }
@@ -155061,6 +155097,47 @@ var HoverTooltip = class {
 };
 
 // src/managers/viewer-controller.ts
+var PANEL_REFRESH_BY_OPERATION = {
+  set_region_summaries: ["navigate"],
+  save_selection: ["navigate"],
+  set_selection_tag: ["navigate"],
+  delete_selection: ["navigate"],
+  clear_selections: ["navigate"],
+  add_label: ["addons"],
+  update_label: ["addons"],
+  add_distance_measurement: ["addons"],
+  add_angle_measurement: ["addons"],
+  add_dihedral_measurement: ["addons"],
+  add_sphere: ["addons"],
+  update_sphere: ["addons"],
+  add_network_links: ["addons"],
+  add_triangle_faces: ["addons"],
+  add_channel_tube: ["addons"],
+  add_tetrahedra: ["addons"],
+  add_anisotropy_ellipsoids: ["addons"],
+  add_pharmacophore_features: ["addons"],
+  add_displacement_vectors: ["addons"],
+  add_pocket_blob: ["addons"],
+  add_scalar_isosurface: ["addons"],
+  add_pocket_surface: ["addons"],
+  create_layer: ["addons"],
+  show_layer: ["addons"],
+  hide_layer: ["addons"],
+  delete_layer: ["addons"],
+  set_layer_tag: ["addons"],
+  clear_scene: ["addons"],
+  clear_all: ["addons"],
+  set_figure_spec: ["addons"],
+  set_user_preset: ["addons"],
+  set_canvas_visibility: ["addons"],
+  set_global_representation: ["addons"],
+  load_molsys_payload: ["addons"],
+  load_structure_from_string: ["addons"],
+  load_pdb_string: ["addons"],
+  load_structure_from_url: ["addons"],
+  load_pdb_id: ["addons"],
+  set_addon_runtime_summary: ["addons"]
+};
 function flattenToNumberIndices(source) {
   const arr = Array.isArray(source) ? source : [];
   return Array.from(new Set(
@@ -157019,7 +157096,6 @@ var MolSysViewerController = class _MolSysViewerController {
               break;
             }
           }
-          this.refreshAddonsPanel();
           break;
         }
         case "set_addon_context_items": {
@@ -157224,9 +157300,11 @@ var MolSysViewerController = class _MolSysViewerController {
           console.warn("[MolSysViewer] unknown op:", msg.op, msg);
           break;
       }
-      this.applyWorkbenchMessage(msg);
-      this.refreshNavigatePanel();
-      this.refreshAddonsPanel();
+      const refreshTargets = PANEL_REFRESH_BY_OPERATION[msg.op] ?? [];
+      if (refreshTargets.includes("addons")) this.applyWorkbenchMessage(msg);
+      if (refreshTargets.includes("navigate")) this.refreshNavigatePanel(false);
+      if (refreshTargets.includes("addons")) this.refreshAddonsPanel(false);
+      if (refreshTargets.length > 0) this.refreshPanelWorkspaceChrome();
       this.syncStripOverlaysForMessage(msg);
     } catch (error2) {
       console.error("[MolSysViewer] Error handling message:", msg, error2);
@@ -157242,6 +157320,12 @@ var MolSysViewerController = class _MolSysViewerController {
     const structures = this.plugin.managers.structure.hierarchy.current.structures;
     const last4 = structures.length ? structures[structures.length - 1] : void 0;
     return last4?.components ?? [];
+  }
+  hasRegion(tag) {
+    return this.state.hasRegion(tag);
+  }
+  isRegionHidden(tag) {
+    return this.state.isRegionHidden(tag);
   }
   captureCurrentStructure() {
     const structures = this.plugin.managers.structure.hierarchy.current.structures;
@@ -157560,7 +157644,7 @@ var MolSysViewerController = class _MolSysViewerController {
       };
     }
   }
-  refreshAddonsPanel() {
+  refreshAddonsPanel(refreshChrome = true) {
     this.groupPanel.setAnnotations(
       Array.from(this.addonsAnnotations.entries()).sort(([left], [right]) => left.localeCompare(right)).map(([tag, item2]) => ({
         key: tag,
@@ -157677,7 +157761,6 @@ var MolSysViewerController = class _MolSysViewerController {
         } : null
       );
     }
-    this.refreshPanelWorkspaceChrome();
     this.addonsPanel.setAddons(
       this.addonsList.map((item2) => ({
         ...item2,
@@ -157686,6 +157769,7 @@ var MolSysViewerController = class _MolSysViewerController {
     );
     this.addonsPanel.setAddonDiagnostics(this.addonDiagnostics);
     this.addonsPanel.setAddonWorkbenchSections([]);
+    if (refreshChrome) this.refreshPanelWorkspaceChrome();
   }
   buildAddonWorkspaceSummary(msg) {
     const specs = Array.isArray(msg?.workspace_specs) ? msg.workspace_specs : [];
@@ -157790,7 +157874,7 @@ var MolSysViewerController = class _MolSysViewerController {
       traceback: typeof item2?.traceback === "string" ? item2.traceback : void 0
     })).sort((left, right) => left.source.localeCompare(right.source));
   }
-  refreshNavigatePanel() {
+  refreshNavigatePanel(refreshChrome = true) {
     this.groupPanel.setSavedSelections(this.savedSelections);
     this.groupPanel.setRegionStyleOptions(this.state.getRegionStyleOptions());
     this.groupPanel.setRegions(
@@ -157805,7 +157889,7 @@ var MolSysViewerController = class _MolSysViewerController {
         available_attributes: item2.available_attributes
       }))
     );
-    this.refreshPanelWorkspaceChrome();
+    if (refreshChrome) this.refreshPanelWorkspaceChrome();
   }
   getWorkspaceOptions() {
     const options = [

@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import test from "node:test";
 
+import { StructureElement } from "molstar/lib/mol-model/structure";
 import { StateHandlers } from "../../src/managers/handlers/state-handlers";
 
 test("visibility delta applies on matching version and self-heals on drift", async () => {
@@ -186,6 +187,76 @@ test("state handler applies batched region operations in order", async () => {
     });
 
     assert.deepStrictEqual(calls, ["create:A", "style:A", "create:B"]);
+});
+
+test("state handler styles a newly-created bare region without rebuilding its component", async () => {
+    const originalFromSelection = StructureElement.Bundle.fromSelection;
+    let componentCommits = 0;
+    let representationAdds = 0;
+    const plugin: any = {
+        state: {
+            data: {
+                cells: { has: () => true },
+                build: () => ({
+                    to: (_ref: unknown) => ({
+                        apply: (_transform: unknown, _params: unknown) => ({
+                            selector: { ref: "component-ref", isOk: true },
+                            async commit(_options: unknown) {
+                                componentCommits += 1;
+                            },
+                        }),
+                    }),
+                }),
+            },
+        },
+        builders: {
+            structure: {
+                representation: {
+                    async addRepresentation(_componentRef: unknown, spec: any, options: any) {
+                        representationAdds += 1;
+                        assert.strictEqual(_componentRef, "component-ref");
+                        assert.deepStrictEqual(spec, {
+                            type: "line",
+                            typeParams: {},
+                            color: "uniform",
+                            colorParams: { value: 16711680 },
+                        });
+                        assert.deepStrictEqual(options, { tag: "site" });
+                        return { ref: "repr-ref" };
+                    },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        getLoadedStructure: () => ({ structure: "structure-ref" }) as any,
+        getCurrentStructureRef: () => "structure-ref" as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).buildSelectionFromAtomIndices = () => ({ fake: "selection" });
+    (StructureElement.Bundle as any).fromSelection = (_selection: unknown) => ({ fake: "bundle" });
+
+    try {
+        await handler.createRegion({ op: "create_region", tag: "site", atom_indices: [0, 1] });
+        await handler.setRegionRepresentation({
+            op: "set_region_representation",
+            tag: "site",
+            representation: "line",
+            params: {
+                molstar_color_theme: {
+                    name: "uniform",
+                    params: { value: 16711680 },
+                },
+            },
+        });
+    } finally {
+        (StructureElement.Bundle as any).fromSelection = originalFromSelection;
+    }
+
+    assert.strictEqual(componentCommits, 1);
+    assert.strictEqual(representationAdds, 1);
 });
 
 test("state handler applies preset alpha to every generated representation", async () => {

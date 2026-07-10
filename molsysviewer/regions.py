@@ -233,17 +233,18 @@ class Region:
         msg = {"op": op, "tag": self.tag, **payload}
         self._view._send_region_operation(msg)  # noqa: SLF001
 
-    def _send_create(self) -> None:
+    def _send_create(self, *, include_visual: bool = True) -> None:
         atom_indices = None
         if self.atom_indices is not None:
             atom_indices = list(self.atom_indices)
-        self._send(
-            "create_region",
-            selection=self.selection,
-            atom_indices=atom_indices,
-            representation=self.representation,
-            params=self.repr_params,
-        )
+        payload = {
+            "selection": self.selection,
+            "atom_indices": atom_indices,
+        }
+        if include_visual:
+            payload["representation"] = self.representation
+            payload["params"] = self.repr_params
+        self._send("create_region", **payload)
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     # --- public API ---

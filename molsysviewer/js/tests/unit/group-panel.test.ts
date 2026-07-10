@@ -1513,6 +1513,27 @@ test("GroupPanel can be force-hidden for non-core workspaces", () => {
     }
 });
 
+test("GroupPanel does not rebuild the System hierarchy when runtime visibility is unchanged", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const systemPanel = (panel as unknown as { systemPanel: { rebuild(): void } }).systemPanel;
+        let rebuilds = 0;
+        systemPanel.rebuild = () => { rebuilds += 1; };
+
+        panel.setRuntimeVisible(null);
+        panel.setRuntimeVisible(false);
+        panel.setRuntimeVisible(false);
+        panel.setRuntimeVisible(null);
+
+        assert.strictEqual(rebuilds, 2);
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel supports custom navigation labels", () => {
     const restore = installFakeDom();
     try {
@@ -1649,4 +1670,3 @@ test("GroupPanel tabs have correct tooltips and initial subtitle labels", () => 
         restore();
     }
 });
-
