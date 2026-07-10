@@ -144901,11 +144901,6 @@ var StateHandlers = class {
     this.previousFocusFadeValue = 0;
     this.previousShowOnlyWholeMask = false;
     this.previousOwnedOpaqueIndices = /* @__PURE__ */ new Set();
-    this.globalRepresentationState = {
-      kind: "preset",
-      preset: "auto",
-      params: {}
-    };
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
@@ -145288,32 +145283,40 @@ var StateHandlers = class {
     }
     return refs;
   }
+  /**
+   * The concrete representation types the whole is actually drawing, deduped by
+   * name, each with the whole's own typeParams. Read from `globalReprs` — the
+   * representation refs this handler created for the global view — so an inherit
+   * region mirrors what the user sees regardless of whether the whole is on a
+   * type, a built-in preset or a user preset. (The whole's reps are not tracked as
+   * `StructureComponentRef.representations`, so that path reads empty; `globalReprs`
+   * is the authoritative source.)
+   */
+  wholeRepresentationTypes() {
+    const seen = /* @__PURE__ */ new Set();
+    const types2 = [];
+    for (const ref of this.globalReprs) {
+      const type3 = this.plugin.state.data.cells.get(ref)?.transform?.params?.type;
+      const name = type3?.name;
+      if (typeof name !== "string" || name === "" || seen.has(name)) continue;
+      seen.add(name);
+      types2.push({ name, typeParams: type3?.params ?? {} });
+    }
+    return types2;
+  }
   async addInheritedRegionRepresentations(componentRef, tag, params) {
-    if (this.globalRepresentationState.kind === "preset") {
-      const applied = await this.plugin.builders.structure.representation.applyPreset(
-        { ref: componentRef },
-        this.globalRepresentationState.preset,
-        params ?? {}
-      );
-      return this.collectRefsFromPreset(applied);
-    }
-    if (this.globalRepresentationState.kind === "user_preset") {
-      return this.addOwnRegionRepresentations(componentRef, tag, {
-        op: "set_region_representation",
+    const inheritedTypes = this.wholeRepresentationTypes();
+    const resolved = inheritedTypes.length > 0 ? inheritedTypes : [{ name: DEFAULT_GLOBAL_REPRESENTATION, typeParams: {} }];
+    const refs = [];
+    for (const { name, typeParams } of resolved) {
+      refs.push(...await this.addTypedRegionRepresentation(
+        componentRef,
         tag,
-        user_preset: this.globalRepresentationState.userPreset,
-        params
-      });
+        name,
+        { ...typeParams, ...params ?? {} }
+      ));
     }
-    return this.addTypedRegionRepresentation(
-      componentRef,
-      tag,
-      this.globalRepresentationState.representation,
-      {
-        ...this.globalRepresentationState.params,
-        ...params ?? {}
-      }
-    );
+    return refs;
   }
   async createRegion(msg) {
     const structure = this.callbacks.getStructure();
@@ -145563,26 +145566,6 @@ var StateHandlers = class {
   async setGlobalRepresentation(msg) {
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structureRef) return;
-    const cleanParamsForState = this.omitStructuralColorKeys(msg.params);
-    if (msg.user_preset) {
-      this.globalRepresentationState = {
-        kind: "user_preset",
-        userPreset: msg.user_preset,
-        params: cleanParamsForState
-      };
-    } else if (msg.preset) {
-      this.globalRepresentationState = {
-        kind: "preset",
-        preset: msg.preset,
-        params: cleanParamsForState
-      };
-    } else {
-      this.globalRepresentationState = {
-        kind: "type",
-        representation: msg.representation ?? DEFAULT_GLOBAL_REPRESENTATION,
-        params: cleanParamsForState
-      };
-    }
     const cameraSnap = this.plugin.canvas3d?.camera.getSnapshot?.();
     const structure = this.callbacks.getStructure();
     const structuralColor = this.getStructuralColorThemeFromParams(

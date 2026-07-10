@@ -376,10 +376,17 @@ test("state handler reset_representation removes the visual instead of adding ca
 test("state handler inherit region follows the live whole representation type", async () => {
     const originalFromSelection = StructureElement.Bundle.fromSelection;
     const addedTypes: string[] = [];
+    // The whole's rendered representation, read by wholeRepresentationTypes() from
+    // globalReprs → the cell's transform.params.type.name. Mutating wholeType here
+    // models the user restyling the whole; the inherit region must follow.
+    let wholeType = "line";
     const plugin: any = {
         state: {
             data: {
-                cells: { has: () => true },
+                cells: {
+                    has: () => true,
+                    get: (_ref: unknown) => ({ transform: { params: { type: { name: wholeType, params: {} } } } }),
+                },
                 build: () => ({
                     to: (_ref: unknown) => ({
                         apply: (_transform: unknown, _params: unknown) => ({
@@ -409,7 +416,8 @@ test("state handler inherit region follows the live whole representation type", 
         getComponents: () => [],
         notify: (_msg: any) => {},
     });
-    (handler as any).globalRepresentationState = { kind: "type", representation: "line", params: {} };
+    // The whole is drawing one representation; the inherit path reads it from globalReprs.
+    (handler as any).globalReprs = new Set(["whole-repr"]);
     (handler as any).buildSelectionFromAtomIndices = () => ({ fake: "selection" });
     (StructureElement.Bundle as any).fromSelection = (_selection: unknown) => ({ fake: "bundle" });
 
@@ -421,7 +429,7 @@ test("state handler inherit region follows the live whole representation type", 
             representation: "inherit",
             params: { alpha: 1 },
         });
-        (handler as any).globalRepresentationState = { kind: "type", representation: "spacefill", params: {} };
+        wholeType = "spacefill";
         (handler as any).removeStateObject = async () => {};
         await (handler as any).repaintInheritedRegions();
     } finally {

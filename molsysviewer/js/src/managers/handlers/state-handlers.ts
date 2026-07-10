@@ -49,10 +49,6 @@ import {
 
 const DEFAULT_GLOBAL_REPRESENTATION = "cartoon";
 type RegionRepresentationState = "none" | "inherit" | "own";
-type GlobalRepresentationState =
-    | { kind: "type"; representation: string; params: Record<string, unknown> }
-    | { kind: "preset"; preset: string; params: Record<string, unknown> }
-    | { kind: "user_preset"; userPreset: any; params: Record<string, unknown> };
 
 interface RegionEntry {
     component?: StateObjectRef;
@@ -109,11 +105,6 @@ export class StateHandlers {
     private previousFocusFadeValue = 0;
     private previousShowOnlyWholeMask = false;
     private previousOwnedOpaqueIndices = new Set<number>();
-    private globalRepresentationState: GlobalRepresentationState = {
-        kind: "preset",
-        preset: "auto",
-        params: {},
-    };
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
@@ -586,36 +577,52 @@ export class StateHandlers {
         return refs;
     }
 
+    /**
+     * The concrete representation types the whole is actually drawing, deduped by
+     * name, each with the whole's own typeParams. Read from `globalReprs` — the
+     * representation refs this handler created for the global view — so an inherit
+     * region mirrors what the user sees regardless of whether the whole is on a
+     * type, a built-in preset or a user preset. (The whole's reps are not tracked as
+     * `StructureComponentRef.representations`, so that path reads empty; `globalReprs`
+     * is the authoritative source.)
+     */
+    private wholeRepresentationTypes(): Array<{ name: string; typeParams: Record<string, unknown> }> {
+        const seen = new Set<string>();
+        const types: Array<{ name: string; typeParams: Record<string, unknown> }> = [];
+        for (const ref of this.globalReprs) {
+            const type = (this.plugin.state.data.cells.get(ref)?.transform?.params as any)?.type;
+            const name = type?.name;
+            if (typeof name !== "string" || name === "" || seen.has(name)) continue;
+            seen.add(name);
+            types.push({ name, typeParams: (type?.params ?? {}) as Record<string, unknown> });
+        }
+        return types;
+    }
+
     private async addInheritedRegionRepresentations(
         componentRef: StateObjectRef,
         tag: string,
         params: Record<string, unknown> | undefined,
     ): Promise<StateTransform.Ref[]> {
-        if (this.globalRepresentationState.kind === "preset") {
-            const applied = await this.plugin.builders.structure.representation.applyPreset(
-                { ref: componentRef } as any,
-                this.globalRepresentationState.preset as any,
-                params ?? {},
-            );
-            return this.collectRefsFromPreset(applied as any);
-        }
-        if (this.globalRepresentationState.kind === "user_preset") {
-            return this.addOwnRegionRepresentations(componentRef, tag, {
-                op: "set_region_representation",
+        // Inherit mirrors the whole's *rendered* representation types via
+        // component-level addRepresentation. A structure-level preset (built-in or
+        // user) cannot be applied to a region component — Mol* rejects it with
+        // "Applying structure repr. provider to bad cell", leaving the region with no
+        // representation while ownership still masks the whole, i.e. an invisible hole.
+        const inheritedTypes = this.wholeRepresentationTypes();
+        const resolved = inheritedTypes.length > 0
+            ? inheritedTypes
+            : [{ name: DEFAULT_GLOBAL_REPRESENTATION, typeParams: {} }];
+        const refs: StateTransform.Ref[] = [];
+        for (const { name, typeParams } of resolved) {
+            refs.push(...await this.addTypedRegionRepresentation(
+                componentRef,
                 tag,
-                user_preset: this.globalRepresentationState.userPreset,
-                params,
-            });
+                name,
+                { ...typeParams, ...(params ?? {}) },
+            ));
         }
-        return this.addTypedRegionRepresentation(
-            componentRef,
-            tag,
-            this.globalRepresentationState.representation,
-            {
-                ...this.globalRepresentationState.params,
-                ...(params ?? {}),
-            },
-        );
+        return refs;
     }
 
     async createRegion(msg: CreateRegionMessage) {
@@ -924,26 +931,6 @@ export class StateHandlers {
     async setGlobalRepresentation(msg: SetGlobalRepresentationMessage) {
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structureRef) return;
-        const cleanParamsForState = this.omitStructuralColorKeys(msg.params);
-        if (msg.user_preset) {
-            this.globalRepresentationState = {
-                kind: "user_preset",
-                userPreset: msg.user_preset,
-                params: cleanParamsForState,
-            };
-        } else if (msg.preset) {
-            this.globalRepresentationState = {
-                kind: "preset",
-                preset: msg.preset,
-                params: cleanParamsForState,
-            };
-        } else {
-            this.globalRepresentationState = {
-                kind: "type",
-                representation: msg.representation ?? DEFAULT_GLOBAL_REPRESENTATION,
-                params: cleanParamsForState,
-            };
-        }
 
         // Preserve camera state: removing then re-adding representations can trigger
         // Mol*-internal camera adjustments that leave the orbit minRadius too small,
