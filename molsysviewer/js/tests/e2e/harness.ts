@@ -1,8 +1,502 @@
 import { MolSysViewerController } from "../../src/managers/viewer-controller";
+import { Structure, StructureElement, Unit } from "molstar/lib/mol-model/structure";
+import { StructureSelection } from "molstar/lib/mol-model/structure/query";
+import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
+import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
+import { Vec2 } from "molstar/lib/mol-math/linear-algebra";
+import { Vec3 } from "molstar/lib/mol-math/linear-algebra/3d/vec3";
+import { Vec4 } from "molstar/lib/mol-math/linear-algebra/3d/vec4";
+import { cameraProject } from "molstar/lib/mol-canvas3d/camera/util";
+import { StateTransforms } from "molstar/lib/mol-plugin-state/transforms";
+import { PluginCommands } from "molstar/lib/mol-plugin/commands";
+import { StateSelection } from "molstar/lib/mol-state";
+import {
+    clearStructureTransparency,
+    setStructureTransparency,
+} from "molstar/lib/mol-plugin-state/helpers/structure-transparency";
+import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 
 declare global {
     // eslint-disable-next-line no-var
-    var Harness: { createController: typeof createController } | undefined;
+    var Harness: {
+        createController: typeof createController;
+        profileExclusiveOwnership: typeof profileExclusiveOwnership;
+        profileExclusiveOwnershipMask: typeof profileExclusiveOwnershipMask;
+        profileRegionVisibilityControl: typeof profileRegionVisibilityControl;
+        probeExclusiveOwnershipPicking: typeof probeExclusiveOwnershipPicking;
+    } | undefined;
+}
+
+type ProfileController = MolSysViewerController & {
+    plugin: any;
+    loadedStructure?: { structure?: any };
+    state: {
+        buildSelectionFromAtomIndices(structure: unknown, atomIndices: number[]): unknown;
+    };
+};
+
+type ExclusiveOwnershipProfileOptions = {
+    atoms: number;
+    ownedAtoms: number;
+    toggles: number;
+    paused: boolean;
+    representation?: string;
+};
+
+type ExclusiveOwnershipToggleProfile = {
+    index: number;
+    regionVisible: boolean;
+    wholeAtoms: number;
+    regionToggleMs: number;
+    removeMs: number;
+    buildSelectionMs: number;
+    bundleMs: number;
+    componentCommitMs: number;
+    addRepresentationMs: number;
+    totalMs: number;
+};
+
+type ExclusiveOwnershipMaskToggleProfile = {
+    index: number;
+    regionVisible: boolean;
+    maskedAtoms: number;
+    regionToggleMs: number;
+    clearTransparencyMs: number;
+    buildSelectionMs: number;
+    lociMs: number;
+    applyTransparencyMs: number;
+    totalMs: number;
+};
+
+type ExclusiveOwnershipComponentProbe = {
+    wholeComponentRefsBeforeRegion: string[];
+    wholeComponentRefsAfterRegion: string[];
+    targetWholeComponentRefs: string[];
+    regionComponentRef: string | null;
+    regionIncludedInGetComponents: boolean;
+};
+
+type TransparencyRecord = {
+    componentRef: string;
+    representationRef: string;
+    layerCount: number;
+    layerValues: number[];
+    atomCount: number;
+    atomSetMatchesExpected: boolean;
+};
+
+type ExclusiveOwnershipInvariantProbe = {
+    targetWholeComponentRefs: string[];
+    regionComponentRef: string | null;
+    wholeTransparencyRecords: TransparencyRecord[];
+    regionTransparencyRecords: TransparencyRecord[];
+    wholeMaskedAtoms: number;
+    regionMaskedAtoms: number;
+    expectedMaskedAtoms: number;
+    wholeOwnedAtomsTransparent: boolean;
+    regionOwnedAtomsOpaque: boolean;
+    wholeUnownedAtomsOpaque: boolean;
+};
+
+type PickingProbeCaseName = "owned-region-visible" | "unowned-region-visible" | "owned-region-hidden";
+
+type PickingProbeCase = {
+    case: PickingProbeCaseName;
+    atomIndex: number;
+    regionVisible: boolean;
+    picked: boolean;
+    source: "whole" | "region" | "other" | "none";
+    representationRef: string | null;
+    componentRef: string | null;
+    atomIndices: number[];
+    pickPoint: [number, number];
+    invariantProbe: ExclusiveOwnershipInvariantProbe;
+};
+
+function atomRange(start: number, stop: number): number[] {
+    return Array.from({ length: Math.max(0, stop - start) }, (_value, index) => start + index);
+}
+
+async function removeStateObject(plugin: any, ref: unknown): Promise<number> {
+    if (ref === undefined || ref === null) return 0;
+    const resolved = String(ref);
+    const cells = plugin && plugin.state && plugin.state.data ? plugin.state.data.cells : undefined;
+    if (cells && typeof cells.has === "function" && !cells.has(resolved)) return 0;
+    const started = performance.now();
+    await PluginCommands.State.RemoveObject(plugin, {
+        state: plugin.state.data,
+        ref: resolved,
+        removeParentGhosts: true,
+    });
+    return performance.now() - started;
+}
+
+async function buildExclusiveWhole(
+    controller: ProfileController,
+    atomIndices: number[],
+    representation: string,
+): Promise<{ componentRef: unknown; profile: Omit<ExclusiveOwnershipToggleProfile, "index" | "regionVisible" | "wholeAtoms" | "regionToggleMs" | "removeMs" | "totalMs"> }> {
+    const structure = controller.getStructureData();
+    const structureRef = controller.loadedStructure ? controller.loadedStructure.structure : undefined;
+    if (!structure || !structureRef) {
+        throw new Error("Exclusive ownership profile requires a loaded structure.");
+    }
+
+    const selectionStarted = performance.now();
+    const selection = controller.state.buildSelectionFromAtomIndices(structure, atomIndices);
+    const buildSelectionMs = performance.now() - selectionStarted;
+    if (!selection) throw new Error("Exclusive ownership profile produced an empty whole selection.");
+
+    const bundleStarted = performance.now();
+    const bundle = StructureElement.Bundle.fromSelection(selection as any);
+    const bundleMs = performance.now() - bundleStarted;
+
+    const commitStarted = performance.now();
+    const component = controller.plugin.state.data
+        .build()
+        .to(structureRef)
+        .apply(StateTransforms.Model.StructureComponent, {
+            type: { name: "bundle", params: bundle },
+            nullIfEmpty: true,
+            label: "__exclusive_whole_profile__",
+    });
+    await component.commit({ revertOnError: false });
+    const componentCommitMs = performance.now() - commitStarted;
+    const componentRef = component.selector ? component.selector.ref : undefined;
+    if (!component.selector || !component.selector.isOk || !componentRef) {
+        throw new Error("Exclusive ownership profile failed to build whole component.");
+    }
+
+    const reprStarted = performance.now();
+    await controller.plugin.builders.structure.representation.addRepresentation(
+        componentRef,
+        { type: representation },
+        { tag: "__exclusive_whole_profile__" },
+    );
+    const addRepresentationMs = performance.now() - reprStarted;
+
+    return {
+        componentRef,
+        profile: {
+            buildSelectionMs,
+            bundleMs,
+            componentCommitMs,
+            addRepresentationMs,
+        },
+    };
+}
+
+function getWholeComponents(controller: ProfileController): any[] {
+    const structures = controller.plugin.managers.structure.hierarchy.current.structures;
+    const last = structures.length ? structures[structures.length - 1] : undefined;
+    return last && Array.isArray(last.components) ? last.components : [];
+}
+
+function componentRefs(components: any[]): string[] {
+    return components
+        .map((component) => {
+            const ref = component && component.cell && component.cell.transform
+                ? component.cell.transform.ref
+                : component && component.transform
+                    ? component.transform.ref
+                    : component && component.ref
+                        ? component.ref
+                        : undefined;
+            return typeof ref === "string" ? ref : "";
+        })
+        .filter((ref) => ref.length > 0);
+}
+
+function findComponentByRef(controller: ProfileController, componentRef: unknown): any | null {
+    const ref = typeof componentRef === "string" ? componentRef : null;
+    if (!ref) return null;
+    const structures = controller.plugin.managers.structure.hierarchy.current.structures;
+    for (const structureRef of structures) {
+        for (const component of structureRef.components ?? []) {
+            const [candidate] = componentRefs([component]);
+            if (candidate === ref) return component;
+        }
+    }
+    return null;
+}
+
+function getRegionComponentRef(controller: ProfileController, tag: string): string | null {
+    const regionIndex = (controller.state as any).regionIndex;
+    const entry = regionIndex && typeof regionIndex.get === "function" ? regionIndex.get(tag) : undefined;
+    const component = entry ? entry.component : undefined;
+    const ref = typeof component === "string"
+        ? component
+        : component && typeof component.ref === "string"
+            ? component.ref
+            : null;
+    return ref;
+}
+
+function atomIndicesToLoci(structure: Structure, atomIndices: number[]): StructureElement.Loci | null {
+    const target = new Set(atomIndices);
+    const lociElements: { unit: Unit.Atomic; indices: any }[] = [];
+    for (const unit of structure.units) {
+        if (!Unit.isAtomic(unit)) continue;
+        const matched: number[] = [];
+        const elements = unit.elements;
+        const count = OrderedSet.size(elements);
+        for (let ordinal = 0; ordinal < count; ordinal++) {
+            if (target.has(OrderedSet.getAt(elements, ordinal))) matched.push(ordinal);
+        }
+        if (matched.length > 0) lociElements.push({ unit, indices: SortedArray.ofSortedArray(matched) });
+    }
+    return lociElements.length > 0 ? StructureElement.Loci(structure, lociElements as any) : null;
+}
+
+function atomPosition(structure: Structure, atomIndex: number): Vec3 | null {
+    const position = Vec3();
+    for (const unit of structure.units) {
+        if (!Unit.isAtomic(unit)) continue;
+        const elements = unit.elements;
+        const count = OrderedSet.size(elements);
+        for (let ordinal = 0; ordinal < count; ordinal++) {
+            const elementIndex = OrderedSet.getAt(elements, ordinal);
+            if (elementIndex !== atomIndex) continue;
+            unit.conformation.position(elementIndex, position);
+            return position;
+        }
+    }
+    return null;
+}
+
+function lociAtomIndices(loci: any): number[] {
+    if (!StructureElement.Loci.is(loci)) return [];
+    const seen = new Set<number>();
+    const atomIndices: number[] = [];
+    for (const element of loci.elements) {
+        const { unit, indices } = element;
+        const count = OrderedSet.size(indices);
+        for (let ordinal = 0; ordinal < count; ordinal++) {
+            const unitIndex = OrderedSet.getAt(indices, ordinal);
+            const atomIndex = OrderedSet.getAt(unit.elements, unitIndex);
+            if (!seen.has(atomIndex)) {
+                seen.add(atomIndex);
+                atomIndices.push(atomIndex);
+            }
+        }
+    }
+    atomIndices.sort((left, right) => left - right);
+    return atomIndices;
+}
+
+function bundleAtomIndices(bundle: StructureElement.Bundle, structure: Structure): number[] {
+    const loci = StructureElement.Bundle.toLoci(bundle, structure);
+    const atomIndices: number[] = [];
+    for (const element of loci.elements) {
+        const { unit, indices } = element;
+        const size = OrderedSet.size(indices);
+        for (let ordinal = 0; ordinal < size; ordinal++) {
+            const unitIndex = OrderedSet.getAt(indices, ordinal);
+            atomIndices.push(OrderedSet.getAt(unit.elements, unitIndex));
+        }
+    }
+    atomIndices.sort((left, right) => left - right);
+    return atomIndices;
+}
+
+function findPickedRepresentation(
+    controller: ProfileController,
+    repr: any,
+    wholeComponentRefs: string[],
+    regionComponentRef: string | null,
+): { source: "whole" | "region" | "other" | "none"; representationRef: string | null; componentRef: string | null } {
+    if (!repr) return { source: "none", representationRef: null, componentRef: null };
+    const wholeRefs = new Set(wholeComponentRefs);
+    const structures = controller.plugin.managers.structure.hierarchy.current.structures;
+    for (const structureRef of structures) {
+        for (const component of structureRef.components ?? []) {
+            const [componentRef] = componentRefs([component]);
+            for (const representation of component.representations ?? []) {
+                const cell = representation.cell;
+                if (cell && cell.obj && cell.obj.data && cell.obj.data.repr === repr) {
+                    const representationRef = cell.transform.ref;
+                    const source = componentRef === regionComponentRef
+                        ? "region"
+                        : wholeRefs.has(componentRef)
+                            ? "whole"
+                            : "other";
+                    return { source, representationRef, componentRef };
+                }
+            }
+        }
+    }
+    return { source: "other", representationRef: null, componentRef: null };
+}
+
+function identifyAtBestPoint(
+    controller: ProfileController,
+    atomIndex: number,
+    wholeComponentRefs: string[],
+    regionComponentRef: string | null,
+): { picked: boolean; source: "whole" | "region" | "other" | "none"; representationRef: string | null; componentRef: string | null; atomIndices: number[]; pickPoint: [number, number] } {
+    const structure = controller.getStructureData();
+    const canvas3d = controller.plugin.canvas3d;
+    if (!structure || !canvas3d) {
+        return { picked: false, source: "none", representationRef: null, componentRef: null, atomIndices: [], pickPoint: [0, 0] };
+    }
+    const position = atomPosition(structure, atomIndex);
+    if (!position) throw new Error(`Could not locate atom ${atomIndex}.`);
+    const projected = cameraProject(Vec4(), position, canvas3d.camera.viewport, canvas3d.camera.projectionView);
+    const viewport = canvas3d.camera.viewport;
+    const candidates: Array<[number, number]> = [
+        [projected[0], projected[1]],
+        [projected[0], viewport.height - projected[1]],
+        [viewport.width / 2, viewport.height / 2],
+    ];
+    for (const [x, y] of candidates) {
+        const pick = canvas3d.identify(Vec2.create(x, y));
+        const lociInfo = canvas3d.getLoci(pick ? pick.id : undefined);
+        const picked = findPickedRepresentation(controller, lociInfo.repr, wholeComponentRefs, regionComponentRef);
+        if (pick) {
+            return {
+                picked: true,
+                ...picked,
+                atomIndices: lociAtomIndices(lociInfo.loci),
+                pickPoint: [x, y],
+            };
+        }
+    }
+    return { picked: false, source: "none", representationRef: null, componentRef: null, atomIndices: [], pickPoint: [projected[0], projected[1]] };
+}
+
+function sameAtomIndices(left: number[], right: number[]): boolean {
+    if (left.length !== right.length) return false;
+    for (let index = 0; index < left.length; index++) {
+        if (left[index] !== right[index]) return false;
+    }
+    return true;
+}
+
+function transparencyRecords(plugin: any, components: any[], expectedAtomIndices: number[]): TransparencyRecord[] {
+    const records: TransparencyRecord[] = [];
+    const state = plugin.state.data;
+    for (const component of components) {
+        const [componentRef] = componentRefs([component]);
+        const representations = Array.isArray(component.representations) ? component.representations : [];
+        for (const representation of representations) {
+            const cell = representation.cell;
+            const representationRef = cell && cell.transform ? cell.transform.ref : undefined;
+            const sourceData = cell && cell.obj && cell.obj.data ? cell.obj.data.sourceData : undefined;
+            if (typeof representationRef !== "string" || !sourceData) continue;
+            const transparencyCells = state.select(
+                StateSelection.Generators.ofTransformer(
+                    StateTransforms.Representation.TransparencyStructureRepresentation3DFromBundle,
+                    representationRef,
+                ).withTag("transparency-controls"),
+            );
+            for (const transparencyCell of transparencyCells) {
+                const layers = transparencyCell.params && transparencyCell.params.values
+                    ? transparencyCell.params.values.layers
+                    : [];
+                if (!Array.isArray(layers) || layers.length === 0) continue;
+                let atomCount = 0;
+                const layerValues: number[] = [];
+                const transparentAtomIndices: number[] = [];
+                for (const layer of layers) {
+                    if (!layer || !layer.bundle) continue;
+                    layerValues.push(Number(layer.value));
+                    const atomIndices = bundleAtomIndices(layer.bundle, sourceData.root);
+                    atomCount += atomIndices.length;
+                    transparentAtomIndices.push(...atomIndices);
+                }
+                transparentAtomIndices.sort((left, right) => left - right);
+                records.push({
+                    componentRef,
+                    representationRef,
+                    layerCount: layers.length,
+                    layerValues,
+                    atomCount,
+                    atomSetMatchesExpected: sameAtomIndices(transparentAtomIndices, expectedAtomIndices),
+                });
+            }
+        }
+    }
+    return records;
+}
+
+function sumRecordAtoms(records: TransparencyRecord[]): number {
+    return records.reduce((total, record) => total + record.atomCount, 0);
+}
+
+function recordsAreFullyTransparent(records: TransparencyRecord[]): boolean {
+    return records.length > 0 && records.every((record) => (
+        record.layerValues.length > 0 && record.layerValues.every((value) => value === 1)
+    ));
+}
+
+function probeExclusiveOwnershipInvariant(
+    controller: ProfileController,
+    wholeComponents: any[],
+    regionComponents: any[],
+    regionComponentRef: string | null,
+    expectedMaskedAtoms: number,
+): ExclusiveOwnershipInvariantProbe {
+    const expectedAtomIndices = atomRange(0, expectedMaskedAtoms);
+    const wholeRecords = transparencyRecords(controller.plugin, wholeComponents, expectedAtomIndices);
+    const regionRecords = transparencyRecords(controller.plugin, regionComponents, expectedAtomIndices);
+    const wholeMaskedAtoms = sumRecordAtoms(wholeRecords);
+    const regionMaskedAtoms = sumRecordAtoms(regionRecords);
+    const targetWholeComponentRefs = componentRefs(wholeComponents);
+    return {
+        targetWholeComponentRefs,
+        regionComponentRef,
+        wholeTransparencyRecords: wholeRecords,
+        regionTransparencyRecords: regionRecords,
+        wholeMaskedAtoms,
+        regionMaskedAtoms,
+        expectedMaskedAtoms,
+        wholeOwnedAtomsTransparent: wholeMaskedAtoms === expectedMaskedAtoms && recordsAreFullyTransparent(wholeRecords),
+        regionOwnedAtomsOpaque: regionMaskedAtoms === 0 && regionRecords.length === 0,
+        wholeUnownedAtomsOpaque: wholeRecords.length > 0 && wholeRecords.every((record) => record.atomSetMatchesExpected),
+    };
+}
+
+function buildHiddenSelection(structure: Structure, hiddenAtomIndices: number[]): { selection: any; buildSelectionMs: number } {
+    const started = performance.now();
+    const selectionBuilder = StructureSelection.LinearBuilder(structure);
+    const hiddenSet = new Set(hiddenAtomIndices);
+    let hasHidden = false;
+
+    for (const unit of structure.units) {
+        if (!Unit.isAtomic(unit)) continue;
+        const elementCount = OrderedSet.size(unit.elements);
+        if (elementCount === 0) continue;
+
+        const hiddenElements: number[] = [];
+        for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+            const elementIndex = OrderedSet.getAt(unit.elements, ordinal);
+            if (hiddenSet.has(elementIndex)) hiddenElements.push(elementIndex);
+        }
+        if (hiddenElements.length === 0) continue;
+        hasHidden = true;
+
+        const subset =
+            hiddenElements.length === elementCount
+                ? unit.elements
+                : (SortedArray.ofSortedArray(hiddenElements) as StructureElement.Set);
+        const childUnit = unit.getChild(subset);
+        const hiddenStructure = Structure.create([childUnit], { parent: structure });
+        selectionBuilder.add(hiddenStructure);
+    }
+
+    if (!hasHidden) return { selection: undefined, buildSelectionMs: performance.now() - started };
+    return { selection: selectionBuilder.getSelection(), buildSelectionMs: performance.now() - started };
+}
+
+async function setRegionVisibility(controller: ProfileController, tag: string, visible: boolean): Promise<number> {
+    const regionIndex = (controller.state as any).regionIndex;
+    const entry = regionIndex && typeof regionIndex.get === "function" ? regionIndex.get(tag) : undefined;
+    const refs = entry && Array.isArray(entry.representations) ? entry.representations : [];
+    const started = performance.now();
+    for (const ref of refs) {
+        setSubtreeVisibility(controller.plugin.state.data, ref, !visible);
+    }
+    return performance.now() - started;
 }
 
 export async function createController(targetId = "root") {
@@ -16,7 +510,325 @@ export async function createController(targetId = "root") {
     return controller;
 }
 
-if (typeof window !== "undefined") {
-    (window as any).Harness = { createController };
+export async function profileExclusiveOwnership(
+    controller: MolSysViewerController,
+    options: ExclusiveOwnershipProfileOptions,
+): Promise<ExclusiveOwnershipToggleProfile[]> {
+    const profiled = controller as ProfileController;
+    const atoms = Math.trunc(options.atoms);
+    const ownedAtoms = Math.trunc(options.ownedAtoms);
+    const toggles = Math.trunc(options.toggles);
+    const representation = options.representation ?? "cartoon";
+    if (atoms <= 0 || ownedAtoms <= 0 || ownedAtoms >= atoms || toggles <= 0) {
+        throw new Error("Invalid exclusive ownership profile options.");
+    }
+
+    const canvas3d = profiled.plugin.canvas3d as { pause(value: boolean): void } | undefined;
+    if (canvas3d) canvas3d.pause(options.paused);
+
+    const owned = atomRange(0, ownedAtoms);
+    const fullWhole = atomRange(0, atoms);
+    const complementWhole = atomRange(ownedAtoms, atoms);
+
+    await profiled.handleMessage({ op: "hide_global", target: "global" });
+    await profiled.handleMessage({ op: "create_region", tag: "__exclusive_owned_region__", atom_indices: owned });
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__exclusive_owned_region__",
+        representation: "ball-and-stick",
+    });
+
+    let currentWhole = await buildExclusiveWhole(profiled, fullWhole, representation);
+    const profiles: ExclusiveOwnershipToggleProfile[] = [];
+
+    for (let index = 0; index < toggles; index++) {
+        const regionVisible = index % 2 === 0;
+        const wholeAtoms = regionVisible ? complementWhole : fullWhole;
+        const totalStarted = performance.now();
+
+        const regionToggleStarted = performance.now();
+        await profiled.handleMessage({
+            op: regionVisible ? "show_region" : "hide_region",
+            tag: "__exclusive_owned_region__",
+        });
+        const regionToggleMs = performance.now() - regionToggleStarted;
+
+        const removeMs = await removeStateObject(profiled.plugin, currentWhole.componentRef);
+        currentWhole = await buildExclusiveWhole(profiled, wholeAtoms, representation);
+        profiles.push({
+            index,
+            regionVisible,
+            wholeAtoms: wholeAtoms.length,
+            regionToggleMs,
+            removeMs,
+            ...currentWhole.profile,
+            totalMs: performance.now() - totalStarted,
+        });
+    }
+
+    await removeStateObject(profiled.plugin, currentWhole.componentRef);
+    return profiles;
 }
 
+export async function profileExclusiveOwnershipMask(
+    controller: MolSysViewerController,
+    options: ExclusiveOwnershipProfileOptions,
+): Promise<{ componentProbe: ExclusiveOwnershipComponentProbe; invariantProbe: ExclusiveOwnershipInvariantProbe | null; toggles: ExclusiveOwnershipMaskToggleProfile[] }> {
+    const profiled = controller as ProfileController;
+    const atoms = Math.trunc(options.atoms);
+    const ownedAtoms = Math.trunc(options.ownedAtoms);
+    const toggles = Math.trunc(options.toggles);
+    if (atoms <= 0 || ownedAtoms <= 0 || ownedAtoms >= atoms || toggles <= 0) {
+        throw new Error("Invalid exclusive ownership mask profile options.");
+    }
+
+    const structure = profiled.getStructureData();
+    if (!structure) throw new Error("Exclusive ownership mask profile requires a loaded structure.");
+    const canvas3d = profiled.plugin.canvas3d as { pause(value: boolean): void } | undefined;
+    if (canvas3d) canvas3d.pause(options.paused);
+
+    const wholeComponentsBeforeRegion = getWholeComponents(profiled);
+    const refsBeforeRegion = componentRefs(wholeComponentsBeforeRegion);
+    const owned = atomRange(0, ownedAtoms);
+
+    await profiled.handleMessage({ op: "create_region", tag: "__exclusive_mask_region__", atom_indices: owned });
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__exclusive_mask_region__",
+        representation: "ball-and-stick",
+    });
+
+    const wholeComponentsAfterRegion = getWholeComponents(profiled);
+    const refsAfterRegion = componentRefs(wholeComponentsAfterRegion);
+    const regionComponentRef = getRegionComponentRef(profiled, "__exclusive_mask_region__");
+    const componentProbe = {
+        wholeComponentRefsBeforeRegion: refsBeforeRegion,
+        wholeComponentRefsAfterRegion: refsAfterRegion,
+        targetWholeComponentRefs: refsBeforeRegion,
+        regionComponentRef,
+        regionIncludedInGetComponents: regionComponentRef !== null && refsAfterRegion.includes(regionComponentRef),
+    };
+
+    const profiles: ExclusiveOwnershipMaskToggleProfile[] = [];
+    const wholeComponents = wholeComponentsBeforeRegion;
+    if (wholeComponents.length === 0) throw new Error("Exclusive ownership mask profile found no whole components.");
+    const regionComponents = wholeComponentsAfterRegion.filter((component) => {
+        const [ref] = componentRefs([component]);
+        return regionComponentRef !== null && ref === regionComponentRef;
+    });
+    let invariantProbe: ExclusiveOwnershipInvariantProbe | null = null;
+
+    for (let index = 0; index < toggles; index++) {
+        const regionVisible = index % 2 === 0;
+        const totalStarted = performance.now();
+
+        const regionToggleMs = await setRegionVisibility(profiled, "__exclusive_mask_region__", regionVisible);
+
+        const clearStarted = performance.now();
+        await clearStructureTransparency(profiled.plugin, wholeComponents);
+        const clearTransparencyMs = performance.now() - clearStarted;
+
+        let buildSelectionMs = 0;
+        let lociMs = 0;
+        let applyTransparencyMs = 0;
+        if (regionVisible) {
+            const selectionResult = buildHiddenSelection(structure, owned);
+            buildSelectionMs = selectionResult.buildSelectionMs;
+            const selection = selectionResult.selection;
+            if (!selection || StructureSelection.isEmpty(selection)) {
+                throw new Error("Exclusive ownership mask profile produced an empty hidden selection.");
+            }
+            const lociStarted = performance.now();
+            const loci = StructureSelection.toLociWithSourceUnits(selection);
+            lociMs = performance.now() - lociStarted;
+
+            const applyStarted = performance.now();
+            await setStructureTransparency(profiled.plugin, wholeComponents, 1, async () => loci);
+            applyTransparencyMs = performance.now() - applyStarted;
+
+            const probe = probeExclusiveOwnershipInvariant(
+                profiled,
+                wholeComponents,
+                regionComponents,
+                regionComponentRef,
+                ownedAtoms,
+            );
+            if (!probe.wholeOwnedAtomsTransparent || !probe.regionOwnedAtomsOpaque || !probe.wholeUnownedAtomsOpaque) {
+                throw new Error(`Exclusive ownership mask invariant failed: ${JSON.stringify(probe)}`);
+            }
+            if (invariantProbe === null) invariantProbe = probe;
+        }
+
+        profiles.push({
+            index,
+            regionVisible,
+            maskedAtoms: regionVisible ? owned.length : 0,
+            regionToggleMs,
+            clearTransparencyMs,
+            buildSelectionMs,
+            lociMs,
+            applyTransparencyMs,
+            totalMs: performance.now() - totalStarted,
+        });
+    }
+
+    await clearStructureTransparency(profiled.plugin, wholeComponents);
+    await setRegionVisibility(profiled, "__exclusive_mask_region__", false);
+    return { componentProbe, invariantProbe, toggles: profiles };
+}
+
+export async function profileRegionVisibilityControl(
+    controller: MolSysViewerController,
+    options: ExclusiveOwnershipProfileOptions,
+): Promise<ExclusiveOwnershipMaskToggleProfile[]> {
+    const profiled = controller as ProfileController;
+    const atoms = Math.trunc(options.atoms);
+    const ownedAtoms = Math.trunc(options.ownedAtoms);
+    const toggles = Math.trunc(options.toggles);
+    if (atoms <= 0 || ownedAtoms <= 0 || ownedAtoms >= atoms || toggles <= 0) {
+        throw new Error("Invalid region visibility control profile options.");
+    }
+    const canvas3d = profiled.plugin.canvas3d as { pause(value: boolean): void } | undefined;
+    if (canvas3d) canvas3d.pause(options.paused);
+    const owned = atomRange(0, ownedAtoms);
+    await profiled.handleMessage({ op: "create_region", tag: "__visibility_control_region__", atom_indices: owned });
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__visibility_control_region__",
+        representation: "ball-and-stick",
+    });
+    const profiles: ExclusiveOwnershipMaskToggleProfile[] = [];
+    for (let index = 0; index < toggles; index++) {
+        const regionVisible = index % 2 === 0;
+        const totalStarted = performance.now();
+        const regionToggleMs = await setRegionVisibility(profiled, "__visibility_control_region__", regionVisible);
+        profiles.push({
+            index,
+            regionVisible,
+            maskedAtoms: 0,
+            regionToggleMs,
+            clearTransparencyMs: 0,
+            buildSelectionMs: 0,
+            lociMs: 0,
+            applyTransparencyMs: 0,
+            totalMs: performance.now() - totalStarted,
+        });
+    }
+    await setRegionVisibility(profiled, "__visibility_control_region__", false);
+    return profiles;
+}
+
+export async function probeExclusiveOwnershipPicking(
+    controller: MolSysViewerController,
+    options: { atoms: number; ownedAtoms: number; cases?: PickingProbeCaseName[]; cleanup?: boolean },
+): Promise<{ cases: PickingProbeCase[]; pickabilityNotes: string[] }> {
+    const profiled = controller as ProfileController;
+    const atoms = Math.trunc(options.atoms);
+    const ownedAtoms = Math.trunc(options.ownedAtoms);
+    if (atoms <= 2 || ownedAtoms <= 0 || ownedAtoms >= atoms) {
+        throw new Error("Invalid exclusive ownership picking probe options.");
+    }
+    const structure = profiled.getStructureData();
+    if (!structure) throw new Error("Exclusive ownership picking probe requires a loaded structure.");
+
+    const owned = atomRange(0, ownedAtoms);
+    await profiled.handleMessage({ op: "hide_global", target: "global" });
+    const explicitWhole = await buildExclusiveWhole(profiled, atomRange(0, atoms), "cartoon");
+    const explicitWholeComponent = findComponentByRef(profiled, explicitWhole.componentRef);
+    if (!explicitWholeComponent) throw new Error("Exclusive ownership picking probe failed to create explicit whole component.");
+    const wholeComponentsBeforeRegion = [explicitWholeComponent];
+    const refsBeforeRegion = componentRefs(wholeComponentsBeforeRegion);
+    await profiled.handleMessage({ op: "create_region", tag: "__exclusive_pick_region__", atom_indices: owned });
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__exclusive_pick_region__",
+        representation: "ball-and-stick",
+    });
+    const regionComponentRef = getRegionComponentRef(profiled, "__exclusive_pick_region__");
+    const wholeComponentsAfterRegion = getWholeComponents(profiled);
+    const regionComponents = wholeComponentsAfterRegion.filter((component) => {
+        const [ref] = componentRefs([component]);
+        return regionComponentRef !== null && ref === regionComponentRef;
+    });
+    if (regionComponents.length === 0) throw new Error("Exclusive ownership picking probe could not find the region component.");
+    const canvas3d = profiled.plugin.canvas3d;
+    if (!canvas3d) throw new Error("Exclusive ownership picking probe requires Canvas3D.");
+
+    async function runCase(name: PickingProbeCaseName, atomIndex: number, regionVisible: boolean): Promise<PickingProbeCase> {
+        await setRegionVisibility(profiled, "__exclusive_pick_region__", regionVisible);
+        await clearStructureTransparency(profiled.plugin, wholeComponentsBeforeRegion);
+        const selectionResult = buildHiddenSelection(structure, owned);
+        if (!selectionResult.selection || StructureSelection.isEmpty(selectionResult.selection)) {
+            throw new Error("Exclusive ownership picking probe produced an empty hidden selection.");
+        }
+        const loci = StructureSelection.toLociWithSourceUnits(selectionResult.selection);
+        await setStructureTransparency(profiled.plugin, wholeComponentsBeforeRegion, 1, async () => loci);
+        const invariantProbe = probeExclusiveOwnershipInvariant(
+            profiled,
+            wholeComponentsBeforeRegion,
+            regionComponents,
+            regionComponentRef,
+            ownedAtoms,
+        );
+        if (!invariantProbe.wholeOwnedAtomsTransparent || !invariantProbe.regionOwnedAtomsOpaque || !invariantProbe.wholeUnownedAtomsOpaque) {
+            throw new Error(`Exclusive ownership picking invariant failed: ${JSON.stringify(invariantProbe)}`);
+        }
+        const focusLoci = atomIndicesToLoci(structure, [atomIndex]);
+        if (!focusLoci) throw new Error(`Could not focus atom ${atomIndex}.`);
+        profiled.plugin.managers.camera.focusLoci(focusLoci, { durationMs: 0, extraRadius: 1, minRadius: 1 });
+        canvas3d.commit(true);
+        canvas3d.requestDraw();
+        await new Promise((resolve) => setTimeout(resolve, 120));
+        const picked = identifyAtBestPoint(profiled, atomIndex, refsBeforeRegion, regionComponentRef);
+        return {
+            case: name,
+            atomIndex,
+            regionVisible,
+            picked: picked.picked,
+            source: picked.source,
+            representationRef: picked.representationRef,
+            componentRef: picked.componentRef,
+            atomIndices: picked.atomIndices,
+            pickPoint: picked.pickPoint,
+            invariantProbe,
+        };
+    }
+
+    const requestedCases = options.cases ?? [
+        "owned-region-visible",
+        "unowned-region-visible",
+        "owned-region-hidden",
+    ];
+    const cases: PickingProbeCase[] = [];
+    for (const caseName of requestedCases) {
+        if (caseName === "owned-region-visible") {
+            cases.push(await runCase("owned-region-visible", Math.min(1, ownedAtoms - 1), true));
+        } else if (caseName === "unowned-region-visible") {
+            cases.push(await runCase("unowned-region-visible", ownedAtoms, true));
+        } else if (caseName === "owned-region-hidden") {
+            cases.push(await runCase("owned-region-hidden", Math.min(1, ownedAtoms - 1), false));
+        }
+    }
+    if (options.cleanup !== false) {
+        await clearStructureTransparency(profiled.plugin, wholeComponentsBeforeRegion);
+        await setRegionVisibility(profiled, "__exclusive_pick_region__", false);
+        await removeStateObject(profiled.plugin, explicitWhole.componentRef);
+    }
+    return {
+        cases,
+        pickabilityNotes: [
+            "Mol* exposes representation-level pickable state, not a per-loci pick mask equivalent to Transparency/Overpaint/Clipping.",
+            "The pick shader discards fragments whose effective alpha is below the picking threshold, so full transparency can remove fragments from the pick pass.",
+        ],
+    };
+}
+
+if (typeof window !== "undefined") {
+    (window as any).Harness = {
+        createController,
+        profileExclusiveOwnership,
+        profileExclusiveOwnershipMask,
+        profileRegionVisibilityControl,
+        probeExclusiveOwnershipPicking,
+    };
+}
