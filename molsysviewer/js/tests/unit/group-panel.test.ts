@@ -1629,3 +1629,24 @@ test("GroupPanel mounts the residue color-scheme (palette) toggle in the System 
         restore();
     }
 });
+
+test("GroupPanel tabs have correct tooltips and initial subtitle labels", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
+        const root = host.children[0];
+        const tabs = collectByAttribute(root, "data-molsysviewer-group-panel-tab");
+        const systemTab = tabs.find(t => t.getAttribute("data-molsysviewer-group-panel-tab") === "system");
+        const wholeTab = tabs.find(t => t.getAttribute("data-molsysviewer-group-panel-tab") === "whole");
+
+        assert.ok(systemTab);
+        assert.ok(wholeTab);
+        assert.strictEqual(systemTab.title, "Molecular hierarchy, chain sequence, and residue-level selections.");
+        assert.strictEqual(wholeTab.title, "Global representation styling, visual presets, and overall system view.");
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+

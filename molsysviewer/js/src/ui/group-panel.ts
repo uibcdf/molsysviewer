@@ -253,6 +253,7 @@ export class GroupPanel {
         const settingsBtn = document.createElement("button");
         settingsBtn.type = "button";
         settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
+        settingsBtn.title = "Configure viewer behavior, cache settings, and options.";
         Object.assign(settingsBtn.style, {
             display: "flex",
             flexDirection: "column",
@@ -386,8 +387,8 @@ export class GroupPanel {
         // Register the subpanels and build their tabs, mounting each into its
         // section. Adding a subpanel is a single registry entry.
         const registry: Array<[TabKey, string, string, HTMLDivElement, StudioPanel]> = [
-            ["system", "System", "None", this.systemSection, this.systemPanel],
-            ["whole", "Whole", "None", this.wholeSection, this.wholePanel],
+            ["system", "System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel],
+            ["whole", "Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel],
             ["selection", "Selection", "None", this.selectionSection, this.selectionPanel],
             ["regions", "Regions", "0", this.regionsSection, this.regionsPanel],
             ["measures", "Measures", "0", this.measuresSection, this.measuresPanel],
@@ -425,6 +426,22 @@ export class GroupPanel {
     private addTab(key: TabKey, title: string, initialBadge: string): void {
         const button = document.createElement("button");
         button.setAttribute("data-molsysviewer-group-panel-tab", key);
+        const tooltips: Record<string, string> = {
+            system: "Molecular hierarchy, chain sequence, and residue-level selections.",
+            whole: "Global representation styling, visual presets, and overall system view.",
+            selection: "Create, view, and modify active and saved selection queries.",
+            regions: "Define and style spatial regions, boolean composition, and overlap inspection.",
+            measures: "Measure distances, angles, and dihedrals between atoms.",
+            annotations: "View and customize textual labels, 3D annotations, and overlays.",
+            shapes: "Manage custom 3D geometric shapes and objects in the scene.",
+            layers: "Configure drawing layers, rendering order, and depth settings.",
+            viewport: "Adjust background color, lighting, camera, and display parameters.",
+            export: "Export high-resolution images, coordinates, and system state files.",
+        };
+        const tooltip = tooltips[key];
+        if (tooltip) {
+            button.title = tooltip;
+        }
         Object.assign(button.style, {
             display: "flex",
             flexDirection: "column",

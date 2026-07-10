@@ -208,7 +208,9 @@ export class SystemPanel implements StudioPanel {
         const naturalVisible = Boolean(this.structure) && grouped.size > 0;
 
         this.ctx.setBadge(
-            naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None",
+            naturalVisible
+                ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res`
+                : "Molecular Hierarchy & Sequence",
         );
 
         if (this.structure && grouped.size > 0) {

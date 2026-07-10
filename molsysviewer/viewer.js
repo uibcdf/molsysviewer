@@ -151842,7 +151842,7 @@ var SystemPanel = class {
     }
     const naturalVisible = Boolean(this.structure) && grouped.size > 0;
     this.ctx.setBadge(
-      naturalVisible ? `${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "None"
+      naturalVisible ? `Hierarchy: ${grouped.size} chain${grouped.size === 1 ? "" : "s"}, ${items.length} res` : "Molecular Hierarchy & Sequence"
     );
     if (this.structure && grouped.size > 0) {
       for (const [chain2, chainItems] of grouped.entries()) {
@@ -153456,6 +153456,7 @@ var GroupPanel = class {
     const settingsBtn = document.createElement("button");
     settingsBtn.type = "button";
     settingsBtn.setAttribute("data-molsysviewer-group-settings-btn", "true");
+    settingsBtn.title = "Configure viewer behavior, cache settings, and options.";
     Object.assign(settingsBtn.style, {
       display: "flex",
       flexDirection: "column",
@@ -153579,8 +153580,8 @@ var GroupPanel = class {
       }
     });
     const registry = [
-      ["system", "System", "None", this.systemSection, this.systemPanel],
-      ["whole", "Whole", "None", this.wholeSection, this.wholePanel],
+      ["system", "System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel],
+      ["whole", "Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel],
       ["selection", "Selection", "None", this.selectionSection, this.selectionPanel],
       ["regions", "Regions", "0", this.regionsSection, this.regionsPanel],
       ["measures", "Measures", "0", this.measuresSection, this.measuresPanel],
@@ -153614,6 +153615,22 @@ var GroupPanel = class {
   addTab(key2, title, initialBadge) {
     const button = document.createElement("button");
     button.setAttribute("data-molsysviewer-group-panel-tab", key2);
+    const tooltips = {
+      system: "Molecular hierarchy, chain sequence, and residue-level selections.",
+      whole: "Global representation styling, visual presets, and overall system view.",
+      selection: "Create, view, and modify active and saved selection queries.",
+      regions: "Define and style spatial regions, boolean composition, and overlap inspection.",
+      measures: "Measure distances, angles, and dihedrals between atoms.",
+      annotations: "View and customize textual labels, 3D annotations, and overlays.",
+      shapes: "Manage custom 3D geometric shapes and objects in the scene.",
+      layers: "Configure drawing layers, rendering order, and depth settings.",
+      viewport: "Adjust background color, lighting, camera, and display parameters.",
+      export: "Export high-resolution images, coordinates, and system state files."
+    };
+    const tooltip = tooltips[key2];
+    if (tooltip) {
+      button.title = tooltip;
+    }
     Object.assign(button.style, {
       display: "flex",
       flexDirection: "column",
