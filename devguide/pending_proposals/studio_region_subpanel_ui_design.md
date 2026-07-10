@@ -1,6 +1,6 @@
 # Proposal: Studio → Regions Subpanel UI Design & Implementation Spec
 
-**Status:** implemented (2026-07-09).
+**Status:** **partially implemented** (2026-07-09 structure; 2026-07-10 audit).
 **Scope:** UI/UX styling, layout structure, and frontend-backend synchronization for the
 **Regions Subpanel** of the **Studio** panel in MolSysViewer.
 
@@ -8,6 +8,18 @@ This document is the high-fidelity visual/UX specification, supplementing the
 architectural blueprint in `studio_region_subpanel.md`. It reuses the design system
 established for the Selection subpanel (`studio_selection_subpanel_ui_design.md` §4) so
 both subpanels look and feel like one Studio.
+
+> **Normative source:** `region_contracts.md`. This document never redefines backend
+> behaviour. Where a mockup below shows something the code does not do, it is marked
+> **(proposed)** and scheduled in `studio_region_subpanel_implementation_plan.md`.
+>
+> **Not yet built, though drawn below:** provenance in the Inspect panel (§2, §3.B) — no
+> `provenance` exists in Python at all; and the multi-operand checklist of the boolean
+> composer (§2, §3.C) — the code has a single `Region B` dropdown.
+>
+> **Section order:** this document specifies Create → Regions → Boolean. `RegionsPanel.paint()`
+> currently renders Create → **Boolean** → Regions. The code is to follow this document
+> (the composer operates *on* the list, so it reads after it).
 
 The implementation uses stable `data-molsysviewer-region-*` selectors rather than
 semantic CSS class names, while preserving the tokens and visual behavior specified
@@ -61,15 +73,17 @@ Key objectives:
 │      Representation: [ ball-and-stick ▼ ]     Preset: [ (none) ▼ ]            │
 │      Opacity:  [========o----] 0.7            Quality: [ medium ▼ ]           │
 │      Color:    [ Element | Chain | SS | Hydrophob. | Custom ▼ ]  [🎨]          │
-│      Color by: [ (none) | bfactor | occupancy | charge ▼ ]  [ Reset colors ] │
+│      Color by: [ (none) | b_factor | occupancy | … ▼ ] [palette ▼] [Reset col.]│
 │    ── Inspect (ⓘ) ───────────────────────────────────────────────────────     │
 │      128 atoms · 8 groups · 1 chain · center [1.24, 0.88, 2.10] nm            │
+│      Origen: Consulta (MolSysMT) → "molecule_type == 'protein'"   (proposed)   │
 │  ───────────────────────────────────────────────────────────────────────────  │
 │  ▸ backbone (642 atoms · cartoon · hidden)      👁   🗑                        │
 └───────────────────────────────────────────────────────────────────────────────┘
 
 ┌── [Section C] BOOLEAN COMPOSER (Math Composer) ──────────────────────────────┐
-│  [ site ▼ ]   [ ∪ Union | ∩ Intersection | − Difference (A−B) ▼ ]  [ backbone ▼ ]
+│  Base: [ site ▼ ]   Op: [ ∪ Union | ∩ Intersection | − Difference (A−B) ▼ ]   │
+│  Target(s): [x] backbone  [ ] ligand  [x] water                              │
 │  Output name: [ pocket_sidechains ....... ]                      [ Create ]   │
 └───────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -93,7 +107,12 @@ Key objectives:
   auto-incremented** (`A`, `A__2`, …) — **no** collision prompt on this path (a batch
   split must never stall per-element); single creations still use the prompt.
 * **Name & repr:** optional tag (collision policy, §below) and an optional initial
-  representation applied on create.
+  representation applied on create. The dropdown must list the **12 real representations and
+  the real presets** delivered by the backend via `setStyleOptions()` — today it is hardcoded
+  to 7 entries and no presets, which is exactly the flaw the blueprint §1.1 set out to fix.
+  It must also offer **Inherit** (`region_contracts.md` §A.1), and **default to Inherit while
+  the `whole` is hidden**: a region created in state *None* under a hidden whole is silently
+  invisible, and `new_view(selection=…)` hides the whole.
 * **Global:** `Show all` / `Hide all` fire a **single** action → public
   `RegionsManager.show_all()` / `hide_all()` → **single** consolidated summary. The frontend
   does **not** iterate or send per-region messages; batch suppression on the backend avoids
@@ -102,7 +121,8 @@ Key objectives:
 ### B. Region Cards
 * **Header:** tag (click → `focus_region`), atom count + representation hint,
   visibility toggle (`toggle_region_visibility` → `show`/`hide`), delete
-  (`delete_region`).
+  (`delete_region`). **The visibility toggle is disabled for a region in state *None*** — it
+  has no visual of its own to hide (`region_contracts.md` §A.3) — with an explanatory tooltip.
 * **⚠ Overlap badge:** shown when `overlap_tags` is non-empty for a *visible* region.
   Clicking opens **Section C pre-filled** with `Difference` between the pair (explicit,
   non-destructive). Tooltip lists the overlapping tags.
@@ -122,17 +142,31 @@ Key objectives:
   * *Color:* scheme select + custom color picker (`<input type="color">`) → `color_scheme`
     / uniform color; **Color by** attribute dropdown → `color_region_by_attribute` — the
     dropdown lists **only attributes present** in the loaded system (from the summary's
-    `available_attributes` flags), so files without bfactor/charge/occupancy never offer a
-    missing one; `Reset colors` → `reset_colors`.
+    `available_attributes` flags), so files without them never offer a missing one. The names
+    surfaced are the canonical ones — `b_factor`, `occupancy`, `partial_charge`,
+    `formal_charge` — not the `bfactor` / `charge` aliases, which exist only inside
+    `Region.set_color_by_attribute`. **(proposed)** the dropdown must also expose `palette`,
+    `value_range` and `element` (the handler already accepts all three) and must display the
+    **active** attribute rather than resetting to "None" on each repaint.
+  * *Reset colors* → `reset_colors`. **Per `region_contracts.md` §B.3 this clears only this
+    region's colour layer**, revealing whatever lies beneath. The canvas-wide wipe lives in
+    the **Whole** subpanel (`view.reset_all_colors()`), not here. Today's shipped behaviour
+    is the opposite — the button wipes the canvas — and is repaired in Phase 2.
   * *Apply / Cancel* commit via `set_region_representation`.
-* **Inspect (ⓘ, expandable — lazy):** composition + geometric center. Fetched **on demand**
+* **Inspect (ⓘ, expandable — lazy):** composition + geometric center + provenance. Fetched **on demand**
   via `get_region_details { tag }` when the panel opens (**not** in the static summary), and
-  the centroid is resolved in the **current playback frame** for trajectories.
+  the centroid is resolved in the **current playback frame** for trajectories. Shows the structured
+  origin metadata (`provenance`) in clear text (e.g. `Origen: Consulta (MolSysMT) → "molecule_type == 'protein'"` or `Origen: Composición booleana → site_A − (backbone | water)`).
 
 ### C. Boolean Composer
-* Region A dropdown · operator (`∪ | ∩ | −`) · Region B dropdown · output name → `Create`
-  (`compose_regions`). Dropdowns refresh whenever a region is created/deleted/renamed.
-* Difference is **ordered**; the label makes `A − B` explicit.
+
+**(proposed — the shipped composer has a single `Region B` dropdown.)** Multi-operand
+composition rests on the variadic Python operators (`a.difference(b, c)`) added in Phase 4;
+the GUI must not open-code the chaining.
+
+* **Multi-operand Layout:** Supports base region dropdown, operator selection (`∪ | ∩ | −`), and operand targets. For Union and Difference, targets render as a multi-selection checklist of existing regions. For Intersection, it remains a single target selection.
+* `Create` calls `compose_regions` passing the list of operands. Dropdowns refresh whenever a region is created/deleted/renamed.
+* Difference is **ordered**; base region is the positive term, and all selected targets are subtracted.
 
 ### Name-collision handling
 When creating/renaming/composing, if the tag exists the backend raises `ValueError`;
@@ -189,12 +223,16 @@ Selection subpanel.
 
 ## 5. Programming & Backend Synchronization
 
+0. **Contracts first:** `region_contracts.md` governs representation states, colour ownership
+   and serialisation. Nothing in this document overrides it.
 1. **Backend method contracts:** all region operations route through the verified
    Python methods in **§6 of the blueprint** (`studio_region_subpanel.md`) — never
    re-implement region logic in TS.
 2. **Opacity / quality:** no protocol change — `set_region_representation`'s `params`
    already flow to Mol\* `typeParams` (blueprint §6.3). The UI only sends `alpha` /
-   `quality`.
+   `quality`. **The opacity slider is only meaningful for a region with its own visual**
+   (states *Inherit* or *Own*). On a state-*None* region it must be disabled, not silently
+   inert as it is today.
 3. **Region summary payload:** the frontend `RegionSummary` must be extended with
    `representation`, `preset`, `overlap_tags`, and `available_attributes` so cards can
    render the representation hint, the ⚠ badge, and the gated "Color by attribute" dropdown

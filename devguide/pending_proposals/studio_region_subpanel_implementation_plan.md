@@ -1,52 +1,63 @@
-# Implementation Plan: Studio → Regions subpanel
+# Implementation Plan: Regions — contracts, API completeness, and subpanel parity
 
-**Status:** implemented (Phases 0-D complete; post-Phase-D browser E2E validation pending).
-**Purpose:** a meticulous, checkable, phase-by-phase plan to implement the Studio →
-Regions subpanel. Update the checkboxes, the **Progress dashboard**, and the **Risks**
-table as work lands.
+> ⚠ **The execution order lives in `scene_master_plan.md`, not here.** That document owns the
+> phase order, the gates and the audits, across Regions *and* Whole *and* the performance work.
+> This file is now a **task-detail source** for the Regions-specific phases. Where the two
+> disagree on ordering, the master plan wins.
+>
+> In particular: master-plan **Phase 0** (the `handleMessage` toll) precedes everything here,
+> and master-plan **Phase 1** (exclusive atom ownership) is an open gate that reshapes
+> Contracts A and B.
 
----
+**Status:** Phases 0–D of the *original* plan landed (2026-07-09) and delivered the
+subpanel's structure. A 2026-07-10 audit against the code found that the delivery rests
+on **three broken contracts** and that the GUI does not reach parity with the Python API.
+This plan supersedes the original phase list. The original Phase 0–D completion notes are
+preserved in §Appendix for provenance.
 
-## Reference documents (read all three before starting)
-
-1. **`studio_region_subpanel.md`** — the **architectural blueprint**: *what / how / why*,
-   the lifecycle model (§3), the design layout (§4), the **verified backend contracts**
-   (§6), non-API additions (§8). Source of truth for Python calls and behaviour.
-2. **`studio_region_subpanel_ui_design.md`** — the **UI/UX + CSS spec**: ASCII layout,
-   component details (§2–§3), CSS tokens (§4), sync notes (§5). Source of truth for the
-   visual/interaction surface.
-3. **`studio_selection_subpanel.md`** (+ its UI spec) — the **sibling contract**: the
-   query composer, collision policy, rename idiom, and design tokens this subpanel
-   **reuses**. Do not fork them.
-
-When these disagree, (1) wins over (2); (2) never redefines backend calls — it delegates
-to (1) §6. Region-specific vocabulary aligns with (3) so the two subpanels feel like one.
+**Purpose:** make regions *right* — for the computational-biology user, from Python and
+from the GUI alike — rather than merely feature-complete on the surface.
 
 ---
 
-## How to use this plan
+## Reference documents (read all before starting)
 
-- Each task is a checkbox: `- [ ]` open, `- [x]` done. Strike through (`~~task~~`) only if
-  dropped, with a reason.
-- A phase is **Done** only when its tasks are checked **and** its **acceptance criteria**
-  pass **and** the Python suite + `npm run test:js` + `npm run build:runtime` are green.
-- After each phase: update its **dashboard** row (status, date, commit SHA, notes) and the
-  **Risks** table if anything changed.
-- **Execution order = numeric order** (A → C, with 0 first). Dependencies are listed per
-  phase.
+1. **`region_contracts.md`** — **normative**. The three contracts (representation, colour,
+   serialisation), the evidence for each, and how they are tested. **This wins over
+   everything else.**
+2. **`studio_region_subpanel.md`** — architectural blueprint: lifecycle, layout, backend
+   contracts, non-API additions.
+3. **`studio_region_subpanel_ui_design.md`** — UI/UX + CSS spec.
+4. **`studio_selection_subpanel.md`** — sibling contract: query composer, collision policy,
+   rename idiom, design tokens. Reused, never forked.
 
-### Guardrails (project rules)
+Precedence on disagreement: (1) > (2) > (3). (3) never redefines backend calls.
 
-- **Never hand-edit** `molsysviewer/viewer.js` / `.map`; edit TS under
-  `molsysviewer/js/src/` and run `npm run build:runtime` for development rebuilds.
-  Reserve `npm run build` for release/packaging version sync.
-- Region ops go through the public API (`view.new_region`, `view.regions`, `region.*`);
-  do **not** regrow viewer mutators.
-- Backend ops resolve **on the Python side** so provenance/naming are known there.
-- **Reuse** the Selection subpanel's query composer, collision policy, and CSS tokens —
-  do not fork them.
-- Prefer **raw index lists / registry lookups** over building query strings for
-  index-based ops (composition, split).
+---
+
+## Guardrails (project rules)
+
+- **Never hand-edit** `molsysviewer/viewer.js` / `.map`. Edit TS under
+  `molsysviewer/js/src/` and run `npm run build:runtime`. Reserve `npm run build` for
+  release/packaging version sync.
+- Region ops go through the **public API** (`view.new_region`, `view.regions`, `region.*`).
+  Do not regrow viewer mutators; do not let the GUI reach past the API.
+- **API first.** A capability lands as a public Python method *before* it is wired as a
+  `core.py` handler or exposed in the GUI.
+- Backend ops resolve **on the Python side** so provenance and naming are known there.
+- Prefer raw index lists / registry lookups over building query strings.
+- **A test whose name claims a visual outcome must assert against the simulated Mol\***
+  plugin, not against the emitted message dict. (This is *why* the defects shipped.)
+
+---
+
+## Closure criterion (new, adopted 2026-07-10)
+
+> For every parameter accepted by a region handler in `core.py`, either the GUI exposes it,
+> or this plan documents why it does not.
+
+Applied retroactively, this criterion is what catches `palette`, `value_range`, `element`,
+`new_tag` (complement, duplicate) and `selection` (split) sitting dead in the backend.
 
 ---
 
@@ -54,15 +65,19 @@ to (1) §6. Region-specific vocabulary aligns with (3) so the two subpanels feel
 
 | Phase | Title | Size | Depends on | Status | Date | Commit | Notes |
 |------:|-------|:----:|:----------:|--------|------|--------|-------|
-| 0 | Public API + backend ops + summary | M | — | ☑ | 2026-07-09 | — | public API, handlers, batch protocol, optimized enriched summary, lazy details and acceptance coverage complete |
-| A | Create, isolate & lifecycle | L | 0 | ☑ | 2026-07-09 | — | shared manual query composer; three create origins; lifecycle cards; explicit collision choices; global batch actions |
-| B | Enriched style composer | M | 0 | ☑ | 2026-07-09 | — | backend-provided reps/presets; release-only opacity; quality; curated/uniform/attribute color |
-| C | Boolean composer & inspection | M | 0, A | ☑ | 2026-07-09 | — | ordered boolean composer; overlap prefill; safe overwrite; lazy frame-aware inspect |
-| D | CSS + integration / e2e | S | A, B, C | ☑ | 2026-07-09 | `6f66da07` | shared tokens; inspect refresh; overlap focus; E2E walkthrough implemented; docs updated |
-| Post-D | Real browser E2E validation | S | D | ☐ | — | — | run the Regions walkthrough on Chromium + WebGL and record the result |
+| 0 | Documentation truth reset | S | — | ☐ | — | — | correct the false "implemented" claims before building on them |
+| 1 | **Contract A** — representation is optional | L | 0 | ☐ | — | — | removes the two `?? "cartoon"`; introduces the `"inherit"` sentinel |
+| 2 | **Contract B** — layered, owned colour | L | 1, **Whole P1** | ☐ | — | — | decorator theme, colour layers, precedence, `color_order` |
+| 3 | **Contract C** — provenance & state v2 | L | 1, 2 | ☐ | — | — | needs A and B closed to know *what* to persist |
+| 4 | Public API completeness | M | 3 | ☐ | — | — | variadic booleans, atomic overwrite, counts, colour params |
+| 5 | GUI parity | L | 4 | ☐ | — | — | mostly mechanical once the floor is firm |
+| 6 | Real browser E2E validation | S | 5 | ☐ | — | — | Chromium + WebGL; still open since the original Phase D |
 
 Size: **S** ≈ hours · **M** ≈ 1–2 days · **L** ≈ 3–5 days.
 Status legend: ☐ Not started · ◐ In progress · ☑ Done · ✗ Dropped.
+
+**Ordering is not negotiable for 1 → 2 → 3.** You cannot serialise a visual state whose
+contract still lies, nor colour layers that do not yet exist.
 
 ---
 
@@ -70,271 +85,288 @@ Status legend: ☐ Not started · ◐ In progress · ☑ Done · ✗ Dropped.
 
 | # | Risk | Phase(s) | Mitigation |
 |---|------|:--------:|------------|
-| R1 | **Overlap computation cost** — `_overlapping_visual_region_tags` is O(regions × atoms); recomputing on every summary could get heavy with many large regions | 0, A | resolved for summaries: build each visible atom set once and compare each pair once; only consider manageable visible represented regions |
-| R2 | **Index-space** — region atom sets live in the `_molsys` index space; splits/composition/attribute color must stay in it | 0, A, B, C | use `view.regions[...]` atom sets and `_molsys` consistently; add a subset-loaded test |
-| R3 | **Transient-region leakage** — `orientation-`/`plane-` **and `focus`** regions would appear in the list (`styles.focus()` registers `focus<n>` regions, verified) | 0, A | filter tags `^(orientation-\|plane-\|focus)\d+` from the summary/list; test that overlay + `styles.focus()` do not add a manageable card (P1) |
-| R4 | **Color-by-attribute mapping & availability** — attribute may be absent for the format (`.xyz`/`.gro`/`.xtc`) or None for some atoms | 0, B | expose only **present** attributes via summary `available_attributes` (load-time probe); reuse `expand_values_to_atoms`; guard None; auto-range; test with bfactor present/absent (P3) |
-| R5 | **Composer staleness** — Section C dropdowns must track create/delete/rename | C | rebuild dropdowns from the live region list on every summary update |
-| R6 | **Preset vs representation precedence** — choosing a preset supersedes representation; UI could send both | B | mutually exclusive controls; preset clears representation selection and vice-versa |
-| R7 | **Opacity IPC flood** — dragging the slider fires dozens of `input`/s → message backlog/lag | B | update readout on `input`; **fire `set_region_representation` on `change` (mouseup)** — one message per release; optional throttle only for live 3D preview (P2). NB: per-keystroke debounce is *wrong* for the query composer but `change`/mouseup is *right* for a slider (all values valid) |
-| R8 | **Bulk-op flicker** — `show_all`/`hide_all`/split emit one message + summary per region | A | backend **batch context** (`_batch_updating`) suppressing per-item signals (incl. `@signal`), one consolidated summary; medium priority, non-blocking (P6) |
-| R9 | **Inspection cost** — centroid/composition per region on every summary is expensive and frame-dependent | C | fetch lazily via `get_region_details {tag}` on `ⓘ` open; centroid in current frame; keep out of the summary (P5) |
-| R10 | **Shared query composer vs paused Selection** — Region implements the manual-verification composer (Option B) that the paused Selection refinements (Part A) will inherit; risk of divergence if Selection is later changed independently | A | build it as **one shared component**; when Selection resumes it adopts the component instead of re-implementing; do not fork the debounced version |
+| R1 | **Silent invisibility.** A state-**None** region under a hidden whole renders nothing. `new_view(selection=…)` hides the whole. | 1, 5 | `new_view`/`extract`/`merge` switch to `"inherit"`; the GUI's Create control defaults to **Inherit** when the whole is hidden |
+| R2 | **Live-tracking edge.** Regions in state **Inherit** must repaint when `set_global_representation` changes the whole's type | 1 | new edge in `StateHandlers`; unit test on the simulated plugin |
+| R3 | **`hide()` on a state-None region** has nothing to hide | 1, 5 | documented no-op **that warns**; GUI disables the control with a tooltip |
+| R4 | **Colour precedence is not reproducible** — `dict` order does not survive `import_state` | 2, 3 | materialise `color_order` per region and serialise it; round-trip test asserts the overlap winner |
+| R5 | **Message size** — resolving layers in Python could resend large maps | 2 | send only affected atom indices; `clear_atom_colors` gains optional `atom_indices` |
+| R6 | **Published-API semantic breaks** (`reset_colors`, `replace`, `reset_representation`) | 1, 2 | migration table in `region_contracts.md`; deliberate and documented, not silent |
+| R7 | **v1 state files** in the wild | 3 | `import_state` reads v1 (identity only) and v2 |
+| R8 | **Split explosion** — `group`/`component` can yield hundreds of regions | 4, 5 | new `count_regions_by` query; GUI confirms above a threshold |
+| R9 | **Green tests that assert nothing visual** — the root cause of all three defects | all | the guardrail above; retrofit `state-handler.test.ts` coverage |
+| R10 | **Index space** — atom sets live in `_molsys`; splits/composition/attribute colour must stay in it | all | subset-loaded regression test |
+| R11 | **Overlap cost** — `_overlapping_visual_region_tags` is O(regions × atoms), and Contract A makes *more* regions count as visible | 1 | already optimised (one atom set per visible region, each pair once); re-measure after A |
+| R12 | **The grey screen** — `msv-per-atom` replaces the structural theme instead of decorating it, so any colour write greys every uncoloured atom and `reset_colors()` greys everything | 2 | make the theme a decorator with a base-theme fallback; assert on the simulated plugin that uncoloured atoms keep their theme |
+| R13 | **Whole coupling** — the base colour layer and the structural theme belong to `whole`, whose Python API does not own them today | 2, 3 | land `studio_whole_subpanel_implementation_plan.md` Phase 1 first; the two subpanels share Contracts A and B |
 
 ---
 
-## Phase 0 — Public API + backend ops + summary *(foundational)*
+## Phase 0 — Documentation truth reset
 
-**Size:** M · **Depends on:** — · Refs: blueprint §6.2–§6.5, §8.
+**Size:** S · **Depends on:** — · Docs only, no code.
 
-Complete the **public Python API first** (so the GUI routes through it, never past it),
-then land the event handlers and the extended summary; the UI phases build on these.
+The three existing documents assert as *implemented* things that do not exist. Building on
+them is how we got here.
 
-- [x] **Public API (`molsysviewer/regions.py`) — new methods (§6.5)**, each
-      `@signal @digest`, operating in the `_molsys` index space (R2):
-  - [x] `Region.reset_representation()` — revert this region to the base representation.
-  - [x] `Region.set_color_by_attribute(attribute, *, element="atom", palette="viridis",
-        value_range=None, replace=False)` — `msm.get(attribute)` → `set_color_by_values`;
-        guard missing/None values (R4).
-  - [x] `Region.duplicate(*, tag=None, representation=None, **repr_params)` — clone atoms
-        + representation.
-  - [x] `Region.overlaps()` → `list[str]` (public wrapper over
-        `_overlapping_visual_region_tags`).
-  - [x] `RegionsManager.show_all()` / `hide_all()` — batch visibility.
-  - [x] extend `make_regions_by` to `group | component` as an
-        **API-only** extension (not a one-click GUI action; §6.5 note).
-- [x] Backend (`core.py`): add ops `create_region_from_query`, `make_regions_by`,
-      `show_only_region`, `create_complementary_region`, `compose_regions`,
-      `reset_region_representation`, `color_region_by_attribute`, `duplicate_region`,
-      `show_all_regions`, `hide_all_regions`, and `get_region_details {tag}` (lazy
-      inspection, P5/R9) — **each routing through the public API method above** (existing or
-      new), echoing an updated region summary (blueprint §6.2).
-- [x] Backend: **batch-update context** (`_batch_updating`, blueprint §6.6) suppressing
-      per-item scene messages and intermediate summaries during
-      `show_all`/`hide_all`/`make_regions_by`, while preserving SMonitor `@signal`
-      breadcrumbs; emit one consolidated summary (R8, P6).
-- [x] Backend/summary: extend the region summary with `representation`, `preset`,
-      `overlap_tags` (via `Region.overlaps()`), and **`available_attributes`** (load-time
-      probe of which structural attributes exist, P3/R4); **filter** transient tags
-      `^(orientation-|plane-|focus)\d+` (R3, P1). Keep centroid/composition **out** of the
-      summary (fetched via `get_region_details`, R9).
-- **Acceptance:** `tests/test_regions.py` (new; today region tests live in
-  `tests/regions/test_region_flow.py`) covers the **new public API methods directly**
-  (reset repr, color-by-attribute, duplicate, overlaps, show/hide all) **and** each op
-  routing through them (compose per operator, complement tag default `Global-<tag>`, split
-  per element), plus the summary fields, transient-tag filter (incl. `styles.focus()`),
-  `available_attributes`, `get_region_details`, and a **subset-loaded** case (R2).
-  Python suite + `npm run test:js` + `npm run build:runtime` green.
-
-  Completion note 2026-07-09: Public
-  `Region` now exposes reset, color-by-attribute, duplicate, and overlap operations;
-  `RegionsManager` exposes overlap and single-message show/hide-all operations. The
-  frontend handlers accept `set_regions_visibility` and an authoritative runtime-only
-  `set_region_summaries` payload. Context actions cover query creation, split,
-  isolate, complement, boolean composition, reset/color/duplicate, global visibility,
-  and lazy frame-specific details. Summaries include representation, preset,
-  overlap tags, populated scalar attributes, and filter actual generated
-  `focusN`/`orientation-regionN`/`plane-regionN` tags. Validation:
-  `tests/regions/test_region_flow.py` passed (21 tests), `npm run test:js` passed
-  (149/149), `npm run build:runtime` passed, and the full Python suite passed
-  (3 skipped). `make_regions_by` now records one reproducible
-  `batch_region_operations` message and emits one runtime summary; SMonitor
-  breadcrumbs remain active because they are observability, not scene IPC.
-  Summary overlap detection constructs each visible atom set once and compares each
-  pair once. Handler coverage includes union/intersection/ordered difference, and a
-  subset-loaded regression confirms `_molsys` local index-space behavior.
-
-  Deliberate contract changes: `new_region(tag=...)` now raises on an existing tag
-  instead of silently replacing the registry entry, matching the documented collision
-  policy; overwrite remains delete-then-create. `RegionsManager` is now viewer-bound
-  (`RegionsManager(view)`) so its public batch methods can send through the owning
-  transport. Repository callers were audited; direct external construction was never
-  a supported workflow.
+- [ ] `studio_region_subpanel.md`: remove the §5 claim that regions store `_provenance`
+      (grep returns nothing); mark provenance as **proposed**. Fix §6.1's path
+      (`renderRegionsSection()` in `group-panel.ts` no longer exists — the panel lives in
+      `ui/panels/regions-panel.ts` since the A–F refactor). Swap the inverted §6.5 / §6.6.
+      Downgrade the header status.
+- [ ] `studio_region_subpanel_ui_design.md`: the Inspect mockup (§2, §3.B) draws provenance
+      that does not exist; §3.C describes a multi-operand checklist that is a single
+      `<select>` in code. Mark both **proposed**. Correct the attribute names shown
+      (`b_factor`, `occupancy`, `partial_charge`, `formal_charge` — the GUI lists canonical
+      names; `bfactor`/`charge` are aliases internal to `set_color_by_attribute`).
+- [ ] Reconcile the section order: the doc says Create → Regions → Boolean; `paint()` renders
+      Create → Boolean → Regions. Decide and align **both**.
+- [ ] Record the debt: `tests/regions/test_region_flow.py::test_region_reset_representation_restores_base_visual_state`
+      asserts only the emitted message; its name claims a visual outcome it never checks.
+- [ ] Link all three documents to `region_contracts.md` as the normative source.
+- **Acceptance:** no document asserts, in the indicative, a capability absent from the code.
 
 ---
 
-## Phase A — Create, isolate & lifecycle *(biggest capability gain)*
+## Phase 1 — Contract A: a region's representation is genuinely optional
 
-**Size:** L · **Depends on:** 0 · Refs: blueprint §4A–§4B; UI §2 A/B, §3 A/B.
+**Size:** L · **Depends on:** 0 · Refs: `region_contracts.md` §A.
 
-- [x] Frontend (`group-panel.ts`, `renderRegionsSection`): **Section A** — create composer
-      with the three origins: from active selection; from query via the **shared
-      manual-verification composer** (`Check`/`Enter`, `idle` while typing — Option B, **not**
-      debounced preview; R10); split by hierarchy. Optional name + initial repr. Global
-      `Show all` / `Hide all` fire a **single** action → public `RegionsManager.show_all()` /
-      `hide_all()` → **single** consolidated summary (no per-region iteration; R8).
-- [x] Frontend: **region cards** replacing the flat rows — header (focus, count, repr
-      hint, visibility, delete), quick actions (Isolate, Complement, Rename inline,
-      Duplicate, Reset repr), and the **⚠ overlap badge** (opens Section C pre-filled with
-      Difference — Phase C wires the composer; here the badge + tooltip render).
-- [x] Frontend: **name-collision policy** (Rename / Overwrite / Cancel) on **single**
-      create / rename, reusing the Selection idiom; the **split path auto-increments
-      silently** (no prompt — backend already resolves via `_unique_region_tag`, P4).
-- [x] Frontend: `Show all` / `Hide all` apply the single consolidated summary from the
-      backend batch context (R8) — one update, not one per region.
-- **Acceptance:** create a region by each origin; split yields several cards **without a
-  collision prompt**; isolate, complement, rename, duplicate, reset work; the overlap badge
-  appears for overlapping visible regions; `styles.focus()` overlays do **not** appear as
-  cards. `js/tests/unit/group-panel.test.ts` covers that each control emits the correct
-  action; Python covers the handlers (Phase 0). Suite/build green.
+This is the root fix. Three shipped bugs collapse into it.
 
-  Completion note 2026-07-09: `ManualQueryComposer` is a reusable component with
-  explicit `Check`/Enter verification, request IDs, stale-response rejection, and no
-  traffic while typing. Section A supports active selection, verified query, and
-  hierarchy split origins, optional tag and initial representation, plus single-action
-  show/hide-all controls. Region cards expose focus, visibility, delete, isolate,
-  complement, inline rename, duplicate, representation reset, style entry, and overlap
-  metadata. Single create and rename collisions render explicit Rename / Overwrite /
-  Cancel choices; split remains prompt-free. The active-selection handler now applies
-  the requested initial representation. Validation: region flow tests passed (22),
-  JavaScript tests passed (151/151), `npm run build:runtime` passed, and the full Python
-  suite passed with 3 skips.
+**Python (`molsysviewer/regions.py`, `whole.py`, `viewer/regions.py`)**
 
-  Post-review refinements: the overlap warning is non-interactive until Phase C gives it
-  a real destination; `Base` is the default initial style and omits `representation`
-  from the action payload; Split hides the inapplicable name field. Selection still
-  uses its existing composer while that subpanel is paused. Its later refinement must
-  adopt `ManualQueryComposer`; Regions does not duplicate that implementation.
+- [ ] Accept the reserved `"inherit"` sentinel in `Region.set_representation()`. It is not a
+      Mol\* type: `_normalize_representation_type` must reject it as a type and the region
+      must store it as its representation state.
+- [ ] `reset_representation()` means state **None**: no own visual. Its message must be
+      distinguishable from "paint me with the default".
+- [ ] `Region.hide()` on a state-**None** region: documented no-op **that warns**.
+- [ ] Fix `_region_has_visible_representation()` to be true exactly for states **Inherit**
+      and **Own** while not hidden — i.e. to describe what Mol\* paints. Overlap detection
+      (and therefore the ⚠ badge) starts working as a consequence.
 
----
+**Protocol / frontend (`js/src/managers/handlers/state-handlers.ts`)**
 
-## Phase B — Enriched style composer
+- [ ] Remove **both** `const reprType = msg.representation ?? "cartoon";` — in `createRegion`
+      *and* in `setRegionRepresentation`. The frontend never invents a type.
+- [ ] State **None** ⇒ component, no representation child.
+- [ ] State **Inherit** ⇒ own representation using the whole's **live** type/preset, with the
+      region's `params` on top.
+- [ ] `setGlobalRepresentation` repaints every region in state **Inherit** (R2).
 
-**Size:** M · **Depends on:** 0 · Refs: blueprint §4B (style), §6.3, §8; UI §3.B.
+**Callers (`new_view.py`, `tools/basic/extract.py`, `tools/basic/merge.py`)**
 
-- [x] Frontend: replace the 5-representation composer with the **12** real types
-      (`view.representations`) + a **preset** select (`view.presets`; mutually exclusive
-      with representation, R6).
-- [x] Frontend: **opacity** slider (`alpha`) and **quality** dropdown — sent as `params`;
-      verified to pass through to Mol\* `typeParams` (blueprint §6.3, no protocol change).
-      **Fire the opacity IPC on `change` (mouseup)** — one message on release, not per value;
-      update the numeric readout live on `input` (R7, P2). Optional throttle only if live 3D
-      feedback is later wanted.
-- [x] Frontend: **color** — scheme select + uniform color picker, **Color by** attribute
-      dropdown (`color_region_by_attribute`) **gated to `available_attributes`** so only
-      present attributes are offered (R4, P3), and **Reset colors** (`reset_colors`).
-- **Acceptance:** changing representation/preset/opacity/quality/color updates the region
-  in 3D; an opacity drag emits a **single** `set_region_representation` on `change` (mouseup),
-  not one per intermediate value; color-by-attribute colors by bfactor **and** the dropdown
-  hides absent attributes; reset reverts. Unit tests assert the emitted
-  `set_region_representation` / `color_region_by_attribute` payloads and the fire-on-`change`
-  behaviour. Suite/build green.
+- [ ] Replace the hand-rolled snapshot copy of the whole's representation with
+      `set_representation("inherit")`. Behaviour is preserved and gains live tracking.
 
-  Completion note 2026-07-09: the style composer consumes the complete representation
-  and preset vocabularies supplied by Python, including user presets, and keeps the two
-  controls mutually exclusive. The runtime-only region summary now carries those
-  vocabularies at message level and each region's `representation_params`, allowing the
-  editor to preserve existing representation-specific settings. Opacity updates its
-  readout on `input` but emits only on `change`; quality, curated structural schemes,
-  uniform color, available-attribute coloring, and color reset are wired. The backend
-  context-action handler now forwards `preset` to the public API. Validation: region
-  flow tests passed (23), JavaScript tests passed (152/152),
-  `npm run build:runtime` passed, and the full Python suite passed with 3 skips.
+**Tests**
 
-  Post-review refinements: the composer separates style controls committed by
-  `Apply Style` from immediate adjustments. Opacity now applies only to the region's
-  committed representation/preset and cannot accidentally commit a representation
-  selected in the draft. Inspection of the authoritative local Mol* source
-  (`~/repos@others/molstar/src/mol-plugin-state/builder/structure/representation-preset.ts`)
-  confirms that preset `quality` and global themes are supported, while `alpha` is not
-  a common preset parameter. `StateHandlers` therefore updates `type.params.alpha` on
-  every representation generated by a preset in one state-tree commit. Unit coverage
-  verifies both this update and draft isolation; JavaScript validation is now 153/153.
+- [ ] `js/tests/unit/state-handler.test.ts`, against the simulated plugin: state **None** adds
+      **no** representation; `reset_representation` removes the child; `inherit` uses the
+      whole's current type; changing the whole repaints inheriting regions.
+- [ ] Rename/repair `test_region_reset_representation_restores_base_visual_state`.
+- [ ] Python: a base region that overlaps a visible one now reports the overlap.
+
+- **Acceptance:** `view.new_region("protein")` on a visible whole adds no cartoon;
+  `reset_representation()` restores the base look; the opacity slider is meaningful on an
+  inheriting region; the ⚠ badge fires for a previously-invisible overlap;
+  `new_view(selection=…)` still shows the selection under a hidden whole. Python suite +
+  `npm run test:js` + `npm run build:runtime` green.
 
 ---
 
-## Phase C — Boolean composer & inspection
+## Phase 2 — Contract B: layered, owned colour
 
-**Size:** M · **Depends on:** 0, A · Refs: blueprint §4C–§4D; UI §2 C, §3.C.
+**Size:** L · **Depends on:** 1 · Refs: `region_contracts.md` §B.
 
-- [x] Frontend: **Section C** boolean composer — Region A · operator (∪ ∩ −) · Region B ·
-      output name → `compose_regions`; dropdowns refresh on create/delete/rename (R5).
-      Difference labeled as ordered `A − B`.
-- [x] Frontend: wire the **⚠ overlap badge** (Phase A) to open Section C pre-filled with
-      Difference for the overlapping pair.
-- [x] Frontend: per-card **Inspect (ⓘ)** panel — composition + geometric center fetched
-      **lazily** via `get_region_details {tag}` on expand (not from the summary), centroid in
-      the **current playback frame** (R9, P5).
-- **Acceptance:** composing two regions creates the expected region (per operator); the
-  overlap badge pre-fills Difference; inspect fetches on demand and shows composition +
-  frame-accurate center. Unit + Python tests cover compose per operator and the
-  `get_region_details` path (incl. centroid per frame). Suite/build green.
+> **Depends on the Whole subpanel's Phase 1** (`studio_whole_subpanel_implementation_plan.md`):
+> the base layer is owned by `whole`, and the structural colour theme beneath it must first
+> become a Python-owned, serialisable property instead of a frontend-only dropdown.
 
-  Completion note 2026-07-09: Section C tracks the live region registry and exposes
-  ordered union, intersection, and `A - B` difference with optional output naming.
-  Overlap badges prefill Difference for the first overlapping pair. Composition
-  collisions use an explicit Rename / Overwrite / Cancel flow; overwrite is executed
-  safely in Python by composing under a temporary tag before deleting and renaming, so
-  the destination may also be one of the operands. Inspect requests are lazy,
-  request-ID scoped, and ignore stale or closed-panel responses. The panel shows atom,
-  group, and chain composition plus the center and current frame. Validation: region
-  flow tests passed (24), including a real `pentalanine` frame-1 centroid; JavaScript
-  tests passed (155/155), `npm run build:runtime` passed, and the full Python suite
-  passed with 3 skips before the final trajectory test was added (the focused region
-  suite was rerun afterward).
+- [ ] **Make `msv-per-atom` a decorator theme** (`region_contracts.md` §B.5). Today
+      `per-atom-color.ts` returns a grey `DEFAULT_COLOR` on a miss and
+      `_applyPerAtomColorTheme()` swaps the theme of **every** component. Consequences shipped
+      today: `reset_colors()` paints the whole system grey, and colouring one region greys out
+      every other atom. The theme must take a **base theme** and delegate to it on a miss;
+      clearing the last layer over a component restores that component's configured theme.
+- [ ] Replace the flat canvas-wide `_atom_color_map` (`viewer/core.py:267`) with ordered
+      layers: a base layer owned by `whole`, one layer per region above it.
+- [ ] Layer lifecycle (`region_contracts.md` §B.6): delete drops the layer; rename carries it;
+      duplicate copies it with a **fresh** `color_order`; boolean results start with none;
+      `apply_system_edit` remaps every layer through `atom_index_map`.
+- [ ] Precedence: any region beats the base; between overlapping regions the **most recently
+      created/updated** wins. Materialise a monotonic `color_order` per region, bumped on
+      every colour write (R4).
+- [ ] `Region.reset_colors()` clears **its own layer only**; what lies beneath reappears.
+- [ ] `Region.set_color_by_values(replace=…)` — `replace` acts **within the region's layer**
+      (redefinition of published behaviour, R6).
+- [ ] `Whole.reset_colors()` clears the **base layer** across the system; regions keep theirs.
+- [ ] New `view.reset_all_colors()` for the explicit canvas-wide wipe.
+- [ ] A state-**None** region may still carry a colour layer (§B.4): colouring without
+      representing must work.
+- [ ] Protocol: `clear_atom_colors` gains optional `atom_indices`. Colour writes send only
+      affected atoms (R5).
+- [ ] Align `set_color_by_attribute`'s availability check with the summary probe: it calls
+      `msm.get_attributes(...)` **without** `include_none=False`, while
+      `_available_region_attributes` uses it. It can accept an all-`None` attribute and fail
+      later in the value guard.
 
----
-
-## Phase D — CSS design system + integration / e2e
-
-**Size:** S · **Depends on:** A, B, C · Refs: UI §4; blueprint §7.
-
-- [x] Frontend: apply the **region tokens** (`.region-card`, `.region-overlap-badge`,
-      `.region-opacity-slider`, `.region-style-composer`), reusing the shared Selection
-      tokens; dark-mode/theme-aware.
-- [x] **Implement and integrate the end-to-end walkthrough**
-      (`js/tests/e2e/region-subpanel.e2e.ts`): create from
-      query → split by chain → style (opacity + color-by-attribute) → isolate → compose
-      (difference) → complement → rename → inspect → delete. Browser execution as
-      feasible (Chromium/WebGL), otherwise transport-contract simulation like the
-      Selection e2e.
-- [x] Update the **three reference documents**: flip statuses to *implemented*; note the
-      subpanel as done.
-- [x] Full Python suite + `npm run test:js` + `npm run build:runtime` green; `viewer.js`
-      regenerated.
-- **Acceptance:** the subpanel delivers the five capabilities of blueprint §1.2 end to
-  end, on a real system, with tests guarding each.
-
-  Completion note 2026-07-09: Regions now reuses the Studio design tokens for cards,
-  overlap warnings, style controls, and structured inspection. The overlap action
-  scrolls to and highlights the prefilled boolean composer. Inspect remains
-  intentionally non-streaming during playback and exposes an explicit current-frame
-  Refresh action. The Playwright walkthrough covers query creation, split, opacity,
-  attribute color, isolate, Difference, complement, rename, lazy inspect, and delete;
-  it is integrated into the E2E scripts and compiles successfully. Per repository
-  policy, browser/WebGL execution remains a manual environment validation rather than
-  a local CI-style run. Final validation: region flow tests passed (24), JavaScript
-  tests passed (155/155), `npm run build:runtime` passed, the dedicated E2E bundle
-  compiled, and the full Python suite passed with 3 skips.
+- **Acceptance:** colouring region A leaves the rest of the system on its structural theme (no
+  grey); `reset_colors()` restores that theme rather than painting grey. Colouring region A then
+  `whole.reset_colors()` leaves A's colours on screen; hiding A reveals the reset beneath. Two
+  overlapping coloured regions: the last updated wins, and re-updating the other flips the
+  winner. `Region.reset_colors()` never touches another region. Deleting a coloured region
+  reveals what lay beneath. Suite/build green.
 
 ---
 
-## Post-Phase D — Real browser E2E validation
+## Phase 3 — Contract C: provenance and state v2
 
-**Status:** pending · **Depends on:** D.
+**Size:** L · **Depends on:** 1, 2 · Refs: `region_contracts.md` §C.
 
-- [ ] On a host with a real Chromium/Chrome installation and working WebGL, run:
+- [ ] `Region.provenance` — new public read-only mapping. Populate it at **every** creation
+      path: query, active selection, saved selection, split, complement, boolean, duplicate,
+      import. Nothing of this exists today.
+- [ ] `export_state` → `version: 2`. Per region: identity (`tag`, `atom_indices`, `selection`,
+      `syntax`), `provenance`, visual state (`representation` incl. the `"inherit"` sentinel,
+      `preset`, `params`, `hidden`), colour layer, `color_order`.
+- [ ] Export the **whole**'s representation/preset/params/visibility and its base colour layer
+      — none of which are exported today.
+- [ ] **Filter transient tags on export** (`_TRANSIENT_REGION_TAG`). Today `styles.focus()`
+      overlays are exported and reimported as permanent manageable regions.
+- [ ] `import_state` reads v1 (identity only; regions restored in state **None**, no colours)
+      and v2 (R7).
+- [ ] Return `provenance` in `get_region_details`.
+
+- **Acceptance:** `export_state` → fresh session → `import_state` reproduces the regions, their
+  visual state, their visibility, their colours **including the winner in every overlap zone**,
+  and the provenance rendered in Inspect. A `styles.focus()` overlay does not survive the
+  round-trip as a region. A v1 file still loads. Suite/build green.
+
+---
+
+## Phase 4 — Public API completeness
+
+**Size:** M · **Depends on:** 3 · Refs: blueprint §6.5, §8.
+
+Everything here is additive, and each item is a **public Python method first**.
+
+- [ ] **Variadic boolean operators**: `a.union(b, c)`, `a.intersection(b, c)`,
+      `a.difference(b, c)` — evaluating `A − (B ∪ C)`. The Python user gets exactly what the
+      GUI's multi-operand composer needs.
+- [ ] **Atomic overwrite** for create and rename, using the temporary-tag pattern already used
+      correctly by `compose_regions` in `core.py`. Today the frontend emits `delete_region` +
+      create/rename as two independent actions: if the second fails the user loses the
+      original region.
+- [ ] **Complement of several regions** — `new_region(complement_of_regions=[…])` already
+      supports a list; surface it (`create_complementary_region` accepts one tag today).
+- [ ] **`count_regions_by {element, selection}`** — a cheap query so the GUI can confirm before
+      a `group`/`component` split creates hundreds of regions (R8).
+- [ ] **`new_tag`** honoured end-to-end for `create_complementary_region` and
+      `duplicate_region` (the handlers already accept it; nothing sends it).
+- [ ] **Colour-by-attribute full surface**: `palette`, `value_range`, `element` (the handler
+      already accepts all three; the GUI sends only `attribute`).
+
+- **Acceptance:** each method has a direct unit test *and* a handler test routing through it.
+  The closure criterion holds: no `core.py` region parameter is unreachable. Suite/build green.
+
+---
+
+## Phase 5 — GUI parity
+
+**Size:** L · **Depends on:** 4 · Refs: blueprint §4; UI spec §2–§3.
+
+**Create section**
+- [ ] Use the **12 representations and the real presets** supplied by the backend
+      (`setStyleOptions()` already delivers them; only the style composer consumes them). The
+      Create dropdown is still hardcoded to 7 options — the very flaw the blueprint §1.1
+      criticised in the old implementation.
+- [ ] Offer **Inherit** as an option, and default to it when the whole is hidden (R1).
+- [ ] Fourth origin: **from a saved selection** (`create_region_from_saved_selection` exists in
+      the backend and in `PanelAction`; only the Selection panel offers it).
+- [ ] Split: all elements (`group | component | chain | molecule | entity`), with a
+      confirmation above a threshold, driven by `count_regions_by` (R8).
+- [ ] Split over the **active selection** (`make_regions_by` accepts `selection`; the GUI always
+      sends `all`).
+
+**Region cards**
+- [ ] `new_tag` inputs for **Complement** and **Duplicate**.
+- [ ] Disable **Hide** for state-**None** regions, with a tooltip (R3).
+- [ ] **Bug:** the opacity slider is inert on a Base region (`regions-panel.ts:995`). Resolved
+      by Contract A + Inherit.
+- [ ] **Bug:** `Apply Style` with both selects empty emits `reset_region_representation`,
+      silently discarding the opacity/quality/colour the user just set
+      (`buildStyleAction()`, `regions-panel.ts:963-967`).
+- [ ] **Bug:** `regionBooleanAttention` is set to `true` on the ⚠ badge and never reset
+      (`regions-panel.ts:47, 419`) — the composer stays highlighted forever.
+- [ ] **Bug:** the ⚠ badge only ever prefills `overlap_tags[0]`; with several overlaps the user
+      cannot choose.
+
+**Style composer**
+- [ ] `palette`, `value_range`, `element` for colour-by-attribute; the `<select>` must reflect
+      the **active** attribute instead of resetting to "None" on every repaint.
+
+**Boolean composer**
+- [ ] Multi-operand (checklist) for Union and Difference, over the variadic API from Phase 4.
+
+**Inspect**
+- [ ] Show `provenance`. Natural home for `contains` / `is_composed_of`, which have no GUI
+      surface at all.
+
+**Whole subpanel**
+- [ ] `view.whole.reset_colors()` and `view.reset_all_colors()` land here — the first real
+      content of what is today a `RoadmapPanel` placeholder.
+
+- **Acceptance:** every capability of blueprint §1.2 is reachable from the GUI, and the closure
+  criterion holds. Unit tests assert the emitted payloads. Suite/build green.
+
+---
+
+## Phase 6 — Real browser E2E validation
+
+**Size:** S · **Depends on:** 5. Open since the original Phase D.
+
+- [ ] On a host with a real Chromium/Chrome and working WebGL:
 
   ```bash
   cd molsysviewer/js
   npm run test:e2e:regions
   ```
 
-- [ ] Confirm the walkthrough completes without browser errors or a WebGL-related skip.
-- [ ] Manually inspect the Regions subpanel for layout overflow, overlap-badge
-      scroll/highlight feedback, style controls, boolean composition, and Inspect refresh.
-- [ ] Record the browser version, graphics/WebGL environment, command result, and any
-      findings in this section.
+- [ ] Confirm the walkthrough completes with no browser errors and no WebGL-related skip.
+- [ ] Confirm on screen what no simulation can: `alpha` and `quality` reach Mol\* `typeParams`;
+      an inheriting region follows a change of the whole's representation; the overlap badge
+      corresponds to visible z-fighting.
+- [ ] Manually inspect layout overflow, badge scroll/highlight, style controls, boolean
+      composition, Inspect refresh.
+- [ ] Record browser version, GL environment, command result and findings here.
 
-This is validation of already implemented code, not an additional implementation
-phase. A compile-only E2E check or a controlled headless skip does not close it.
+This validates already-implemented code. A compile-only check or a headless skip does not
+close it.
 
 ---
 
 ## Cross-cutting (every phase)
 
-- [x] Rebuild the bundle after TS changes: `cd molsysviewer/js && npm run build:runtime`
-      (regenerates `viewer.js`); never edit it by hand. Use `npm run build` only for
-      release/packaging version sync.
-- [x] Keep the Python suite + `npm run test:js` green; add tests with each phase.
-- [x] Update the dashboard row + Risks table as each phase lands.
+- [ ] Rebuild after TS changes: `cd molsysviewer/js && npm run build:runtime`. Never hand-edit
+      `viewer.js`.
+- [ ] Keep the Python suite + `npm run test:js` green; add tests **with** each phase.
+- [ ] Update the dashboard row and the Risks table as each phase lands.
+- [ ] Correct the reference documents **as you go**, not at the end.
+
+---
+
+## Appendix — the original Phases 0–D (2026-07-09)
+
+The original plan delivered, in order: the public API additions (`reset_representation`,
+`set_color_by_attribute`, `duplicate`, `overlaps`, `show_all`/`hide_all`), the backend event
+handlers and batch context, the enriched region summary (`representation`, `preset`,
+`overlap_tags`, `available_attributes`, transient-tag filter), the three creation origins with
+the shared `ManualQueryComposer`, the lifecycle cards, the style composer, the ordered boolean
+composer, lazy frame-aware Inspect, and the design tokens.
+
+That work stands and is not being reverted. What the 2026-07-10 audit established is that it
+was built on three contracts that were never written down and that the code silently violates
+— which is why `reset_representation` never worked, why overlap detection never fired for base
+regions, why per-region colour was never per-region, and why a session could never be reloaded.
+Phases 1–3 supply the missing floor; Phases 4–5 finish the work the original plan intended.

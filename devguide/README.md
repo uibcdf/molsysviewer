@@ -128,6 +128,23 @@ To bridge the gap between API reference and real-world scientific usage, the fol
 - **Complex System Navigation**: Managing systems with multiple chains, ligands, and solvent molecules using the new hierarchical `GroupPanel` and selection tools.
 - **Structural Mutation Replay**: Demonstrating how annotations and measurements survive structural rebuilds when modifying systems from Python.
 
+## Active work: the scene rework (Regions, Whole, colour, state, performance)
+
+A 2026-07-10 audit found that the Regions and Whole subpanels rest on unwritten contracts that
+the code silently violates, plus a 3-second-per-message performance toll. Start here:
+
+- [`pending_proposals/scene_master_plan.md`](pending_proposals/scene_master_plan.md) — **the
+  entry point.** Phase order, decisions, gates, audit protocol, and the 29-entry bug ledger.
+- [`pending_proposals/region_contracts.md`](pending_proposals/region_contracts.md) —
+  **normative.** Representation states, layered colour and ordering, regions-as-recipes,
+  serialisation. Wins over every other document.
+- [`pending_proposals/message_toll_performance.md`](pending_proposals/message_toll_performance.md)
+  — the performance defects, their measurements, and the harness that must guard them.
+- Subpanel detail: `studio_region_subpanel*.md`, `studio_whole_subpanel*.md`.
+
+`sandbox/Curso/`, `docs/` and `bloques.md` are **expected to break** during this work and are
+regenerated in the final phases.
+
 ## Standards and Conventions
 
 This project strictly adheres to the UIBCDF software engineering standards. Please refer to the root `*_GUIDE.md` files for the canonical documentation of each infrastructure tool.

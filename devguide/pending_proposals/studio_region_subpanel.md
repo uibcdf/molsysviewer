@@ -1,6 +1,13 @@
 # Proposal: Studio → Regions subpanel (native region management)
 
-**Status:** implemented (2026-07-09).
+**Status:** **partially implemented** (structure landed 2026-07-09; a 2026-07-10 audit found
+it rests on three broken contracts and that the GUI does not reach parity with the Python
+API). See **`region_contracts.md`** (normative) and the reworked
+`studio_region_subpanel_implementation_plan.md`.
+
+> **Read `region_contracts.md` first.** It governs how a region relates to the whole, to
+> colour, and to persisted state, and it **wins over this document** wherever they disagree.
+> Sections below that describe capabilities not yet in the code are marked **(proposed)**.
 
 **Scope:** the **Regions** subpanel of the **Studio** panel in MolSysViewer. Gives the
 user adequate and complete control over the viewer's *native* region management —
@@ -58,7 +65,10 @@ The Python surface backing regions is rich and already implemented (verified in 
   `region.get_center(structure_indices)` (centroid as a `puw` quantity in nm),
   `region.contains(...)`, `region.is_composed_of(...)`.
 - **Color (scalar):** `region.set_color_by_values(values, element, palette,
-  value_range, replace)`, `region.reset_colors()`.
+  value_range, replace)`, `region.reset_colors()`. **Both are canvas-wide, not
+  region-scoped** — `Region.reset_colors()` and `Whole.reset_colors()` have identical bodies
+  (`self._view._atom_color_map.clear()`), and `replace=True` replaces the entire canvas map.
+  Colour has no owner today. Repaired in Phase 2; see `region_contracts.md` §B.
 - **Registry:** `view.regions` (dict-like `RegionsManager`) with `.info(tag?)`; overlap
   detection (`_overlapping_visual_region_tags`, `_warn_region_visual_overlap`) that
   today only emits a Python `UserWarning`.
@@ -71,11 +81,19 @@ representations** and **4 color schemes**, with **no opacity, no presets, no
 creation, no isolate, no rename, no composition, no inspection**. That is why it reads
 as "empty". The gap between the model and the UI is the opportunity.
 
-The implemented subpanel closes that gap through the public Python API. It includes
-all three creation origins, batch visibility, lifecycle cards, the complete
-representation/preset surface, ordered boolean composition, overlap assistance, and
-lazy frame-aware inspection. Runtime summaries expose style capabilities and current
-parameters without entering reproducible scene history.
+The subpanel as shipped closes much of that gap through the public Python API: three
+creation origins, batch visibility, lifecycle cards, the representation/preset surface in
+the style composer, ordered boolean composition, overlap assistance, and lazy frame-aware
+inspection. Runtime summaries expose style capabilities and current parameters without
+entering reproducible scene history.
+
+> **Audit, 2026-07-10.** The gap is **not** closed. The Create control still offers 7
+> hardcoded representations and no presets — the very flaw described above. The GUI ignores
+> backend parameters that already work (`palette`, `value_range`, `element`, `new_tag` on
+> complement and duplicate, `selection` on split). Multi-operand composition and provenance
+> were documented but never built. And three contracts are broken beneath all of it (§6.3,
+> `region_contracts.md`). The reworked implementation plan closes both the contracts and the
+> parity.
 
 ### 1.2 What "complete control" means
 
@@ -256,17 +274,18 @@ Expandable **Style composer** (faithful to the API):
 
 ### C. Boolean composer (bottom)
 
-`Region A ▾` · `∪ Union | ∩ Intersection | − Difference (A−B) ▾` · `Region B ▾` ·
-optional output name → `Create`. Populated from the live region list (refreshed on
-create/delete/rename). Produces a **new** region via `region_a.union/intersection/
-difference(region_b, tag=…)`. Worked example: `pocket ∖ backbone → pocket_sidechains`.
+`Region A ▾` · `∪ Union | ∩ Intersection | − Difference (A−B) ▾` · `Region B ▾` (or multiple checkbox/selection for subtracting/combining multiple regions) · optional output name → `Create`. Populated from the live region list (refreshed on create/delete/rename).
+* **Multi-operand / Multilayer Composition:** To prevent manual cascading steps for complex subtraction/union formulas, Union and Difference operations support selecting multiple target regions. For example:
+  * Base: `site_A`
+  * Operator: `− (Difference)`
+  * Subtrahends (multi-selection): `[x] backbone`, `[x] water`
+  * Backend evaluation: `indices_A - (indices_B | indices_C)`.
+* Produces a **new** region via the corresponding API composition calls. Worked example: `pocket ∖ (backbone | water) → pocket_sidechains`.
 
 ### D. Inspection (per card, on demand — lazy)
 
 A collapsible metadata panel per region backed by `region.info()` + `region.get_center()`:
-atom/element composition (n atoms, n groups/chains), molecular composition, and the
-geometric center. Gives the GUI what today needs `region.info()` / `get_center()` in
-Python.
+atom/element composition (n atoms, n groups/chains), molecular composition, geometric center, and **provenance details**. Gives the GUI what today needs `region.info()` / `get_center()` in Python.
 
 **Lazy + frame-accurate.** These metrics are **not** carried in the static region
 summary (they are expensive, and a centroid changes per trajectory frame). Instead they
@@ -275,13 +294,32 @@ request-response (§6.2), and the centroid is resolved **in the current playback
 it matches what the user is looking at — without polluting the socket during normal
 playback.
 
+**Provenance / Trazabilidad:** Exposes a clear text description of the region's origin based on its saved creation details:
+* *Query-based:* `Origen: Consulta (MolSysMT) → "molecule_type == 'protein'"`
+* *Selection-based:* `Origen: Selección Activa`
+* *Split-based:* `Origen: División por cadena (Chain A)`
+* *Complement-based:* `Origen: Complemento de backbone`
+* *Boolean-based:* `Origen: Composición → site_A − (backbone | water)`
+
 ---
 
 ## 5. Reproducibility / provenance
 
 Lighter than selections. A `Region` already stores its defining `selection` expression
-(`self.selection`) and `atom_indices`, and regions already participate in
-export/replay. Targets:
+(`self.selection`) and `atom_indices`.
+
+> **(proposed — not implemented.)** An earlier revision of this document asserted that
+> "regions store their origin kind and parameters in `_provenance` metadata". They do not:
+> `grep -rn "_provenance" molsysviewer/` returns nothing. Provenance is specified in
+> `region_contracts.md` §C.1 and delivered in Phase 3 of the implementation plan.
+>
+> **(proposed.)** Regions also do **not** currently survive export/replay in any meaningful
+> sense: `viewer/state.py` persists only `{tag, atom_indices}` per region, losing
+> representation, preset, params, visibility, colours and the defining expression, and it does
+> not filter transient `focus`/`orientation`/`plane` tags on export. Full serialisation is
+> `region_contracts.md` §C.2, delivered in Phase 3.
+
+Targets:
 
 - **Query-created** regions keep their `(expression, syntax)` so they can re-evaluate
   across rebuild/topology change (the field already exists on the object; ensure the
@@ -299,9 +337,13 @@ is re-sent on rebuild through the existing region messages.
 
 ## 6. Architecture / How
 
-### 6.1 Frontend (`molsysviewer/js/src/ui/group-panel.ts`)
+### 6.1 Frontend (`molsysviewer/js/src/ui/panels/regions-panel.ts`)
 
-`renderRegionsSection()` grows from the current flat list to the A/B/C/D layout,
+> Path corrected 2026-07-10. The panel no longer lives in `group-panel.ts`: the Studio A–F
+> refactor moved each subpanel to its own module under `ui/panels/`, and
+> `renderRegionsSection()` no longer exists. Rendering happens in `RegionsPanel.paint()`.
+
+The panel grows from the old flat list to the A/B/C/D layout,
 reusing existing helpers (`makeSectionHeader`, `makeRowElement`, `makeButton`,
 `makeStyledSelect`, `renderStyleComposer`) and the collision/rename idioms. The
 create-from-query path uses a **shared query-composer component** with **manual
@@ -381,6 +423,15 @@ keys) and passes `typeParams: cleanParams as any` straight to Mol\*. Since Mol\*
 channels `region.set_representation(alpha=…, quality=…)` end to end. The UI only needs
 to *send* these params.
 
+> **Correction (2026-07-10).** The same handler — and `createRegion` alongside it — contains
+> `const reprType = msg.representation ?? "cartoon";`. A region with **no** representation is
+> therefore painted as a cartoon, while Python's `_region_has_visible_representation()`
+> believes it has no visual at all. That single fallback is why `reset_representation()`
+> never restored the base look, why the opacity slider is inert on a base region, and why
+> overlap detection never fired for base regions. It is removed in Phase 1; see
+> `region_contracts.md` §A. The pass-through of `alpha`/`quality` described above remains
+> correct, but has never been confirmed on screen — that is Phase 6.
+
 ### 6.4 Transient/auxiliary regions register as regions (list filter)
 
 Several viewer features create `Region` objects internally that are **not** manageable
@@ -398,16 +449,6 @@ have the forms `orientation-regionN` / `plane-regionN` (and older/documented
 exact generated-tag pattern rather than filtering every user tag with those prefixes. (A cleaner
 long-term alternative is tagging them with a `kind`/transient flag at creation.)
 
-### 6.6 Batch-update suppression (bulk operations)
-
-Bulk operations — `show_all` / `hide_all` and `make_regions_by` — otherwise emit one
-scene message (and one summary rebuild) **per region**, which for 20+ chains causes
-visible flicker and IPC lag. The backend batch context suppresses per-item scene
-messages and intermediate summary echoes, records one reproducible batch operation,
-and emits a **single consolidated summary** at the end. SMonitor `@signal`
-breadcrumbs remain active: they are diagnostics, not scene IPC, and suppressing them
-would reduce traceability without improving rendering performance.
-
 ### 6.5 Public API completeness (new methods to add first)
 
 Per the shared philosophy (§1.3), *managing* is the authority of the **molsysviewer
@@ -421,6 +462,8 @@ New methods on **`Region`** (all `@signal @digest`, index space = `_molsys`, R2)
 
 - `reset_representation()` — clear this region's representation/preset/params and revert
   to the base representation; re-send. (Backs `reset_region_representation`; §8.)
+  **Shipped, but broken:** it renders the region as `cartoon` (see §6.3). Repaired in
+  Phase 1, where it comes to mean state **None** of `region_contracts.md` §A.1.
 - `set_color_by_attribute(attribute, *, element="atom", palette="viridis",
   value_range=None, replace=False)` — resolve an attribute already present in `_molsys`
   (`msm.get(..., **{attribute: True})`) and delegate to the existing
@@ -448,6 +491,22 @@ hundreds of regions, so the subpanel's Split remains restricted to
 
 These additions are the **"make the Python API more complete"** work: without them the
 subpanel would be reaching past the public API, which the philosophy forbids.
+
+**(proposed, Phase 4.)** The audit of 2026-07-10 adds to this list: variadic boolean
+operators (`a.difference(b, c)`), atomic overwrite for create/rename, complement of several
+regions, a `count_regions_by` query to size a split before running it, and — per
+`region_contracts.md` — `view.reset_all_colors()`, `Region.provenance`, and the `"inherit"`
+representation sentinel.
+
+### 6.6 Batch-update suppression (bulk operations)
+
+Bulk operations — `show_all` / `hide_all` and `make_regions_by` — otherwise emit one
+scene message (and one summary rebuild) **per region**, which for 20+ chains causes
+visible flicker and IPC lag. The backend batch context suppresses per-item scene
+messages and intermediate summary echoes, records one reproducible batch operation,
+and emits a **single consolidated summary** at the end. SMonitor `@signal`
+breadcrumbs remain active: they are diagnostics, not scene IPC, and suppressing them
+would reduce traceability without improving rendering performance.
 
 ---
 
