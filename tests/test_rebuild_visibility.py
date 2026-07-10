@@ -21,7 +21,7 @@ def test_hidden_region_stays_sticky_after_rebuild_and_global_show():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(atom_indices=[5, 6, 7], tag="pocket", skip_digestion=True)
+    region = view.new_region(atom_indices=[5, 6, 7], tag="pocket", representation="line", skip_digestion=True)
     region.hide(skip_digestion=True)
 
     # Trigger rebuild
@@ -45,7 +45,7 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(atom_indices=[3, 4, 5], tag="site", skip_digestion=True)
+    region = view.new_region(atom_indices=[3, 4, 5], tag="site", representation="line", skip_digestion=True)
     region.hide(skip_digestion=True)
 
     apply_remove(view, selection="atom_index < 2")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
+import warnings
 
 import molsysmt as msm
 from smonitor import signal
@@ -33,6 +34,9 @@ class Region:
         self._hidden = False
 
     # --- helpers ---
+
+    def _has_own_visual(self) -> bool:
+        return self.representation is not None or self.preset is not None
 
     def _scoped_indices_for_element(self, element: str):
         if self.atom_indices is None:
@@ -241,7 +245,7 @@ class Region:
             "selection": self.selection,
             "atom_indices": atom_indices,
         }
-        if include_visual:
+        if include_visual and self._has_own_visual():
             payload["representation"] = self.representation
             payload["params"] = self.repr_params
         self._send("create_region", **payload)
@@ -605,9 +609,14 @@ class Region:
             params["molstar_color_theme"] = {"name": "uniform", "params": {"value": normalize_color(color)}}
         normalized_preset = self._view._normalize_representation_preset(preset)  # noqa: SLF001
         user_preset_payload = self._view._resolve_user_preset(normalized_preset)  # noqa: SLF001
-        normalized = None if normalized_preset else self._view._normalize_representation_type(representation)  # noqa: SLF001
+        if normalized_preset:
+            normalized = None
+        elif isinstance(representation, str) and representation.strip().lower() == "inherit":
+            normalized = "inherit"
+        else:
+            normalized = self._view._normalize_representation_type(representation)  # noqa: SLF001
         if self.atom_indices is not None:
-            has_visual = normalized is not None or normalized_preset is not None or user_preset_payload is not None or bool(params)
+            has_visual = normalized is not None or normalized_preset is not None or user_preset_payload is not None
             if has_visual:
                 self._view._warn_region_visual_overlap(  # noqa: SLF001
                     self.tag,
@@ -732,7 +741,7 @@ class Region:
             skip_digestion=True,
         )
         target_representation = representation if representation is not None else self.representation
-        if target_representation is not None or self.preset is not None or params:
+        if target_representation is not None or self.preset is not None:
             duplicate.set_representation(
                 target_representation,
                 preset=self.preset if representation is None else None,
@@ -776,6 +785,13 @@ class Region:
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
         """Show this region (all attached representations)."""
+        if not self._has_own_visual():
+            warnings.warn(
+                f"Region {self.tag!r} has no own representation to show.",
+                UserWarning,
+                stacklevel=2,
+            )
+            return
         self._hidden = False
         self._send("show_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
@@ -784,6 +800,13 @@ class Region:
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         """Hide this region (all attached representations)."""
+        if not self._has_own_visual():
+            warnings.warn(
+                f"Region {self.tag!r} has no own representation to hide.",
+                UserWarning,
+                stacklevel=2,
+            )
+            return
         self._hidden = True
         self._send("hide_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
@@ -794,7 +817,12 @@ class Region:
         """Leave only this region visible in the current view."""
         if self.atom_indices is None:
             raise ValueError("Cannot show only a region without known atom indices.")
-        self._view.isolate(selection=list(self.atom_indices), skip_digestion=True)
+        for tag, region in self._view._regions.items():  # noqa: SLF001
+            if not getattr(region, "_active", False):
+                continue
+            region._hidden = tag != self.tag  # noqa: SLF001
+        self._send("show_only_region")
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     @signal(tags=["region"])
     @digest()

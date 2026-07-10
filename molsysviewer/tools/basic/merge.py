@@ -158,7 +158,7 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
                 representation=None,
                 skip_digestion=True,
             )
-            if getattr(region, "preset", None) is not None or region.representation is not None or region.repr_params:
+            if getattr(region, "preset", None) is not None or region.representation is not None:
                 merged_region.set_representation(
                     region.representation,
                     preset=getattr(region, "preset", None),

@@ -117,10 +117,5 @@ def new_view(
 
     view.whole.hide()
     region = view.new_region(selection, tag="selection", syntax=syntax, skip_digestion=True)
-    preset = getattr(view.whole, "_preset", None)
-    representation = getattr(view.whole, "_representation", None)
-    params = getattr(view.whole, "_repr_params", {}) or {}
-    if preset is None and representation is None:
-        preset = "auto"
-    region.set_representation(representation, preset=preset, skip_digestion=True, **params)
+    region.set_representation("inherit", skip_digestion=True)
     return view

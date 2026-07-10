@@ -103,7 +103,7 @@ def test_new_view_all_mode_loads_all_and_creates_selection_region():
         {"selection": "molecule_index == 0", "tag": "selection", "syntax": "MolSysMT", "skip_digestion": True}
     ]
     assert view.region.repr_calls == [
-        {"representation": None, "preset": "auto", "params": {"skip_digestion": True}}
+        {"representation": "inherit", "preset": None, "params": {"skip_digestion": True}}
     ]
 
 
@@ -151,9 +151,9 @@ def test_new_view_all_mode_inherits_whole_preset():
 
     assert view.region.repr_calls == [
         {
-            "representation": None,
-            "preset": "polymer-cartoon",
-            "params": {"quality": "high", "skip_digestion": True},
+            "representation": "inherit",
+            "preset": None,
+            "params": {"skip_digestion": True},
         }
     ]
 

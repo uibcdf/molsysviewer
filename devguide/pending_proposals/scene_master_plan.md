@@ -294,6 +294,40 @@ adding `cartoon`; a base region overlapping a visible one now reports the overla
 `grep -rn '?? "cartoon"' js/src/` is empty; `test_region_reset_representation_restores_base_visual_state`
 is repaired or renamed (it asserts only the message dict today).
 
+### Audit note — 2026-07-10, **passed** (second pass)
+
+The three representation states, the two `?? "cartoon"` removals, the `"inherit"` sentinel, the
+warn-only no-ops, `show_only` off `isolate`, and the composed transparency (one owner of the
+transparency channel, closing the latent `setFocusFade`-vs-visibility bug) all landed. Confirmed in
+Mol\*'s source that `setStructureTransparency` does `[...layers, layer]` — it **appends** — so the
+delta path (R-O2) is complete, not the documented fallback.
+
+**Rejected on the first pass: exclusive ownership had zero tests.** Two mutations left the whole
+suite green — `isFullyOpaque → true` (a translucent region would own its atoms, the exact bug R-O1
+prevents) and `ownedOpaqueAtomIndices → []` (ownership off entirely). The code read correct, but
+"reads correct" is the failure mode that produced this plan's 29-bug ledger.
+
+**Second pass verified by mutation**, each mutant failing its own test and no other:
+
+| mutation | test that fails |
+|---|---|
+| `isFullyOpaque → true` | translucent regions do not own atoms |
+| `ownedOpaqueAtomIndices → []` | opaque mask + delta + composition (3) |
+| `requiresFullRebuild = true` always | ownership updates the whole mask by deltas |
+| `show_only` whole mask neutralised | show_only masks the whole component |
+
+Two minor points resolved: `extract`/`merge` copy whole→whole (not a region that inherits), so they
+correctly do **not** use `"inherit"`; `view.isolate()` remains valid as the user-mask API and now
+composes with ownership and the focus fade.
+
+**Two truths now surface that were silent before.** Overlap detection begins warning about visual
+overlaps unreported for months (guarded by `test_region_inherit_counts_as_visible_visual_overlap`),
+and the focus fade no longer erases partial visibility. Neither is a regression.
+
+**Residual, not blocking:** coverage is unit-level against the simulated plugin. State **None**
+under a hidden whole, the opacity slider, and the ownership mask have not been seen to render.
+Deferred to the maintainer's Jupyter smoke and to Phase 14.
+
 ---
 
 ## Phase 3 — Whole's public API + two rebuild bugs
@@ -651,7 +685,7 @@ none were reported by a failing test.
 |------:|-------|:----:|--------|------|--------|-----------|
 | 0 | Perf: toll + double build | M | ☑ | 2026-07-10 | `68522ae6` | **Passed on the third pass.** See note below. |
 | 1 | GATE: close Decision 2 | S | ☑ | 2026-07-10 | *(bench, pending commit)* | **Ownership ADOPTED.** 32 ms worst case vs a 150 ms threshold; picking verified. Two rejections first. |
-| 2 | Contract A: representation | L | ☐ | — | — | — |
+| 2 | Contract A: representation | L | ☑ | 2026-07-10 | *(this commit)* | **Passed on the second pass.** Ownership had zero tests until mutation exposed it. See note. |
 | 3 | Whole API + rebuild bugs | M | ☐ | — | — | — |
 | 4 | Contract B/O: colour + order | L | ☐ | — | — | — |
 | 5 | Contract R: recipes | L | ☐ | — | — | — |

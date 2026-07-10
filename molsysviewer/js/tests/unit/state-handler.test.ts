@@ -259,6 +259,329 @@ test("state handler styles a newly-created bare region without rebuilding its co
     assert.strictEqual(representationAdds, 1);
 });
 
+test("state handler creates a state-None region without adding a representation", async () => {
+    const originalFromSelection = StructureElement.Bundle.fromSelection;
+    let representationAdds = 0;
+    const plugin: any = {
+        state: {
+            data: {
+                cells: { has: () => true },
+                build: () => ({
+                    to: (_ref: unknown) => ({
+                        apply: (_transform: unknown, _params: unknown) => ({
+                            selector: { ref: "component-ref", isOk: true },
+                            async commit(_options: unknown) {},
+                        }),
+                    }),
+                }),
+            },
+        },
+        builders: {
+            structure: {
+                representation: {
+                    async addRepresentation() {
+                        representationAdds += 1;
+                        return { ref: "repr-ref" };
+                    },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        getLoadedStructure: () => ({ structure: "structure-ref" }) as any,
+        getCurrentStructureRef: () => "structure-ref" as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).buildSelectionFromAtomIndices = () => ({ fake: "selection" });
+    (StructureElement.Bundle as any).fromSelection = (_selection: unknown) => ({ fake: "bundle" });
+
+    try {
+        await handler.createRegion({
+            op: "create_region",
+            tag: "none-region",
+            atom_indices: [0, 1],
+            params: { alpha: 0.4 },
+        });
+    } finally {
+        (StructureElement.Bundle as any).fromSelection = originalFromSelection;
+    }
+
+    assert.strictEqual(representationAdds, 0);
+});
+
+test("state handler reset_representation removes the visual instead of adding cartoon", async () => {
+    const originalFromSelection = StructureElement.Bundle.fromSelection;
+    const addedTypes: string[] = [];
+    let removed = 0;
+    const plugin: any = {
+        state: {
+            data: {
+                cells: { has: () => true },
+                build: () => ({
+                    to: (_ref: unknown) => ({
+                        apply: (_transform: unknown, _params: unknown) => ({
+                            selector: { ref: `component-ref-${removed}`, isOk: true },
+                            async commit(_options: unknown) {},
+                        }),
+                    }),
+                }),
+            },
+        },
+        builders: {
+            structure: {
+                representation: {
+                    async addRepresentation(_componentRef: unknown, spec: any) {
+                        addedTypes.push(String(spec.type));
+                        return { ref: `repr-${addedTypes.length}` };
+                    },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        getLoadedStructure: () => ({ structure: "structure-ref" }) as any,
+        getCurrentStructureRef: () => "structure-ref" as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).removeStateObject = async () => { removed += 1; };
+    (handler as any).buildSelectionFromAtomIndices = () => ({ fake: "selection" });
+    (StructureElement.Bundle as any).fromSelection = (_selection: unknown) => ({ fake: "bundle" });
+
+    try {
+        await handler.createRegion({ op: "create_region", tag: "styled", atom_indices: [0, 1] });
+        await handler.setRegionRepresentation({
+            op: "set_region_representation",
+            tag: "styled",
+            representation: "line",
+            params: {},
+        });
+        await handler.setRegionRepresentation({
+            op: "set_region_representation",
+            tag: "styled",
+            representation: undefined,
+            params: {},
+        });
+    } finally {
+        (StructureElement.Bundle as any).fromSelection = originalFromSelection;
+    }
+
+    assert.deepStrictEqual(addedTypes, ["line"]);
+    assert.strictEqual(removed, 1);
+});
+
+test("state handler inherit region follows the live whole representation type", async () => {
+    const originalFromSelection = StructureElement.Bundle.fromSelection;
+    const addedTypes: string[] = [];
+    const plugin: any = {
+        state: {
+            data: {
+                cells: { has: () => true },
+                build: () => ({
+                    to: (_ref: unknown) => ({
+                        apply: (_transform: unknown, _params: unknown) => ({
+                            selector: { ref: "component-ref", isOk: true },
+                            async commit(_options: unknown) {},
+                        }),
+                    }),
+                    async commit() {},
+                }),
+            },
+        },
+        builders: {
+            structure: {
+                representation: {
+                    async addRepresentation(_componentRef: unknown, spec: any) {
+                        addedTypes.push(String(spec.type));
+                        return { ref: `repr-${addedTypes.length}` };
+                    },
+                },
+            },
+        },
+    };
+    const handler = new StateHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        getLoadedStructure: () => ({ structure: "structure-ref" }) as any,
+        getCurrentStructureRef: () => "structure-ref" as any,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    (handler as any).globalRepresentationState = { kind: "type", representation: "line", params: {} };
+    (handler as any).buildSelectionFromAtomIndices = () => ({ fake: "selection" });
+    (StructureElement.Bundle as any).fromSelection = (_selection: unknown) => ({ fake: "bundle" });
+
+    try {
+        await handler.createRegion({
+            op: "create_region",
+            tag: "inherited",
+            atom_indices: [0, 1],
+            representation: "inherit",
+            params: { alpha: 1 },
+        });
+        (handler as any).globalRepresentationState = { kind: "type", representation: "spacefill", params: {} };
+        (handler as any).removeStateObject = async () => {};
+        await (handler as any).repaintInheritedRegions();
+    } finally {
+        (StructureElement.Bundle as any).fromSelection = originalFromSelection;
+    }
+
+    assert.deepStrictEqual(addedTypes, ["line", "spacefill"]);
+});
+
+function makeOwnershipHarness() {
+    const wholeComponent = {
+        ref: "whole-component",
+        representations: [{ cell: { transform: { ref: "whole-repr" }, params: { values: { type: { name: "cartoon" } } } } }],
+    };
+    const regionComponentA = {
+        ref: "region-a-component",
+        representations: [{ cell: { transform: { ref: "region-a-repr" }, params: { values: { type: { name: "line" } } } } }],
+    };
+    const regionComponentB = {
+        ref: "region-b-component",
+        representations: [{ cell: { transform: { ref: "region-b-repr" }, params: { values: { type: { name: "line" } } } } }],
+    };
+    const update: any = {
+        to() { return update; },
+        update() { return update; },
+        apply() { return update; },
+        delete() { return update; },
+        async commit() {},
+    };
+    const plugin: any = {
+        state: {
+            data: {
+                build: () => update,
+                select: () => [],
+                cells: { has: () => true },
+            },
+        },
+    };
+    const componentByRef: Record<string, any> = {
+        "region-a-component": regionComponentA,
+        "region-b-component": regionComponentB,
+    };
+    let handler: StateHandlers;
+    handler = new StateHandlers(plugin, {
+        getStructure: () => ({}) as any,
+        getLoadedStructure: () => ({ structure: "structure-ref" }) as any,
+        getCurrentStructureRef: () => "structure-ref" as any,
+        getComponents: () => {
+            const regionIndex = (handler as any).regionIndex as Map<string, any>;
+            const regionComponents = Array.from(regionIndex.values())
+                .map(entry => componentByRef[String(entry.component)])
+                .filter(Boolean);
+            return [wholeComponent, ...regionComponents] as any;
+        },
+        notify: (_msg: any) => {},
+    });
+    const calls: Array<{ components: string[]; atomIndices: number[]; value: number }> = [];
+    (handler as any).allAtomIndices = () => [0, 1, 2, 3, 4, 5];
+    (handler as any).applyTransparencyLayer = async (
+        components: Array<{ ref: string }>,
+        atomIndices: number[] | undefined,
+        value: number,
+    ) => {
+        calls.push({
+            components: components.map(component => component.ref),
+            atomIndices: [...(atomIndices ?? [])],
+            value,
+        });
+    };
+    const regionIndex = (handler as any).regionIndex as Map<string, any>;
+    const setRegion = (
+        tag: string,
+        component: string,
+        atomIndices: number[],
+        params: Record<string, unknown> = {},
+    ) => {
+        regionIndex.set(tag, {
+            component,
+            representations: [],
+            atomIndices,
+            selection: tag,
+            hidden: false,
+            representationState: "own",
+            representation: "line",
+            preset: undefined,
+            userPreset: undefined,
+            params,
+        });
+    };
+    return { handler, calls, setRegion };
+}
+
+test("state handler ownership masks opaque region atoms on the whole component only", async () => {
+    const { handler, calls, setRegion } = makeOwnershipHarness();
+    setRegion("site", "region-a-component", [0, 1]);
+
+    await (handler as any).applyComposedTransparency();
+
+    assert.deepStrictEqual(calls, [
+        { components: ["whole-component"], atomIndices: [0, 1], value: 1 },
+    ]);
+});
+
+test("state handler translucent regions do not own atoms", async () => {
+    const { handler, calls, setRegion } = makeOwnershipHarness();
+    setRegion("site", "region-a-component", [0, 1], { alpha: 0.95 });
+
+    await (handler as any).applyComposedTransparency();
+
+    assert.deepStrictEqual(calls, []);
+});
+
+test("state handler ownership updates the whole mask by atom deltas", async () => {
+    const { handler, calls, setRegion } = makeOwnershipHarness();
+    setRegion("site", "region-a-component", [0, 1]);
+
+    await (handler as any).applyComposedTransparency();
+    calls.length = 0;
+    const entry = ((handler as any).regionIndex as Map<string, any>).get("site");
+    entry.atomIndices = [0, 1, 2];
+    await (handler as any).applyComposedTransparency();
+
+    assert.deepStrictEqual(calls, [
+        { components: ["whole-component"], atomIndices: [2], value: 1 },
+    ]);
+});
+
+test("state handler composes user mask, focus fade, and ownership on the right components", async () => {
+    const { handler, calls, setRegion } = makeOwnershipHarness();
+    setRegion("site", "region-a-component", [0, 1]);
+    (handler as any).currentVisibleIndices = [0, 1, 3, 4, 5];
+    (handler as any).focusFadeIndices = [0, 1];
+    (handler as any).focusFadeValue = 0.4;
+
+    await (handler as any).applyComposedTransparency();
+
+    assert.deepStrictEqual(calls, [
+        { components: ["region-a-component"], atomIndices: [2], value: 1 },
+        { components: ["whole-component"], atomIndices: [2, 3, 4, 5], value: 0.4 },
+        { components: ["whole-component"], atomIndices: [0, 1, 2], value: 1 },
+    ]);
+});
+
+test("state handler show_only hides other regions and masks the whole component", async () => {
+    const { handler, calls, setRegion } = makeOwnershipHarness();
+    setRegion("site", "region-a-component", [0, 1]);
+    setRegion("other", "region-b-component", [2, 3]);
+
+    await handler.showOnlyRegion({ op: "show_only_region", tag: "site" });
+
+    const regionIndex = (handler as any).regionIndex as Map<string, any>;
+    assert.strictEqual(regionIndex.get("site").hidden, false);
+    assert.strictEqual(regionIndex.get("other").hidden, true);
+    assert.deepStrictEqual(calls.at(-1), {
+        components: ["whole-component"],
+        atomIndices: [0, 1, 2, 3, 4, 5],
+        value: 1,
+    });
+});
+
 test("state handler applies preset alpha to every generated representation", async () => {
     const updated: Array<{ ref: string; alpha: number }> = [];
     let commits = 0;

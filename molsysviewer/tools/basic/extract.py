@@ -96,11 +96,7 @@ def _import_extracted_state(
             representation=None,
             skip_digestion=True,
         )
-        if (
-            region.representation is not None
-            or getattr(region, "preset", None) is not None
-            or region.repr_params
-        ):
+        if region.representation is not None or getattr(region, "preset", None) is not None:
             new_region.set_representation(
                 region.representation,
                 preset=getattr(region, "preset", None),

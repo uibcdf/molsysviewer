@@ -194,7 +194,7 @@ def test_hidden_region_state_replayed_after_rebuild():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(atom_indices=[5, 6, 7], tag="pocket", skip_digestion=True)
+    region = view.new_region(atom_indices=[5, 6, 7], tag="pocket", representation="line", skip_digestion=True)
     region.hide(skip_digestion=True)
     assert region._hidden is True  # noqa: SLF001
 

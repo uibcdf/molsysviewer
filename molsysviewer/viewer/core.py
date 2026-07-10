@@ -1868,7 +1868,7 @@ class MolSysView(
         for region in list(self._regions.values()):
             if not getattr(region, "_active", True):
                 continue
-            if getattr(region, "preset", None) is not None or region.representation is not None or region.repr_params:
+            if getattr(region, "preset", None) is not None or region.representation is not None:
                 region._send_create(include_visual=False)  # noqa: SLF001
                 region.set_representation(
                     region.representation,

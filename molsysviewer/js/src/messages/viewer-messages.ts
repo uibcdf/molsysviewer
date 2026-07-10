@@ -426,6 +426,8 @@ export type CreateRegionMessage = {
     selection?: string;
     atom_indices?: number[];
     representation?: string;
+    preset?: string;
+    user_preset?: any;
     params?: Record<string, unknown>;
 };
 
@@ -439,7 +441,7 @@ export type SetRegionRepresentationMessage = {
 };
 
 export type ShowRegionMessage = {
-    op: "show_region";
+    op: "show_region" | "show_only_region";
     tag?: string;
 };
 

@@ -153,6 +153,8 @@ class RegionsMixin:
         return created
 
     def _normalize_representation_type(self, value: str | None) -> str | None:
+        if isinstance(value, str) and value.strip().lower() == "inherit":
+            raise ValueError("'inherit' is a region representation sentinel, not a Mol* representation type.")
         return normalize_representation_type(value)
 
     def _normalize_representation_preset(self, value: str | None) -> str | None:
@@ -300,7 +302,6 @@ class RegionsMixin:
             and (
                 region.representation is not None
                 or region.preset is not None
-                or bool(region.repr_params)
             )
         )
 
@@ -364,7 +365,10 @@ class RegionsMixin:
         tag = tag or self._next_region_tag()
         if tag in self._regions:
             raise ValueError(f"A region with tag {tag!r} already exists.")
-        representation = self._normalize_representation_type(representation)
+        if isinstance(representation, str) and representation.strip().lower() == "inherit":
+            representation = "inherit"
+        else:
+            representation = self._normalize_representation_type(representation)
 
         if atom_indices is None and complement_of_regions is not None:
             region_tags = []
@@ -396,7 +400,7 @@ class RegionsMixin:
 
         visual_representation = representation
         visual_repr_params = dict(repr_params)
-        has_visual_spec = visual_representation is not None or bool(visual_repr_params)
+        has_visual_spec = visual_representation is not None
 
         region = Region(
             self,
@@ -404,7 +408,7 @@ class RegionsMixin:
             selection,
             atom_indices=atom_indices,
             representation=None if has_visual_spec else representation,
-            repr_params={} if has_visual_spec else repr_params,
+            repr_params={},
         )
         self._regions[tag] = region
         if has_visual_spec:

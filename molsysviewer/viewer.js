@@ -144880,6 +144880,7 @@ function clearPerAtomColors() {
 }
 
 // src/managers/handlers/state-handlers.ts
+var DEFAULT_GLOBAL_REPRESENTATION = "cartoon";
 var StateHandlers = class {
   constructor(plugin, callbacks) {
     this.plugin = plugin;
@@ -144893,6 +144894,18 @@ var StateHandlers = class {
     this.pendingLayerVisibility = /* @__PURE__ */ new Map();
     this.pendingRegions = [];
     this.regionStyleOptions = { representations: [], presets: [] };
+    this.focusFadeValue = 0;
+    this.transparencyInitialized = false;
+    this.previousUserHiddenKey = "";
+    this.previousFadedKey = "";
+    this.previousFocusFadeValue = 0;
+    this.previousShowOnlyWholeMask = false;
+    this.previousOwnedOpaqueIndices = /* @__PURE__ */ new Set();
+    this.globalRepresentationState = {
+      kind: "preset",
+      preset: "auto",
+      params: {}
+    };
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
     // when its base_version matches; otherwise we ask the kernel for a full resync.
@@ -145017,6 +145030,148 @@ var StateHandlers = class {
       available_attributes: []
     })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
+  componentRefId(component) {
+    return component?.cell?.transform?.ref ?? component?.transform?.ref ?? component?.ref;
+  }
+  getRegionComponentRefs() {
+    const refs = /* @__PURE__ */ new Set();
+    this.regionIndex.forEach((entry) => {
+      const ref = StateObjectRef.resolveRef(entry.component);
+      if (ref) refs.add(ref);
+    });
+    return refs;
+  }
+  splitComponentsByRegionOwnership() {
+    const all3 = this.callbacks.getComponents();
+    const regionRefs = this.getRegionComponentRefs();
+    const whole = [];
+    const regions = [];
+    for (const component of all3) {
+      const ref = this.componentRefId(component);
+      if (ref && regionRefs.has(ref)) {
+        regions.push(component);
+      } else {
+        whole.push(component);
+      }
+    }
+    return { all: all3, whole, regions };
+  }
+  allAtomIndices(structure) {
+    const indices2 = [];
+    for (const unit2 of structure.units) {
+      if (!Unit.isAtomic(unit2)) continue;
+      const elementCount = OrderedSet2.size(unit2.elements);
+      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
+        indices2.push(OrderedSet2.getAt(unit2.elements, ordinal));
+      }
+    }
+    return indices2;
+  }
+  hiddenAtomIndicesFromUserMask(structure) {
+    const indices2 = this.currentVisibleIndices;
+    if (!Array.isArray(indices2)) return void 0;
+    if (indices2.length === 0) return this.allAtomIndices(structure);
+    const visibleSet = new Set(indices2);
+    return this.allAtomIndices(structure).filter((index) => !visibleSet.has(index));
+  }
+  unionAtomIndices(...sets) {
+    const union4 = /* @__PURE__ */ new Set();
+    for (const values2 of sets) {
+      for (const value of values2 ?? []) union4.add(value);
+    }
+    return Array.from(union4).sort((a8, b8) => a8 - b8);
+  }
+  atomIndexKey(indices2) {
+    return Array.isArray(indices2) && indices2.length > 0 ? indices2.join(",") : "";
+  }
+  complementAtomIndices(structure, indices2) {
+    if (!Array.isArray(indices2) || indices2.length === 0) return void 0;
+    const keep = new Set(indices2);
+    return this.allAtomIndices(structure).filter((index) => !keep.has(index));
+  }
+  isFullyOpaque(params) {
+    const alpha = params?.alpha;
+    return alpha === void 0 || alpha === null || Number(alpha) === 1;
+  }
+  ownedOpaqueAtomIndices() {
+    const owned = /* @__PURE__ */ new Set();
+    this.regionIndex.forEach((entry) => {
+      if (entry.hidden) return;
+      if (entry.representationState === "none") return;
+      if (!this.isFullyOpaque(entry.params)) return;
+      for (const index of entry.atomIndices) owned.add(index);
+    });
+    return Array.from(owned).sort((a8, b8) => a8 - b8);
+  }
+  async applyTransparencyLayer(components, atomIndices, value) {
+    const structure = this.callbacks.getStructure();
+    if (!structure || components.length === 0 || !Array.isArray(atomIndices) || atomIndices.length === 0) return;
+    const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
+    if (!selection || StructureSelection.isEmpty(selection)) return;
+    const loci = StructureSelection.toLociWithSourceUnits(selection);
+    await setStructureTransparency(this.plugin, components, value, async () => loci);
+  }
+  async applyComposedTransparency() {
+    const structure = this.callbacks.getStructure();
+    if (!structure) return;
+    const { all: all3, whole, regions } = this.splitComponentsByRegionOwnership();
+    if (all3.length === 0) return;
+    const userHidden = this.hiddenAtomIndicesFromUserMask(structure);
+    const faded = this.focusFadeValue > 0 ? this.complementAtomIndices(structure, this.focusFadeIndices) : void 0;
+    const ownedOpaque = this.ownedOpaqueAtomIndices();
+    const showOnlyWholeMaskActive = !!this.showOnlyRegionTag;
+    const showOnlyWholeMask = showOnlyWholeMaskActive ? this.allAtomIndices(structure) : void 0;
+    const wholeHidden = this.unionAtomIndices(userHidden, this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
+    const userHiddenKey = this.atomIndexKey(userHidden);
+    const fadedKey = this.atomIndexKey(faded);
+    const requiresFullRebuild = !this.transparencyInitialized || userHiddenKey !== this.previousUserHiddenKey || fadedKey !== this.previousFadedKey || this.focusFadeValue !== this.previousFocusFadeValue || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask;
+    if (requiresFullRebuild) {
+      await clearStructureTransparency(this.plugin, all3);
+      if (Array.isArray(userHidden) && userHidden.length > 0) {
+        await this.applyTransparencyLayer(regions, userHidden, 1);
+      }
+      if (Array.isArray(faded) && faded.length > 0) {
+        await this.applyTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
+      }
+      if (wholeHidden.length > 0) {
+        await this.applyTransparencyLayer(whole, wholeHidden, 1);
+      }
+    } else {
+      const previousOwned = this.previousOwnedOpaqueIndices;
+      const nextOwned = new Set(ownedOpaque);
+      const userHiddenSet = new Set(userHidden ?? []);
+      const fadedSet = new Set(faded ?? []);
+      const added = ownedOpaque.filter((index) => !previousOwned.has(index));
+      const removed = Array.from(previousOwned).filter((index) => !nextOwned.has(index));
+      if (added.length > 0) {
+        await this.applyTransparencyLayer(whole, added, 1);
+      }
+      if (!showOnlyWholeMaskActive && removed.length > 0) {
+        const fadedReleased = [];
+        const clearReleased = [];
+        for (const index of removed) {
+          if (userHiddenSet.has(index)) continue;
+          if (fadedSet.has(index)) {
+            fadedReleased.push(index);
+          } else {
+            clearReleased.push(index);
+          }
+        }
+        if (fadedReleased.length > 0) {
+          await this.applyTransparencyLayer(whole, fadedReleased, Math.min(1, this.focusFadeValue));
+        }
+        if (clearReleased.length > 0) {
+          await this.applyTransparencyLayer(whole, clearReleased, 0);
+        }
+      }
+    }
+    this.transparencyInitialized = true;
+    this.previousUserHiddenKey = userHiddenKey;
+    this.previousFadedKey = fadedKey;
+    this.previousFocusFadeValue = this.focusFadeValue;
+    this.previousShowOnlyWholeMask = showOnlyWholeMaskActive;
+    this.previousOwnedOpaqueIndices = new Set(ownedOpaque);
+  }
   async updateVisibility(msg) {
     const indices2 = Array.isArray(msg) || msg === void 0 ? msg : msg.options?.visible_atom_indices;
     const version = Array.isArray(msg) || msg === void 0 ? void 0 : msg.options?.version;
@@ -145049,77 +145204,116 @@ var StateHandlers = class {
       }
       return;
     }
-    const components = this.callbacks.getComponents();
-    if (components.length === 0) return;
-    await clearStructureTransparency(this.plugin, components);
-    if (!Array.isArray(indices2)) return;
-    const hideAll = indices2.length === 0;
-    const selectionBuilder = StructureSelection.LinearBuilder(structure);
-    const visibleSet = hideAll ? void 0 : new Set(indices2);
-    let hasHidden = hideAll;
-    for (const unit2 of structure.units) {
-      if (!Unit.isAtomic(unit2)) continue;
-      const elementCount = OrderedSet2.size(unit2.elements);
-      if (elementCount === 0) continue;
-      if (hideAll) {
-        const childUnit2 = unit2.getChild(unit2.elements);
-        const hiddenStructure2 = Structure.create([childUnit2], { parent: structure });
-        selectionBuilder.add(hiddenStructure2);
-        continue;
-      }
-      const hiddenElements = [];
-      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
-        const elementIndex = OrderedSet2.getAt(unit2.elements, ordinal);
-        if (!visibleSet?.has(elementIndex)) {
-          hiddenElements.push(elementIndex);
-        }
-      }
-      if (hiddenElements.length === 0) continue;
-      hasHidden = true;
-      const elementSubset = hiddenElements.length === elementCount ? unit2.elements : SortedArray.ofSortedArray(hiddenElements);
-      const childUnit = unit2.getChild(elementSubset);
-      const hiddenStructure = Structure.create([childUnit], { parent: structure });
-      selectionBuilder.add(hiddenStructure);
-    }
-    if (!hasHidden) return;
-    const selection = selectionBuilder.getSelection();
-    if (StructureSelection.isEmpty(selection)) return;
-    const loci = StructureSelection.toLociWithSourceUnits(selection);
-    await setStructureTransparency(this.plugin, components, 1, async () => loci);
+    await this.applyComposedTransparency();
   }
   async setFocusFade(msg) {
     const structure = this.callbacks.getStructure();
     if (!structure) return;
-    const components = this.callbacks.getComponents();
-    if (components.length === 0) return;
-    await clearStructureTransparency(this.plugin, components);
     const indices2 = msg.options?.focus_atom_indices;
     const fade = msg.options?.fade ?? 0;
-    if (!Array.isArray(indices2) || indices2.length === 0 || fade <= 0) return;
-    const focusSet = new Set(indices2);
-    const selectionBuilder = StructureSelection.LinearBuilder(structure);
-    let hasFaded = false;
-    for (const unit2 of structure.units) {
-      if (!Unit.isAtomic(unit2)) continue;
-      const elementCount = OrderedSet2.size(unit2.elements);
-      if (elementCount === 0) continue;
-      const fadedElements = [];
-      for (let ordinal = 0; ordinal < elementCount; ordinal++) {
-        const elementIndex = OrderedSet2.getAt(unit2.elements, ordinal);
-        if (!focusSet.has(elementIndex)) fadedElements.push(elementIndex);
+    this.focusFadeIndices = Array.isArray(indices2) && indices2.length > 0 ? indices2 : void 0;
+    this.focusFadeValue = fade > 0 ? fade : 0;
+    await this.applyComposedTransparency();
+  }
+  regionStateFromMessage(msg) {
+    if (msg.user_preset || msg.preset) return "own";
+    if (msg.representation === "inherit") return "inherit";
+    if (typeof msg.representation === "string" && msg.representation.trim() !== "") return "own";
+    return "none";
+  }
+  async addTypedRegionRepresentation(componentRef, tag, reprType, params) {
+    const structuralColor = this.getStructuralColorThemeFromParams(reprType, params);
+    const cleanParams = this.omitStructuralColorKeys(params);
+    const repr = await this.plugin.builders.structure.representation.addRepresentation(
+      componentRef,
+      {
+        type: reprType,
+        typeParams: cleanParams,
+        ...structuralColor.color ? { color: structuralColor.color } : {},
+        ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}
+      },
+      { tag }
+    );
+    return repr?.ref ? [repr.ref] : [];
+  }
+  async addOwnRegionRepresentations(componentRef, tag, msg) {
+    const params = msg.params ?? {};
+    const structuralColor = this.getStructuralColorThemeFromParams(
+      msg.representation ?? void 0,
+      params
+    );
+    const cleanParams = this.omitStructuralColorKeys(params);
+    const refs = [];
+    if (msg.user_preset) {
+      const userPreset = msg.user_preset || {};
+      const { base, rules } = userPreset;
+      if (base) {
+        const applied = await this.plugin.builders.structure.representation.applyPreset(
+          { ref: componentRef },
+          base,
+          {
+            ...cleanParams,
+            ...structuralColor.theme ? { theme: structuralColor.theme } : {}
+          }
+        );
+        refs.push(...this.collectRefsFromPreset(applied));
       }
-      if (fadedElements.length === 0) continue;
-      hasFaded = true;
-      const elementSubset = fadedElements.length === elementCount ? unit2.elements : SortedArray.ofSortedArray(fadedElements);
-      const childUnit = unit2.getChild(elementSubset);
-      const fadedStructure = Structure.create([childUnit], { parent: structure });
-      selectionBuilder.add(fadedStructure);
+      if (Array.isArray(rules)) {
+        for (const rule of rules) {
+          const type3 = rule?.representation ?? DEFAULT_GLOBAL_REPRESENTATION;
+          refs.push(...await this.addTypedRegionRepresentation(
+            componentRef,
+            tag,
+            type3,
+            rule?.params ?? cleanParams
+          ));
+        }
+      }
+      return refs;
     }
-    if (!hasFaded) return;
-    const selection = selectionBuilder.getSelection();
-    if (StructureSelection.isEmpty(selection)) return;
-    const loci = StructureSelection.toLociWithSourceUnits(selection);
-    await setStructureTransparency(this.plugin, components, Math.min(1, fade), async () => loci);
+    if (msg.preset) {
+      const applied = await this.plugin.builders.structure.representation.applyPreset(
+        { ref: componentRef },
+        msg.preset,
+        {
+          ...cleanParams,
+          ...structuralColor.theme ? { theme: structuralColor.theme } : {}
+        }
+      );
+      refs.push(...this.collectRefsFromPreset(applied));
+      return refs;
+    }
+    if (typeof msg.representation === "string" && msg.representation !== "inherit") {
+      refs.push(...await this.addTypedRegionRepresentation(componentRef, tag, msg.representation, params));
+    }
+    return refs;
+  }
+  async addInheritedRegionRepresentations(componentRef, tag, params) {
+    if (this.globalRepresentationState.kind === "preset") {
+      const applied = await this.plugin.builders.structure.representation.applyPreset(
+        { ref: componentRef },
+        this.globalRepresentationState.preset,
+        params ?? {}
+      );
+      return this.collectRefsFromPreset(applied);
+    }
+    if (this.globalRepresentationState.kind === "user_preset") {
+      return this.addOwnRegionRepresentations(componentRef, tag, {
+        op: "set_region_representation",
+        tag,
+        user_preset: this.globalRepresentationState.userPreset,
+        params
+      });
+    }
+    return this.addTypedRegionRepresentation(
+      componentRef,
+      tag,
+      this.globalRepresentationState.representation,
+      {
+        ...this.globalRepresentationState.params,
+        ...params ?? {}
+      }
+    );
   }
   async createRegion(msg) {
     const structure = this.callbacks.getStructure();
@@ -145150,34 +145344,26 @@ var StateHandlers = class {
         console.warn("[MolSysViewer] create_region: empty component for", tag);
         return;
       }
-      const hasVisualSpec = msg.representation !== void 0 || msg.params !== void 0 && Object.keys(msg.params).length > 0;
+      const representationState = this.regionStateFromMessage(msg);
       const representations = [];
-      if (hasVisualSpec) {
-        const reprType = msg.representation ?? "cartoon";
-        const structuralColor = this.getStructuralColorThemeFromParams(
-          reprType,
-          msg.params
-        );
-        const cleanParams = this.omitStructuralColorKeys(msg.params);
-        const repr = await this.plugin.builders.structure.representation.addRepresentation(
-          componentRef,
-          {
-            type: reprType,
-            typeParams: cleanParams,
-            ...structuralColor.color ? { color: structuralColor.color } : {},
-            ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}
-          },
-          { tag }
-        );
-        if (repr?.ref) representations.push(repr.ref);
+      if (representationState === "inherit") {
+        representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
+      } else if (representationState === "own") {
+        representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
       }
       this.regionIndex.set(tag, {
         component: componentRef,
         representations,
         atomIndices,
         selection: msg.selection,
-        hidden: false
+        hidden: false,
+        representationState,
+        representation: msg.representation,
+        preset: msg.preset,
+        userPreset: msg.user_preset,
+        params: { ...msg.params ?? {} }
       });
+      await this.applyComposedTransparency();
       this.callbacks.notify({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
     } catch (err) {
       console.error("[MolSysViewer] Error creating region", err);
@@ -145214,65 +145400,15 @@ var StateHandlers = class {
     } else {
       entry.representations = [];
     }
-    const structuralColor = this.getStructuralColorThemeFromParams(
-      msg.representation ?? void 0,
-      msg.params
-    );
-    const cleanParams = this.omitStructuralColorKeys(msg.params);
-    if (msg.user_preset) {
-      const { base, rules } = msg.user_preset || {};
-      if (base) {
-        const applied = await this.plugin.builders.structure.representation.applyPreset(
-          { ref: componentRef },
-          base,
-          {
-            ...cleanParams,
-            ...structuralColor.theme ? { theme: structuralColor.theme } : {}
-          }
-        );
-        const refs = this.collectRefsFromPreset(applied);
-        entry.representations.push(...refs);
-      }
-      if (Array.isArray(rules)) {
-        for (const rule of rules) {
-          const type3 = rule?.representation ?? "cartoon";
-          const repr = await this.plugin.builders.structure.representation.addRepresentation(
-            componentRef,
-            {
-              type: type3,
-              typeParams: rule?.params ?? cleanParams,
-              ...structuralColor.color ? { color: structuralColor.color } : {},
-              ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}
-            },
-            { tag }
-          );
-          if (repr?.ref) entry.representations.push(repr.ref);
-        }
-      }
-    } else if (msg.preset) {
-      const applied = await this.plugin.builders.structure.representation.applyPreset(
-        { ref: componentRef },
-        msg.preset,
-        {
-          ...cleanParams,
-          ...structuralColor.theme ? { theme: structuralColor.theme } : {}
-        }
-      );
-      const refs = this.collectRefsFromPreset(applied);
-      entry.representations.push(...refs);
-    } else {
-      const reprType = msg.representation ?? "cartoon";
-      const repr = await this.plugin.builders.structure.representation.addRepresentation(
-        componentRef,
-        {
-          type: reprType,
-          typeParams: cleanParams,
-          ...structuralColor.color ? { color: structuralColor.color } : {},
-          ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}
-        },
-        { tag }
-      );
-      if (repr?.ref) entry.representations.push(repr.ref);
+    entry.representationState = this.regionStateFromMessage(msg);
+    entry.representation = msg.representation;
+    entry.preset = msg.preset;
+    entry.userPreset = msg.user_preset;
+    entry.params = { ...msg.params ?? {} };
+    if (entry.representationState === "inherit") {
+      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
+    } else if (entry.representationState === "own") {
+      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
     }
     const alpha = msg.params?.alpha;
     if ((msg.preset || msg.user_preset) && typeof alpha === "number") {
@@ -145283,9 +145419,23 @@ var StateHandlers = class {
         (ref) => setSubtreeVisibility(this.plugin.state.data, ref, true)
       );
     }
+    await this.applyComposedTransparency();
   }
   async showRegion(msg) {
     await this.toggleRegionVisibility(msg.tag, false);
+  }
+  async showOnlyRegion(msg) {
+    const regionTag = msg.tag ?? "region";
+    const entry = this.regionIndex.get(regionTag);
+    if (!entry) return;
+    this.showOnlyRegionTag = regionTag;
+    this.regionIndex.forEach((candidate, tag) => {
+      candidate.hidden = tag !== regionTag;
+      candidate.representations.forEach(
+        (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag)
+      );
+    });
+    await this.applyComposedTransparency();
   }
   async hideRegion(msg) {
     await this.toggleRegionVisibility(msg.tag, true);
@@ -145338,6 +145488,9 @@ var StateHandlers = class {
         case "show_region":
           await this.showRegion(operation);
           break;
+        case "show_only_region":
+          await this.showOnlyRegion(operation);
+          break;
         case "hide_region":
           await this.hideRegion(operation);
           break;
@@ -145357,6 +145510,8 @@ var StateHandlers = class {
     ];
     await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
     this.regionIndex.delete(tag);
+    if (this.showOnlyRegionTag === tag) this.showOnlyRegionTag = void 0;
+    await this.applyComposedTransparency();
     this.callbacks.notify({ event: "region_deleted", tag });
   }
   async renameRegion(msg) {
@@ -145408,6 +145563,26 @@ var StateHandlers = class {
   async setGlobalRepresentation(msg) {
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structureRef) return;
+    const cleanParamsForState = this.omitStructuralColorKeys(msg.params);
+    if (msg.user_preset) {
+      this.globalRepresentationState = {
+        kind: "user_preset",
+        userPreset: msg.user_preset,
+        params: cleanParamsForState
+      };
+    } else if (msg.preset) {
+      this.globalRepresentationState = {
+        kind: "preset",
+        preset: msg.preset,
+        params: cleanParamsForState
+      };
+    } else {
+      this.globalRepresentationState = {
+        kind: "type",
+        representation: msg.representation ?? DEFAULT_GLOBAL_REPRESENTATION,
+        params: cleanParamsForState
+      };
+    }
     const cameraSnap = this.plugin.canvas3d?.camera.getSnapshot?.();
     const structure = this.callbacks.getStructure();
     const structuralColor = this.getStructuralColorThemeFromParams(
@@ -145455,7 +145630,7 @@ var StateHandlers = class {
         const componentRef = component.selector?.ref;
         if (!component.selector?.isOk || !componentRef) continue;
         const update10 = this.plugin.state.data.build();
-        const reprType = rule?.representation ?? "cartoon";
+        const reprType = rule?.representation ?? DEFAULT_GLOBAL_REPRESENTATION;
         const repr = this.plugin.builders.structure.representation.buildRepresentation(
           update10,
           { ref: componentRef },
@@ -145483,7 +145658,7 @@ var StateHandlers = class {
       refs.forEach((ref) => this.globalReprs.add(ref));
     } else {
       const update10 = this.plugin.state.data.build();
-      const reprType = msg.representation ?? "cartoon";
+      const reprType = msg.representation ?? DEFAULT_GLOBAL_REPRESENTATION;
       const reprParams = createStructureRepresentationParams(
         this.plugin,
         structure,
@@ -145527,6 +145702,7 @@ var StateHandlers = class {
       } catch {
       }
     }
+    await this.repaintInheritedRegions();
   }
   async showGlobal(msg) {
     await this.handleShowHideGlobal(false, msg.target ?? "global");
@@ -145594,6 +145770,15 @@ var StateHandlers = class {
     this.regionIndex.clear();
     this.backendRegionSummaries = null;
     this.layerMeta.clear();
+    this.focusFadeIndices = void 0;
+    this.focusFadeValue = 0;
+    this.showOnlyRegionTag = void 0;
+    this.transparencyInitialized = false;
+    this.previousUserHiddenKey = "";
+    this.previousFadedKey = "";
+    this.previousFocusFadeValue = 0;
+    this.previousShowOnlyWholeMask = false;
+    this.previousOwnedOpaqueIndices.clear();
     if (this.globalReprs.size > 0) {
       await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
       this.globalReprs.clear();
@@ -145688,9 +145873,13 @@ var StateHandlers = class {
   async toggleRegionVisibility(tag, hide) {
     const regionTag = tag ?? "region";
     const entry = this.regionIndex.get(regionTag);
-    if (!entry || entry.representations.length === 0) return;
+    if (!entry) return;
+    if (this.showOnlyRegionTag && (!hide || regionTag === this.showOnlyRegionTag)) {
+      this.showOnlyRegionTag = void 0;
+    }
     entry.hidden = hide;
     entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
+    await this.applyComposedTransparency();
   }
   async toggleLayerVisibility(tag, hide) {
     const layerTag = tag ?? "layer";
@@ -145734,6 +145923,17 @@ var StateHandlers = class {
       }
     } catch (err) {
       console.warn("[MolSysViewer] default global representation failed", err);
+    }
+  }
+  async repaintInheritedRegions() {
+    const inherited = Array.from(this.regionIndex.entries()).filter(([, entry]) => entry.representationState === "inherit");
+    for (const [tag, entry] of inherited) {
+      await this.setRegionRepresentation({
+        op: "set_region_representation",
+        tag,
+        representation: "inherit",
+        params: entry.params
+      });
     }
   }
   collectBaselineGlobalRepresentationRefs() {
@@ -156948,6 +157148,9 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "show_region":
           await this.state.showRegion(msg);
+          break;
+        case "show_only_region":
+          await this.state.showOnlyRegion(msg);
           break;
         case "hide_region":
           await this.state.hideRegion(msg);

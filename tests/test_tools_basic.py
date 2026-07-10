@@ -94,15 +94,17 @@ def test_make_regions_by_creates_regions_with_deduplicated_tags():
     assert chains_second["A__2"].atom_indices == tuple(range(22))
 
 
-def test_region_show_only_applies_live_visibility_mask():
+def test_region_show_only_uses_ownership_without_mutating_user_visibility():
     view = demo["dialanine"]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="line", skip_digestion=True)
+    other = view.new_region(atom_indices=[3, 4], tag="other", representation="line", skip_digestion=True)
 
     region.show_only()
 
-    assert view.visible_atom_indices == [0, 1, 2]
-    visibility_msg = next(msg for msg in reversed(view._message_history) if msg.get("op") == "update_visibility")  # noqa: SLF001
-    assert visibility_msg["options"]["visible_atom_indices"] == [0, 1, 2]
+    assert view.visible_atom_indices == list(range(22))
+    assert region._hidden is False  # noqa: SLF001
+    assert other._hidden is True  # noqa: SLF001
+    assert view._message_history[-1] == {"op": "show_only_region", "tag": "frag"}  # noqa: SLF001
 
 
 def test_tools_basic_extract_returns_subset_view():

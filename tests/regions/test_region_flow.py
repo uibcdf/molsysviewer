@@ -106,6 +106,14 @@ def test_region_overlap_warning_when_creating_visual_overlap():
         view.new_region(atom_indices=[2, 3], tag="second", representation="ball-and-stick", skip_digestion=True)
 
 
+def test_region_inherit_counts_as_visible_visual_overlap():
+    view = _empty_view()
+    view.new_region(atom_indices=[0, 1, 2], tag="first", representation="inherit", skip_digestion=True)
+
+    with pytest.warns(UserWarning, match="overlaps visible represented region"):
+        view.new_region(atom_indices=[2, 3], tag="second", representation="line", skip_digestion=True)
+
+
 def test_region_overlap_warning_ignores_logical_and_hidden_regions():
     view = _empty_view()
     view.new_region(atom_indices=[0, 1], tag="logical", skip_digestion=True)
@@ -119,7 +127,7 @@ def test_region_overlap_warning_ignores_logical_and_hidden_regions():
     assert record == []
 
 
-def test_region_reset_representation_restores_base_visual_state():
+def test_region_reset_representation_removes_own_visual_state():
     view = _empty_view()
     region = view.new_region(
         atom_indices=[0, 1, 2],
@@ -142,6 +150,20 @@ def test_region_reset_representation_restores_base_visual_state():
         "user_preset": None,
         "params": {},
     }
+
+
+def test_none_region_hide_and_show_warn_without_frontend_visibility_message():
+    view = _empty_view()
+    region = view.new_region(atom_indices=[0, 1, 2], tag="logical", skip_digestion=True)
+    before = len(view._message_history)  # noqa: SLF001
+
+    with pytest.warns(UserWarning, match="no own representation to hide"):
+        region.hide(skip_digestion=True)
+    with pytest.warns(UserWarning, match="no own representation to show"):
+        region.show(skip_digestion=True)
+
+    assert len(view._message_history) == before  # noqa: SLF001
+    assert region._hidden is False  # noqa: SLF001
 
 
 def test_new_region_with_visual_spec_preserves_representation_semantics():
@@ -191,6 +213,7 @@ def test_new_region_with_visual_params_preserves_none_representation():
     )
 
     assert region.representation is None
+    assert region.repr_params == {}
     operations = [
         message
         for message in view._message_history  # noqa: SLF001
@@ -203,15 +226,7 @@ def test_new_region_with_visual_params_preserves_none_representation():
             "tag": "styled-default",
             "selection": "all",
             "atom_indices": [0, 1, 2],
-        },
-        {
-            "op": "set_region_representation",
-            "tag": "styled-default",
-            "representation": None,
-            "preset": None,
-            "user_preset": None,
-            "params": {"alpha": 0.4},
-        },
+        }
     ]
 
 
