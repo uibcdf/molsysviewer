@@ -76,6 +76,10 @@ export type RegionDetails = {
     chain_count: number;
     center_nm: number[];
     structure_index: number;
+    provenance?: Record<string, unknown>;
+    order?: number;
+    mode?: "static" | "dynamic";
+    broken?: boolean;
 };
 type WorkspaceOption = { id: string; title: string; subtitle?: string };
 type PanelOption = { id: string; title: string; active?: boolean };
@@ -596,6 +600,7 @@ export class GroupPanel {
 
     setSavedSelections(items: SavedSelectionSummary[]): void {
         this.selectionPanel.setSavedSelections(items);
+        this.regionsPanel.setSavedSelections(items);
     }
 
     updateSelectionQueryPreview(preview: SelectionQueryPreview): void {
@@ -610,7 +615,7 @@ export class GroupPanel {
         this.layersPanel.setRegions(items);
     }
 
-    setRegionStyleOptions(options: { representations: string[]; presets: string[] }): void {
+    setRegionStyleOptions(options: { representations: string[]; presets: string[]; wholeHidden?: boolean }): void {
         this.regionsPanel.setStyleOptions(options);
     }
 

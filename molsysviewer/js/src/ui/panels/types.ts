@@ -40,6 +40,8 @@ export type PanelAction =
     | "rename_region"
     | "toggle_region_visibility"
     | "show_only_region"
+    | "raise_region_to_front"
+    | "send_region_to_back"
     | "create_complementary_region"
     | "duplicate_region"
     | "compose_regions"

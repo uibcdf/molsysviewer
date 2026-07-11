@@ -874,6 +874,70 @@ test("GroupPanel region create composer covers active, checked query, split, and
     }
 });
 
+test("GroupPanel region create uses real style options, saved selections, and inherit default when whole is hidden", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        panel.setRegionStyleOptions({
+            representations: ["cartoon", "line", "spacefill"],
+            presets: ["polymer-cartoon"],
+            wholeHidden: true,
+        });
+        panel.setSavedSelections([{ tag: "saved_site", atom_count: 4 }]);
+        panel.updateSelection({ count_atoms: 2, atom_indices: [0, 1] } as any);
+        (panel as any).switchTab("regions");
+        const root = host.children[0];
+        const createRepresentation = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-create-representation",
+            "true",
+        ) as any;
+        assert.strictEqual(createRepresentation.children.length, 6);
+        assert.strictEqual(createRepresentation.value, "inherit");
+
+        findFirstByAttribute(root, "data-molsysviewer-region-create-active", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "create_region_from_selection",
+            details: { representation: "inherit" },
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-region-create-origin", "saved")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const savedSelect = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-create-saved-select",
+            "true",
+        ) as any;
+        assert.strictEqual(savedSelect.value, "saved_site");
+        createRepresentation.value = "preset:polymer-cartoon";
+        createRepresentation.dispatch("change");
+        findFirstByAttribute(root, "data-molsysviewer-region-create-saved", "true")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "create_region_from_saved_selection",
+            details: { selection_tag: "saved_site", preset: "polymer-cartoon" },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel region cards expose lifecycle actions and explicit collision choices", () => {
     const restore = installFakeDom();
     try {
@@ -1022,7 +1086,7 @@ test("GroupPanel region style composer emits presets, release-only opacity, and 
             "binding",
         ) as any;
 
-        assert.strictEqual(representation.children.length, 13);
+        assert.strictEqual(representation.children.length, 14);
         assert.strictEqual(preset.children.length, 7);
         assert.strictEqual(attribute.children.length, 2);
         representation.value = "cartoon";
@@ -1078,13 +1142,100 @@ test("GroupPanel region style composer emits presets, release-only opacity, and 
         nextAttribute.dispatch("change");
         assert.deepStrictEqual(actions.at(-1), {
             action: "color_region_by_attribute",
-            details: { tag: "binding", attribute: "b_factor" },
+            details: {
+                tag: "binding",
+                attribute: "b_factor",
+                element: "atom",
+                palette: "viridis",
+                replace: true,
+            },
         });
         findFirstByAttribute(root, "data-molsysviewer-region-style-reset-colors", "binding")
             ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
         assert.deepStrictEqual(actions.at(-1), {
             action: "reset_region_colors",
             details: { tag: "binding" },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel region style composer disables base opacity and preserves current visual on empty apply", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => actions.push({ action, details }),
+        );
+        panel.setRegions([{ tag: "base", atom_count: 5, hidden: false }]);
+        (panel as any).switchTab("regions");
+        const root = host.children[0];
+        findFirstByAttribute(root, "data-molsysviewer-region-style", "base")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const baseOpacity = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-opacity",
+            "base",
+        ) as any;
+        assert.strictEqual(baseOpacity?.disabled, true);
+        baseOpacity.value = "0.4";
+        baseOpacity.dispatch("change");
+        assert.strictEqual(actions.length, 0);
+
+        findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "base")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_region_representation",
+            details: {
+                tag: "base",
+                representation: "inherit",
+                params: { alpha: 0.4, quality: "auto" },
+            },
+        });
+
+        panel.setRegions([{
+            tag: "line",
+            atom_count: 6,
+            hidden: false,
+            representation: "line",
+            representation_params: { alpha: 0.8 },
+        }]);
+        findFirstByAttribute(root, "data-molsysviewer-region-style", "line")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        const representation = findFirstByAttribute(
+            root,
+            "data-molsysviewer-region-style-representation",
+            "line",
+        ) as any;
+        const preset = findFirstByAttribute(root, "data-molsysviewer-region-style-preset", "line") as any;
+        const opacity = findFirstByAttribute(root, "data-molsysviewer-region-style-opacity", "line") as any;
+        const quality = findFirstByAttribute(root, "data-molsysviewer-region-style-quality", "line") as any;
+        representation.value = "";
+        preset.value = "";
+        opacity.value = "0.7";
+        quality.value = "medium";
+        findFirstByAttribute(root, "data-molsysviewer-region-style-apply", "line")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_region_representation",
+            details: {
+                tag: "line",
+                representation: "line",
+                params: { alpha: 0.7, quality: "medium" },
+            },
         });
 
         panel.dispose();
@@ -1111,8 +1262,9 @@ test("GroupPanel region boolean composer supports ordered operations and overlap
             (action, details) => actions.push({ action, details }),
         );
         panel.setRegions([
-            { tag: "pocket", atom_count: 8, hidden: false, overlap_tags: ["backbone"] },
+            { tag: "pocket", atom_count: 8, hidden: false, overlap_tags: ["backbone", "water"] },
             { tag: "backbone", atom_count: 4, hidden: false, overlap_tags: ["pocket"] },
+            { tag: "water", atom_count: 12, hidden: false, overlap_tags: ["pocket"] },
         ]);
         (panel as any).switchTab("regions");
         const root = host.children[0];
@@ -1129,7 +1281,7 @@ test("GroupPanel region boolean composer supports ordered operations and overlap
         );
         assert.strictEqual(
             composer?.getAttribute("data-molsysviewer-region-boolean-current-b"),
-            "backbone",
+            "backbone,water",
         );
         assert.strictEqual(
             composer?.getAttribute("data-molsysviewer-region-boolean-current-operation"),
@@ -1138,6 +1290,23 @@ test("GroupPanel region boolean composer supports ordered operations and overlap
         assert.strictEqual(
             composer?.getAttribute("data-molsysviewer-region-boolean-attention"),
             "true",
+        );
+
+        // The attention flag is one-shot: a subsequent repaint must clear it,
+        // otherwise the ⚠ highlight sticks to the composer forever (the bug).
+        panel.setRegions([
+            { tag: "pocket", atom_count: 8, hidden: false, overlap_tags: ["backbone", "water"] },
+            { tag: "backbone", atom_count: 4, hidden: false, overlap_tags: ["pocket"] },
+            { tag: "water", atom_count: 12, hidden: false, overlap_tags: ["pocket"] },
+        ]);
+        const composerAfter = findFirstByAttribute(
+            host.children[0],
+            "data-molsysviewer-region-boolean-composer",
+            "true",
+        );
+        assert.strictEqual(
+            composerAfter?.getAttribute("data-molsysviewer-region-boolean-attention"),
+            "false",
         );
 
         const output = findFirstByAttribute(
@@ -1153,7 +1322,7 @@ test("GroupPanel region boolean composer supports ordered operations and overlap
             action: "compose_regions",
             details: {
                 tag_a: "pocket",
-                tag_b: "backbone",
+                operand_tags: ["backbone", "water"],
                 op: "difference",
                 new_tag: "sidechains",
             },
@@ -1174,7 +1343,7 @@ test("GroupPanel region boolean composer supports ordered operations and overlap
             action: "compose_regions",
             details: {
                 tag_a: "pocket",
-                tag_b: "backbone",
+                operand_tags: ["backbone", "water"],
                 op: "difference",
                 new_tag: "backbone",
                 overwrite: true,

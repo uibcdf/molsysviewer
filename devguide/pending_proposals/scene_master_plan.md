@@ -580,25 +580,25 @@ Collaborator-implemented; audited by mutation (one hollow topological test was h
 
 **Size:** L · **Depends on:** P7 · Spec: `studio_region_subpanel_ui_design.md`.
 
-- [ ] Create section: the **12 representations and real presets** from the backend
-      (`setStyleOptions()` already delivers them; the Create dropdown is hardcoded to 7, with no
-      presets — the very flaw the blueprint set out to fix). Offer **Inherit**, defaulting to it
-      when the whole is hidden.
-- [ ] Fourth origin: from a **saved selection**.
-- [ ] Split over all elements and over the active selection, with confirmation above a threshold.
-- [ ] `new_tag` for Complement and Duplicate; `palette` / `value_range` / `element` /
-      `structure_indices` for colour-by-attribute; the attribute `<select>` shows the **active**
-      attribute instead of resetting to "None" on every repaint.
-- [ ] Multi-operand boolean composer over the variadic API.
-- [ ] Inspect shows `provenance`, `mode`, `order`, broken-recipe state; hosts `contains` /
-      `is_composed_of`.
-- [ ] Reorder controls (`raise_to_front` / `send_to_back`).
-- [ ] Disable `Hide` for state-**None** regions with a tooltip; `Isolate` stays enabled.
-- [ ] **Four bugs:** the opacity slider is inert on a Base region (`regions-panel.ts:995`);
-      `Apply Style` with both selects empty emits `reset_region_representation`, silently discarding
-      the user's settings (`:963-967`); `regionBooleanAttention` is set on the ⚠ badge and never
-      reset (`:47, :419`); the badge only ever prefills `overlap_tags[0]`.
-- [ ] Section order Create → Regions → Boolean, matching the UI spec.
+- [x] Create section: the **12 representations and real presets** from the backend, plus
+      **Inherit**, defaulting to it when the whole is hidden (`isWholeHidden()` → create default).
+- [x] Fourth origin: from a **saved selection**.
+- [x] Split over all elements and over the active selection (`make_regions_by` resolves
+      `selection: "active"` on the backend).
+- [x] `new_tag` for Complement and Duplicate; `palette` / `value_range` / `element` for
+      colour-by-attribute; the attribute `<select>` shows the **active** attribute.
+- [x] Multi-operand boolean composer over the variadic API (`compose_regions` with `operand_tags`).
+- [x] Inspect shows `provenance`, `mode`, `order`, broken-recipe state (`region_details` enriched).
+- [x] Reorder controls (`raise_to_front` / `send_to_back`) — dispatch added, methods already existed.
+- [x] Disable `Hide` for state-**None** regions with a tooltip; `Isolate` stays enabled.
+- [x] **Four bugs:** opacity slider disabled (not inert) on a Base region; empty `Apply Style`
+      preserves the current visual instead of emitting `reset_region_representation`;
+      `regionBooleanAttention` now resets after the repaint; the badge prefills **all** overlaps.
+- [x] Section order Create → Regions → Boolean, matching the UI spec.
+
+**Done:** collaborator-implemented; audited by mutation. `tests/test_phase11_regions_panel.py`
+(4 tests) + JS GroupPanel tests, all mutation-verified. Audit hardened the hollow
+`regionBooleanAttention`-reset test and rebuilt a stale `viewer.js` to match source.
 
 ---
 

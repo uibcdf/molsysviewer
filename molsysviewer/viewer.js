@@ -145815,6 +145815,9 @@ var StateHandlers = class {
       presets: [...this.regionStyleOptions.presets]
     };
   }
+  isWholeHidden() {
+    return this.requestedGlobalHidden === true;
+  }
   hasRegion(tag) {
     return this.regionIndex.has(tag);
   }
@@ -149177,6 +149180,7 @@ function makeStyledSelect(options, selectedValue, onChange) {
     el.selected = value === selectedValue;
     select.appendChild(el);
   }
+  select.value = selectedValue;
   select.addEventListener("change", () => {
     onChange(select.value);
   });
@@ -150043,6 +150047,8 @@ var RegionsPanel = class extends BasePanel {
     this.regionStyleRepresentations = [];
     this.regionStylePresets = [];
     this.currentSelection = { count_atoms: 0 };
+    this.savedSelections = [];
+    this.wholeHidden = false;
     // View state (owned locally)
     this.activeStyleRegionTag = null;
     this.regionQueryComposer = null;
@@ -150052,11 +150058,13 @@ var RegionsPanel = class extends BasePanel {
     this.regionCreateTag = "";
     this.regionCreateRepresentation = "";
     this.regionSplitLevel = "chain";
+    this.regionSplitScope = "all";
+    this.regionSavedSelectionTag = "";
     this.regionRenameTag = null;
     this.regionCreateCollision = null;
     this.regionRenameCollisionTag = null;
     this.regionBooleanA = "";
-    this.regionBooleanB = "";
+    this.regionBooleanTargets = /* @__PURE__ */ new Set();
     this.regionBooleanOperation = "union";
     this.regionBooleanOutput = "";
     this.regionComposeCollision = null;
@@ -150073,8 +150081,14 @@ var RegionsPanel = class extends BasePanel {
     if (!tags.includes(this.regionBooleanA)) {
       this.regionBooleanA = tags[0] ?? "";
     }
-    if (!tags.includes(this.regionBooleanB) || this.regionBooleanB === this.regionBooleanA) {
-      this.regionBooleanB = tags.find((tag) => tag !== this.regionBooleanA) ?? "";
+    for (const tag of [...this.regionBooleanTargets]) {
+      if (!tags.includes(tag) || tag === this.regionBooleanA) {
+        this.regionBooleanTargets.delete(tag);
+      }
+    }
+    if (this.regionBooleanTargets.size === 0) {
+      const fallback = tags.find((tag) => tag !== this.regionBooleanA);
+      if (fallback) this.regionBooleanTargets.add(fallback);
     }
     for (const tag of [...this.regionInspectOpen]) {
       if (!tags.includes(tag)) {
@@ -150089,6 +150103,21 @@ var RegionsPanel = class extends BasePanel {
   setStyleOptions(options) {
     this.regionStyleRepresentations = [...options.representations];
     this.regionStylePresets = [...options.presets];
+    this.wholeHidden = options.wholeHidden === true;
+    if (!this.regionCreateRepresentation && this.wholeHidden) {
+      this.regionCreateRepresentation = "inherit";
+    }
+    this.scheduleRender();
+  }
+  setSavedSelections(items) {
+    this.savedSelections = [...items];
+    const tags = this.savedSelections.map((item2) => item2.tag);
+    if (!tags.includes(this.regionSavedSelectionTag)) {
+      this.regionSavedSelectionTag = tags[0] ?? "";
+    }
+    if (this.regionCreateOrigin === "saved") {
+      this.scheduleRender();
+    }
   }
   updateDetails(details) {
     const expectedRequest = this.regionDetailsRequests.get(details.tag);
@@ -150134,8 +150163,6 @@ var RegionsPanel = class extends BasePanel {
     this.host.replaceChildren();
     this.host.appendChild(makeSectionHeader("Create & Global Actions"));
     this.host.appendChild(this.renderRegionCreateSection());
-    this.host.appendChild(makeSectionHeader("Boolean Composition"));
-    this.host.appendChild(this.renderRegionBooleanComposer());
     this.host.appendChild(makeSectionHeader("Regions"));
     const list3 = document.createElement("div");
     list3.setAttribute("data-molsysviewer-region-list", "true");
@@ -150150,7 +150177,7 @@ var RegionsPanel = class extends BasePanel {
       for (const item2 of sorted) {
         list3.appendChild(this.renderRegionCard(item2));
       }
-    } else {
+    } else if (this.regionCreateOrigin === "split") {
       const emptyLabel = document.createElement("div");
       Object.assign(emptyLabel.style, {
         fontSize: "11px",
@@ -150160,6 +150187,8 @@ var RegionsPanel = class extends BasePanel {
       emptyLabel.textContent = "No regions yet.";
       list3.appendChild(emptyLabel);
     }
+    this.host.appendChild(makeSectionHeader("Boolean Composition"));
+    this.host.appendChild(this.renderRegionBooleanComposer());
   }
   getRegionQueryComposer() {
     if (this.regionQueryComposer === null) {
@@ -150168,6 +150197,33 @@ var RegionsPanel = class extends BasePanel {
       }, () => this.syncQueryCreateButton());
     }
     return this.regionQueryComposer;
+  }
+  getRepresentationOptions(includeBase = true) {
+    const fallbackRepresentations = [
+      "backbone",
+      "ball-and-stick",
+      "carbohydrate",
+      "cartoon",
+      "ellipsoid",
+      "gaussian-surface",
+      "gaussian-volume",
+      "line",
+      "molecular-surface",
+      "point",
+      "putty",
+      "spacefill"
+    ];
+    const representations = this.regionStyleRepresentations.length > 0 ? this.regionStyleRepresentations : fallbackRepresentations;
+    const presets = this.regionStylePresets.length > 0 ? this.regionStylePresets : [];
+    const options = [];
+    if (includeBase) options.push({ value: "", label: "Base" });
+    options.push({ value: "inherit", label: "Inherit" });
+    options.push(...representations);
+    options.push(...presets.map((preset) => ({ value: `preset:${preset}`, label: `Preset: ${preset}` })));
+    return options;
+  }
+  regionHasOwnVisual(item2) {
+    return Boolean(item2.representation || item2.preset);
   }
   renderRegionCreateSection() {
     this.queryCreateButton = null;
@@ -150185,13 +150241,14 @@ var RegionsPanel = class extends BasePanel {
     const originRow = document.createElement("div");
     Object.assign(originRow.style, {
       display: "grid",
-      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
       gap: "6px"
     });
     for (const [origin, label2] of [
       ["active", "Active"],
       ["query", "Query"],
-      ["split", "Split"]
+      ["split", "Split"],
+      ["saved", "Saved"]
     ]) {
       const button = makeButton(label2, () => {
         this.regionCreateOrigin = origin;
@@ -150220,15 +150277,7 @@ var RegionsPanel = class extends BasePanel {
       this.regionCreateTag = tagInput.value;
     });
     const representation = makeStyledSelect(
-      [
-        { value: "", label: "Base" },
-        "cartoon",
-        "backbone",
-        "ball-and-stick",
-        "line",
-        "spacefill",
-        "putty"
-      ],
+      this.getRepresentationOptions(true),
       this.regionCreateRepresentation,
       (value) => {
         this.regionCreateRepresentation = value;
@@ -150242,11 +150291,12 @@ var RegionsPanel = class extends BasePanel {
     container.appendChild(optionsRow);
     const createWithCollision = (action, details) => {
       const tag = this.regionCreateTag.trim();
+      const initialVisual = this.regionCreateRepresentation.startsWith("preset:") ? { preset: this.regionCreateRepresentation.slice("preset:".length) } : this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {};
       const emit = () => {
         this.ctx.onAction(action, {
           ...details,
           ...tag ? { tag } : {},
-          ...this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
+          ...initialVisual
         });
         this.regionCreateTag = "";
         this.regionCreateCollision = null;
@@ -150296,16 +150346,69 @@ var RegionsPanel = class extends BasePanel {
         }
       );
       level.setAttribute("data-molsysviewer-region-split-level", "true");
+      const scope = makeStyledSelect(
+        [
+          { value: "all", label: "All atoms" },
+          { value: "active", label: "Active selection" }
+        ],
+        this.regionSplitScope,
+        (value) => {
+          this.regionSplitScope = value === "active" ? "active" : "all";
+          this.scheduleRender();
+        }
+      );
+      scope.setAttribute("data-molsysviewer-region-split-scope", "true");
       const split = makeButton("Split", () => {
+        if (this.regionSplitScope === "active" && this.currentSelection.count_atoms <= 0) return;
+        if (this.currentSelection.count_atoms > 250 && typeof window !== "undefined" && typeof window.confirm === "function") {
+          const ok = window.confirm(`Split may create many regions from ${this.currentSelection.count_atoms} selected atoms. Continue?`);
+          if (!ok) return;
+        }
         this.ctx.onAction("make_regions_by", {
           element: this.regionSplitLevel,
-          ...this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
+          ...this.regionSplitScope === "active" ? { selection: "active" } : {},
+          ...this.regionCreateRepresentation.startsWith("preset:") ? { preset: this.regionCreateRepresentation.slice("preset:".length) } : this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
         });
       });
       split.setAttribute("data-molsysviewer-region-split", "true");
+      split.disabled = this.regionSplitScope === "active" && this.currentSelection.count_atoms <= 0;
+      if (split.disabled) {
+        split.style.opacity = "0.42";
+        split.style.cursor = "not-allowed";
+        split.title = "Select atoms before splitting over the active selection.";
+      }
       splitRow.appendChild(level);
+      splitRow.appendChild(scope);
       splitRow.appendChild(split);
       container.appendChild(splitRow);
+    }
+    if (this.regionCreateOrigin === "saved") {
+      const savedRow = document.createElement("div");
+      Object.assign(savedRow.style, {
+        display: "flex",
+        gap: "6px"
+      });
+      const savedTags = this.savedSelections.map((item2) => item2.tag);
+      const saved = makeStyledSelect(savedTags, this.regionSavedSelectionTag, (value) => {
+        this.regionSavedSelectionTag = value;
+      });
+      saved.setAttribute("data-molsysviewer-region-create-saved-select", "true");
+      const createSaved = makeButton("Create from saved selection", () => {
+        if (!this.regionSavedSelectionTag) return;
+        createWithCollision("create_region_from_saved_selection", {
+          selection_tag: this.regionSavedSelectionTag
+        });
+      });
+      createSaved.setAttribute("data-molsysviewer-region-create-saved", "true");
+      createSaved.disabled = savedTags.length === 0;
+      if (createSaved.disabled) {
+        createSaved.style.opacity = "0.42";
+        createSaved.style.cursor = "not-allowed";
+        createSaved.title = "Save a selection before creating a region from it.";
+      }
+      savedRow.appendChild(saved);
+      savedRow.appendChild(createSaved);
+      container.appendChild(savedRow);
     }
     if (this.regionCreateCollision !== null) {
       const collision = document.createElement("div");
@@ -150323,7 +150426,7 @@ var RegionsPanel = class extends BasePanel {
         this.ctx.onAction(pending.action, {
           ...pending.details,
           tag: pending.tag,
-          ...this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
+          ...this.regionCreateRepresentation.startsWith("preset:") ? { preset: this.regionCreateRepresentation.slice("preset:".length) } : this.regionCreateRepresentation ? { representation: this.regionCreateRepresentation } : {}
         });
         this.regionCreateTag = "";
         this.regionCreateCollision = null;
@@ -150391,7 +150494,9 @@ var RegionsPanel = class extends BasePanel {
     if ((item2.overlap_tags?.length ?? 0) > 0 && !item2.hidden) {
       const overlap = makeButton("\u26A0", () => {
         this.regionBooleanA = item2.tag;
-        this.regionBooleanB = item2.overlap_tags[0];
+        this.regionBooleanTargets = new Set(
+          (item2.overlap_tags ?? []).filter((tag) => tag !== item2.tag)
+        );
         this.regionBooleanOperation = "difference";
         this.regionComposeCollision = null;
         this.regionBooleanAttention = true;
@@ -150411,6 +150516,12 @@ var RegionsPanel = class extends BasePanel {
       () => this.ctx.onAction("toggle_region_visibility", { tag: item2.tag })
     );
     visibility.setAttribute("data-molsysviewer-region-visibility", item2.tag);
+    if (!this.regionHasOwnVisual(item2)) {
+      visibility.disabled = true;
+      visibility.style.opacity = "0.42";
+      visibility.style.cursor = "not-allowed";
+      visibility.title = "This base region has no visual representation to hide.";
+    }
     const remove3 = makeButton(
       "Delete",
       () => this.ctx.onAction("delete_region", { tag: item2.tag })
@@ -150446,6 +150557,16 @@ var RegionsPanel = class extends BasePanel {
       () => this.ctx.onAction("reset_region_representation", { tag: item2.tag })
     );
     reset.setAttribute("data-molsysviewer-region-reset", item2.tag);
+    const raise = makeButton(
+      "Raise",
+      () => this.ctx.onAction("raise_region_to_front", { tag: item2.tag })
+    );
+    raise.setAttribute("data-molsysviewer-region-raise", item2.tag);
+    const lower = makeButton(
+      "Lower",
+      () => this.ctx.onAction("send_region_to_back", { tag: item2.tag })
+    );
+    lower.setAttribute("data-molsysviewer-region-lower", item2.tag);
     const rename = makeButton("Rename", () => {
       this.regionRenameTag = item2.tag;
       this.scheduleRender();
@@ -150468,7 +150589,7 @@ var RegionsPanel = class extends BasePanel {
       this.scheduleRender();
     });
     inspect.setAttribute("data-molsysviewer-region-inspect", item2.tag);
-    for (const button of [isolate, complement2, rename, duplicate, reset, style, inspect]) {
+    for (const button of [isolate, complement2, rename, duplicate, reset, raise, lower, style, inspect]) {
       button.style.fontSize = "10px";
       button.style.padding = "3px 6px";
       actions.appendChild(button);
@@ -150563,8 +150684,14 @@ var RegionsPanel = class extends BasePanel {
       "data-molsysviewer-region-boolean-attention",
       String(this.regionBooleanAttention)
     );
+    if (this.regionBooleanAttention) {
+      this.regionBooleanAttention = false;
+    }
     container.setAttribute("data-molsysviewer-region-boolean-current-a", this.regionBooleanA);
-    container.setAttribute("data-molsysviewer-region-boolean-current-b", this.regionBooleanB);
+    container.setAttribute(
+      "data-molsysviewer-region-boolean-current-b",
+      Array.from(this.regionBooleanTargets).join(",")
+    );
     container.setAttribute(
       "data-molsysviewer-region-boolean-current-operation",
       this.regionBooleanOperation
@@ -150580,8 +150707,10 @@ var RegionsPanel = class extends BasePanel {
     const tags = this.regions.map((item2) => item2.tag);
     const left = makeStyledSelect(tags, this.regionBooleanA, (value) => {
       this.regionBooleanA = value;
-      if (this.regionBooleanB === value) {
-        this.regionBooleanB = tags.find((tag) => tag !== value) ?? "";
+      this.regionBooleanTargets.delete(value);
+      if (this.regionBooleanTargets.size === 0) {
+        const fallback = tags.find((tag) => tag !== value);
+        if (fallback) this.regionBooleanTargets.add(fallback);
         this.scheduleRender();
       }
     });
@@ -150595,16 +150724,62 @@ var RegionsPanel = class extends BasePanel {
       this.regionBooleanOperation,
       (value) => {
         this.regionBooleanOperation = value === "intersection" ? "intersection" : value === "difference" ? "difference" : "union";
+        if (this.regionBooleanOperation === "intersection" && this.regionBooleanTargets.size > 1) {
+          this.regionBooleanTargets = /* @__PURE__ */ new Set([Array.from(this.regionBooleanTargets)[0]]);
+        }
+        this.scheduleRender();
       }
     );
     operation.setAttribute("data-molsysviewer-region-boolean-operation", "true");
-    const right = makeStyledSelect(tags, this.regionBooleanB, (value) => {
-      this.regionBooleanB = value;
-    });
-    right.setAttribute("data-molsysviewer-region-boolean-b", "true");
     container.appendChild(left);
     container.appendChild(operation);
-    container.appendChild(right);
+    const targetContainer = document.createElement("div");
+    targetContainer.setAttribute("data-molsysviewer-region-boolean-targets", "true");
+    Object.assign(targetContainer.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "3px"
+    });
+    const candidateTags = tags.filter((tag) => tag !== this.regionBooleanA);
+    if (this.regionBooleanOperation === "intersection") {
+      const current2 = Array.from(this.regionBooleanTargets).find((tag) => candidateTags.includes(tag)) ?? candidateTags[0] ?? "";
+      if (current2 && (this.regionBooleanTargets.size !== 1 || !this.regionBooleanTargets.has(current2))) {
+        this.regionBooleanTargets = /* @__PURE__ */ new Set([current2]);
+      }
+      const right = makeStyledSelect(candidateTags, current2, (value) => {
+        this.regionBooleanTargets = new Set(value ? [value] : []);
+      });
+      right.setAttribute("data-molsysviewer-region-boolean-b", "true");
+      targetContainer.appendChild(right);
+    } else {
+      for (const tag of candidateTags) {
+        const row = document.createElement("label");
+        Object.assign(row.style, {
+          display: "flex",
+          alignItems: "center",
+          gap: "5px",
+          fontSize: "11px",
+          color: "rgba(244,244,245,0.72)"
+        });
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = this.regionBooleanTargets.has(tag);
+        checkbox.setAttribute("data-molsysviewer-region-boolean-target", tag);
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            this.regionBooleanTargets.add(tag);
+          } else {
+            this.regionBooleanTargets.delete(tag);
+          }
+        });
+        const label2 = document.createElement("span");
+        label2.textContent = tag;
+        row.appendChild(checkbox);
+        row.appendChild(label2);
+        targetContainer.appendChild(row);
+      }
+    }
+    container.appendChild(targetContainer);
     const output = document.createElement("input");
     output.type = "text";
     output.placeholder = "Output name (optional)";
@@ -150614,13 +150789,14 @@ var RegionsPanel = class extends BasePanel {
       this.regionBooleanOutput = output.value;
     });
     const create3 = makeButton("Create", () => {
-      if (!this.regionBooleanA || !this.regionBooleanB || this.regionBooleanA === this.regionBooleanB) {
+      const operandTags = Array.from(this.regionBooleanTargets).filter((tag2) => tag2 && tag2 !== this.regionBooleanA && tags.includes(tag2));
+      if (!this.regionBooleanA || operandTags.length === 0) {
         return;
       }
       const tag = this.regionBooleanOutput.trim();
       const details = {
         tag_a: this.regionBooleanA,
-        tag_b: this.regionBooleanB,
+        operand_tags: operandTags,
         op: this.regionBooleanOperation,
         ...tag ? { new_tag: tag } : {}
       };
@@ -150631,8 +150807,9 @@ var RegionsPanel = class extends BasePanel {
       }
       this.ctx.onAction("compose_regions", details);
       this.regionBooleanOutput = "";
+      this.regionBooleanAttention = false;
     });
-    create3.disabled = tags.length < 2 || !this.regionBooleanA || !this.regionBooleanB;
+    create3.disabled = tags.length < 2 || !this.regionBooleanA || this.regionBooleanTargets.size === 0;
     create3.setAttribute("data-molsysviewer-region-boolean-create", "true");
     container.appendChild(output);
     container.appendChild(create3);
@@ -150703,6 +150880,16 @@ var RegionsPanel = class extends BasePanel {
     centerRow.setAttribute("data-molsysviewer-region-inspect-center", "true");
     centerRow.textContent = `center [nm]: ${center2}`;
     panel.appendChild(centerRow);
+    const modeRow = document.createElement("div");
+    modeRow.setAttribute("data-molsysviewer-region-inspect-mode", "true");
+    modeRow.textContent = `mode: ${details.mode ?? "static"} \xB7 order: ${details.order ?? 0}${details.broken ? " \xB7 broken recipe" : ""}`;
+    panel.appendChild(modeRow);
+    if (details.provenance && Object.keys(details.provenance).length > 0) {
+      const provenance = document.createElement("div");
+      provenance.setAttribute("data-molsysviewer-region-inspect-provenance", "true");
+      provenance.textContent = `provenance: ${JSON.stringify(details.provenance)}`;
+      panel.appendChild(provenance);
+    }
     const refresh = makeButton("Refresh", () => {
       this.requestRegionDetails(tag);
       this.scheduleRender();
@@ -150747,20 +150934,6 @@ var RegionsPanel = class extends BasePanel {
       row.appendChild(control);
       return row;
     };
-    const fallbackRepresentations = [
-      "backbone",
-      "ball-and-stick",
-      "carbohydrate",
-      "cartoon",
-      "ellipsoid",
-      "gaussian-surface",
-      "gaussian-volume",
-      "line",
-      "molecular-surface",
-      "point",
-      "putty",
-      "spacefill"
-    ];
     const fallbackPresets = [
       "atomic-detail",
       "auto",
@@ -150769,7 +150942,7 @@ var RegionsPanel = class extends BasePanel {
       "polymer-and-ligand",
       "polymer-cartoon"
     ];
-    const representations = this.regionStyleRepresentations.length > 0 ? this.regionStyleRepresentations : fallbackRepresentations;
+    const representations = this.getRepresentationOptions(true).filter((option) => typeof option === "string" || !option.value.startsWith("preset:"));
     const presets = this.regionStylePresets.length > 0 ? this.regionStylePresets : fallbackPresets;
     const params = item2.representation_params ?? {};
     const draftHeading = document.createElement("div");
@@ -150784,7 +150957,7 @@ var RegionsPanel = class extends BasePanel {
     let representationSelect;
     let presetSelect;
     representationSelect = makeStyledSelect(
-      [{ value: "", label: "Base" }, ...representations],
+      representations,
       item2.preset ? "" : item2.representation ?? "",
       (value) => {
         if (value) presetSelect.value = "";
@@ -150823,6 +150996,10 @@ var RegionsPanel = class extends BasePanel {
     opacity.step = "0.05";
     opacity.value = String(typeof params.alpha === "number" ? params.alpha : 1);
     opacity.setAttribute("data-molsysviewer-region-style-opacity", tag);
+    if (!this.regionHasOwnVisual(item2)) {
+      opacity.disabled = true;
+      opacity.title = "Opacity requires a region visual. Choose Inherit or a representation first.";
+    }
     const opacityValue = document.createElement("span");
     opacityValue.textContent = Number(opacity.value).toFixed(2);
     opacityValue.setAttribute("data-molsysviewer-region-style-opacity-value", tag);
@@ -150892,19 +151069,53 @@ var RegionsPanel = class extends BasePanel {
     Object.assign(attributeRow.style, {
       display: "flex",
       alignItems: "center",
-      gap: "6px"
+      gap: "6px",
+      flexWrap: "wrap"
+    });
+    const attributeElement = makeStyledSelect(
+      ["atom", "group"],
+      typeof params.color_attribute_element === "string" ? params.color_attribute_element : "atom",
+      () => {
+      }
+    );
+    attributeElement.setAttribute("data-molsysviewer-region-style-color-attribute-element", tag);
+    const palette = makeStyledSelect(
+      ["viridis", "plasma", "magma", "inferno", "cividis", "turbo"],
+      typeof params.color_attribute_palette === "string" ? params.color_attribute_palette : "viridis",
+      () => {
+      }
+    );
+    palette.setAttribute("data-molsysviewer-region-style-color-attribute-palette", tag);
+    const valueRange = document.createElement("input");
+    valueRange.type = "text";
+    valueRange.placeholder = "range min,max";
+    valueRange.value = Array.isArray(params.color_attribute_range) ? params.color_attribute_range.join(",") : "";
+    valueRange.setAttribute("data-molsysviewer-region-style-color-attribute-range", tag);
+    Object.assign(valueRange.style, {
+      width: "86px",
+      background: "rgba(0,0,0,0.28)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "3px 6px",
+      color: "#f4f4f5",
+      fontSize: "11px"
     });
     const attribute = makeStyledSelect(
       [
         { value: "", label: "None" },
         ...item2.available_attributes ?? []
       ],
-      "",
+      typeof params.color_attribute === "string" ? params.color_attribute : "",
       (value) => {
         if (!value) return;
+        const range2 = valueRange.value.split(",").map((part) => Number(part.trim())).filter((value2) => Number.isFinite(value2));
         this.ctx.onAction("color_region_by_attribute", {
           tag,
-          attribute: value
+          attribute: value,
+          element: attributeElement.value,
+          palette: palette.value,
+          ...range2.length === 2 ? { value_range: [range2[0], range2[1]] } : {},
+          replace: true
         });
       }
     );
@@ -150915,14 +151126,14 @@ var RegionsPanel = class extends BasePanel {
     );
     resetColors.setAttribute("data-molsysviewer-region-style-reset-colors", tag);
     attributeRow.appendChild(attribute);
+    attributeRow.appendChild(attributeElement);
+    attributeRow.appendChild(palette);
+    attributeRow.appendChild(valueRange);
     attributeRow.appendChild(resetColors);
     container.appendChild(makeControlRow("Color by", attributeRow));
     const buildStyleAction = () => {
       const selectedPreset = presetSelect.value;
       const selectedRepresentation = representationSelect.value;
-      if (!selectedPreset && !selectedRepresentation) {
-        return { action: "reset_region_representation", details: { tag } };
-      }
       const nextParams = {
         ...params,
         alpha: Number(opacity.value),
@@ -150941,13 +151152,13 @@ var RegionsPanel = class extends BasePanel {
         action: "set_region_representation",
         details: {
           tag,
-          ...selectedPreset ? { preset: selectedPreset } : { representation: selectedRepresentation },
+          ...selectedPreset ? { preset: selectedPreset } : selectedRepresentation ? { representation: selectedRepresentation } : item2.preset ? { preset: item2.preset } : { representation: item2.representation ?? "inherit" },
           params: nextParams
         }
       };
     };
     opacity.addEventListener("change", () => {
-      if (!item2.representation && !item2.preset) return;
+      if (!this.regionHasOwnVisual(item2)) return;
       this.ctx.onAction("set_region_representation", {
         tag,
         ...item2.preset ? { preset: item2.preset } : { representation: item2.representation },
@@ -154434,6 +154645,7 @@ var GroupPanel = class {
   }
   setSavedSelections(items) {
     this.selectionPanel.setSavedSelections(items);
+    this.regionsPanel.setSavedSelections(items);
   }
   updateSelectionQueryPreview(preview) {
     if (this.regionsPanel.updatePreview(preview)) return;
@@ -157654,9 +157866,11 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "show_whole":
           await this.state.showWhole(msg);
+          this.refreshNavigatePanel(false);
           break;
         case "hide_whole":
           await this.state.hideWhole(msg);
+          this.refreshNavigatePanel(false);
           break;
         case "zoom":
           await this.state.zoom(msg);
@@ -158544,7 +158758,10 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   refreshNavigatePanel(refreshChrome = true) {
     this.groupPanel.setSavedSelections(this.savedSelections);
-    this.groupPanel.setRegionStyleOptions(this.state.getRegionStyleOptions());
+    this.groupPanel.setRegionStyleOptions({
+      ...this.state.getRegionStyleOptions(),
+      wholeHidden: this.state.isWholeHidden()
+    });
     this.groupPanel.setRegions(
       this.state.getRegionSummaries().map((item2) => ({
         tag: item2.tag,

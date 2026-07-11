@@ -996,42 +996,64 @@ class MolSysView(
                 elif action == "create_region_from_selection":
                     raw_tag = content.get("tag")
                     representation = content.get("representation")
+                    preset = content.get("preset")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
-                    self.new_region_from_active_selection(
+                    region = self.new_region_from_active_selection(
                         tag=region_tag,
                         representation=representation,
                         skip_digestion=True,
                     )
+                    if isinstance(preset, str) and preset.strip():
+                        region.set_representation(preset=preset.strip(), skip_digestion=True)
                 elif action == "create_region_from_query":
                     expression = content.get("expression")
                     syntax = str(content.get("syntax") or "MolSysMT")
                     raw_tag = content.get("tag")
                     representation = content.get("representation")
+                    preset = content.get("preset")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
                     if expression is None or (isinstance(expression, str) and not expression.strip()):
                         raise ValueError("create_region_from_query requires a non-empty expression.")
-                    self._new_region_impl(
+                    region = self._new_region_impl(
                         selection=expression,
                         syntax=syntax,
                         tag=region_tag,
                         representation=representation,
                         skip_digestion=True,
                     )
+                    if isinstance(preset, str) and preset.strip():
+                        region.set_representation(preset=preset.strip(), skip_digestion=True)
                 elif action == "make_regions_by":
                     element = str(content.get("element") or "").strip().lower()
                     selection = content.get("selection", "all")
+                    if isinstance(selection, str) and selection.strip().lower() == "active":
+                        selection = list(self.active_selection.atom_indices)
                     representation = content.get("representation")
-                    self.make_regions_by(
+                    preset = content.get("preset")
+                    regions = self.make_regions_by(
                         element,
                         selection=selection,
                         representation=representation,
                         skip_digestion=True,
                     )
+                    if isinstance(preset, str) and preset.strip():
+                        for region in regions.values():
+                            region.set_representation(preset=preset.strip(), skip_digestion=True)
                 elif action == "show_only_region":
                     tag = content.get("tag")
                     if not isinstance(tag, str) or tag.strip() not in self._regions:
                         raise ValueError(f"No region found with tag {tag!r}.")
                     self._regions[tag.strip()].show_only(skip_digestion=True)
+                elif action == "raise_region_to_front":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    self._regions[tag.strip()].raise_to_front(skip_digestion=True)
+                elif action == "send_region_to_back":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() not in self._regions:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    self._regions[tag.strip()].send_to_back(skip_digestion=True)
                 elif action == "create_complementary_region":
                     tag = content.get("tag")
                     raw_new_tag = content.get("new_tag")
@@ -1044,26 +1066,40 @@ class MolSysView(
                     )
                 elif action == "compose_regions":
                     tag_a = content.get("tag_a")
-                    tag_b = content.get("tag_b")
+                    raw_operands = content.get("operand_tags", content.get("tag_b"))
                     operation = str(content.get("op") or "").strip().lower()
                     raw_new_tag = content.get("new_tag")
                     if not isinstance(tag_a, str) or tag_a.strip() not in self._regions:
                         raise ValueError(f"No region found with tag {tag_a!r}.")
-                    if not isinstance(tag_b, str) or tag_b.strip() not in self._regions:
-                        raise ValueError(f"No region found with tag {tag_b!r}.")
+                    if isinstance(raw_operands, str):
+                        operand_tags = [raw_operands]
+                    elif isinstance(raw_operands, (list, tuple)):
+                        operand_tags = list(raw_operands)
+                    else:
+                        operand_tags = []
+                    normalized_operands = []
+                    for operand_tag in operand_tags:
+                        if not isinstance(operand_tag, str) or operand_tag.strip() not in self._regions:
+                            raise ValueError(f"No region found with tag {operand_tag!r}.")
+                        normalized = operand_tag.strip()
+                        if normalized == tag_a.strip():
+                            continue
+                        normalized_operands.append(normalized)
+                    if not normalized_operands:
+                        raise ValueError("compose_regions requires at least one operand region.")
                     new_tag = raw_new_tag.strip() if isinstance(raw_new_tag, str) and raw_new_tag.strip() else None
                     left = self._regions[tag_a.strip()]
-                    right = self._regions[tag_b.strip()]
+                    operands = [self._regions[tag] for tag in normalized_operands]
                     overwrite = bool(content.get("overwrite", False))
                     operation_tag = new_tag
                     if overwrite and new_tag in self._regions:
                         operation_tag = self._unique_region_tag(f"{new_tag}__compose")
                     if operation == "union":
-                        result = left.union(right, tag=operation_tag, skip_digestion=True)
+                        result = left.union(*operands, tag=operation_tag, skip_digestion=True)
                     elif operation == "intersection":
-                        result = left.intersection(right, tag=operation_tag, skip_digestion=True)
+                        result = left.intersection(*operands, tag=operation_tag, skip_digestion=True)
                     elif operation == "difference":
-                        result = left.difference(right, tag=operation_tag, skip_digestion=True)
+                        result = left.difference(*operands, tag=operation_tag, skip_digestion=True)
                     else:
                         raise ValueError(f"Unsupported region composition operation: {operation!r}.")
                     if overwrite and new_tag in self._regions:
@@ -1169,6 +1205,10 @@ class MolSysView(
                         "chain_count": len(region._scoped_indices_for_element("chain") or []),  # noqa: SLF001
                         "center_nm": puw.get_value(center, to_unit="nm").tolist(),
                         "structure_index": self.current_structure_index,
+                        "provenance": dict(region.provenance),
+                        "order": int(region.order),
+                        "mode": region.mode,
+                        "broken": bool(region.provenance.get("broken")),
                     }
                     self._send_runtime_only(details)
                 elif action == "toggle_region_visibility":
@@ -1298,13 +1338,21 @@ class MolSysView(
                 elif action == "create_region_from_saved_selection":
                     selection_tag = content.get("selection_tag")
                     raw_tag = content.get("tag")
+                    representation = content.get("representation")
+                    preset = content.get("preset")
                     if not isinstance(selection_tag, str) or not selection_tag.strip():
                         raise ValueError("create_region_from_saved_selection requires non-empty selection_tag.")
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
                     saved = self.selections.get(selection_tag.strip())
                     if saved is None:
                         raise ValueError(f"No saved selection found with tag {selection_tag!r}.")
-                    saved.new_region(tag=region_tag, skip_digestion=True)
+                    region = saved.new_region(
+                        tag=region_tag,
+                        representation=representation,
+                        skip_digestion=True,
+                    )
+                    if isinstance(preset, str) and preset.strip():
+                        region.set_representation(preset=preset.strip(), skip_digestion=True)
                 elif action == "create_label_from_saved_selection":
                     selection_tag = content.get("selection_tag")
                     text = content.get("text")

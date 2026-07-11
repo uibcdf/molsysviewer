@@ -286,6 +286,7 @@ export function makeStyledSelect(
         el.selected = value === selectedValue;
         select.appendChild(el);
     }
+    select.value = selectedValue;
 
     select.addEventListener("change", () => {
         onChange(select.value);

@@ -1062,6 +1062,10 @@ export class StateHandlers {
         };
     }
 
+    isWholeHidden(): boolean {
+        return this.requestedGlobalHidden === true;
+    }
+
     hasRegion(tag: string): boolean {
         return this.regionIndex.has(tag);
     }

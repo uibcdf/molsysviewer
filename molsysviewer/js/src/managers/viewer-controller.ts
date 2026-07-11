@@ -2191,8 +2191,14 @@ export class MolSysViewerController {
                     this.groupPanel.render();
                     break;
                 case "set_whole_representation": await this.state.setWholeRepresentation(msg); break;
-                case "show_whole": await this.state.showWhole(msg); break;
-                case "hide_whole": await this.state.hideWhole(msg); break;
+                case "show_whole":
+                    await this.state.showWhole(msg);
+                    this.refreshNavigatePanel(false);
+                    break;
+                case "hide_whole":
+                    await this.state.hideWhole(msg);
+                    this.refreshNavigatePanel(false);
+                    break;
                 case "zoom": await this.state.zoom(msg); break;
                 case "zoom_to_position": await this.scene.zoomToPosition(msg as any); break;
                 case "set_camera_snapshot": await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms); break;
@@ -3219,7 +3225,10 @@ export class MolSysViewerController {
 
     private refreshNavigatePanel(refreshChrome = true): void {
         this.groupPanel.setSavedSelections(this.savedSelections);
-        this.groupPanel.setRegionStyleOptions(this.state.getRegionStyleOptions());
+        this.groupPanel.setRegionStyleOptions({
+            ...this.state.getRegionStyleOptions(),
+            wholeHidden: this.state.isWholeHidden(),
+        });
         this.groupPanel.setRegions(
             this.state.getRegionSummaries().map((item) => ({
                 tag: item.tag,
