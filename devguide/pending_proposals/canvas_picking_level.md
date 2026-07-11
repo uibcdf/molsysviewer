@@ -6,6 +6,28 @@
 
 ---
 
+## 0. The granularity is not only a picking preference — it is lossy today
+
+Found while validating the scene contracts in a real browser (2026-07-11), and it raises the
+stakes of this proposal.
+
+The active selection is not held as a set of atoms. It is held as **group-level items**:
+`ActiveSelectionController.setFromAtomIndices()` builds a Mol\* loci and immediately passes it
+through `lociToGroupItems()`. So an atom-level selection coming **from Python** is snapped up to
+whole groups.
+
+Concretely: `view.active_selection.set([0, 1])`, where atoms 0, 1, 2 are one residue, comes back
+from the frontend as a **three-atom** selection. Python asked for two atoms and the canvas selected
+three. (`js/tests/e2e/selection-subpanel.e2e.ts` documents this at the point where a shift-click
+composes to six atoms rather than five.)
+
+That is defensible as a *canvas* interaction default — you rarely want to click half a residue —
+but it is applied to the backend echo too, where nobody chose it. Whatever this proposal decides,
+it should decide **whether a picking level is a canvas-interaction setting or a property of the
+active selection itself**, and whether a Python-set selection is allowed to be rewritten by it.
+
+---
+
 ## 1. Why
 
 Currently, clicking on the 3D canvas selects atoms or residues based on the viewer's default interaction mode. However, users often need to select different structural granularities on the fly—for example, clicking to select a single **Atom** (e.g., for detailed distance measurement), a **Residue** (for standard binding pocket highlighting), or a whole **Chain** / **Entity** (for global component adjustments).

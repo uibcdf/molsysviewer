@@ -36,6 +36,13 @@ That principle should guide prioritization throughout the repository.
 
 1. [**Architecture**](architecture.md)
    - The Python/JS bridge, Mol* integration, and messaging protocol.
+1. [**Scene Contracts**](scene_contracts.md) — **normative**
+   - How regions relate to the whole, to colour, to ordering and to persisted state.
+     Representation states (None/Inherit/Own), the colour layer stack, regions as recipes,
+     state v2, the scene history. **Read before changing any of it.**
+1. [**Engineering Rules**](engineering_rules.md)
+   - How we are allowed to build: API first, generated artefacts, what a test must assert,
+     the mutation audit, and what "green" means.
 2. [**Digestion and Dependencies**](digestion_and_dependencies.md)
    - Using ArgDigest for validation and DepDigest for environment robustness.
 3. [**Units and Quantities**](units_and_quantities.md)
@@ -128,22 +135,25 @@ To bridge the gap between API reference and real-world scientific usage, the fol
 - **Complex System Navigation**: Managing systems with multiple chains, ligands, and solvent molecules using the new hierarchical `GroupPanel` and selection tools.
 - **Structural Mutation Replay**: Demonstrating how annotations and measurements survive structural rebuilds when modifying systems from Python.
 
-## Active work: the scene rework (Regions, Whole, colour, state, performance)
+## The scene rework: **done** (2026-07-11)
 
-A 2026-07-10 audit found that the Regions and Whole subpanels rest on unwritten contracts that
-the code silently violates, plus a 3-second-per-message performance toll. Start here:
+A 2026-07-10 audit found that the Regions and Whole subpanels rested on unwritten contracts that
+the code silently violated, plus a ~3-second-per-message performance toll. A 15-phase rework fixed
+it. The plan, the per-subpanel blueprints and the phase briefs are gone — they were scaffolding,
+and git has them. What survives is what future work must obey:
 
-- [`pending_proposals/scene_master_plan.md`](pending_proposals/scene_master_plan.md) — **the
-  entry point.** Phase order, decisions, gates, audit protocol, and the 29-entry bug ledger.
-- [`pending_proposals/region_contracts.md`](pending_proposals/region_contracts.md) —
-  **normative.** Representation states, layered colour and ordering, regions-as-recipes,
-  serialisation. Wins over every other document.
-- [`pending_proposals/message_toll_performance.md`](pending_proposals/message_toll_performance.md)
-  — the performance defects, their measurements, and the harness that must guard them.
-- Subpanel detail: `studio_region_subpanel*.md`, `studio_whole_subpanel*.md`.
+- [`scene_contracts.md`](scene_contracts.md) — **normative.** Representation states
+  (None/Inherit/Own), layered colour and ordering, regions-as-recipes, state v2, the scene
+  history. Wins over every other document.
+- [`engineering_rules.md`](engineering_rules.md) — the rules the rework was built under, and the
+  defects that earned each of them.
 
-`sandbox/Curso/`, `docs/` and `bloques.md` are **expected to break** during this work and are
-regenerated in the final phases.
+Regions, Whole and Layers now have real subpanels; the Studio no longer reaches past the Python
+API to repaint Mol\*; and the contracts are guarded on screen by
+`js/tests/e2e/scene-contracts.e2e.ts`.
+
+`docs/` and `bloques.md` were migrated. **`sandbox/Curso/` was deliberately not** — it is the
+maintainer's working area and still calls the pre-rework API. See `scene_contracts.md` §Migration.
 
 ## Standing requirement: session reproducibility
 

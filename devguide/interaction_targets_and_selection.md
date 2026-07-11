@@ -266,7 +266,7 @@ Implemented extension (Studio → Selection Phase 0):
 
 Subtract and Intersect cannot be expressed by a single canvas click, so surfaces
 expose them via explicit controls — implemented by the Studio → Selection subpanel
-(`pending_proposals/studio_selection_subpanel.md`). No new *click* modifier is
+(`js/src/ui/panels/selection-panel.ts`). No new *click* modifier is
 planned (`Alt`+click is avoided; Linux window managers commonly capture it).
 
 Design principle for all surfaces: the operation is chosen at the moment of acting,

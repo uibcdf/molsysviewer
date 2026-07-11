@@ -121,4 +121,4 @@ and a reloadable *snapshot* answer different questions (§Terminology).
 - `molsysviewer/viewer/state.py` — `export_state` / `import_state`, `STATE_VERSION`.
 - `tests/test_state_v2.py` — the round-trip, overlap-winner, high-water-mark,
   topological-order, transient-filter and whole-restore tests.
-- `region_contracts.md` §C — the normative contract this implements.
+- `scene_contracts.md` §C — the normative contract this implements.

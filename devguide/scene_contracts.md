@@ -1,12 +1,23 @@
-# Region contracts (normative)
+# Scene contracts (normative)
 
-**Status:** proposed (2026-07-10) — **not implemented**. Execution order, gates and audits live
-in `scene_master_plan.md`. Promote this file to `devguide/` once its contracts are implemented
-and guarded by tests.
+**Status: IN FORCE.** Implemented and guarded by tests (2026-07-11). Every contract below is
+live in the code, covered by the Python suite, and — for the parts that are only observable on
+screen — by `js/tests/e2e/scene-contracts.e2e.ts`, which asserts against the Mol\* render tree
+rather than against the messages we emit.
 
-**No external users.** `sandbox/Curso/`, `docs/` and `bloques.md` are provisional and are
-regenerated in master-plan Phase 10. Breaking changes are allowed and expected; they are
-declared in §Migration with **no shims and no deprecation period**.
+This file was promoted here from `devguide/pending_proposals/` when the 15-phase scene rework
+closed. The plan that delivered it (`scene_master_plan.md`), the per-subpanel blueprints and the
+phase briefs have been deleted: they were scaffolding, and they are in git history. **This
+document is what survives**, because it is not a plan. It is the law the code obeys.
+
+**If you are about to change how regions, the whole, colour, ordering or scene state behave,
+read this first.** A change that contradicts a contract here is a bug, not a preference — or it
+is a deliberate contract change, in which case update this file in the same commit and declare it
+in §Migration.
+
+**No external users.** Breaking changes are allowed and expected; they are declared in §Migration
+with **no shims and no deprecation period**. (The one corpus still un-migrated is
+`sandbox/Curso/`, deliberately carved out — see §Migration.)
 
 **Scope:** the three contracts that govern how a **region** relates to the
 **whole**, to **colour**, and to **persisted state**. They are not specific to
@@ -14,16 +25,21 @@ the Studio → Regions subpanel: they bind the public Python API, the JS↔Pytho
 protocol, `whole`, `styles.focus()`, `new_view`, `tools.basic.extract/merge`,
 and every future surface.
 
-They exist because the codebase currently has **two disagreeing sources of
-truth** about what is being painted, and no notion of colour ownership. Both
-defects are invisible from Python and invisible from the tests, which assert
-emitted messages rather than rendered effects.
+They exist because the codebase once had **two disagreeing sources of truth** about what is being
+painted, and no notion of colour ownership. Both defects were invisible from Python and invisible
+from the tests, which asserted emitted messages rather than rendered effects.
 
 ---
 
 ## 0. Why these contracts exist (evidence)
 
-Three defects, verified in code, all downstream of a missing contract.
+> **Read this section in the past tense.** Every defect below is **fixed**. It is kept because a
+> contract you cannot see the reason for is a contract someone will "simplify" away. The code
+> snippets are the *old* code. Do not go looking for them — go looking for the tests that now stop
+> them coming back (`tests/regions/`, `tests/test_dynamic_regions.py`,
+> `js/tests/e2e/scene-contracts.e2e.ts`).
+
+Five defects, verified in code, all downstream of a missing contract.
 
 ### 0.1 "No representation" does not exist in the frontend
 
@@ -132,7 +148,13 @@ await this.plugin.managers.structure.component.updateRepresentationsTheme(compon
 
 The whole's structural colour theme is therefore: (a) not in the Python API at all, (b) not
 serialised, (c) owned by a subpanel that is not `Whole`, and (d) silently clobbered by any
-per-atom colouring (§0.3). See `studio_whole_subpanel.md`.
+per-atom colouring (§0.3).
+
+> **Resolved (Phase 12).** All four are now false: the theme is `whole.set_color_scheme()`, it is
+> serialised, `Whole` owns it, and per-atom colour is a *decorator over* it rather than a
+> replacement. The System subpanel's dropdown is gone; its sequence strips now mirror the whole's
+> scheme instead of owning it. This paragraph is kept because it explains **why** the contract is
+> shaped the way it is.
 
 ### 0.5 A region serialises its identity, not its state
 
@@ -272,7 +294,8 @@ user asked for.
 
 **R-O2 — The mask is updated by deltas**, never recomputed in full. Contract R's `dynamic` regions
 re-evaluate their atom set per frame; a full mask recompute costs 26 ms at 50% ownership and the
-frame budget is 16 ms (`message_toll_performance.md` §5.1).
+frame budget is 16 ms. (The measurement, and the harness that produced it, live in
+`js/tests/perf/` — run `npm run test:perf`; see `engineering_rules.md` §Performance.)
 
 This is where the cost actually is. In the Phase 1 benchmark at n = 95,000, `buildSelectionMs` was
 13–23 ms of a 14–32 ms toggle: **constructing the selection dominates**, and a delta makes it small.
@@ -522,7 +545,7 @@ stacked. For any atom, the colour is the first of:
 4. the `whole`'s structural theme (`element-symbol`, `msv-physicochemical`, …).
 
 Rules 1–2 are skipped for an atom no region paints. Rule 4 is owned by `whole`
-(`studio_whole_subpanel.md`), not by the System subpanel, and is serialised.
+(`whole.set_color_scheme()`), not by the System subpanel, and is serialised.
 
 This is the answer to a question the first draft of this contract left undefined, and it is the
 same class of ambiguity that produced every bug catalogued in §0.
@@ -562,9 +585,7 @@ the Inspect panel. Invert it: **the recipe is primary; `atom_indices` is its cac
 
 ### R.1 `Region.provenance` is executable
 
-`Region.provenance` is a public, read-only mapping. It does not exist in any form today
-(`grep -rn "_provenance" molsysviewer/` returns nothing), despite `studio_region_subpanel.md`
-§5 describing it in the indicative.
+`Region.provenance` is a public, read-only mapping. **Implemented (Phase 5).**
 
 | `kind` | Payload | Re-evaluable |
 |---|---|---|
@@ -579,9 +600,8 @@ the Inspect panel. Invert it: **the recipe is primary; `atom_indices` is its cac
 ### R.2 `atom_indices` is derived
 
 Since the recipe is primary, `Region.atom_indices` becomes a **read-only property**: the cached
-result of the last evaluation. Assigning to it is meaningless and must be impossible. (Today it
-is a plain public attribute, like `representation`, `preset`, `repr_params` and `tag` — see the
-symmetry work in `scene_master_plan.md`.)
+result of the last evaluation. Assigning to it is meaningless and must be impossible.
+**Implemented (Phase 7).**
 
 ### R.3 Two modes, and two kinds of recipe
 
@@ -623,8 +643,9 @@ The evaluation contract:
 4. Non-`frame_dependent` regions are re-evaluated on **topology change**
    (`apply_system_edit`), not on frame change.
 5. If the per-frame evaluation exceeds its budget
-   (`message_toll_performance.md` §5.1), the viewer **warns and offers to freeze** the region to
-   `static`. It never silently drops frames.
+   (25 ms; `viewer/core.py:_dynamic_region_evaluation_budget_ms`), the viewer **warns and
+   freezes** the region to `static` and reports it through SMonitor. It never silently drops
+   frames.
 
 **Hard prerequisite.** One message per frame is viable at microseconds and absurd at three
 seconds. Master-plan **Phase 0** (the `handleMessage` toll) must land before dynamic evaluation
@@ -663,9 +684,8 @@ corrupt and must raise, not partially load.
 ### R.4 Consequences
 
 - **Rebuild becomes exact.** `apply_system_edit` re-evaluates recipes instead of remapping
-  indices through `atom_index_map`. What `studio_region_subpanel.md` §5 calls "best-effort"
-  becomes exact for every re-evaluable kind; remapping survives only as the fallback for
-  regions that have no recipe.
+  indices through `atom_index_map`. Rebuild becomes **exact** for every re-evaluable kind;
+  remapping survives only as the fallback for regions that have no recipe.
 - **Serialisation shrinks and travels.** A state file stores recipes, not tens of thousands of
   integers, and becomes portable to a comparable molecular system.
 - **Contract C does not need a `v3`.** The format expresses `mode` and `provenance` from day
@@ -729,6 +749,31 @@ These are semantic changes to a **published** public API. Each is deliberate:
 `new_view`, `extract` and `merge` switch to `set_representation("inherit")`.
 Their observable behaviour is preserved (the region stays visible under a hidden
 whole) and improves (it now follows later changes to the whole).
+
+### Corpus status
+
+`docs/` and `bloques.md` were migrated (2026-07-11). **`sandbox/Curso/` was deliberately left
+un-migrated** — it is the maintainer's working area. Its notebooks still call `view.new_region()`,
+which no longer exists, and still describe the pre-rework colour semantics. Migrating it is a
+standing task, not an oversight.
+
+Note that `docs/` notebooks are **not executed by the Sphinx build** (`docs/conf.py` sets
+`nb_execution_mode = "off"`), so a green `make html` proves nothing about whether the code in them
+runs. The only real check is `python docs/execute_notebooks.py`.
+
+---
+
+## Known Mol\* behaviour that the contracts do not control
+
+**Mol\* silently substitutes a representation it cannot build.** Ask for a `cartoon` on a component
+with no renderable polymer backbone — a one-residue chain, a ligand region — and Mol\* does not
+fail: it renders **`ball-and-stick` with default params**, discarding the `alpha` and `quality`
+you asked for.
+
+So a region's *rendered* type is not proof of the type that was *requested*, and Contract A's
+"Own" state can be Own-in-Python and something-else-on-screen. Nothing in this document prevents
+it, and no test will catch it for you. If a user reports "I asked for cartoon and got sticks",
+this is why.
 
 ---
 

@@ -111,13 +111,33 @@ This is part of the runtime contract because it affects rebuilds, exports, and p
 
 ## Scene Object and Layer Model
 
-There are two parallel registries on every `MolSysView` instance:
+> **The scene's behaviour is governed by [`scene_contracts.md`](scene_contracts.md), which is
+> normative.** This section describes the *registries*; that document describes the *rules* —
+> representation states, colour ownership, ordering, recipes and serialisation. If the two
+> disagree, the contracts win. Read them before changing anything below.
+
+There are three registries on every `MolSysView` instance:
 
 - **`_scene_objects: dict[str, SceneObject]`** — individual Shape, Annotation,
   and Measurement objects.  Each entry is keyed by its unique `tag`.
+- **`_regions: dict[str, Region]`** — structural regions over the molecular system.
 - **`_layers: dict[str, Layer]`** — `GroupLayer` instances that group one or
   more scene objects (or structural regions) under a shared visibility/color
   toggle.  Each entry is keyed by the layer's `tag`.
+
+### The scene model in one paragraph
+
+A **region is a recipe**, not a set of atoms: it carries a `provenance` (how it was defined) and a
+`mode` (`static` / `dynamic`), and its `atom_indices` are the cached result of evaluating that
+recipe. A region's representation is in one of three states — **None** (no own visual; the atoms
+are painted by nothing else, so the region disappears if the whole is hidden), **Inherit** (the
+sentinel string `"inherit"`; the region draws what the whole draws, and follows it when it
+changes), or **Own**. Colour is **layered**: a base layer owned by `whole`, with one layer per
+region stacked on top by a single `order` per region, and an atom in no layer falls through to the
+structural colour theme rather than being painted grey. Scene mutations are recorded in **one**
+scene-level history (`view.history`, snapshot-based undo/redo). All of it serialises to state
+**v2**. Each of those sentences is a contract; the details, and the reasons, are in
+`scene_contracts.md`.
 
 ### Key invariants
 
@@ -126,12 +146,18 @@ There are two parallel registries on every `MolSysView` instance:
    `_layer_counter`, etc.) are incremented monotonically; they are propagated
    when views are extracted or merged so collisions cannot occur.
 
-2. **`layer_tag` is the grouping channel.**  A `SceneObject` carries a
+2. **`layer_tag` is the grouping channel — for scene objects.**  A `SceneObject` carries a
    `layer_tag` attribute that names the `Layer` it belongs to.  When no
    explicit `layer_tag` is given, the object's own `tag` is used as a
    degenerate single-object layer.  To move an object between layers, call
    `obj.set_layer_tag(new_tag)`; the registry cleanup (de-register from the old
    layer, register into the new one) is handled inside `set_layer_tag`.
+
+   **Regions are the exception, and it bites.**  A `Region`'s membership lives in
+   `region.layer` (set via `region.set_layer(...)` / `remove_from_layer()`), **not** in
+   `layer_tag`.  Any code that walks a layer's members and writes `member.layer_tag` will
+   silently orphan every region in it — which is exactly what a layer rename used to do.  Iterate
+   `Layer.members` and branch on which channel the member actually uses.
 
 3. **`Layer.add(obj)` / `Layer.detach(obj)`** are the high-level membership
    management methods.  Both delegate to `obj.set_layer_tag(...)` and therefore
