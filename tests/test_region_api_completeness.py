@@ -79,3 +79,45 @@ def test_complement_of_several_regions():
     assert comp.provenance["kind"] == "complement"
     assert len(comp.provenance["of"]) == 2
     assert all(i not in comp.atom_indices for i in [0, 1, 2, 3])
+
+
+# ── Symmetry: Region.visible, Region.set_color_scheme, RegionsManager parity ──
+
+def test_region_visible_property_tracks_show_hide():
+    view = _mute(demo["dialanine"])
+    r = view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    r.set_representation("cartoon", skip_digestion=True)
+    assert r.visible is True
+    r.hide(skip_digestion=True)
+    assert r.visible is False
+    r.show(skip_digestion=True)
+    assert r.visible is True
+
+
+def test_region_set_color_scheme_records_and_requires_own_visual():
+    view = _mute(demo["dialanine"])
+    r = view.new_region(atom_indices=[0, 1, 2], tag="A", skip_digestion=True)
+    r.set_representation("cartoon", skip_digestion=True)
+    r.set_color_scheme("chain_default", skip_digestion=True)
+    assert r.repr_params.get("color_scheme") == "chain_default"
+
+    bare = view.new_region(atom_indices=[3, 4], tag="B", skip_digestion=True)
+    with pytest.raises(ValueError):
+        bare.set_color_scheme("chain_default", skip_digestion=True)
+
+
+def test_regions_manager_parity_methods():
+    view = _mute(demo["dialanine"])
+    view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    view.new_region(atom_indices=[2, 3], tag="B", skip_digestion=True)
+    regions = view.regions
+    assert sorted(regions.tags()) == ["A", "B"]
+    assert regions.count() == 2
+    assert regions.contains("A") is True
+    assert len(regions.records()) == 2
+    regions.set_tag("A", "A2", skip_digestion=True)
+    assert regions.contains("A2") and not regions.contains("A")
+    regions.delete("B", skip_digestion=True)
+    assert regions.tags() == ["A2"]
+    regions.delete_all(skip_digestion=True)
+    assert regions.count() == 0

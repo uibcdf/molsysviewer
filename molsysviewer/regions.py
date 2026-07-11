@@ -130,6 +130,11 @@ class Region:
             if self.uid in region.dependencies
         )
 
+    @property
+    def visible(self) -> bool:
+        """Whether this region's own representation is currently shown."""
+        return not self._hidden
+
     @staticmethod
     def _dependency_uids_from_provenance(provenance: dict[str, Any]) -> list[str]:
         kind = provenance.get("kind")
@@ -826,6 +831,32 @@ class Region:
 
     @signal(tags=["region", "color"])
     @digest()
+    def set_color_scheme(self, scheme: str, skip_digestion: bool = False) -> None:
+        """Set the structural colour theme used by this region's own representation.
+
+        Mirrors :meth:`Whole.set_color_scheme`. The region must have its own
+        representation (state *Inherit* or *Own*); a state-*None* region is
+        painted by the whole and has no structural theme of its own to set.
+        """
+        normalized = str(scheme).strip()
+        if not normalized:
+            raise ValueError("set_color_scheme requires a non-empty scheme.")
+        if not self._has_own_visual():
+            raise ValueError(
+                f"Region {self.tag!r} has no own representation; set a representation "
+                "before its colour scheme, or colour it through the whole."
+            )
+        params = dict(self.repr_params)
+        params["color_scheme"] = normalized
+        self.set_representation(
+            self.representation,
+            preset=self.preset,
+            skip_digestion=True,
+            **params,
+        )
+
+    @signal(tags=["region", "color"])
+    @digest()
     def set_color_by_attribute(
         self,
         attribute: str,
@@ -1107,6 +1138,55 @@ class RegionsManager(dict):
         super().__init__()
         self._view = view
 
+    # ── Registry queries (parity with SelectionsManager) ───────────────────
+    # RegionsManager *is* the live registry dict, so `dict.clear()` is left
+    # untouched (scene reset relies on it); a message-based bulk delete is
+    # exposed as delete_all() instead of overriding clear().
+
+    def tags(self) -> list[str]:
+        """The tags of every managed region."""
+        return list(self.keys())
+
+    def contains(self, tag: str, skip_digestion: bool = False) -> bool:
+        """Whether a region with *tag* is registered."""
+        return tag in self
+
+    def count(self, skip_digestion: bool = False) -> int:
+        """How many regions are registered."""
+        return len(self)
+
+    def records(self, skip_digestion: bool = False) -> list[dict[str, Any]]:
+        """A summary record per region (the list form of :meth:`info`)."""
+        result = self.info()
+        return result if isinstance(result, list) else [result]
+
+    @signal(tags=["region"])
+    @digest()
+    def delete(self, tag: str, skip_digestion: bool = False) -> None:
+        """Delete the region with *tag* (and its representations)."""
+        region = self.get(tag)
+        if region is None:
+            raise KeyError(f"No region with tag {tag!r}.")
+        region.delete(skip_digestion=True)
+
+    @signal(tags=["region"])
+    @digest()
+    def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> None:
+        """Rename the region *tag* to *new_tag*."""
+        region = self.get(tag)
+        if region is None:
+            raise KeyError(f"No region with tag {tag!r}.")
+        region.rename(new_tag, skip_digestion=True)
+
+    @signal(tags=["region"])
+    @digest()
+    def delete_all(self, skip_digestion: bool = False) -> None:
+        """Delete every managed region, emitting a scene message for each."""
+        for tag in list(self.keys()):
+            region = self.get(tag)
+            if region is not None:
+                region.delete(skip_digestion=True)
+
     @signal(tags=["region", "visibility"])
     @digest()
     def show_all(self, skip_digestion: bool = False) -> None:
@@ -1172,7 +1252,7 @@ class RegionsManager(dict):
                 "provenance": dict(region.provenance),
                 "dependencies": region.dependencies,
                 "dependents": region.dependents,
-                "visible": not region._hidden,  # noqa: SLF001
+                "visible": region.visible,
                 "active": region._active,  # noqa: SLF001
             }
 
