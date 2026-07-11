@@ -595,6 +595,11 @@ export class SelectionPanel extends BasePanel {
                     const inlineConfirm = document.createElement("button");
                     inlineConfirm.type = "button";
                     inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Label";
+                    // The card's toolbar already carries a button labelled "Rename",
+                    // so this one cannot be addressed by its text: give it a stable
+                    // selector, as the rest of the panels do.
+                    inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm", item.tag);
+                    inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm-mode", mode);
                     Object.assign(inlineConfirm.style, {
                         background: "#6366f1",
                         border: "0",

@@ -693,14 +693,46 @@ only surfaced because the documentation was checked against the code rather than
 
 Flags: `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader`.
 
-- [ ] `alpha` / `quality` reach Mol\* `typeParams` **on screen** — never yet confirmed.
-- [ ] An inheriting region follows a change of the whole's representation.
-- [ ] Uncoloured atoms keep their structural theme and **do not turn grey**.
-- [ ] Hiding the whole makes state-**None** regions vanish; `Inherit`/`Own` remain.
-- [ ] `Reset colours` leaves region layers; `Reset ALL colours` clears them.
-- [ ] A dynamic region tracks a trajectory.
-- [ ] Regions and Selection walkthroughs pass with no WebGL skip.
-- [ ] Record browser version, GL environment, machine and results.
+- [x] `alpha` / `quality` reach Mol\* `typeParams` **on screen** — confirmed, for the whole
+      *and* for a region (they travel different code paths: structure-level params vs.
+      component-level `addRepresentation`, so one passing says nothing about the other).
+- [x] An inheriting region follows a change of the whole's representation.
+- [x] Uncoloured atoms keep their structural theme and **do not turn grey** (asserted against
+      `0xaaaaaa` explicitly, the colour the old `reset_colors()` painted).
+- [x] Hiding the whole makes state-**None** regions vanish; `Inherit`/`Own` remain.
+- [x] `Reset colours` leaves region layers; `Reset ALL colours` clears them.
+- [x] A dynamic region tracks a trajectory, and keeps its representation while doing so.
+- [x] Regions and Selection walkthroughs pass with no WebGL skip.
+- [x] Record browser version, GL environment, machine and results.
+
+**Done** (2026-07-11), in-house rather than delegated. New `tests/e2e/scene-contracts.e2e.ts`
+asserts against the **Mol\* render tree** — `transform.params.type`, cell visibility, and the
+colour the per-atom theme resolves at a given atom — not against the message the frontend just
+emitted. Two new harness probes: `inspectScene` and `probeAtomColors`.
+
+Mutation-verified: dropping `typeParams` on the whole path, dropping them on the region path,
+disabling `repaintInheritedRegions`, and making state-None build a visual each turn exactly one
+scenario red.
+
+**`selection-subpanel.e2e` was red at HEAD and had been for some time.** Two causes, both in the
+test: it clicked a sequence strip while the *Selection* tab was active, and the strips only render
+under *System* — so it waited 30 s on an invisible element. And it expected a 5-atom selection
+where the design gives 6: the active selection is held as **group-level** items
+(`setFromAtomIndices` → `lociToGroupItems`), so a backend echo of atoms `[0, 1]` is snapped up to
+the whole ALA group. One product change was needed: the saved-selection card's inline confirm
+button had no stable selector and collided by text with the toolbar's *Rename*.
+
+**Environment.** Chrome 149.0.7827.53 · WebGL2 via ANGLE/SwiftShader (Vulkan 1.3.0, Subzero) ·
+Linux 6.17.0-35-generic, 20 cores. Flags: `--use-gl=angle --use-angle=swiftshader
+--enable-unsafe-swiftshader`. The run **asserts** WebGL2 is present rather than skipping without
+it: a phase whose purpose is "confirm it on screen" must not be able to pass by not looking.
+
+**Result:** 14/14 e2e suites green, 659 Python passed / 3 skipped, 178 JS, `tsc` 0.
+
+**Noted, not a defect:** Mol\* silently substitutes `ball-and-stick` with default params when asked
+for a `cartoon` on a component with no renderable polymer backbone (e.g. a one-residue chain, or a
+ligand region). It does not fail; it changes the representation. Worth knowing before anyone reads
+a region's rendered type as confirmation of what was requested.
 
 ---
 

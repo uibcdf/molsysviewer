@@ -119,14 +119,25 @@ async function run() {
         assert.strictEqual(queryAction.op, "replace");
         await setActiveSelection(page, [0, 1]);
 
-        // Compose through a real strip click.
+        // Compose through a real strip click. The strips live in the System tab, so
+        // they are not rendered while Selection is the active tab: the click has to
+        // happen there and then come back. (This is why the test used to hang on an
+        // invisible element for 30 s and then time out.)
+        await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         await page.locator('[data-molsysviewer-group-item="true"]').nth(1).click({ modifiers: ["Shift"] });
+        // Six, not five. The active selection is held as *group-level* items
+        // (`setFromAtomIndices` -> `lociToGroupItems`), so the backend echo of atoms
+        // [0, 1] is snapped up to the whole ALA group {0, 1, 2}. Shift adds the
+        // clicked GLY group {3, 4, 5} on top, giving all six. The old expectation of
+        // five assumed atom-level fidelity that this path has never had — and the
+        // test timed out on an invisible strip long before ever reaching it.
         await page.waitForFunction(() =>
             ((window as any).__messages || []).some((message: any) =>
                 message.event === "interaction_active_selection_changed"
-                && message.atom_indices?.length === 5
+                && message.atom_indices?.length === 6
             )
         );
+        await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
 
         // Register a saved selection and exercise union and subtraction.
         await page.evaluate(async () => {
@@ -148,12 +159,15 @@ async function run() {
         await setActiveSelection(page, [0, 1, 2]);
 
         // Expand to chain from the context menu, then save and apply the backend echoes.
+        // Again: the strip's context menu is only reachable from the System tab.
+        await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         await page.locator('[data-molsysviewer-group-item="true"]').first().click({ button: "right" });
         await page.waitForSelector('[data-molsysviewer-context-menu="true"]');
         await page.locator('[data-molsysviewer-context-menu="true"] button').filter({ hasText: "Chain" }).click();
         const expand = await latestAction(page, "expand_selection");
         assert.strictEqual(expand.level, "chain");
         await setActiveSelection(page, [0, 1, 2]);
+        await page.locator('[data-molsysviewer-group-panel-tab="selection"]').click();
 
         await page.locator('[data-molsysviewer-selection-save="true"]').click();
         await page.locator('[data-molsysviewer-selection-inline-input="true"]').fill("chain_a");
@@ -173,7 +187,9 @@ async function run() {
         await page.locator('[data-molsysviewer-saved-selection-rename="chain_a"]').click();
         const chainCard = page.locator('[data-molsysviewer-saved-selection-card="chain_a"]');
         await chainCard.locator("input").fill("active_chain");
-        await chainCard.locator("button").filter({ hasText: "Rename" }).click();
+        // Not `filter({ hasText: "Rename" })`: the card's toolbar carries a Rename
+        // button too, so the text matches two elements and Playwright refuses.
+        await page.locator('[data-molsysviewer-saved-selection-confirm-mode="rename"]').click();
         const rename = await latestAction(page, "rename_selection");
         assert.deepStrictEqual(
             { tag: rename.tag, new_tag: rename.new_tag },
@@ -190,7 +206,7 @@ async function run() {
         await page.locator('[data-molsysviewer-saved-selection-to-region="active_chain"]').click();
         const renamedCard = page.locator('[data-molsysviewer-saved-selection-card="active_chain"]');
         await renamedCard.locator("input").fill("active_chain_region");
-        await renamedCard.locator("button").filter({ hasText: "Create" }).click();
+        await page.locator('[data-molsysviewer-saved-selection-confirm-mode="region"]').click();
         const promote = await latestAction(page, "create_region_from_saved_selection");
         assert.deepStrictEqual(
             { selection_tag: promote.selection_tag, tag: promote.tag },

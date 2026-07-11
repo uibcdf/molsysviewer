@@ -28,7 +28,116 @@ declare global {
         probeGlobalRepresentationOwnershipMask: typeof probeGlobalRepresentationOwnershipMask;
         probePerAtomColorDecorator: typeof probePerAtomColorDecorator;
         probeRegionOrderOwnership: typeof probeRegionOrderOwnership;
+        inspectScene: typeof inspectScene;
+        probeAtomColors: typeof probeAtomColors;
     } | undefined;
+}
+
+/**
+ * What Mol* is actually rendering, read from the plugin state tree.
+ *
+ * Phase 14 exists because every claim about `alpha`, `quality`, inheritance and
+ * colour fall-through had until now only been asserted against the *message* we
+ * emitted, never against the representation Mol* built from it. So this reads
+ * `transform.params.type` off the real cells and nothing else.
+ */
+export type RenderedRepresentation = {
+    name: string;
+    typeParams: Record<string, unknown>;
+    hidden: boolean;
+};
+
+export type SceneSnapshot = {
+    wholeVisible: boolean;
+    wholeReprs: RenderedRepresentation[];
+    regions: Record<string, {
+        state: string;
+        hidden: boolean;
+        atomCount: number;
+        reprs: RenderedRepresentation[];
+    }>;
+};
+
+function readRepresentation(plugin: any, ref: string): RenderedRepresentation | null {
+    const cell = plugin.state.data.cells.get(ref);
+    if (!cell) return null;
+    const type = (cell.transform?.params as any)?.type;
+    if (typeof type?.name !== "string") return null;
+    return {
+        name: type.name,
+        typeParams: { ...(type.params ?? {}) },
+        // Mol* stores "not rendered" as `state.isHidden` on the cell.
+        hidden: cell.state?.isHidden === true,
+    };
+}
+
+export function inspectScene(controller: MolSysViewerController): SceneSnapshot {
+    const profiled = controller as ProfileController;
+    const plugin = profiled.plugin;
+    const state = profiled.state as any;
+
+    const wholeReprs: RenderedRepresentation[] = [];
+    for (const ref of (state.globalReprs ?? []) as Iterable<string>) {
+        const repr = readRepresentation(plugin, ref);
+        if (repr) wholeReprs.push(repr);
+    }
+
+    const regions: SceneSnapshot["regions"] = {};
+    (state.regionIndex as Map<string, any> | undefined)?.forEach((entry, tag) => {
+        const reprs: RenderedRepresentation[] = [];
+        for (const ref of (entry.representations ?? []) as string[]) {
+            const repr = readRepresentation(plugin, ref);
+            if (repr) reprs.push(repr);
+        }
+        regions[tag] = {
+            state: entry.representationState,
+            hidden: entry.hidden === true,
+            atomCount: Array.isArray(entry.atomIndices) ? entry.atomIndices.length : 0,
+            reprs,
+        };
+    });
+
+    return {
+        wholeVisible: state.requestedGlobalHidden !== true,
+        wholeReprs,
+        regions,
+    };
+}
+
+/**
+ * The colour Mol* would paint at each requested atom, evaluated through the real
+ * per-atom decorator theme rather than read back from the message we sent.
+ *
+ * `0xaaaaaa` is the grey the old `reset_colors()` painted over the whole system;
+ * Contract B says an uncoloured atom must fall through to the structural theme
+ * instead, so the e2e asserts against that exact value.
+ */
+export function probeAtomColors(
+    controller: MolSysViewerController,
+    atomIndices: number[],
+): { colors: number[]; baseThemeName: string | null; themeName: string | null } {
+    const profiled = controller as ProfileController;
+    const structure = profiled.getStructureData();
+    if (!structure) throw new Error("probeAtomColors requires a loaded structure.");
+
+    const refs = Array.from(((profiled.state as any).globalReprs ?? []) as Iterable<string>)
+        .filter((ref): ref is string => typeof ref === "string");
+    const cell = refs[0] ? profiled.plugin.state.data.cells.get(refs[0]) : undefined;
+    const colorTheme = cell?.transform?.params?.colorTheme;
+    const base = colorTheme?.params?.base ?? { name: "element-symbol", params: {} };
+
+    const theme = MsvPerAtomColorThemeProvider.factory({ structure } as any, { base } as any);
+    const colors = atomIndices.map(index => {
+        const location = atomLocation(structure, index);
+        if (!location) throw new Error(`probeAtomColors could not build a location for atom ${index}.`);
+        return Number(theme.color(location, false));
+    });
+
+    return {
+        colors,
+        themeName: colorTheme?.name ?? null,
+        baseThemeName: base?.name ?? null,
+    };
 }
 
 type ProfileController = MolSysViewerController & {
@@ -1096,5 +1205,7 @@ if (typeof window !== "undefined") {
         probeGlobalRepresentationOwnershipMask,
         probePerAtomColorDecorator,
         probeRegionOrderOwnership,
+        inspectScene,
+        probeAtomColors,
     };
 }

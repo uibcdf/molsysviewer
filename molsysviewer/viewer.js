@@ -151778,6 +151778,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           const inlineConfirm = document.createElement("button");
           inlineConfirm.type = "button";
           inlineConfirm.textContent = mode === "rename" ? "Rename" : mode === "region" ? "Create" : "Add Label";
+          inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm", item2.tag);
+          inlineConfirm.setAttribute("data-molsysviewer-saved-selection-confirm-mode", mode);
           Object.assign(inlineConfirm.style, {
             background: "#6366f1",
             border: "0",
