@@ -139,6 +139,7 @@ test("state handler accepts authoritative enriched region summaries", () => {
             atom_indices: [0, 1],
             atom_count: 2,
             hidden: false,
+            layer: "analysis",
             representation: "line",
             preset: null,
             representation_params: { alpha: 0.5 },
@@ -152,6 +153,9 @@ test("state handler accepts authoritative enriched region summaries", () => {
         atom_indices: [0, 1],
         atom_count: 2,
         hidden: false,
+        // Layer membership (Phase 9) must survive the summary mapping so the
+        // Layers subpanel can group the region under its layer.
+        layer: "analysis",
         representation: "line",
         preset: undefined,
         selection: undefined,

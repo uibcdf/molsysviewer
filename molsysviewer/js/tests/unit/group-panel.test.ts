@@ -1261,6 +1261,83 @@ test("GroupPanel region inspect fetches lazily and rejects stale details", () =>
     }
 });
 
+test("GroupPanel layers panel groups region and scene-object layers and emits actions", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details?: any }> = [];
+        const panel = new GroupPanel(
+            host,
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            () => {},
+            (action, details) => { actions.push({ action, details }); },
+        );
+        const root = host.children[0];
+        const layersTab = findFirstByAttribute(root, "data-molsysviewer-group-panel-tab", "layers");
+        assert.ok(layersTab);
+
+        panel.setRegions([
+            { tag: "pocket", atom_count: 4, hidden: false, layer: "analysis" },
+            { tag: "surface", atom_count: 8, hidden: true, layer: "analysis" },
+            { tag: "free", atom_count: 2, hidden: false, layer: null },
+        ]);
+        panel.setLayerObjects([
+            { kind: "annotation", tag: "note1", title: "Note", layerTag: "analysis" },
+            { kind: "shape", tag: "marker", title: "Marker", layerTag: "geometry" },
+        ]);
+        layersTab.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-card", "analysis"));
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-card", "geometry"));
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-member", "pocket"));
+        assert.ok(findFirstByAttribute(root, "data-molsysviewer-layer-member", "note1"));
+        assert.strictEqual(findFirstByAttribute(root, "data-molsysviewer-layer-member", "free"), null);
+
+        findFirstByAttribute(root, "data-molsysviewer-layer-hide", "analysis")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_layer_visibility",
+            details: { tag: "analysis", hidden: true },
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-layer-remove-region", "pocket")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "remove_region_from_layer",
+            details: { tag: "pocket" },
+        });
+
+        const regionInput = findFirstByAttribute(root, "data-molsysviewer-layer-assign-region", "true") as any;
+        const layerInput = findFirstByAttribute(root, "data-molsysviewer-layer-assign-layer", "true") as any;
+        regionInput.value = "free";
+        layerInput.value = "analysis";
+        findFirstByAttribute(root, "data-molsysviewer-layer-assign-form", "true")
+            ?.children.at(-1)
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "set_region_layer",
+            details: { tag: "free", layer: "analysis" },
+        });
+
+        findFirstByAttribute(root, "data-molsysviewer-layer-delete", "geometry")
+            ?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.deepStrictEqual(actions.at(-1), {
+            action: "delete_layer_group",
+            details: { tag: "geometry" },
+        });
+
+        panel.dispose();
+    } finally {
+        restore();
+    }
+});
+
 test("GroupPanel saved selections card actions and inline forms", () => {
     const restore = installFakeDom();
     try {

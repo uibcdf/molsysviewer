@@ -145725,6 +145725,9 @@ var StateHandlers = class {
       atom_count: typeof item2.atom_count === "number" ? item2.atom_count : Array.isArray(item2.atom_indices) ? item2.atom_indices.length : 0,
       selection: typeof item2.selection === "string" ? item2.selection : void 0,
       hidden: !!item2.hidden,
+      // Layer membership (Phase 9) must survive the summary mapping,
+      // or the Layers subpanel can never group a region under its layer.
+      layer: typeof item2.layer === "string" ? item2.layer : null,
       representation: typeof item2.representation === "string" ? item2.representation : void 0,
       preset: typeof item2.preset === "string" ? item2.preset : void 0,
       representation_params: item2.representation_params && typeof item2.representation_params === "object" ? { ...item2.representation_params } : {},
@@ -149531,6 +149534,238 @@ var ExportPanel = class extends BasePanel {
     htmlRow.appendChild(htmlLabel);
     htmlRow.appendChild(htmlButton);
     dataCard.appendChild(htmlRow);
+  }
+};
+
+// src/ui/panels/layers-panel.ts
+var LayersPanel = class extends BasePanel {
+  constructor(ctx) {
+    super();
+    this.ctx = ctx;
+    this.key = "layers";
+    this.regions = [];
+    this.objects = [];
+  }
+  setRegions(items) {
+    this.regions = [...items];
+    this.updateBadge();
+    this.scheduleRender();
+  }
+  setObjects(items) {
+    this.objects = [...items];
+    this.updateBadge();
+    this.scheduleRender();
+  }
+  paint() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Logical Layers"));
+    this.host.appendChild(this.renderAssignCard());
+    this.host.appendChild(makeSectionHeader("Layer Groups"));
+    const layers = this.buildLayers();
+    if (layers.length === 0) {
+      const empty2 = document.createElement("div");
+      Object.assign(empty2.style, {
+        fontSize: "11px",
+        color: "rgba(244,244,245,0.48)",
+        paddingLeft: "4px"
+      });
+      empty2.textContent = "No layer groups yet.";
+      this.host.appendChild(empty2);
+      return;
+    }
+    const list3 = document.createElement("div");
+    list3.setAttribute("data-molsysviewer-layer-list", "true");
+    Object.assign(list3.style, {
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px"
+    });
+    this.host.appendChild(list3);
+    for (const layer of layers) {
+      list3.appendChild(this.renderLayerCard(layer));
+    }
+  }
+  updateBadge() {
+    this.ctx.setBadge(String(this.buildLayers().length));
+  }
+  buildLayers() {
+    const records = /* @__PURE__ */ new Map();
+    const ensure = (tag) => {
+      const existing = records.get(tag);
+      if (existing) return existing;
+      const record2 = { tag, regions: [], objects: [] };
+      records.set(tag, record2);
+      return record2;
+    };
+    for (const region of this.regions) {
+      const layerTag = typeof region.layer === "string" ? region.layer.trim() : "";
+      if (!layerTag) continue;
+      ensure(layerTag).regions.push({
+        kind: "region",
+        tag: region.tag,
+        title: region.tag,
+        atomCount: region.atom_count,
+        hidden: region.hidden
+      });
+    }
+    for (const object of this.objects) {
+      const layerTag = typeof object.layerTag === "string" ? object.layerTag.trim() : "";
+      if (!layerTag) continue;
+      ensure(layerTag).objects.push({
+        kind: object.kind,
+        tag: object.tag,
+        title: object.title,
+        hidden: !!object.hidden
+      });
+    }
+    return Array.from(records.values()).map((layer) => ({
+      ...layer,
+      regions: [...layer.regions].sort((a8, b8) => a8.tag.localeCompare(b8.tag)),
+      objects: [...layer.objects].sort((a8, b8) => a8.tag.localeCompare(b8.tag))
+    })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+  }
+  renderAssignCard() {
+    const card = makeSettingsCard("Assign Region");
+    const row = document.createElement("form");
+    row.setAttribute("data-molsysviewer-layer-assign-form", "true");
+    Object.assign(row.style, {
+      display: "grid",
+      gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr) auto",
+      gap: "6px",
+      alignItems: "center"
+    });
+    const regionInput = this.makeInput("Region tag");
+    regionInput.setAttribute("data-molsysviewer-layer-assign-region", "true");
+    const layerInput = this.makeInput("Layer tag");
+    layerInput.setAttribute("data-molsysviewer-layer-assign-layer", "true");
+    const button = makeButton("Assign", () => {
+      const tag = regionInput.value.trim();
+      const layer = layerInput.value.trim();
+      if (!tag) return;
+      this.ctx.onAction("set_region_layer", { tag, layer: layer || null });
+    });
+    button.type = "submit";
+    row.appendChild(regionInput);
+    row.appendChild(layerInput);
+    row.appendChild(button);
+    row.addEventListener("submit", (event) => {
+      event.preventDefault();
+      button.click();
+    });
+    card.appendChild(row);
+    const hint = document.createElement("div");
+    Object.assign(hint.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.48)",
+      lineHeight: "1.4"
+    });
+    hint.textContent = "Leave the layer empty to detach the region.";
+    card.appendChild(hint);
+    return card;
+  }
+  renderLayerCard(layer) {
+    const card = makeSettingsCard(layer.tag);
+    card.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    const counts = document.createElement("div");
+    Object.assign(counts.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.56)"
+    });
+    counts.textContent = `${layer.regions.length} regions \xB7 ${layer.objects.length} scene objects`;
+    card.appendChild(counts);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+      gap: "6px"
+    });
+    const show = makeButton("Show", () => {
+      this.ctx.onAction("set_layer_visibility", { tag: layer.tag, hidden: false });
+    });
+    show.setAttribute("data-molsysviewer-layer-show", layer.tag);
+    const hide = makeButton("Hide", () => {
+      this.ctx.onAction("set_layer_visibility", { tag: layer.tag, hidden: true });
+    });
+    hide.setAttribute("data-molsysviewer-layer-hide", layer.tag);
+    const del = makeButton("Delete", () => {
+      this.ctx.onAction("delete_layer_group", { tag: layer.tag });
+    });
+    del.setAttribute("data-molsysviewer-layer-delete", layer.tag);
+    actions.appendChild(show);
+    actions.appendChild(hide);
+    actions.appendChild(del);
+    card.appendChild(actions);
+    for (const member of [...layer.regions, ...layer.objects]) {
+      card.appendChild(this.renderMemberRow(layer.tag, member));
+    }
+    return card;
+  }
+  renderMemberRow(layerTag, member) {
+    const row = document.createElement("div");
+    row.setAttribute("data-molsysviewer-layer-member", member.tag);
+    Object.assign(row.style, {
+      display: "grid",
+      gridTemplateColumns: "minmax(0, 1fr) auto",
+      gap: "8px",
+      alignItems: "center",
+      padding: "6px 8px",
+      borderRadius: "6px",
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.05)"
+    });
+    const label2 = document.createElement("div");
+    Object.assign(label2.style, {
+      minWidth: "0",
+      display: "flex",
+      flexDirection: "column",
+      gap: "2px"
+    });
+    const title = document.createElement("div");
+    Object.assign(title.style, {
+      fontSize: "11px",
+      color: member.hidden ? "rgba(244,244,245,0.42)" : "#f4f4f5",
+      fontWeight: "600",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
+    });
+    title.textContent = member.title;
+    const subtitle = document.createElement("div");
+    Object.assign(subtitle.style, {
+      fontSize: "10px",
+      color: "rgba(244,244,245,0.48)"
+    });
+    subtitle.textContent = member.kind === "region" ? `region \xB7 ${member.atomCount} atoms` : member.kind;
+    label2.appendChild(title);
+    label2.appendChild(subtitle);
+    row.appendChild(label2);
+    const detach = makeButton("Remove", () => {
+      if (member.kind !== "region") return;
+      this.ctx.onAction("remove_region_from_layer", { tag: member.tag });
+    });
+    detach.setAttribute("data-molsysviewer-layer-remove-region", member.tag);
+    detach.disabled = member.kind !== "region";
+    detach.title = member.kind === "region" ? `Remove ${member.tag} from ${layerTag}` : "Scene objects are managed by their own addon layer tags.";
+    detach.style.opacity = member.kind === "region" ? "1" : "0.35";
+    row.appendChild(detach);
+    return row;
+  }
+  makeInput(placeholder) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = placeholder;
+    Object.assign(input.style, {
+      minWidth: "0",
+      background: "rgba(0,0,0,0.28)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "5px 7px",
+      color: "#f4f4f5",
+      fontSize: "11px",
+      outline: "none"
+    });
+    return input;
   }
 };
 
@@ -153918,16 +154153,7 @@ var GroupPanel = class {
       emptyText: "No shapes yet."
     });
     this.layersSection = this.createSection("layers");
-    this.layersPanel = new RoadmapPanel("layers", {
-      header: "Logical Layers",
-      cardTitle: "Feature Roadmap",
-      description: "This subpanel will act as a logical group tag organizer (view.layers). Planned features include:",
-      items: [
-        "Group Tag Registry: View and list all active grouping tags across layers",
-        "Bulk Actions: Toggle visibility or delete whole categories of annotations/measures in one click",
-        "Layer Assignments: Map structural representations and custom shapes to target layers dynamically"
-      ]
-    });
+    this.layersPanel = new LayersPanel(this.makePanelContext("layers"));
     this.viewportSection = this.createSection("viewport");
     this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
     this.exportSection = this.createSection("export");
@@ -154141,6 +154367,7 @@ var GroupPanel = class {
   }
   setRegions(items) {
     this.regionsPanel.setRegions(items);
+    this.layersPanel.setRegions(items);
   }
   setRegionStyleOptions(options) {
     this.regionsPanel.setStyleOptions(options);
@@ -154150,6 +154377,9 @@ var GroupPanel = class {
   }
   setShapes(items) {
     this.shapesPanel.setItems(items);
+  }
+  setLayerObjects(items) {
+    this.layersPanel.setObjects(items);
   }
   /** Build the narrow context injected into a migrated subpanel. */
   makePanelContext(key2) {
@@ -158040,6 +158270,29 @@ var MolSysViewerController = class _MolSysViewerController {
         }
       }))
     );
+    this.groupPanel.setLayerObjects([
+      ...Array.from(this.addonsAnnotations.entries()).map(([tag, item2]) => ({
+        kind: "annotation",
+        tag,
+        title: item2.text,
+        layerTag: item2.layerTag,
+        hidden: item2.hidden
+      })),
+      ...Array.from(this.addonsMeasurements.entries()).map(([tag, item2]) => ({
+        kind: "measurement",
+        tag,
+        title: `${item2.kind[0].toUpperCase()}${item2.kind.slice(1)}`,
+        layerTag: item2.layerTag,
+        hidden: item2.hidden
+      })),
+      ...Array.from(this.addonsShapes.entries()).map(([tag, item2]) => ({
+        kind: "shape",
+        tag,
+        title: item2.title,
+        layerTag: item2.layerTag,
+        hidden: item2.hidden
+      }))
+    ]);
     const canvas3d = this.plugin.canvas3d;
     const fogName = canvas3d?.props.cameraFog?.name;
     const fogIntensity = canvas3d?.props.cameraFog?.params?.intensity;
@@ -158217,6 +158470,9 @@ var MolSysViewerController = class _MolSysViewerController {
         tag: item2.tag,
         atom_count: item2.atom_count,
         hidden: item2.hidden,
+        // Forward layer membership (Phase 9) to the panel; without it the
+        // Layers subpanel never groups a region under its layer.
+        layer: item2.layer,
         representation: item2.representation,
         preset: item2.preset,
         representation_params: item2.representation_params,

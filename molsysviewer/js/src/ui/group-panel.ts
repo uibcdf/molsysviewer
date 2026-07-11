@@ -16,6 +16,7 @@ import { InspectorListPanel } from "./panels/inspector-list-panel";
 import { RoadmapPanel } from "./panels/roadmap-panel";
 import { ViewportPanel } from "./panels/viewport-panel";
 import { ExportPanel } from "./panels/export-panel";
+import { LayersPanel, LayerObjectSummary } from "./panels/layers-panel";
 import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
 import { SystemPanel } from "./panels/system-panel";
@@ -58,6 +59,7 @@ export type RegionSummary = {
     tag: string;
     atom_count: number;
     hidden: boolean;
+    layer?: string | null;
     representation?: string;
     preset?: string;
     representation_params?: Record<string, unknown>;
@@ -104,7 +106,7 @@ export class GroupPanel {
     private readonly measuresPanel: InspectorListPanel;
     private readonly annotationsPanel: InspectorListPanel;
     private readonly wholePanel: RoadmapPanel;
-    private readonly layersPanel: RoadmapPanel;
+    private readonly layersPanel: LayersPanel;
     private readonly viewportPanel: ViewportPanel;
     private readonly exportPanel: ExportPanel;
     private readonly regionsPanel: RegionsPanel;
@@ -353,16 +355,7 @@ export class GroupPanel {
             emptyText: "No shapes yet.",
         });
         this.layersSection = this.createSection("layers");
-        this.layersPanel = new RoadmapPanel("layers", {
-            header: "Logical Layers",
-            cardTitle: "Feature Roadmap",
-            description: "This subpanel will act as a logical group tag organizer (view.layers). Planned features include:",
-            items: [
-                "Group Tag Registry: View and list all active grouping tags across layers",
-                "Bulk Actions: Toggle visibility or delete whole categories of annotations/measures in one click",
-                "Layer Assignments: Map structural representations and custom shapes to target layers dynamically",
-            ],
-        });
+        this.layersPanel = new LayersPanel(this.makePanelContext("layers"));
         this.viewportSection = this.createSection("viewport");
         this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
         this.exportSection = this.createSection("export");
@@ -612,6 +605,7 @@ export class GroupPanel {
 
     setRegions(items: RegionSummary[]): void {
         this.regionsPanel.setRegions(items);
+        this.layersPanel.setRegions(items);
     }
 
     setRegionStyleOptions(options: { representations: string[]; presets: string[] }): void {
@@ -624,6 +618,10 @@ export class GroupPanel {
 
     setShapes(items: NavigateItem[]): void {
         this.shapesPanel.setItems(items);
+    }
+
+    setLayerObjects(items: LayerObjectSummary[]): void {
+        this.layersPanel.setObjects(items);
     }
 
     /** Build the narrow context injected into a migrated subpanel. */

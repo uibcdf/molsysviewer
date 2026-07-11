@@ -76,6 +76,8 @@ export interface RegionSummary {
     atom_count: number;
     selection?: string;
     hidden: boolean;
+    /** Tag of the layer this region belongs to, or null (Phase 9). */
+    layer?: string | null;
     representation?: string;
     preset?: string;
     representation_params: Record<string, unknown>;
@@ -949,6 +951,9 @@ export class StateHandlers {
                     : Array.isArray(item.atom_indices) ? item.atom_indices.length : 0,
                 selection: typeof item.selection === "string" ? item.selection : undefined,
                 hidden: !!item.hidden,
+                // Layer membership (Phase 9) must survive the summary mapping,
+                // or the Layers subpanel can never group a region under its layer.
+                layer: typeof item.layer === "string" ? item.layer : null,
                 representation: typeof item.representation === "string" ? item.representation : undefined,
                 preset: typeof item.preset === "string" ? item.preset : undefined,
                 representation_params: item.representation_params && typeof item.representation_params === "object"

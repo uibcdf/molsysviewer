@@ -50,6 +50,11 @@ export type PanelAction =
     | "get_region_details"
     | "show_all_regions"
     | "hide_all_regions"
+    // Layer membership
+    | "set_region_layer"
+    | "remove_region_from_layer"
+    | "set_layer_visibility"
+    | "delete_layer_group"
     // Whole lifecycle & style
     | "set_whole_representation"
     | "reset_whole_representation"

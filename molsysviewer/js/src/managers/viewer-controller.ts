@@ -2953,6 +2953,29 @@ export class MolSysViewerController {
                     },
                 }))
         );
+        this.groupPanel.setLayerObjects([
+            ...Array.from(this.addonsAnnotations.entries()).map(([tag, item]) => ({
+                kind: "annotation" as const,
+                tag,
+                title: item.text,
+                layerTag: item.layerTag,
+                hidden: item.hidden,
+            })),
+            ...Array.from(this.addonsMeasurements.entries()).map(([tag, item]) => ({
+                kind: "measurement" as const,
+                tag,
+                title: `${item.kind[0].toUpperCase()}${item.kind.slice(1)}`,
+                layerTag: item.layerTag,
+                hidden: item.hidden,
+            })),
+            ...Array.from(this.addonsShapes.entries()).map(([tag, item]) => ({
+                kind: "shape" as const,
+                tag,
+                title: item.title,
+                layerTag: item.layerTag,
+                hidden: item.hidden,
+            })),
+        ]);
 
         const canvas3d = this.plugin.canvas3d;
         const fogName = canvas3d?.props.cameraFog?.name;
@@ -3196,6 +3219,9 @@ export class MolSysViewerController {
                 tag: item.tag,
                 atom_count: item.atom_count,
                 hidden: item.hidden,
+                // Forward layer membership (Phase 9) to the panel; without it the
+                // Layers subpanel never groups a region under its layer.
+                layer: item.layer,
                 representation: item.representation,
                 preset: item.preset,
                 representation_params: item.representation_params,
