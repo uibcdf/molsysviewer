@@ -151,7 +151,7 @@ def _import_view_state(result: MolSysView, source_views: list[MolSysView]) -> No
                 continue
             new_tag = _unique_tag(region.tag, used_region_tags, source_index)
             remapped_indices = _remap_indices(list(region.atom_indices or []), atom_offset)
-            merged_region = result.new_region(
+            merged_region = result.regions.add(
                 selection=remapped_indices,
                 atom_indices=remapped_indices,
                 tag=new_tag,

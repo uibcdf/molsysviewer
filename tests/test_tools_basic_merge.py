@@ -14,13 +14,13 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
 
     view_a.whole.set_representation("cartoon", skip_digestion=True)
     view_a.whole.hide(skip_digestion=True)
-    region_a = view_a.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+    region_a = view_a.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
     region_a.hide(skip_digestion=True)
     pocket_a = view_a.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket_a.hide(skip_digestion=True)
     view_a.hide(selection=[2], skip_digestion=True)
 
-    view_b.new_region(atom_indices=[0, 1], tag="frag", representation="line", skip_digestion=True)
+    view_b.regions.add(atom_indices=[0, 1], tag="frag", representation="line", skip_digestion=True)
     analysis_b = view_b.new_layer(tag="analysis", kind="annotation", owner="b", skip_digestion=True)
     analysis_b.hide(skip_digestion=True)
     pocket_b = view_b.shapes.add_links(atom_pairs=[[0, 1]], tag="pocket", skip_digestion=True)

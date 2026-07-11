@@ -116,6 +116,6 @@ def new_view(
         return view
 
     view.whole.hide()
-    region = view.new_region(selection, tag="selection", syntax=syntax, skip_digestion=True)
+    region = view.regions.add(selection, tag="selection", syntax=syntax, skip_digestion=True)
     region.set_representation("inherit", skip_digestion=True)
     return view

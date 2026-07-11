@@ -140,7 +140,7 @@ def benchmark_telemetry_overhead(iterations: int = 50) -> dict[str, Any]:
     # Sequence of high-frequency operations
     def run_sequence(skip_digestion: bool) -> None:
         # 1. new_region
-        reg = view.new_region(
+        reg = view.regions.add(
             atom_indices=[0, 1, 2],
             tag="bench_reg",
             representation="sticks",

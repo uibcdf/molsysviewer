@@ -21,6 +21,8 @@ def digest_representation(representation, caller=None):
     elif caller in {
         'molsysviewer.viewer.MolSysView.new_region',
         'molsysviewer.viewer.new_region',
+        'molsysviewer.regions.RegionsManager.add',
+        'molsysviewer.regions.add',
         'molsysviewer.viewer.MolSysView.new_region_from_active_selection',
         'molsysviewer.viewer.new_region_from_active_selection',
         'molsysviewer.active_selection.ActiveSelection.new_region',

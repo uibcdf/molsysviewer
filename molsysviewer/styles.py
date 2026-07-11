@@ -644,7 +644,7 @@ class StylesManager:
                 "styles.focus() requires a style object, a builtin tag string, or representation=."
             )
 
-        region = self._view.new_region(
+        region = self._view.regions.add(
             selection=selection,
             atom_indices=atom_indices,
             tag=resolved_tag,

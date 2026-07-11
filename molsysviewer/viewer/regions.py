@@ -476,33 +476,6 @@ class RegionsMixin:
     def _resolve_user_preset(self, preset: str | None):
         return resolve_user_preset(self, preset)
 
-    @dep_digest('molsysmt')
-    @signal(tags=["region"])
-    @digest()
-    def new_region(
-        self,
-        selection: str | Any = "all",
-        *,
-        atom_indices: list[int] | None = None,
-        tag: str | None = None,
-        representation: str | None = None,
-        complement_of_regions: str | list[str] | None = None,
-        syntax: str = "MolSysMT",
-        skip_digestion: bool = False,
-        **repr_params: Any,
-    ) -> Region:
-        """Create a new region (structural subset) with an optional representation."""
-        return self._new_region_impl(
-            selection=selection,
-            atom_indices=atom_indices,
-            tag=tag,
-            representation=representation,
-            complement_of_regions=complement_of_regions,
-            syntax=syntax,
-            skip_digestion=True,
-            **repr_params,
-        )
-
     def _new_region_impl(
         self,
         selection: str | Any = "all",
@@ -625,7 +598,7 @@ class RegionsMixin:
         if len(atom_indices) == 0:
             raise ValueError("The current active selection does not resolve to any atoms.")
 
-        return self.new_region(
+        return self._new_region_impl(
             atom_indices=atom_indices,
             tag=tag,
             representation=representation,
@@ -646,7 +619,7 @@ class RegionsMixin:
     ) -> Region:
         """Overlay Mol* orientation-ellipsoid axes on a selection."""
         region_tag = tag or f"orientation-{self._next_region_tag()}"
-        region = self.new_region(
+        region = self._new_region_impl(
             selection=selection,
             atom_indices=atom_indices,
             tag=region_tag,
@@ -678,7 +651,7 @@ class RegionsMixin:
     ) -> Region:
         """Overlay Mol* best-fit plane on a selection."""
         region_tag = tag or f"plane-{self._next_region_tag()}"
-        region = self.new_region(
+        region = self._new_region_impl(
             selection=selection,
             atom_indices=atom_indices,
             tag=region_tag,

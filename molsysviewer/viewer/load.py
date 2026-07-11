@@ -154,7 +154,7 @@ class LoadMixin:
             base_tag = self._load_region_base_tag(block)
             tag = self._unique_region_tag(base_tag, used_tags)
             used_tags.add(tag)
-            self.new_region(
+            self._new_region_impl(
                 atom_indices=atom_indices,
                 tag=tag,
                 skip_digestion=True,

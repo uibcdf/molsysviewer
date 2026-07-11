@@ -91,7 +91,7 @@ def test_contract_wrappers_bypass_redigestion_after_local_digest():
 
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
 
     observed: list[tuple[str, object]] = []
 

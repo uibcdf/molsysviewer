@@ -28,7 +28,7 @@ def test_hidden_region_and_layer_survive_global_hide_show_cycle():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -63,7 +63,7 @@ def test_show_all_resets_partial_atom_visibility_without_clearing_hidden_region_
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",

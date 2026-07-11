@@ -18,7 +18,7 @@ def test_apply_system_edit_reconciles_external_molsysmt_edit():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    view.new_region(
+    view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -73,7 +73,7 @@ def test_append_structures_rebuild_preserves_state_and_sets_multiple_structures(
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -199,7 +199,7 @@ def test_add_rebuild_preserves_state_and_expands_atom_payload(monkeypatch):
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -252,7 +252,7 @@ def test_set_rebuild_updates_group_name_and_preserves_hidden_state():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -282,7 +282,7 @@ def test_apply_system_edit_replays_visual_region_as_bare_create_then_style():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    view.new_region(
+    view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -313,7 +313,7 @@ def test_set_rebuild_updates_coordinates_with_quantity():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -408,7 +408,7 @@ def test_consecutive_live_edits_keep_replay_state_consistent(monkeypatch):
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -465,7 +465,7 @@ def test_remove_rebuild_drops_fully_orphaned_scene_objects_and_regions():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    view.new_region(atom_indices=[0], tag="orphan-region", skip_digestion=True)
+    view.regions.add(atom_indices=[0], tag="orphan-region", skip_digestion=True)
     view.shapes.add_pocket_surface(atom_indices=[0], tag="orphan-shape", skip_digestion=True)
     view.annotations.add_annotation(text="orphan", atom_indices=[0], tag="orphan-label", skip_digestion=True)
     view.measurements.add_distance([0], [1], tag="orphan-distance", skip_digestion=True)
@@ -493,7 +493,7 @@ def test_export_messages_after_live_edit_chain_remain_replay_safe(monkeypatch):
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",
@@ -546,7 +546,7 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     view = demo["dialanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="frag",
         representation="sticks",

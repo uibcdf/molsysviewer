@@ -18,9 +18,9 @@ def test_import_state_rejects_version_1():
 
 def test_round_trip_preserves_region_visual_recipe_and_hidden_state():
     source = _mute(demo["dialanine"])
-    styled = source.new_region(atom_indices=[0, 1, 2], tag="styled", skip_digestion=True)
+    styled = source.regions.add(atom_indices=[0, 1, 2], tag="styled", skip_digestion=True)
     styled.set_representation("spacefill", skip_digestion=True)
-    hidden = source.new_region(atom_indices=[3, 4], tag="hidden", skip_digestion=True)
+    hidden = source.regions.add(atom_indices=[3, 4], tag="hidden", skip_digestion=True)
     hidden.set_representation("cartoon", skip_digestion=True)
     hidden.hide(skip_digestion=True)
 
@@ -54,8 +54,8 @@ def test_round_trip_preserves_whole_representation_and_visibility():
 
 def test_round_trip_preserves_overlap_colour_winner_via_order():
     source = _mute(demo["dialanine"])
-    lower = source.new_region(atom_indices=[0, 1, 2], tag="lower", skip_digestion=True)
-    upper = source.new_region(atom_indices=[1, 2, 3], tag="upper", skip_digestion=True)
+    lower = source.regions.add(atom_indices=[0, 1, 2], tag="lower", skip_digestion=True)
+    upper = source.regions.add(atom_indices=[1, 2, 3], tag="upper", skip_digestion=True)
     # lower.order < upper.order, so upper wins on the shared atoms {1, 2}.
     lower.set_color_by_values([0.0, 0.0, 0.0], element="atom",
                               palette=[0xAA0000, 0xAA0000], skip_digestion=True)
@@ -77,15 +77,15 @@ def test_round_trip_preserves_overlap_colour_winner_via_order():
 
 def test_import_restores_order_high_water_mark():
     source = _mute(demo["dialanine"])
-    a = source.new_region(atom_indices=[0, 1], tag="a", skip_digestion=True)
+    a = source.regions.add(atom_indices=[0, 1], tag="a", skip_digestion=True)
     # Advance the order counter well beyond the number of kept regions, so a
     # plain reconstruction (which bumps the counter once per restored region)
     # cannot coincidentally reach the true high-water mark. Only an explicit
     # restore of the mark makes a post-import region outrank the restored ones.
     for i in range(5):
-        dummy = source.new_region(atom_indices=[6, 7], tag=f"dummy{i}", skip_digestion=True)
+        dummy = source.regions.add(atom_indices=[6, 7], tag=f"dummy{i}", skip_digestion=True)
         dummy.delete(skip_digestion=True)
-    b = source.new_region(atom_indices=[2, 3], tag="b", skip_digestion=True)
+    b = source.regions.add(atom_indices=[2, 3], tag="b", skip_digestion=True)
     top_order = max(a.order, b.order)
     assert top_order >= 6  # the gap the mark must bridge
 
@@ -94,7 +94,7 @@ def test_import_restores_order_high_water_mark():
     target = _mute(demo["dialanine"])
     target.import_state(state)
 
-    fresh = target.new_region(atom_indices=[4, 5], tag="fresh", skip_digestion=True)
+    fresh = target.regions.add(atom_indices=[4, 5], tag="fresh", skip_digestion=True)
     # A region created after the import must outrank every restored region.
     assert fresh.order > top_order
     assert fresh.order > target.regions["a"].order
@@ -103,7 +103,7 @@ def test_import_restores_order_high_water_mark():
 
 def test_export_filters_transient_overlay_regions():
     source = _mute(demo["dialanine"])
-    source.new_region(atom_indices=[0, 1], tag="keep", skip_digestion=True)
+    source.regions.add(atom_indices=[0, 1], tag="keep", skip_digestion=True)
     # A transient focus overlay registers as a region internally; it must not
     # survive a round trip as a manageable region.
     source.styles.focus(atom_indices=[2, 3], representation="spacefill", skip_digestion=True)
@@ -121,8 +121,8 @@ def test_export_filters_transient_overlay_regions():
 
 def test_import_restores_boolean_region_in_topological_order():
     source = _mute(demo["dialanine"])
-    a = source.new_region(atom_indices=[0, 1, 2], tag="a", skip_digestion=True)
-    b = source.new_region(atom_indices=[2, 3, 4], tag="b", skip_digestion=True)
+    a = source.regions.add(atom_indices=[0, 1, 2], tag="a", skip_digestion=True)
+    b = source.regions.add(atom_indices=[2, 3, 4], tag="b", skip_digestion=True)
     union = a.union(b, tag="union", skip_digestion=True)
     assert union.provenance["operands"] == [a.uid, b.uid]
 

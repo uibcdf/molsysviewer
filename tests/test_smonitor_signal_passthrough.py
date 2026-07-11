@@ -26,7 +26,7 @@ def test_smonitor_signal_preserves_region_fluent_api_when_disabled():
     smonitor.configure(enabled=False)
     view = MolSysView()
 
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
     result = region.set_representation("line", skip_digestion=True)
 
     assert result is None

@@ -11,9 +11,9 @@ def _mute(view):
 
 
 def _regions(view):
-    a = view.new_region(atom_indices=[0, 1, 2, 3, 4], tag="A", skip_digestion=True)
-    b = view.new_region(atom_indices=[1, 2], tag="B", skip_digestion=True)
-    c = view.new_region(atom_indices=[3], tag="C", skip_digestion=True)
+    a = view.regions.add(atom_indices=[0, 1, 2, 3, 4], tag="A", skip_digestion=True)
+    b = view.regions.add(atom_indices=[1, 2], tag="B", skip_digestion=True)
+    c = view.regions.add(atom_indices=[3], tag="C", skip_digestion=True)
     return a, b, c
 
 
@@ -33,14 +33,14 @@ def test_variadic_union_tracks_all_operands():
 
 def test_variadic_intersection_across_operands():
     view = _mute(demo["dialanine"])
-    a = view.new_region(atom_indices=[0, 1, 2, 3], tag="A", skip_digestion=True)
-    b = view.new_region(atom_indices=[1, 2, 3], tag="B", skip_digestion=True)
-    c = view.new_region(atom_indices=[2, 3, 9], tag="C", skip_digestion=True)
+    a = view.regions.add(atom_indices=[0, 1, 2, 3], tag="A", skip_digestion=True)
+    b = view.regions.add(atom_indices=[1, 2, 3], tag="B", skip_digestion=True)
+    c = view.regions.add(atom_indices=[2, 3, 9], tag="C", skip_digestion=True)
     i = a.intersection(b, c, tag="I", skip_digestion=True)
     # A & B & C = {2, 3}
     assert sorted(i.atom_indices) == [2, 3]
     # A ∩ B ∩ C where C is disjoint on the tail → empty → raises
-    empty_c = view.new_region(atom_indices=[7, 8], tag="Z", skip_digestion=True)
+    empty_c = view.regions.add(atom_indices=[7, 8], tag="Z", skip_digestion=True)
     with pytest.raises(ValueError):
         a.intersection(b, empty_c, tag="EMPTY", skip_digestion=True)
 
@@ -73,9 +73,9 @@ def test_count_regions_by_rejects_unknown_element():
 
 def test_complement_of_several_regions():
     view = _mute(demo["dialanine"])
-    view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
-    view.new_region(atom_indices=[2, 3], tag="B", skip_digestion=True)
-    comp = view.new_region(complement_of_regions=["A", "B"], tag="COMP", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    view.regions.add(atom_indices=[2, 3], tag="B", skip_digestion=True)
+    comp = view.regions.add(complement_of_regions=["A", "B"], tag="COMP", skip_digestion=True)
     assert comp.provenance["kind"] == "complement"
     assert len(comp.provenance["of"]) == 2
     assert all(i not in comp.atom_indices for i in [0, 1, 2, 3])
@@ -85,7 +85,7 @@ def test_complement_of_several_regions():
 
 def test_region_visible_property_tracks_show_hide():
     view = _mute(demo["dialanine"])
-    r = view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    r = view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
     r.set_representation("cartoon", skip_digestion=True)
     assert r.visible is True
     r.hide(skip_digestion=True)
@@ -96,20 +96,20 @@ def test_region_visible_property_tracks_show_hide():
 
 def test_region_set_color_scheme_records_and_requires_own_visual():
     view = _mute(demo["dialanine"])
-    r = view.new_region(atom_indices=[0, 1, 2], tag="A", skip_digestion=True)
+    r = view.regions.add(atom_indices=[0, 1, 2], tag="A", skip_digestion=True)
     r.set_representation("cartoon", skip_digestion=True)
     r.set_color_scheme("chain_default", skip_digestion=True)
     assert r.repr_params.get("color_scheme") == "chain_default"
 
-    bare = view.new_region(atom_indices=[3, 4], tag="B", skip_digestion=True)
+    bare = view.regions.add(atom_indices=[3, 4], tag="B", skip_digestion=True)
     with pytest.raises(ValueError):
         bare.set_color_scheme("chain_default", skip_digestion=True)
 
 
 def test_regions_manager_parity_methods():
     view = _mute(demo["dialanine"])
-    view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
-    view.new_region(atom_indices=[2, 3], tag="B", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    view.regions.add(atom_indices=[2, 3], tag="B", skip_digestion=True)
     regions = view.regions
     assert sorted(regions.tags()) == ["A", "B"]
     assert regions.count() == 2
@@ -127,7 +127,7 @@ def test_regions_manager_parity_methods():
 
 def test_region_visual_state_and_tag_are_read_only():
     view = _mute(demo["dialanine"])
-    r = view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    r = view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
     r.set_representation("spacefill", skip_digestion=True)
     assert r.representation == "spacefill"
     for attr, value in [("representation", "cartoon"), ("preset", "auto"),
@@ -138,3 +138,15 @@ def test_region_visual_state_and_tag_are_read_only():
     r.rename("A2", skip_digestion=True)
     assert r.tag == "A2"
     assert "A2" in view.regions and "A" not in view.regions
+
+
+# ── Unified creation idiom: view.regions.add, view.new_region removed ────────
+
+def test_regions_add_creates_and_view_new_region_is_removed():
+    view = _mute(demo["dialanine"])
+    r = view.regions.add(atom_indices=[0, 1, 2], tag="A", representation="cartoon", skip_digestion=True)
+    assert r.tag == "A"
+    assert r.representation == "cartoon"
+    assert "A" in view.regions
+    # the old view-level creation method is gone
+    assert not hasattr(view, "new_region")

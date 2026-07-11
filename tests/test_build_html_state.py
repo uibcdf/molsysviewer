@@ -145,7 +145,7 @@ def test_export_messages_after_post_load_region_and_label():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     atom_indices = list(view.select(selection="group_index==0"))
-    view.new_region(atom_indices=atom_indices, tag="r0", skip_digestion=True)
+    view.regions.add(atom_indices=atom_indices, tag="r0", skip_digestion=True)
     view.annotations.add_annotation(
         text="Anchor",
         selection="group_index==0",

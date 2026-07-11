@@ -86,7 +86,7 @@ def _import_extracted_state(
         ]
         if not remapped_indices:
             continue
-        new_region = result.new_region(
+        new_region = result.regions.add(
             selection=remapped_indices,
             atom_indices=remapped_indices,
             tag=region.tag,

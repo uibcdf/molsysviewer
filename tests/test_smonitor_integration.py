@@ -56,7 +56,7 @@ def test_public_wrappers_emit_signal_timeline_entries(tmp_path):
             skip_digestion=True,
         )
 
-        region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+        region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
         region.hide(skip_digestion=True)
         view.whole.hide(skip_digestion=True)
         view.shapes.clear(skip_digestion=True)

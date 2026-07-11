@@ -21,7 +21,7 @@ def test_hidden_region_stays_sticky_after_rebuild_and_global_show():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(atom_indices=[5, 6, 7], tag="pocket", representation="line", skip_digestion=True)
+    region = view.regions.add(atom_indices=[5, 6, 7], tag="pocket", representation="line", skip_digestion=True)
     region.hide(skip_digestion=True)
 
     # Trigger rebuild
@@ -45,7 +45,7 @@ def test_global_hide_after_rebuild_does_not_duplicate_hide_region():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
-    region = view.new_region(atom_indices=[3, 4, 5], tag="site", representation="line", skip_digestion=True)
+    region = view.regions.add(atom_indices=[3, 4, 5], tag="site", representation="line", skip_digestion=True)
     region.hide(skip_digestion=True)
 
     apply_remove(view, selection="atom_index < 2")
@@ -272,7 +272,7 @@ def test_export_messages_ordered_after_remove_then_append():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     atom_indices = list(view.select(selection="group_index==2"))
-    view.new_region(atom_indices=atom_indices, tag="site", skip_digestion=True)
+    view.regions.add(atom_indices=atom_indices, tag="site", skip_digestion=True)
     view.annotations.add_annotation(
         text="Site label",
         selection="group_index==2",
@@ -308,7 +308,7 @@ def test_export_messages_region_atom_indices_remapped_after_rebuild_chain():
 
     # Use atoms well above index 3 so the remap is predictable
     atom_indices_before = list(view.select(selection="group_index==3"))
-    view.new_region(atom_indices=atom_indices_before, tag="stable", skip_digestion=True)
+    view.regions.add(atom_indices=atom_indices_before, tag="stable", skip_digestion=True)
 
     # Remove atoms 0..2 — indices shift by -3
     apply_remove(view, selection="atom_index < 3")

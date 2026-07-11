@@ -4,7 +4,7 @@ from molsysviewer import demo
 def test_view_info_source_view_returns_styler_by_default():
     view = demo["dialanine"]
     view.styles.apply(representation="cartoon", color_scheme="secondary_structure_default")
-    view.new_region(tag="site", atom_indices=[0, 1, 2], representation="ball-and-stick")
+    view.regions.add(tag="site", atom_indices=[0, 1, 2], representation="ball-and-stick")
     view.selections.add_selection("sel", selection=[0, 1, 2])
     view.annotations.add_label("anchor", group_index=[0], tag="ann1")
 

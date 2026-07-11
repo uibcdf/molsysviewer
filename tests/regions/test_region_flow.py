@@ -21,7 +21,7 @@ def test_demo_region_hide():
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.show()
-    region = view.new_region("chain_id == 'A'", representation="sticks")
+    region = view.regions.add("chain_id == 'A'", representation="sticks")
     region.hide()
 
     assert region is not None
@@ -31,7 +31,7 @@ def test_demo_region_hide():
 def test_region_scoped_indices_bond():
     """Region._scoped_indices_for_element('bond') returns non-empty sorted int list."""
     view = demo["dialanine"]
-    region = view.new_region(selection="group_index == 0", tag="bond-scope-test")
+    region = view.regions.add(selection="group_index == 0", tag="bond-scope-test")
 
     bond_indices = region._scoped_indices_for_element("bond")
 
@@ -44,7 +44,7 @@ def test_region_scoped_indices_bond():
 def test_region_scoped_indices_bond_subset():
     """Bond scoping on a single-atom region returns only the bonds of that atom."""
     view = demo["dialanine"]
-    region = view.new_region(selection="atom_index == 1", tag="bond-scope-single")
+    region = view.regions.add(selection="atom_index == 1", tag="bond-scope-single")
 
     bond_indices = region._scoped_indices_for_element("bond")
 
@@ -61,8 +61,8 @@ def _empty_view():
 
 def test_region_boolean_composition_from_atom_indices():
     view = _empty_view()
-    left = view.new_region(atom_indices=[0, 1, 2], tag="left", skip_digestion=True)
-    right = view.new_region(atom_indices=[2, 3], tag="right", skip_digestion=True)
+    left = view.regions.add(atom_indices=[0, 1, 2], tag="left", skip_digestion=True)
+    right = view.regions.add(atom_indices=[2, 3], tag="right", skip_digestion=True)
 
     difference = left.difference(right, tag="left-minus-right")
     intersection = left & right
@@ -82,8 +82,8 @@ def test_region_boolean_composition_from_atom_indices():
 
 def test_region_boolean_composition_rejects_empty_result():
     view = _empty_view()
-    left = view.new_region(atom_indices=[0, 1], tag="left", skip_digestion=True)
-    right = view.new_region(atom_indices=[2, 3], tag="right", skip_digestion=True)
+    left = view.regions.add(atom_indices=[0, 1], tag="left", skip_digestion=True)
+    right = view.regions.add(atom_indices=[2, 3], tag="right", skip_digestion=True)
 
     with pytest.raises(ValueError, match="empty region"):
         left.intersection(right)
@@ -91,8 +91,8 @@ def test_region_boolean_composition_rejects_empty_result():
 
 def test_region_overlap_warning_when_visualizing_overlap():
     view = _empty_view()
-    view.new_region(atom_indices=[0, 1, 2], tag="first", representation="line", skip_digestion=True)
-    second = view.new_region(atom_indices=[2, 3], tag="second", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1, 2], tag="first", representation="line", skip_digestion=True)
+    second = view.regions.add(atom_indices=[2, 3], tag="second", skip_digestion=True)
 
     with pytest.warns(UserWarning, match="overlaps visible represented region"):
         second.set_representation("ball-and-stick", skip_digestion=True)
@@ -100,36 +100,36 @@ def test_region_overlap_warning_when_visualizing_overlap():
 
 def test_region_overlap_warning_when_creating_visual_overlap():
     view = _empty_view()
-    view.new_region(atom_indices=[0, 1, 2], tag="first", representation="line", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1, 2], tag="first", representation="line", skip_digestion=True)
 
     with pytest.warns(UserWarning, match="overlaps visible represented region"):
-        view.new_region(atom_indices=[2, 3], tag="second", representation="ball-and-stick", skip_digestion=True)
+        view.regions.add(atom_indices=[2, 3], tag="second", representation="ball-and-stick", skip_digestion=True)
 
 
 def test_region_inherit_counts_as_visible_visual_overlap():
     view = _empty_view()
-    view.new_region(atom_indices=[0, 1, 2], tag="first", representation="inherit", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1, 2], tag="first", representation="inherit", skip_digestion=True)
 
     with pytest.warns(UserWarning, match="overlaps visible represented region"):
-        view.new_region(atom_indices=[2, 3], tag="second", representation="line", skip_digestion=True)
+        view.regions.add(atom_indices=[2, 3], tag="second", representation="line", skip_digestion=True)
 
 
 def test_region_overlap_warning_ignores_logical_and_hidden_regions():
     view = _empty_view()
-    view.new_region(atom_indices=[0, 1], tag="logical", skip_digestion=True)
-    hidden = view.new_region(atom_indices=[1, 2], tag="hidden", representation="line", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1], tag="logical", skip_digestion=True)
+    hidden = view.regions.add(atom_indices=[1, 2], tag="hidden", representation="line", skip_digestion=True)
     hidden.hide(skip_digestion=True)
 
     with warnings.catch_warnings(record=True) as record:
         warnings.simplefilter("always")
-        view.new_region(atom_indices=[1, 2, 3], tag="visible", representation="line", skip_digestion=True)
+        view.regions.add(atom_indices=[1, 2, 3], tag="visible", representation="line", skip_digestion=True)
 
     assert record == []
 
 
 def test_region_reset_representation_removes_own_visual_state():
     view = _empty_view()
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="styled",
         representation="line",
@@ -155,7 +155,7 @@ def test_region_reset_representation_removes_own_visual_state():
 
 def test_none_region_hide_and_show_warn_without_frontend_visibility_message():
     view = _empty_view()
-    region = view.new_region(atom_indices=[0, 1, 2], tag="logical", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="logical", skip_digestion=True)
     before = len(view._message_history)  # noqa: SLF001
 
     with pytest.warns(UserWarning, match="no own representation to hide"):
@@ -169,7 +169,7 @@ def test_none_region_hide_and_show_warn_without_frontend_visibility_message():
 
 def test_new_region_with_visual_spec_preserves_representation_semantics():
     view = _empty_view()
-    view.new_region(
+    view.regions.add(
         atom_indices=[0, 1, 2],
         tag="one-build",
         representation="line",
@@ -208,7 +208,7 @@ def test_new_region_with_visual_spec_preserves_representation_semantics():
 
 def test_new_region_with_visual_params_preserves_none_representation():
     view = _empty_view()
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="styled-default",
         alpha=0.4,
@@ -236,7 +236,7 @@ def test_new_region_with_visual_params_preserves_none_representation():
 
 def test_rebuild_replays_visual_region_as_bare_create_then_style():
     view = _empty_view()
-    view.new_region(
+    view.regions.add(
         atom_indices=[0, 1, 2],
         tag="rebuild-region",
         representation="line",
@@ -279,7 +279,7 @@ def test_rebuild_replays_visual_region_as_bare_create_then_style():
 
 def test_region_duplicate_preserves_atoms_and_visual_specification():
     view = _empty_view()
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="source",
         representation="line",
@@ -301,13 +301,13 @@ def test_region_duplicate_preserves_atoms_and_visual_specification():
 
 def test_region_and_manager_overlap_queries_use_visible_visual_regions():
     view = _empty_view()
-    first = view.new_region(
+    first = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="first",
         representation="line",
         skip_digestion=True,
     )
-    second = view.new_region(
+    second = view.regions.add(
         atom_indices=[2, 3],
         tag="second",
         skip_digestion=True,
@@ -328,8 +328,8 @@ def test_region_and_manager_overlap_queries_use_visible_visual_regions():
 
 def test_regions_manager_show_all_and_hide_all_update_every_region():
     view = _empty_view()
-    first = view.new_region(atom_indices=[0], tag="first", skip_digestion=True)
-    second = view.new_region(atom_indices=[1], tag="second", skip_digestion=True)
+    first = view.regions.add(atom_indices=[0], tag="first", skip_digestion=True)
+    second = view.regions.add(atom_indices=[1], tag="second", skip_digestion=True)
 
     view.regions.hide_all(skip_digestion=True)
     assert first._hidden is True  # noqa: SLF001
@@ -360,7 +360,7 @@ def test_region_set_color_by_real_b_factor_attribute():
         b_factor=b_factors,
         skip_digestion=True,
     )
-    region = view.new_region(atom_indices=[0, 1, 2], tag="bfactor", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="bfactor", skip_digestion=True)
 
     region.set_color_by_attribute("bfactor", palette="viridis", skip_digestion=True)
 
@@ -372,7 +372,7 @@ def test_region_set_color_by_real_b_factor_attribute():
 
 def test_region_set_color_by_attribute_rejects_missing_attribute():
     view = demo["dialanine"]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="missing", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="missing", skip_digestion=True)
 
     with pytest.raises(ValueError, match="not available"):
         region.set_color_by_attribute("b_factor", skip_digestion=True)
@@ -382,8 +382,8 @@ def test_region_frontend_actions_route_through_public_api():
     view = demo["dialanine"]
     group_0 = list(view.select(selection="group_index==0"))
     group_1 = list(view.select(selection="group_index==1"))
-    view.new_region(atom_indices=group_0, tag="left", skip_digestion=True)
-    view.new_region(atom_indices=group_1, tag="right", skip_digestion=True)
+    view.regions.add(atom_indices=group_0, tag="left", skip_digestion=True)
+    view.regions.add(atom_indices=group_1, tag="right", skip_digestion=True)
 
     view._handle_frontend_event(  # noqa: SLF001
         {
@@ -428,8 +428,8 @@ def test_region_frontend_actions_route_through_public_api():
 
 def test_compose_regions_handler_supports_all_ordered_operations():
     view = demo["dialanine"]
-    view.new_region(atom_indices=[0, 1, 2], tag="left", skip_digestion=True)
-    view.new_region(atom_indices=[2, 3], tag="right", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1, 2], tag="left", skip_digestion=True)
+    view.regions.add(atom_indices=[2, 3], tag="right", skip_digestion=True)
     expected = {
         "union": (0, 1, 2, 3),
         "intersection": (2,),
@@ -531,7 +531,7 @@ def test_create_region_from_active_selection_action_applies_initial_representati
 
 def test_region_details_center_uses_current_trajectory_frame():
     view = demo["pentalanine"]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="moving", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="moving", skip_digestion=True)
     sent = []
     view._ready = True  # noqa: SLF001
     view.widget.send = sent.append
@@ -557,10 +557,10 @@ def test_region_details_center_uses_current_trajectory_frame():
 
 def test_new_region_rejects_duplicate_tag():
     view = _empty_view()
-    view.new_region(atom_indices=[0], tag="same", skip_digestion=True)
+    view.regions.add(atom_indices=[0], tag="same", skip_digestion=True)
 
     with pytest.raises(ValueError, match="already exists"):
-        view.new_region(atom_indices=[1], tag="same", skip_digestion=True)
+        view.regions.add(atom_indices=[1], tag="same", skip_digestion=True)
 
 
 def test_region_summary_fields_filter_transients_and_gate_attributes():
@@ -572,14 +572,14 @@ def test_region_summary_fields_filter_transients_and_gate_attributes():
         b_factor=puw.quantity([float(index) for index in range(n_atoms)], "nm**2"),
         skip_digestion=True,
     )
-    first = view.new_region(
+    first = view.regions.add(
         atom_indices=[0, 1, 2],
         tag="first",
         representation="line",
         skip_digestion=True,
     )
     with pytest.warns(UserWarning, match="overlaps visible represented region"):
-        view.new_region(
+        view.regions.add(
             atom_indices=[2, 3],
             tag="second",
             representation="ball-and-stick",
@@ -608,7 +608,7 @@ def test_region_summary_fields_filter_transients_and_gate_attributes():
 
 def test_set_region_representation_action_supports_preset_and_params():
     view = demo["dialanine"]
-    view.new_region(atom_indices=[0, 1], tag="styled", skip_digestion=True)
+    view.regions.add(atom_indices=[0, 1], tag="styled", skip_digestion=True)
 
     view._handle_frontend_event(  # noqa: SLF001
         {
@@ -651,7 +651,7 @@ def test_region_operations_stay_in_loaded_subset_index_space():
     n_atoms = int(view._molsys.get_n_atoms())  # noqa: SLF001
     assert view._atom_index_mapper is not None  # noqa: SLF001
 
-    region = view.new_region(
+    region = view.regions.add(
         atom_indices=[0, 1],
         tag="local",
         representation="line",

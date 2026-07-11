@@ -15,7 +15,7 @@ def _quiet(view):
 def test_region_provenance_is_populated_for_creation_routes():
     view = _quiet(demo["dialanine"])
 
-    query = view.new_region(selection="atom_index < 3", tag="query", skip_digestion=True)
+    query = view.regions.add(selection="atom_index < 3", tag="query", skip_digestion=True)
     assert query.provenance["kind"] == "query"
     assert query.provenance["expression"] == "atom_index < 3"
     assert query.provenance["syntax"] == "MolSysMT"
@@ -60,7 +60,7 @@ def test_active_and_saved_selection_regions_are_static_index_recipes():
 
 def test_region_atom_indices_are_read_only_public_state():
     view = _quiet(demo["dialanine"])
-    region = view.new_region(atom_indices=[0, 1], tag="readonly", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1], tag="readonly", skip_digestion=True)
 
     with pytest.raises(AttributeError):
         region.atom_indices = (2, 3)  # type: ignore[misc]
@@ -71,9 +71,9 @@ def test_region_atom_indices_are_read_only_public_state():
 
 def test_dynamic_mode_closes_over_reevaluable_compositions():
     view = _quiet(demo["dialanine"])
-    left = view.new_region(selection="atom_index < 3", tag="left", skip_digestion=True)
-    right = view.new_region(selection="atom_index < 4", tag="right", skip_digestion=True)
-    static = view.new_region(atom_indices=[4, 5], tag="static", skip_digestion=True)
+    left = view.regions.add(selection="atom_index < 3", tag="left", skip_digestion=True)
+    right = view.regions.add(selection="atom_index < 4", tag="right", skip_digestion=True)
+    static = view.regions.add(atom_indices=[4, 5], tag="static", skip_digestion=True)
 
     static_union = left.union(static, tag="static-union", skip_digestion=True)
     with pytest.raises(ValueError, match="cannot be dynamic"):
@@ -97,8 +97,8 @@ def test_dynamic_mode_closes_over_reevaluable_compositions():
 
 def test_renaming_operand_does_not_break_uid_based_recipe():
     view = _quiet(demo["dialanine"])
-    left = view.new_region(atom_indices=[0, 1], tag="left", skip_digestion=True)
-    right = view.new_region(atom_indices=[1, 2], tag="right", skip_digestion=True)
+    left = view.regions.add(atom_indices=[0, 1], tag="left", skip_digestion=True)
+    right = view.regions.add(atom_indices=[1, 2], tag="right", skip_digestion=True)
     combined = left.union(right, tag="combined", skip_digestion=True)
 
     left_uid = left.uid
@@ -114,8 +114,8 @@ def test_renaming_operand_does_not_break_uid_based_recipe():
 
 def test_deleting_operand_freezes_dependents_without_cascade():
     view = _quiet(demo["dialanine"])
-    left = view.new_region(atom_indices=[0, 1], tag="left", skip_digestion=True)
-    right = view.new_region(atom_indices=[1, 2], tag="right", skip_digestion=True)
+    left = view.regions.add(atom_indices=[0, 1], tag="left", skip_digestion=True)
+    right = view.regions.add(atom_indices=[1, 2], tag="right", skip_digestion=True)
     combined = left.union(right, tag="combined", skip_digestion=True)
     cached = combined.atom_indices
 
@@ -131,7 +131,7 @@ def test_deleting_operand_freezes_dependents_without_cascade():
 
 def test_apply_system_edit_reevaluates_query_region_instead_of_remapping():
     view = _quiet(demo["dialanine"])
-    region = view.new_region(selection="atom_index >= 2", tag="query", skip_digestion=True)
+    region = view.regions.add(selection="atom_index >= 2", tag="query", skip_digestion=True)
     old_indices = tuple(region.atom_indices or ())
     assert old_indices[:2] == (2, 3)
 

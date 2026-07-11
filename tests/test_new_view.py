@@ -27,6 +27,17 @@ class DummyRegion:
         )
 
 
+class DummyRegions:
+    def __init__(self, view: "DummyView") -> None:
+        self._view = view
+
+    def add(self, selection, *, tag=None, syntax="MolSysMT", skip_digestion=False, **_kwargs):
+        self._view.new_region_calls.append(
+            {"selection": selection, "tag": tag, "syntax": syntax, "skip_digestion": skip_digestion}
+        )
+        return self._view.region
+
+
 class DummyView:
     def __init__(self) -> None:
         self.whole = DummyWhole()
@@ -35,6 +46,7 @@ class DummyView:
         self.select_calls: list[dict] = []
         self.select_result = [0]
         self.region = DummyRegion()
+        self.regions = DummyRegions(self)
 
     def load(self, molecular_system, *, selection="all", structure_indices="all", syntax="MolSysMT", skip_digestion=False, **_kwargs) -> None:
         self.load_calls.append(
@@ -51,9 +63,6 @@ class DummyView:
         self.select_calls.append({"selection": selection, "syntax": syntax, "skip_digestion": skip_digestion})
         return list(self.select_result)
 
-    def new_region(self, selection, *, tag=None, syntax="MolSysMT", skip_digestion=False, **_kwargs):
-        self.new_region_calls.append({"selection": selection, "tag": tag, "syntax": syntax, "skip_digestion": skip_digestion})
-        return self.region
 
 
 def test_new_view_selection_mode_loads_selection():

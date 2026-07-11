@@ -42,7 +42,7 @@ def test_object_api_contains_extract_and_is_composed_of():
 
 def test_region_and_whole_contains_and_is_composed_of_use_scoped_semantics():
     view = demo["dialanine"]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
 
     assert view.whole.contains(n_peptides=True) is True
     assert view.whole.is_composed_of(n_molecules=1) is True
@@ -52,7 +52,7 @@ def test_region_and_whole_contains_and_is_composed_of_use_scoped_semantics():
 
 def test_focus_selection_focus_region_and_region_focus_emit_zoom_messages():
     view = demo["dialanine"]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", skip_digestion=True)
 
     view.focus_selection(selection=[0, 1], duration_ms=0, extra_radius="2 angstroms", min_radius="1 angstrom")
     first_zoom = next(msg for msg in reversed(view._message_history) if msg.get("op") == "zoom")  # noqa: SLF001
@@ -96,8 +96,8 @@ def test_make_regions_by_creates_regions_with_deduplicated_tags():
 
 def test_region_show_only_uses_ownership_without_mutating_user_visibility():
     view = demo["dialanine"]
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="line", skip_digestion=True)
-    other = view.new_region(atom_indices=[3, 4], tag="other", representation="line", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="line", skip_digestion=True)
+    other = view.regions.add(atom_indices=[3, 4], tag="other", representation="line", skip_digestion=True)
 
     region.show_only()
 
@@ -123,7 +123,7 @@ def test_tools_basic_copy_returns_independent_view_with_scene_state():
 
     view.whole.set_representation("cartoon", skip_digestion=True)
     view.whole.hide(skip_digestion=True)
-    region = view.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
+    region = view.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks", skip_digestion=True)
     region.hide(skip_digestion=True)
     pocket = view.shapes.add_pocket_surface(atom_indices=[0, 1, 2], tag="pocket", skip_digestion=True)
     pocket.hide(skip_digestion=True)

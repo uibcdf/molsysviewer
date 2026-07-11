@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 import warnings
 
 import molsysmt as msm
+from depdigest import dep_digest
 from smonitor import signal
 from ._private.arg_digestion import digest
 from ._private.smonitor_emit import emit_suppressed_exception
@@ -1170,6 +1171,34 @@ class RegionsManager(dict):
     def __init__(self, view: Any) -> None:
         super().__init__()
         self._view = view
+
+    @dep_digest('molsysmt')
+    @signal(tags=["region"])
+    @digest()
+    def add(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: list[int] | None = None,
+        tag: str | None = None,
+        representation: str | None = None,
+        complement_of_regions: str | list[str] | None = None,
+        syntax: str = "MolSysMT",
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> "Region":
+        """Create and register a new region — the region-side twin of
+        ``view.selections.add(...)``."""
+        return self._view._new_region_impl(  # noqa: SLF001
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            complement_of_regions=complement_of_regions,
+            syntax=syntax,
+            skip_digestion=True,
+            **repr_params,
+        )
 
     # ── Registry queries (parity with SelectionsManager) ───────────────────
     # RegionsManager *is* the live registry dict, so `dict.clear()` is left

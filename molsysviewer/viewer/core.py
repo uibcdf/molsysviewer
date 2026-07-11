@@ -998,7 +998,7 @@ class MolSysView(
                     region_tag = raw_tag.strip() if isinstance(raw_tag, str) and raw_tag.strip() else None
                     if expression is None or (isinstance(expression, str) and not expression.strip()):
                         raise ValueError("create_region_from_query requires a non-empty expression.")
-                    self.new_region(
+                    self._new_region_impl(
                         selection=expression,
                         syntax=syntax,
                         tag=region_tag,
