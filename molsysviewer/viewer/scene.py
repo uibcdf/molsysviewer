@@ -415,6 +415,7 @@ class SceneMixin:
         self._section_history.clear()
         self._selection_history.clear()
         self._scene_look.clear()
+        self._clear_dynamic_region_cache()
         self._player_state.clear()
         self.player._reset_state()  # noqa: SLF001
         self._last_label = None

@@ -35,6 +35,7 @@ import {
     SetRegionOrderMessage,
     SetRegionsVisibilityMessage,
     SetRegionSummariesMessage,
+    SetDynamicRegionAtomsMessage,
     BatchRegionOperationsMessage,
     ShowWholeMessage,
     ShowLayerMessage,
@@ -83,6 +84,8 @@ export interface RegionSummary {
     representation_params: Record<string, unknown>;
     overlap_tags: string[];
     available_attributes: string[];
+    mode?: "static" | "dynamic";
+    frame_dependent?: boolean;
 }
 
 export interface StateCallbacks {
@@ -894,6 +897,81 @@ export class StateHandlers {
         await this.applyComposedTransparency();
     }
 
+    private async addRepresentationsForRegionEntry(entry: RegionEntry, tag: string, componentRef: StateObjectRef) {
+        entry.representations = [];
+        if (entry.representationState === "inherit") {
+            entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params));
+        } else if (entry.representationState === "own") {
+            entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, {
+                op: "set_region_representation",
+                tag,
+                representation: entry.representation,
+                preset: entry.preset,
+                user_preset: entry.userPreset,
+                params: entry.params,
+            }));
+        }
+    }
+
+    private async updateRegionComponentAtomIndices(tag: string, entry: RegionEntry, atomIndices: number[]) {
+        const structure = this.callbacks.getStructure();
+        const structureRef = this.callbacks.getLoadedStructure()?.structure;
+        if (!structure || !structureRef) return;
+
+        entry.atomIndices = [...atomIndices];
+        const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
+
+        if (!selection) {
+            if (entry.component) await this.removeStateObject(entry.component);
+            entry.component = undefined;
+            entry.representations = [];
+            await this.applyComposedTransparency();
+            return;
+        }
+
+        const bundle = StructureElement.Bundle.fromSelection(selection);
+        if (entry.component) {
+            const update = this.plugin.state.data.build();
+            update.to(entry.component).update({
+                type: { name: "bundle", params: bundle },
+                nullIfEmpty: true,
+                label: tag,
+            });
+            await update.commit({ doNotUpdateCurrent: true });
+        } else {
+            const component = this.plugin.state.data.build().to(structureRef).apply(
+                StateTransforms.Model.StructureComponent,
+                {
+                    type: { name: "bundle", params: bundle },
+                    nullIfEmpty: true,
+                    label: tag,
+                },
+            );
+            await component.commit({ revertOnError: false });
+            const componentRef = component.selector.ref;
+            if (!component.selector.isOk || !componentRef) return;
+            entry.component = componentRef;
+            await this.addRepresentationsForRegionEntry(entry, tag, componentRef);
+            if (entry.hidden) {
+                entry.representations.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, true));
+            }
+        }
+        await this.applyComposedTransparency();
+    }
+
+    async setDynamicRegionAtoms(msg: SetDynamicRegionAtomsMessage) {
+        const regions = Array.isArray(msg.regions) ? msg.regions : [];
+        for (const item of regions) {
+            if (typeof item?.tag !== "string") continue;
+            const entry = this.regionIndex.get(item.tag);
+            if (!entry) continue;
+            const atomIndices = Array.isArray(item.atom_indices)
+                ? item.atom_indices.map(value => Math.trunc(Number(value))).filter(Number.isFinite)
+                : [];
+            await this.updateRegionComponentAtomIndices(item.tag, entry, atomIndices);
+        }
+    }
+
     async setRegionOrder(msg: SetRegionOrderMessage) {
         const tag = msg.tag ?? "region";
         const entry = this.regionIndex.get(tag);
@@ -965,8 +1043,16 @@ export class StateHandlers {
                 available_attributes: Array.isArray(item.available_attributes)
                     ? item.available_attributes.filter((value): value is string => typeof value === "string")
                     : [],
+                mode: item.mode === "dynamic" ? "dynamic" as const : "static" as const,
+                frame_dependent: !!item.frame_dependent,
             }))
             .sort((left, right) => left.tag.localeCompare(right.tag));
+    }
+
+    hasFrameDependentDynamicRegions(): boolean {
+        return Array.from(this.backendRegionSummaries ?? []).some(region =>
+            region.mode === "dynamic" && region.frame_dependent === true
+        );
     }
 
     getRegionStyleOptions(): { representations: string[]; presets: string[] } {

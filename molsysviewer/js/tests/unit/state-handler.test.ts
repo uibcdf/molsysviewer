@@ -162,11 +162,74 @@ test("state handler accepts authoritative enriched region summaries", () => {
         representation_params: { alpha: 0.5 },
         overlap_tags: ["backbone"],
         available_attributes: ["b_factor"],
+        mode: "static",
+        frame_dependent: false,
     }]);
     assert.deepStrictEqual(handler.getRegionStyleOptions(), {
         representations: ["line", "cartoon"],
         presets: ["auto"],
     });
+});
+
+test("state handler tracks dynamic frame-dependent summaries for request gating", () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    handler.setRegionSummaries({
+        op: "set_region_summaries",
+        regions: [
+            { tag: "topological", atom_count: 3, hidden: false, mode: "dynamic", frame_dependent: false },
+        ],
+    });
+    assert.strictEqual(handler.hasFrameDependentDynamicRegions(), false);
+
+    handler.setRegionSummaries({
+        op: "set_region_summaries",
+        regions: [
+            { tag: "shell", atom_count: 3, hidden: false, mode: "dynamic", frame_dependent: true },
+        ],
+    });
+    assert.strictEqual(handler.hasFrameDependentDynamicRegions(), true);
+});
+
+test("state handler applies consolidated dynamic region atom deltas", async () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+    const regionIndex = (handler as any).regionIndex as Map<string, any>;
+    regionIndex.set("shell", {
+        atomIndices: [0],
+        representations: [],
+        representationState: "none",
+        params: {},
+        order: 0,
+    });
+    const updates: Array<{ tag: string; atoms: number[] }> = [];
+    (handler as any).updateRegionComponentAtomIndices = async (tag: string, entry: any, atoms: number[]) => {
+        entry.atomIndices = [...atoms];
+        updates.push({ tag, atoms: [...atoms] });
+    };
+
+    await handler.setDynamicRegionAtoms({
+        op: "set_dynamic_region_atoms",
+        frame: 7,
+        regions: [
+            { tag: "shell", atom_indices: [2, 3] },
+            { tag: "missing", atom_indices: [9] },
+        ],
+    });
+
+    assert.deepStrictEqual(updates, [{ tag: "shell", atoms: [2, 3] }]);
+    assert.deepStrictEqual(regionIndex.get("shell").atomIndices, [2, 3]);
 });
 
 test("state handler applies batched region operations in order", async () => {

@@ -553,17 +553,26 @@ history stack is gone (single source of truth), Decision 1 = snapshots + Decisio
 
 **Size:** L · **Depends on:** P0, P5, P6 · **Decisions 1 + A + B4.**
 
-- [ ] Python evaluates `frame_dependent` dynamic regions **lazily**, on frame display, cached per
-      `(region, structure_index)`.
-- [ ] One **consolidated message per frame** carrying the atom-index deltas of all changed dynamic
-      regions. Never one message per region.
-- [ ] Non-`frame_dependent` regions re-evaluate on topology change only.
-- [ ] Budget enforcement: if per-frame evaluation exceeds its budget, warn and **offer to freeze**
-      the region to `static`. Never silently drop frames.
-- [ ] Perf harness gains a "frame advance with a dynamic region" budget.
+- [x] Python evaluates `frame_dependent` dynamic regions **lazily**, on frame display, cached per
+      `(region, structure_index)`. *(Pull model: the frontend signals frame display via
+      `request_dynamic_region_evaluation`; Python evaluates + LRU-caches, `structure_index` threaded
+      into `msm.select`.)*
+- [x] One **consolidated message per frame** carrying the atom-index deltas of all changed dynamic
+      regions. Never one message per region. *(`set_dynamic_region_atoms`, runtime-only, one per
+      frame; perf harness confirms 1000 frames → 1000 messages.)*
+- [x] Non-`frame_dependent` regions re-evaluate on topology change only. *(Excluded from the
+      per-frame work list; mutation-verified they never re-run `msm.select` on frame advance.)*
+- [x] Budget enforcement: if per-frame evaluation exceeds its budget, warn and **offer to freeze**
+      the region to `static`. Never silently drop frames. *(SMonitor catalog warning + runtime
+      `dynamic_region_evaluation_warning`; the region freezes to static and the current frame's
+      result is kept.)*
+- [x] Perf harness gains a "frame advance with a dynamic region" budget.
 
 **Acceptance:** *"waters within 5 Å of the ligand"* tracks a trajectory; a `chain A` dynamic region
 costs zero during playback; playback with N dynamic regions emits exactly one message per frame.
+**Done:** `tests/test_dynamic_regions.py` (6 tests) + frontend coalescing/gating/delta tests, all
+mutation-verified; the runtime atom cache is omitted from state v2 and re-derived on load.
+Collaborator-implemented; audited by mutation (one hollow topological test was hardened).
 
 ---
 

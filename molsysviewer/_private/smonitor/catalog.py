@@ -109,6 +109,12 @@ CATALOG = {
         "category": "frontend",
         "level": "ERROR",
     },
+    "dynamic_region_evaluation_over_budget": {
+        "code": "MOLSYSVIEWER-DYNAMIC-REGION-EVALUATION-OVER-BUDGET",
+        "source": "molsysviewer.viewer.regions",
+        "category": "performance",
+        "level": "WARNING",
+    },
     "addon_load_failed": {
         "code": "MOLSYSVIEWER-ADDON-LOAD-FAILED",
         "source": "molsysviewer.addons",

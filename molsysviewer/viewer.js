@@ -145683,6 +145683,73 @@ var StateHandlers = class {
     }
     await this.applyComposedTransparency();
   }
+  async addRepresentationsForRegionEntry(entry, tag, componentRef) {
+    entry.representations = [];
+    if (entry.representationState === "inherit") {
+      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params));
+    } else if (entry.representationState === "own") {
+      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, {
+        op: "set_region_representation",
+        tag,
+        representation: entry.representation,
+        preset: entry.preset,
+        user_preset: entry.userPreset,
+        params: entry.params
+      }));
+    }
+  }
+  async updateRegionComponentAtomIndices(tag, entry, atomIndices) {
+    const structure = this.callbacks.getStructure();
+    const structureRef = this.callbacks.getLoadedStructure()?.structure;
+    if (!structure || !structureRef) return;
+    entry.atomIndices = [...atomIndices];
+    const selection = this.buildSelectionFromAtomIndices(structure, entry.atomIndices);
+    if (!selection) {
+      if (entry.component) await this.removeStateObject(entry.component);
+      entry.component = void 0;
+      entry.representations = [];
+      await this.applyComposedTransparency();
+      return;
+    }
+    const bundle = element_exports.Bundle.fromSelection(selection);
+    if (entry.component) {
+      const update10 = this.plugin.state.data.build();
+      update10.to(entry.component).update({
+        type: { name: "bundle", params: bundle },
+        nullIfEmpty: true,
+        label: tag
+      });
+      await update10.commit({ doNotUpdateCurrent: true });
+    } else {
+      const component = this.plugin.state.data.build().to(structureRef).apply(
+        StateTransforms.Model.StructureComponent,
+        {
+          type: { name: "bundle", params: bundle },
+          nullIfEmpty: true,
+          label: tag
+        }
+      );
+      await component.commit({ revertOnError: false });
+      const componentRef = component.selector.ref;
+      if (!component.selector.isOk || !componentRef) return;
+      entry.component = componentRef;
+      await this.addRepresentationsForRegionEntry(entry, tag, componentRef);
+      if (entry.hidden) {
+        entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
+      }
+    }
+    await this.applyComposedTransparency();
+  }
+  async setDynamicRegionAtoms(msg) {
+    const regions = Array.isArray(msg.regions) ? msg.regions : [];
+    for (const item2 of regions) {
+      if (typeof item2?.tag !== "string") continue;
+      const entry = this.regionIndex.get(item2.tag);
+      if (!entry) continue;
+      const atomIndices = Array.isArray(item2.atom_indices) ? item2.atom_indices.map((value) => Math.trunc(Number(value))).filter(Number.isFinite) : [];
+      await this.updateRegionComponentAtomIndices(item2.tag, entry, atomIndices);
+    }
+  }
   async setRegionOrder(msg) {
     const tag = msg.tag ?? "region";
     const entry = this.regionIndex.get(tag);
@@ -145732,8 +145799,15 @@ var StateHandlers = class {
       preset: typeof item2.preset === "string" ? item2.preset : void 0,
       representation_params: item2.representation_params && typeof item2.representation_params === "object" ? { ...item2.representation_params } : {},
       overlap_tags: Array.isArray(item2.overlap_tags) ? item2.overlap_tags.filter((value) => typeof value === "string") : [],
-      available_attributes: Array.isArray(item2.available_attributes) ? item2.available_attributes.filter((value) => typeof value === "string") : []
+      available_attributes: Array.isArray(item2.available_attributes) ? item2.available_attributes.filter((value) => typeof value === "string") : [],
+      mode: item2.mode === "dynamic" ? "dynamic" : "static",
+      frame_dependent: !!item2.frame_dependent
     })).sort((left, right) => left.tag.localeCompare(right.tag));
+  }
+  hasFrameDependentDynamicRegions() {
+    return Array.from(this.backendRegionSummaries ?? []).some(
+      (region) => region.mode === "dynamic" && region.frame_dependent === true
+    );
   }
   getRegionStyleOptions() {
     return {
@@ -156000,6 +156074,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.addonsAnnotations = /* @__PURE__ */ new Map();
     this.addonsMeasurements = /* @__PURE__ */ new Map();
     this.addonsShapes = /* @__PURE__ */ new Map();
+    this.dynamicRegionEvaluationInFlight = null;
+    this.dynamicRegionEvaluationPendingFrame = null;
     this.addonsScene = null;
     this.addonsList = [];
     this.addonWorkspaces = [];
@@ -156576,6 +156652,7 @@ var MolSysViewerController = class _MolSysViewerController {
       (state) => {
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
+        this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
       },
       { immediate: false }
     );
@@ -157517,6 +157594,10 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_region_summaries":
           this.state.setRegionSummaries(msg);
+          break;
+        case "set_dynamic_region_atoms":
+          await this.state.setDynamicRegionAtoms(msg);
+          this.handleDynamicRegionEvaluationResponse(msg.frame);
           break;
         case "set_history_state":
           this.groupPanel?.updateSelectionHistoryState({
@@ -158472,6 +158553,8 @@ var MolSysViewerController = class _MolSysViewerController {
         // Forward layer membership (Phase 9) to the panel; without it the
         // Layers subpanel never groups a region under its layer.
         layer: item2.layer,
+        mode: item2.mode,
+        frame_dependent: item2.frame_dependent,
         representation: item2.representation,
         preset: item2.preset,
         representation_params: item2.representation_params,
@@ -159098,6 +159181,32 @@ var MolSysViewerController = class _MolSysViewerController {
       });
     } catch (err) {
       console.warn("[MolSysViewer] setCameraSnapshot failed", err);
+    }
+  }
+  requestDynamicRegionEvaluationForFrame(frame) {
+    if (!this.state.hasFrameDependentDynamicRegions()) return;
+    const normalizedFrame = Math.max(0, Math.trunc(Number(frame) || 0));
+    if (this.dynamicRegionEvaluationInFlight !== null) {
+      this.dynamicRegionEvaluationPendingFrame = normalizedFrame;
+      return;
+    }
+    this.dynamicRegionEvaluationInFlight = normalizedFrame;
+    this.notify?.({
+      event: "request_dynamic_region_evaluation",
+      frame: normalizedFrame
+    });
+  }
+  handleDynamicRegionEvaluationResponse(frame) {
+    const completed = Math.trunc(Number(frame));
+    if (Number.isFinite(completed) && this.dynamicRegionEvaluationInFlight === completed) {
+      this.dynamicRegionEvaluationInFlight = null;
+    } else {
+      this.dynamicRegionEvaluationInFlight = null;
+    }
+    const pending = this.dynamicRegionEvaluationPendingFrame;
+    this.dynamicRegionEvaluationPendingFrame = null;
+    if (pending !== null && pending !== completed) {
+      this.requestDynamicRegionEvaluationForFrame(pending);
     }
   }
   notifyTrajectoryState() {

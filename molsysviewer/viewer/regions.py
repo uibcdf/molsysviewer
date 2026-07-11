@@ -2,15 +2,18 @@ from __future__ import annotations
 
 
 import re
+import time
 import warnings
 from contextlib import contextmanager
 from typing import Any, Mapping
 
 import molsysmt as msm
+from smonitor.integrations import emit_from_catalog
 from smonitor import signal
 from depdigest import dep_digest
 
 from .._private.arg_digestion import digest
+from .._private.smonitor import CATALOG, PACKAGE_ROOT, META
 from .._private.smonitor_emit import emit_suppressed_exception
 from ..regions import Region
 from .representations import normalize_representation_type
@@ -85,12 +88,37 @@ class RegionsMixin:
             for region in (self._region_by_uid(uid) for uid in operand_uids)
         )
 
-    def _evaluate_region_provenance(self, region: Region) -> list[int] | None:
+    def _clear_dynamic_region_cache(self, uid: str | None = None) -> None:
+        cache = getattr(self, "_dynamic_region_cache", None)
+        if cache is None:
+            return
+        if uid is None:
+            cache.clear()
+            return
+        for key in list(cache.keys()):
+            if key[0] == uid:
+                cache.pop(key, None)
+
+    def _cache_dynamic_region_atoms(self, uid: str, structure_index: int, atom_indices: list[int]) -> tuple[int, ...]:
+        cache = self._dynamic_region_cache
+        key = (str(uid), int(structure_index))
+        value = tuple(int(index) for index in atom_indices)
+        cache[key] = value
+        cache.move_to_end(key)
+        limit = max(1, int(getattr(self, "_dynamic_region_cache_limit", 512)))
+        while len(cache) > limit:
+            cache.popitem(last=False)
+        return value
+
+    def _evaluate_region_provenance(self, region: Region, structure_index: int | None = None) -> list[int] | None:
         provenance = dict(region.provenance)
         if provenance.get("broken"):
             return None
         kind = provenance.get("kind")
         if kind == "query":
+            select_kwargs: dict[str, Any] = {}
+            if structure_index is not None:
+                select_kwargs["structure_indices"] = [int(structure_index)]
             return [
                 int(index)
                 for index in msm.select(
@@ -98,6 +126,7 @@ class RegionsMixin:
                     selection=provenance.get("expression", "all"),
                     syntax=str(provenance.get("syntax") or "MolSysMT"),
                     skip_digestion=True,
+                    **select_kwargs,
                 )
             ]
         if kind == "split":
@@ -124,7 +153,18 @@ class RegionsMixin:
             return [atom_index for atom_index, item_index in enumerate(raw_indices) if item_index == value]
         if kind == "duplicate":
             source = self._region_by_uid(str(provenance.get("of")))
-            return list(source.atom_indices or []) if source is not None else None
+            if source is None:
+                return None
+            if structure_index is not None and source.mode == "dynamic" and source.frame_dependent:
+                cached = self._dynamic_region_cache.get((source.uid, int(structure_index)))
+                if cached is not None:
+                    return list(cached)
+                evaluated = self._evaluate_region_provenance(source, structure_index=structure_index)
+                if evaluated is None:
+                    return None
+                self._cache_dynamic_region_atoms(source.uid, int(structure_index), evaluated)
+                return list(evaluated)
+            return list(source.atom_indices or [])
         if kind == "complement":
             operand_uids = [str(uid) for uid in provenance.get("of", [])]
             excluded: set[int] = set()
@@ -132,7 +172,16 @@ class RegionsMixin:
                 operand = self._region_by_uid(uid)
                 if operand is None:
                     return None
-                excluded.update(operand.atom_indices or ())
+                if structure_index is not None and operand.mode == "dynamic" and operand.frame_dependent:
+                    cached = self._dynamic_region_cache.get((operand.uid, int(structure_index)))
+                    if cached is None:
+                        evaluated = self._evaluate_region_provenance(operand, structure_index=structure_index)
+                        if evaluated is None:
+                            return None
+                        cached = self._cache_dynamic_region_atoms(operand.uid, int(structure_index), evaluated)
+                    excluded.update(cached)
+                else:
+                    excluded.update(operand.atom_indices or ())
             total = int(self._molsys.get_n_atoms())
             return [index for index in range(total) if index not in excluded]
         if kind == "boolean":
@@ -142,26 +191,111 @@ class RegionsMixin:
                 return None
             if not operands:
                 return []
-            left = list(operands[0].atom_indices or [])
+            operand_atoms: list[list[int]] = []
+            for operand in operands:
+                assert operand is not None
+                if structure_index is not None and operand.mode == "dynamic" and operand.frame_dependent:
+                    cached = self._dynamic_region_cache.get((operand.uid, int(structure_index)))
+                    if cached is None:
+                        evaluated = self._evaluate_region_provenance(operand, structure_index=structure_index)
+                        if evaluated is None:
+                            return None
+                        cached = self._cache_dynamic_region_atoms(operand.uid, int(structure_index), evaluated)
+                    operand_atoms.append(list(cached))
+                else:
+                    operand_atoms.append(list(operand.atom_indices or []))
+            left = list(operand_atoms[0])
             op = provenance.get("op")
             if op in {"minus", "difference", "subtract"}:
-                right = set(operands[1].atom_indices or []) if len(operands) > 1 else set()
+                right: set[int] = set()
+                for atoms in operand_atoms[1:]:
+                    right.update(atoms)
                 return [index for index in left if index not in right]
             if op in {"and", "intersection"}:
                 current = set(left)
-                for operand in operands[1:]:
-                    current &= set(operand.atom_indices or [])
+                for atoms in operand_atoms[1:]:
+                    current &= set(atoms)
                 return [index for index in left if index in current]
             if op in {"or", "union"}:
                 seen: set[int] = set()
                 result: list[int] = []
-                for operand in operands:
-                    for index in operand.atom_indices or ():
+                for atoms in operand_atoms:
+                    for index in atoms:
                         if index not in seen:
                             seen.add(index)
                             result.append(int(index))
                 return result
         return None
+
+    def _dynamic_regions_requiring_frame_evaluation(self) -> list[Region]:
+        return [
+            region
+            for region in self._regions.values()
+            if (
+                bool(getattr(region, "_active", False))
+                and region.mode == "dynamic"
+                and region.frame_dependent
+            )
+        ]
+
+    def _handle_dynamic_region_evaluation_request(self, content: Mapping[str, Any]) -> None:
+        frame = int(content.get("frame", 0))
+        changed = self._evaluate_dynamic_regions_for_frame(frame)
+        self._send_runtime_only(
+            {
+                "op": "set_dynamic_region_atoms",
+                "frame": frame,
+                "regions": changed,
+            }
+        )
+
+    def _evaluate_dynamic_regions_for_frame(self, structure_index: int) -> list[dict[str, Any]]:
+        changed: list[dict[str, Any]] = []
+        frame = int(structure_index)
+        budget_ms = float(getattr(self, "_dynamic_region_evaluation_budget_ms", 25.0))
+        for region in self._dynamic_regions_requiring_frame_evaluation():
+            key = (region.uid, frame)
+            cached = self._dynamic_region_cache.get(key)
+            if cached is None:
+                started = time.perf_counter()
+                evaluated = self._evaluate_region_provenance(region, structure_index=frame)
+                elapsed_ms = (time.perf_counter() - started) * 1000.0
+                if evaluated is None:
+                    continue
+                cached = self._cache_dynamic_region_atoms(region.uid, frame, evaluated)
+                if elapsed_ms > budget_ms:
+                    region._set_mode("static")  # noqa: SLF001
+                    self._clear_dynamic_region_cache(region.uid)
+                    emit_from_catalog(
+                        CATALOG["dynamic_region_evaluation_over_budget"],
+                        package_root=PACKAGE_ROOT,
+                        meta=META,
+                        extra={
+                            "tag": region.tag,
+                            "uid": region.uid,
+                            "frame": frame,
+                            "elapsed_ms": elapsed_ms,
+                            "budget_ms": budget_ms,
+                        },
+                    )
+                    self._send_runtime_only(
+                        {
+                            "op": "dynamic_region_evaluation_warning",
+                            "tag": region.tag,
+                            "frame": frame,
+                            "elapsed_ms": elapsed_ms,
+                            "budget_ms": budget_ms,
+                            "action": "frozen_to_static",
+                        }
+                    )
+            current = tuple(region.atom_indices or ())
+            if tuple(cached) == current:
+                continue
+            region._set_atom_indices(cached)  # noqa: SLF001
+            changed.append({"tag": region.tag, "atom_indices": list(cached)})
+        if changed:
+            self._sync_region_summaries_runtime()
+        return changed
 
     def _label_for_split_region(self, *, element_label: str, item_index: int) -> str | None:
         template = "{name}"
@@ -288,12 +422,14 @@ class RegionsMixin:
     def _unregister_region(self, tag: str) -> None:
         region = self._regions.get(tag)
         if region is not None:
+            self._clear_dynamic_region_cache(region.uid)
             missing_uid = region.uid
             for candidate in list(self._regions.values()):
                 if candidate is region:
                     continue
                 if missing_uid in candidate.dependencies:
                     candidate._freeze_broken_recipe(missing_uid)  # noqa: SLF001
+                    self._clear_dynamic_region_cache(candidate.uid)
         self._regions.pop(tag, None)
         self._refresh_region_dynamic_modes()
 
@@ -406,6 +542,8 @@ class RegionsMixin:
                     # Layer membership (Phase 9) so the Layers subpanel can group
                     # regions under their layer; None for a region in no layer.
                     "layer": region.layer,
+                    "mode": region.mode,
+                    "frame_dependent": region.frame_dependent,
                     "representation": region.representation,
                     "preset": region.preset,
                     "representation_params": dict(region.repr_params),

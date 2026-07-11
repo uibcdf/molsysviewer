@@ -74,7 +74,16 @@ class Region:
             raise ValueError("Region.mode must be 'static' or 'dynamic'.")
         if normalized == "dynamic" and not self._can_be_dynamic():
             raise ValueError(f"Region {self.tag!r} has no re-evaluable recipe and cannot be dynamic.")
+        previous = getattr(self, "_mode", None)
+        if previous != normalized and hasattr(self._view, "_clear_dynamic_region_cache"):
+            self._view._clear_dynamic_region_cache(self.uid)  # noqa: SLF001
         self._mode = normalized
+        if (
+            previous != normalized
+            and hasattr(self._view, "_sync_region_summaries_runtime")
+            and getattr(self._view, "_regions", {}).get(self.tag) is self
+        ):
+            self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     def _can_be_dynamic(self) -> bool:
         if not self._is_reevaluable_provenance(self._provenance):
@@ -102,6 +111,8 @@ class Region:
     def _set_provenance(self, provenance: dict[str, Any]) -> None:
         self._provenance = deepcopy(provenance)
         self._provenance.setdefault("frame_dependent", False)
+        if hasattr(self._view, "_clear_dynamic_region_cache"):
+            self._view._clear_dynamic_region_cache(self.uid)  # noqa: SLF001
         if not self._is_reevaluable_provenance(self._provenance):
             self._mode = "static"
 

@@ -479,6 +479,8 @@ export type SetRegionSummariesMessage = {
         hidden?: boolean;
         /** Tag of the layer this region belongs to, or null (Phase 9). */
         layer?: string | null;
+        mode?: "static" | "dynamic";
+        frame_dependent?: boolean;
         representation?: string | null;
         preset?: string | null;
         representation_params?: Record<string, unknown>;
@@ -487,6 +489,15 @@ export type SetRegionSummariesMessage = {
     }>;
     representations?: string[];
     presets?: string[];
+};
+
+export type SetDynamicRegionAtomsMessage = {
+    op: "set_dynamic_region_atoms";
+    frame?: number;
+    regions?: Array<{
+        tag?: string;
+        atom_indices?: number[];
+    }>;
 };
 
 export type BatchRegionOperationsMessage = {
@@ -809,6 +820,7 @@ export type KnownViewerMessage =
     HideRegionMessage |
     SetRegionsVisibilityMessage |
     SetRegionSummariesMessage |
+    SetDynamicRegionAtomsMessage |
     SetRegionOrderMessage |
     BatchRegionOperationsMessage |
     DeleteRegionMessage |

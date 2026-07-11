@@ -561,6 +561,8 @@ export class MolSysViewerController {
     private readonly addonsAnnotations = new Map<string, { text: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
     private readonly addonsMeasurements = new Map<string, { kind: string; picks: number; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
     private readonly addonsShapes = new Map<string, { title: string; subtitle?: string; layerTag?: string; hidden: boolean; atomIndices: number[] }>();
+    private dynamicRegionEvaluationInFlight: number | null = null;
+    private dynamicRegionEvaluationPendingFrame: number | null = null;
     private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[] } | null = null;
     private addonsList: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
@@ -1389,6 +1391,7 @@ export class MolSysViewerController {
             (state) => {
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
+                this.requestDynamicRegionEvaluationForFrame(state.currentFrame);
             },
             { immediate: false },
         );
@@ -2141,6 +2144,10 @@ export class MolSysViewerController {
                 case "hide_region": await this.state.hideRegion(msg); break;
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
                 case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
+                case "set_dynamic_region_atoms":
+                    await this.state.setDynamicRegionAtoms(msg as any);
+                    this.handleDynamicRegionEvaluationResponse((msg as any).frame);
+                    break;
                 case "set_history_state":
                     this.groupPanel?.updateSelectionHistoryState({
                         canUndo: Boolean((msg as any).can_undo),
@@ -3221,6 +3228,8 @@ export class MolSysViewerController {
                 // Forward layer membership (Phase 9) to the panel; without it the
                 // Layers subpanel never groups a region under its layer.
                 layer: item.layer,
+                mode: item.mode,
+                frame_dependent: item.frame_dependent,
                 representation: item.representation,
                 preset: item.preset,
                 representation_params: item.representation_params,
@@ -3908,6 +3917,34 @@ export class MolSysViewerController {
             });
         } catch (err) {
             console.warn("[MolSysViewer] setCameraSnapshot failed", err);
+        }
+    }
+
+    private requestDynamicRegionEvaluationForFrame(frame: number) {
+        if (!this.state.hasFrameDependentDynamicRegions()) return;
+        const normalizedFrame = Math.max(0, Math.trunc(Number(frame) || 0));
+        if (this.dynamicRegionEvaluationInFlight !== null) {
+            this.dynamicRegionEvaluationPendingFrame = normalizedFrame;
+            return;
+        }
+        this.dynamicRegionEvaluationInFlight = normalizedFrame;
+        this.notify?.({
+            event: "request_dynamic_region_evaluation",
+            frame: normalizedFrame,
+        });
+    }
+
+    private handleDynamicRegionEvaluationResponse(frame: unknown) {
+        const completed = Math.trunc(Number(frame));
+        if (Number.isFinite(completed) && this.dynamicRegionEvaluationInFlight === completed) {
+            this.dynamicRegionEvaluationInFlight = null;
+        } else {
+            this.dynamicRegionEvaluationInFlight = null;
+        }
+        const pending = this.dynamicRegionEvaluationPendingFrame;
+        this.dynamicRegionEvaluationPendingFrame = null;
+        if (pending !== null && pending !== completed) {
+            this.requestDynamicRegionEvaluationForFrame(pending);
         }
     }
 

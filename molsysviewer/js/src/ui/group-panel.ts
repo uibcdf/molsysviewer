@@ -60,6 +60,8 @@ export type RegionSummary = {
     atom_count: number;
     hidden: boolean;
     layer?: string | null;
+    mode?: "static" | "dynamic";
+    frame_dependent?: boolean;
     representation?: string;
     preset?: string;
     representation_params?: Record<string, unknown>;

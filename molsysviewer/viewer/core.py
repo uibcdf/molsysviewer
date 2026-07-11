@@ -6,6 +6,7 @@ import re
 import time
 import inspect
 import warnings
+from collections import OrderedDict
 from typing import Any, Dict, Mapping, Sequence
 
 import molsysmt as msm
@@ -253,6 +254,9 @@ class MolSysView(
         self._region_batch_depth = 0
         self._region_batch_operations: list[dict[str, Any]] = []
         self._region_batch_summary_dirty = False
+        self._dynamic_region_cache: OrderedDict[tuple[str, int], tuple[int, ...]] = OrderedDict()
+        self._dynamic_region_cache_limit: int = 512
+        self._dynamic_region_evaluation_budget_ms: float = 25.0
         self._layers: Dict[str, Layer] = {}
         self._scene_objects: Dict[str, SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
@@ -1563,6 +1567,8 @@ class MolSysView(
                     structure_indices=frame,
                     skip_digestion=True,
                 )
+        elif event == "request_dynamic_region_evaluation":
+            self._handle_dynamic_region_evaluation_request(content)
         elif event == "panel_mode_state":
             self._last_panel_mode_state_event = dict(content)
         elif event == "panel_navigate":
@@ -2086,6 +2092,8 @@ class MolSysView(
                 self._unregister_region(tag)
                 continue
             region._set_atom_indices(evaluated_atom_indices)  # noqa: SLF001
+
+        self._clear_dynamic_region_cache()
 
         # Rebuild the message history to reflect the new state (important for HTML exports).
         self._message_history = []

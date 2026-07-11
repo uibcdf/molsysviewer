@@ -51,11 +51,12 @@ class StateMixin:
                 continue
             if region.atom_indices is None:
                 continue
-            regions.append({
+            provenance = dict(region.provenance)
+            record = {
                 "uid": region.uid,
                 "tag": tag,
                 "selection": region.selection if isinstance(region.selection, str) else None,
-                "provenance": dict(region.provenance),
+                "provenance": provenance,
                 "mode": region.mode,
                 "order": int(region.order),
                 # Layer membership: the field lands in v2 so the format can express
@@ -67,10 +68,12 @@ class StateMixin:
                 "hidden": bool(region._hidden),  # noqa: SLF001
                 # Colour layer owned by this region, keyed by atom index.
                 "color_layer": self._color_layer_record(tag),
-                # atom_indices is a cache of the recipe result; re-derivable for
-                # re-evaluable recipes, authoritative for click-born ones.
-                "atom_indices": list(region.atom_indices),
-            })
+            }
+            if not (region.mode == "dynamic" and Region._is_reevaluable_provenance(provenance)):  # noqa: SLF001
+                # atom_indices is authoritative for static/click-born regions. For
+                # dynamic regions it is a runtime frame cache and must be re-derived.
+                record["atom_indices"] = list(region.atom_indices)
+            regions.append(record)
 
         active = {"atom_indices": list(self.active_selection.atom_indices)}
 
@@ -261,9 +264,24 @@ class StateMixin:
     def _restore_region_v2(self, record: dict) -> None:
         tag = record.get("tag")
         atom_indices = record.get("atom_indices")
-        if not tag or not isinstance(atom_indices, list) or len(atom_indices) == 0:
+        if not tag:
             return
         provenance = dict(record.get("provenance") or {"kind": "imported", "state_version": 1})
+        if not isinstance(atom_indices, list):
+            if Region._is_reevaluable_provenance(provenance):  # noqa: SLF001
+                probe = Region(
+                    self,
+                    str(tag),
+                    record.get("selection") if isinstance(record.get("selection"), str) else "all",
+                    atom_indices=[],
+                    uid=str(record["uid"]) if record.get("uid") is not None else None,
+                    provenance=provenance,
+                )
+                atom_indices = self._evaluate_region_provenance(probe) or []
+            else:
+                return
+        if len(atom_indices) == 0:
+            return
         region = Region(
             self,
             tag,

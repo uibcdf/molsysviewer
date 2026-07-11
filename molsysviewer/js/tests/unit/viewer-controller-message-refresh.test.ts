@@ -34,3 +34,44 @@ test("viewer controller does not rebuild System chrome for non-invalidating mess
     assert.strictEqual(chromeRefreshes, 0);
     assert.strictEqual(stripSyncs, 2);
 });
+
+test("viewer controller coalesces dynamic-region frame evaluation requests", () => {
+    const controller = Object.create(MolSysViewerController.prototype) as MolSysViewerController & {
+        state: { hasFrameDependentDynamicRegions(): boolean };
+        notify?: (message: unknown) => void;
+    };
+    const messages: unknown[] = [];
+    controller.state = { hasFrameDependentDynamicRegions: () => true };
+    controller.notify = (message: unknown) => messages.push(message);
+    (controller as any).dynamicRegionEvaluationInFlight = null;
+    (controller as any).dynamicRegionEvaluationPendingFrame = null;
+
+    (controller as any).requestDynamicRegionEvaluationForFrame(1);
+    (controller as any).requestDynamicRegionEvaluationForFrame(2);
+    (controller as any).requestDynamicRegionEvaluationForFrame(3);
+
+    assert.deepStrictEqual(messages, [
+        { event: "request_dynamic_region_evaluation", frame: 1 },
+    ]);
+
+    (controller as any).handleDynamicRegionEvaluationResponse(1);
+
+    assert.deepStrictEqual(messages, [
+        { event: "request_dynamic_region_evaluation", frame: 1 },
+        { event: "request_dynamic_region_evaluation", frame: 3 },
+    ]);
+});
+
+test("viewer controller does not request dynamic-region evaluation without frame-dependent regions", () => {
+    const controller = Object.create(MolSysViewerController.prototype) as MolSysViewerController & {
+        state: { hasFrameDependentDynamicRegions(): boolean };
+        notify?: (message: unknown) => void;
+    };
+    const messages: unknown[] = [];
+    controller.state = { hasFrameDependentDynamicRegions: () => false };
+    controller.notify = (message: unknown) => messages.push(message);
+
+    (controller as any).requestDynamicRegionEvaluationForFrame(1);
+
+    assert.deepStrictEqual(messages, []);
+});
