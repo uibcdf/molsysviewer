@@ -49,6 +49,9 @@ class Region:
         self.order: int = view._next_region_order()  # noqa: SLF001
         self._active = True
         self._hidden = False
+        # Layer membership (Contract B3, Phase 9): the tag of the layer this
+        # region belongs to, or None for a region that belongs to no layer.
+        self._layer: str | None = None
 
     @property
     def atom_indices(self) -> tuple[int, ...] | None:
@@ -136,6 +139,33 @@ class Region:
     def visible(self) -> bool:
         """Whether this region's own representation is currently shown."""
         return not self._hidden
+
+    @property
+    def layer(self) -> str | None:
+        """The tag of the layer this region belongs to, or ``None``.
+
+        Read-only; use :meth:`set_layer` / :meth:`remove_from_layer` to change
+        it. Serialised in state v2 and honoured by layer show/hide/delete.
+        """
+        return self._layer
+
+    def _set_layer_membership(self, layer_tag: str | None) -> None:
+        """Internal: move this region into *layer_tag* (or out, when ``None``).
+
+        Ensures the target layer group exists and cleans up a previous layer
+        group left empty by the move. No signal/history — the public
+        :meth:`set_layer` wraps this."""
+        old_tag = self._layer
+        text = layer_tag.strip() if isinstance(layer_tag, str) else None
+        if text == "":
+            raise ValueError("Layer tag must be a non-empty string, or None.")
+        if text == old_tag:
+            return
+        if text is not None:
+            self._view._ensure_layer_group(text)  # noqa: SLF001
+        self._layer = text
+        if isinstance(old_tag, str):
+            self._view._cleanup_empty_layer_group(old_tag)  # noqa: SLF001
 
     @property
     def tag(self) -> str:
@@ -1108,6 +1138,8 @@ class Region:
         self._send("delete_region")
         self._view._drop_atom_color_layer(self.tag)  # noqa: SLF001
         self._view._unregister_region(self.tag)  # noqa: SLF001
+        if isinstance(self._layer, str):
+            self._view._cleanup_empty_layer_group(self._layer)  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     @records_scene_history
@@ -1123,6 +1155,32 @@ class Region:
         self._view._regions[new_tag] = self  # noqa: SLF001
         self._view._regions.pop(old_tag, None)  # noqa: SLF001
         self._view._rename_atom_color_layer(old_tag, new_tag)  # noqa: SLF001
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @records_scene_history
+    @signal(tags=["region", "layer"])
+    @digest()
+    def set_layer(self, layer: Any, skip_digestion: bool = False) -> None:
+        """Assign this region to *layer* (a :class:`Layer`, a tag, or ``None``).
+
+        The layer group is created if it does not exist yet; a previous layer
+        left empty by the move is cleaned up. Layer show/hide/delete then apply
+        to this region.
+        """
+        if not self._active:
+            return
+        tag = layer.tag if hasattr(layer, "tag") else (None if layer is None else str(layer))
+        self._set_layer_membership(tag)
+        self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @records_scene_history
+    @signal(tags=["region", "layer"])
+    @digest()
+    def remove_from_layer(self, skip_digestion: bool = False) -> None:
+        """Detach this region from its layer (it belongs to no layer afterwards)."""
+        if not self._active or self._layer is None:
+            return
+        self._set_layer_membership(None)
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     # --- Scalar colour mapping ---

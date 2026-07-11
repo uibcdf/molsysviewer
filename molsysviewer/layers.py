@@ -149,11 +149,21 @@ class LayerHandle:
         }
 
     @property
-    def members(self) -> Dict[str, "SceneObject"]:
-        members: Dict[str, SceneObject] = {}
+    def regions(self) -> Dict[str, Any]:
+        """Regions that belong to this layer (Contract B3, Phase 9)."""
+        return {
+            item.tag: item
+            for item in getattr(self._view, "_regions", {}).values()  # noqa: SLF001
+            if getattr(item, "layer", None) == self.tag and getattr(item, "_active", False)
+        }
+
+    @property
+    def members(self) -> Dict[str, Any]:
+        members: Dict[str, Any] = {}
         members.update(self.shapes)
         members.update(self.annotations)
         members.update(self.measurements)
+        members.update(self.regions)
         return members
 
     def _send(self, op: str, **payload: Any) -> None:
@@ -286,14 +296,28 @@ class Layer(LayerHandle):
         for member in members:
             member.layer_tag = self.tag
 
+    @staticmethod
+    def _member_has_nothing_to_render(member: Any) -> bool:
+        # A region without its own representation (Contract A) has nothing to
+        # show or hide; toggling it directly would warn, so a bulk layer op
+        # tracks its state quietly instead.
+        has_own_visual = getattr(member, "_has_own_visual", None)
+        return callable(has_own_visual) and not has_own_visual()
+
     def show(self, skip_digestion: bool = False) -> None:
         self._hidden = False
         for member in list(self.members.values()):
+            if self._member_has_nothing_to_render(member):
+                member._hidden = False  # noqa: SLF001
+                continue
             member.show(skip_digestion=True)
 
     def hide(self, skip_digestion: bool = False) -> None:
         self._hidden = True
         for member in list(self.members.values()):
+            if self._member_has_nothing_to_render(member):
+                member._hidden = True  # noqa: SLF001
+                continue
             member.hide(skip_digestion=True)
 
     def delete(self, skip_digestion: bool = False) -> None:

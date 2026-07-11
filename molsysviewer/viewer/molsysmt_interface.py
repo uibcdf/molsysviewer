@@ -192,7 +192,7 @@ class MolSysMTInterfaceMixin:
                     "kind": "region",
                     "visible": not bool(getattr(region, "_hidden", False)),
                     "active": bool(getattr(region, "_active", False)),
-                    "layer tag": None,
+                    "layer tag": getattr(region, "layer", None),
                     "representation": getattr(region, "representation", None),
                     "preset": getattr(region, "preset", None),
                     "n atoms": len(getattr(region, "atom_indices", ()) or ()),
@@ -207,6 +207,7 @@ class MolSysMTInterfaceMixin:
             n_shapes = sum(1 for member in members.values() if getattr(member, "kind", None) == "shape")
             n_annotations = sum(1 for member in members.values() if getattr(member, "kind", None) == "annotation")
             n_measurements = sum(1 for member in members.values() if getattr(member, "kind", None) == "measurement")
+            n_regions = sum(1 for member in members.values() if hasattr(member, "layer"))
             records.append(
                 {
                     "section": "layers",
@@ -220,7 +221,7 @@ class MolSysMTInterfaceMixin:
                     "n atoms": None,
                     "n members": len(members),
                     "n picks": None,
-                    "details": f"shapes={n_shapes}, annotations={n_annotations}, measurements={n_measurements}",
+                    "details": f"shapes={n_shapes}, annotations={n_annotations}, measurements={n_measurements}, regions={n_regions}",
                 }
             )
         for tag, item in sorted(self._scene_objects.items()):

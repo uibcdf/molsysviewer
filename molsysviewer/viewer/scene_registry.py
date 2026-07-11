@@ -83,6 +83,15 @@ class SceneRegistryMixin:
                 self._sync_layer_group_hidden_state(old_layer_tag)
         self._sync_layer_group_hidden_state(text)
 
+    def _cleanup_empty_layer_group(self, layer_tag: str) -> None:
+        """Drop a grouping layer left empty (e.g. after a region moved out or
+        was deleted), otherwise refresh its aggregate hidden state."""
+        layer = self._layers.get(layer_tag)
+        if isinstance(layer, GroupLayer) and len(layer.members) == 0:
+            self._layers.pop(layer_tag, None)
+        else:
+            self._sync_layer_group_hidden_state(layer_tag)
+
     def _ensure_layer_group(self, layer_tag: str, *, kind: str | None = None) -> Layer:
         text = str(layer_tag).strip()
         if text == "":

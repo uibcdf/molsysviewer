@@ -538,10 +538,14 @@ history stack is gone (single source of truth), Decision 1 = snapshots + Decisio
 `view.layers` governs shapes, annotations and measurements — but not regions
 (`molsysviewer/layers.py`). That asymmetry has no justification.
 
-- [ ] `Region.layer` membership; `LayerHandle.members` includes regions; layer show/hide/delete
-      applies to them.
-- [ ] Serialised in state v2 (the field lands in Phase 6; the behaviour lands here).
-- [ ] The Layers subpanel (today a `RoadmapPanel`) gains its first real content.
+- [x] `Region.layer` membership; `LayerHandle.members` includes regions; layer show/hide/delete
+      applies to them. *(Backend — `Region.layer` / `set_layer` / `remove_from_layer`,
+      `LayerHandle.regions`, empty-group cleanup, quiet toggle of visual-less regions.)*
+- [x] Serialised in state v2 (the field lands in Phase 6; the behaviour lands here).
+      *(`export_state` writes `region.layer`; `import_state` restores it via `_set_layer_membership`.)*
+- [ ] The Layers subpanel (today a `RoadmapPanel`) gains its first real content. **← collaborator**
+      *(Frontend only; the backend contract above is stable and green — `tests/regions/test_region_layers.py`,
+      10 tests, mutation-verified. `set_layer` is undoable through the one scene history.)*
 
 ---
 

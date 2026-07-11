@@ -303,6 +303,10 @@ class StateMixin:
         if record.get("hidden"):
             region.hide(skip_digestion=True)
 
+        layer = record.get("layer")
+        if isinstance(layer, str) and layer:
+            region._set_layer_membership(layer)  # noqa: SLF001
+
         color_layer = self._decode_color_layer(record.get("color_layer"))
         if color_layer:
             self._atom_color_layers[tag] = color_layer
