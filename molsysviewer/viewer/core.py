@@ -878,6 +878,12 @@ class MolSysView(
             # (missed/out-of-order message or a bug); resend the authoritative full
             # state so the delta protocol self-heals.
             self._resend_full_visibility()
+        elif event == "scene_history_undo":
+            self.history.undo()
+            return
+        elif event == "scene_history_redo":
+            self.history.redo()
+            return
         elif event == "interaction_context_action":
             try:
                 self._last_context_action_event = dict(content)
@@ -1331,6 +1337,17 @@ class MolSysView(
             atom_indices = list(content.get("atom_indices") or [])
             enriched["atom_indices"] = list(atom_indices)
 
+            # A user pick is a mutating scene operation, so it is undoable through
+            # the one scene history. Checkpoint only on a real change: a selection
+            # that Python itself just set (e.g. during an undo/redo replay) echoes
+            # back unchanged and must not add a spurious history entry.
+            _previous_selection = list(
+                (self._last_active_selection_event or {}).get("atom_indices") or []
+            )
+            _selection_changed = atom_indices != _previous_selection
+            if _selection_changed:
+                self.history._begin_operation()  # noqa: SLF001
+
             if self._molsys is not None and len(atom_indices) > 0:
                 try:
                     group_indices = sorted(
@@ -1449,6 +1466,8 @@ class MolSysView(
                 )
             else:
                 self._set_active_selection_recipe([])
+            if _selection_changed:
+                self.history._end_operation()  # noqa: SLF001
             addons = getattr(self, "addons", None)
             if addons is not None and hasattr(addons, "refresh_context_items"):
                 try:

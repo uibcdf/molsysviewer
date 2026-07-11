@@ -206,13 +206,34 @@ async function run() {
         const label = await latestAction(page, "add_label_from_selection");
         assert.strictEqual(label.text, "Active chain");
 
-        // Undo and redo are frontend-local and emit the restored selection.
+        // Undo/redo are no longer a frontend-local stack: they drive the single
+        // scene history in Python. The buttons' enabled state is pushed from
+        // Python via set_history_state, and a click emits a scene_history event.
+        await page.evaluate(async () => {
+            await (window as any).__controller.handleMessage({
+                op: "set_history_state", can_undo: true, can_redo: false,
+            });
+        });
+        assert.strictEqual(
+            await page.locator('[data-molsysviewer-selection-undo="true"]').isDisabled(),
+            false,
+        );
         await page.locator('[data-molsysviewer-selection-undo="true"]').click();
-        await page.locator('[data-molsysviewer-selection-redo="true"]').click();
+        await page.waitForFunction(() =>
+            ((window as any).__messages || []).some((m: any) => m.event === "scene_history_undo"));
+
+        await page.evaluate(async () => {
+            await (window as any).__controller.handleMessage({
+                op: "set_history_state", can_undo: true, can_redo: true,
+            });
+        });
         assert.strictEqual(
             await page.locator('[data-molsysviewer-selection-redo="true"]').isDisabled(),
-            true,
+            false,
         );
+        await page.locator('[data-molsysviewer-selection-redo="true"]').click();
+        await page.waitForFunction(() =>
+            ((window as any).__messages || []).some((m: any) => m.event === "scene_history_redo"));
 
         const hasWebglError = errors.some(error => error.includes("WebGL rendering context"));
         if (hasWebglError) {

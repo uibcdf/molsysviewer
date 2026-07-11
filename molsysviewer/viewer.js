@@ -148700,9 +148700,6 @@ var ActiveSelectionController = class {
     this.items = [];
     this.allAvailableItems = [];
     this.anchorItem = null;
-    this.undoStack = [];
-    this.redoStack = [];
-    this.historyLimit = 10;
   }
   // The original in-memory items (with their non-enumerable shape ``_loci`` refs)
   // for callers that need the live JS objects (e.g. ``syncVisualSelection`` to
@@ -148711,39 +148708,8 @@ var ActiveSelectionController = class {
   getCurrentItems() {
     return this.items;
   }
-  setHistoryListener(listener) {
-    this.historyListener = listener;
-    this.emitHistoryState();
-  }
   setAllAvailableItems(items) {
     this.allAvailableItems = items;
-  }
-  canUndo() {
-    return this.undoStack.length > 0;
-  }
-  canRedo() {
-    return this.redoStack.length > 0;
-  }
-  clearHistory() {
-    this.undoStack.length = 0;
-    this.redoStack.length = 0;
-    this.emitHistoryState();
-  }
-  undo() {
-    const previous = this.undoStack.pop();
-    if (!previous) return;
-    this.redoStack.push([...this.items]);
-    this.items = [...previous];
-    this.emit();
-    this.emitHistoryState();
-  }
-  redo() {
-    const next = this.redoStack.pop();
-    if (!next) return;
-    this.undoStack.push([...this.items]);
-    this.items = [...next];
-    this.emit();
-    this.emitHistoryState();
   }
   handlePrimaryClick(ev) {
     const shift2 = !!ev?.modifiers?.shift;
@@ -148875,17 +148841,8 @@ var ActiveSelectionController = class {
       this.emit();
       return;
     }
-    this.undoStack.push([...this.items]);
-    if (this.undoStack.length > this.historyLimit) {
-      this.undoStack.shift();
-    }
-    this.redoStack.length = 0;
     this.items = [...next];
     this.emit();
-    this.emitHistoryState();
-  }
-  emitHistoryState() {
-    this.historyListener?.({ canUndo: this.canUndo(), canRedo: this.canRedo() });
   }
 };
 function sameItems(a8, b8) {
@@ -155979,9 +155936,6 @@ var MolSysViewerController = class _MolSysViewerController {
       }
     }
     this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
-    this.activeSelection.setHistoryListener((state) => {
-      this.groupPanel?.updateSelectionHistoryState(state);
-    });
     this.groupPanel = new GroupPanel(host, (items, op4) => {
       this.activeSelection.setItems(items, op4);
     }, (item2, modifiers) => {
@@ -156023,11 +155977,11 @@ var MolSysViewerController = class _MolSysViewerController {
         return;
       }
       if (action === "undo_active_selection") {
-        this.activeSelection.undo();
+        emitInteractionEvent({ event: "scene_history_undo" });
         return;
       }
       if (action === "redo_active_selection") {
-        this.activeSelection.redo();
+        emitInteractionEvent({ event: "scene_history_redo" });
         return;
       }
       if (action === "selection_query_preview_request") {
@@ -156049,10 +156003,6 @@ var MolSysViewerController = class _MolSysViewerController {
         color: themeName
       });
     }, { sharedShell, floating: floatingPanels, model: this.model });
-    this.groupPanel.updateSelectionHistoryState({
-      canUndo: this.activeSelection.canUndo(),
-      canRedo: this.activeSelection.canRedo()
-    });
     const addonsOptions = sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : {};
     addonsOptions.model = this.model;
     addonsOptions.onAction = (action, details) => {
@@ -157115,7 +157065,6 @@ var MolSysViewerController = class _MolSysViewerController {
       const isLoaderOp = msg.op === "load_structure_from_string" || msg.op === "load_pdb_string" || msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref" || msg.op === "load_structure_from_url" || msg.op === "load_pdb_id";
       if (isLoaderOp) {
         this.hideWelcomeCard();
-        this.activeSelection.clearHistory();
       }
       if (msg.op === "load_molsys_payload" || msg.op === "load_molsys_payload_ref") {
         const structures = msg.payload?.structures;
@@ -157295,7 +157244,6 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "clear_scene":
-          this.activeSelection.clearHistory();
           await this.scene.clearScene(msg);
           break;
         case "clear_all":
@@ -157340,6 +157288,12 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "set_region_summaries":
           this.state.setRegionSummaries(msg);
+          break;
+        case "set_history_state":
+          this.groupPanel?.updateSelectionHistoryState({
+            canUndo: Boolean(msg.can_undo),
+            canRedo: Boolean(msg.can_redo)
+          });
           break;
         case "region_details":
           this.groupPanel.updateRegionDetails(msg);
@@ -157716,7 +157670,6 @@ var MolSysViewerController = class _MolSysViewerController {
     if (last4) {
       const structure = last4.cell.obj?.data;
       this.currentStructure = last4.cell.transform.ref;
-      this.activeSelection.clearHistory();
       this.groupPanel.setStructure(structure);
       this.refreshNavigatePanel();
       this.addonsPanel.setVisible(true);
@@ -157727,7 +157680,6 @@ var MolSysViewerController = class _MolSysViewerController {
       this.trajectory.notifyListeners();
     } else {
       this.currentStructure = void 0;
-      this.activeSelection.clearHistory();
       this.groupPanel.setStructure(void 0);
       this.refreshNavigatePanel();
       this.activeSelection.setAllAvailableItems([]);

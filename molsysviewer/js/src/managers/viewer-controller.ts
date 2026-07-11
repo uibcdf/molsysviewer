@@ -955,9 +955,6 @@ export class MolSysViewerController {
         }
 
         this.activeSelection = new ActiveSelectionController(emitInteractionEvent);
-        this.activeSelection.setHistoryListener((state) => {
-            this.groupPanel?.updateSelectionHistoryState(state);
-        });
         this.groupPanel = new GroupPanel(host, (items, op) => {
             this.activeSelection.setItems(items, op);
         }, (item, modifiers) => {
@@ -999,11 +996,11 @@ export class MolSysViewerController {
                 return;
             }
             if (action === "undo_active_selection") {
-                this.activeSelection.undo();
+                emitInteractionEvent({ event: "scene_history_undo" });
                 return;
             }
             if (action === "redo_active_selection") {
-                this.activeSelection.redo();
+                emitInteractionEvent({ event: "scene_history_redo" });
                 return;
             }
             if (action === "selection_query_preview_request") {
@@ -1025,10 +1022,6 @@ export class MolSysViewerController {
                 color: themeName as any
             });
         }, { sharedShell, floating: floatingPanels, model: this.model });
-        this.groupPanel.updateSelectionHistoryState({
-            canUndo: this.activeSelection.canUndo(),
-            canRedo: this.activeSelection.canRedo(),
-        });
         const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
         addonsOptions.model = this.model;
         addonsOptions.onAction = (action: string, details: any) => {
@@ -2012,7 +2005,6 @@ export class MolSysViewerController {
                                msg.op === "load_pdb_id";
             if (isLoaderOp) {
                 this.hideWelcomeCard();
-                this.activeSelection.clearHistory();
             }
 
             if ((msg as any).op === "load_molsys_payload" || (msg as any).op === "load_molsys_payload_ref") {
@@ -2128,8 +2120,7 @@ export class MolSysViewerController {
                     break;
                 }
                 case "clear_scene":
-                    this.activeSelection.clearHistory();
-                    await this.scene.clearScene(msg);
+                        await this.scene.clearScene(msg);
                     break;
                 case "clear_all": await this.scene.clearAll(); break;
                 case "clear_shapes_by_tag": await this.scene.clearShapesByTag(msg); break;
@@ -2151,6 +2142,12 @@ export class MolSysViewerController {
                 case "hide_region": await this.state.hideRegion(msg); break;
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
                 case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
+                case "set_history_state":
+                    this.groupPanel?.updateSelectionHistoryState({
+                        canUndo: Boolean((msg as any).can_undo),
+                        canRedo: Boolean((msg as any).can_redo),
+                    });
+                    break;
                 case "region_details": this.groupPanel.updateRegionDetails(msg as any); break;
                 case "batch_region_operations": await this.state.applyRegionOperations(msg as any); break;
                 case "delete_region": {
@@ -2507,7 +2504,6 @@ export class MolSysViewerController {
         if (last) {
             const structure = last.cell.obj?.data;
             this.currentStructure = last.cell.transform.ref as any;
-            this.activeSelection.clearHistory();
             this.groupPanel.setStructure(structure);
             this.refreshNavigatePanel();
             this.addonsPanel.setVisible(true);
@@ -2519,7 +2515,6 @@ export class MolSysViewerController {
             this.trajectory.notifyListeners();
         } else {
             this.currentStructure = undefined;
-            this.activeSelection.clearHistory();
             this.groupPanel.setStructure(undefined);
             this.refreshNavigatePanel();
             this.activeSelection.setAllAvailableItems([]);

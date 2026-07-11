@@ -421,10 +421,6 @@ export class ActiveSelectionController {
     private items: ActiveSelectionItem[] = [];
     private allAvailableItems: GroupSelectionItem[] = [];
     private anchorItem: ActiveSelectionItem | null = null;
-    private readonly undoStack: ActiveSelectionItem[][] = [];
-    private readonly redoStack: ActiveSelectionItem[][] = [];
-    private readonly historyLimit = 10;
-    private historyListener?: (state: { canUndo: boolean; canRedo: boolean }) => void;
 
     // The original in-memory items (with their non-enumerable shape ``_loci`` refs)
     // for callers that need the live JS objects (e.g. ``syncVisualSelection`` to
@@ -436,45 +432,8 @@ export class ActiveSelectionController {
 
     constructor(private readonly notify?: (msg: any) => void) {}
 
-    setHistoryListener(listener: (state: { canUndo: boolean; canRedo: boolean }) => void): void {
-        this.historyListener = listener;
-        this.emitHistoryState();
-    }
-
     setAllAvailableItems(items: GroupSelectionItem[]): void {
         this.allAvailableItems = items;
-    }
-
-    canUndo(): boolean {
-        return this.undoStack.length > 0;
-    }
-
-    canRedo(): boolean {
-        return this.redoStack.length > 0;
-    }
-
-    clearHistory(): void {
-        this.undoStack.length = 0;
-        this.redoStack.length = 0;
-        this.emitHistoryState();
-    }
-
-    undo(): void {
-        const previous = this.undoStack.pop();
-        if (!previous) return;
-        this.redoStack.push([...this.items]);
-        this.items = [...previous];
-        this.emit();
-        this.emitHistoryState();
-    }
-
-    redo(): void {
-        const next = this.redoStack.pop();
-        if (!next) return;
-        this.undoStack.push([...this.items]);
-        this.items = [...next];
-        this.emit();
-        this.emitHistoryState();
     }
 
     handlePrimaryClick(ev: any): void {
@@ -629,18 +588,11 @@ export class ActiveSelectionController {
             this.emit();
             return;
         }
-        this.undoStack.push([...this.items]);
-        if (this.undoStack.length > this.historyLimit) {
-            this.undoStack.shift();
-        }
-        this.redoStack.length = 0;
+        // Undo/redo is owned by the single scene history (Python view.history),
+        // which checkpoints on the resulting interaction_active_selection_changed
+        // event; this controller no longer keeps its own stack.
         this.items = [...next];
         this.emit();
-        this.emitHistoryState();
-    }
-
-    private emitHistoryState(): void {
-        this.historyListener?.({ canUndo: this.canUndo(), canRedo: this.canRedo() });
     }
 }
 

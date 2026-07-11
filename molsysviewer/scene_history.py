@@ -72,6 +72,20 @@ class SceneHistory:
         if self._suspended:
             return
         self._depth = max(0, self._depth - 1)
+        if self._depth == 0:
+            self._notify_state()
+
+    def _notify_state(self) -> None:
+        """Push can_undo / can_redo to the frontend so the GUI Undo/Redo buttons
+        reflect the single scene history (not a separate frontend stack)."""
+        send = getattr(self._view, "_send_runtime_only", None)
+        if send is None:
+            return
+        send({
+            "op": "set_history_state",
+            "can_undo": self.can_undo(),
+            "can_redo": self.can_redo(),
+        })
 
     # ── Public API ─────────────────────────────────────────────────────────
 
@@ -89,6 +103,7 @@ class SceneHistory:
         snapshot = self._undo.pop()
         self._redo.append(current)
         self._restore(snapshot)
+        self._notify_state()
         return True
 
     def redo(self) -> bool:
@@ -99,6 +114,7 @@ class SceneHistory:
         snapshot = self._redo.pop()
         self._undo.append(current)
         self._restore(snapshot)
+        self._notify_state()
         return True
 
     def clear(self) -> None:
@@ -106,6 +122,7 @@ class SceneHistory:
         self._undo.clear()
         self._redo.clear()
         self._depth = 0
+        self._notify_state()
 
     def _restore(self, snapshot: dict) -> None:
         # Suspend checkpointing so import_state's own mutations do not push

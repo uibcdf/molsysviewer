@@ -401,39 +401,6 @@ test("ActiveSelectionController supports explicit subtract and intersect operati
     assert.strictEqual(events.at(-1)?.source_kind, "empty");
 });
 
-test("ActiveSelectionController supports bounded undo redo and history invalidation", () => {
-    const events: any[] = [];
-    const historyStates: any[] = [];
-    const controller = new ActiveSelectionController((msg) => events.push(msg));
-    controller.setHistoryListener((state) => historyStates.push(state));
-
-    controller.handlePrimaryClick(clickEvent([1]));
-    controller.handlePrimaryClick(clickEvent([3], true));
-
-    assert.strictEqual(controller.canUndo(), true);
-    assert.strictEqual(controller.canRedo(), false);
-    assert.deepStrictEqual(events.at(-1).atom_indices, [0, 1, 2, 3, 4]);
-
-    controller.undo();
-    assert.deepStrictEqual(events.at(-1).atom_indices, [0, 1, 2]);
-    assert.strictEqual(controller.canUndo(), true);
-    assert.strictEqual(controller.canRedo(), true);
-
-    controller.redo();
-    assert.deepStrictEqual(events.at(-1).atom_indices, [0, 1, 2, 3, 4]);
-    assert.strictEqual(controller.canRedo(), false);
-
-    controller.undo();
-    controller.handlePrimaryClick(clickEvent([3]));
-    assert.deepStrictEqual(events.at(-1).atom_indices, [3, 4]);
-    assert.strictEqual(controller.canRedo(), false);
-
-    controller.clearHistory();
-    assert.strictEqual(controller.canUndo(), false);
-    assert.strictEqual(controller.canRedo(), false);
-    assert.deepStrictEqual(historyStates.at(-1), { canUndo: false, canRedo: false });
-});
-
 test("ActiveSelectionController supports shape selections", () => {
     const events: any[] = [];
     const controller = new ActiveSelectionController((msg) => events.push(msg));

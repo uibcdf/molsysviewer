@@ -102,3 +102,42 @@ def test_undo_absorbs_active_selection_changes():
     assert sorted(view.active_selection.atom_indices) == [5, 6]
     view.history.undo()
     assert sorted(view.active_selection.atom_indices) == [0, 1, 2]
+
+
+def _pick(view, indices):
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_active_selection_changed",
+        "atom_indices": list(indices),
+    })
+
+
+def test_frontend_pick_is_checkpointed_and_undoable():
+    view = _mute(demo["dialanine"])
+    _pick(view, [0, 1, 2])
+    assert sorted(view.active_selection.atom_indices) == [0, 1, 2]
+    assert view.history.can_undo()
+    _pick(view, [5, 6])
+    assert sorted(view.active_selection.atom_indices) == [5, 6]
+
+    # Undo, driven through the single scene history via the frontend event.
+    view._handle_frontend_event({"event": "scene_history_undo"})  # noqa: SLF001
+    assert sorted(view.active_selection.atom_indices) == [0, 1, 2]
+
+
+def test_unchanged_pick_echo_does_not_add_a_history_entry():
+    view = _mute(demo["dialanine"])
+    _pick(view, [0, 1, 2])
+    depth = len(view.history._undo)  # noqa: SLF001
+    # An echo of the same selection (what a Python-driven set produces) must not
+    # add a spurious checkpoint.
+    _pick(view, [0, 1, 2])
+    assert len(view.history._undo) == depth  # noqa: SLF001
+
+
+def test_history_state_is_pushed_to_the_frontend():
+    view = _mute(demo["dialanine"])
+    pushed = []
+    view._send_runtime_only = lambda m: pushed.append(m)  # noqa: SLF001
+    view.regions.add(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    states = [m for m in pushed if m.get("op") == "set_history_state"]
+    assert states and states[-1]["can_undo"] is True

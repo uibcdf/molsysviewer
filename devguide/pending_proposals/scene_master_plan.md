@@ -511,15 +511,23 @@ says why not.
 Selections have an undo/redo stack in the frontend (`activeSelection.canUndo()`). Regions have
 none. Adding a second, independent stack would guarantee two divergent truths.
 
-- [ ] A single **scene-level command history**: every mutating public operation (create, delete,
+- [x] A single **scene-level command history**: every mutating public operation (create, delete,
       rename, represent, colour, reorder, compose, layer-assign) is an undoable command.
-- [ ] It **absorbs** the frontend selection history rather than coexisting with it.
-- [ ] It is invalidated on `apply_system_edit` and on load, as the selection history already is.
-- [ ] `view.history.undo() / redo() / clear()`, plus GUI affordances.
-- [ ] It is **not** serialised into state v2 (session-scoped), and that is stated.
+      *(Phase 8a — snapshot-based `SceneHistory`, `@records_scene_history` decorator with a
+      re-entrancy guard so a composite op is one undo step.)*
+- [x] It **absorbs** the frontend selection history rather than coexisting with it.
+      *(Phase 8b — the frontend selection undo/redo stack is removed; a user pick routes through
+      Python as a checkpointed, content-guarded operation; the active selection is serialised in
+      state v2 and restored on undo. Option A: one Python history, no second stack.)*
+- [x] It is invalidated on `apply_system_edit` and on load, as the selection history already is.
+- [x] `view.history.undo() / redo() / clear()`, plus GUI affordances (the Undo/Redo buttons now
+      drive the Python history and reflect its `set_history_state` push).
+- [x] It is **not** serialised into state v2 (session-scoped), and that is stated.
 
 **Acceptance:** undo of every mutating operation restores the prior scene, verified by comparing
 `export_state` before and after; there is exactly one history object in the codebase.
+**Done (Phase 8a + 8b):** `tests/test_scene_history.py` (11 tests, mutation-verified), the frontend
+history stack is gone (single source of truth), Decision 1 = snapshots + Decision 2 = Option A.
 
 ---
 
