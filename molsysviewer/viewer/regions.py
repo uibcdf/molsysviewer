@@ -544,7 +544,7 @@ class RegionsMixin:
             operand_uids = [self._regions[rt].uid for rt in region_tags if rt in self._regions]
             if self._molsys is None:
                 raise ValueError("Cannot build complement: no molecular system loaded.")
-            total = int(self._molsys._get_n_atoms())
+            total = int(self._molsys.get_n_atoms())
             atom_indices = [i for i in range(total) if i not in exclude]
             if provenance is None:
                 provenance = {
@@ -699,6 +699,63 @@ class RegionsMixin:
         region.repr_params = params
         return region
 
+    _SPLIT_ELEMENT_ATTRIBUTES = {
+        "group": "group_index",
+        "component": "component_index",
+        "chain": "chain_index",
+        "molecule": "molecule_index",
+        "entity": "entity_index",
+    }
+
+    @signal(tags=["region", "query"])
+    @digest()
+    def count_regions_by(
+        self,
+        element: str,
+        selection: str | Any = "all",
+        structure_indices: str | Any = "all",
+        syntax: str = "MolSysMT",
+        *,
+        skip_digestion: bool = False,
+    ) -> int:
+        """Return how many regions :meth:`make_regions_by` would create, without creating them.
+
+        A cheap probe so a caller can size a split — a ``group`` split can produce
+        hundreds of regions — and decide (or confirm) before running it.
+        """
+        if element not in self._SPLIT_ELEMENT_ATTRIBUTES:
+            raise ValueError(
+                f"Unsupported element for count_regions_by: {element!r}. "
+                f"Allowed: {sorted(self._SPLIT_ELEMENT_ATTRIBUTES)}"
+            )
+        if self._molsys is None:
+            raise ValueError("No molecular system loaded.")
+        atom_indices = self.select(
+            selection=selection,
+            structure_indices=structure_indices,
+            element="atom",
+            syntax=syntax,
+            skip_digestion=True,
+        )
+        if not atom_indices:
+            return 0
+        index_attribute = self._SPLIT_ELEMENT_ATTRIBUTES[element]
+        values = msm.get(
+            self._molsys,
+            element="atom",
+            selection=atom_indices,
+            output_type="dictionary",
+            skip_digestion=True,
+            **{index_attribute: True},
+        )
+        distinct: set[int] = set()
+        for raw in values.get(index_attribute, []):
+            try:
+                distinct.add(int(raw))
+            except (TypeError, ValueError):
+                continue
+        return len(distinct)
+
     @signal(tags=["region", "split"])
     @digest()
     def make_regions_by(
@@ -713,22 +770,18 @@ class RegionsMixin:
     ) -> dict[str, Region]:
         """Create one region per selected hierarchy element and return them by tag."""
         representation = self._normalize_representation_type(representation)
-        allowed = {
-            "group": "group_index",
-            "component": "component_index",
-            "chain": "chain_index",
-            "molecule": "molecule_index",
-            "entity": "entity_index",
-        }
-        if element not in allowed:
-            raise ValueError(f"Unsupported element for make_regions_by: {element!r}. Allowed: {sorted(allowed)}")
+        if element not in self._SPLIT_ELEMENT_ATTRIBUTES:
+            raise ValueError(
+                f"Unsupported element for make_regions_by: {element!r}. "
+                f"Allowed: {sorted(self._SPLIT_ELEMENT_ATTRIBUTES)}"
+            )
         with self._batch_region_updates():
             return self._split_into_regions(
                 selection=selection,
                 structure_indices=structure_indices,
                 syntax=syntax,
                 element_label=element,
-                index_attribute=allowed[element],
+                index_attribute=self._SPLIT_ELEMENT_ATTRIBUTES[element],
                 representation=representation,
             )
 

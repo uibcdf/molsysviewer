@@ -246,58 +246,80 @@ class Region:
         self,
         *,
         operation: str,
-        other: Any,
+        others: tuple[Any, ...],
         atom_indices: list[int],
         tag: str | None,
         representation: str | None,
         repr_params: dict[str, Any],
     ) -> "Region":
-        other_tag, _ = self._coerce_region_operand(other)
-        base_tag = tag or self._view._unique_region_tag(f"{self.tag}_{operation}_{other_tag}")  # noqa: SLF001
+        other_tags = [self._coerce_region_operand(other)[0] for other in others]
+        base_tag = tag or self._view._unique_region_tag(  # noqa: SLF001
+            f"{self.tag}_{operation}_{'_'.join(other_tags)}"
+        )
         if not atom_indices:
             raise ValueError(f"Boolean region composition produced an empty region for {base_tag!r}.")
         operand_uids = [self.uid]
-        if isinstance(other, Region):
-            operand_uids.append(other.uid)
-            frame_dependent = self.frame_dependent or other.frame_dependent
-            mode = "dynamic" if self.mode == "dynamic" and other.mode == "dynamic" else "static"
-        else:
-            frame_dependent = False
-            mode = "static"
+        region_others = [other for other in others if isinstance(other, Region)]
+        has_non_region = len(region_others) != len(others)
+        operand_uids.extend(other.uid for other in region_others)
+        frame_dependent = self.frame_dependent or any(o.frame_dependent for o in region_others)
+        # Dynamic only if every operand is a dynamic region; a raw-index or static
+        # operand makes the result static (§R.5, closure under composition).
+        mode = (
+            "dynamic"
+            if not has_non_region and self.mode == "dynamic"
+            and all(o.mode == "dynamic" for o in region_others)
+            else "static"
+        )
+        provenance: dict[str, Any] = {
+            "kind": "boolean",
+            "op": operation,
+            "operands": operand_uids,
+            "frame_dependent": frame_dependent,
+        }
+        if has_non_region:
+            provenance["broken"] = True
+            provenance["missing"] = ["non-region-operand"]
         region = self._view._new_region_impl(  # noqa: SLF001
             atom_indices=atom_indices,
             tag=base_tag,
             representation=representation,
-            provenance={
-                "kind": "boolean",
-                "op": operation,
-                "operands": operand_uids,
-                "frame_dependent": frame_dependent,
-                **({} if isinstance(other, Region) else {"broken": True, "missing": ["non-region-operand"]}),
-            },
+            provenance=provenance,
             skip_digestion=True,
             **repr_params,
         )
         region.mode = mode
         return region
 
+    def _combined_operand_indices(self, others: tuple[Any, ...]) -> list[int]:
+        """Union of the atom sets of every operand (order-preserving)."""
+        seen: set[int] = set()
+        combined: list[int] = []
+        for other in others:
+            _, indices = self._coerce_region_operand(other)
+            for index in indices:
+                if index not in seen:
+                    seen.add(index)
+                    combined.append(index)
+        return combined
+
     def difference(
         self,
-        other: Any,
-        *,
+        *others: Any,
         tag: str | None = None,
         representation: str | None = None,
         skip_digestion: bool = False,
         **repr_params: Any,
     ) -> "Region":
-        """Create a region with atoms from this region excluding atoms from *other*."""
+        """Create a region with this region's atoms excluding every operand: ``A - (B | C | ...)``."""
+        if not others:
+            raise TypeError("difference() requires at least one operand.")
         lhs = self._require_atom_indices()
-        _, rhs = self._coerce_region_operand(other)
-        rhs_set = set(rhs)
+        rhs_set = set(self._combined_operand_indices(others))
         atom_indices = [index for index in lhs if index not in rhs_set]
         return self._new_boolean_region(
             operation="minus",
-            other=other,
+            others=others,
             atom_indices=atom_indices,
             tag=tag,
             representation=representation,
@@ -306,21 +328,23 @@ class Region:
 
     def intersection(
         self,
-        other: Any,
-        *,
+        *others: Any,
         tag: str | None = None,
         representation: str | None = None,
         skip_digestion: bool = False,
         **repr_params: Any,
     ) -> "Region":
-        """Create a region with atoms common to this region and *other*."""
-        lhs = self._require_atom_indices()
-        _, rhs = self._coerce_region_operand(other)
-        rhs_set = set(rhs)
-        atom_indices = [index for index in lhs if index in rhs_set]
+        """Create a region with atoms common to this region and every operand: ``A & B & C & ...``."""
+        if not others:
+            raise TypeError("intersection() requires at least one operand.")
+        atom_indices = list(self._require_atom_indices())
+        for other in others:
+            _, rhs = self._coerce_region_operand(other)
+            rhs_set = set(rhs)
+            atom_indices = [index for index in atom_indices if index in rhs_set]
         return self._new_boolean_region(
             operation="and",
-            other=other,
+            others=others,
             atom_indices=atom_indices,
             tag=tag,
             representation=representation,
@@ -329,25 +353,24 @@ class Region:
 
     def union(
         self,
-        other: Any,
-        *,
+        *others: Any,
         tag: str | None = None,
         representation: str | None = None,
         skip_digestion: bool = False,
         **repr_params: Any,
     ) -> "Region":
-        """Create a region containing atoms from this region and *other*."""
-        lhs = self._require_atom_indices()
-        _, rhs = self._coerce_region_operand(other)
+        """Create a region containing this region's atoms and every operand's: ``A | B | C | ...``."""
+        if not others:
+            raise TypeError("union() requires at least one operand.")
         seen: set[int] = set()
         atom_indices: list[int] = []
-        for index in (*lhs, *rhs):
+        for index in (*self._require_atom_indices(), *self._combined_operand_indices(others)):
             if index not in seen:
                 seen.add(index)
                 atom_indices.append(index)
         return self._new_boolean_region(
             operation="or",
-            other=other,
+            others=others,
             atom_indices=atom_indices,
             tag=tag,
             representation=representation,
