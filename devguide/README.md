@@ -145,6 +145,13 @@ the code silently violates, plus a 3-second-per-message performance toll. Start 
 `sandbox/Curso/`, `docs/` and `bloques.md` are **expected to break** during this work and are
 regenerated in the final phases.
 
+## Standing requirement: session reproducibility
+
+- [`session_reproducibility.md`](session_reproducibility.md) — the durable rule that a user
+  must be able to save a session and reload it later, unchanged. Any state a user can create
+  must round-trip through `export_state` / `import_state`, or the promise breaks **silently**.
+  Read it before adding any new kind of scene state.
+
 ## Standards and Conventions
 
 This project strictly adheres to the UIBCDF software engineering standards. Please refer to the root `*_GUIDE.md` files for the canonical documentation of each infrastructure tool.

@@ -689,7 +689,7 @@ none were reported by a failing test.
 | 3 | Whole API + rebuild bugs | M | ☑ | 2026-07-10 | *(this commit)* | **Passed.** Mechanical criterion clean; both rebuild bugs + orthogonality + new API mutation-verified. |
 | 4 | Contract B/O: colour + order | L | ☑ | 2026-07-11 | *(this commit)* | **Passed.** Done in two slices (4a colour/decorator, 4b order→render + region-vs-region ownership). Decorator, layers, precedence, region-vs-region masking + R-O1 all mutation-verified in real Mol\*. `order` serialisation deferred to P6. |
 | 5 | Contract R: recipes | L | ☑ | 2026-07-11 | *(this commit)* | **Passed.** provenance/uid/mode/frame_dependent, uid-referenced recipes, operand-deletion freeze, read-only atom_indices, and rebuild re-evaluation (not remap) all mutation-verified. `mode` is a validating setter, not a `new_region` arg. Dynamic evaluation → P10, serialisation → P6. |
-| 6 | Contract C: state v2 | M | ☐ | — | — | — |
+| 6 | Contract C: state v2 | M | ☑ | 2026-07-11 | *(this commit)* | **Passed.** Implemented by Claude (author == auditor; flagged). Round-trip overlap winner, order high-water mark, topological restore, transient filter, whole restore all mutation-verified. No v1 reader. Layer-membership is a format-only field (behaviour → P9). |
 | 7 | API completeness & symmetry | L | ☐ | — | — | — |
 | 8 | Contract H: command history | L | ☐ | — | — | — |
 | 9 | Layer membership | M | ☐ | — | — | — |

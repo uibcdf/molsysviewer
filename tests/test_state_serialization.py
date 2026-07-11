@@ -11,12 +11,12 @@ def test_export_state_returns_json_serializable_dict():
     state = view.export_state()
 
     assert isinstance(state, dict)
-    assert state["version"] == 1
+    assert state["version"] == 2
 
     # Must be fully JSON-serializable (no numpy types, no non-serializable objects)
     serialized = json.dumps(state)
     restored = json.loads(serialized)
-    assert restored["version"] == 1
+    assert restored["version"] == 2
 
 
 def test_export_state_captures_annotations():
@@ -135,7 +135,7 @@ def test_import_state_clear_first_removes_existing_state():
     view = MolSysView()
     view.measurements.add_distance([0], [1], tag="old")
 
-    new_state = {"version": 1, "annotations": [], "measurements": [], "selections": [], "regions": []}
+    new_state = {"version": 2, "annotations": [], "measurements": [], "selections": [], "regions": []}
     view.import_state(new_state, clear_first=True)
 
     assert view.measurements.count() == 0
@@ -146,7 +146,7 @@ def test_import_state_merge_keeps_existing_measurements():
     view.measurements.add_distance([0], [1], tag="existing")
 
     extra_state = {
-        "version": 1,
+        "version": 2,
         "annotations": [],
         "measurements": [{
             "op": "add_distance_measurement",
