@@ -256,6 +256,7 @@ class MolSysView(
         self._scene_objects: Dict[str, SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
         self._region_counter = 0
+        self._region_uid_counter = 0
         self._annotation_counter = 0
         self._layer_counter = 0
         self._measurement_counter = 0
@@ -794,7 +795,7 @@ class MolSysView(
             tag = content.get("tag")
             if tag and tag in self._regions:
                 region = self._regions[tag]
-                region.atom_indices = content.get("atom_indices") or region.atom_indices
+                region._set_atom_indices(content.get("atom_indices") or region.atom_indices)  # noqa: SLF001
                 if content.get("selection") is not None:
                     region.selection = content.get("selection")
         elif event == "region_deleted":
@@ -2003,16 +2004,21 @@ class MolSysView(
             if keep:
                 self.atom_mask[keep] = True
 
-        if atom_index_map is not None:
-            for tag, region in list(self._regions.items()):
-                if region.atom_indices is None:
+        for tag, region in list(self._regions.items()):
+            if region.atom_indices is None:
+                continue
+            evaluated_atom_indices = None
+            if Region._is_reevaluable_provenance(dict(region.provenance)):  # noqa: SLF001
+                evaluated_atom_indices = self._evaluate_region_provenance(region)
+            if evaluated_atom_indices is None:
+                if atom_index_map is None:
                     continue
-                remapped_atom_indices = self._remap_indices(list(region.atom_indices), atom_index_map)
-                if len(remapped_atom_indices) == 0:
-                    region._active = False  # noqa: SLF001
-                    self._unregister_region(tag)
-                    continue
-                region.atom_indices = tuple(remapped_atom_indices)
+                evaluated_atom_indices = self._remap_indices(list(region.atom_indices), atom_index_map)
+            if len(evaluated_atom_indices) == 0:
+                region._active = False  # noqa: SLF001
+                self._unregister_region(tag)
+                continue
+            region._set_atom_indices(evaluated_atom_indices)  # noqa: SLF001
 
         # Rebuild the message history to reflect the new state (important for HTML exports).
         self._message_history = []

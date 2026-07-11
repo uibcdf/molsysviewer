@@ -111,11 +111,17 @@ class Selection:
         atom_indices = info.get("atom_indices") or []
         if not isinstance(atom_indices, list) or len(atom_indices) == 0:
             raise ValueError(f"Selection {self.tag!r} does not resolve to any atoms.")
-        return self._view.new_region(  # noqa: SLF001
+        return self._view._new_region_impl(  # noqa: SLF001
             tag=tag,
             selection="all",
             atom_indices=list(atom_indices),
             representation=representation,
+            provenance={
+                "kind": "saved_selection",
+                "selection_tag": self.tag,
+                "atom_indices": list(atom_indices),
+                "frame_dependent": False,
+            },
             skip_digestion=True,
             **params,
         )

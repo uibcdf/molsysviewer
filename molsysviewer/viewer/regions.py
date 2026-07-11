@@ -42,6 +42,10 @@ class RegionsMixin:
         self._region_counter += 1
         return f"region{self._region_counter}"
 
+    def _next_region_uid(self) -> str:
+        self._region_uid_counter += 1
+        return f"region-uid-{self._region_uid_counter}"
+
     def _slugify_region_tag(self, value: str) -> str:
         text = re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_")
         return text or self._next_region_tag()
@@ -56,6 +60,108 @@ class RegionsMixin:
             counter += 1
             candidate = f"{base}__{counter}"
         return candidate
+
+    def _recipe_frame_dependent(self, expression: Any, syntax: str = "MolSysMT") -> bool:
+        text = str(expression or "").lower()
+        return any(token in text for token in (" within ", "within ", "distance", "around", "near"))
+
+    def _region_by_uid(self, uid: str) -> Region | None:
+        for region in self._regions.values():
+            if region.uid == uid:
+                return region
+        return None
+
+    def _operands_are_dynamic(self, operand_uids: list[str]) -> bool:
+        if not operand_uids:
+            return False
+        operands = [self._region_by_uid(uid) for uid in operand_uids]
+        if any(region is None for region in operands):
+            return False
+        return all(region.mode == "dynamic" for region in operands if region is not None)
+
+    def _operands_frame_dependent(self, operand_uids: list[str]) -> bool:
+        return any(
+            bool(region and region.frame_dependent)
+            for region in (self._region_by_uid(uid) for uid in operand_uids)
+        )
+
+    def _evaluate_region_provenance(self, region: Region) -> list[int] | None:
+        provenance = dict(region.provenance)
+        if provenance.get("broken"):
+            return None
+        kind = provenance.get("kind")
+        if kind == "query":
+            return [
+                int(index)
+                for index in msm.select(
+                    self._molsys,
+                    selection=provenance.get("expression", "all"),
+                    syntax=str(provenance.get("syntax") or "MolSysMT"),
+                    skip_digestion=True,
+                )
+            ]
+        if kind == "split":
+            element = str(provenance.get("element"))
+            value = int(provenance.get("value"))
+            index_attribute = {
+                "group": "group_index",
+                "component": "component_index",
+                "chain": "chain_index",
+                "molecule": "molecule_index",
+                "entity": "entity_index",
+            }.get(element)
+            if index_attribute is None:
+                return None
+            values = msm.get(
+                self._molsys,
+                element="atom",
+                selection="all",
+                output_type="dictionary",
+                skip_digestion=True,
+                **{index_attribute: True},
+            )
+            raw_indices = list(values.get(index_attribute, []))
+            return [atom_index for atom_index, item_index in enumerate(raw_indices) if item_index == value]
+        if kind == "duplicate":
+            source = self._region_by_uid(str(provenance.get("of")))
+            return list(source.atom_indices or []) if source is not None else None
+        if kind == "complement":
+            operand_uids = [str(uid) for uid in provenance.get("of", [])]
+            excluded: set[int] = set()
+            for uid in operand_uids:
+                operand = self._region_by_uid(uid)
+                if operand is None:
+                    return None
+                excluded.update(operand.atom_indices or ())
+            total = int(self._molsys.get_n_atoms())
+            return [index for index in range(total) if index not in excluded]
+        if kind == "boolean":
+            operand_uids = [str(uid) for uid in provenance.get("operands", [])]
+            operands = [self._region_by_uid(uid) for uid in operand_uids]
+            if any(operand is None for operand in operands):
+                return None
+            if not operands:
+                return []
+            left = list(operands[0].atom_indices or [])
+            op = provenance.get("op")
+            if op in {"minus", "difference", "subtract"}:
+                right = set(operands[1].atom_indices or []) if len(operands) > 1 else set()
+                return [index for index in left if index not in right]
+            if op in {"and", "intersection"}:
+                current = set(left)
+                for operand in operands[1:]:
+                    current &= set(operand.atom_indices or [])
+                return [index for index in left if index in current]
+            if op in {"or", "union"}:
+                seen: set[int] = set()
+                result: list[int] = []
+                for operand in operands:
+                    for index in operand.atom_indices or ():
+                        if index not in seen:
+                            seen.add(index)
+                            result.append(int(index))
+                return result
+        return None
 
     def _label_for_split_region(self, *, element_label: str, item_index: int) -> str | None:
         template = "{name}"
@@ -144,10 +250,16 @@ class RegionsMixin:
                 base_tag = f"{element_label}_{item_index}"
             tag = self._unique_region_tag(base_tag, used_tags)
             used_tags.add(tag)
-            created[tag] = self.new_region(
+            created[tag] = self._new_region_impl(
                 atom_indices=bucket["atom_indices"],
                 tag=tag,
                 representation=representation,
+                provenance={
+                    "kind": "split",
+                    "element": element_label,
+                    "value": item_index,
+                    "frame_dependent": False,
+                },
                 skip_digestion=True,
             )
         return created
@@ -174,7 +286,25 @@ class RegionsMixin:
         return sorted(ALLOWED_PRESETS | set(user_presets.keys()))
 
     def _unregister_region(self, tag: str) -> None:
+        region = self._regions.get(tag)
+        if region is not None:
+            missing_uid = region.uid
+            for candidate in list(self._regions.values()):
+                if candidate is region:
+                    continue
+                if missing_uid in candidate.dependencies:
+                    candidate._freeze_broken_recipe(missing_uid)  # noqa: SLF001
         self._regions.pop(tag, None)
+        self._refresh_region_dynamic_modes()
+
+    def _refresh_region_dynamic_modes(self) -> None:
+        changed = True
+        while changed:
+            changed = False
+            for region in list(self._regions.values()):
+                if region.mode == "dynamic" and not region._can_be_dynamic():  # noqa: SLF001
+                    region._set_mode("static")  # noqa: SLF001
+                    changed = True
 
     def _set_all_regions_visibility(self, *, hidden: bool) -> None:
         tags: list[str] = []
@@ -362,6 +492,32 @@ class RegionsMixin:
         **repr_params: Any,
     ) -> Region:
         """Create a new region (structural subset) with an optional representation."""
+        return self._new_region_impl(
+            selection=selection,
+            atom_indices=atom_indices,
+            tag=tag,
+            representation=representation,
+            complement_of_regions=complement_of_regions,
+            syntax=syntax,
+            skip_digestion=True,
+            **repr_params,
+        )
+
+    def _new_region_impl(
+        self,
+        selection: str | Any = "all",
+        *,
+        atom_indices: list[int] | None = None,
+        tag: str | None = None,
+        representation: str | None = None,
+        complement_of_regions: str | list[str] | None = None,
+        syntax: str = "MolSysMT",
+        provenance: dict[str, Any] | None = None,
+        frame_dependent: bool | None = None,
+        skip_digestion: bool = False,
+        **repr_params: Any,
+    ) -> Region:
+        """Internal region constructor that may receive recipe metadata."""
         tag = tag or self._next_region_tag()
         if tag in self._regions:
             raise ValueError(f"A region with tag {tag!r} already exists.")
@@ -369,6 +525,7 @@ class RegionsMixin:
             representation = "inherit"
         else:
             representation = self._normalize_representation_type(representation)
+        region_mode = "static"
 
         if atom_indices is None and complement_of_regions is not None:
             region_tags = []
@@ -384,12 +541,28 @@ class RegionsMixin:
                 r = self._regions.get(rt)
                 if r and r.atom_indices is not None:
                     exclude.update(r.atom_indices)
+            operand_uids = [self._regions[rt].uid for rt in region_tags if rt in self._regions]
             if self._molsys is None:
                 raise ValueError("Cannot build complement: no molecular system loaded.")
             total = int(self._molsys._get_n_atoms())
             atom_indices = [i for i in range(total) if i not in exclude]
+            if provenance is None:
+                provenance = {
+                    "kind": "complement",
+                    "of": operand_uids,
+                    "frame_dependent": self._operands_frame_dependent(operand_uids),
+                }
+                if self._operands_are_dynamic(operand_uids):
+                    region_mode = "dynamic"
         elif atom_indices is None and self._molsys is not None:
             atom_indices = list(msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True))
+            if provenance is None:
+                provenance = {
+                    "kind": "query",
+                    "expression": selection,
+                    "syntax": syntax,
+                    "frame_dependent": self._recipe_frame_dependent(selection, syntax),
+                }
         elif atom_indices is None and self._molsys is None:
             raise ValueError("No molecular system loaded. Load a system before creating regions.")
 
@@ -397,6 +570,14 @@ class RegionsMixin:
             raise ValueError("Cannot create region: empty atom_indices for selection.")
 
         atom_indices = [int(i) for i in atom_indices]
+        if provenance is None:
+            provenance = {
+                "kind": "active_selection",
+                "atom_indices": list(atom_indices),
+                "frame_dependent": False,
+            }
+        if frame_dependent is not None:
+            provenance["frame_dependent"] = bool(frame_dependent)
 
         visual_representation = representation
         visual_repr_params = dict(repr_params)
@@ -409,6 +590,8 @@ class RegionsMixin:
             atom_indices=atom_indices,
             representation=None if has_visual_spec else representation,
             repr_params={},
+            provenance=provenance,
+            mode=region_mode,
         )
         self._regions[tag] = region
         if has_visual_spec:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from copy import deepcopy
+from types import MappingProxyType
 from typing import Any, Dict, List, Optional
 import warnings
 
@@ -22,17 +24,129 @@ class Region:
         atom_indices: Optional[list[int]] = None,
         representation: str | None = None,
         repr_params: Optional[Dict[str, Any]] = None,
+        uid: str | None = None,
+        provenance: dict[str, Any] | None = None,
+        mode: str = "static",
+        frame_dependent: bool | None = None,
     ) -> None:
         self._view = view
+        self.uid = uid or view._next_region_uid()  # noqa: SLF001
         self.tag = tag
         self.selection = selection
-        self.atom_indices = tuple(atom_indices) if atom_indices is not None else None
+        self._atom_indices = tuple(atom_indices) if atom_indices is not None else None
+        self._provenance = deepcopy(provenance) if provenance is not None else {"kind": "imported", "state_version": None}
+        if frame_dependent is not None:
+            self._provenance["frame_dependent"] = bool(frame_dependent)
+        else:
+            self._provenance.setdefault("frame_dependent", False)
+        self._mode = "static"
+        self._set_mode(mode)
         self.representation = representation
         self.preset: str | None = None
         self.repr_params = repr_params or {}
         self.order: int = view._next_region_order()  # noqa: SLF001
         self._active = True
         self._hidden = False
+
+    @property
+    def atom_indices(self) -> tuple[int, ...] | None:
+        return self._atom_indices
+
+    def _set_atom_indices(self, atom_indices: Optional[list[int] | tuple[int, ...]]) -> None:
+        self._atom_indices = tuple(int(index) for index in atom_indices) if atom_indices is not None else None
+
+    @property
+    def provenance(self):
+        return MappingProxyType(deepcopy(self._provenance))
+
+    @property
+    def mode(self) -> str:
+        return self._mode
+
+    def _set_mode(self, mode: str) -> None:
+        normalized = str(mode or "static").strip().lower()
+        if normalized not in {"static", "dynamic"}:
+            raise ValueError("Region.mode must be 'static' or 'dynamic'.")
+        if normalized == "dynamic" and not self._can_be_dynamic():
+            raise ValueError(f"Region {self.tag!r} has no re-evaluable recipe and cannot be dynamic.")
+        self._mode = normalized
+
+    def _can_be_dynamic(self) -> bool:
+        if not self._is_reevaluable_provenance(self._provenance):
+            return False
+        kind = self._provenance.get("kind")
+        if kind in {"query", "split"}:
+            return True
+        if kind == "duplicate":
+            source = self._view._region_by_uid(str(self._provenance.get("of")))  # noqa: SLF001
+            return bool(source and source.mode == "dynamic")
+        if kind == "complement":
+            operands = [
+                self._view._region_by_uid(str(uid))  # noqa: SLF001
+                for uid in self._provenance.get("of", [])
+            ]
+            return bool(operands) and all(region is not None and region.mode == "dynamic" for region in operands)
+        if kind == "boolean":
+            operands = [
+                self._view._region_by_uid(str(uid))  # noqa: SLF001
+                for uid in self._provenance.get("operands", [])
+            ]
+            return bool(operands) and all(region is not None and region.mode == "dynamic" for region in operands)
+        return False
+
+    def _set_provenance(self, provenance: dict[str, Any]) -> None:
+        self._provenance = deepcopy(provenance)
+        self._provenance.setdefault("frame_dependent", False)
+        if not self._is_reevaluable_provenance(self._provenance):
+            self._mode = "static"
+
+    def _freeze_broken_recipe(self, missing_uid: str) -> None:
+        provenance = deepcopy(self._provenance)
+        missing = [str(uid) for uid in provenance.get("missing", [])]
+        if str(missing_uid) not in missing:
+            missing.append(str(missing_uid))
+        provenance["broken"] = True
+        provenance["missing"] = missing
+        self._set_provenance(provenance)
+        self._mode = "static"
+
+    @mode.setter
+    def mode(self, value: str) -> None:
+        self._set_mode(value)
+
+    @property
+    def frame_dependent(self) -> bool:
+        return bool(self._provenance.get("frame_dependent", False))
+
+    @property
+    def dependencies(self) -> tuple[str, ...]:
+        return tuple(self._dependency_uids_from_provenance(self._provenance))
+
+    @property
+    def dependents(self) -> tuple[str, ...]:
+        return tuple(
+            region.uid
+            for region in self._view._regions.values()  # noqa: SLF001
+            if self.uid in region.dependencies
+        )
+
+    @staticmethod
+    def _dependency_uids_from_provenance(provenance: dict[str, Any]) -> list[str]:
+        kind = provenance.get("kind")
+        if kind == "boolean":
+            return [str(uid) for uid in provenance.get("operands", [])]
+        if kind == "complement":
+            return [str(uid) for uid in provenance.get("of", [])]
+        if kind == "duplicate":
+            uid = provenance.get("of")
+            return [str(uid)] if uid is not None else []
+        return []
+
+    @staticmethod
+    def _is_reevaluable_provenance(provenance: dict[str, Any]) -> bool:
+        if provenance.get("broken"):
+            return False
+        return provenance.get("kind") in {"query", "split", "complement", "boolean", "duplicate"}
 
     # --- helpers ---
 
@@ -142,13 +256,30 @@ class Region:
         base_tag = tag or self._view._unique_region_tag(f"{self.tag}_{operation}_{other_tag}")  # noqa: SLF001
         if not atom_indices:
             raise ValueError(f"Boolean region composition produced an empty region for {base_tag!r}.")
-        return self._view.new_region(  # noqa: SLF001
+        operand_uids = [self.uid]
+        if isinstance(other, Region):
+            operand_uids.append(other.uid)
+            frame_dependent = self.frame_dependent or other.frame_dependent
+            mode = "dynamic" if self.mode == "dynamic" and other.mode == "dynamic" else "static"
+        else:
+            frame_dependent = False
+            mode = "static"
+        region = self._view._new_region_impl(  # noqa: SLF001
             atom_indices=atom_indices,
             tag=base_tag,
             representation=representation,
+            provenance={
+                "kind": "boolean",
+                "op": operation,
+                "operands": operand_uids,
+                "frame_dependent": frame_dependent,
+                **({} if isinstance(other, Region) else {"broken": True, "missing": ["non-region-operand"]}),
+            },
             skip_digestion=True,
             **repr_params,
         )
+        region.mode = mode
+        return region
 
     def difference(
         self,
@@ -757,12 +888,19 @@ class Region:
         duplicate_tag = tag or self._view._unique_region_tag(f"{self.tag}_copy")  # noqa: SLF001
         params = dict(self.repr_params)
         params.update(repr_params)
-        duplicate = self._view.new_region(  # noqa: SLF001
+        duplicate = self._view._new_region_impl(  # noqa: SLF001
             selection=self.selection,
             atom_indices=list(atom_indices),
             tag=duplicate_tag,
+            provenance={
+                "kind": "duplicate",
+                "of": self.uid,
+                "frame_dependent": self.frame_dependent,
+            },
             skip_digestion=True,
         )
+        if self.mode == "dynamic":
+            duplicate.mode = "dynamic"
         self._view._copy_atom_color_layer(self.tag, duplicate.tag, bump=duplicate)  # noqa: SLF001
         target_representation = representation if representation is not None else self.representation
         if target_representation is not None or self.preset is not None:
@@ -799,11 +937,19 @@ class Region:
         comp_tag = tag or f"Global-{self.tag}"
         total_atoms = int(self._view._molsys.get_n_atoms())  # noqa: SLF001
         complement = [i for i in range(total_atoms) if i not in set(self.atom_indices)]
-        return self._view.new_region(  # noqa: SLF001
+        region = self._view._new_region_impl(  # noqa: SLF001
             atom_indices=complement,
             tag=comp_tag,
+            provenance={
+                "kind": "complement",
+                "of": [self.uid],
+                "frame_dependent": self.frame_dependent,
+            },
             **kwargs,
         )
+        if self.mode == "dynamic":
+            region.mode = "dynamic"
+        return region
 
     @signal(tags=["region", "visibility"])
     @digest()
@@ -956,6 +1102,18 @@ class RegionsManager(dict):
         """Return overlap tags for every managed region."""
         return {tag: region.overlaps(skip_digestion=True) for tag, region in self.items()}
 
+    @signal(tags=["region", "recipe"])
+    @digest()
+    def dependencies(self, skip_digestion: bool = False) -> dict[str, tuple[str, ...]]:
+        """Return region dependency uids keyed by region tag."""
+        return {tag: region.dependencies for tag, region in self.items()}
+
+    @signal(tags=["region", "recipe"])
+    @digest()
+    def dependents(self, skip_digestion: bool = False) -> dict[str, tuple[str, ...]]:
+        """Return dependent region uids keyed by region tag."""
+        return {tag: region.dependents for tag, region in self.items()}
+
     @signal(tags=["region", "order"])
     @digest()
     def raise_to_front(self, tag: str, skip_digestion: bool = False) -> None:
@@ -985,6 +1143,12 @@ class RegionsManager(dict):
                 "atom_indices": atom_indices,
                 "representation": region.representation,
                 "order": region.order,
+                "uid": region.uid,
+                "mode": region.mode,
+                "frame_dependent": region.frame_dependent,
+                "provenance": dict(region.provenance),
+                "dependencies": region.dependencies,
+                "dependents": region.dependents,
                 "visible": not region._hidden,  # noqa: SLF001
                 "active": region._active,  # noqa: SLF001
             }
