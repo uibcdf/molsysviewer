@@ -8,6 +8,7 @@ from smonitor import signal
 from . import pyunitwizard as puw
 from ._private.arg_digestion import digest
 from .colors import expand_values_to_atoms, normalize_color
+from .scene_history import records_scene_history
 
 
 class Whole:
@@ -62,6 +63,7 @@ class Whole:
         },
     )
     @digest()
+    @records_scene_history
     def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Set or update the global representation for the whole structure.
 
@@ -101,6 +103,7 @@ class Whole:
         if hasattr(self._view, "styles"):
             self._view.styles._clear_cached_name()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["representation", "whole"])
     @digest()
     def reset_representation(self, skip_digestion: bool = False) -> None:
@@ -112,6 +115,7 @@ class Whole:
             **dict(self._load_repr_params),
         )
 
+    @records_scene_history
     @signal(tags=["visibility", "whole"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
@@ -119,6 +123,7 @@ class Whole:
         self._view._global_hidden = False  # noqa: SLF001
         self._view._send({"op": "show_whole", "target": "whole"})  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["visibility", "whole"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
@@ -234,6 +239,7 @@ class Whole:
 
     # --- Scalar colour mapping ---
 
+    @records_scene_history
     @signal(tags=["color", "whole"])
     @digest()
     def set_color_scheme(
@@ -317,6 +323,7 @@ class Whole:
             skip_digestion=True,
         )
 
+    @records_scene_history
     @signal(tags=["color", "whole"])
     @digest()
     def set_color_by_values(
@@ -365,6 +372,7 @@ class Whole:
         else:
             self._view._update_atom_color_layer("whole", layer_update)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["color", "whole"])
     @digest()
     def reset_colors(self, skip_digestion: bool = False) -> None:

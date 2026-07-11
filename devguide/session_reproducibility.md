@@ -91,6 +91,31 @@ new capability:
   conflated: a snapshot restores *where you are*; a history replays *how you got
   there*. Both exist; keep their contracts distinct.
 
+## Future proposal: a command history that compacts itself
+
+Phase 8's undo/redo is **snapshot-based**: each mutating operation stores a full
+`export_state` snapshot, and undo restores the previous one. This is
+guaranteed-correct and cheap to build, but it discards *how* the user got there —
+the sequence of commands — and it grows linearly with the number of operations.
+
+A **command-based** history (each operation records its forward command and its
+inverse) would instead preserve the narrative: the exact steps taken, replayable
+and exportable as a reproducible script. The reason it was not chosen is the cost
+of maintaining a correct inverse for every operation, and of a log that
+accumulates do/undo churn (create then delete, colour then recolour) that a naive
+implementation never cleans up.
+
+That objection weakens if a language model is in the loop. A command log could be
+**periodically compacted by an LLM**: collapsing an operation and its later
+inverse, merging a sequence of small edits into one intent, and rewriting the log
+into the *minimal* command sequence that reaches the same state — turning a noisy
+interaction trace into a clean, human-readable, reproducible protocol. That is a
+genuinely new capability (a session that documents itself as a tidy script), and
+it belongs to the same family as this document: mechanisms that make a session
+reproducible. Proposed for the future; not built. If pursued, it would sit
+alongside — not replace — the snapshot state, since a self-documenting *history*
+and a reloadable *snapshot* answer different questions (§Terminology).
+
 ## Where the mechanism lives
 
 - `molsysviewer/viewer/state.py` — `export_state` / `import_state`, `STATE_VERSION`.

@@ -11,6 +11,7 @@ from smonitor import signal
 from ._private.arg_digestion import digest
 from ._private.smonitor_emit import emit_suppressed_exception
 from .colors import expand_values_to_atoms, normalize_color
+from .scene_history import records_scene_history
 
 
 class Region:
@@ -342,6 +343,7 @@ class Region:
                     combined.append(index)
         return combined
 
+    @records_scene_history
     def difference(
         self,
         *others: Any,
@@ -365,6 +367,7 @@ class Region:
             repr_params=repr_params,
         )
 
+    @records_scene_history
     def intersection(
         self,
         *others: Any,
@@ -390,6 +393,7 @@ class Region:
             repr_params=repr_params,
         )
 
+    @records_scene_history
     def union(
         self,
         *others: Any,
@@ -788,6 +792,7 @@ class Region:
         },
     )
     @digest()
+    @records_scene_history
     def set_representation(self, representation: str | None = None, *, preset: str | None = None, skip_digestion: bool = False, **params: Any) -> None:
         """Apply or update a representation for this region.
 
@@ -835,6 +840,7 @@ class Region:
         )
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "representation"])
     @digest()
     def reset_representation(self, skip_digestion: bool = False) -> None:
@@ -851,18 +857,21 @@ class Region:
         )
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "order"])
     @digest()
     def raise_to_front(self, skip_digestion: bool = False) -> None:
         """Move this region above every other region for colour and render ownership."""
         self._view._raise_region_to_front(self)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "order"])
     @digest()
     def send_to_back(self, skip_digestion: bool = False) -> None:
         """Move this region below every other region for colour and render ownership."""
         self._view._send_region_to_back(self)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "color"])
     @digest()
     def set_color_scheme(self, scheme: str, skip_digestion: bool = False) -> None:
@@ -889,6 +898,7 @@ class Region:
             **params,
         )
 
+    @records_scene_history
     @signal(tags=["region", "color"])
     @digest()
     def set_color_by_attribute(
@@ -961,6 +971,7 @@ class Region:
             skip_digestion=True,
         )
 
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def duplicate(
@@ -1011,6 +1022,7 @@ class Region:
             exclude_tag=self.tag,
         )
 
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def new_complementary_region(self, tag: str | None = None, skip_digestion: bool = False, **kwargs: Any) -> "Region":
@@ -1039,6 +1051,7 @@ class Region:
             region.mode = "dynamic"
         return region
 
+    @records_scene_history
     @signal(tags=["region", "visibility"])
     @digest()
     def show(self, skip_digestion: bool = False) -> None:
@@ -1054,6 +1067,7 @@ class Region:
         self._send("show_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "visibility"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
@@ -1069,6 +1083,7 @@ class Region:
         self._send("hide_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "visibility"])
     @digest()
     def show_only(self, skip_digestion: bool = False) -> None:
@@ -1082,6 +1097,7 @@ class Region:
         self._send("show_only_region")
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def delete(self, skip_digestion: bool = False) -> None:
@@ -1094,6 +1110,7 @@ class Region:
         self._view._unregister_region(self.tag)  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def rename(self, new_tag: str, skip_digestion: bool = False) -> None:
@@ -1110,6 +1127,7 @@ class Region:
 
     # --- Scalar colour mapping ---
 
+    @records_scene_history
     @signal(tags=["color", "region"])
     @digest()
     def set_color_by_values(
@@ -1158,6 +1176,7 @@ class Region:
         else:
             self._view._update_atom_color_layer(self.tag, layer_update, bump=self)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["color", "region"])
     @digest()
     def reset_colors(self, skip_digestion: bool = False) -> None:
@@ -1173,6 +1192,7 @@ class RegionsManager(dict):
         self._view = view
 
     @dep_digest('molsysmt')
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def add(
@@ -1231,6 +1251,7 @@ class RegionsManager(dict):
             raise KeyError(f"No region with tag {tag!r}.")
         region.delete(skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def set_tag(self, tag: str, new_tag: str, skip_digestion: bool = False) -> None:
@@ -1240,6 +1261,7 @@ class RegionsManager(dict):
             raise KeyError(f"No region with tag {tag!r}.")
         region.rename(new_tag, skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["region"])
     @digest()
     def delete_all(self, skip_digestion: bool = False) -> None:
@@ -1249,12 +1271,14 @@ class RegionsManager(dict):
             if region is not None:
                 region.delete(skip_digestion=True)
 
+    @records_scene_history
     @signal(tags=["region", "visibility"])
     @digest()
     def show_all(self, skip_digestion: bool = False) -> None:
         """Show every active region."""
         self._view._set_all_regions_visibility(hidden=False)  # noqa: SLF001
 
+    @records_scene_history
     @signal(tags=["region", "visibility"])
     @digest()
     def hide_all(self, skip_digestion: bool = False) -> None:

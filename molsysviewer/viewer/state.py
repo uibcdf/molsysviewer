@@ -72,6 +72,8 @@ class StateMixin:
                 "atom_indices": list(region.atom_indices),
             })
 
+        active = {"atom_indices": list(self.active_selection.atom_indices)}
+
         whole = {
             "representation": self.whole.representation,
             "preset": self.whole.preset,
@@ -88,6 +90,7 @@ class StateMixin:
             "selections": self.selections.records(),
             "regions": regions,
             "whole": whole,
+            "active_selection": active,
             # The high-water marks let a region created after a reload keep
             # winning over the ones restored from disk. A counter reset to zero
             # would silently invert the precedence of every overlap.
@@ -156,6 +159,7 @@ class StateMixin:
                     self._send(msg)
 
         self._restore_whole_state(state.get("whole"))
+        self._restore_active_selection(state.get("active_selection"))
 
         if self._molsys is not None:
             for record in ordered_records:
@@ -222,6 +226,15 @@ class StateMixin:
         for record in records:
             visit(record)
         return ordered
+
+    def _restore_active_selection(self, active: Any) -> None:
+        if not isinstance(active, dict):
+            return
+        indices = active.get("atom_indices")
+        if isinstance(indices, list) and indices:
+            self.active_selection.set(indices, syntax="Indices", skip_digestion=True)
+        else:
+            self.active_selection.clear(skip_digestion=True)
 
     def _restore_whole_state(self, whole: Any) -> None:
         if not isinstance(whole, dict):

@@ -42,6 +42,7 @@ from ..colors import colors as global_colors
 from .. import config
 
 from .history import HistoryMixin
+from ..scene_history import SceneHistory
 from .camera import CameraManager
 from .movie import MovieManager
 from .export import ExportMixin
@@ -305,6 +306,7 @@ class MolSysView(
         self.active_selection = ActiveSelection(self)
         self.measurements = MeasurementsManager(self)
         self.selections = SelectionsManager(self)
+        self.history = SceneHistory(self)
         self.scene = SceneManager(self)
         self.player = PlayerManager(self)
         self.trajectory_plot = TrajectoryPlotManager(self)
@@ -2026,6 +2028,11 @@ class MolSysView(
         # Force the next visibility update to send a full state (the frontend is
         # reset by the rebuild, so a delta against the old mask would be wrong).
         self._last_visibility_mask = None
+        # The undo/redo snapshots reference the pre-edit index space; a system
+        # edit invalidates them.
+        history = getattr(self, "history", None)
+        if history is not None:
+            history.clear()
 
         self._send({"op": "clear_all"})
         self._send(

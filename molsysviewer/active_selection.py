@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Literal
 
 from smonitor import signal
+from .scene_history import records_scene_history
 
 from ._private.arg_digestion import digest
 
@@ -157,6 +158,7 @@ class ActiveSelection:
             skip_digestion=True,
         )
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def set(
@@ -247,6 +249,7 @@ class ActiveSelection:
             self._view._set_active_selection_recipe([step])  # noqa: SLF001
         return self
 
+    @records_scene_history
     @signal(tags=["selection"])
     @digest()
     def clear(self, skip_digestion: bool = False) -> None:
