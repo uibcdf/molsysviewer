@@ -7,8 +7,8 @@
 is expensive for large systems. For exploratory work, use:
 
 ```python
-view.set_global_representation("backbone")   # protein backbone only
-view.set_global_representation("cartoon")    # ribbon/helix/sheet
+view.whole.set_representation("backbone")   # protein backbone only
+view.whole.set_representation("cartoon")    # ribbon/helix/sheet
 ```
 
 **Load a lighter system.** Waters and ions are usually the largest atom count.
@@ -34,10 +34,18 @@ view.shapes.add_pocket_surface(
 
 ## Large trajectories
 
-**Use a shorter frame range.** Pass a frame slice to the player:
+**Load fewer frames.** The frame range is chosen at load time, with
+`structure_indices`:
 
 ```python
-view.player.set_frame_range(0, 100)   # show only first 100 frames
+view.load(trajectory, structure_indices=list(range(100)))   # only the first 100 frames
+```
+
+**Or play a subsample.** Once loaded, the player can skip frames instead of
+rendering every one:
+
+```python
+view.player.set_step_size(10)   # render every 10th frame
 ```
 
 **Reduce export fps.** For movie export, lower fps reduces render time:
@@ -59,8 +67,8 @@ recreating them:
 
 ```python
 view.shapes.add_links(..., layer_tag="hbonds")
-view.hide_layer("hbonds")   # fast — no geometry rebuild
-view.show_layer("hbonds")
+view.layers["hbonds"].hide()   # fast — no geometry rebuild
+view.layers["hbonds"].show()
 ```
 
 ## HTML export file size

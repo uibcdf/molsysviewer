@@ -653,10 +653,37 @@ Current call sites: `view.new_region` ×46, `view.whole.set_representation` ×36
 ×30, `view.whole.hide` ×11, `.set_color_by_values` ×10, `.reset_colors` ×4 — across
 `sandbox/Curso/` (26 notebooks), `docs/`, `bloques.md`.
 
-- [ ] Audit **every** call site against the migration table, one by one.
-- [ ] Regenerate the course units and `docs/` against the new API (`view.regions.add`, `"inherit"`,
-      layered colour, `reset_all_colors`, recipes).
-- [ ] Delete `bloques.md` or bring it in line.
+- [x] Audit **every** call site against the migration table, one by one.
+- [x] Regenerate `docs/` against the new API (`view.regions.add`, `"inherit"`, layered colour,
+      `reset_all_colors`, recipes).
+- [x] Bring `bloques.md` in line.
+- [ ] **`sandbox/Curso/` is explicitly carved out of this phase** (maintainer's working area,
+      2026-07-11). The course units are *not* migrated here.
+
+**Scope correction:** the call-site counts above were taken over `docs/_build/` as well, so they
+are inflated. Over source only (`.md`/`.rst`/`.ipynb`, 225 files): `view.new_region` ×15,
+`whole.set_representation` ×12, `view.regions[` ×7, `whole.hide` ×7, `set_color_by_values` ×3,
+`reset_colors` ×2.
+
+**Done:** collaborator-implemented; audited. The historical records
+(`architecture_snapshot_2025_11.md`, `architecture_snapshot_2026_01.md`, `changes_notes.md`) were
+correctly left unmigrated — a dated snapshot records what *was* true.
+
+Audit method, since this phase has no unit tests: every `view.*` call in the corpus was **resolved
+statically against the live API** (173 source files; historical records excluded) → 0 unresolved.
+That found four dead calls the phase had missed, all of them in `.md` files that *nothing ever
+executes*, so running the notebooks would not have caught them either: `view.add_sphere` →
+`view.shapes.add_sphere`; `view.hide_layer`/`show_layer` → `view.layers[tag].hide()/.show()`;
+`view.add_region` → `view.regions.add`; and `view.player.set_frame_range()`, which **never
+existed** — the docs advertised an invented method (replaced with `load(structure_indices=…)` and
+`player.set_step_size()`).
+
+Then every semantic claim the new `regions.md` makes was **executed** against the code. Four held;
+one did not: the docs (and `region_contracts.md` §Migration) say `set_representation(None, **params)`
+ignores the params, but `regions.py` retained them, sent them to the frontend and serialised them.
+The contract is normative, so the **code** was fixed (state None drops the params) and
+`test_state_none_drops_representation_params` now pins it. **This was a real Contract A defect that
+only surfaced because the documentation was checked against the code rather than the plan.**
 
 ---
 

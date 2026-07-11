@@ -35,7 +35,7 @@ Key modules
     - `regions.py` (Mixin) handles spatial regions and atom selection logic.
     - `panel_mode.py` (Mixin) manages sidebar panel states and dynamic workspace controls.
     - `load.py` (Mixin) orchestrates importing molecular systems and stylesheet configuration.
-    - `visibility.py` (Mixin) controls global, representation, and component-level visibility.
+    - `visibility.py` (Mixin) controls whole, representation, and component-level visibility.
     - `scene.py` (Mixin) manages camera, snapshots, figures, and exports.
     - `molsysmt_interface.py` (Mixin) provides a dedicated interface layer for MolSysMT integration.
     - `state.py` (Mixin) synchronizes layout configurations and traits.
@@ -54,7 +54,7 @@ Key modules
 - `molsysviewer/loaders/`
   - `load_molsysmt.py`: MolSysMT conversion and payload serialization.
 - `molsysviewer/regions.py`, `molsysviewer/layers.py`, `molsysviewer/whole.py`
-  - Region/layer/global wrappers with tag management.
+  - Region/layer/whole wrappers with tag management.
 - `molsysviewer/shapes/`
   - Python shape APIs (spheres, pockets, blobs, tubes, ellipsoids, links,
     displacements, pharmacophore, triangles, tetrahedra).

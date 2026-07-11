@@ -50,14 +50,14 @@ Here we isolate the central ALA residue and leave the rest as-is:
 ala_atoms = list(view.select(selection="group_index==1"))
 
 # ALA residue: ball-and-stick to highlight it
-region_ala = view.new_region(
+region_ala = view.regions.add(
     atom_indices=ala_atoms,
     tag="ala",
     representation="ball_and_stick",
 )
 
 # Everything else: sticks
-region_caps = view.new_region(
+region_caps = view.regions.add(
     complement_of_regions="ala",
     tag="caps",
     representation="sticks",
@@ -175,8 +175,8 @@ exactly what you built, with no dependency on the original notebook.
 
 - `view.set_panel_mode(panel=...)`
 - `view.select(selection=...)`
-- `view.new_region(atom_indices=..., tag=..., representation=...)`
-- `view.new_region(complement_of_regions=..., tag=..., representation=...)`
+- `view.regions.add(atom_indices=..., tag=..., representation=...)`
+- `view.regions.add(complement_of_regions=..., tag=..., representation=...)`
 - `view.annotations.add_annotation(text=..., atom_indices=..., tag=..., label_style=...)`
 - `view.measurements.add_distance(selection_a=..., selection_b=..., tag=...)`
 - `view.annotations.records()`

@@ -15,7 +15,7 @@ Responsibilities
 - Expose the public Python API for:
   - Loading (`load`, `load_pdb_string`, `load_mmcif_string`, `load_pdb_id`, `load_from_url`).
   - Visibility (`show`, `hide`, `isolate`).
-  - Regions and layers (`new_region`, `new_layer`, `regions`, `layers`, `whole`).
+  - Regions and layers (`regions.add`, `layers`, `whole`).
   - Shapes (`self.shapes`).
   - Export (`view.export.html(...)` with `standalone` and `lite` modes).
 - Encapsulate Python ↔ JS messaging (`_send`, `_message_history`, `_clean_message_history`).
@@ -28,7 +28,7 @@ Current package split
   - `regions.py`: Manages spatial regions and atom selection logic.
   - `panel_mode.py`: Manages sidebar panel rendering and dynamic workspace contexts.
   - `load.py`: Handles importing structures and parsing project stylesheets.
-  - `visibility.py`: Controls global, representation, and component-level visibility.
+  - `visibility.py`: Controls whole, representation, and component-level visibility.
   - `scene.py`: Manages camera, snapshots, figures, and exports.
   - `molsysmt_interface.py`: Dedicated interface layer for MolSysMT integration.
   - `state.py`: Handles layout state synchronization.
@@ -99,9 +99,9 @@ Layer
 - A layer is a tag-based group for non-structural visuals (shapes/overlays).
 - Main operations: `show`, `hide`, `delete`, `set_tag`.
 
-Whole (global)
+Whole
 
-- `Whole` controls the baseline/global representation for the full structure.
+- `Whole` controls the baseline representation for the full structure.
 - It must not collide with region tags.
 - It has its own visibility semantics (see {doc}`regions_layers`).
 
@@ -109,7 +109,7 @@ State handlers (TypeScript)
 
 - Track region state: refs, atom indices, selection, hidden state.
 - Track layer refs per tag and apply show/hide/delete to all refs under a tag.
-- Track global reps (`globalReprs`) separately from regions.
+- Track whole baseline refs (`globalReprs` internally) separately from regions.
 - Apply visibility updates via transparency using Mol* helpers.
 
 ## 5. Trajectory

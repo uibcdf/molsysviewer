@@ -169,7 +169,7 @@ Minimum expected behavior:
 
 - Tag collisions via deterministic suffixes (`__2`, `__3`, ...).
 - Atom index remapping for imported regions and atom-index-based shapes.
-- First-view-wins policy for global representation, controls, and last camera snapshot.
+- First-view-wins policy for whole representation, controls, and last camera snapshot.
 
 Not yet part of the current contract:
 

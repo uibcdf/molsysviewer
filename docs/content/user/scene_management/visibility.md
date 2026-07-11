@@ -4,7 +4,7 @@ MolSysViewer tracks visibility at three independent levels:
 
 | Level | Object | Controls |
 |---|---|---|
-| **Whole** | the baseline global representation | `view.show()`, `view.hide()`, `view.isolate()` |
+| **Whole** | the baseline representation | `view.whole.show()`, `view.whole.hide()` |
 | **Region** | a named structural subset | `region.show()`, `region.hide()` |
 | **Layer** | a non-structural visual group (shapes, overlays) | `layer.show()`, `layer.hide()` |
 
@@ -12,16 +12,21 @@ MolSysViewer tracks visibility at three independent levels:
 
 ## Whole visibility
 
-`view.show()` and `view.hide()` operate on the baseline representation —
-the one created automatically when you load a system.
+`view.whole.show()` and `view.whole.hide()` operate on the baseline
+representation — the one created automatically when you load a system or by
+`view.whole.set_representation(...)`.
 
 ```python
-# Hide the entire structure
-view.hide("all")
+# Hide the baseline representation
+view.whole.hide()
 
 # Show it again
-view.show("all")
+view.whole.show()
+```
 
+Atom-mask visibility is a separate selection-level operation:
+
+```python
 # Hide only a selection (MolSysMT syntax)
 view.hide('molecule_type == "water"')
 
@@ -53,10 +58,10 @@ view.regions["chain-A"].hide()   # hide chain A
 view.regions["chain-B"].show()   # show chain B (already visible by default)
 ```
 
-Regions created from an active canvas selection also respond to the same calls:
+Regions created from explicit atom indices also respond to the same calls:
 
 ```python
-pocket = view.new_region(atom_indices=[10, 11, 12, 13], tag="pocket")
+pocket = view.regions.add(atom_indices=[10, 11, 12, 13], tag="pocket")
 pocket.hide()
 pocket.show()
 ```
@@ -78,11 +83,15 @@ layer.show()
 
 ## Interaction between levels
 
-- Hiding the whole (`view.hide("all")`) also hides all region representations
-  but does **not** clear the region registry — regions are still accessible in Python.
-- `view.show("all")` restores the baseline and all previously visible regions.
-- A region hidden explicitly with `region.hide()` stays hidden even after
-  `view.show("all")` — region-level intent is preserved.
+- Hiding the whole (`view.whole.hide()`) hides only the baseline. Regions with
+  own visuals remain controlled by their region visibility.
+- A region in state None (no own representation or preset) is painted by the
+  whole, so it disappears while the whole is hidden.
+- `view.show(...)`, `view.hide(...)`, and `view.isolate(...)` operate on the
+  atom mask. They compose with whole and region visibility rather than deleting
+  regions.
+- A region hidden explicitly with `region.hide()` stays hidden until
+  `region.show()` is called — region-level intent is preserved.
 
 ---
 

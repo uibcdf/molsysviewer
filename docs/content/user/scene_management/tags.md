@@ -34,7 +34,7 @@ view.shapes.clear()
 When you create a region, the tag identifies that region:
 
 ```python
-site = view.new_region("resid 10:20", tag="site", representation="ball-and-stick")
+site = view.regions.add("resid 10:20", tag="site", representation="ball-and-stick")
 site.hide()
 ```
 

@@ -669,3 +669,28 @@ def test_region_operations_stay_in_loaded_subset_index_space():
         if operation["op"] == "create_region"
     ]
     assert sorted(index for operation in create_operations for index in operation["atom_indices"]) == list(range(n_atoms))
+
+
+def test_state_none_drops_representation_params(): 
+    """Contract A: state None owns no visual, so params have nothing to apply to.
+
+    Retaining them would make `repr_params` advertise styling the region does not
+    have, and would serialise a phantom parameter into the state file.
+    """
+    view = viewer.MolSysView()
+    view.widget.send = lambda _msg: None
+    view.load(demo["dialanine"]._molsys.copy(), skip_digestion=True)
+    view._ready = True
+
+    region = view.regions.add(atom_indices=[0, 1], tag="r", representation="line", alpha=0.3, skip_digestion=True)
+    assert region.repr_params == {"alpha": 0.3}
+
+    # Dropping to state None must drop the params with the visual they styled.
+    region.set_representation(None, alpha=0.3, skip_digestion=True)
+    assert region.representation is None
+    assert region.preset is None
+    assert region.repr_params == {}
+
+    # A region that owns a visual keeps them, including via the "inherit" sentinel.
+    region.set_representation("inherit", alpha=0.6, skip_digestion=True)
+    assert region.repr_params == {"alpha": 0.6}

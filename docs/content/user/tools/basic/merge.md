@@ -20,7 +20,7 @@ from molsysviewer import demo, tools
 view_a = demo["dialanine"]
 view_b = demo["dialanine"]
 
-view_a.new_region(atom_indices=[0, 1, 2], tag="frag", representation="sticks")
+view_a.regions.add(atom_indices=[0, 1, 2], tag="frag", representation="sticks")
 view_b.shapes.add_links(atom_pairs=[[0, 1]], tag="contacts")
 
 merged = tools.basic.merge([view_a, view_b])
@@ -33,9 +33,9 @@ merged
 
 Current merge policy:
 
-- the **first** input view is the source of global state:
-  - whole/global representation,
-  - global hidden state,
+- the **first** input view is the source of whole/scene state:
+  - whole representation and colour scheme,
+  - whole visibility state,
   - camera snapshot,
   - controls/autohide/positions;
 - regions, layers, shapes, and atom visibility are imported from **all** views;

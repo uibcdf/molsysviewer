@@ -99,8 +99,8 @@ import molsysviewer as mv
 view = mv.demo["tctim"]
 
 # Set up two named regions (assumes regions already exist or created here)
-# view.add_region("active-site", ...)
-# view.add_region("binding-loop", ...)
+# view.regions.add("...", tag="active-site", representation="ball-and-stick")
+# view.regions.add("...", tag="binding-loop", representation="cartoon")
 
 snap_overview = view.camera.get_snapshot()
 snap_zoom = {"position": [5, 0, 0], "target": [0, 0, 0], "up": [0, 1, 0]}

@@ -110,14 +110,14 @@ Layers
 - A layer is a tag-based group for non-structural visuals (shapes/overlays).
 - JS stores refs per tag and applies show/hide/delete to all refs under that tag.
 
-Whole (global)
-- `Whole` controls the baseline/global representation for the full structure.
-- `show_global` / `hide_global` target either `global` only or `all` reps.
+Whole
+- `Whole` controls the baseline representation for the full structure.
+- `show_whole` / `hide_whole` target the whole baseline; atom-mask visibility is handled separately.
 
 Semantics to preserve
 - `region.hide()` remains hidden after `viewer.hide(); viewer.show()`.
-- `whole.hide()` only affects the baseline/global reps, not regions.
-- `viewer.hide(selection=\"all\")` hides all reps and masks; `show()` restores masks and re-applies the baseline visibility intent.
+- `whole.hide()` only affects the baseline representation. Regions with own visuals keep their region visibility; state-None regions disappear because the whole paints them.
+- `viewer.hide(selection="all")` updates atom masks and composes with whole/region visibility.
 
 ## Shapes pipeline
 
@@ -160,7 +160,7 @@ Common operations include:
   - `load_pdb_id`, `load_url` (when delegating to Mol*)
 - Visibility:
   - `update_visibility`
-  - `show_global`, `hide_global`
+  - `show_whole`, `hide_whole`
 - Regions:
   - `create_region`, `set_region_representation`
   - `show_region`, `hide_region`, `delete_region`
@@ -191,10 +191,11 @@ The widget emits events back to Python via `widget.on_msg`, including:
 These semantics are user-visible and should remain stable:
 
 - `region.hide()` stays hidden after `viewer.hide(); viewer.show()`.
-- `whole.hide()` only affects the baseline/global reps, not regions.
-- `viewer.hide(selection="all")` hides all reps and masks; `show()` restores
-  masks and re-applies the baseline visibility intent while respecting
-  already-hidden regions.
+- `whole.hide()` only affects the baseline representation. Regions with own
+  visuals keep their region visibility; state-None regions disappear because
+  the whole paints them.
+- `viewer.hide(selection="all")` updates atom masks and composes with whole and
+  region visibility while respecting already-hidden regions.
 
 ### Popup (popout) sync model
 

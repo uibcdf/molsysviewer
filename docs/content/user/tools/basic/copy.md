@@ -6,8 +6,8 @@ Current contract:
 
 - it copies the loaded molecular system,
 - and it also recreates useful scene state:
-  - whole/global representation,
-  - hidden global state,
+  - whole representation and colour scheme,
+  - whole visibility state,
   - regions,
   - layers,
   - shapes,

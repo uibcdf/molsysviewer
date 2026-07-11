@@ -16,7 +16,7 @@ existing scene representation contract.
 Today, styles are:
 
 - scene-level
-- global-first
+- whole-first
 - reproducible
 - backed by the existing `whole.set_representation(...)` pathway
 

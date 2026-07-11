@@ -18,7 +18,7 @@ view = viewer.MolSysView()
 view.show()
 
 # Transparent sphere
-view.add_sphere(center=(0, 0, 0), radius=3.0, color=0x00ff00, alpha=0.4)
+view.shapes.add_sphere(center=(0, 0, 0), radius=3.0, color=0x00ff00, alpha=0.4)
 
 # Alpha-sphere set with optional atom spheres (single message)
 view.shapes.add_set_alpha_spheres(

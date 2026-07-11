@@ -30,7 +30,7 @@ Current scope clarification for `Style`:
 `new_view(...)` includes a convenience argument `load_mode`:
 
 - `"selection"` (default): `selection` subsets the loaded system.
-- `"all"`: the full system loads, the global representation is hidden, and a
+- `"all"`: the full system loads, the whole baseline is hidden, and a
   region tagged `"selection"` is created for the selection.
 
 `molsysviewer.tools.basic` is now a public module. Current public helpers there include:

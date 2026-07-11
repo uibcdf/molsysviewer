@@ -850,19 +850,22 @@ class Region:
             normalized = "inherit"
         else:
             normalized = self._view._normalize_representation_type(representation)  # noqa: SLF001
-        if self.atom_indices is not None:
-            has_visual = normalized is not None or normalized_preset is not None or user_preset_payload is not None
-            if has_visual:
-                self._view._warn_region_visual_overlap(  # noqa: SLF001
-                    self.tag,
-                    list(self.atom_indices),
-                    exclude_tag=self.tag,
-                    stacklevel=3,
-                )
+        has_visual = normalized is not None or normalized_preset is not None or user_preset_payload is not None
+        if self.atom_indices is not None and has_visual:
+            self._view._warn_region_visual_overlap(  # noqa: SLF001
+                self.tag,
+                list(self.atom_indices),
+                exclude_tag=self.tag,
+                stacklevel=3,
+            )
         self._set_visual_fields(
             representation=normalized,
             preset=normalized_preset,
-            repr_params=params or {},
+            # State None owns no visual, so there is nothing for the parameters to
+            # apply to: they are dropped rather than retained (Contract A). Keeping
+            # them would make `repr_params` report styling the region does not have,
+            # and would serialise it into the state file.
+            repr_params=(params or {}) if has_visual else {},
         )
         self._view._bump_region_order(self)  # noqa: SLF001
         self._send(
