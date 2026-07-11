@@ -77,7 +77,7 @@ const PANEL_REFRESH_BY_OPERATION: Partial<Record<ViewerMessage["op"], readonly P
     set_figure_spec: ["addons"],
     set_user_preset: ["addons"],
     set_canvas_visibility: ["addons"],
-    set_global_representation: ["addons"],
+    set_whole_representation: ["addons"],
     load_molsys_payload: ["addons"],
     load_structure_from_string: ["addons"],
     load_pdb_string: ["addons"],
@@ -2187,9 +2187,9 @@ export class MolSysViewerController {
                     await this.state.clearAtomColors(msg as any);
                     this.groupPanel.render();
                     break;
-                case "set_global_representation": await this.state.setGlobalRepresentation(msg); break;
-                case "show_global": await this.state.showGlobal(msg); break;
-                case "hide_global": await this.state.hideGlobal(msg); break;
+                case "set_whole_representation": await this.state.setWholeRepresentation(msg); break;
+                case "show_whole": await this.state.showWhole(msg); break;
+                case "hide_whole": await this.state.hideWhole(msg); break;
                 case "zoom": await this.state.zoom(msg); break;
                 case "zoom_to_position": await this.scene.zoomToPosition(msg as any); break;
                 case "set_camera_snapshot": await this.setCameraSnapshot((msg as any).snapshot, (msg as any).duration_ms); break;
@@ -2851,7 +2851,7 @@ export class MolSysViewerController {
             return;
         }
 
-        if (op === "set_global_representation") {
+        if (op === "set_whole_representation") {
             const styleTag =
                 typeof (msg as any).user_preset?.name === "string"
                     ? (msg as any).user_preset.name

@@ -90,7 +90,7 @@ class Whole:
         else:
             self._color_scheme = None
         payload = {
-            "op": "set_global_representation",
+            "op": "set_whole_representation",
             "representation": normalized_repr,
             "preset": normalized_preset if user_preset_payload is None else None,
             "params": self._repr_params,
@@ -117,14 +117,14 @@ class Whole:
     def show(self, skip_digestion: bool = False) -> None:
         """Show the global representation(s)."""
         self._view._global_hidden = False  # noqa: SLF001
-        self._view._send({"op": "show_global", "target": "global"})  # noqa: SLF001
+        self._view._send({"op": "show_whole", "target": "whole"})  # noqa: SLF001
 
     @signal(tags=["visibility", "whole"])
     @digest()
     def hide(self, skip_digestion: bool = False) -> None:
         """Hide the global representation(s)."""
         self._view._global_hidden = True  # noqa: SLF001
-        self._view._send({"op": "hide_global", "target": "global"})  # noqa: SLF001
+        self._view._send({"op": "hide_whole", "target": "whole"})  # noqa: SLF001
 
     # --- MolSysMT query helpers (delegated to MolSysView) ---
 

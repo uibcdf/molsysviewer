@@ -145832,7 +145832,7 @@ var StateHandlers = class {
       this.layerMeta.set(newTag, meta);
     }
   }
-  async setGlobalRepresentation(msg) {
+  async setWholeRepresentation(msg) {
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structureRef) return;
     const cameraSnap = this.plugin.canvas3d?.camera.getSnapshot?.();
@@ -145958,11 +145958,11 @@ var StateHandlers = class {
     this.transparencyInitialized = false;
     await this.applyComposedTransparency();
   }
-  async showGlobal(msg) {
-    await this.handleShowHideGlobal(false, msg.target ?? "global");
+  async showWhole(msg) {
+    await this.handleShowHideGlobal(false, msg.target ?? "whole");
   }
-  async hideGlobal(msg) {
-    await this.handleShowHideGlobal(true, msg.target ?? "global");
+  async hideWhole(msg) {
+    await this.handleShowHideGlobal(true, msg.target ?? "whole");
   }
   async zoom(msg) {
     const structure = this.callbacks.getStructure();
@@ -146013,7 +146013,7 @@ var StateHandlers = class {
       await this.ensureDefaultGlobalRepresentation();
     }
     if (this.requestedGlobalHidden !== null) {
-      await this.handleShowHideGlobal(this.requestedGlobalHidden, "global");
+      await this.handleShowHideGlobal(this.requestedGlobalHidden, "whole");
     }
   }
   async clearState() {
@@ -146053,8 +146053,8 @@ var StateHandlers = class {
     await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
     this.tagIndex.delete(tag);
   }
-  async handleShowHideGlobal(hide, target = "global") {
-    if (target === "global") {
+  async handleShowHideGlobal(hide, target = "whole") {
+    if (target === "whole") {
       this.requestedGlobalHidden = hide;
     }
     if (!this.callbacks.getStructure()) {
@@ -146071,7 +146071,7 @@ var StateHandlers = class {
       regionReprRefs.add(ref);
       if (entry.hidden) hiddenRegionReprRefs.add(ref);
     }));
-    if (target === "global") {
+    if (target === "whole") {
       this.globalReprs.forEach((ref) => {
         refs.push(ref);
         baselineRefs.push(ref);
@@ -146121,7 +146121,7 @@ var StateHandlers = class {
       if (baselineRefs.length) {
         baselineRefs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
       } else {
-        this.pendingGlobalOps.push({ hide: true, target: "global" });
+        this.pendingGlobalOps.push({ hide: true, target: "whole" });
       }
     }
   }
@@ -155507,7 +155507,7 @@ var PANEL_REFRESH_BY_OPERATION = {
   set_figure_spec: ["addons"],
   set_user_preset: ["addons"],
   set_canvas_visibility: ["addons"],
-  set_global_representation: ["addons"],
+  set_whole_representation: ["addons"],
   load_molsys_payload: ["addons"],
   load_structure_from_string: ["addons"],
   load_pdb_string: ["addons"],
@@ -157385,14 +157385,14 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.state.clearAtomColors(msg);
           this.groupPanel.render();
           break;
-        case "set_global_representation":
-          await this.state.setGlobalRepresentation(msg);
+        case "set_whole_representation":
+          await this.state.setWholeRepresentation(msg);
           break;
-        case "show_global":
-          await this.state.showGlobal(msg);
+        case "show_whole":
+          await this.state.showWhole(msg);
           break;
-        case "hide_global":
-          await this.state.hideGlobal(msg);
+        case "hide_whole":
+          await this.state.hideWhole(msg);
           break;
         case "zoom":
           await this.state.zoom(msg);
@@ -158003,7 +158003,7 @@ var MolSysViewerController = class _MolSysViewerController {
       }
       return;
     }
-    if (op4 === "set_global_representation") {
+    if (op4 === "set_whole_representation") {
       const styleTag = typeof msg.user_preset?.name === "string" ? msg.user_preset.name : typeof msg.preset === "string" ? msg.preset : void 0;
       const preset = typeof msg.preset === "string" ? msg.preset : typeof msg.representation === "string" ? msg.representation : void 0;
       this.addonsScene = {

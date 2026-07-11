@@ -32,7 +32,7 @@ class VisibilityMixin:
             self.atom_mask[:] = False
             self._update_visibility_in_frontend()
             # Hide all representations in the frontend
-            self._send({"op": "hide_global", "target": "all"})
+            self._send({"op": "hide_whole", "target": "all"})
         else:
             atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)
             self.atom_mask[atom_indices] = False
@@ -56,9 +56,9 @@ class VisibilityMixin:
                 self.atom_mask[:] = True
                 self._update_visibility_in_frontend()
                 # Show all representations in the frontend (global + regions)
-                self._send({"op": "show_global", "target": "all"})
+                self._send({"op": "show_whole", "target": "all"})
                 # Re-apply the user's intent about the baseline/global view
-                self._send({"op": "show_global" if self.whole.visible else "hide_global", "target": "global"})
+                self._send({"op": "show_whole" if self.whole.visible else "hide_whole", "target": "whole"})
             elif not (is_all(selection) and is_all(structure_indices)):
                 # Partial "show": turn on only the requested selection
                 atom_indices = msm.select(self._molsys, selection=selection, syntax=syntax, skip_digestion=True)

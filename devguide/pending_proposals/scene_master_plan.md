@@ -690,7 +690,7 @@ none were reported by a failing test.
 | 4 | Contract B/O: colour + order | L | ☑ | 2026-07-11 | *(this commit)* | **Passed.** Done in two slices (4a colour/decorator, 4b order→render + region-vs-region ownership). Decorator, layers, precedence, region-vs-region masking + R-O1 all mutation-verified in real Mol\*. `order` serialisation deferred to P6. |
 | 5 | Contract R: recipes | L | ☑ | 2026-07-11 | *(this commit)* | **Passed.** provenance/uid/mode/frame_dependent, uid-referenced recipes, operand-deletion freeze, read-only atom_indices, and rebuild re-evaluation (not remap) all mutation-verified. `mode` is a validating setter, not a `new_region` arg. Dynamic evaluation → P10, serialisation → P6. |
 | 6 | Contract C: state v2 | M | ☑ | 2026-07-11 | *(this commit)* | **Passed.** Implemented by Claude (author == auditor; flagged). Round-trip overlap winner, order high-water mark, topological restore, transient filter, whole restore all mutation-verified. No v1 reader. Layer-membership is a format-only field (behaviour → P9). |
-| 7 | API completeness & symmetry | L | ☐ | — | — | — |
+| 7 | API completeness & symmetry | L | ☑ | 2026-07-11 | `cb7a26dd`+ | **Passed.** Done in five slices 7a–7e (variadic booleans + count + complement-of-many; visible/set_color_scheme/manager parity; read-only state; view.regions.add; protocol rename *_global→*_whole verified in real Mol\*). Implemented by Claude. **Deferred to P12:** the whole PanelAction family and whole summary (GUI infrastructure, no consumer until the Whole subpanel). |
 | 8 | Contract H: command history | L | ☐ | — | — | — |
 | 9 | Layer membership | M | ☐ | — | — | — |
 | 10 | Dynamic-region evaluation | L | ☐ | — | — | — |

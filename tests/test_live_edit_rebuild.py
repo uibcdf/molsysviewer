@@ -585,7 +585,7 @@ def test_remove_rebuild_remaps_regions_shapes_and_visibility():
     assert bool(view.atom_mask[1]) is False
 
     ops = [msg.get("op") for msg in view._message_history]
-    assert ops[:3] == ["clear_all", "load_molsys_payload", "hide_global"]
+    assert ops[:3] == ["clear_all", "load_molsys_payload", "hide_whole"]
 
     create_region_msg = next(msg for msg in view._message_history if msg.get("op") == "create_region")
     assert create_region_msg["tag"] == "frag"
@@ -677,8 +677,8 @@ def test_remove_rebuild_preserves_hidden_styled_whole():
     assert view.whole.visible is False
     ops = [msg.get("op") for msg in view._message_history]
     assert ops[:2] == ["clear_all", "load_molsys_payload"]
-    assert "set_global_representation" in ops
-    assert ops.index("hide_global") > ops.index("set_global_representation")
+    assert "set_whole_representation" in ops
+    assert ops.index("hide_whole") > ops.index("set_whole_representation")
 
 
 def test_remove_rebuild_remaps_dynamic_shape_frame_indices():

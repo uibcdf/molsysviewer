@@ -234,7 +234,7 @@ def test_selection_history_remapped_after_rebuild():
 # Global style survives rebuild and then is respected by a second rebuild
 # ---------------------------------------------------------------------------
 
-def test_set_global_representation_replayed_across_two_rebuilds():
+def test_set_whole_representation_replayed_across_two_rebuilds():
     """The applied global style must appear in the replay after each of two successive rebuilds."""
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
@@ -246,7 +246,7 @@ def test_set_global_representation_replayed_across_two_rebuilds():
 
     repr_after_first = [
         m for m in view._message_history  # noqa: SLF001
-        if m.get("op") == "set_global_representation"
+        if m.get("op") == "set_whole_representation"
     ]
     assert len(repr_after_first) >= 1
     assert repr_after_first[0]["representation"] == "cartoon"
@@ -256,7 +256,7 @@ def test_set_global_representation_replayed_across_two_rebuilds():
 
     repr_after_second = [
         m for m in view._message_history  # noqa: SLF001
-        if m.get("op") == "set_global_representation"
+        if m.get("op") == "set_whole_representation"
     ]
     assert len(repr_after_second) >= 1
     assert repr_after_second[0]["representation"] == "cartoon"

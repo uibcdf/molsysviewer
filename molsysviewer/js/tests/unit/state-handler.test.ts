@@ -638,14 +638,14 @@ test("state handler queues global visibility ops when structure is not ready", a
         notify: (_msg: any) => {},
     });
 
-    await handler.hideGlobal({ op: "hide_global" });
+    await handler.hideWhole({ op: "hide_whole" });
     const pendingOpsA = (handler as any).pendingGlobalOps as Array<{ hide: boolean; target: string }>;
     const requestedA = (handler as any).requestedGlobalHidden as boolean | null;
     assert.strictEqual(pendingOpsA.length, 1);
-    assert.deepStrictEqual(pendingOpsA[0], { hide: true, target: "global" });
+    assert.deepStrictEqual(pendingOpsA[0], { hide: true, target: "whole" });
     assert.strictEqual(requestedA, true);
 
-    await handler.showGlobal({ op: "show_global", target: "all" });
+    await handler.showWhole({ op: "show_whole", target: "all" });
     const pendingOpsB = (handler as any).pendingGlobalOps as Array<{ hide: boolean; target: string }>;
     const requestedB = (handler as any).requestedGlobalHidden as boolean | null;
     assert.strictEqual(pendingOpsB.length, 2);
@@ -728,8 +728,8 @@ test("state handler clears orphan default global representations before applying
     };
     (handler as any).handleShowHideGlobal = async () => {};
 
-    await handler.setGlobalRepresentation({
-        op: "set_global_representation",
+    await handler.setWholeRepresentation({
+        op: "set_whole_representation",
         preset: "auto",
         params: {},
     } as any);
@@ -781,8 +781,8 @@ test("state handler replaces prior explicit global representation on subsequent 
     };
     (handler as any).handleShowHideGlobal = async () => {};
 
-    await handler.setGlobalRepresentation({ op: "set_global_representation", preset: "auto", params: {} } as any);
-    await handler.setGlobalRepresentation({ op: "set_global_representation", preset: "polymer-cartoon", params: {} } as any);
+    await handler.setWholeRepresentation({ op: "set_whole_representation", preset: "auto", params: {} } as any);
+    await handler.setWholeRepresentation({ op: "set_whole_representation", preset: "polymer-cartoon", params: {} } as any);
 
     assert.deepStrictEqual(removed, ["first-global-repr"]);
     const globalReprs = (handler as any).globalReprs as Set<string>;
@@ -880,8 +880,8 @@ test("state handler maps structural color_scheme to a Mol* color theme for direc
     });
     (handler as any).handleShowHideGlobal = async () => {};
 
-    await handler.setGlobalRepresentation({
-        op: "set_global_representation",
+    await handler.setWholeRepresentation({
+        op: "set_whole_representation",
         representation: "cartoon",
         params: { color_scheme: "secondary_structure_default" },
     } as any);
@@ -948,8 +948,8 @@ test("state handler maps curated structural color and size schemes for direct gl
     });
     (handler as any).handleShowHideGlobal = async () => {};
 
-    await handler.setGlobalRepresentation({
-        op: "set_global_representation",
+    await handler.setWholeRepresentation({
+        op: "set_whole_representation",
         representation: "cartoon",
         params: { color_scheme: "residue_name", size_scheme: "physical" },
     } as any);
@@ -1017,8 +1017,8 @@ test("state handler accepts advanced Mol* color and size themes for direct globa
     });
     (handler as any).handleShowHideGlobal = async () => {};
 
-    await handler.setGlobalRepresentation({
-        op: "set_global_representation",
+    await handler.setWholeRepresentation({
+        op: "set_whole_representation",
         representation: "cartoon",
         params: {
             molstar_color_theme: { name: "residue-name", params: { saturation: 0 } },
@@ -1089,8 +1089,8 @@ test("state handler gives curated structural color and size schemes priority ove
     });
     (handler as any).handleShowHideGlobal = async () => {};
 
-    await handler.setGlobalRepresentation({
-        op: "set_global_representation",
+    await handler.setWholeRepresentation({
+        op: "set_whole_representation",
         representation: "cartoon",
         params: {
             color_scheme: "secondary_structure_default",

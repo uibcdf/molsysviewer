@@ -48,8 +48,8 @@ def test_tools_basic_merge_merges_scene_state_and_resolves_tag_collisions():
 
     ops = [msg.get("op") for msg in result._message_history]  # noqa: SLF001
     assert "load_molsys_payload" in ops
-    assert "set_global_representation" in ops
-    assert "hide_global" in ops
+    assert "set_whole_representation" in ops
+    assert "hide_whole" in ops
 
     region_b_msg = next(
         msg for msg in result._message_history if msg.get("op") == "create_region" and msg.get("tag") == "frag__2"  # noqa: SLF001

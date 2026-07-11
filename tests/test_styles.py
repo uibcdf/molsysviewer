@@ -18,7 +18,7 @@ def test_styles_apply_representation_delegates_to_whole_message_flow():
     style = view.styles.apply(representation="cartoon")
 
     assert style.representation == "cartoon"
-    assert view._message_history[-1]["op"] == "set_global_representation"  # noqa: SLF001
+    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
     assert view._message_history[-1]["representation"] == "cartoon"  # noqa: SLF001
     current = view.styles.current()
     assert current is not None
@@ -33,7 +33,7 @@ def test_styles_apply_style_object_tracks_name_and_params():
     applied = view.styles.apply(style=style)
 
     assert applied == style
-    assert view._message_history[-1]["op"] == "set_global_representation"  # noqa: SLF001
+    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
     assert view._message_history[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
     assert view._message_history[-1]["params"] == {"quality": "auto"}  # noqa: SLF001
     info = view.styles.info()
@@ -142,7 +142,7 @@ def test_styles_apply_by_tag_uses_registered_style():
     applied = view.styles.apply(tag="publication")
 
     assert applied.preset == "polymer-cartoon"
-    assert view._message_history[-1]["op"] == "set_global_representation"  # noqa: SLF001
+    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
     assert view._message_history[-1]["preset"] == "polymer-cartoon"  # noqa: SLF001
 
 
@@ -253,7 +253,7 @@ def test_styles_apply_by_tag_falls_back_to_builtin_catalog():
     applied = view.styles.apply(tag="atomic-detail")
 
     assert applied.preset == "atomic-detail"
-    assert view._message_history[-1]["op"] == "set_global_representation"  # noqa: SLF001
+    assert view._message_history[-1]["op"] == "set_whole_representation"  # noqa: SLF001
     assert view._message_history[-1]["preset"] == "atomic-detail"  # noqa: SLF001
 
 

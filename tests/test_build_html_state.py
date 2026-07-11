@@ -80,7 +80,7 @@ def test_build_export_messages_keeps_replay_order_and_appends_camera_snapshot():
     view._message_history = [
         {"op": "load_molsys_payload", "payload": {"atoms": {"atom_id": [1, 2, 3]}, "structures": []}},
         {"op": "update_visibility", "options": {"visible_atom_indices": [0, 1, 2]}},
-        {"op": "hide_global", "target": "global"},
+        {"op": "hide_whole", "target": "whole"},
     ]
     view._last_camera_snapshot = {"target": [1, 2, 3]}
 
@@ -89,7 +89,7 @@ def test_build_export_messages_keeps_replay_order_and_appends_camera_snapshot():
     content_msgs = [m for m in messages if m.get("op") != "set_addon_runtime_summary"]
     assert content_msgs == [
         {"op": "load_molsys_payload", "payload": {"atoms": {"atom_id": [1, 2, 3]}, "structures": []}},
-        {"op": "hide_global", "target": "global"},
+        {"op": "hide_whole", "target": "whole"},
         {
             "op": "set_camera_snapshot",
             "snapshot": {"target": [1, 2, 3]},
@@ -118,21 +118,21 @@ def test_export_messages_include_hide_region_for_hidden_region():
         "create_region must precede hide_region in export"
 
 
-def test_export_messages_include_hide_global_when_view_is_hidden():
-    """hide_global in history must survive into export messages (item 5)."""
+def test_export_messages_include_hide_whole_when_view_is_hidden():
+    """hide_whole in history must survive into export messages (item 5)."""
     view = MolSysView(debug_js=True)
     view.widget.send = lambda _msg: None  # type: ignore
 
     view._message_history = [  # noqa: SLF001
         {"op": "load_molsys_payload", "payload": {}},
-        {"op": "hide_global", "target": "global"},
+        {"op": "hide_whole", "target": "whole"},
     ]
 
     messages = view._build_export_messages()  # noqa: SLF001
     ops = [m["op"] for m in messages if m.get("op") != "set_addon_runtime_summary"]
 
-    assert "hide_global" in ops
-    assert "show_global" not in ops
+    assert "hide_whole" in ops
+    assert "show_whole" not in ops
 
 
 def test_export_messages_after_post_load_region_and_label():

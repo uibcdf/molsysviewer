@@ -24,11 +24,11 @@ import {
     DeleteLayerMessage,
     DeleteRegionMessage,
     RenameRegionMessage,
-    HideGlobalMessage,
+    HideWholeMessage,
     HideLayerMessage,
     HideRegionMessage,
     SetAtomColorsMessage,
-    SetGlobalRepresentationMessage,
+    SetWholeRepresentationMessage,
     SetFocusFadeMessage,
     SetLayerTagMessage,
     SetRegionRepresentationMessage,
@@ -36,7 +36,7 @@ import {
     SetRegionsVisibilityMessage,
     SetRegionSummariesMessage,
     BatchRegionOperationsMessage,
-    ShowGlobalMessage,
+    ShowWholeMessage,
     ShowLayerMessage,
     ShowRegionMessage,
     UpdateVisibilityMessage,
@@ -98,7 +98,7 @@ export class StateHandlers {
     private readonly layerMeta = new Map<string, { kind?: string; meta?: Record<string, unknown> }>();
     private readonly tagIndex = new Map<string, Set<StateTransform.Ref>>();
     private readonly globalReprs = new Set<StateTransform.Ref>();
-    private readonly pendingGlobalOps: Array<{ hide: boolean; target: "global" | "all" }> = [];
+    private readonly pendingGlobalOps: Array<{ hide: boolean; target: "whole" | "all" }> = [];
     private readonly pendingLayerVisibility = new Map<string, boolean>();
     private readonly pendingRegions: CreateRegionMessage[] = [];
     private regionStyleOptions = { representations: [] as string[], presets: [] as string[] };
@@ -1075,7 +1075,7 @@ export class StateHandlers {
         }
     }
 
-    async setGlobalRepresentation(msg: SetGlobalRepresentationMessage) {
+    async setWholeRepresentation(msg: SetWholeRepresentationMessage) {
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structureRef) return;
 
@@ -1217,12 +1217,12 @@ export class StateHandlers {
         await this.applyComposedTransparency();
     }
 
-    async showGlobal(msg: ShowGlobalMessage) {
-        await this.handleShowHideGlobal(false, msg.target ?? "global");
+    async showWhole(msg: ShowWholeMessage) {
+        await this.handleShowHideGlobal(false, msg.target ?? "whole");
     }
 
-    async hideGlobal(msg: HideGlobalMessage) {
-        await this.handleShowHideGlobal(true, msg.target ?? "global");
+    async hideWhole(msg: HideWholeMessage) {
+        await this.handleShowHideGlobal(true, msg.target ?? "whole");
     }
 
     async zoom(msg: ZoomMessage) {
@@ -1280,7 +1280,7 @@ export class StateHandlers {
             await this.ensureDefaultGlobalRepresentation();
         }
         if (this.requestedGlobalHidden !== null) {
-            await this.handleShowHideGlobal(this.requestedGlobalHidden, "global");
+            await this.handleShowHideGlobal(this.requestedGlobalHidden, "whole");
         }
     }
 
@@ -1323,8 +1323,8 @@ export class StateHandlers {
         this.tagIndex.delete(tag);
     }
 
-    private async handleShowHideGlobal(hide: boolean, target: "global" | "all" = "global") {
-        if (target === "global") {
+    private async handleShowHideGlobal(hide: boolean, target: "whole" | "all" = "whole") {
+        if (target === "whole") {
             this.requestedGlobalHidden = hide;
         }
         if (!this.callbacks.getStructure()) {
@@ -1343,7 +1343,7 @@ export class StateHandlers {
             if (entry.hidden) hiddenRegionReprRefs.add(ref as any);
         }));
 
-        if (target === "global") {
+        if (target === "whole") {
             this.globalReprs.forEach(ref => {
                 refs.push(ref);
                 baselineRefs.push(ref);
@@ -1396,7 +1396,7 @@ export class StateHandlers {
             if (baselineRefs.length) {
                 baselineRefs.forEach(ref => setSubtreeVisibility(this.plugin.state.data, ref, true));
             } else {
-                this.pendingGlobalOps.push({ hide: true, target: "global" });
+                this.pendingGlobalOps.push({ hide: true, target: "whole" });
             }
         }
     }

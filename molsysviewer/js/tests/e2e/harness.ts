@@ -619,7 +619,7 @@ export async function profileExclusiveOwnership(
     const fullWhole = atomRange(0, atoms);
     const complementWhole = atomRange(ownedAtoms, atoms);
 
-    await profiled.handleMessage({ op: "hide_global", target: "global" });
+    await profiled.handleMessage({ op: "hide_whole", target: "whole" });
     await profiled.handleMessage({ op: "create_region", tag: "__exclusive_owned_region__", atom_indices: owned });
     await profiled.handleMessage({
         op: "set_region_representation",
@@ -821,7 +821,7 @@ export async function probeExclusiveOwnershipPicking(
     if (!structure) throw new Error("Exclusive ownership picking probe requires a loaded structure.");
 
     const owned = atomRange(0, ownedAtoms);
-    await profiled.handleMessage({ op: "hide_global", target: "global" });
+    await profiled.handleMessage({ op: "hide_whole", target: "whole" });
     const explicitWhole = await buildExclusiveWhole(profiled, atomRange(0, atoms), "cartoon");
     const explicitWholeComponent = findComponentByRef(profiled, explicitWhole.componentRef);
     if (!explicitWholeComponent) throw new Error("Exclusive ownership picking probe failed to create explicit whole component.");
@@ -930,7 +930,7 @@ export async function probeGlobalRepresentationOwnershipMask(
         representation: "ball-and-stick",
     });
     await profiled.handleMessage({
-        op: "set_global_representation",
+        op: "set_whole_representation",
         ...options.globalMessage,
     } as any);
 
@@ -975,7 +975,7 @@ export async function probePerAtomColorDecorator(
     if (!structure) throw new Error("Per-atom color decorator probe requires a loaded structure.");
 
     await profiled.handleMessage({
-        op: "set_global_representation",
+        op: "set_whole_representation",
         representation: "ball-and-stick",
         params: { color_scheme: "element_cpk" },
     } as any);

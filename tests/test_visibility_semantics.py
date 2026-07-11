@@ -18,10 +18,10 @@ def test_whole_hide_stays_sticky_across_show_all():
     assert view.visible_atom_indices == list(range(22))
     assert [msg.get("op") for msg in view._message_history[-3:]] == [
         "update_visibility",
-        "show_global",
-        "hide_global",
+        "show_whole",
+        "hide_whole",
     ]
-    assert view._message_history[-1] == {"op": "hide_global", "target": "global"}  # noqa: SLF001
+    assert view._message_history[-1] == {"op": "hide_whole", "target": "whole"}  # noqa: SLF001
 
 
 def test_hidden_region_and_layer_survive_global_hide_show_cycle():
@@ -53,10 +53,10 @@ def test_hidden_region_and_layer_survive_global_hide_show_cycle():
     assert not any(msg.get("op") == "show_layer" and msg.get("tag") == "pocket" for msg in view._message_history)
     assert [msg.get("op") for msg in view._message_history[-3:]] == [
         "update_visibility",
-        "show_global",
-        "show_global",
+        "show_whole",
+        "show_whole",
     ]
-    assert view._message_history[-1] == {"op": "show_global", "target": "global"}  # noqa: SLF001
+    assert view._message_history[-1] == {"op": "show_whole", "target": "whole"}  # noqa: SLF001
 
 
 def test_show_all_resets_partial_atom_visibility_without_clearing_hidden_region_state():

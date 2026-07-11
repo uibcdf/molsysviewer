@@ -526,8 +526,8 @@ export type SetLayerTagMessage = {
     new_tag: string;
 };
 
-export type SetGlobalRepresentationMessage = {
-    op: "set_global_representation";
+export type SetWholeRepresentationMessage = {
+    op: "set_whole_representation";
     representation?: string;
     preset?: string;
     user_preset?: any;
@@ -541,14 +541,14 @@ export type SetFigureSpecMessage = {
     figure_variants?: string[];
 };
 
-export type ShowGlobalMessage = {
-    op: "show_global";
-    target?: "global" | "all";
+export type ShowWholeMessage = {
+    op: "show_whole";
+    target?: "whole" | "all";
 };
 
-export type HideGlobalMessage = {
-    op: "hide_global";
-    target?: "global" | "all";
+export type HideWholeMessage = {
+    op: "hide_whole";
+    target?: "whole" | "all";
 };
 
 export type ZoomMessage = {
@@ -810,10 +810,10 @@ export type ViewerMessage =
     HideLayerMessage |
     DeleteLayerMessage |
     SetLayerTagMessage |
-    SetGlobalRepresentationMessage |
+    SetWholeRepresentationMessage |
     SetFigureSpecMessage |
-    ShowGlobalMessage |
-    HideGlobalMessage |
+    ShowWholeMessage |
+    HideWholeMessage |
     ZoomMessage |
     ZoomToPositionMessage |
     SetCameraSnapshotMessage |

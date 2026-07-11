@@ -34,7 +34,7 @@ def test_whole_reset_representation_returns_to_load_time_explicit_style():
     assert view.whole.params == {}
     assert view.whole.color_scheme is None
     message = view._message_history[-1]  # noqa: SLF001
-    assert message["op"] == "set_global_representation"
+    assert message["op"] == "set_whole_representation"
     assert message["representation"] is None
     assert message["preset"] is None
     assert message["params"] == {}
@@ -152,7 +152,7 @@ def test_whole_context_actions_route_through_public_api():
     assert view.whole.params == {"alpha": 0.7}
     assert view.whole.visible is False
     assert [msg["op"] for msg in view._message_history[-3:]] == [  # noqa: SLF001
-        "set_global_representation",
-        "hide_global",
+        "set_whole_representation",
+        "hide_whole",
         "clear_atom_colors",
     ]

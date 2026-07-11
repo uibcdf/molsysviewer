@@ -158,21 +158,21 @@ def test_measurement_set_layer_tag_rewrites_measurement_history():
 
 
 # ---------------------------------------------------------------------------
-# set_global_representation replay after rebuild
+# set_whole_representation replay after rebuild
 # ---------------------------------------------------------------------------
 
-def test_set_global_representation_survives_rebuild():
+def test_set_whole_representation_survives_rebuild():
     view = demo["pentalanine"]
     view.widget.send = lambda _msg: None  # type: ignore[attr-defined]
 
     view.styles.apply(representation="cartoon", skip_digestion=True)
     before_ops = [m.get("op") for m in view._message_history]  # noqa: SLF001
-    assert "set_global_representation" in before_ops
+    assert "set_whole_representation" in before_ops
 
     apply_remove(view, selection="atom_index < 3")
 
-    repr_msgs = [m for m in view._message_history if m.get("op") == "set_global_representation"]  # noqa: SLF001
-    assert len(repr_msgs) >= 1, "set_global_representation must appear in replayed history"
+    repr_msgs = [m for m in view._message_history if m.get("op") == "set_whole_representation"]  # noqa: SLF001
+    assert len(repr_msgs) >= 1, "set_whole_representation must appear in replayed history"
     assert repr_msgs[0]["representation"] == "cartoon"
 
 
@@ -186,8 +186,8 @@ def test_global_hidden_state_replayed_after_rebuild():
     apply_remove(view, selection="atom_index < 2")
 
     assert view._global_hidden is True  # noqa: SLF001
-    hide_ops = [m for m in view._message_history if m.get("op") == "hide_global"]  # noqa: SLF001
-    assert len(hide_ops) >= 1, "hide_global must be re-emitted after rebuild"
+    hide_ops = [m for m in view._message_history if m.get("op") == "hide_whole"]  # noqa: SLF001
+    assert len(hide_ops) >= 1, "hide_whole must be re-emitted after rebuild"
 
 
 def test_hidden_region_state_replayed_after_rebuild():

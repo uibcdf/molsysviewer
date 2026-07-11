@@ -2048,7 +2048,7 @@ class MolSysView(
         self._remap_atom_color_map(atom_index_map)
 
         if not self.whole.visible:
-            self._send({"op": "hide_global", "target": "global"})
+            self._send({"op": "hide_whole", "target": "whole"})
 
         for layer in list(self._layers.values()):
             if not getattr(layer, "_active", True):

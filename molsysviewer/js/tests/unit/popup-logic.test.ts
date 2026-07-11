@@ -196,7 +196,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
             data: {
                 type: "molsysviewer-initial-sync",
                 data: {
-                    messages: [{ op: "load_molsys_payload" }, { op: "hide_global", target: "global" }],
+                    messages: [{ op: "load_molsys_payload" }, { op: "hide_whole", target: "whole" }],
                     cameraSnapshot: { target: [0, 0, 0] },
                     isSpinActive: true,
                     isSwingActive: true,
@@ -209,7 +209,7 @@ test("bootPopup replays initial sync and enables autohide listeners", async () =
 
         assert.deepStrictEqual(calls.handled, [
             { op: "load_molsys_payload" },
-            { op: "hide_global", target: "global" },
+            { op: "hide_whole", target: "whole" },
         ]);
         assert.deepStrictEqual(calls.camera, [
             { snapshot: { target: [0, 0, 0] }, duration: 0 },
@@ -372,13 +372,13 @@ test("bootPopup dispatches molsysviewer-sync-op to controller (live mirror)", as
         await flushAsync();
 
         env.windowObj.dispatch("message", {
-            data: { type: "molsysviewer-sync-op", data: { op: "show_global", target: "global" } },
+            data: { type: "molsysviewer-sync-op", data: { op: "show_whole", target: "whole" } },
         });
         await flushAsync();
 
         assert.deepStrictEqual(handled, [
             { op: "hide_region", tag: "r1" },
-            { op: "show_global", target: "global" },
+            { op: "show_whole", target: "whole" },
         ]);
     } finally {
         (globalThis as any).window = previousWindow;
