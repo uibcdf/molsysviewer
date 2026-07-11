@@ -491,6 +491,21 @@ export type SetRegionSummariesMessage = {
     presets?: string[];
 };
 
+export type SetWholeSummaryMessage = {
+    op: "set_whole_summary";
+    representation?: string | null;
+    preset?: string | null;
+    params?: Record<string, unknown>;
+    visible?: boolean;
+    color_scheme?: string | null;
+    scene_style_name?: string | null;
+    available_attributes?: string[];
+    color_schemes?: string[];
+    inheriting_region_count?: number;
+    none_state_region_count?: number;
+    covering_layer_count?: number;
+};
+
 export type SetDynamicRegionAtomsMessage = {
     op: "set_dynamic_region_atoms";
     frame?: number;
@@ -820,6 +835,7 @@ export type KnownViewerMessage =
     HideRegionMessage |
     SetRegionsVisibilityMessage |
     SetRegionSummariesMessage |
+    SetWholeSummaryMessage |
     SetDynamicRegionAtomsMessage |
     SetRegionOrderMessage |
     BatchRegionOperationsMessage |

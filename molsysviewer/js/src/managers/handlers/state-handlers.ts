@@ -35,6 +35,7 @@ import {
     SetRegionOrderMessage,
     SetRegionsVisibilityMessage,
     SetRegionSummariesMessage,
+    SetWholeSummaryMessage,
     SetDynamicRegionAtomsMessage,
     BatchRegionOperationsMessage,
     ShowWholeMessage,
@@ -88,6 +89,20 @@ export interface RegionSummary {
     frame_dependent?: boolean;
 }
 
+export interface WholeSummary {
+    representation?: string | null;
+    preset?: string | null;
+    params: Record<string, unknown>;
+    visible: boolean;
+    color_scheme?: string | null;
+    scene_style_name?: string | null;
+    available_attributes: string[];
+    color_schemes: string[];
+    inheriting_region_count: number;
+    none_state_region_count: number;
+    covering_layer_count: number;
+}
+
 export interface StateCallbacks {
     getStructure: () => Structure | undefined;
     getLoadedStructure: () => LoadedStructure | undefined;
@@ -100,6 +115,7 @@ export interface StateCallbacks {
 export class StateHandlers {
     private readonly regionIndex = new Map<string, RegionEntry>();
     private backendRegionSummaries: RegionSummary[] | null = null;
+    private wholeSummary: WholeSummary | null = null;
     private readonly layerMeta = new Map<string, { kind?: string; meta?: Record<string, unknown> }>();
     private readonly tagIndex = new Map<string, Set<StateTransform.Ref>>();
     private readonly globalReprs = new Set<StateTransform.Ref>();
@@ -1062,6 +1078,36 @@ export class StateHandlers {
         };
     }
 
+    setWholeSummary(msg: SetWholeSummaryMessage) {
+        this.wholeSummary = {
+            representation: typeof msg.representation === "string" ? msg.representation : null,
+            preset: typeof msg.preset === "string" ? msg.preset : null,
+            params: msg.params && typeof msg.params === "object" ? { ...msg.params } : {},
+            visible: msg.visible !== false,
+            color_scheme: typeof msg.color_scheme === "string" ? msg.color_scheme : null,
+            scene_style_name: typeof msg.scene_style_name === "string" ? msg.scene_style_name : null,
+            available_attributes: Array.isArray(msg.available_attributes)
+                ? msg.available_attributes.filter((value): value is string => typeof value === "string")
+                : [],
+            color_schemes: Array.isArray(msg.color_schemes)
+                ? msg.color_schemes.filter((value): value is string => typeof value === "string")
+                : [],
+            inheriting_region_count: typeof msg.inheriting_region_count === "number" ? msg.inheriting_region_count : 0,
+            none_state_region_count: typeof msg.none_state_region_count === "number" ? msg.none_state_region_count : 0,
+            covering_layer_count: typeof msg.covering_layer_count === "number" ? msg.covering_layer_count : 0,
+        };
+    }
+
+    getWholeSummary(): WholeSummary | null {
+        if (this.wholeSummary === null) return null;
+        return {
+            ...this.wholeSummary,
+            params: { ...this.wholeSummary.params },
+            available_attributes: [...this.wholeSummary.available_attributes],
+            color_schemes: [...this.wholeSummary.color_schemes],
+        };
+    }
+
     isWholeHidden(): boolean {
         return this.requestedGlobalHidden === true;
     }
@@ -1700,8 +1746,27 @@ export class StateHandlers {
         return colorTheme ?? { name: "element-symbol", params: {} };
     }
 
-    private async updateGlobalRepresentationColorThemes(hasColors: boolean) {
-        const refs = this.currentGlobalRepresentationRefs();
+    private currentManagedRepresentationRefs(): StateTransform.Ref[] {
+        const refs = new Set<StateTransform.Ref>();
+        this.currentGlobalRepresentationRefs().forEach(ref => refs.add(ref));
+        this.regionIndex.forEach(entry => entry.representations.forEach(ref => {
+            const resolved = StateObjectRef.resolveRef(ref);
+            if (resolved && this.plugin.state.data.cells.has(resolved)) refs.add(resolved);
+        }));
+        const hierarchy = this.plugin.managers.structure.hierarchy.current;
+        for (const structure of hierarchy?.structures ?? []) {
+            for (const component of structure.components ?? []) {
+                for (const representation of component.representations ?? []) {
+                    const ref = representation.cell.transform.ref;
+                    if (ref && this.plugin.state.data.cells.has(ref)) refs.add(ref);
+                }
+            }
+        }
+        return [...refs];
+    }
+
+    private async updateManagedRepresentationColorThemes(hasColors: boolean) {
+        const refs = this.currentManagedRepresentationRefs();
         if (refs.length === 0) return;
         const update = this.plugin.state.data.build();
         for (const ref of refs) {
@@ -1718,26 +1783,7 @@ export class StateHandlers {
     }
 
     private async _applyPerAtomColorTheme() {
-        const components = this.callbacks.getComponents();
         const hasColors = hasPerAtomColors();
-        await this.updateGlobalRepresentationColorThemes(hasColors);
-        if (components.length === 0) return;
-        if (!hasColors) {
-            await this.plugin.managers.structure.component.updateRepresentationsTheme(
-                components,
-                { color: "default" as any },
-            );
-            return;
-        }
-        await this.plugin.managers.structure.component.updateRepresentationsTheme(
-            components,
-            (_component: any, representation: any) => {
-                const oldTheme = representation?.cell?.transform?.params?.colorTheme;
-                return {
-                    color: MsvPerAtomColorThemeName as any,
-                    colorParams: this.perAtomThemeParamsFromCurrent(oldTheme).params,
-                };
-            },
-        );
+        await this.updateManagedRepresentationColorThemes(hasColors);
     }
 }

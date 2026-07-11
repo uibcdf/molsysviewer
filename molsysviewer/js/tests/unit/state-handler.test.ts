@@ -121,6 +121,45 @@ test("state handler applies one batch region visibility message to every tag", a
     ]);
 });
 
+test("state handler preserves whole summary fields through the backend seam", () => {
+    const handler = new StateHandlers({ state: { data: {} } } as any, {
+        getStructure: () => undefined,
+        getLoadedStructure: () => undefined,
+        getCurrentStructureRef: () => undefined,
+        getComponents: () => [],
+        notify: (_msg: any) => {},
+    });
+
+    handler.setWholeSummary({
+        op: "set_whole_summary",
+        representation: "cartoon",
+        preset: null,
+        params: { alpha: 0.5, quality: "medium" },
+        visible: false,
+        color_scheme: "physicochemical",
+        scene_style_name: "publication",
+        available_attributes: ["b_factor"],
+        color_schemes: ["element_cpk", "physicochemical"],
+        inheriting_region_count: 3,
+        none_state_region_count: 2,
+        covering_layer_count: 1,
+    });
+
+    assert.deepStrictEqual(handler.getWholeSummary(), {
+        representation: "cartoon",
+        preset: null,
+        params: { alpha: 0.5, quality: "medium" },
+        visible: false,
+        color_scheme: "physicochemical",
+        scene_style_name: "publication",
+        available_attributes: ["b_factor"],
+        color_schemes: ["element_cpk", "physicochemical"],
+        inheriting_region_count: 3,
+        none_state_region_count: 2,
+        covering_layer_count: 1,
+    });
+});
+
 test("state handler accepts authoritative enriched region summaries", () => {
     const handler = new StateHandlers({ state: { data: {} } } as any, {
         getStructure: () => undefined,

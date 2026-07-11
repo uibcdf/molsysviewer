@@ -44,6 +44,11 @@ function installFakeDom() {
     const previousDocument = (globalThis as any).document;
     (globalThis as any).document = {
         createElement: () => new FakeElement(),
+        createTextNode: (text: string) => {
+            const node = new FakeElement();
+            node.textContent = text;
+            return node;
+        },
     };
     return () => {
         (globalThis as any).document = previousDocument;
@@ -1881,17 +1886,93 @@ test("GroupPanel header nav button triggers navigate-to-workbench callback", () 
     }
 });
 
-test("GroupPanel mounts the residue color-scheme (palette) toggle in the System tab", () => {
-    // Regression: the 🎨 palette button was gated on a section titled "Structure",
-    // which the navigate-panel redesign renamed to the "System" tab — silently
-    // orphaning the button. It must mount in the System tab content on construction.
+test("GroupPanel does not expose a molecular color-scheme toggle in the System tab", () => {
     const restore = installFakeDom();
     try {
         const host = new FakeElement() as any;
         new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {});
         const root = host.children[0];
         const toggle = findFirstByAttribute(root, "data-molsysviewer-color-scheme-toggle", "true");
-        assert.ok(toggle, "the color-scheme (palette) toggle should be mounted in the System tab");
+        assert.strictEqual(toggle, null, "whole-owned color scheme must not repaint the molecule from System");
+    } finally {
+        restore();
+    }
+});
+
+test("GroupPanel Whole panel renders summary and confirms hiding base-only regions", () => {
+    const restore = installFakeDom();
+    const previousWindow = (globalThis as any).window;
+    try {
+        let confirmed = 0;
+        (globalThis as any).window = { confirm: () => { confirmed += 1; return false; } };
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details?: any }> = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, (action, details) => {
+            actions.push({ action, details });
+        });
+        panel.setWholeSummary({
+            representation: "cartoon",
+            preset: null,
+            params: { alpha: 0.65, quality: "medium" },
+            visible: true,
+            color_scheme: "physicochemical",
+            scene_style_name: "publication",
+            available_attributes: ["b_factor"],
+            color_schemes: ["element_cpk", "physicochemical"],
+            inheriting_region_count: 2,
+            none_state_region_count: 1,
+            covering_layer_count: 3,
+        });
+        const root = host.children[0];
+        const dot = findFirstByAttribute(root, "data-molsysviewer-whole-visible-dot", "true");
+        const hide = findFirstByAttribute(root, "data-molsysviewer-whole-visibility", "hide");
+        const scheme = findFirstByAttribute(root, "data-molsysviewer-whole-color-scheme", "true") as any;
+        assert.ok(dot);
+        assert.ok(hide);
+        assert.strictEqual(scheme?.value, "physicochemical");
+
+        hide?.dispatch("click", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(confirmed, 1);
+        assert.deepStrictEqual(actions, []);
+    } finally {
+        (globalThis as any).window = previousWindow;
+        restore();
+    }
+});
+
+test("GroupPanel Whole opacity updates readout on input and emits only on change", () => {
+    const restore = installFakeDom();
+    try {
+        const host = new FakeElement() as any;
+        const actions: Array<{ action: string; details?: any }> = [];
+        const panel = new GroupPanel(host, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, (action, details) => {
+            actions.push({ action, details });
+        });
+        panel.setWholeSummary({
+            representation: "cartoon",
+            preset: null,
+            params: { alpha: 0.5 },
+            visible: true,
+            color_scheme: null,
+            scene_style_name: null,
+            available_attributes: [],
+            color_schemes: ["element_cpk"],
+            inheriting_region_count: 0,
+            none_state_region_count: 0,
+            covering_layer_count: 0,
+        });
+        const root = host.children[0];
+        const opacity = findFirstByAttribute(root, "data-molsysviewer-whole-opacity", "true") as any;
+        const readout = findFirstByAttribute(root, "data-molsysviewer-whole-opacity-value", "true");
+        assert.ok(opacity);
+        opacity.value = "0.25";
+        opacity.dispatch("input", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(readout?.textContent, "0.25");
+        assert.deepStrictEqual(actions, []);
+        opacity.dispatch("change", { preventDefault() {}, stopPropagation() {} });
+        assert.strictEqual(actions.length, 1);
+        assert.strictEqual(actions[0].action, "set_whole_representation");
+        assert.deepStrictEqual(actions[0].details.params.alpha, 0.25);
     } finally {
         restore();
     }

@@ -187,6 +187,7 @@ class StateMixin:
         )
 
         self._send_resolved_atom_colors(replay=True)
+        self._sync_whole_summary_runtime()
 
     def _topologically_ordered_regions(self, records: list) -> list:
         """Return records ordered so every dependency precedes its dependents.

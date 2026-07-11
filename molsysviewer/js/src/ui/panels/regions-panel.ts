@@ -4,6 +4,7 @@ import type { RegionDetails, RegionSummary, SavedSelectionSummary, SelectionQuer
 import { BasePanel } from "./base-panel";
 import { PanelAction, PanelContext } from "./types";
 import { makeButton, makeSectionHeader, makeStyledSelect } from "./ui-helpers";
+import { FALLBACK_PRESETS, createStyleDraftControls, makeStyleControlRow } from "./style-composer";
 
 /**
  * Studio -> Regions subpanel.
@@ -954,39 +955,11 @@ export class RegionsPanel extends BasePanel {
             marginBottom: "4px",
         });
 
-        const makeControlRow = (label: string, control: HTMLElement): HTMLDivElement => {
-            const row = document.createElement("div");
-            Object.assign(row.style, {
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "8px",
-                width: "100%",
-            });
-            const text = document.createElement("span");
-            text.textContent = label;
-            Object.assign(text.style, {
-                fontSize: "11px",
-                color: "rgba(244,244,245,0.7)",
-            });
-            row.appendChild(text);
-            row.appendChild(control);
-            return row;
-        };
-
-        const fallbackPresets = [
-            "atomic-detail",
-            "auto",
-            "coarse-surface",
-            "empty",
-            "polymer-and-ligand",
-            "polymer-cartoon",
-        ];
         const representations = this.getRepresentationOptions(true)
             .filter(option => typeof option === "string" || !option.value.startsWith("preset:"));
         const presets = this.regionStylePresets.length > 0
             ? this.regionStylePresets
-            : fallbackPresets;
+            : FALLBACK_PRESETS;
         const params = item.representation_params ?? {};
         const draftHeading = document.createElement("div");
         draftHeading.textContent = "Style draft";
@@ -998,26 +971,25 @@ export class RegionsPanel extends BasePanel {
         });
         container.appendChild(draftHeading);
 
-        let representationSelect: HTMLSelectElement;
-        let presetSelect: HTMLSelectElement;
-        representationSelect = makeStyledSelect(
+        const controls = createStyleDraftControls({
+            id: tag,
+            dataPrefix: "region-style",
             representations,
-            item.preset ? "" : (item.representation ?? ""),
-            (value) => {
-                if (value) presetSelect.value = "";
-            },
-        );
-        representationSelect.setAttribute("data-molsysviewer-region-style-representation", tag);
-        presetSelect = makeStyledSelect(
-            [{ value: "", label: "No preset" }, ...presets],
-            item.preset ?? "",
-            (value) => {
-                if (value) representationSelect.value = "";
-            },
-        );
-        presetSelect.setAttribute("data-molsysviewer-region-style-preset", tag);
-        container.appendChild(makeControlRow("Representation", representationSelect));
-        container.appendChild(makeControlRow("Preset", presetSelect));
+            presets,
+            currentRepresentation: item.representation,
+            currentPreset: item.preset,
+            params,
+            opacityDisabled: !this.regionHasOwnVisual(item),
+            opacityDisabledTitle: "Opacity requires a region visual. Choose Inherit or a representation first.",
+        });
+        const representationSelect = controls.representationSelect;
+        const presetSelect = controls.presetSelect;
+        const opacity = controls.opacityInput;
+        const quality = controls.qualitySelect;
+        const customColorInput = controls.customColorInput;
+        const colorScheme = controls.colorSchemeSelect;
+        container.appendChild(controls.representationRow);
+        container.appendChild(controls.presetRow);
 
         const immediateHeading = document.createElement("div");
         immediateHeading.textContent = "Immediate adjustments";
@@ -1028,91 +1000,10 @@ export class RegionsPanel extends BasePanel {
             color: "rgba(244,244,245,0.55)",
             paddingTop: "2px",
         });
-        const opacityWrap = document.createElement("div");
-        Object.assign(opacityWrap.style, {
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-        });
-        const opacity = document.createElement("input");
-        opacity.type = "range";
-        opacity.min = "0";
-        opacity.max = "1";
-        opacity.step = "0.05";
-        opacity.value = String(typeof params.alpha === "number" ? params.alpha : 1);
-        opacity.setAttribute("data-molsysviewer-region-style-opacity", tag);
-        if (!this.regionHasOwnVisual(item)) {
-            opacity.disabled = true;
-            opacity.title = "Opacity requires a region visual. Choose Inherit or a representation first.";
-        }
-        const opacityValue = document.createElement("span");
-        opacityValue.textContent = Number(opacity.value).toFixed(2);
-        opacityValue.setAttribute("data-molsysviewer-region-style-opacity-value", tag);
-        opacity.addEventListener("input", () => {
-            opacityValue.textContent = Number(opacity.value).toFixed(2);
-        });
-        opacityWrap.appendChild(opacity);
-        opacityWrap.appendChild(opacityValue);
-        const opacityRow = makeControlRow("Opacity", opacityWrap);
-
-        const qualityValues = ["auto", "lowest", "lower", "low", "medium", "high", "higher", "highest", "custom"];
-        const quality = makeStyledSelect(
-            qualityValues,
-            typeof params.quality === "string" ? params.quality : "auto",
-            () => {},
-        );
-        quality.setAttribute("data-molsysviewer-region-style-quality", tag);
-        container.appendChild(makeControlRow("Quality", quality));
-
-        const customColorInput = document.createElement("input");
-        customColorInput.type = "color";
-        customColorInput.value = "#3b82f6";
-        customColorInput.setAttribute("data-molsysviewer-region-style-uniform-color", tag);
-        Object.assign(customColorInput.style, {
-            width: "24px",
-            height: "24px",
-            border: "1px solid rgba(255,255,255,0.25)",
-            borderRadius: "4px",
-            padding: "0",
-            background: "transparent",
-            cursor: "pointer",
-            boxSizing: "border-box",
-            overflow: "hidden",
-            outline: "none",
-        });
-
-        const colorScheme = makeStyledSelect(
-            [
-                { value: "", label: "Keep current" },
-                { value: "element_cpk", label: "Element (CPK)" },
-                { value: "chain_default", label: "Chain" },
-                { value: "secondary_structure_default", label: "Secondary structure" },
-                { value: "physicochemical", label: "Physicochemical" },
-                { value: "residue_name", label: "Residue name" },
-                { value: "molecule_type", label: "Molecule type" },
-                { value: "entity_default", label: "Entity" },
-                { value: "illustrative_default", label: "Illustrative" },
-                { value: "uniform", label: "Uniform color" },
-            ],
-            typeof params.color_scheme === "string" ? params.color_scheme : "",
-            (val) => {
-                customColorInput.style.display = val === "uniform" ? "inline-block" : "none";
-            },
-        );
-        colorScheme.setAttribute("data-molsysviewer-region-style-color-scheme", tag);
-        customColorInput.style.display = colorScheme.value === "uniform" ? "inline-block" : "none";
-
-        const colorRight = document.createElement("div");
-        Object.assign(colorRight.style, {
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-        });
-        colorRight.appendChild(customColorInput);
-        colorRight.appendChild(colorScheme);
-        container.appendChild(makeControlRow("Color", colorRight));
+        container.appendChild(controls.qualityRow);
+        container.appendChild(controls.colorRow);
         container.appendChild(immediateHeading);
-        container.appendChild(opacityRow);
+        container.appendChild(controls.opacityRow);
 
         const attributeRow = document.createElement("div");
         Object.assign(attributeRow.style, {
@@ -1181,7 +1072,7 @@ export class RegionsPanel extends BasePanel {
         attributeRow.appendChild(palette);
         attributeRow.appendChild(valueRange);
         attributeRow.appendChild(resetColors);
-        container.appendChild(makeControlRow("Color by", attributeRow));
+        container.appendChild(makeStyleControlRow("Color by", attributeRow));
 
         const buildStyleAction = (): { action: PanelAction; details: Record<string, unknown> } => {
             const selectedPreset = presetSelect.value;

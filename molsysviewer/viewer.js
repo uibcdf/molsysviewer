@@ -14700,7 +14700,7 @@ var Column;
   function ofIntTokens(tokens) {
     const { count: count3, data, indices: indices2 } = tokens;
     return lambdaColumn({
-      value: (row) => parseInt2(data, indices2[2 * row], indices2[2 * row + 1]) || 0,
+      value: (row2) => parseInt2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0,
       rowCount: count3,
       schema: Schema9.int
     });
@@ -14709,7 +14709,7 @@ var Column;
   function ofFloatTokens(tokens) {
     const { count: count3, data, indices: indices2 } = tokens;
     return lambdaColumn({
-      value: (row) => parseFloat2(data, indices2[2 * row], indices2[2 * row + 1]) || 0,
+      value: (row2) => parseFloat2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0,
       rowCount: count3,
       schema: Schema9.float
     });
@@ -14718,8 +14718,8 @@ var Column;
   function ofStringTokens(tokens) {
     const { count: count3, data, indices: indices2 } = tokens;
     return lambdaColumn({
-      value: (row) => {
-        const ret = data.substring(indices2[2 * row], indices2[2 * row + 1]);
+      value: (row2) => {
+        const ret = data.substring(indices2[2 * row2], indices2[2 * row2 + 1]);
         if (ret === "." || ret === "?")
           return "";
         return ret;
@@ -14806,14 +14806,14 @@ function createIndexerOfColumn(c8) {
   return (v4) => map4.has(v4) ? map4.get(v4) : -1;
 }
 function constColumn(v4, rowCount, schema, valueKind) {
-  const value = (row) => v4;
+  const value = (row2) => v4;
   return {
     schema,
     __array: void 0,
     isDefined: valueKind === Column.ValueKinds.Present,
     rowCount,
     value,
-    valueKind: (row) => valueKind,
+    valueKind: (row2) => valueKind,
     toArray: (params) => {
       const { array: array2 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -14830,7 +14830,7 @@ function lambdaColumn({ value, valueKind, areValuesEqual: areValuesEqual2, rowCo
     isDefined: true,
     rowCount,
     value,
-    valueKind: valueKind ? valueKind : (row) => Column.ValueKinds.Present,
+    valueKind: valueKind ? valueKind : (row2) => Column.ValueKinds.Present,
     toArray: (params) => {
       const { array: array2, start: start4 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -14843,16 +14843,16 @@ function lambdaColumn({ value, valueKind, areValuesEqual: areValuesEqual2, rowCo
 function arrayColumn({ array: array2, schema, valueKind }) {
   const rowCount = array2.length;
   const defaultValue = schema.T;
-  const value = schema.valueType === "str" ? schema.transform === "lowercase" ? (row) => {
-    const v4 = array2[row];
+  const value = schema.valueType === "str" ? schema.transform === "lowercase" ? (row2) => {
+    const v4 = array2[row2];
     return typeof v4 === "string" ? v4.toLowerCase() : `${v4 !== null && v4 !== void 0 ? v4 : defaultValue}`.toLowerCase();
-  } : schema.transform === "uppercase" ? (row) => {
-    const v4 = array2[row];
+  } : schema.transform === "uppercase" ? (row2) => {
+    const v4 = array2[row2];
     return typeof v4 === "string" ? v4.toUpperCase() : `${v4 !== null && v4 !== void 0 ? v4 : defaultValue}`.toUpperCase();
-  } : (row) => {
-    const v4 = array2[row];
+  } : (row2) => {
+    const v4 = array2[row2];
     return typeof v4 === "string" ? v4 : `${v4 !== null && v4 !== void 0 ? v4 : defaultValue}`;
-  } : (row) => array2[row];
+  } : (row2) => array2[row2];
   const isTyped = isTypedArray(array2);
   return {
     schema,
@@ -14860,7 +14860,7 @@ function arrayColumn({ array: array2, schema, valueKind }) {
     isDefined: true,
     rowCount,
     value,
-    valueKind: valueKind ? valueKind : (row) => Column.ValueKinds.Present,
+    valueKind: valueKind ? valueKind : (row2) => Column.ValueKinds.Present,
     toArray: schema.valueType === "str" ? schema.transform === "lowercase" ? (params) => {
       const { start: start4, end: end4 } = getArrayBounds(rowCount, params);
       const ret = new (params && typeof params.array !== "undefined" ? params.array : array2.constructor)(end4 - start4);
@@ -14909,11 +14909,11 @@ function windowColumn(column, start4, end4) {
 function windowTyped(c8, start4, end4) {
   const array2 = typedArrayWindow(c8.__array, { start: start4, end: end4 });
   const vk = c8.valueKind;
-  return arrayColumn({ array: array2, schema: c8.schema, valueKind: (row) => vk(start4 + row) });
+  return arrayColumn({ array: array2, schema: c8.schema, valueKind: (row2) => vk(start4 + row2) });
 }
 function windowFull(c8, start4, end4) {
   const v4 = c8.value, vk = c8.valueKind, ave = c8.areValuesEqual;
-  const value = start4 === 0 ? v4 : (row) => v4(row + start4);
+  const value = start4 === 0 ? v4 : (row2) => v4(row2 + start4);
   const rowCount = end4 - start4;
   return {
     schema: c8.schema,
@@ -14921,7 +14921,7 @@ function windowFull(c8, start4, end4) {
     isDefined: c8.isDefined,
     rowCount,
     value,
-    valueKind: start4 === 0 ? vk : (row) => vk(row + start4),
+    valueKind: start4 === 0 ? vk : (row2) => vk(row2 + start4),
     toArray: (params) => {
       const { array: array2 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -14955,11 +14955,11 @@ function arrayView(c8, map4) {
   for (let i = 0, _i = map4.length; i < _i; i++)
     ret[i] = array2[map4[i]];
   const vk = c8.valueKind;
-  return arrayColumn({ array: ret, schema: c8.schema, valueKind: (row) => vk(map4[row]) });
+  return arrayColumn({ array: ret, schema: c8.schema, valueKind: (row2) => vk(map4[row2]) });
 }
 function viewFull(c8, map4) {
   const v4 = c8.value, vk = c8.valueKind, ave = c8.areValuesEqual;
-  const value = (row) => v4(map4[row]);
+  const value = (row2) => v4(map4[row2]);
   const rowCount = map4.length;
   return {
     schema: c8.schema,
@@ -14967,7 +14967,7 @@ function viewFull(c8, map4) {
     isDefined: c8.isDefined,
     rowCount,
     value,
-    valueKind: (row) => vk(map4[row]),
+    valueKind: (row2) => vk(map4[row2]),
     toArray: (params) => {
       const { array: array2 } = createArray(rowCount, params);
       for (let i = 0, _i = array2.length; i < _i; i++)
@@ -15216,13 +15216,13 @@ var Table;
   }
   Table2.areEqual = areEqual4;
   function getRow(table, index) {
-    const row = /* @__PURE__ */ Object.create(null);
+    const row2 = /* @__PURE__ */ Object.create(null);
     const { _columns: cols } = table;
     for (let i = 0; i < cols.length; i++) {
       const c8 = cols[i];
-      row[c8] = table[c8].value(index);
+      row2[c8] = table[c8].value(index);
     }
-    return row;
+    return row2;
   }
   Table2.getRow = getRow;
   function pickRow(table, test) {
@@ -20387,12 +20387,12 @@ var Matrix;
     return mean;
   }
   Matrix4.meanRows = meanRows;
-  function subRows(mat, row) {
+  function subRows(mat, row2) {
     const nrows = mat.rows, ncols = mat.cols;
     const md = mat.data;
     for (let i = 0, p6 = 0; i < nrows; ++i) {
       for (let j = 0; j < ncols; ++j, ++p6)
-        md[p6] -= row[j];
+        md[p6] -= row2[j];
     }
     return mat;
   }
@@ -41504,14 +41504,14 @@ function TokenColumnProvider(tokens) {
 function TokenColumn(tokens, schema) {
   const { data, indices: indices2, count: rowCount } = tokens;
   const { valueType: type3 } = schema;
-  const value = type3 === "str" ? (row) => data.substring(indices2[2 * row], indices2[2 * row + 1]) : type3 === "int" ? (row) => parseInt2(data, indices2[2 * row], indices2[2 * row + 1]) || 0 : (row) => parseFloat2(data, indices2[2 * row], indices2[2 * row + 1]) || 0;
+  const value = type3 === "str" ? (row2) => data.substring(indices2[2 * row2], indices2[2 * row2 + 1]) : type3 === "int" ? (row2) => parseInt2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0 : (row2) => parseFloat2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0;
   return {
     schema,
     __array: void 0,
     isDefined: true,
     rowCount,
     value,
-    valueKind: (row) => Column.ValueKinds.Present,
+    valueKind: (row2) => Column.ValueKinds.Present,
     toArray: (params) => column_helpers_exports.createAndFillArray(rowCount, value, params),
     areValuesEqual: areValuesEqualProvider(tokens)
   };
@@ -41601,22 +41601,22 @@ var CifField;
   CifField4.ofString = ofString;
   function ofStrings(values2) {
     const rowCount = values2.length;
-    const str11 = (row) => {
-      const ret = values2[row];
+    const str11 = (row2) => {
+      const ret = values2[row2];
       if (!ret || ret === "." || ret === "?")
         return "";
       return ret;
     };
-    const int9 = (row) => {
-      const v4 = values2[row];
+    const int9 = (row2) => {
+      const v4 = values2[row2];
       return parseInt2(v4, 0, v4.length) || 0;
     };
-    const float7 = (row) => {
-      const v4 = values2[row];
+    const float7 = (row2) => {
+      const v4 = values2[row2];
       return parseFloat2(v4, 0, v4.length) || 0;
     };
-    const valueKind = (row) => {
-      const v4 = values2[row], l = v4.length;
+    const valueKind = (row2) => {
+      const v4 = values2[row2], l = v4.length;
       if (l > 1)
         return Column.ValueKinds.Present;
       if (l === 0)
@@ -41646,11 +41646,11 @@ var CifField;
   CifField4.ofStrings = ofStrings;
   function ofNumbers(values2) {
     const rowCount = values2.length;
-    const str11 = (row) => {
-      return "" + values2[row];
+    const str11 = (row2) => {
+      return "" + values2[row2];
     };
-    const float7 = (row) => values2[row];
-    const valueKind = (row) => Column.ValueKinds.Present;
+    const float7 = (row2) => values2[row2];
+    const valueKind = (row2) => Column.ValueKinds.Present;
     const toFloatArray = (params) => {
       if (!params || params.array && values2 instanceof params.array) {
         return values2;
@@ -41676,20 +41676,20 @@ var CifField;
   CifField4.ofNumbers = ofNumbers;
   function ofTokens(tokens) {
     const { data, indices: indices2, count: rowCount } = tokens;
-    const str11 = (row) => {
-      const ret = data.substring(indices2[2 * row], indices2[2 * row + 1]);
+    const str11 = (row2) => {
+      const ret = data.substring(indices2[2 * row2], indices2[2 * row2 + 1]);
       if (ret === "." || ret === "?")
         return "";
       return ret;
     };
-    const int9 = (row) => {
-      return parseInt2(data, indices2[2 * row], indices2[2 * row + 1]) || 0;
+    const int9 = (row2) => {
+      return parseInt2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0;
     };
-    const float7 = (row) => {
-      return parseFloat2(data, indices2[2 * row], indices2[2 * row + 1]) || 0;
+    const float7 = (row2) => {
+      return parseFloat2(data, indices2[2 * row2], indices2[2 * row2 + 1]) || 0;
     };
-    const valueKind = (row) => {
-      const s = indices2[2 * row], l = indices2[2 * row + 1] - s;
+    const valueKind = (row2) => {
+      const s = indices2[2 * row2], l = indices2[2 * row2 + 1] - s;
       if (l > 1)
         return Column.ValueKinds.Present;
       if (l === 0)
@@ -41725,28 +41725,28 @@ var CifField;
     switch (column.schema.valueType) {
       case "float":
       case "int":
-        str11 = (row) => {
-          return "" + column.value(row);
+        str11 = (row2) => {
+          return "" + column.value(row2);
         };
         int9 = column.value;
         float7 = column.value;
         break;
       case "str":
         str11 = column.value;
-        int9 = (row) => {
-          const v4 = column.value(row);
+        int9 = (row2) => {
+          const v4 = column.value(row2);
           return parseInt2(v4, 0, v4.length) || 0;
         };
-        float7 = (row) => {
-          const v4 = column.value(row);
+        float7 = (row2) => {
+          const v4 = column.value(row2);
           return parseFloat2(v4, 0, v4.length) || 0;
         };
         break;
       case "list":
         const { separator } = column.schema;
-        str11 = (row) => column.value(row).join(separator);
-        int9 = (row) => NaN;
-        float7 = (row) => NaN;
+        str11 = (row2) => column.value(row2).join(separator);
+        int9 = (row2) => NaN;
+        float7 = (row2) => NaN;
         break;
       default:
         throw new Error(`unsupported valueType '${column.schema.valueType}'`);
@@ -41785,20 +41785,20 @@ function tensorFieldNameGetter(field, rank, zeroIndexed, namingVariant) {
       throw new Error("Tensors with rank > 3 or rank 0 are currently not supported.");
   }
 }
-function getTensor(category, space, row, getName) {
+function getTensor(category, space, row2, getName) {
   const ret = space.create();
   if (space.rank === 1) {
     const rows = space.dimensions[0];
     for (let i = 0; i < rows; i++) {
       const f = category.getField(getName(i));
-      space.set(ret, i, !!f ? f.float(row) : 0);
+      space.set(ret, i, !!f ? f.float(row2) : 0);
     }
   } else if (space.rank === 2) {
     const rows = space.dimensions[0], cols = space.dimensions[1];
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         const f = category.getField(getName(i, j));
-        space.set(ret, i, j, !!f ? f.float(row) : 0);
+        space.set(ret, i, j, !!f ? f.float(row2) : 0);
       }
     }
   } else if (space.rank === 3) {
@@ -41807,7 +41807,7 @@ function getTensor(category, space, row, getName) {
       for (let j = 0; j < d1; j++) {
         for (let k = 0; k < d22; k++) {
           const f = category.getField(getName(i, j, k));
-          space.set(ret, i, j, k, !!f ? f.float(row) : 0);
+          space.set(ret, i, j, k, !!f ? f.float(row2) : 0);
         }
       }
     }
@@ -41867,7 +41867,7 @@ function createStringColumn(schema, field, value, toArray2) {
     __array: field.__array,
     isDefined: field.isDefined,
     rowCount: field.rowCount,
-    value: schema.transform === "lowercase" ? (row) => value(row).toLowerCase() : schema.transform === "uppercase" ? (row) => value(row).toUpperCase() : value,
+    value: schema.transform === "lowercase" ? (row2) => value(row2).toLowerCase() : schema.transform === "uppercase" ? (row2) => value(row2).toUpperCase() : value,
     valueKind: field.valueKind,
     areValuesEqual: field.areValuesEqual,
     toArray: schema.transform === "lowercase" ? (p6) => Array.from(toArray2(p6)).map((x) => x.toLowerCase()) : schema.transform === "uppercase" ? (p6) => Array.from(toArray2(p6)).map((x) => x.toUpperCase()) : toArray2
@@ -41889,7 +41889,7 @@ function createListColumn(schema, category, key2) {
   const separator = schema.separator;
   const itemParse = schema.itemParse;
   const f = category.getField(key2);
-  const value = f ? (row) => f.str(row).split(separator).map((x) => itemParse(x.trim())).filter((x) => !!x) : (row) => [];
+  const value = f ? (row2) => f.str(row2).split(separator).map((x) => itemParse(x.trim())).filter((x) => !!x) : (row2) => [];
   const toArray2 = (params) => column_helpers_exports.createAndFillArray(category.rowCount, value, params);
   return {
     schema,
@@ -41909,7 +41909,7 @@ function createTensorColumn(schema, category, key2) {
   const namingVariant = category.fieldNames.includes(`${key2}_1`) || category.fieldNames.includes(`${key2}_11`) || category.fieldNames.includes(`${key2}_111`) ? "underscore" : "brackets";
   const getName = tensorFieldNameGetter(key2, space.rank, zeroOffset, namingVariant);
   const first4 = category.getField(getName(fst, fst, fst)) || Column.Undefined(category.rowCount, schema);
-  const value = (row) => getTensor(category, space, row, getName);
+  const value = (row2) => getTensor(category, space, row2, getName);
   const toArray2 = (params) => column_helpers_exports.createAndFillArray(category.rowCount, value, params);
   return {
     schema,
@@ -45374,16 +45374,16 @@ var StructConn;
       symmetry: struct_conn.ptnr2_symmetry
     };
     const entityIds = Array.from(model.entities.data.id.toArray());
-    const _p = (row, ps) => {
-      if (ps.label_asym_id.valueKind(row) !== Column.ValueKinds.Present)
+    const _p = (row2, ps) => {
+      if (ps.label_asym_id.valueKind(row2) !== Column.ValueKinds.Present)
         return void 0;
-      const asymId = ps.label_asym_id.value(row);
-      const atomName = ps.label_atom_id.value(row);
+      const asymId = ps.label_asym_id.value(row2);
+      const atomName = ps.label_atom_id.value(row2);
       if (!atomName)
         return void 0;
-      const resId = ps.auth_seq_id.valueKind(row) === Column.ValueKind.Present ? ps.auth_seq_id.value(row) : ps.label_seq_id.value(row);
-      const resInsCode = ps.ins_code.value(row);
-      const altId = ps.label_alt_id.value(row);
+      const resId = ps.auth_seq_id.valueKind(row2) === Column.ValueKind.Present ? ps.auth_seq_id.value(row2) : ps.label_seq_id.value(row2);
+      const resInsCode = ps.ins_code.value(row2);
+      const altId = ps.label_alt_id.value(row2);
       for (const eId of entityIds) {
         const residueIndex2 = model.atomicHierarchy.index.findResidue(eId, asymId, resId, resInsCode);
         if (residueIndex2 < 0)
@@ -45391,7 +45391,7 @@ var StructConn;
         const atomIndex = model.atomicHierarchy.index.findAtomOnResidue(residueIndex2, atomName, altId);
         if (atomIndex < 0)
           continue;
-        return { residueIndex: residueIndex2, atomIndex, symmetry: ps.symmetry.value(row) };
+        return { residueIndex: residueIndex2, atomIndex, symmetry: ps.symmetry.value(row2) };
       }
       return void 0;
     };
@@ -56258,16 +56258,16 @@ function Field2(column) {
   const mask = column.mask ? decode(column.mask) : void 0;
   const data = decode(column.data);
   const isNumeric = column_helpers_exports.isTypedArray(data);
-  const str11 = isNumeric ? mask ? (row) => mask[row] === Column.ValueKinds.Present ? "" + data[row] : "" : (row) => "" + data[row] : mask ? (row) => mask[row] === Column.ValueKinds.Present ? data[row] : "" : (row) => data[row];
-  const int9 = isNumeric ? (row) => data[row] : (row) => {
-    const v4 = data[row];
+  const str11 = isNumeric ? mask ? (row2) => mask[row2] === Column.ValueKinds.Present ? "" + data[row2] : "" : (row2) => "" + data[row2] : mask ? (row2) => mask[row2] === Column.ValueKinds.Present ? data[row2] : "" : (row2) => data[row2];
+  const int9 = isNumeric ? (row2) => data[row2] : (row2) => {
+    const v4 = data[row2];
     return parseInt2(v4, 0, v4.length);
   };
-  const float7 = isNumeric ? (row) => data[row] : (row) => {
-    const v4 = data[row];
+  const float7 = isNumeric ? (row2) => data[row2] : (row2) => {
+    const v4 = data[row2];
     return parseFloat2(v4, 0, v4.length);
   };
-  const valueKind = mask ? (row) => mask[row] : (row) => Column.ValueKinds.Present;
+  const valueKind = mask ? (row2) => mask[row2] : (row2) => Column.ValueKinds.Present;
   const rowCount = data.length;
   return {
     __array: data,
@@ -59188,18 +59188,18 @@ var SIFTSMapping;
     const num = new Array(count3);
     const residue2 = new Array(count3);
     for (let i = 0; i < count3; i++) {
-      const row = atomSourceIndex.value(residueOffsets[i]);
-      if (db_name.valueKind(row) !== Column.ValueKinds.Present) {
+      const row2 = atomSourceIndex.value(residueOffsets[i]);
+      if (db_name.valueKind(row2) !== Column.ValueKinds.Present) {
         dbName[i] = "";
         accession[i] = "";
         num[i] = "";
         residue2[i] = "";
         continue;
       }
-      dbName[i] = db_name.value(row);
-      accession[i] = db_acc.value(row);
-      num[i] = db_num.value(row);
-      residue2[i] = db_res.value(row);
+      dbName[i] = db_name.value(row2);
+      accession[i] = db_acc.value(row2);
+      num[i] = db_num.value(row2);
+      residue2[i] = db_res.value(row2);
     }
     return { dbName, accession, num, residue: residue2 };
   }
@@ -60266,7 +60266,7 @@ var Sequence;
       this.code = Column.ofConst("X", count3, Column.Schema.str);
       this.label = Column.ofConst("", count3, Column.Schema.str);
       this.seqId = Column.ofLambda({
-        value: (row) => row + minSeqId + 1,
+        value: (row2) => row2 + minSeqId + 1,
         rowCount: count3,
         schema: Column.Schema.int
       });
@@ -75215,8 +75215,8 @@ function parseListElement(state, spec) {
     rowCount: count3,
     name: property2.name,
     type: property2.dataType,
-    value: (row) => {
-      const offset3 = offsets[row] + 1;
+    value: (row2) => {
+      const offset3 = offsets[row2] + 1;
       const count4 = column.value(offset3 - 1);
       for (let i = offset3, il = offset3 + count4; i < il; ++i) {
         listValue.entries[i - offset3] = column.value(i);
@@ -76694,22 +76694,22 @@ function FixedColumnProvider(lines) {
 function FixedColumn(lines, offset3, width, schema) {
   const { data, indices: indices2, count: rowCount } = lines;
   const { valueType: type3 } = schema;
-  const value = type3 === "str" ? (row) => {
-    const s = indices2[2 * row] + offset3, le = indices2[2 * row + 1];
+  const value = type3 === "str" ? (row2) => {
+    const s = indices2[2 * row2] + offset3, le = indices2[2 * row2 + 1];
     if (s >= le)
       return "";
     let e = s + width;
     if (e > le)
       e = le;
     return trimStr(data, s, e);
-  } : type3 === "int" ? (row) => {
-    const s = indices2[2 * row] + offset3;
-    if (s > indices2[2 * row + 1])
+  } : type3 === "int" ? (row2) => {
+    const s = indices2[2 * row2] + offset3;
+    if (s > indices2[2 * row2 + 1])
       return 0;
     return parseIntSkipLeadingWhitespace(data, s, s + width);
-  } : (row) => {
-    const s = indices2[2 * row] + offset3;
-    if (s > indices2[2 * row + 1])
+  } : (row2) => {
+    const s = indices2[2 * row2] + offset3;
+    if (s > indices2[2 * row2 + 1])
       return 0;
     return parseFloatSkipLeadingWhitespace(data, s, s + width);
   };
@@ -76719,7 +76719,7 @@ function FixedColumn(lines, offset3, width, schema) {
     isDefined: true,
     rowCount,
     value,
-    valueKind: (row) => Column.ValueKinds.Present,
+    valueKind: (row2) => Column.ValueKinds.Present,
     toArray: (params) => column_helpers_exports.createAndFillArray(rowCount, value, params),
     areValuesEqual: (rowA, rowB) => value(rowA) === value(rowB)
   };
@@ -78096,15 +78096,15 @@ function parseRemark350(lines, lineStart, lineEnd) {
       assemblies.push(current2);
     } else if (line.substr(13, 5) === "BIOMT") {
       const biomt = line.split(/\s+/);
-      const row = parseInt(line[18]) - 1;
-      if (row === 0) {
+      const row2 = parseInt(line[18]) - 1;
+      if (row2 === 0) {
         matrix = Mat4.identity();
         group.operators.push({ id: operId++, matrix });
       }
-      Mat4.setValue(matrix, row, 0, parseFloat(biomt[4]));
-      Mat4.setValue(matrix, row, 1, parseFloat(biomt[5]));
-      Mat4.setValue(matrix, row, 2, parseFloat(biomt[6]));
-      Mat4.setValue(matrix, row, 3, parseFloat(biomt[7]));
+      Mat4.setValue(matrix, row2, 0, parseFloat(biomt[4]));
+      Mat4.setValue(matrix, row2, 1, parseFloat(biomt[5]));
+      Mat4.setValue(matrix, row2, 2, parseFloat(biomt[6]));
+      Mat4.setValue(matrix, row2, 3, parseFloat(biomt[7]));
     } else if (line.substr(11, 30) === "APPLY THE FOLLOWING TO CHAINS:" || line.substr(11, 30) === "                   AND CHAINS:") {
       if (line.substr(11, 5) === "APPLY") {
         group = { chains: [], operators: [] };
@@ -78157,7 +78157,7 @@ function parseRemark350(lines, lineStart, lineEnd) {
   for (const asm of assemblies) {
     for (const group2 of asm.groups) {
       for (const oper of group2.operators) {
-        const row = {
+        const row2 = {
           id: "" + oper.id,
           type: "?",
           name: "?",
@@ -78165,11 +78165,11 @@ function parseRemark350(lines, lineStart, lineEnd) {
         };
         for (let i = 0; i < 3; i++) {
           for (let j = 0; j < 3; j++) {
-            row[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper.matrix, i, j);
+            row2[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper.matrix, i, j);
           }
-          row[`vector[${i + 1}]`] = "" + Mat4.getValue(oper.matrix, i, 3);
+          row2[`vector[${i + 1}]`] = "" + Mat4.getValue(oper.matrix, i, 3);
         }
-        pdbx_struct_oper_list_rows.push(row);
+        pdbx_struct_oper_list_rows.push(row2);
       }
     }
   }
@@ -78200,33 +78200,33 @@ function parseMtrix(lines, lineStart, lineEnd) {
   for (let i = lineStart; i < lineEnd; i++) {
     const line = getLine(i);
     const ncs = line.split(/\s+/);
-    const row = parseInt(line[5]) - 1;
-    if (row === 0) {
+    const row2 = parseInt(line[5]) - 1;
+    if (row2 === 0) {
       matrix = Mat4.identity();
       matrices.push(matrix);
     }
-    Mat4.setValue(matrix, row, 0, parseFloat(ncs[2]));
-    Mat4.setValue(matrix, row, 1, parseFloat(ncs[3]));
-    Mat4.setValue(matrix, row, 2, parseFloat(ncs[4]));
-    Mat4.setValue(matrix, row, 3, parseFloat(ncs[5]));
+    Mat4.setValue(matrix, row2, 0, parseFloat(ncs[2]));
+    Mat4.setValue(matrix, row2, 1, parseFloat(ncs[3]));
+    Mat4.setValue(matrix, row2, 2, parseFloat(ncs[4]));
+    Mat4.setValue(matrix, row2, 3, parseFloat(ncs[5]));
   }
   if (matrices.length === 0)
     return [];
   const struct_ncs_oper_rows = [];
   let id = 1;
   for (const oper of matrices) {
-    const row = {
+    const row2 = {
       id: "ncsop" + id++,
       code: ".",
       details: "."
     };
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        row[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper, i, j);
+        row2[`matrix[${i + 1}][${j + 1}]`] = "" + Mat4.getValue(oper, i, j);
       }
-      row[`vector[${i + 1}]`] = "" + Mat4.getValue(oper, i, 3);
+      row2[`vector[${i + 1}]`] = "" + Mat4.getValue(oper, i, 3);
     }
-    struct_ncs_oper_rows.push(row);
+    struct_ncs_oper_rows.push(row2);
   }
   const struct_ncs_oper = {
     id: CifField.ofStrings(struct_ncs_oper_rows.map((r) => r.id)),
@@ -79206,12 +79206,12 @@ function topologyFromPsf(psf) {
     const { atomIdA, atomIdB } = psf.bonds;
     const bonds = {
       indexA: Column.ofLambda({
-        value: (row) => atomIdA.value(row) - 1,
+        value: (row2) => atomIdA.value(row2) - 1,
         rowCount: atomIdA.rowCount,
         schema: atomIdA.schema
       }),
       indexB: Column.ofLambda({
-        value: (row) => atomIdB.value(row) - 1,
+        value: (row2) => atomIdB.value(row2) - 1,
         rowCount: atomIdB.rowCount,
         schema: atomIdB.schema
       }),
@@ -86125,7 +86125,7 @@ async function getModels6(mol, ctx, unitsStyle = "real") {
   }
   const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
   const asym_id = Column.ofLambda({
-    value: (row) => atoms2.moleculeId.value(row).toString(),
+    value: (row2) => atoms2.moleculeId.value(row2).toString(),
     rowCount: count3,
     schema: Column.Schema.str
   });
@@ -86406,7 +86406,7 @@ async function getModels7(mol, ctx, unitsStyle = "real") {
   }
   const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
   const asym_id = Column.ofLambda({
-    value: (row) => atoms2.moleculeId.value(row).toString(),
+    value: (row2) => atoms2.moleculeId.value(row2).toString(),
     rowCount: count3,
     schema: Column.Schema.str
   });
@@ -87688,15 +87688,15 @@ function topologyFromPrmtop(prmtop) {
     const bondCount2 = NBONH + NBONA;
     const bonds = {
       indexA: Column.ofLambda({
-        value: (row) => {
-          return row < NBONH ? bondsIncHydrogen.value(row * 3) / 3 : bondsWithoutHydrogen.value((row - NBONH) * 3) / 3;
+        value: (row2) => {
+          return row2 < NBONH ? bondsIncHydrogen.value(row2 * 3) / 3 : bondsWithoutHydrogen.value((row2 - NBONH) * 3) / 3;
         },
         rowCount: bondCount2,
         schema: Column.Schema.int
       }),
       indexB: Column.ofLambda({
-        value: (row) => {
-          return row < NBONH ? bondsIncHydrogen.value(row * 3 + 1) / 3 : bondsWithoutHydrogen.value((row - NBONH) * 3 + 1) / 3;
+        value: (row2) => {
+          return row2 < NBONH ? bondsIncHydrogen.value(row2 * 3 + 1) / 3 : bondsWithoutHydrogen.value((row2 - NBONH) * 3 + 1) / 3;
         },
         rowCount: bondCount2,
         schema: Column.Schema.int
@@ -90617,9 +90617,9 @@ function createVolumeTexture2d(volume, variant, padding2 = 0, type3 = "byte") {
     for (let y = 0; y < yn; ++y) {
       for (let x = 0; x < xn; ++x) {
         const column = Math.floor(z * xnp % width / xnp);
-        const row = Math.floor(z * xnp / width);
+        const row2 = Math.floor(z * xnp / width);
         const px = column * xnp + x;
-        const index = itemSize * (row * ynp * width + y * width + px);
+        const index = itemSize * (row2 * ynp * width + y * width + px);
         const offset3 = o(x, y, z);
         let value;
         if (type3 === "byte") {
@@ -90724,9 +90724,9 @@ function createSegmentTexture2d(volume, set4, bbox, padding2 = 0) {
     for (let y = 0; y < yn; ++y) {
       for (let x = 0; x < xn; ++x) {
         const column = Math.floor(z * xnp % width / xnp);
-        const row = Math.floor(z * xnp / width);
+        const row2 = Math.floor(z * xnp / width);
         const px = column * xnp + x;
-        const index = itemSize * (row * ynp * width + y * width + px);
+        const index = itemSize * (row2 * ynp * width + y * width + px);
         const v0 = set4.includes(data[o(x + minx, y + miny, z + minz)]) ? 255 : 0;
         const xp = set4.includes(data[o(Math.min(xn1 + maxx, x + 1 + minx), y + miny, z + minz)]) ? 255 : 0;
         const xn2 = set4.includes(data[o(Math.max(0, x - 1 + minx), y + miny, z + minz)]) ? 255 : 0;
@@ -90797,9 +90797,9 @@ function calcMeshColorSmoothing(input, resolution, stride, webgl, texture) {
   const colors = input.colorData.array;
   function getIndex(x, y, z) {
     const column = Math.floor(z * xn % width / xn);
-    const row = Math.floor(z * xn / width);
+    const row2 = Math.floor(z * xn / width);
     const px = column * xn + x;
-    return itemSize * (row * yn * width + y * width + px);
+    return itemSize * (row2 * yn * width + y * width + px);
   }
   const p6 = 2;
   const [dimX, dimY, dimZ] = gridDim;
@@ -90887,9 +90887,9 @@ function getTrilinearlyInterpolated(input) {
   const scaleFactor = gridTransform[3];
   function getIndex(x, y, z) {
     const column = Math.floor(z * xn % width / xn);
-    const row = Math.floor(z * xn / width);
+    const row2 = Math.floor(z * xn / width);
     const px = column * xn + x;
-    return colorStride * (row * yn * width + y * width + px);
+    return colorStride * (row2 * yn * width + y * width + px);
   }
   const v4 = Vec3();
   const v0 = Vec3();
@@ -118225,34 +118225,34 @@ var ModelCrossLinkRestraint;
       seq_id: table.seq_id_2,
       atom_id: table.atom_id_2
     };
-    function _add(map4, element, row) {
+    function _add(map4, element, row2) {
       const indices2 = map4.get(element);
       if (indices2)
-        indices2.push(row);
+        indices2.push(row2);
       else
-        map4.set(element, [row]);
+        map4.set(element, [row2]);
     }
-    function add(row, ps) {
-      const entityId = ps.entity_id.value(row);
-      const asymId = ps.asym_id.value(row);
-      const seqId2 = ps.seq_id.value(row);
-      if (table.model_granularity.value(row) === "by-atom") {
+    function add(row2, ps) {
+      const entityId = ps.entity_id.value(row2);
+      const asymId = ps.asym_id.value(row2);
+      const seqId2 = ps.seq_id.value(row2);
+      if (table.model_granularity.value(row2) === "by-atom") {
         const atomicElement = model.atomicHierarchy.index.findAtom({
           auth_seq_id: seqId2,
           label_asym_id: asymId,
-          label_atom_id: ps.atom_id.value(row),
+          label_atom_id: ps.atom_id.value(row2),
           label_entity_id: entityId
         });
         if (atomicElement >= 0)
-          _add(atomicElementMap, atomicElement, row);
+          _add(atomicElementMap, atomicElement, row2);
       } else if (model.coarseHierarchy.isDefined) {
         const sphereElement = model.coarseHierarchy.spheres.findSequenceKey(entityId, asymId, seqId2);
         if (sphereElement >= 0) {
-          _add(sphereElementMap, sphereElement, row);
+          _add(sphereElementMap, sphereElement, row2);
         } else {
           const gaussianElement = model.coarseHierarchy.gaussians.findSequenceKey(entityId, asymId, seqId2);
           if (gaussianElement >= 0)
-            _add(gaussianElementMap, gaussianElement, row);
+            _add(gaussianElementMap, gaussianElement, row2);
         }
       }
     }
@@ -118452,17 +118452,17 @@ function extractIntra(pairs, unit2) {
     pairs.push(createCrossLinkRestraint(unit2, indexA, unit2, indexB, restraints, ri), createCrossLinkRestraint(unit2, indexB, unit2, indexA, restraints, ri));
   });
 }
-function createCrossLinkRestraint(unitA, indexA, unitB, indexB, restraints, row) {
+function createCrossLinkRestraint(unitA, indexA, unitB, indexB, restraints, row2) {
   return {
     unitA,
     indexA,
     unitB,
     indexB,
-    restraintType: restraints.data.restraint_type.value(row),
-    distanceThreshold: restraints.data.distance_threshold.value(row),
-    psi: restraints.data.psi.value(row),
-    sigma1: restraints.data.sigma_1.value(row),
-    sigma2: restraints.data.sigma_2.value(row)
+    restraintType: restraints.data.restraint_type.value(row2),
+    distanceThreshold: restraints.data.distance_threshold.value(row2),
+    psi: restraints.data.psi.value(row2),
+    sigma1: restraints.data.sigma_1.value(row2),
+    sigma2: restraints.data.sigma_2.value(row2)
   };
 }
 function extractCrossLinkRestraints(structure) {
@@ -145047,6 +145047,7 @@ var StateHandlers = class {
     this.callbacks = callbacks;
     this.regionIndex = /* @__PURE__ */ new Map();
     this.backendRegionSummaries = null;
+    this.wholeSummary = null;
     this.layerMeta = /* @__PURE__ */ new Map();
     this.tagIndex = /* @__PURE__ */ new Map();
     this.globalReprs = /* @__PURE__ */ new Set();
@@ -145815,6 +145816,30 @@ var StateHandlers = class {
       presets: [...this.regionStyleOptions.presets]
     };
   }
+  setWholeSummary(msg) {
+    this.wholeSummary = {
+      representation: typeof msg.representation === "string" ? msg.representation : null,
+      preset: typeof msg.preset === "string" ? msg.preset : null,
+      params: msg.params && typeof msg.params === "object" ? { ...msg.params } : {},
+      visible: msg.visible !== false,
+      color_scheme: typeof msg.color_scheme === "string" ? msg.color_scheme : null,
+      scene_style_name: typeof msg.scene_style_name === "string" ? msg.scene_style_name : null,
+      available_attributes: Array.isArray(msg.available_attributes) ? msg.available_attributes.filter((value) => typeof value === "string") : [],
+      color_schemes: Array.isArray(msg.color_schemes) ? msg.color_schemes.filter((value) => typeof value === "string") : [],
+      inheriting_region_count: typeof msg.inheriting_region_count === "number" ? msg.inheriting_region_count : 0,
+      none_state_region_count: typeof msg.none_state_region_count === "number" ? msg.none_state_region_count : 0,
+      covering_layer_count: typeof msg.covering_layer_count === "number" ? msg.covering_layer_count : 0
+    };
+  }
+  getWholeSummary() {
+    if (this.wholeSummary === null) return null;
+    return {
+      ...this.wholeSummary,
+      params: { ...this.wholeSummary.params },
+      available_attributes: [...this.wholeSummary.available_attributes],
+      color_schemes: [...this.wholeSummary.color_schemes]
+    };
+  }
   isWholeHidden() {
     return this.requestedGlobalHidden === true;
   }
@@ -146380,8 +146405,26 @@ var StateHandlers = class {
     }
     return colorTheme ?? { name: "element-symbol", params: {} };
   }
-  async updateGlobalRepresentationColorThemes(hasColors) {
-    const refs = this.currentGlobalRepresentationRefs();
+  currentManagedRepresentationRefs() {
+    const refs = /* @__PURE__ */ new Set();
+    this.currentGlobalRepresentationRefs().forEach((ref) => refs.add(ref));
+    this.regionIndex.forEach((entry) => entry.representations.forEach((ref) => {
+      const resolved = StateObjectRef.resolveRef(ref);
+      if (resolved && this.plugin.state.data.cells.has(resolved)) refs.add(resolved);
+    }));
+    const hierarchy = this.plugin.managers.structure.hierarchy.current;
+    for (const structure of hierarchy?.structures ?? []) {
+      for (const component of structure.components ?? []) {
+        for (const representation of component.representations ?? []) {
+          const ref = representation.cell.transform.ref;
+          if (ref && this.plugin.state.data.cells.has(ref)) refs.add(ref);
+        }
+      }
+    }
+    return [...refs];
+  }
+  async updateManagedRepresentationColorThemes(hasColors) {
+    const refs = this.currentManagedRepresentationRefs();
     if (refs.length === 0) return;
     const update10 = this.plugin.state.data.build();
     for (const ref of refs) {
@@ -146395,27 +146438,8 @@ var StateHandlers = class {
     await update10.commit({ doNotUpdateCurrent: true });
   }
   async _applyPerAtomColorTheme() {
-    const components = this.callbacks.getComponents();
     const hasColors = hasPerAtomColors();
-    await this.updateGlobalRepresentationColorThemes(hasColors);
-    if (components.length === 0) return;
-    if (!hasColors) {
-      await this.plugin.managers.structure.component.updateRepresentationsTheme(
-        components,
-        { color: "default" }
-      );
-      return;
-    }
-    await this.plugin.managers.structure.component.updateRepresentationsTheme(
-      components,
-      (_component, representation) => {
-        const oldTheme = representation?.cell?.transform?.params?.colorTheme;
-        return {
-          color: MsvPerAtomColorThemeName,
-          colorParams: this.perAtomThemeParamsFromCurrent(oldTheme).params
-        };
-      }
-    );
+    await this.updateManagedRepresentationColorThemes(hasColors);
   }
 };
 
@@ -147301,8 +147325,8 @@ var ViewerContextMenu = class {
     return button;
   }
   makeRegionButton(region) {
-    const row = document.createElement("div");
-    Object.assign(row.style, {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, {
       display: "flex",
       alignItems: "center",
       gap: "4px",
@@ -147392,11 +147416,11 @@ var ViewerContextMenu = class {
       this.notify?.({ event: "interaction_context_action", action: "delete_region", context: this.currentTarget, ...details });
       this.close();
     });
-    row.appendChild(label2);
-    row.appendChild(toggleBtn);
-    row.appendChild(renameBtn);
-    row.appendChild(deleteBtn);
-    return row;
+    row2.appendChild(label2);
+    row2.appendChild(toggleBtn);
+    row2.appendChild(renameBtn);
+    row2.appendChild(deleteBtn);
+    return row2;
   }
   renderRegionComposer() {
     if (!this.currentTarget) return;
@@ -148237,8 +148261,8 @@ var LegendOverlay = class {
       right: position.endsWith("right") ? "12px" : ""
     });
     const rows = items.map((it) => {
-      const row = document.createElement("div");
-      Object.assign(row.style, {
+      const row2 = document.createElement("div");
+      Object.assign(row2.style, {
         display: "flex",
         alignItems: "center",
         gap: "6px"
@@ -148255,8 +148279,8 @@ var LegendOverlay = class {
       });
       const label2 = document.createElement("span");
       label2.textContent = it.label;
-      row.replaceChildren(chip, label2);
-      return row;
+      row2.replaceChildren(chip, label2);
+      return row2;
     });
     this.root.replaceChildren(...rows);
     this.root.style.display = "block";
@@ -148987,10 +149011,10 @@ function makeButton(text, onClick) {
   return btn;
 }
 function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
-  const row = document.createElement("div");
-  row.setAttribute("data-molsysviewer-group-panel-row", "true");
-  row.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-  Object.assign(row.style, {
+  const row2 = document.createElement("div");
+  row2.setAttribute("data-molsysviewer-group-panel-row", "true");
+  row2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+  Object.assign(row2.style, {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -149002,11 +149026,11 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     gap: "8px",
     transition: "background 0.1s ease"
   });
-  row.addEventListener("mouseenter", () => {
-    row.style.background = "rgba(255,255,255,0.09)";
+  row2.addEventListener("mouseenter", () => {
+    row2.style.background = "rgba(255,255,255,0.09)";
   });
-  row.addEventListener("mouseleave", () => {
-    row.style.background = "rgba(255,255,255,0.05)";
+  row2.addEventListener("mouseleave", () => {
+    row2.style.background = "rgba(255,255,255,0.05)";
   });
   const main = document.createElement("div");
   Object.assign(main.style, {
@@ -149018,8 +149042,8 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     cursor: onActivate ? "pointer" : "default"
   });
   if (onActivate) {
-    row.style.cursor = "pointer";
-    row.addEventListener("click", (e) => {
+    row2.style.cursor = "pointer";
+    row2.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       onActivate();
@@ -149046,7 +149070,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   subtitle.textContent = subtitleText;
   main.appendChild(title);
   main.appendChild(subtitle);
-  row.appendChild(main);
+  row2.appendChild(main);
   const actions = document.createElement("div");
   Object.assign(actions.style, {
     display: "flex",
@@ -149054,7 +149078,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     gap: "6px",
     flex: "0 0 auto"
   });
-  row.appendChild(actions);
+  row2.appendChild(actions);
   if (onStyle) {
     const styleBtn = document.createElement("button");
     styleBtn.type = "button";
@@ -149131,11 +149155,11 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     });
     actions.appendChild(delBtn);
   }
-  return row;
+  return row2;
 }
 function makeSettingsCard(titleText) {
-  const card = document.createElement("div");
-  Object.assign(card.style, {
+  const card2 = document.createElement("div");
+  Object.assign(card2.style, {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
@@ -149155,8 +149179,8 @@ function makeSettingsCard(titleText) {
     marginBottom: "2px"
   });
   header2.textContent = titleText;
-  card.appendChild(header2);
-  return card;
+  card2.appendChild(header2);
+  return card2;
 }
 function makeStyledSelect(options, selectedValue, onChange) {
   const select = document.createElement("select");
@@ -149187,8 +149211,8 @@ function makeStyledSelect(options, selectedValue, onChange) {
   return select;
 }
 function makeCheckboxRow(labelText, checked, onChange) {
-  const row = document.createElement("div");
-  Object.assign(row.style, {
+  const row2 = document.createElement("div");
+  Object.assign(row2.style, {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -149198,7 +149222,7 @@ function makeCheckboxRow(labelText, checked, onChange) {
   const label2 = document.createElement("span");
   label2.textContent = labelText;
   Object.assign(label2.style, { fontSize: "11px", color: "rgba(244,244,245,0.8)" });
-  row.appendChild(label2);
+  row2.appendChild(label2);
   const cb2 = document.createElement("input");
   cb2.type = "checkbox";
   cb2.checked = checked;
@@ -149210,7 +149234,7 @@ function makeCheckboxRow(labelText, checked, onChange) {
     cb2.checked = !cb2.checked;
     onChange(cb2.checked);
   };
-  row.addEventListener("click", (e) => {
+  row2.addEventListener("click", (e) => {
     if (e.target !== cb2) {
       e.preventDefault();
       toggle();
@@ -149219,8 +149243,8 @@ function makeCheckboxRow(labelText, checked, onChange) {
   cb2.addEventListener("change", () => {
     onChange(cb2.checked);
   });
-  row.appendChild(cb2);
-  return row;
+  row2.appendChild(cb2);
+  return row2;
 }
 
 // src/ui/panels/base-panel.ts
@@ -149336,48 +149360,6 @@ var InspectorListPanel = class extends BasePanel {
       empty2.textContent = this.config.emptyText;
       list3.appendChild(empty2);
     }
-  }
-};
-
-// src/ui/panels/roadmap-panel.ts
-var RoadmapPanel = class extends BasePanel {
-  constructor(key2, config2) {
-    super();
-    this.key = key2;
-    this.config = config2;
-  }
-  paint() {
-    if (!this.host) return;
-    this.host.replaceChildren();
-    this.host.appendChild(makeSectionHeader(this.config.header));
-    const card = makeSettingsCard(this.config.cardTitle);
-    const desc = document.createElement("div");
-    Object.assign(desc.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.7)",
-      lineHeight: "1.5",
-      marginBottom: "8px"
-    });
-    desc.textContent = this.config.description;
-    card.appendChild(desc);
-    const list3 = document.createElement("ul");
-    Object.assign(list3.style, {
-      fontSize: "11px",
-      color: "rgba(244,244,245,0.7)",
-      lineHeight: "1.6",
-      paddingLeft: "16px",
-      margin: "0",
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px"
-    });
-    for (const itemText of this.config.items) {
-      const li = document.createElement("li");
-      li.textContent = itemText;
-      list3.appendChild(li);
-    }
-    card.appendChild(list3);
-    this.host.appendChild(card);
   }
 };
 
@@ -149704,10 +149686,10 @@ var LayersPanel = class extends BasePanel {
     })).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   renderAssignCard() {
-    const card = makeSettingsCard("Assign Region");
-    const row = document.createElement("form");
-    row.setAttribute("data-molsysviewer-layer-assign-form", "true");
-    Object.assign(row.style, {
+    const card2 = makeSettingsCard("Assign Region");
+    const row2 = document.createElement("form");
+    row2.setAttribute("data-molsysviewer-layer-assign-form", "true");
+    Object.assign(row2.style, {
       display: "grid",
       gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr) auto",
       gap: "6px",
@@ -149724,14 +149706,14 @@ var LayersPanel = class extends BasePanel {
       this.ctx.onAction("set_region_layer", { tag, layer: layer || null });
     });
     button.type = "submit";
-    row.appendChild(regionInput);
-    row.appendChild(layerInput);
-    row.appendChild(button);
-    row.addEventListener("submit", (event) => {
+    row2.appendChild(regionInput);
+    row2.appendChild(layerInput);
+    row2.appendChild(button);
+    row2.addEventListener("submit", (event) => {
       event.preventDefault();
       button.click();
     });
-    card.appendChild(row);
+    card2.appendChild(row2);
     const hint = document.createElement("div");
     Object.assign(hint.style, {
       fontSize: "10px",
@@ -149739,19 +149721,19 @@ var LayersPanel = class extends BasePanel {
       lineHeight: "1.4"
     });
     hint.textContent = "Leave the layer empty to detach the region.";
-    card.appendChild(hint);
-    return card;
+    card2.appendChild(hint);
+    return card2;
   }
   renderLayerCard(layer) {
-    const card = makeSettingsCard(layer.tag);
-    card.setAttribute("data-molsysviewer-layer-card", layer.tag);
+    const card2 = makeSettingsCard(layer.tag);
+    card2.setAttribute("data-molsysviewer-layer-card", layer.tag);
     const counts = document.createElement("div");
     Object.assign(counts.style, {
       fontSize: "10px",
       color: "rgba(244,244,245,0.56)"
     });
     counts.textContent = `${layer.regions.length} regions \xB7 ${layer.objects.length} scene objects`;
-    card.appendChild(counts);
+    card2.appendChild(counts);
     const actions = document.createElement("div");
     Object.assign(actions.style, {
       display: "grid",
@@ -149773,16 +149755,16 @@ var LayersPanel = class extends BasePanel {
     actions.appendChild(show);
     actions.appendChild(hide);
     actions.appendChild(del);
-    card.appendChild(actions);
+    card2.appendChild(actions);
     for (const member of [...layer.regions, ...layer.objects]) {
-      card.appendChild(this.renderMemberRow(layer.tag, member));
+      card2.appendChild(this.renderMemberRow(layer.tag, member));
     }
-    return card;
+    return card2;
   }
   renderMemberRow(layerTag, member) {
-    const row = document.createElement("div");
-    row.setAttribute("data-molsysviewer-layer-member", member.tag);
-    Object.assign(row.style, {
+    const row2 = document.createElement("div");
+    row2.setAttribute("data-molsysviewer-layer-member", member.tag);
+    Object.assign(row2.style, {
       display: "grid",
       gridTemplateColumns: "minmax(0, 1fr) auto",
       gap: "8px",
@@ -149817,7 +149799,7 @@ var LayersPanel = class extends BasePanel {
     subtitle.textContent = member.kind === "region" ? `region \xB7 ${member.atomCount} atoms` : member.kind;
     label2.appendChild(title);
     label2.appendChild(subtitle);
-    row.appendChild(label2);
+    row2.appendChild(label2);
     const detach = makeButton("Remove", () => {
       if (member.kind !== "region") return;
       this.ctx.onAction("remove_region_from_layer", { tag: member.tag });
@@ -149826,8 +149808,8 @@ var LayersPanel = class extends BasePanel {
     detach.disabled = member.kind !== "region";
     detach.title = member.kind === "region" ? `Remove ${member.tag} from ${layerTag}` : "Scene objects are managed by their own addon layer tags.";
     detach.style.opacity = member.kind === "region" ? "1" : "0.35";
-    row.appendChild(detach);
-    return row;
+    row2.appendChild(detach);
+    return row2;
   }
   makeInput(placeholder) {
     const input = document.createElement("input");
@@ -149864,8 +149846,8 @@ var ManualQueryComposer = class _ManualQueryComposer {
       flexDirection: "column",
       gap: "6px"
     });
-    const row = document.createElement("div");
-    Object.assign(row.style, {
+    const row2 = document.createElement("div");
+    Object.assign(row2.style, {
       display: "flex",
       gap: "6px",
       alignItems: "center"
@@ -149944,10 +149926,10 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.renderStatus();
       this.onChange?.();
     });
-    row.appendChild(this.input);
-    row.appendChild(this.checkButton);
-    row.appendChild(this.syntaxSelect);
-    this.root.appendChild(row);
+    row2.appendChild(this.input);
+    row2.appendChild(this.checkButton);
+    row2.appendChild(this.syntaxSelect);
+    this.root.appendChild(row2);
     this.status = document.createElement("div");
     this.status.setAttribute("data-molsysviewer-query-status", scope);
     Object.assign(this.status.style, {
@@ -150034,6 +150016,162 @@ var ManualQueryComposer = class _ManualQueryComposer {
     }
   }
 };
+
+// src/ui/panels/style-composer.ts
+var FALLBACK_REPRESENTATIONS = [
+  "backbone",
+  "ball-and-stick",
+  "cartoon",
+  "carbohydrate",
+  "ellipsoid",
+  "gaussian-surface",
+  "gaussian-volume",
+  "label",
+  "line",
+  "molecular-surface",
+  "point",
+  "spacefill"
+];
+var FALLBACK_PRESETS = [
+  "atomic-detail",
+  "auto",
+  "coarse-surface",
+  "empty",
+  "polymer-and-ligand",
+  "polymer-cartoon"
+];
+var STRUCTURAL_COLOR_OPTIONS = [
+  { value: "", label: "Keep current" },
+  { value: "element_cpk", label: "Element (CPK)" },
+  { value: "chain_default", label: "Chain" },
+  { value: "secondary_structure_default", label: "Secondary structure" },
+  { value: "physicochemical", label: "Physicochemical" },
+  { value: "residue_name", label: "Residue name" },
+  { value: "molecule_type", label: "Molecule type" },
+  { value: "entity_default", label: "Entity" },
+  { value: "illustrative_default", label: "Illustrative" },
+  { value: "uniform", label: "Uniform color" }
+];
+var QUALITY_OPTIONS = ["auto", "lowest", "lower", "low", "medium", "high", "higher", "highest", "custom"];
+function makeStyleControlRow(label2, control) {
+  const row2 = document.createElement("div");
+  Object.assign(row2.style, {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "8px",
+    width: "100%"
+  });
+  const text = document.createElement("span");
+  text.textContent = label2;
+  Object.assign(text.style, {
+    fontSize: "11px",
+    color: "rgba(244,244,245,0.7)"
+  });
+  row2.appendChild(text);
+  row2.appendChild(control);
+  return row2;
+}
+function createStyleDraftControls(options) {
+  const params = options.params ?? {};
+  let representationSelect;
+  let presetSelect;
+  representationSelect = makeStyledSelect(
+    options.representations,
+    options.currentPreset ? "" : options.currentRepresentation ?? "",
+    (value) => {
+      if (value) presetSelect.value = "";
+    }
+  );
+  representationSelect.setAttribute(`data-molsysviewer-${options.dataPrefix}-representation`, options.id);
+  presetSelect = makeStyledSelect(
+    [{ value: "", label: "No preset" }, ...options.presets],
+    options.currentPreset ?? "",
+    (value) => {
+      if (value) representationSelect.value = "";
+    }
+  );
+  presetSelect.setAttribute(`data-molsysviewer-${options.dataPrefix}-preset`, options.id);
+  const opacityWrap = document.createElement("div");
+  Object.assign(opacityWrap.style, {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px"
+  });
+  const opacityInput = document.createElement("input");
+  opacityInput.type = "range";
+  opacityInput.min = "0";
+  opacityInput.max = "1";
+  opacityInput.step = "0.05";
+  opacityInput.value = String(typeof params.alpha === "number" ? params.alpha : 1);
+  opacityInput.setAttribute(`data-molsysviewer-${options.dataPrefix}-opacity`, options.id);
+  if (options.opacityDisabled) {
+    opacityInput.disabled = true;
+    opacityInput.title = options.opacityDisabledTitle ?? "";
+  }
+  const opacityValue = document.createElement("span");
+  opacityValue.textContent = Number(opacityInput.value).toFixed(2);
+  opacityValue.setAttribute(`data-molsysviewer-${options.dataPrefix}-opacity-value`, options.id);
+  opacityInput.addEventListener("input", () => {
+    opacityValue.textContent = Number(opacityInput.value).toFixed(2);
+  });
+  opacityWrap.appendChild(opacityInput);
+  opacityWrap.appendChild(opacityValue);
+  const qualitySelect = makeStyledSelect(
+    QUALITY_OPTIONS,
+    typeof params.quality === "string" ? params.quality : "auto",
+    () => {
+    }
+  );
+  qualitySelect.setAttribute(`data-molsysviewer-${options.dataPrefix}-quality`, options.id);
+  const customColorInput = document.createElement("input");
+  customColorInput.type = "color";
+  customColorInput.value = "#3b82f6";
+  customColorInput.setAttribute(`data-molsysviewer-${options.dataPrefix}-uniform-color`, options.id);
+  Object.assign(customColorInput.style, {
+    width: "24px",
+    height: "24px",
+    border: "1px solid rgba(255,255,255,0.25)",
+    borderRadius: "4px",
+    padding: "0",
+    background: "transparent",
+    cursor: "pointer",
+    boxSizing: "border-box",
+    overflow: "hidden",
+    outline: "none"
+  });
+  const colorSchemeSelect = makeStyledSelect(
+    STRUCTURAL_COLOR_OPTIONS,
+    typeof params.color_scheme === "string" ? params.color_scheme : "",
+    (value) => {
+      customColorInput.style.display = value === "uniform" ? "inline-block" : "none";
+    }
+  );
+  colorSchemeSelect.setAttribute(`data-molsysviewer-${options.dataPrefix}-color-scheme`, options.id);
+  customColorInput.style.display = colorSchemeSelect.value === "uniform" ? "inline-block" : "none";
+  const colorRight = document.createElement("div");
+  Object.assign(colorRight.style, {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px"
+  });
+  colorRight.appendChild(customColorInput);
+  colorRight.appendChild(colorSchemeSelect);
+  return {
+    representationSelect,
+    presetSelect,
+    qualitySelect,
+    opacityInput,
+    opacityValue,
+    colorSchemeSelect,
+    customColorInput,
+    representationRow: makeStyleControlRow("Representation", representationSelect),
+    presetRow: makeStyleControlRow("Preset", presetSelect),
+    qualityRow: makeStyleControlRow("Quality", qualitySelect),
+    colorRow: makeStyleControlRow("Color", colorRight),
+    opacityRow: makeStyleControlRow("Opacity", opacityWrap)
+  };
+}
 
 // src/ui/panels/regions-panel.ts
 var RegionsPanel = class extends BasePanel {
@@ -150459,10 +150597,10 @@ var RegionsPanel = class extends BasePanel {
     return container;
   }
   renderRegionCard(item2) {
-    const card = document.createElement("div");
-    card.setAttribute("data-molsysviewer-region-card", item2.tag);
-    card.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
-    Object.assign(card.style, {
+    const card2 = document.createElement("div");
+    card2.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card2.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    Object.assign(card2.style, {
       display: "flex",
       flexDirection: "column",
       gap: "7px",
@@ -150529,7 +150667,7 @@ var RegionsPanel = class extends BasePanel {
     remove3.setAttribute("data-molsysviewer-region-delete", item2.tag);
     header2.appendChild(visibility);
     header2.appendChild(remove3);
-    card.appendChild(header2);
+    card2.appendChild(header2);
     const actions = document.createElement("div");
     actions.setAttribute("data-molsysviewer-region-actions", item2.tag);
     Object.assign(actions.style, {
@@ -150594,7 +150732,7 @@ var RegionsPanel = class extends BasePanel {
       button.style.padding = "3px 6px";
       actions.appendChild(button);
     }
-    card.appendChild(actions);
+    card2.appendChild(actions);
     if (this.regionRenameTag === item2.tag) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
@@ -150638,7 +150776,7 @@ var RegionsPanel = class extends BasePanel {
       form.appendChild(input);
       form.appendChild(submit);
       form.appendChild(cancel);
-      card.appendChild(form);
+      card2.appendChild(form);
       if (this.regionRenameCollisionTag !== null) {
         const collisionTag = this.regionRenameCollisionTag;
         const collision = document.createElement("div");
@@ -150665,16 +150803,16 @@ var RegionsPanel = class extends BasePanel {
         collision.appendChild(chooseRename);
         collision.appendChild(overwrite);
         collision.appendChild(cancelCollision);
-        card.appendChild(collision);
+        card2.appendChild(collision);
       }
     }
     if (this.activeStyleRegionTag === item2.tag) {
-      card.appendChild(this.renderStyleComposer(item2));
+      card2.appendChild(this.renderStyleComposer(item2));
     }
     if (this.regionInspectOpen.has(item2.tag)) {
-      card.appendChild(this.renderRegionInspect(item2.tag));
+      card2.appendChild(this.renderRegionInspect(item2.tag));
     }
-    return card;
+    return card2;
   }
   renderRegionBooleanComposer() {
     const container = document.createElement("div");
@@ -150753,8 +150891,8 @@ var RegionsPanel = class extends BasePanel {
       targetContainer.appendChild(right);
     } else {
       for (const tag of candidateTags) {
-        const row = document.createElement("label");
-        Object.assign(row.style, {
+        const row2 = document.createElement("label");
+        Object.assign(row2.style, {
           display: "flex",
           alignItems: "center",
           gap: "5px",
@@ -150774,9 +150912,9 @@ var RegionsPanel = class extends BasePanel {
         });
         const label2 = document.createElement("span");
         label2.textContent = tag;
-        row.appendChild(checkbox);
-        row.appendChild(label2);
-        targetContainer.appendChild(row);
+        row2.appendChild(checkbox);
+        row2.appendChild(label2);
+        targetContainer.appendChild(row2);
       }
     }
     container.appendChild(targetContainer);
@@ -150915,35 +151053,8 @@ var RegionsPanel = class extends BasePanel {
       marginTop: "4px",
       marginBottom: "4px"
     });
-    const makeControlRow = (label2, control) => {
-      const row = document.createElement("div");
-      Object.assign(row.style, {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: "8px",
-        width: "100%"
-      });
-      const text = document.createElement("span");
-      text.textContent = label2;
-      Object.assign(text.style, {
-        fontSize: "11px",
-        color: "rgba(244,244,245,0.7)"
-      });
-      row.appendChild(text);
-      row.appendChild(control);
-      return row;
-    };
-    const fallbackPresets = [
-      "atomic-detail",
-      "auto",
-      "coarse-surface",
-      "empty",
-      "polymer-and-ligand",
-      "polymer-cartoon"
-    ];
     const representations = this.getRepresentationOptions(true).filter((option) => typeof option === "string" || !option.value.startsWith("preset:"));
-    const presets = this.regionStylePresets.length > 0 ? this.regionStylePresets : fallbackPresets;
+    const presets = this.regionStylePresets.length > 0 ? this.regionStylePresets : FALLBACK_PRESETS;
     const params = item2.representation_params ?? {};
     const draftHeading = document.createElement("div");
     draftHeading.textContent = "Style draft";
@@ -150954,26 +151065,25 @@ var RegionsPanel = class extends BasePanel {
       color: "rgba(244,244,245,0.55)"
     });
     container.appendChild(draftHeading);
-    let representationSelect;
-    let presetSelect;
-    representationSelect = makeStyledSelect(
+    const controls = createStyleDraftControls({
+      id: tag,
+      dataPrefix: "region-style",
       representations,
-      item2.preset ? "" : item2.representation ?? "",
-      (value) => {
-        if (value) presetSelect.value = "";
-      }
-    );
-    representationSelect.setAttribute("data-molsysviewer-region-style-representation", tag);
-    presetSelect = makeStyledSelect(
-      [{ value: "", label: "No preset" }, ...presets],
-      item2.preset ?? "",
-      (value) => {
-        if (value) representationSelect.value = "";
-      }
-    );
-    presetSelect.setAttribute("data-molsysviewer-region-style-preset", tag);
-    container.appendChild(makeControlRow("Representation", representationSelect));
-    container.appendChild(makeControlRow("Preset", presetSelect));
+      presets,
+      currentRepresentation: item2.representation,
+      currentPreset: item2.preset,
+      params,
+      opacityDisabled: !this.regionHasOwnVisual(item2),
+      opacityDisabledTitle: "Opacity requires a region visual. Choose Inherit or a representation first."
+    });
+    const representationSelect = controls.representationSelect;
+    const presetSelect = controls.presetSelect;
+    const opacity = controls.opacityInput;
+    const quality = controls.qualitySelect;
+    const customColorInput = controls.customColorInput;
+    const colorScheme = controls.colorSchemeSelect;
+    container.appendChild(controls.representationRow);
+    container.appendChild(controls.presetRow);
     const immediateHeading = document.createElement("div");
     immediateHeading.textContent = "Immediate adjustments";
     immediateHeading.setAttribute("data-molsysviewer-region-style-immediate-heading", tag);
@@ -150983,88 +151093,10 @@ var RegionsPanel = class extends BasePanel {
       color: "rgba(244,244,245,0.55)",
       paddingTop: "2px"
     });
-    const opacityWrap = document.createElement("div");
-    Object.assign(opacityWrap.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "6px"
-    });
-    const opacity = document.createElement("input");
-    opacity.type = "range";
-    opacity.min = "0";
-    opacity.max = "1";
-    opacity.step = "0.05";
-    opacity.value = String(typeof params.alpha === "number" ? params.alpha : 1);
-    opacity.setAttribute("data-molsysviewer-region-style-opacity", tag);
-    if (!this.regionHasOwnVisual(item2)) {
-      opacity.disabled = true;
-      opacity.title = "Opacity requires a region visual. Choose Inherit or a representation first.";
-    }
-    const opacityValue = document.createElement("span");
-    opacityValue.textContent = Number(opacity.value).toFixed(2);
-    opacityValue.setAttribute("data-molsysviewer-region-style-opacity-value", tag);
-    opacity.addEventListener("input", () => {
-      opacityValue.textContent = Number(opacity.value).toFixed(2);
-    });
-    opacityWrap.appendChild(opacity);
-    opacityWrap.appendChild(opacityValue);
-    const opacityRow = makeControlRow("Opacity", opacityWrap);
-    const qualityValues = ["auto", "lowest", "lower", "low", "medium", "high", "higher", "highest", "custom"];
-    const quality = makeStyledSelect(
-      qualityValues,
-      typeof params.quality === "string" ? params.quality : "auto",
-      () => {
-      }
-    );
-    quality.setAttribute("data-molsysviewer-region-style-quality", tag);
-    container.appendChild(makeControlRow("Quality", quality));
-    const customColorInput = document.createElement("input");
-    customColorInput.type = "color";
-    customColorInput.value = "#3b82f6";
-    customColorInput.setAttribute("data-molsysviewer-region-style-uniform-color", tag);
-    Object.assign(customColorInput.style, {
-      width: "24px",
-      height: "24px",
-      border: "1px solid rgba(255,255,255,0.25)",
-      borderRadius: "4px",
-      padding: "0",
-      background: "transparent",
-      cursor: "pointer",
-      boxSizing: "border-box",
-      overflow: "hidden",
-      outline: "none"
-    });
-    const colorScheme = makeStyledSelect(
-      [
-        { value: "", label: "Keep current" },
-        { value: "element_cpk", label: "Element (CPK)" },
-        { value: "chain_default", label: "Chain" },
-        { value: "secondary_structure_default", label: "Secondary structure" },
-        { value: "physicochemical", label: "Physicochemical" },
-        { value: "residue_name", label: "Residue name" },
-        { value: "molecule_type", label: "Molecule type" },
-        { value: "entity_default", label: "Entity" },
-        { value: "illustrative_default", label: "Illustrative" },
-        { value: "uniform", label: "Uniform color" }
-      ],
-      typeof params.color_scheme === "string" ? params.color_scheme : "",
-      (val) => {
-        customColorInput.style.display = val === "uniform" ? "inline-block" : "none";
-      }
-    );
-    colorScheme.setAttribute("data-molsysviewer-region-style-color-scheme", tag);
-    customColorInput.style.display = colorScheme.value === "uniform" ? "inline-block" : "none";
-    const colorRight = document.createElement("div");
-    Object.assign(colorRight.style, {
-      display: "flex",
-      alignItems: "center",
-      gap: "6px"
-    });
-    colorRight.appendChild(customColorInput);
-    colorRight.appendChild(colorScheme);
-    container.appendChild(makeControlRow("Color", colorRight));
+    container.appendChild(controls.qualityRow);
+    container.appendChild(controls.colorRow);
     container.appendChild(immediateHeading);
-    container.appendChild(opacityRow);
+    container.appendChild(controls.opacityRow);
     const attributeRow = document.createElement("div");
     Object.assign(attributeRow.style, {
       display: "flex",
@@ -151130,7 +151162,7 @@ var RegionsPanel = class extends BasePanel {
     attributeRow.appendChild(palette);
     attributeRow.appendChild(valueRange);
     attributeRow.appendChild(resetColors);
-    container.appendChild(makeControlRow("Color by", attributeRow));
+    container.appendChild(makeStyleControlRow("Color by", attributeRow));
     const buildStyleAction = () => {
       const selectedPreset = presetSelect.value;
       const selectedRepresentation = representationSelect.value;
@@ -151652,11 +151684,11 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     if (this.savedSelections.length > 0) {
       const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
-        const card = document.createElement("div");
-        card.setAttribute("data-molsysviewer-group-panel-row", "true");
-        card.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-        card.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
-        Object.assign(card.style, {
+        const card2 = document.createElement("div");
+        card2.setAttribute("data-molsysviewer-group-panel-row", "true");
+        card2.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+        card2.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        Object.assign(card2.style, {
           display: "flex",
           flexDirection: "column",
           padding: "8px 10px",
@@ -151667,16 +151699,16 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           transition: "background 0.1s ease",
           cursor: "pointer"
         });
-        card.addEventListener("mouseenter", () => {
-          card.setAttribute("data-molsysviewer-selection-row-hover", "true");
-          card.style.background = "rgba(255,255,255,0.09)";
+        card2.addEventListener("mouseenter", () => {
+          card2.setAttribute("data-molsysviewer-selection-row-hover", "true");
+          card2.style.background = "rgba(255,255,255,0.09)";
         });
-        card.addEventListener("mouseleave", () => {
-          card.setAttribute("data-molsysviewer-selection-row-hover", "false");
-          card.style.background = "rgba(255,255,255,0.05)";
+        card2.addEventListener("mouseleave", () => {
+          card2.setAttribute("data-molsysviewer-selection-row-hover", "false");
+          card2.style.background = "rgba(255,255,255,0.05)";
         });
-        card.addEventListener("click", (e) => {
-          if (e && e.target && e.target !== card) {
+        card2.addEventListener("click", (e) => {
+          if (e && e.target && e.target !== card2) {
             return;
           }
           e?.preventDefault();
@@ -151710,7 +151742,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
         title.appendChild(subtitle);
         topRow.appendChild(title);
-        card.appendChild(topRow);
+        card2.appendChild(topRow);
         const btnRow = document.createElement("div");
         btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
         Object.assign(btnRow.style, {
@@ -151737,7 +151769,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           fontSize: "11px",
           outline: "none"
         });
-        card.appendChild(inlineForm);
+        card2.appendChild(inlineForm);
         const showForm = (mode) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
@@ -151844,8 +151876,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           btn.style.fontSize = "10px";
           btnRow.appendChild(btn);
         }
-        card.appendChild(btnRow);
-        savedList.appendChild(card);
+        card2.appendChild(btnRow);
+        savedList.appendChild(card2);
       }
     } else {
       const emptyLabel = document.createElement("div");
@@ -151968,10 +152000,10 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         ["Bonded", "bonded to atom_index in [0]"]
       ];
       for (const [label2, expression] of examples) {
-        const row = document.createElement("button");
-        row.type = "button";
-        row.setAttribute("data-molsysviewer-selection-cheatsheet-example", label2);
-        Object.assign(row.style, {
+        const row2 = document.createElement("button");
+        row2.type = "button";
+        row2.setAttribute("data-molsysviewer-selection-cheatsheet-example", label2);
+        Object.assign(row2.style, {
           display: "flex",
           justifyContent: "space-between",
           gap: "8px",
@@ -151996,14 +152028,14 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           textOverflow: "ellipsis",
           whiteSpace: "nowrap"
         });
-        row.appendChild(name);
-        row.appendChild(code);
-        row.addEventListener("click", (event) => {
+        row2.appendChild(name);
+        row2.appendChild(code);
+        row2.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
           composer.setExpression(expression, "MolSysMT");
         });
-        cheatSheet.appendChild(row);
+        cheatSheet.appendChild(row2);
       }
       container.appendChild(cheatSheet);
     }
@@ -152613,6 +152645,14 @@ var SystemPanel = class {
   // visibility does not gate its rendering.
   setVisible(_visible) {
   }
+  setColorScheme(scheme) {
+    if (this.activeColorScheme === scheme) return;
+    this.activeColorScheme = scheme;
+    for (const strip of this.strips.values()) {
+      strip.setColorScheme(scheme);
+    }
+    this.structureNeedsReconcile = true;
+  }
   mount(host) {
     this.host = host;
     Object.assign(host.style, {
@@ -152775,7 +152815,6 @@ var SystemPanel = class {
       gap: "8px"
     });
     header2.appendChild(this.makeModifierLegend());
-    header2.appendChild(this.makeColorSchemeButton());
     return header2;
   }
   makeModifierLegend() {
@@ -152823,106 +152862,308 @@ var SystemPanel = class {
     }
     return legend;
   }
-  makeColorSchemeButton() {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.innerHTML = "\u{1F3A8}";
-    btn.title = "Residue color scheme";
-    btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
-    Object.assign(btn.style, {
-      background: "transparent",
-      border: "none",
-      color: "rgba(244,244,245,0.6)",
-      cursor: "pointer",
-      padding: "2px 4px",
-      fontSize: "12px",
-      outline: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    });
-    btn.addEventListener("mouseenter", () => {
-      btn.style.color = "rgba(244,244,245,0.95)";
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.color = "rgba(244,244,245,0.6)";
-    });
-    btn.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      this.toggleColorSchemeMenu(btn);
-    });
-    return btn;
+};
+
+// src/ui/panels/whole-panel.ts
+function labelFromToken(value) {
+  return value.replace(/_/g, " ").replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+function row(label2, control) {
+  const item2 = document.createElement("div");
+  Object.assign(item2.style, {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "8px",
+    width: "100%"
+  });
+  const text = document.createElement("span");
+  text.textContent = label2;
+  Object.assign(text.style, {
+    fontSize: "11px",
+    color: "rgba(244,244,245,0.7)"
+  });
+  item2.appendChild(text);
+  item2.appendChild(control);
+  return item2;
+}
+function card() {
+  const el = document.createElement("div");
+  Object.assign(el.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    padding: "10px",
+    borderRadius: "6px",
+    background: "rgba(255,255,255,0.035)",
+    border: "1px solid rgba(255,255,255,0.08)"
+  });
+  return el;
+}
+function note(text, warning = false) {
+  const el = document.createElement("div");
+  el.textContent = text;
+  Object.assign(el.style, {
+    fontSize: "10px",
+    color: warning ? "#fbbf24" : "rgba(244,244,245,0.6)",
+    borderLeft: `2px solid ${warning ? "rgba(251,191,36,0.5)" : "rgba(99,102,241,0.4)"}`,
+    paddingLeft: "6px",
+    lineHeight: "1.35"
+  });
+  return el;
+}
+var WholePanel = class {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.key = "whole";
+    this.host = null;
+    this.visible = false;
+    this.summary = null;
+    this.details = null;
+    this.requestId = 0;
   }
-  toggleColorSchemeMenu(button) {
-    const existing = this.host?.querySelector("[data-molsysviewer-color-scheme-menu]");
-    if (existing) {
-      existing.remove();
-      return;
-    }
-    const dropdown = document.createElement("div");
-    dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
-    Object.assign(dropdown.style, {
-      position: "absolute",
-      top: "20px",
-      right: "0",
-      background: "#18181b",
-      border: "1px solid #3f3f46",
-      borderRadius: "4px",
-      zIndex: "100",
-      padding: "4px 0",
-      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
+  mount(host) {
+    this.host = host;
+    this.render();
+  }
+  setVisible(visible) {
+    this.visible = visible;
+    if (visible) this.render();
+  }
+  setSummary(summary) {
+    this.summary = summary;
+    this.ctx.setBadge(summary ? summary.visible ? "Visible" : "Hidden" : "None");
+    this.render();
+  }
+  updateDetails(details) {
+    if (details.request_id !== this.requestId) return;
+    this.details = details;
+    this.render();
+  }
+  render() {
+    if (!this.host) return;
+    this.host.innerHTML = "";
+    Object.assign(this.host.style, {
       display: "flex",
       flexDirection: "column",
-      minWidth: "140px"
+      gap: "12px",
+      minHeight: "0"
     });
-    const makeOption = (label2, value) => {
-      const opt = document.createElement("button");
-      opt.type = "button";
-      opt.setAttribute("data-molsysviewer-color-scheme-option", value);
-      opt.textContent = label2;
-      const active = this.activeColorScheme === value;
-      Object.assign(opt.style, {
-        background: active ? "rgba(255,255,255,0.08)" : "transparent",
-        border: "none",
-        color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
-        padding: "6px 12px",
-        fontSize: "11px",
-        textAlign: "left",
-        cursor: "pointer",
-        fontWeight: active ? "700" : "400"
-      });
-      opt.addEventListener("mouseenter", () => {
-        opt.style.background = "rgba(255,255,255,0.12)";
-        opt.style.color = "#ffffff";
-      });
-      opt.addEventListener("mouseleave", () => {
-        opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
-        opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
-      });
-      opt.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropdown.remove();
-        if (this.activeColorScheme !== value) {
-          this.activeColorScheme = value;
-          this.structureNeedsReconcile = true;
-          this.rebuild();
-          this.callbacks.onChangeColorScheme?.(value);
-        }
-      });
-      return opt;
-    };
-    dropdown.appendChild(makeOption("Neutral", "neutral"));
-    dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
-    button.parentElement?.appendChild(dropdown);
-    const onOutsideClick = (e) => {
-      if (!dropdown.contains(e.target) && e.target !== button) {
-        dropdown.remove();
-        window.removeEventListener("click", onOutsideClick);
+    this.host.appendChild(makeSectionHeader("Whole"));
+    if (!this.summary) {
+      const empty2 = document.createElement("div");
+      empty2.textContent = "No whole summary received yet.";
+      Object.assign(empty2.style, { color: "rgba(244,244,245,0.56)", fontSize: "12px" });
+      this.host.appendChild(empty2);
+      return;
+    }
+    this.host.appendChild(this.renderPresence());
+    this.host.appendChild(this.renderRepresentation());
+    this.host.appendChild(this.renderColour());
+    this.host.appendChild(this.renderInspect());
+  }
+  renderPresence() {
+    const summary = this.summary;
+    const section = card();
+    section.setAttribute("data-molsysviewer-whole-presence", "true");
+    const header2 = document.createElement("div");
+    Object.assign(header2.style, { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" });
+    const title = document.createElement("div");
+    Object.assign(title.style, { display: "flex", alignItems: "center", gap: "6px", color: "#f4f4f5", fontWeight: "700", fontSize: "12px" });
+    const dot = document.createElement("span");
+    dot.setAttribute("data-molsysviewer-whole-visible-dot", String(summary.visible));
+    Object.assign(dot.style, {
+      width: "7px",
+      height: "7px",
+      borderRadius: "999px",
+      background: summary.visible ? "#34d399" : "rgba(244,244,245,0.28)",
+      boxShadow: summary.visible ? "0 0 8px rgba(52,211,153,0.5)" : "none"
+    });
+    title.appendChild(dot);
+    title.appendChild(document.createTextNode(`Whole structure \xB7 ${summary.visible ? "visible" : "hidden"}`));
+    header2.appendChild(title);
+    section.appendChild(header2);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", gap: "6px" });
+    const toggle = makeButton(summary.visible ? "Hide" : "Show", () => {
+      if (summary.visible && summary.none_state_region_count > 0) {
+        const ok = window.confirm(`${summary.none_state_region_count} region(s) have no own representation and will disappear while the whole is hidden.`);
+        if (!ok) return;
       }
-    };
-    setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
+      this.ctx.onAction("set_whole_visibility", { visible: !summary.visible });
+    });
+    toggle.setAttribute("data-molsysviewer-whole-visibility", summary.visible ? "hide" : "show");
+    actions.appendChild(toggle);
+    section.appendChild(actions);
+    if (summary.none_state_region_count > 0) {
+      section.appendChild(note(`${summary.none_state_region_count} region(s) have no representation of their own and will disappear.`, true));
+    }
+    return section;
+  }
+  renderRepresentation() {
+    const summary = this.summary;
+    const params = summary.params ?? {};
+    const section = card();
+    section.setAttribute("data-molsysviewer-whole-representation", "true");
+    if (summary.scene_style_name) {
+      section.appendChild(note(`Scene style: ${summary.scene_style_name}. Editing below clears this name.`));
+    }
+    const controls = createStyleDraftControls({
+      id: "true",
+      dataPrefix: "whole",
+      representations: [{ value: "", label: "Base" }, ...FALLBACK_REPRESENTATIONS],
+      presets: FALLBACK_PRESETS,
+      currentRepresentation: summary.representation,
+      currentPreset: summary.preset,
+      params
+    });
+    const representation = controls.representationSelect;
+    const preset = controls.presetSelect;
+    const opacity = controls.opacityInput;
+    const quality = controls.qualitySelect;
+    section.appendChild(controls.representationRow);
+    section.appendChild(controls.presetRow);
+    opacity.addEventListener("change", () => {
+      this.ctx.onAction("set_whole_representation", {
+        ...preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {},
+        params: { ...params, alpha: Number(opacity.value) }
+      });
+    });
+    section.appendChild(controls.opacityRow);
+    section.appendChild(controls.qualityRow);
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", gap: "6px" });
+    const reset = makeButton("Reset representation", () => this.ctx.onAction("reset_whole_representation"));
+    reset.setAttribute("data-molsysviewer-whole-reset-representation", "true");
+    const apply = makeButton("Apply", () => {
+      this.ctx.onAction("set_whole_representation", {
+        ...preset.value ? { preset: preset.value } : representation.value ? { representation: representation.value } : {},
+        params: { ...params, alpha: Number(opacity.value), quality: quality.value }
+      });
+    });
+    apply.setAttribute("data-molsysviewer-whole-apply-representation", "true");
+    actions.appendChild(reset);
+    actions.appendChild(apply);
+    section.appendChild(actions);
+    if (summary.inheriting_region_count > 0) {
+      section.appendChild(note(`${summary.inheriting_region_count} region(s) inherit this representation and will follow it.`));
+    }
+    return section;
+  }
+  renderColour() {
+    const summary = this.summary;
+    const section = card();
+    section.setAttribute("data-molsysviewer-whole-colour", "true");
+    const scheme = makeStyledSelect(
+      summary.color_schemes.length ? summary.color_schemes.map((value) => ({ value, label: labelFromToken(value) })) : [{ value: "", label: "No schemes available" }],
+      summary.color_scheme ?? "",
+      (value) => {
+        if (value) this.ctx.onAction("set_whole_color_scheme", { scheme: value });
+      }
+    );
+    scheme.setAttribute("data-molsysviewer-whole-color-scheme", "true");
+    section.appendChild(row("Theme", scheme));
+    const uniform = document.createElement("input");
+    uniform.type = "color";
+    uniform.value = "#3b82f6";
+    uniform.setAttribute("data-molsysviewer-whole-uniform-color", "true");
+    uniform.addEventListener("change", () => {
+      this.ctx.onAction("set_whole_representation", {
+        representation: summary.representation ?? void 0,
+        preset: summary.preset ?? void 0,
+        params: { ...summary.params, color: uniform.value }
+      });
+    });
+    section.appendChild(row("Uniform", uniform));
+    const attrWrap = document.createElement("div");
+    Object.assign(attrWrap.style, { display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" });
+    const attr = makeStyledSelect([{ value: "", label: "None" }, ...summary.available_attributes], "", () => {
+    });
+    attr.setAttribute("data-molsysviewer-whole-color-attribute", "true");
+    const palette = makeStyledSelect(["viridis", "plasma", "magma", "inferno", "cividis", "turbo"], "viridis", () => {
+    });
+    palette.setAttribute("data-molsysviewer-whole-color-attribute-palette", "true");
+    const range2 = document.createElement("input");
+    range2.type = "text";
+    range2.placeholder = "range min,max";
+    range2.setAttribute("data-molsysviewer-whole-color-attribute-range", "true");
+    Object.assign(range2.style, {
+      width: "86px",
+      background: "rgba(0,0,0,0.28)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "6px",
+      padding: "3px 6px",
+      color: "#f4f4f5",
+      fontSize: "11px"
+    });
+    const commit = makeButton("Apply", () => {
+      if (!attr.value) return;
+      const parsed = range2.value.split(",").map((part) => Number(part.trim())).filter((value) => Number.isFinite(value));
+      this.ctx.onAction("color_whole_by_attribute", {
+        attribute: attr.value,
+        element: "atom",
+        palette: palette.value,
+        ...parsed.length === 2 ? { value_range: [parsed[0], parsed[1]] } : {},
+        replace: true
+      });
+    });
+    commit.setAttribute("data-molsysviewer-whole-color-attribute-apply", "true");
+    attrWrap.appendChild(attr);
+    attrWrap.appendChild(palette);
+    attrWrap.appendChild(range2);
+    attrWrap.appendChild(commit);
+    section.appendChild(row("Colour by", attrWrap));
+    const reset = makeButton("Reset colours", () => this.ctx.onAction("reset_whole_colors"));
+    reset.setAttribute("data-molsysviewer-whole-reset-colors", "base");
+    const resetAll = makeButton("Reset ALL colours", () => {
+      if (window.confirm("Clear every whole and region colour layer?")) {
+        this.ctx.onAction("reset_all_colors");
+      }
+    });
+    resetAll.setAttribute("data-molsysviewer-whole-reset-colors", "all");
+    Object.assign(resetAll.style, {
+      color: "#fbbf24",
+      border: "1px solid rgba(251,191,36,0.35)",
+      background: "rgba(251,191,36,0.06)"
+    });
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", gap: "6px" });
+    actions.appendChild(reset);
+    actions.appendChild(resetAll);
+    section.appendChild(actions);
+    section.appendChild(note(`Base layer \xB7 covered by ${summary.covering_layer_count} region layer(s).`));
+    return section;
+  }
+  renderInspect() {
+    const section = card();
+    section.setAttribute("data-molsysviewer-whole-inspect", "true");
+    const refresh = makeButton("Refresh", () => {
+      this.requestId += 1;
+      this.ctx.onAction("get_whole_details", { request_id: this.requestId });
+    });
+    refresh.setAttribute("data-molsysviewer-whole-inspect-refresh", "true");
+    section.appendChild(refresh);
+    if (!this.details) return section;
+    const composition = this.details.composition ?? {};
+    const line = document.createElement("div");
+    line.setAttribute("data-molsysviewer-whole-inspect-details", "true");
+    line.textContent = [
+      `${composition.atoms ?? this.details.atom_count} atoms`,
+      `${composition.groups ?? 0} groups`,
+      `${composition.chains ?? 0} chains`,
+      `${composition.molecules ?? 0} molecules`,
+      `${composition.entities ?? 0} entities`,
+      `center [${this.details.center_nm.map((value) => value.toFixed(2)).join(", ")}] nm`,
+      `frame ${this.details.structure_index}`
+    ].join(" \xB7 ");
+    Object.assign(line.style, { fontSize: "11px", color: "rgba(244,244,245,0.72)", lineHeight: "1.45" });
+    section.appendChild(line);
+    const contains = this.details.contains ?? {};
+    const containsLine = document.createElement("div");
+    containsLine.textContent = `contains: ${Object.entries(contains).map(([key2, value]) => `${key2} ${value ? "yes" : "no"}`).join(" \xB7 ")}`;
+    Object.assign(containsLine.style, { fontSize: "10px", color: "rgba(244,244,245,0.56)" });
+    section.appendChild(containsLine);
+    return section;
   }
 };
 
@@ -154240,7 +154481,7 @@ var FloatingPanelShell = class {
 
 // src/ui/group-panel.ts
 var GroupPanel = class {
-  constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onAction, onChangeColorScheme, options) {
+  constructor(host, onSelect, onInteraction, onFocus, onHover, onContext, onAnnotationContext, onActivateSavedSelection, onFocusRegion, onAction, options) {
     this.host = host;
     this.onSelect = onSelect;
     this.onInteraction = onInteraction;
@@ -154251,7 +154492,6 @@ var GroupPanel = class {
     this.onActivateSavedSelection = onActivateSavedSelection;
     this.onFocusRegion = onFocusRegion;
     this.onAction = onAction;
-    this.onChangeColorScheme = onChangeColorScheme;
     this.activeTab = "system";
     this.tabs = /* @__PURE__ */ new Map();
     this.panels = /* @__PURE__ */ new Map();
@@ -154404,17 +154644,7 @@ var GroupPanel = class {
     this.body.appendChild(this.rightColumn);
     this.systemSection = this.createSection("system");
     this.wholeSection = this.createSection("whole");
-    this.wholePanel = new RoadmapPanel("whole", {
-      header: "Whole Structure",
-      cardTitle: "Feature Roadmap",
-      description: "This subpanel will house visual configuration controls for the baseline molecular structure (view.whole). Planned features include:",
-      items: [
-        "Presets & Representation Styles: Choose from 12 styles (cartoon, ribbon, spacefill, licorice, ball & stick, etc.)",
-        "Structure Opacity: Fine-tune baseline alpha transparency across the global scene",
-        "Render Quality: Adjust geometric details for high-performance viewing or production exports",
-        "Base Coloring: Select standard or custom uniform color palettes for the whole system"
-      ]
-    });
+    this.wholePanel = new WholePanel(this.makePanelContext("whole"));
     this.selectionSection = this.createSection("selection");
     this.regionsSection = this.createSection("regions");
     this.regionsPanel = new RegionsPanel(this.makePanelContext("regions"), this.onFocusRegion);
@@ -154451,7 +154681,6 @@ var GroupPanel = class {
       onHover: this.onHover,
       onContext: this.onContext,
       onAnnotationContext: this.onAnnotationContext,
-      onChangeColorScheme: this.onChangeColorScheme,
       onRebuilt: (naturalVisible) => {
         this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
         this.updateBodyDisplay();
@@ -154657,6 +154886,13 @@ var GroupPanel = class {
   }
   setRegionStyleOptions(options) {
     this.regionsPanel.setStyleOptions(options);
+  }
+  setWholeSummary(summary) {
+    this.wholePanel.setSummary(summary);
+    this.systemPanel.setColorScheme(summary?.color_scheme === "physicochemical" ? "physicochemical" : "neutral");
+  }
+  updateWholeDetails(details) {
+    this.wholePanel.updateDetails(details);
   }
   updateRegionDetails(details) {
     this.regionsPanel.updateDetails(details);
@@ -155307,9 +155543,9 @@ var AddonsPanel = class {
       const failure = this.addonDiagnostics.find(
         (d5) => d5.source.toLowerCase().includes(addon.name.toLowerCase())
       );
-      const row = document.createElement("div");
-      row.setAttribute("data-molsysviewer-addon-card", addon.name);
-      Object.assign(row.style, {
+      const row2 = document.createElement("div");
+      row2.setAttribute("data-molsysviewer-addon-card", addon.name);
+      Object.assign(row2.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -155325,8 +155561,8 @@ var AddonsPanel = class {
         cursor: "pointer"
       });
       if (failure) {
-        row.setAttribute("data-molsysviewer-addons-addon-discovery-failure", addon.name);
-        Object.assign(row.style, {
+        row2.setAttribute("data-molsysviewer-addons-addon-discovery-failure", addon.name);
+        Object.assign(row2.style, {
           background: "rgba(239,68,68,0.03)",
           border: "1px solid rgba(239,68,68,0.25)",
           paddingRight: "12px"
@@ -155353,11 +155589,11 @@ var AddonsPanel = class {
         badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
         header3.appendChild(name);
         header3.appendChild(badge);
-        row.appendChild(header3);
+        row2.appendChild(header3);
         const desc = document.createElement("div");
         Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
         desc.textContent = failure.reason || "Error loading addon.";
-        row.appendChild(desc);
+        row2.appendChild(desc);
         const traceBox = document.createElement("pre");
         Object.assign(traceBox.style, {
           display: "none",
@@ -155372,28 +155608,28 @@ var AddonsPanel = class {
           whiteSpace: "pre-wrap"
         });
         traceBox.textContent = failure.traceback || "No traceback detail.";
-        row.appendChild(traceBox);
-        row.addEventListener("click", (e) => {
+        row2.appendChild(traceBox);
+        row2.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const isVisible = traceBox.style.display === "block";
           traceBox.style.display = isVisible ? "none" : "block";
         });
       } else {
-        row.addEventListener("mouseenter", () => {
+        row2.addEventListener("mouseenter", () => {
           if (addon.enabled) {
-            row.style.background = "rgba(255,255,255,0.04)";
-            row.style.border = "1px solid rgba(255,255,255,0.1)";
+            row2.style.background = "rgba(255,255,255,0.04)";
+            row2.style.border = "1px solid rgba(255,255,255,0.1)";
           }
         });
-        row.addEventListener("mouseleave", () => {
-          row.style.background = "rgba(255,255,255,0.02)";
-          row.style.border = "1px solid rgba(255,255,255,0.06)";
+        row2.addEventListener("mouseleave", () => {
+          row2.style.background = "rgba(255,255,255,0.02)";
+          row2.style.border = "1px solid rgba(255,255,255,0.06)";
         });
         const matchedWorkspace = this.workspaceItems.find(
           (w) => w.addon === addon.name || w.id === addon.name
         );
-        row.addEventListener("click", (e) => {
+        row2.addEventListener("click", (e) => {
           e.preventDefault();
           if (addon.enabled && matchedWorkspace) {
             this.onSelectWorkspace?.(matchedWorkspace.id);
@@ -155405,7 +155641,7 @@ var AddonsPanel = class {
           alignItems: "center",
           gap: "6px"
         });
-        row.appendChild(nameRow);
+        row2.appendChild(nameRow);
         const name = document.createElement("div");
         Object.assign(name.style, {
           fontWeight: "700",
@@ -155434,7 +155670,7 @@ var AddonsPanel = class {
           lineHeight: "1.35"
         });
         desc.textContent = addon.description || "";
-        row.appendChild(desc);
+        row2.appendChild(desc);
         const chipRow = document.createElement("div");
         Object.assign(chipRow.style, {
           display: "flex",
@@ -155443,7 +155679,7 @@ var AddonsPanel = class {
           marginTop: "2px",
           opacity: addon.enabled ? "1" : "0.3"
         });
-        row.appendChild(chipRow);
+        row2.appendChild(chipRow);
         const createChip = (text) => {
           const chip = document.createElement("span");
           Object.assign(chip.style, {
@@ -155474,7 +155710,7 @@ var AddonsPanel = class {
           alignItems: "center",
           gap: "8px"
         });
-        row.appendChild(actionsContainer);
+        row2.appendChild(actionsContainer);
         const toggleTrack = document.createElement("div");
         Object.assign(toggleTrack.style, {
           width: "30px",
@@ -155536,7 +155772,7 @@ var AddonsPanel = class {
           actionsContainer.appendChild(openBtn);
         }
       }
-      listContainer.appendChild(row);
+      listContainer.appendChild(row2);
     }
     let diagnosticsRendered = false;
     for (const failure of this.addonDiagnostics) {
@@ -155555,9 +155791,9 @@ var AddonsPanel = class {
         this.workspaceOverviewHost.appendChild(diagHeader);
         diagnosticsRendered = true;
       }
-      const card = document.createElement("div");
-      card.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
-      Object.assign(card.style, {
+      const card2 = document.createElement("div");
+      card2.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
+      Object.assign(card2.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -155588,11 +155824,11 @@ var AddonsPanel = class {
       badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
       header3.appendChild(name);
       header3.appendChild(badge);
-      card.appendChild(header3);
+      card2.appendChild(header3);
       const desc = document.createElement("div");
       Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
       desc.textContent = failure.reason || "Error loading entry point.";
-      card.appendChild(desc);
+      card2.appendChild(desc);
       const traceBox = document.createElement("pre");
       Object.assign(traceBox.style, {
         display: "none",
@@ -155607,13 +155843,13 @@ var AddonsPanel = class {
         whiteSpace: "pre-wrap"
       });
       traceBox.textContent = failure.traceback || "No traceback detail.";
-      card.appendChild(traceBox);
-      card.addEventListener("click", (e) => {
+      card2.appendChild(traceBox);
+      card2.addEventListener("click", (e) => {
         e.preventDefault();
         const isVisible = traceBox.style.display === "block";
         traceBox.style.display = isVisible ? "none" : "block";
       });
-      this.workspaceOverviewHost.appendChild(card);
+      this.workspaceOverviewHost.appendChild(card2);
     }
   }
   // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
@@ -155949,6 +156185,7 @@ var HoverTooltip = class {
 // src/managers/viewer-controller.ts
 var PANEL_REFRESH_BY_OPERATION = {
   set_region_summaries: ["navigate"],
+  set_whole_summary: ["navigate"],
   save_selection: ["navigate"],
   set_selection_tag: ["navigate"],
   delete_selection: ["navigate"],
@@ -156512,12 +156749,6 @@ var MolSysViewerController = class _MolSysViewerController {
         event: "interaction_context_action",
         action,
         ...details
-      });
-    }, async (scheme) => {
-      const themeName = scheme === "physicochemical" ? "msv-physicochemical" : "element-symbol";
-      const components = this.getComponents();
-      await this.plugin.managers.structure.component.updateRepresentationsTheme(components, {
-        color: themeName
       });
     }, { sharedShell, floating: floatingPanels, model: this.model });
     const addonsOptions = sharedShell ? { sharedShell } : floatingPanels ? { floating: true } : {};
@@ -157807,6 +158038,9 @@ var MolSysViewerController = class _MolSysViewerController {
         case "set_region_summaries":
           this.state.setRegionSummaries(msg);
           break;
+        case "set_whole_summary":
+          this.state.setWholeSummary(msg);
+          break;
         case "set_dynamic_region_atoms":
           await this.state.setDynamicRegionAtoms(msg);
           this.handleDynamicRegionEvaluationResponse(msg.frame);
@@ -157819,6 +158053,9 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "region_details":
           this.groupPanel.updateRegionDetails(msg);
+          break;
+        case "whole_details":
+          this.groupPanel.updateWholeDetails(msg);
           break;
         case "batch_region_operations":
           await this.state.applyRegionOperations(msg);
@@ -158758,6 +158995,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   refreshNavigatePanel(refreshChrome = true) {
     this.groupPanel.setSavedSelections(this.savedSelections);
+    this.groupPanel.setWholeSummary(this.state.getWholeSummary());
     this.groupPanel.setRegionStyleOptions({
       ...this.state.getRegionStyleOptions(),
       wholeHidden: this.state.isWholeHidden()
@@ -159029,9 +159267,9 @@ var MolSysViewerController = class _MolSysViewerController {
       fontLink.href = "https://fonts.googleapis.com/css2?family=Varela+Round&display=swap";
       document.head.appendChild(fontLink);
     }
-    const card = document.createElement("div");
-    card.setAttribute("data-molsysviewer-welcome-card", "true");
-    Object.assign(card.style, {
+    const card2 = document.createElement("div");
+    card2.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card2.style, {
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -159077,7 +159315,7 @@ var MolSysViewerController = class _MolSysViewerController {
           <circle cx="80" cy="30" r="24" fill="url(#rad-yellow)" />
           <circle cx="115" cy="45" r="24" fill="url(#rad-blue)" />
         </svg>`;
-    card.appendChild(svgContainer.firstElementChild);
+    card2.appendChild(svgContainer.firstElementChild);
     const titleEl = document.createElement("div");
     Object.assign(titleEl.style, {
       fontSize: "20px",
@@ -159090,7 +159328,7 @@ var MolSysViewerController = class _MolSysViewerController {
       fontFamily: "'Varela Round', system-ui, sans-serif"
     });
     titleEl.textContent = "MolSysViewer";
-    card.appendChild(titleEl);
+    card2.appendChild(titleEl);
     const descEl = document.createElement("div");
     Object.assign(descEl.style, {
       fontSize: "12px",
@@ -159102,7 +159340,7 @@ var MolSysViewerController = class _MolSysViewerController {
       // Clean body text
     });
     descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
-    card.appendChild(descEl);
+    card2.appendChild(descEl);
     const codeBox = document.createElement("div");
     Object.assign(codeBox.style, {
       background: "rgba(0, 0, 0, 0.3)",
@@ -159167,7 +159405,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const line3 = document.createElement("span");
     line3.textContent = "view.show()";
     codeBox.appendChild(line3);
-    card.appendChild(codeBox);
+    card2.appendChild(codeBox);
     const btn = document.createElement("button");
     Object.assign(btn.style, {
       background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
@@ -159198,12 +159436,12 @@ var MolSysViewerController = class _MolSysViewerController {
       btn.textContent = "Loading Crambin...";
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
     };
-    card.appendChild(btn);
+    card2.appendChild(btn);
     if (!this.host.style.position || this.host.style.position === "static") {
       this.host.style.position = "relative";
     }
-    this.host.appendChild(card);
-    this.welcomeCard = card;
+    this.host.appendChild(card2);
+    this.welcomeCard = card2;
   }
   hideWelcomeCard() {
     if (this.welcomeCard) {
@@ -160237,17 +160475,17 @@ function makeSection(heading, rows) {
   h.textContent = heading;
   section.appendChild(h);
   for (const [key2, desc] of rows) {
-    const row = document.createElement("div");
-    row.className = "molsysviewer-help-row";
+    const row2 = document.createElement("div");
+    row2.className = "molsysviewer-help-row";
     const keyEl = document.createElement("span");
     keyEl.className = "molsysviewer-help-key";
     keyEl.textContent = key2;
     const descEl = document.createElement("span");
     descEl.className = "molsysviewer-help-desc";
     descEl.textContent = desc;
-    row.appendChild(keyEl);
-    row.appendChild(descEl);
-    section.appendChild(row);
+    row2.appendChild(keyEl);
+    row2.appendChild(descEl);
+    section.appendChild(row2);
   }
   return section;
 }
@@ -160266,8 +160504,8 @@ var HelpOverlay = class {
       zIndex: "40",
       pointerEvents: "auto"
     });
-    const card = document.createElement("div");
-    card.className = "molsysviewer-help-card";
+    const card2 = document.createElement("div");
+    card2.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
     header2.className = "molsysviewer-help-header";
     const title = document.createElement("span");
@@ -160281,7 +160519,7 @@ var HelpOverlay = class {
     closeBtn.addEventListener("click", () => this.hide());
     header2.appendChild(title);
     header2.appendChild(closeBtn);
-    card.appendChild(header2);
+    card2.appendChild(header2);
     const grid = document.createElement("div");
     grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", [
@@ -160301,11 +160539,11 @@ var HelpOverlay = class {
       ["H", "Toggle this help"],
       ["Esc", "Close panel / cancel"]
     ]));
-    card.appendChild(grid);
+    card2.appendChild(grid);
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
-    this.root.appendChild(card);
+    this.root.appendChild(card2);
     this.host.appendChild(this.root);
   }
   toggle() {

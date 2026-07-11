@@ -46,6 +46,7 @@ type PanelRefreshTarget = "navigate" | "addons";
 // Absent operations, including unknown ones, intentionally refresh nothing.
 const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], readonly PanelRefreshTarget[]>> = {
     set_region_summaries: ["navigate"],
+    set_whole_summary: ["navigate"],
     save_selection: ["navigate"],
     set_selection_tag: ["navigate"],
     delete_selection: ["navigate"],
@@ -1015,12 +1016,6 @@ export class MolSysViewerController {
                 event: "interaction_context_action",
                 action,
                 ...details,
-            });
-        }, async (scheme) => {
-            const themeName = scheme === "physicochemical" ? "msv-physicochemical" : "element-symbol";
-            const components = this.getComponents();
-            await this.plugin.managers.structure.component.updateRepresentationsTheme(components, {
-                color: themeName as any
             });
         }, { sharedShell, floating: floatingPanels, model: this.model });
         const addonsOptions: any = sharedShell ? { sharedShell } : (floatingPanels ? { floating: true } : {});
@@ -2144,6 +2139,7 @@ export class MolSysViewerController {
                 case "hide_region": await this.state.hideRegion(msg); break;
                 case "set_regions_visibility": await this.state.setRegionsVisibility(msg as any); break;
                 case "set_region_summaries": this.state.setRegionSummaries(msg as any); break;
+                case "set_whole_summary": this.state.setWholeSummary(msg as any); break;
                 case "set_dynamic_region_atoms":
                     await this.state.setDynamicRegionAtoms(msg as any);
                     this.handleDynamicRegionEvaluationResponse((msg as any).frame);
@@ -2155,6 +2151,7 @@ export class MolSysViewerController {
                     });
                     break;
                 case "region_details": this.groupPanel.updateRegionDetails(msg as any); break;
+                case "whole_details": this.groupPanel.updateWholeDetails(msg as any); break;
                 case "batch_region_operations": await this.state.applyRegionOperations(msg as any); break;
                 case "delete_region": {
                     await this.state.deleteRegion(msg);
@@ -3225,6 +3222,7 @@ export class MolSysViewerController {
 
     private refreshNavigatePanel(refreshChrome = true): void {
         this.groupPanel.setSavedSelections(this.savedSelections);
+        this.groupPanel.setWholeSummary(this.state.getWholeSummary());
         this.groupPanel.setRegionStyleOptions({
             ...this.state.getRegionStyleOptions(),
             wholeHidden: this.state.isWholeHidden(),

@@ -22,6 +22,19 @@ from .presets import normalize_representation_preset, resolve_user_preset
 
 class RegionsMixin:
     _REGION_ATTRIBUTE_CANDIDATES = ("b_factor", "occupancy", "partial_charge", "formal_charge")
+    # (label shown by the Whole Inspect panel, MolSysMT count attribute). The attribute
+    # names are what `contains` / `is_composed_of` accept as keywords; `n_nucleic_acids`
+    # is deliberately absent because `contains` raises KeyError on it.
+    _WHOLE_COMPOSITION_PROBES = (
+        ("protein", "n_proteins"),
+        ("peptide", "n_peptides"),
+        ("nucleic_dna", "n_dnas"),
+        ("nucleic_rna", "n_rnas"),
+        ("small_molecule", "n_small_molecules"),
+        ("lipid", "n_lipids"),
+        ("ion", "n_ions"),
+        ("water", "n_waters"),
+    )
     _TRANSIENT_REGION_TAG = re.compile(
         r"^(?:(?:orientation|plane)-(?:region)?\d+|focus\d+)$"
     )
@@ -563,6 +576,47 @@ class RegionsMixin:
                 "regions": self._region_summary_records(),
                 "representations": self.representations,
                 "presets": self.presets,
+            }
+        )
+        self._sync_whole_summary_runtime()
+
+    def _whole_summary_record(self) -> dict[str, Any]:
+        inheriting_count = 0
+        none_state_count = 0
+        for region in self._regions.values():
+            if not getattr(region, "_active", False):
+                continue
+            if region.representation == "inherit":
+                inheriting_count += 1
+            if not getattr(region, "_has_own_visual")():
+                none_state_count += 1
+        covering_layer_count = sum(
+            1
+            for owner, layer in getattr(self, "_atom_color_layers", {}).items()
+            if owner != "whole" and bool(layer)
+        )
+        return {
+            "representation": self.whole.representation,
+            "preset": self.whole.preset,
+            "params": self.whole.params,
+            "visible": self.whole.visible,
+            "color_scheme": self.whole.color_scheme,
+            "scene_style_name": self.whole.scene_style_name,
+            "available_attributes": self._available_region_attributes(),
+            "color_schemes": self.styles.structural_color_schemes(skip_digestion=True),
+            "inheriting_region_count": inheriting_count,
+            "none_state_region_count": none_state_count,
+            "covering_layer_count": covering_layer_count,
+        }
+
+    def _sync_whole_summary_runtime(self) -> None:
+        if getattr(self, "_region_batch_depth", 0) > 0:
+            self._region_batch_summary_dirty = True
+            return
+        self._send_runtime_only(
+            {
+                "op": "set_whole_summary",
+                **self._whole_summary_record(),
             }
         )
 

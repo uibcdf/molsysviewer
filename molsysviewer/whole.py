@@ -102,6 +102,7 @@ class Whole:
         self._view._send(payload)  # noqa: SLF001
         if hasattr(self._view, "styles"):
             self._view.styles._clear_cached_name()  # noqa: SLF001
+        self._view._sync_whole_summary_runtime()  # noqa: SLF001
 
     @records_scene_history
     @signal(tags=["representation", "whole"])
@@ -122,6 +123,7 @@ class Whole:
         """Show the global representation(s)."""
         self._view._global_hidden = False  # noqa: SLF001
         self._view._send({"op": "show_whole", "target": "whole"})  # noqa: SLF001
+        self._view._sync_whole_summary_runtime()  # noqa: SLF001
 
     @records_scene_history
     @signal(tags=["visibility", "whole"])
@@ -130,6 +132,7 @@ class Whole:
         """Hide the global representation(s)."""
         self._view._global_hidden = True  # noqa: SLF001
         self._view._send({"op": "hide_whole", "target": "whole"})  # noqa: SLF001
+        self._view._sync_whole_summary_runtime()  # noqa: SLF001
 
     # --- MolSysMT query helpers (delegated to MolSysView) ---
 
@@ -219,22 +222,19 @@ class Whole:
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded.")
 
+        from molsysmt.structure import get_center
         import numpy as np
 
-        coords = msm.get(
+        center = get_center(
             self._view._molsys,  # noqa: SLF001
-            element="atom",
             selection="all",
             structure_indices=structure_indices,
-            coordinates=True,
-            output_type="values",
+            syntax="MolSysMT",
             skip_digestion=True,
         )
-        arr = np.asarray(puw.get_value(coords, to_unit="nm"), dtype=float)
-        if arr.ndim == 3:
-            centroid = arr.mean(axis=(0, 1))
-        else:
-            centroid = arr.mean(axis=0)
+        arr = np.asarray(puw.get_value(center, to_unit="nm"), dtype=float)
+        arr = np.squeeze(arr)
+        centroid = arr.mean(axis=0) if arr.ndim == 2 else arr
         return puw.quantity(centroid.tolist(), "nm")
 
     # --- Scalar colour mapping ---

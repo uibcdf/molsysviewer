@@ -783,25 +783,19 @@ class Region:
         if self._view._molsys is None:  # noqa: SLF001
             raise ValueError("No molecular system loaded.")
 
-        import molsysmt as msm
+        from molsysmt.structure import get_center
         import numpy as np
 
-        coords = msm.get(
+        center = get_center(
             self._view._molsys,  # noqa: SLF001
-            element="atom",
             selection=list(self.atom_indices),
             structure_indices=structure_indices,
-            coordinates=True,
-            output_type="values",
+            syntax="MolSysMT",
             skip_digestion=True,
         )
-        # coords shape: (n_structures, n_atoms, 3) with units already in nm
-        arr = np.asarray(puw.get_value(coords, to_unit="nm"), dtype=float)
-        if arr.ndim == 3:
-            # Average over frames first, then atoms
-            centroid = arr.mean(axis=(0, 1))
-        else:
-            centroid = arr.mean(axis=0)
+        arr = np.asarray(puw.get_value(center, to_unit="nm"), dtype=float)
+        arr = np.squeeze(arr)
+        centroid = arr.mean(axis=0) if arr.ndim == 2 else arr
         return puw.quantity(centroid.tolist(), "nm")
 
     @signal(tags=["region", "camera"])

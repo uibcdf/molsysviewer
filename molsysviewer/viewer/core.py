@@ -43,7 +43,7 @@ from ..colors import colors as global_colors
 from .. import config
 
 from .history import HistoryMixin
-from ..scene_history import SceneHistory
+from ..scene_history import SceneHistory, records_scene_history
 from .camera import CameraManager
 from .movie import MovieManager
 from .export import ExportMixin
@@ -787,6 +787,7 @@ class MolSysView(
             # via initial_messages trait on startup.
             self._pending_messages.clear()
             self._sync_region_summaries_runtime()
+            self._sync_whole_summary_runtime()
         elif event == "request_widget_runtime_source":
             # This is the lazy-load bootstrap handshake: the frontend requests the
             # runtime source BEFORE the real runtime has loaded, so `_ready` is
@@ -985,10 +986,47 @@ class MolSysView(
                         structure_indices=[self.current_structure_index],
                         skip_digestion=True,
                     )
+                    composition: dict[str, int] = {}
+                    if self._molsys is not None:
+                        for key, flag in (
+                            ("atoms", "n_atoms"),
+                            ("groups", "n_groups"),
+                            ("chains", "n_chains"),
+                            ("molecules", "n_molecules"),
+                            ("entities", "n_entities"),
+                        ):
+                            try:
+                                composition[key] = int(
+                                    msm.get(
+                                        self._molsys,
+                                        element="system",
+                                        output_type="values",
+                                        skip_digestion=True,
+                                        **{flag: True},
+                                    )
+                                )
+                            except Exception:
+                                composition[key] = 0
+                    # `contains` / `is_composed_of` take the feature as an attribute
+                    # keyword (`n_waters=True`), not as a selection string: passing
+                    # `selection="water"` makes MolSysMT parse it as a selection
+                    # expression and raise.
+                    contains: dict[str, bool] = {}
+                    composed_of: dict[str, bool] = {}
+                    for token, attribute in self._WHOLE_COMPOSITION_PROBES:
+                        contains[token] = bool(
+                            self.whole.contains(skip_digestion=True, **{attribute: True})
+                        )
+                        composed_of[token] = bool(
+                            self.whole.is_composed_of(skip_digestion=True, **{attribute: True})
+                        )
                     details = {
                         "op": "whole_details",
                         "request_id": content.get("request_id"),
                         "atom_count": int(self._molsys.get_n_atoms()) if self._molsys is not None else 0,
+                        "composition": composition,
+                        "contains": contains,
+                        "is_composed_of": composed_of,
                         "center_nm": puw.get_value(center, to_unit="nm").tolist(),
                         "structure_index": self.current_structure_index,
                     }
@@ -2052,6 +2090,7 @@ class MolSysView(
         if bump is not None:
             self._bump_region_order(bump)
         self._send_atom_color_delta(previous)
+        self._sync_whole_summary_runtime()
 
     def _update_atom_color_layer(self, owner: str, colors: dict[int, int], *, bump: Region | None = None) -> None:
         previous = dict(self._atom_color_map)
@@ -2060,16 +2099,19 @@ class MolSysView(
         if bump is not None:
             self._bump_region_order(bump)
         self._send_atom_color_delta(previous)
+        self._sync_whole_summary_runtime()
 
     def _clear_atom_color_layer(self, owner: str) -> None:
         previous = dict(self._atom_color_map)
         self._atom_color_layers[owner] = {}
         self._send_atom_color_delta(previous)
+        self._sync_whole_summary_runtime()
 
     def _drop_atom_color_layer(self, owner: str) -> None:
         previous = dict(self._atom_color_map)
         self._atom_color_layers.pop(owner, None)
         self._send_atom_color_delta(previous)
+        self._sync_whole_summary_runtime()
 
     def _rename_atom_color_layer(self, old_owner: str, new_owner: str) -> None:
         if old_owner in self._atom_color_layers:
@@ -2083,6 +2125,7 @@ class MolSysView(
             if bump is not None:
                 self._bump_region_order(bump)
             self._send_atom_color_delta(previous)
+            self._sync_whole_summary_runtime()
 
     def _rebuild_view_from_current_molsys(
         self,
@@ -2405,11 +2448,13 @@ class MolSysView(
 
     @signal(tags=["color", "viewer"])
     @digest()
+    @records_scene_history
     def reset_all_colors(self, skip_digestion: bool = False) -> None:
         """Clear every per-atom colour override on the canvas."""
         self._atom_color_layers = {"whole": {}}
         self._atom_color_map.clear()
         self._send({"op": "clear_atom_colors"})
+        self._sync_whole_summary_runtime()
 
     def _update_visibility_in_frontend(self):
         if self.atom_mask is None:

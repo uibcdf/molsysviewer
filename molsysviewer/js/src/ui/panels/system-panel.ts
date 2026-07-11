@@ -26,8 +26,6 @@ export interface SystemPanelCallbacks {
     onHover: OnHover;
     onContext: OnContext;
     onAnnotationContext: OnAnnotationContext;
-    /** Residue color-scheme change (host persists / re-emits). */
-    onChangeColorScheme?: (scheme: "neutral" | "physicochemical") => void;
     /**
      * Called after every strip rebuild with whether the structure yields a
      * naturally-visible System tab. The host owns panel-level visibility.
@@ -38,8 +36,8 @@ export interface SystemPanelCallbacks {
 /**
  * Studio -> System subpanel.
  *
- * Owns the per-chain GroupStrip persistent widgets, the residue color-scheme
- * menu, the modifier legend, and the annotation overlays that live on the
+ * Owns the per-chain GroupStrip persistent widgets, the modifier legend,
+ * and the annotation overlays that live on the
  * strips. It manages the strip lifecycle (build/prune/collapse-state) and
  * propagates selection / context-target / annotations to them. Panel-level
  * visibility stays with the host, reached through the onRebuilt callback.
@@ -85,6 +83,15 @@ export class SystemPanel implements StudioPanel {
     // System renders its strips on setStructure (not on visibility), so tab
     // visibility does not gate its rendering.
     setVisible(_visible: boolean): void {}
+
+    setColorScheme(scheme: "neutral" | "physicochemical"): void {
+        if (this.activeColorScheme === scheme) return;
+        this.activeColorScheme = scheme;
+        for (const strip of this.strips.values()) {
+            strip.setColorScheme(scheme);
+        }
+        this.structureNeedsReconcile = true;
+    }
 
     mount(host: HTMLElement): void {
         this.host = host;
@@ -271,7 +278,6 @@ export class SystemPanel implements StudioPanel {
             gap: "8px",
         });
         header.appendChild(this.makeModifierLegend());
-        header.appendChild(this.makeColorSchemeButton());
         return header;
     }
 
@@ -325,111 +331,4 @@ export class SystemPanel implements StudioPanel {
         return legend;
     }
 
-    private makeColorSchemeButton(): HTMLButtonElement {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.innerHTML = "🎨";
-        btn.title = "Residue color scheme";
-        btn.setAttribute("data-molsysviewer-color-scheme-toggle", "true");
-        Object.assign(btn.style, {
-            background: "transparent",
-            border: "none",
-            color: "rgba(244,244,245,0.6)",
-            cursor: "pointer",
-            padding: "2px 4px",
-            fontSize: "12px",
-            outline: "none",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-        });
-        btn.addEventListener("mouseenter", () => {
-            btn.style.color = "rgba(244,244,245,0.95)";
-        });
-        btn.addEventListener("mouseleave", () => {
-            btn.style.color = "rgba(244,244,245,0.6)";
-        });
-        btn.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.toggleColorSchemeMenu(btn);
-        });
-        return btn;
-    }
-
-    private toggleColorSchemeMenu(button: HTMLElement): void {
-        const existing = this.host?.querySelector("[data-molsysviewer-color-scheme-menu]");
-        if (existing) {
-            existing.remove();
-            return;
-        }
-
-        const dropdown = document.createElement("div");
-        dropdown.setAttribute("data-molsysviewer-color-scheme-menu", "true");
-        Object.assign(dropdown.style, {
-            position: "absolute",
-            top: "20px",
-            right: "0",
-            background: "#18181b",
-            border: "1px solid #3f3f46",
-            borderRadius: "4px",
-            zIndex: "100",
-            padding: "4px 0",
-            boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
-            display: "flex",
-            flexDirection: "column",
-            minWidth: "140px",
-        });
-
-        const makeOption = (label: string, value: "neutral" | "physicochemical") => {
-            const opt = document.createElement("button");
-            opt.type = "button";
-            opt.setAttribute("data-molsysviewer-color-scheme-option", value);
-            opt.textContent = label;
-            const active = this.activeColorScheme === value;
-            Object.assign(opt.style, {
-                background: active ? "rgba(255,255,255,0.08)" : "transparent",
-                border: "none",
-                color: active ? "#ffffff" : "rgba(244,244,245,0.72)",
-                padding: "6px 12px",
-                fontSize: "11px",
-                textAlign: "left",
-                cursor: "pointer",
-                fontWeight: active ? "700" : "400",
-            });
-            opt.addEventListener("mouseenter", () => {
-                opt.style.background = "rgba(255,255,255,0.12)";
-                opt.style.color = "#ffffff";
-            });
-            opt.addEventListener("mouseleave", () => {
-                opt.style.background = active ? "rgba(255,255,255,0.08)" : "transparent";
-                opt.style.color = active ? "#ffffff" : "rgba(244,244,245,0.72)";
-            });
-            opt.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropdown.remove();
-                if (this.activeColorScheme !== value) {
-                    this.activeColorScheme = value;
-                    this.structureNeedsReconcile = true;
-                    this.rebuild();
-                    this.callbacks.onChangeColorScheme?.(value);
-                }
-            });
-            return opt;
-        };
-
-        dropdown.appendChild(makeOption("Neutral", "neutral"));
-        dropdown.appendChild(makeOption("Physicochemical Class", "physicochemical"));
-
-        button.parentElement?.appendChild(dropdown);
-
-        const onOutsideClick = (e: MouseEvent) => {
-            if (!dropdown.contains(e.target as Node) && e.target !== button) {
-                dropdown.remove();
-                window.removeEventListener("click", onOutsideClick);
-            }
-        };
-        setTimeout(() => window.addEventListener("click", onOutsideClick), 0);
-    }
 }

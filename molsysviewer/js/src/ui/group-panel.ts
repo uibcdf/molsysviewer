@@ -13,13 +13,13 @@ import {
 } from "./panels/ui-helpers";
 import { PanelContext, StudioPanel } from "./panels/types";
 import { InspectorListPanel } from "./panels/inspector-list-panel";
-import { RoadmapPanel } from "./panels/roadmap-panel";
 import { ViewportPanel } from "./panels/viewport-panel";
 import { ExportPanel } from "./panels/export-panel";
 import { LayersPanel, LayerObjectSummary } from "./panels/layers-panel";
 import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
 import { SystemPanel } from "./panels/system-panel";
+import { WholePanel } from "./panels/whole-panel";
 import { PanelShell } from "./panel-shell";
 import { FloatingPanelShell } from "./floating-panel-shell";
 
@@ -81,6 +81,28 @@ export type RegionDetails = {
     mode?: "static" | "dynamic";
     broken?: boolean;
 };
+export type WholeSummary = {
+    representation?: string | null;
+    preset?: string | null;
+    params: Record<string, unknown>;
+    visible: boolean;
+    color_scheme?: string | null;
+    scene_style_name?: string | null;
+    available_attributes: string[];
+    color_schemes: string[];
+    inheriting_region_count: number;
+    none_state_region_count: number;
+    covering_layer_count: number;
+};
+export type WholeDetails = {
+    request_id?: number;
+    atom_count: number;
+    composition?: Record<string, number>;
+    contains?: Record<string, boolean>;
+    is_composed_of?: Record<string, boolean>;
+    center_nm: number[];
+    structure_index: number;
+};
 type WorkspaceOption = { id: string; title: string; subtitle?: string };
 type PanelOption = { id: string; title: string; active?: boolean };
 export type SelectionQuerySyntax = "MolSysMT" | "Indices";
@@ -111,7 +133,7 @@ export class GroupPanel {
     private readonly shapesPanel: InspectorListPanel;
     private readonly measuresPanel: InspectorListPanel;
     private readonly annotationsPanel: InspectorListPanel;
-    private readonly wholePanel: RoadmapPanel;
+    private readonly wholePanel: WholePanel;
     private readonly layersPanel: LayersPanel;
     private readonly viewportPanel: ViewportPanel;
     private readonly exportPanel: ExportPanel;
@@ -156,7 +178,6 @@ export class GroupPanel {
         private readonly onActivateSavedSelection: (tag: string) => void,
         private readonly onFocusRegion: (tag: string) => void,
         private readonly onAction: ((action: string, details?: any) => void) | undefined,
-        private readonly onChangeColorScheme?: (scheme: "neutral" | "physicochemical") => void,
         options?: { floating?: boolean; sharedShell?: FloatingPanelShell; model?: any },
     ) {
         this.model = options?.model;
@@ -327,17 +348,7 @@ export class GroupPanel {
         // Create Sections
         this.systemSection = this.createSection("system");
         this.wholeSection = this.createSection("whole");
-        this.wholePanel = new RoadmapPanel("whole", {
-            header: "Whole Structure",
-            cardTitle: "Feature Roadmap",
-            description: "This subpanel will house visual configuration controls for the baseline molecular structure (view.whole). Planned features include:",
-            items: [
-                "Presets & Representation Styles: Choose from 12 styles (cartoon, ribbon, spacefill, licorice, ball & stick, etc.)",
-                "Structure Opacity: Fine-tune baseline alpha transparency across the global scene",
-                "Render Quality: Adjust geometric details for high-performance viewing or production exports",
-                "Base Coloring: Select standard or custom uniform color palettes for the whole system",
-            ],
-        });
+        this.wholePanel = new WholePanel(this.makePanelContext("whole"));
         this.selectionSection = this.createSection("selection");
         this.regionsSection = this.createSection("regions");
         this.regionsPanel = new RegionsPanel(this.makePanelContext("regions"), this.onFocusRegion);
@@ -375,7 +386,6 @@ export class GroupPanel {
             onHover: this.onHover,
             onContext: this.onContext,
             onAnnotationContext: this.onAnnotationContext,
-            onChangeColorScheme: this.onChangeColorScheme,
             onRebuilt: (naturalVisible: boolean) => {
                 this.visible = this.runtimeVisibleOverride === false ? false : naturalVisible;
                 this.updateBodyDisplay();
@@ -617,6 +627,15 @@ export class GroupPanel {
 
     setRegionStyleOptions(options: { representations: string[]; presets: string[]; wholeHidden?: boolean }): void {
         this.regionsPanel.setStyleOptions(options);
+    }
+
+    setWholeSummary(summary: WholeSummary | null): void {
+        this.wholePanel.setSummary(summary);
+        this.systemPanel.setColorScheme(summary?.color_scheme === "physicochemical" ? "physicochemical" : "neutral");
+    }
+
+    updateWholeDetails(details: WholeDetails): void {
+        this.wholePanel.updateDetails(details);
     }
 
     updateRegionDetails(details: RegionDetails): void {

@@ -606,20 +606,36 @@ Collaborator-implemented; audited by mutation (one hollow topological test was h
 
 **Size:** L · **Depends on:** P7 · Spec: `studio_whole_subpanel_ui_design.md`.
 
-- [ ] Replace `RoadmapPanel("whole", …)` (`group-panel.ts:321`) with a real `WholePanel`.
-- [ ] Extract the style composer from `regions-panel.ts` into a **shared component** *before*
-      `WholePanel` consumes it. Two composers that drift is the mistake this effort corrects.
-- [ ] Presence & camera, warning and confirming before hiding when state-**None** regions vanish.
-- [ ] Representation, with the `N regions inherit` note and the `scene_style_name` row stating that
+- [x] Replace `RoadmapPanel("whole", …)` with a real `WholePanel` (`ui/panels/whole-panel.ts`).
+- [x] Extract the style composer from `regions-panel.ts` into a **shared component** *before*
+      `WholePanel` consumes it (`ui/panels/style-composer.ts`; Selection reuses it too).
+- [x] Presence & camera, warning and confirming before hiding when state-**None** regions vanish.
+- [x] Representation, with the `N regions inherit` note and the `scene_style_name` row stating that
       editing clears the named scene style.
-- [ ] Colour: migrated theme, uniform, colour-by-attribute, `Reset colours` (base layer, annotated
+- [x] Colour: migrated theme, uniform, colour-by-attribute, `Reset colours` (base layer, annotated
       `covered by N region layers`), and a visually distinct `Reset ALL colours`.
-- [ ] Lazy Inspect: composition, frame-accurate centroid, `contains` / `is_composed_of`.
-- [ ] Remove the *Colour scheme* dropdown from `system-panel.ts:394-402` and the
-      `onChangeColorScheme` callback (`group-panel.ts:151,378` → `viewer-controller.ts:975-980`).
-      **System** keeps strips, hover, pick and context menu.
+- [x] Lazy Inspect: composition, frame-accurate centroid, `contains` / `is_composed_of`.
+- [x] Remove the *Colour scheme* dropdown from `system-panel.ts` and the `onChangeColorScheme`
+      callback. **System** keeps strips, hover, pick and context menu; the strips now mirror the
+      whole's `color_scheme` from the summary instead of owning it.
 
-**Acceptance:** no frontend path mutates the molecular colour theme without going through Python.
+**Also landed (not foreseen in the plan):** the whole **summary** did not exist at all
+(`set_whole_summary`), so it was built first — Python `_whole_summary_record` /
+`_sync_whole_summary_runtime`, synced from region and colour-layer mutations too, since the three
+coupling counters depend on them. `reset_all_colors` gained `@records_scene_history` (it was the
+one colour operation that could not be undone). `_applyPerAtomColorTheme` was unified onto
+ref-level theme updates, which is what removed the last `updateRepresentationsTheme` call.
+
+**Acceptance:** met. `grep -rn "updateRepresentationsTheme" molsysviewer/js/src` → 0 hits.
+
+**Done:** collaborator-implemented; audited by mutation. `tests/test_phase12_whole_panel.py`
+(5 tests) + JS seam/panel tests, all mutation-verified. The audit found and fixed one real defect:
+`get_whole_details` passed the feature as `selection="protein"` instead of as the attribute keyword
+`n_proteins=True`, so MolSysMT raised, a bare `except` swallowed it, and `contains` /
+`is_composed_of` shipped as permanently empty dicts — the test asserted only
+`isinstance(…, dict)`, which an empty dict satisfies. Verified against real Mol\* (Chrome):
+layers, shapes, workflow-integration and scientific-workflow e2e all pass. `selection-subpanel`
+e2e fails, but it fails identically at HEAD — **pre-existing, unrelated to this phase.**
 
 ---
 
