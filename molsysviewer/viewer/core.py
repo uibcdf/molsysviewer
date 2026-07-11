@@ -264,7 +264,9 @@ class MolSysView(
         self._global_hidden = False
         self._box_visible = False
         self._box_record: dict | None = None  # params last passed to show_box
-        self._atom_color_map: dict[int, int] = {}  # atomIndex → 0xRRGGBB
+        self._atom_color_layers: dict[str, dict[int, int]] = {"whole": {}}
+        self._atom_color_map: dict[int, int] = {}  # resolved atomIndex → 0xRRGGBB
+        self._region_order_counter: int = 0
         self._active_panel_widget: tuple[str, str, AddonPanelWidget] | None = None
 
         self.whole = Whole(self)
@@ -1810,26 +1812,155 @@ class MolSysView(
         return updated
 
     def _remap_atom_color_map(self, atom_index_map: dict[int, int] | None) -> None:
-        if not self._atom_color_map:
+        if not any(self._atom_color_layers.values()) and not self._atom_color_map:
             return
         if atom_index_map is None:
-            remapped = dict(self._atom_color_map)
-        else:
-            remapped = {
-                atom_index_map[old_index]: color
-                for old_index, color in self._atom_color_map.items()
-                if old_index in atom_index_map
+            remapped_layers = {
+                owner: dict(layer)
+                for owner, layer in self._atom_color_layers.items()
+                if layer
             }
-        self._atom_color_map = remapped
-        if remapped:
-            self._send_replay(
+        else:
+            remapped_layers = {
+                owner: {
+                    atom_index_map[old_index]: color
+                    for old_index, color in layer.items()
+                    if old_index in atom_index_map
+                }
+                for owner, layer in self._atom_color_layers.items()
+            }
+        self._atom_color_layers = {
+            owner: layer
+            for owner, layer in remapped_layers.items()
+            if layer or owner == "whole"
+        }
+        self._send_resolved_atom_colors(replay=True)
+
+    def _next_region_order(self) -> int:
+        self._region_order_counter += 1
+        return self._region_order_counter
+
+    def _bump_region_order(self, region: Region) -> None:
+        region.order = self._next_region_order()
+
+    def _emit_region_order(self, region: Region) -> None:
+        region._send("set_region_order", order=region.order)  # noqa: SLF001
+        self._sync_region_summaries_runtime()
+
+    def _recompute_atom_colors_for_order_change(self) -> None:
+        previous = dict(self._atom_color_map)
+        self._send_atom_color_delta(previous)
+
+    def _raise_region_to_front(self, region: Region) -> None:
+        self._bump_region_order(region)
+        self._recompute_atom_colors_for_order_change()
+        self._emit_region_order(region)
+
+    def _send_region_to_back(self, region: Region) -> None:
+        active_orders = [
+            getattr(candidate, "order", 0)
+            for candidate in self._regions.values()
+            if candidate is not region and getattr(candidate, "_active", False)
+        ]
+        region.order = (min(active_orders) - 1) if active_orders else 0
+        self._recompute_atom_colors_for_order_change()
+        self._emit_region_order(region)
+
+    def _resolved_atom_color_map(self) -> dict[int, int]:
+        resolved: dict[int, int] = dict(self._atom_color_layers.get("whole", {}))
+        ordered_regions = sorted(
+            (
+                region
+                for region in self._regions.values()
+                if getattr(region, "_active", False)
+            ),
+            key=lambda region: getattr(region, "order", 0),
+        )
+        for region in ordered_regions:
+            layer = self._atom_color_layers.get(region.tag)
+            if layer:
+                resolved.update(layer)
+        return resolved
+
+    def _send_resolved_atom_colors(self, *, replay: bool = False) -> None:
+        resolved = self._resolved_atom_color_map()
+        self._atom_color_map = resolved
+        message = {
+            "op": "set_atom_colors",
+            "atom_indices": list(resolved.keys()),
+            "colors": list(resolved.values()),
+            "replace": True,
+        }
+        sender = self._send_replay if replay else self._send
+        sender(message)
+
+    def _send_atom_color_delta(self, previous: dict[int, int]) -> None:
+        resolved = self._resolved_atom_color_map()
+        changed = [
+            atom_index
+            for atom_index, color in resolved.items()
+            if previous.get(atom_index) != color
+        ]
+        cleared = [
+            atom_index
+            for atom_index in previous
+            if atom_index not in resolved
+        ]
+        self._atom_color_map = resolved
+        if changed:
+            self._send(
                 {
                     "op": "set_atom_colors",
-                    "atom_indices": list(remapped.keys()),
-                    "colors": list(remapped.values()),
-                    "replace": True,
+                    "atom_indices": changed,
+                    "colors": [resolved[atom_index] for atom_index in changed],
+                    "replace": False,
                 }
             )
+        if cleared:
+            self._send(
+                {
+                    "op": "clear_atom_colors",
+                    "atom_indices": cleared,
+                }
+            )
+
+    def _set_atom_color_layer(self, owner: str, colors: dict[int, int], *, bump: Region | None = None) -> None:
+        previous = dict(self._atom_color_map)
+        self._atom_color_layers[owner] = dict(colors)
+        if bump is not None:
+            self._bump_region_order(bump)
+        self._send_atom_color_delta(previous)
+
+    def _update_atom_color_layer(self, owner: str, colors: dict[int, int], *, bump: Region | None = None) -> None:
+        previous = dict(self._atom_color_map)
+        layer = self._atom_color_layers.setdefault(owner, {})
+        layer.update(colors)
+        if bump is not None:
+            self._bump_region_order(bump)
+        self._send_atom_color_delta(previous)
+
+    def _clear_atom_color_layer(self, owner: str) -> None:
+        previous = dict(self._atom_color_map)
+        self._atom_color_layers[owner] = {}
+        self._send_atom_color_delta(previous)
+
+    def _drop_atom_color_layer(self, owner: str) -> None:
+        previous = dict(self._atom_color_map)
+        self._atom_color_layers.pop(owner, None)
+        self._send_atom_color_delta(previous)
+
+    def _rename_atom_color_layer(self, old_owner: str, new_owner: str) -> None:
+        if old_owner in self._atom_color_layers:
+            self._atom_color_layers[new_owner] = self._atom_color_layers.pop(old_owner)
+
+    def _copy_atom_color_layer(self, source_owner: str, target_owner: str, *, bump: Region | None = None) -> None:
+        source = self._atom_color_layers.get(source_owner, {})
+        if source:
+            previous = dict(self._atom_color_map)
+            self._atom_color_layers[target_owner] = dict(source)
+            if bump is not None:
+                self._bump_region_order(bump)
+            self._send_atom_color_delta(previous)
 
     def _rebuild_view_from_current_molsys(
         self,
@@ -2142,6 +2273,7 @@ class MolSysView(
     @digest()
     def reset_all_colors(self, skip_digestion: bool = False) -> None:
         """Clear every per-atom colour override on the canvas."""
+        self._atom_color_layers = {"whole": {}}
         self._atom_color_map.clear()
         self._send({"op": "clear_atom_colors"})
 

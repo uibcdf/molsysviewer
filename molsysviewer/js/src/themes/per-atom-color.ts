@@ -11,41 +11,73 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { ColorTheme } from "molstar/lib/mol-theme/color";
 import { ThemeDataContext } from "molstar/lib/mol-theme/theme";
 import { ParamDefinition as PD } from "molstar/lib/mol-util/param-definition";
+import { MsvPhysicochemicalColorThemeName, MsvPhysicochemicalColorThemeProvider } from "./physicochemical-color";
 
 // ── Shared mutable state ──────────────────────────────────────────────────────
 
 /** atomIndex (model-level, 0-based) → 0xRRGGBB color integer */
 const _perAtomColorMap = new Map<number, number>();
 
-const DEFAULT_COLOR = Color(0xaaaaaa);
+const DEFAULT_BASE_THEME = { name: "element-symbol", params: {} };
 
 export const MsvPerAtomColorThemeName = "msv-per-atom" as const;
 
+const MsvPerAtomColorThemeParams = {
+    base: PD.Value(DEFAULT_BASE_THEME as { name: string; params?: any }, { isHidden: true }),
+};
+
+type MsvPerAtomColorThemeParams = typeof MsvPerAtomColorThemeParams;
+
+function createBaseTheme(ctx: ThemeDataContext, base: { name: string; params?: any } | undefined) {
+    const spec = base?.name && base.name !== MsvPerAtomColorThemeName ? base : DEFAULT_BASE_THEME;
+    if (spec.name === MsvPhysicochemicalColorThemeName) {
+        return MsvPhysicochemicalColorThemeProvider.factory(ctx, {
+            ...MsvPhysicochemicalColorThemeProvider.defaultValues,
+            ...(spec.params ?? {}),
+        });
+    }
+    const provider = (ColorTheme.BuiltIn as any)[spec.name] as ColorTheme.Provider | undefined;
+    const fallback = ColorTheme.BuiltIn["element-symbol"] as ColorTheme.Provider;
+    const selected = provider ?? fallback;
+    return selected.factory(ctx, {
+        ...selected.defaultValues,
+        ...(spec.params ?? {}),
+    });
+}
+
+function baseColor(baseTheme: any, location: Location, isSecondary: boolean): Color {
+    if ("color" in baseTheme && typeof baseTheme.color === "function") {
+        return baseTheme.color(location, isSecondary);
+    }
+    return ColorTheme.Empty.color(location, isSecondary);
+}
+
 // ── Theme factory ─────────────────────────────────────────────────────────────
 
-function factory(_ctx: ThemeDataContext, _props: {}): ColorTheme<{}, "groupInstance"> {
+function factory(ctx: ThemeDataContext, props: PD.Values<MsvPerAtomColorThemeParams>): ColorTheme<MsvPerAtomColorThemeParams, "groupInstance"> {
+    const baseTheme = createBaseTheme(ctx, props.base);
     return {
         factory,
         granularity: "groupInstance",
         color: (location: Location): Color => {
-            if (!StructureElement.Location.is(location)) return DEFAULT_COLOR;
+            if (!StructureElement.Location.is(location)) return baseColor(baseTheme, location, false);
             const atomIndex = OrderedSet.getAt(location.unit.elements, location.element);
             const c = _perAtomColorMap.get(atomIndex);
-            return c !== undefined ? Color(c) : DEFAULT_COLOR;
+            return c !== undefined ? Color(c) : baseColor(baseTheme, location, false);
         },
-        props: {},
+        props,
     };
 }
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 
-export const MsvPerAtomColorThemeProvider: ColorTheme.Provider<{}, typeof MsvPerAtomColorThemeName> = {
+export const MsvPerAtomColorThemeProvider: ColorTheme.Provider<MsvPerAtomColorThemeParams, typeof MsvPerAtomColorThemeName> = {
     name: MsvPerAtomColorThemeName,
     label: "MSV Per-Atom Color",
     category: ColorTheme.Category.Atom,
     factory,
-    getParams: () => ({} as PD.Params),
-    defaultValues: {},
+    getParams: () => MsvPerAtomColorThemeParams,
+    defaultValues: PD.getDefaultValues(MsvPerAtomColorThemeParams),
     isApplicable: (ctx: ThemeDataContext) => !!ctx.structure,
 };
 
@@ -65,4 +97,14 @@ export function setPerAtomColors(atomIndices: number[], colorInts: number[], rep
 
 export function clearPerAtomColors(): void {
     _perAtomColorMap.clear();
+}
+
+export function clearPerAtomColorsFor(atomIndices: number[]): void {
+    for (const atomIndex of atomIndices) {
+        _perAtomColorMap.delete(atomIndex);
+    }
+}
+
+export function hasPerAtomColors(): boolean {
+    return _perAtomColorMap.size > 0;
 }

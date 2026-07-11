@@ -2145,6 +2145,7 @@ export class MolSysViewerController {
                     break;
                 }
                 case "set_region_representation": await this.state.setRegionRepresentation(msg); break;
+                case "set_region_order": await this.state.setRegionOrder(msg as any); break;
                 case "show_region": await this.state.showRegion(msg); break;
                 case "show_only_region": await this.state.showOnlyRegion(msg); break;
                 case "hide_region": await this.state.hideRegion(msg); break;

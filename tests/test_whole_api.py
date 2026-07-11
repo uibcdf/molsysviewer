@@ -61,6 +61,7 @@ def test_whole_set_color_by_values_can_merge_with_existing_map():
     )
 
     assert set(view._atom_color_map) == set(range(n_atoms))  # noqa: SLF001
+    assert set(view._atom_color_layers["whole"]) == set(range(n_atoms))  # noqa: SLF001
     assert view._message_history[-1]["replace"] is False  # noqa: SLF001
 
 
@@ -79,7 +80,7 @@ def test_whole_set_color_by_attribute_uses_real_molsysmt_attributes():
     n_atoms = int(view.molsys.get_n_atoms())
     assert set(view._atom_color_map) == set(range(n_atoms))  # noqa: SLF001
     assert view._message_history[-1]["op"] == "set_atom_colors"  # noqa: SLF001
-    assert view._message_history[-1]["replace"] is True  # noqa: SLF001
+    assert view._message_history[-1]["replace"] is False  # noqa: SLF001
 
 
 def test_whole_get_center_returns_centroid_quantity():

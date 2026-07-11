@@ -397,6 +397,7 @@ class SceneMixin:
         self._scene_objects.clear()
         self._selections.clear()
         self._region_counter = 0
+        self._region_order_counter = 0
         self._annotation_counter = 0
         self._layer_counter = 0
         self._measurement_counter = 0
@@ -405,6 +406,7 @@ class SceneMixin:
         self._global_hidden = False
         self._box_visible = False
         self._box_record = None
+        self._atom_color_layers = {"whole": {}}
         self._atom_color_map = {}
         self.whole = Whole(self)
         self._shape_history.clear()

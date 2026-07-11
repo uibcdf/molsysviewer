@@ -30,6 +30,7 @@ class Region:
         self.representation = representation
         self.preset: str | None = None
         self.repr_params = repr_params or {}
+        self.order: int = view._next_region_order()  # noqa: SLF001
         self._active = True
         self._hidden = False
 
@@ -244,6 +245,7 @@ class Region:
         payload = {
             "selection": self.selection,
             "atom_indices": atom_indices,
+            "order": self.order,
         }
         if include_visual and self._has_own_visual():
             payload["representation"] = self.representation
@@ -627,8 +629,10 @@ class Region:
         self.representation = normalized
         self.preset = normalized_preset
         self.repr_params = params or {}
+        self._view._bump_region_order(self)  # noqa: SLF001
         self._send(
             "set_region_representation",
+            order=self.order,
             representation=normalized,
             preset=normalized_preset if user_preset_payload is None else None,
             user_preset=user_preset_payload,
@@ -643,14 +647,28 @@ class Region:
         self.representation = None
         self.preset = None
         self.repr_params = {}
+        self._view._bump_region_order(self)  # noqa: SLF001
         self._send(
             "set_region_representation",
+            order=self.order,
             representation=None,
             preset=None,
             user_preset=None,
             params={},
         )
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
+
+    @signal(tags=["region", "order"])
+    @digest()
+    def raise_to_front(self, skip_digestion: bool = False) -> None:
+        """Move this region above every other region for colour and render ownership."""
+        self._view._raise_region_to_front(self)  # noqa: SLF001
+
+    @signal(tags=["region", "order"])
+    @digest()
+    def send_to_back(self, skip_digestion: bool = False) -> None:
+        """Move this region below every other region for colour and render ownership."""
+        self._view._send_region_to_back(self)  # noqa: SLF001
 
     @signal(tags=["region", "color"])
     @digest()
@@ -672,7 +690,7 @@ class Region:
         if molsys is None:
             raise ValueError("No molecular system loaded.")
 
-        available = set(msm.get_attributes(molsys, output_type="list", skip_digestion=True))
+        available = set(msm.get_attributes(molsys, include_none=False, output_type="list", skip_digestion=True))
         requested = str(attribute).strip()
         aliases = {"bfactor": "b_factor"}
         resolved = aliases.get(requested, requested)
@@ -745,6 +763,7 @@ class Region:
             tag=duplicate_tag,
             skip_digestion=True,
         )
+        self._view._copy_atom_color_layer(self.tag, duplicate.tag, bump=duplicate)  # noqa: SLF001
         target_representation = representation if representation is not None else self.representation
         if target_representation is not None or self.preset is not None:
             duplicate.set_representation(
@@ -837,6 +856,7 @@ class Region:
             return
         self._active = False
         self._send("delete_region")
+        self._view._drop_atom_color_layer(self.tag)  # noqa: SLF001
         self._view._unregister_region(self.tag)  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
@@ -851,6 +871,7 @@ class Region:
         self.tag = new_tag
         self._view._regions[new_tag] = self  # noqa: SLF001
         self._view._regions.pop(old_tag, None)  # noqa: SLF001
+        self._view._rename_atom_color_layer(old_tag, new_tag)  # noqa: SLF001
         self._view._sync_region_summaries_runtime()  # noqa: SLF001
 
     # --- Scalar colour mapping ---
@@ -897,24 +918,17 @@ class Region:
             value_range=value_range,
             scope_atom_indices=list(self.atom_indices),
         )
-        # Update Python-side map: merge or replace depending on the flag
+        layer_update = dict(zip(atom_indices, per_atom_colors))
         if replace:
-            self._view._atom_color_map = dict(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+            self._view._set_atom_color_layer(self.tag, layer_update, bump=self)  # noqa: SLF001
         else:
-            self._view._atom_color_map.update(zip(atom_indices, per_atom_colors))  # noqa: SLF001
-        self._view._send({  # noqa: SLF001
-            "op": "set_atom_colors",
-            "atom_indices": atom_indices,
-            "colors": per_atom_colors,
-            "replace": replace,
-        })
+            self._view._update_atom_color_layer(self.tag, layer_update, bump=self)  # noqa: SLF001
 
     @signal(tags=["color", "region"])
     @digest()
     def reset_colors(self, skip_digestion: bool = False) -> None:
-        """Remove per-atom color overrides for the whole canvas and revert to the representation theme."""
-        self._view._atom_color_map.clear()  # noqa: SLF001
-        self._view._send({"op": "clear_atom_colors"})  # noqa: SLF001
+        """Remove this region's per-atom colour layer only."""
+        self._view._clear_atom_color_layer(self.tag)  # noqa: SLF001
 
 
 class RegionsManager(dict):
@@ -942,6 +956,24 @@ class RegionsManager(dict):
         """Return overlap tags for every managed region."""
         return {tag: region.overlaps(skip_digestion=True) for tag, region in self.items()}
 
+    @signal(tags=["region", "order"])
+    @digest()
+    def raise_to_front(self, tag: str, skip_digestion: bool = False) -> None:
+        """Move the named region above every other region."""
+        region = self.get(tag)
+        if region is None:
+            raise KeyError(tag)
+        region.raise_to_front(skip_digestion=True)
+
+    @signal(tags=["region", "order"])
+    @digest()
+    def send_to_back(self, tag: str, skip_digestion: bool = False) -> None:
+        """Move the named region below every other region."""
+        region = self.get(tag)
+        if region is None:
+            raise KeyError(tag)
+        region.send_to_back(skip_digestion=True)
+
     def info(self, tag: str | None = None) -> dict[str, Any] | List[dict[str, Any]]:
         """Return compact metadata for one region (by *tag*) or all regions."""
 
@@ -952,6 +984,7 @@ class RegionsManager(dict):
                 "n_atoms": len(atom_indices),
                 "atom_indices": atom_indices,
                 "representation": region.representation,
+                "order": region.order,
                 "visible": not region._hidden,  # noqa: SLF001
                 "active": region._active,  # noqa: SLF001
             }

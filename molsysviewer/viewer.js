@@ -70468,8 +70468,8 @@ function getStyleTheme(ctx, props) {
 function IllustrativeColorTheme(ctx, props) {
   const { color: styleColor, legend, contextHash } = getStyleTheme(ctx, props.style);
   function illustrativeColor(location2, typeSymbol2) {
-    const baseColor = styleColor(location2, false);
-    return typeSymbol2 === "C" ? Color.lighten(baseColor, props.carbonLightness) : baseColor;
+    const baseColor2 = styleColor(location2, false);
+    return typeSymbol2 === "C" ? Color.lighten(baseColor2, props.carbonLightness) : baseColor2;
   }
   function color(location2) {
     if (element_exports.Location.is(location2) && Unit.isAtomic(location2.unit)) {
@@ -144230,30 +144230,180 @@ var ShapeHandlers = class {
   }
 };
 
-// src/themes/per-atom-color.ts
-var _perAtomColorMap = /* @__PURE__ */ new Map();
+// src/themes/physicochemical-color.ts
+var ResidueToClass = {
+  // Three letter codes
+  "GLY": "aliphatic",
+  "ALA": "aliphatic",
+  "VAL": "aliphatic",
+  "LEU": "aliphatic",
+  "ILE": "aliphatic",
+  "PRO": "aliphatic",
+  "PHE": "aromatic",
+  "TYR": "aromatic",
+  "TRP": "aromatic",
+  "ASP": "acidic",
+  "GLU": "acidic",
+  "LYS": "basic",
+  "ARG": "basic",
+  "HIS": "basic",
+  "SER": "hydroxylic",
+  "THR": "hydroxylic",
+  "CYS": "sulfur-containing",
+  "MET": "sulfur-containing",
+  "ASN": "amidic",
+  "GLN": "amidic",
+  // One letter codes
+  "G": "aliphatic",
+  "A": "aliphatic",
+  "V": "aliphatic",
+  "L": "aliphatic",
+  "I": "aliphatic",
+  "P": "aliphatic",
+  "F": "aromatic",
+  "Y": "aromatic",
+  "W": "aromatic",
+  "D": "acidic",
+  "E": "acidic",
+  "K": "basic",
+  "R": "basic",
+  "H": "basic",
+  "S": "hydroxylic",
+  "T": "hydroxylic",
+  "C": "sulfur-containing",
+  "M": "sulfur-containing",
+  "N": "amidic",
+  "Q": "amidic"
+};
+var PhysicochemicalColorsHex = {
+  aliphatic: "#ef4444",
+  aromatic: "#10b981",
+  acidic: "#f59e0b",
+  basic: "#0ea5e9",
+  hydroxylic: "#ec4899",
+  "sulfur-containing": "#eab308",
+  amidic: "#2563eb"
+};
+var PhysicochemicalColorsInt = {
+  aliphatic: 15680580,
+  aromatic: 1096065,
+  acidic: 16096779,
+  basic: 959977,
+  hydroxylic: 15485081,
+  "sulfur-containing": 15381256,
+  amidic: 2450411
+};
 var DEFAULT_COLOR = Color(11184810);
-var MsvPerAtomColorThemeName = "msv-per-atom";
+var MsvPhysicochemicalColorThemeName = "msv-physicochemical";
+function getAtomicCompId3(unit2, element) {
+  return unit2.model.atomicHierarchy.atoms.label_comp_id.value(element);
+}
+function getCoarseCompId3(unit2, element) {
+  const seqIdBegin = unit2.coarseElements.seq_id_begin.value(element);
+  const seqIdEnd = unit2.coarseElements.seq_id_end.value(element);
+  if (seqIdBegin === seqIdEnd) {
+    const entityKey = unit2.coarseElements.entityKey[element];
+    const seq = unit2.model.sequence.byEntityKey[entityKey].sequence;
+    return seq.compId.value(seqIdBegin - 1);
+  }
+  return void 0;
+}
+function getPhysicochemicalColor(compId3) {
+  const upper = compId3.toUpperCase();
+  const cls = ResidueToClass[upper];
+  if (cls && PhysicochemicalColorsInt[cls] !== void 0) {
+    return Color(PhysicochemicalColorsInt[cls]);
+  }
+  return DEFAULT_COLOR;
+}
 function factory(_ctx, _props) {
+  function color(location2) {
+    if (element_exports.Location.is(location2)) {
+      if (Unit.isAtomic(location2.unit)) {
+        const compId3 = getAtomicCompId3(location2.unit, location2.element);
+        return getPhysicochemicalColor(compId3);
+      } else {
+        const compId3 = getCoarseCompId3(location2.unit, location2.element);
+        if (compId3) return getPhysicochemicalColor(compId3);
+      }
+    } else if (Bond.isLocation(location2)) {
+      if (Unit.isAtomic(location2.aUnit)) {
+        const compId3 = getAtomicCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+        return getPhysicochemicalColor(compId3);
+      } else {
+        const compId3 = getCoarseCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
+        if (compId3) return getPhysicochemicalColor(compId3);
+      }
+    }
+    return DEFAULT_COLOR;
+  }
   return {
     factory,
     granularity: "groupInstance",
+    color,
+    props: {}
+  };
+}
+var MsvPhysicochemicalColorThemeProvider = {
+  name: MsvPhysicochemicalColorThemeName,
+  label: "MSV Physicochemical Class",
+  category: ColorTheme.Category.Residue,
+  factory,
+  getParams: () => ({}),
+  defaultValues: {},
+  isApplicable: (ctx) => !!ctx.structure
+};
+
+// src/themes/per-atom-color.ts
+var _perAtomColorMap = /* @__PURE__ */ new Map();
+var DEFAULT_BASE_THEME = { name: "element-symbol", params: {} };
+var MsvPerAtomColorThemeName = "msv-per-atom";
+var MsvPerAtomColorThemeParams = {
+  base: ParamDefinition.Value(DEFAULT_BASE_THEME, { isHidden: true })
+};
+function createBaseTheme(ctx, base) {
+  const spec = base?.name && base.name !== MsvPerAtomColorThemeName ? base : DEFAULT_BASE_THEME;
+  if (spec.name === MsvPhysicochemicalColorThemeName) {
+    return MsvPhysicochemicalColorThemeProvider.factory(ctx, {
+      ...MsvPhysicochemicalColorThemeProvider.defaultValues,
+      ...spec.params ?? {}
+    });
+  }
+  const provider = ColorTheme.BuiltIn[spec.name];
+  const fallback = ColorTheme.BuiltIn["element-symbol"];
+  const selected = provider ?? fallback;
+  return selected.factory(ctx, {
+    ...selected.defaultValues,
+    ...spec.params ?? {}
+  });
+}
+function baseColor(baseTheme, location2, isSecondary) {
+  if ("color" in baseTheme && typeof baseTheme.color === "function") {
+    return baseTheme.color(location2, isSecondary);
+  }
+  return ColorTheme.Empty.color(location2, isSecondary);
+}
+function factory2(ctx, props) {
+  const baseTheme = createBaseTheme(ctx, props.base);
+  return {
+    factory: factory2,
+    granularity: "groupInstance",
     color: (location2) => {
-      if (!element_exports.Location.is(location2)) return DEFAULT_COLOR;
+      if (!element_exports.Location.is(location2)) return baseColor(baseTheme, location2, false);
       const atomIndex = OrderedSet2.getAt(location2.unit.elements, location2.element);
       const c8 = _perAtomColorMap.get(atomIndex);
-      return c8 !== void 0 ? Color(c8) : DEFAULT_COLOR;
+      return c8 !== void 0 ? Color(c8) : baseColor(baseTheme, location2, false);
     },
-    props: {}
+    props
   };
 }
 var MsvPerAtomColorThemeProvider = {
   name: MsvPerAtomColorThemeName,
   label: "MSV Per-Atom Color",
   category: ColorTheme.Category.Atom,
-  factory,
-  getParams: () => ({}),
-  defaultValues: {},
+  factory: factory2,
+  getParams: () => MsvPerAtomColorThemeParams,
+  defaultValues: ParamDefinition.getDefaultValues(MsvPerAtomColorThemeParams),
   isApplicable: (ctx) => !!ctx.structure
 };
 function getPerAtomColor(atomIndex) {
@@ -144268,6 +144418,14 @@ function setPerAtomColors(atomIndices, colorInts, replace = true) {
 }
 function clearPerAtomColors() {
   _perAtomColorMap.clear();
+}
+function clearPerAtomColorsFor(atomIndices) {
+  for (const atomIndex of atomIndices) {
+    _perAtomColorMap.delete(atomIndex);
+  }
+}
+function hasPerAtomColors() {
+  return _perAtomColorMap.size > 0;
 }
 
 // src/managers/handlers/scene-handlers.ts
@@ -144902,6 +145060,7 @@ var StateHandlers = class {
     this.previousFadedKey = "";
     this.previousFocusFadeValue = 0;
     this.previousShowOnlyWholeMask = false;
+    this.previousRegionOwnershipKey = "";
     this.previousOwnedOpaqueIndices = /* @__PURE__ */ new Set();
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
@@ -145053,6 +145212,11 @@ var StateHandlers = class {
     }
     return { all: all3, whole, regions };
   }
+  componentForRegionEntry(entry, components) {
+    const entryRef = StateObjectRef.resolveRef(entry.component);
+    if (!entryRef) return [];
+    return components.filter((component) => this.componentRefId(component) === entryRef);
+  }
   allAtomIndices(structure) {
     const indices2 = [];
     for (const unit2 of structure.units) {
@@ -145092,13 +145256,29 @@ var StateHandlers = class {
   }
   ownedOpaqueAtomIndices() {
     const owned = /* @__PURE__ */ new Set();
-    this.regionIndex.forEach((entry) => {
-      if (entry.hidden) return;
-      if (entry.representationState === "none") return;
-      if (!this.isFullyOpaque(entry.params)) return;
+    for (const entry of this.ownedOpaqueRegionEntries()) {
       for (const index of entry.atomIndices) owned.add(index);
-    });
+    }
     return Array.from(owned).sort((a8, b8) => a8 - b8);
+  }
+  ownedOpaqueRegionEntries() {
+    return Array.from(this.regionIndex.values()).filter(
+      (entry) => !entry.hidden && entry.representationState !== "none" && this.isFullyOpaque(entry.params)
+    ).sort((left, right) => left.order - right.order);
+  }
+  regionOwnedByHigherOrderAtomIndices(entry) {
+    const masked = /* @__PURE__ */ new Set();
+    for (const owner of this.ownedOpaqueRegionEntries()) {
+      if (owner === entry) continue;
+      if (owner.order <= entry.order) continue;
+      for (const index of owner.atomIndices) masked.add(index);
+    }
+    if (masked.size === 0) return [];
+    const atomSet2 = new Set(entry.atomIndices);
+    return Array.from(masked).filter((index) => atomSet2.has(index)).sort((a8, b8) => a8 - b8);
+  }
+  regionOwnershipKey() {
+    return Array.from(this.regionIndex.entries()).map(([tag, entry]) => `${tag}:${entry.order}:${this.regionOwnedByHigherOrderAtomIndices(entry).join(",")}`).join("|");
   }
   async applyTransparencyLayer(components, atomIndices, value) {
     const structure = this.callbacks.getStructure();
@@ -145183,17 +145363,23 @@ var StateHandlers = class {
     const userHidden = this.hiddenAtomIndicesFromUserMask(structure);
     const faded = this.focusFadeValue > 0 ? this.complementAtomIndices(structure, this.focusFadeIndices) : void 0;
     const ownedOpaque = this.ownedOpaqueAtomIndices();
+    const regionOwnershipKey = this.regionOwnershipKey();
     const showOnlyWholeMaskActive = !!this.showOnlyRegionTag;
     const showOnlyWholeMask = showOnlyWholeMaskActive ? this.allAtomIndices(structure) : void 0;
     const wholeHidden = this.unionAtomIndices(userHidden, this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
     const userHiddenKey = this.atomIndexKey(userHidden);
     const fadedKey = this.atomIndexKey(faded);
-    const requiresFullRebuild = !this.transparencyInitialized || userHiddenKey !== this.previousUserHiddenKey || fadedKey !== this.previousFadedKey || this.focusFadeValue !== this.previousFocusFadeValue || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask;
+    const requiresFullRebuild = !this.transparencyInitialized || userHiddenKey !== this.previousUserHiddenKey || fadedKey !== this.previousFadedKey || this.focusFadeValue !== this.previousFocusFadeValue || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask || regionOwnershipKey !== this.previousRegionOwnershipKey;
     if (requiresFullRebuild) {
       await clearStructureTransparency(this.plugin, all3);
       await this.clearTransparencyFromRepresentationRefs(this.currentGlobalRepresentationRefs());
-      if (Array.isArray(userHidden) && userHidden.length > 0) {
-        await this.applyTransparencyLayer(regions, userHidden, 1);
+      for (const entry of this.regionIndex.values()) {
+        const components = this.componentForRegionEntry(entry, regions);
+        if (components.length === 0) continue;
+        const regionHidden = this.unionAtomIndices(userHidden, this.regionOwnedByHigherOrderAtomIndices(entry));
+        if (regionHidden.length > 0) {
+          await this.applyTransparencyLayer(components, regionHidden, 1);
+        }
       }
       if (Array.isArray(faded) && faded.length > 0) {
         await this.applyWholeTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
@@ -145235,6 +145421,7 @@ var StateHandlers = class {
     this.previousFadedKey = fadedKey;
     this.previousFocusFadeValue = this.focusFadeValue;
     this.previousShowOnlyWholeMask = showOnlyWholeMaskActive;
+    this.previousRegionOwnershipKey = regionOwnershipKey;
     this.previousOwnedOpaqueIndices = new Set(ownedOpaque);
   }
   async updateVisibility(msg) {
@@ -145434,7 +145621,8 @@ var StateHandlers = class {
         representation: msg.representation,
         preset: msg.preset,
         userPreset: msg.user_preset,
-        params: { ...msg.params ?? {} }
+        params: { ...msg.params ?? {} },
+        order: typeof msg.order === "number" ? msg.order : 0
       });
       await this.applyComposedTransparency();
       this.callbacks.notify({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
@@ -145478,6 +145666,7 @@ var StateHandlers = class {
     entry.preset = msg.preset;
     entry.userPreset = msg.user_preset;
     entry.params = { ...msg.params ?? {} };
+    if (typeof msg.order === "number") entry.order = msg.order;
     if (entry.representationState === "inherit") {
       entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
     } else if (entry.representationState === "own") {
@@ -145492,6 +145681,13 @@ var StateHandlers = class {
         (ref) => setSubtreeVisibility(this.plugin.state.data, ref, true)
       );
     }
+    await this.applyComposedTransparency();
+  }
+  async setRegionOrder(msg) {
+    const tag = msg.tag ?? "region";
+    const entry = this.regionIndex.get(tag);
+    if (!entry || typeof msg.order !== "number") return;
+    entry.order = msg.order;
     await this.applyComposedTransparency();
   }
   async showRegion(msg) {
@@ -145557,6 +145753,9 @@ var StateHandlers = class {
           break;
         case "set_region_representation":
           await this.setRegionRepresentation(operation);
+          break;
+        case "set_region_order":
+          await this.setRegionOrder(operation);
           break;
         case "show_region":
           await this.showRegion(operation);
@@ -145833,6 +146032,7 @@ var StateHandlers = class {
     this.previousFadedKey = "";
     this.previousFocusFadeValue = 0;
     this.previousShowOnlyWholeMask = false;
+    this.previousRegionOwnershipKey = "";
     this.previousOwnedOpaqueIndices.clear();
     if (this.globalReprs.size > 0) {
       await Promise.all(Array.from(this.globalReprs).map((ref) => this.removeStateObject(ref)));
@@ -146079,16 +146279,62 @@ var StateHandlers = class {
     setPerAtomColors(atomIndices, colorInts, replace);
     await this._applyPerAtomColorTheme();
   }
-  async clearAtomColors(_msg) {
-    clearPerAtomColors();
+  async clearAtomColors(msg) {
+    const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices : void 0;
+    if (atomIndices) clearPerAtomColorsFor(atomIndices);
+    else clearPerAtomColors();
     await this._applyPerAtomColorTheme();
+  }
+  perAtomThemeParamsFromCurrent(colorTheme) {
+    const current2 = colorTheme?.name && colorTheme.name !== MsvPerAtomColorThemeName ? { name: colorTheme.name, params: colorTheme.params ?? {} } : colorTheme?.params?.base;
+    return {
+      name: MsvPerAtomColorThemeName,
+      params: {
+        base: current2 ?? { name: "element-symbol", params: {} }
+      }
+    };
+  }
+  restoreBaseThemeParamsFromCurrent(colorTheme) {
+    if (colorTheme?.name === MsvPerAtomColorThemeName) {
+      return colorTheme.params?.base ?? { name: "element-symbol", params: {} };
+    }
+    return colorTheme ?? { name: "element-symbol", params: {} };
+  }
+  async updateGlobalRepresentationColorThemes(hasColors) {
+    const refs = this.currentGlobalRepresentationRefs();
+    if (refs.length === 0) return;
+    const update10 = this.plugin.state.data.build();
+    for (const ref of refs) {
+      update10.to(ref).update(
+        StateTransforms.Representation.StructureRepresentation3D,
+        (params) => {
+          params.colorTheme = hasColors ? this.perAtomThemeParamsFromCurrent(params.colorTheme) : this.restoreBaseThemeParamsFromCurrent(params.colorTheme);
+        }
+      );
+    }
+    await update10.commit({ doNotUpdateCurrent: true });
   }
   async _applyPerAtomColorTheme() {
     const components = this.callbacks.getComponents();
+    const hasColors = hasPerAtomColors();
+    await this.updateGlobalRepresentationColorThemes(hasColors);
     if (components.length === 0) return;
+    if (!hasColors) {
+      await this.plugin.managers.structure.component.updateRepresentationsTheme(
+        components,
+        { color: "default" }
+      );
+      return;
+    }
     await this.plugin.managers.structure.component.updateRepresentationsTheme(
       components,
-      { color: MsvPerAtomColorThemeName }
+      (_component, representation) => {
+        const oldTheme = representation?.cell?.transform?.params?.colorTheme;
+        return {
+          color: MsvPerAtomColorThemeName,
+          colorParams: this.perAtomThemeParamsFromCurrent(oldTheme).params
+        };
+      }
     );
   }
 };
@@ -151338,130 +151584,6 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     }
     return this.selectionQueryComposer;
   }
-};
-
-// src/themes/physicochemical-color.ts
-var ResidueToClass = {
-  // Three letter codes
-  "GLY": "aliphatic",
-  "ALA": "aliphatic",
-  "VAL": "aliphatic",
-  "LEU": "aliphatic",
-  "ILE": "aliphatic",
-  "PRO": "aliphatic",
-  "PHE": "aromatic",
-  "TYR": "aromatic",
-  "TRP": "aromatic",
-  "ASP": "acidic",
-  "GLU": "acidic",
-  "LYS": "basic",
-  "ARG": "basic",
-  "HIS": "basic",
-  "SER": "hydroxylic",
-  "THR": "hydroxylic",
-  "CYS": "sulfur-containing",
-  "MET": "sulfur-containing",
-  "ASN": "amidic",
-  "GLN": "amidic",
-  // One letter codes
-  "G": "aliphatic",
-  "A": "aliphatic",
-  "V": "aliphatic",
-  "L": "aliphatic",
-  "I": "aliphatic",
-  "P": "aliphatic",
-  "F": "aromatic",
-  "Y": "aromatic",
-  "W": "aromatic",
-  "D": "acidic",
-  "E": "acidic",
-  "K": "basic",
-  "R": "basic",
-  "H": "basic",
-  "S": "hydroxylic",
-  "T": "hydroxylic",
-  "C": "sulfur-containing",
-  "M": "sulfur-containing",
-  "N": "amidic",
-  "Q": "amidic"
-};
-var PhysicochemicalColorsHex = {
-  aliphatic: "#ef4444",
-  aromatic: "#10b981",
-  acidic: "#f59e0b",
-  basic: "#0ea5e9",
-  hydroxylic: "#ec4899",
-  "sulfur-containing": "#eab308",
-  amidic: "#2563eb"
-};
-var PhysicochemicalColorsInt = {
-  aliphatic: 15680580,
-  aromatic: 1096065,
-  acidic: 16096779,
-  basic: 959977,
-  hydroxylic: 15485081,
-  "sulfur-containing": 15381256,
-  amidic: 2450411
-};
-var DEFAULT_COLOR2 = Color(11184810);
-var MsvPhysicochemicalColorThemeName = "msv-physicochemical";
-function getAtomicCompId3(unit2, element) {
-  return unit2.model.atomicHierarchy.atoms.label_comp_id.value(element);
-}
-function getCoarseCompId3(unit2, element) {
-  const seqIdBegin = unit2.coarseElements.seq_id_begin.value(element);
-  const seqIdEnd = unit2.coarseElements.seq_id_end.value(element);
-  if (seqIdBegin === seqIdEnd) {
-    const entityKey = unit2.coarseElements.entityKey[element];
-    const seq = unit2.model.sequence.byEntityKey[entityKey].sequence;
-    return seq.compId.value(seqIdBegin - 1);
-  }
-  return void 0;
-}
-function getPhysicochemicalColor(compId3) {
-  const upper = compId3.toUpperCase();
-  const cls = ResidueToClass[upper];
-  if (cls && PhysicochemicalColorsInt[cls] !== void 0) {
-    return Color(PhysicochemicalColorsInt[cls]);
-  }
-  return DEFAULT_COLOR2;
-}
-function factory2(_ctx, _props) {
-  function color(location2) {
-    if (element_exports.Location.is(location2)) {
-      if (Unit.isAtomic(location2.unit)) {
-        const compId3 = getAtomicCompId3(location2.unit, location2.element);
-        return getPhysicochemicalColor(compId3);
-      } else {
-        const compId3 = getCoarseCompId3(location2.unit, location2.element);
-        if (compId3) return getPhysicochemicalColor(compId3);
-      }
-    } else if (Bond.isLocation(location2)) {
-      if (Unit.isAtomic(location2.aUnit)) {
-        const compId3 = getAtomicCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
-        return getPhysicochemicalColor(compId3);
-      } else {
-        const compId3 = getCoarseCompId3(location2.aUnit, location2.aUnit.elements[location2.aIndex]);
-        if (compId3) return getPhysicochemicalColor(compId3);
-      }
-    }
-    return DEFAULT_COLOR2;
-  }
-  return {
-    factory: factory2,
-    granularity: "groupInstance",
-    color,
-    props: {}
-  };
-}
-var MsvPhysicochemicalColorThemeProvider = {
-  name: MsvPhysicochemicalColorThemeName,
-  label: "MSV Physicochemical Class",
-  category: ColorTheme.Category.Residue,
-  factory: factory2,
-  getParams: () => ({}),
-  defaultValues: {},
-  isApplicable: (ctx) => !!ctx.structure
 };
 
 // src/ui/group-strip.ts
@@ -157200,6 +157322,9 @@ var MolSysViewerController = class _MolSysViewerController {
         }
         case "set_region_representation":
           await this.state.setRegionRepresentation(msg);
+          break;
+        case "set_region_order":
+          await this.state.setRegionOrder(msg);
           break;
         case "show_region":
           await this.state.showRegion(msg);

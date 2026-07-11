@@ -145,6 +145,7 @@ def test_region_reset_representation_removes_own_visual_state():
     assert view._message_history[-1] == {  # noqa: SLF001
         "op": "set_region_representation",
         "tag": "styled",
+        "order": region.order,
         "representation": None,
         "preset": None,
         "user_preset": None,
@@ -188,9 +189,11 @@ def test_new_region_with_visual_spec_preserves_representation_semantics():
         "tag": "one-build",
         "selection": "all",
         "atom_indices": [0, 1, 2],
+        "order": 1,
     }
     assert operations[1]["op"] == "set_region_representation"
     assert operations[1]["tag"] == "one-build"
+    assert operations[1]["order"] == 2
     assert operations[1]["representation"] == "line"
     assert operations[1]["preset"] is None
     assert operations[1]["user_preset"] is None
@@ -226,6 +229,7 @@ def test_new_region_with_visual_params_preserves_none_representation():
             "tag": "styled-default",
             "selection": "all",
             "atom_indices": [0, 1, 2],
+            "order": region.order,
         }
     ]
 
@@ -266,8 +270,10 @@ def test_rebuild_replays_visual_region_as_bare_create_then_style():
         "tag": "rebuild-region",
         "selection": "all",
         "atom_indices": [0, 1, 2],
+        "order": 2,
     }
     assert operations[1]["op"] == "set_region_representation"
+    assert operations[1]["order"] == 3
     assert operations[1]["representation"] == "line"
 
 

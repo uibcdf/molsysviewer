@@ -32,6 +32,7 @@ import {
     SetFocusFadeMessage,
     SetLayerTagMessage,
     SetRegionRepresentationMessage,
+    SetRegionOrderMessage,
     SetRegionsVisibilityMessage,
     SetRegionSummariesMessage,
     BatchRegionOperationsMessage,
@@ -44,7 +45,9 @@ import {
 } from "../../messages/viewer-messages";
 import { LoadedStructure } from "../../plugin/structure";
 import {
+    clearPerAtomColorsFor,
     clearPerAtomColors,
+    hasPerAtomColors,
     MsvPerAtomColorThemeName,
     setPerAtomColors,
 } from "../../themes/per-atom-color";
@@ -64,6 +67,7 @@ interface RegionEntry {
     preset?: string;
     userPreset?: any;
     params: Record<string, unknown>;
+    order: number;
 }
 
 export interface RegionSummary {
@@ -107,6 +111,7 @@ export class StateHandlers {
     private previousFadedKey = "";
     private previousFocusFadeValue = 0;
     private previousShowOnlyWholeMask = false;
+    private previousRegionOwnershipKey = "";
     private previousOwnedOpaqueIndices = new Set<number>();
     // Versioned visibility state for the delta protocol: the last applied visible
     // atom indices and the version they were stamped with. A delta only applies
@@ -294,6 +299,12 @@ export class StateHandlers {
         return { all, whole, regions };
     }
 
+    private componentForRegionEntry(entry: RegionEntry, components: StructureComponentRef[]): StructureComponentRef[] {
+        const entryRef = StateObjectRef.resolveRef(entry.component);
+        if (!entryRef) return [];
+        return components.filter(component => this.componentRefId(component) === entryRef);
+    }
+
     private allAtomIndices(structure: Structure): number[] {
         const indices: number[] = [];
         for (const unit of structure.units) {
@@ -339,13 +350,40 @@ export class StateHandlers {
 
     private ownedOpaqueAtomIndices(): number[] {
         const owned = new Set<number>();
-        this.regionIndex.forEach(entry => {
-            if (entry.hidden) return;
-            if (entry.representationState === "none") return;
-            if (!this.isFullyOpaque(entry.params)) return;
+        for (const entry of this.ownedOpaqueRegionEntries()) {
             for (const index of entry.atomIndices) owned.add(index);
-        });
+        }
         return Array.from(owned).sort((a, b) => a - b);
+    }
+
+    private ownedOpaqueRegionEntries(): RegionEntry[] {
+        return Array.from(this.regionIndex.values())
+            .filter(entry =>
+                !entry.hidden
+                && entry.representationState !== "none"
+                && this.isFullyOpaque(entry.params)
+            )
+            .sort((left, right) => left.order - right.order);
+    }
+
+    private regionOwnedByHigherOrderAtomIndices(entry: RegionEntry): number[] {
+        const masked = new Set<number>();
+        for (const owner of this.ownedOpaqueRegionEntries()) {
+            if (owner === entry) continue;
+            if (owner.order <= entry.order) continue;
+            for (const index of owner.atomIndices) masked.add(index);
+        }
+        if (masked.size === 0) return [];
+        const atomSet = new Set(entry.atomIndices);
+        return Array.from(masked)
+            .filter(index => atomSet.has(index))
+            .sort((a, b) => a - b);
+    }
+
+    private regionOwnershipKey(): string {
+        return Array.from(this.regionIndex.entries())
+            .map(([tag, entry]) => `${tag}:${entry.order}:${this.regionOwnedByHigherOrderAtomIndices(entry).join(",")}`)
+            .join("|");
     }
 
     private async applyTransparencyLayer(
@@ -456,6 +494,7 @@ export class StateHandlers {
             ? this.complementAtomIndices(structure, this.focusFadeIndices)
             : undefined;
         const ownedOpaque = this.ownedOpaqueAtomIndices();
+        const regionOwnershipKey = this.regionOwnershipKey();
         const showOnlyWholeMaskActive = !!this.showOnlyRegionTag;
         const showOnlyWholeMask = showOnlyWholeMaskActive ? this.allAtomIndices(structure) : undefined;
         const wholeHidden = this.unionAtomIndices(userHidden, this.ownedOpaqueAtomIndices(), showOnlyWholeMask);
@@ -467,14 +506,20 @@ export class StateHandlers {
             || userHiddenKey !== this.previousUserHiddenKey
             || fadedKey !== this.previousFadedKey
             || this.focusFadeValue !== this.previousFocusFadeValue
-            || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask;
+            || showOnlyWholeMaskActive !== this.previousShowOnlyWholeMask
+            || regionOwnershipKey !== this.previousRegionOwnershipKey;
 
         if (requiresFullRebuild) {
             await clearStructureTransparency(this.plugin, all);
             await this.clearTransparencyFromRepresentationRefs(this.currentGlobalRepresentationRefs());
 
-            if (Array.isArray(userHidden) && userHidden.length > 0) {
-                await this.applyTransparencyLayer(regions, userHidden, 1);
+            for (const entry of this.regionIndex.values()) {
+                const components = this.componentForRegionEntry(entry, regions);
+                if (components.length === 0) continue;
+                const regionHidden = this.unionAtomIndices(userHidden, this.regionOwnedByHigherOrderAtomIndices(entry));
+                if (regionHidden.length > 0) {
+                    await this.applyTransparencyLayer(components, regionHidden, 1);
+                }
             }
             if (Array.isArray(faded) && faded.length > 0) {
                 await this.applyWholeTransparencyLayer(whole, faded, Math.min(1, this.focusFadeValue));
@@ -519,6 +564,7 @@ export class StateHandlers {
         this.previousFadedKey = fadedKey;
         this.previousFocusFadeValue = this.focusFadeValue;
         this.previousShowOnlyWholeMask = showOnlyWholeMaskActive;
+        this.previousRegionOwnershipKey = regionOwnershipKey;
         this.previousOwnedOpaqueIndices = new Set(ownedOpaque);
     }
 
@@ -767,6 +813,7 @@ export class StateHandlers {
                 preset: msg.preset,
                 userPreset: msg.user_preset,
                 params: { ...(msg.params ?? {}) },
+                order: typeof msg.order === "number" ? msg.order : 0,
             });
             await this.applyComposedTransparency();
             
@@ -823,6 +870,7 @@ export class StateHandlers {
         entry.preset = msg.preset;
         entry.userPreset = msg.user_preset;
         entry.params = { ...(msg.params ?? {}) };
+        if (typeof msg.order === "number") entry.order = msg.order;
 
         if (entry.representationState === "inherit") {
             entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params));
@@ -841,6 +889,14 @@ export class StateHandlers {
                 setSubtreeVisibility(this.plugin.state.data, ref, true)
             );
         }
+        await this.applyComposedTransparency();
+    }
+
+    async setRegionOrder(msg: SetRegionOrderMessage) {
+        const tag = msg.tag ?? "region";
+        const entry = this.regionIndex.get(tag);
+        if (!entry || typeof msg.order !== "number") return;
+        entry.order = msg.order;
         await this.applyComposedTransparency();
     }
 
@@ -932,6 +988,9 @@ export class StateHandlers {
                     break;
                 case "set_region_representation":
                     await this.setRegionRepresentation(operation as unknown as SetRegionRepresentationMessage);
+                    break;
+                case "set_region_order":
+                    await this.setRegionOrder(operation as unknown as SetRegionOrderMessage);
                     break;
                 case "show_region":
                     await this.showRegion(operation as unknown as ShowRegionMessage);
@@ -1241,6 +1300,7 @@ export class StateHandlers {
         this.previousFadedKey = "";
         this.previousFocusFadeValue = 0;
         this.previousShowOnlyWholeMask = false;
+        this.previousRegionOwnershipKey = "";
         this.previousOwnedOpaqueIndices.clear();
         if (this.globalReprs.size > 0) {
             await Promise.all(Array.from(this.globalReprs).map(ref => this.removeStateObject(ref)));
@@ -1519,17 +1579,70 @@ export class StateHandlers {
         await this._applyPerAtomColorTheme();
     }
 
-    async clearAtomColors(_msg: ClearAtomColorsMessage) {
-        clearPerAtomColors();
+    async clearAtomColors(msg: ClearAtomColorsMessage) {
+        const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices : undefined;
+        if (atomIndices) clearPerAtomColorsFor(atomIndices);
+        else clearPerAtomColors();
         await this._applyPerAtomColorTheme();
+    }
+
+    private perAtomThemeParamsFromCurrent(colorTheme: any) {
+        const current = colorTheme?.name && colorTheme.name !== MsvPerAtomColorThemeName
+            ? { name: colorTheme.name, params: colorTheme.params ?? {} }
+            : colorTheme?.params?.base;
+        return {
+            name: MsvPerAtomColorThemeName,
+            params: {
+                base: current ?? { name: "element-symbol", params: {} },
+            },
+        };
+    }
+
+    private restoreBaseThemeParamsFromCurrent(colorTheme: any) {
+        if (colorTheme?.name === MsvPerAtomColorThemeName) {
+            return colorTheme.params?.base ?? { name: "element-symbol", params: {} };
+        }
+        return colorTheme ?? { name: "element-symbol", params: {} };
+    }
+
+    private async updateGlobalRepresentationColorThemes(hasColors: boolean) {
+        const refs = this.currentGlobalRepresentationRefs();
+        if (refs.length === 0) return;
+        const update = this.plugin.state.data.build();
+        for (const ref of refs) {
+            update.to(ref).update(
+                StateTransforms.Representation.StructureRepresentation3D,
+                (params: any) => {
+                    params.colorTheme = hasColors
+                        ? this.perAtomThemeParamsFromCurrent(params.colorTheme)
+                        : this.restoreBaseThemeParamsFromCurrent(params.colorTheme);
+                },
+            );
+        }
+        await update.commit({ doNotUpdateCurrent: true });
     }
 
     private async _applyPerAtomColorTheme() {
         const components = this.callbacks.getComponents();
+        const hasColors = hasPerAtomColors();
+        await this.updateGlobalRepresentationColorThemes(hasColors);
         if (components.length === 0) return;
+        if (!hasColors) {
+            await this.plugin.managers.structure.component.updateRepresentationsTheme(
+                components,
+                { color: "default" as any },
+            );
+            return;
+        }
         await this.plugin.managers.structure.component.updateRepresentationsTheme(
             components,
-            { color: MsvPerAtomColorThemeName as any },
+            (_component: any, representation: any) => {
+                const oldTheme = representation?.cell?.transform?.params?.colorTheme;
+                return {
+                    color: MsvPerAtomColorThemeName as any,
+                    colorParams: this.perAtomThemeParamsFromCurrent(oldTheme).params,
+                };
+            },
         );
     }
 }

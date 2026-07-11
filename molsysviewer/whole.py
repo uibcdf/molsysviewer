@@ -273,7 +273,7 @@ class Whole:
         if molsys is None:
             raise ValueError("No molecular system loaded.")
 
-        available = set(msm.get_attributes(molsys, output_type="list", skip_digestion=True))
+        available = set(msm.get_attributes(molsys, include_none=False, output_type="list", skip_digestion=True))
         requested = str(attribute).strip()
         resolved = requested if requested in available else requested.lower()
         if resolved not in available:
@@ -359,20 +359,14 @@ class Whole:
             value_range=value_range,
             scope_atom_indices=None,
         )
+        layer_update = dict(zip(atom_indices, per_atom_colors))
         if replace:
-            self._view._atom_color_map = dict(zip(atom_indices, per_atom_colors))  # noqa: SLF001
+            self._view._set_atom_color_layer("whole", layer_update)  # noqa: SLF001
         else:
-            self._view._atom_color_map.update(zip(atom_indices, per_atom_colors))  # noqa: SLF001
-        self._view._send({  # noqa: SLF001
-            "op": "set_atom_colors",
-            "atom_indices": atom_indices,
-            "colors": per_atom_colors,
-            "replace": replace,
-        })
+            self._view._update_atom_color_layer("whole", layer_update)  # noqa: SLF001
 
     @signal(tags=["color", "whole"])
     @digest()
     def reset_colors(self, skip_digestion: bool = False) -> None:
-        """Remove any per-atom color override and revert to the current representation theme."""
-        self._view._atom_color_map.clear()  # noqa: SLF001
-        self._view._send({"op": "clear_atom_colors"})  # noqa: SLF001
+        """Remove the whole/base per-atom colour layer only."""
+        self._view._clear_atom_color_layer("whole")  # noqa: SLF001

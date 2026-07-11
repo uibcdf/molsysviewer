@@ -15,6 +15,7 @@ import {
     setStructureTransparency,
 } from "molstar/lib/mol-plugin-state/helpers/structure-transparency";
 import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
+import { MsvPerAtomColorThemeProvider } from "../../src/themes/per-atom-color";
 
 declare global {
     // eslint-disable-next-line no-var
@@ -25,6 +26,8 @@ declare global {
         profileRegionVisibilityControl: typeof profileRegionVisibilityControl;
         probeExclusiveOwnershipPicking: typeof probeExclusiveOwnershipPicking;
         probeGlobalRepresentationOwnershipMask: typeof probeGlobalRepresentationOwnershipMask;
+        probePerAtomColorDecorator: typeof probePerAtomColorDecorator;
+        probeRegionOrderOwnership: typeof probeRegionOrderOwnership;
     } | undefined;
 }
 
@@ -34,6 +37,16 @@ type ProfileController = MolSysViewerController & {
     state: {
         buildSelectionFromAtomIndices(structure: unknown, atomIndices: number[]): unknown;
     };
+};
+
+type RegionOrderOwnershipCase = {
+    case: string;
+    lowerTag: string;
+    upperTag: string;
+    lowerMaskedAtoms: number;
+    upperMaskedAtoms: number;
+    lowerRecords: TransparencyRecord[];
+    upperRecords: TransparencyRecord[];
 };
 
 type ExclusiveOwnershipProfileOptions = {
@@ -107,6 +120,16 @@ type GlobalRepresentationOwnershipMaskProbe = {
     expectedMaskedAtoms: number;
     wholeOwnedAtomsTransparent: boolean;
     regionOwnedAtomsOpaque: boolean;
+};
+
+type PerAtomColorDecoratorProbe = {
+    representationRef: string;
+    themeName: string | null;
+    baseThemeName: string | null;
+    coloredAtomColor: number;
+    uncoloredAtomColor: number;
+    coloredAtomUsesLayer: boolean;
+    uncoloredAtomFallsThrough: boolean;
 };
 
 type PickingProbeCaseName = "owned-region-visible" | "unowned-region-visible" | "owned-region-hidden";
@@ -270,6 +293,19 @@ function atomPosition(structure: Structure, atomIndex: number): Vec3 | null {
             if (elementIndex !== atomIndex) continue;
             unit.conformation.position(elementIndex, position);
             return position;
+        }
+    }
+    return null;
+}
+
+function atomLocation(structure: Structure, atomIndex: number): StructureElement.Location | null {
+    for (const unit of structure.units) {
+        if (!Unit.isAtomic(unit)) continue;
+        const elements = unit.elements;
+        const count = OrderedSet.size(elements);
+        for (let ordinal = 0; ordinal < count; ordinal++) {
+            const elementIndex = OrderedSet.getAt(elements, ordinal);
+            if (elementIndex === atomIndex) return StructureElement.Location.create(structure, unit, elementIndex);
         }
     }
     return null;
@@ -930,6 +966,126 @@ export async function probeGlobalRepresentationOwnershipMask(
     };
 }
 
+export async function probePerAtomColorDecorator(
+    controller: MolSysViewerController,
+    options: { coloredAtom: number; uncoloredAtom: number; color: number },
+): Promise<PerAtomColorDecoratorProbe> {
+    const profiled = controller as ProfileController;
+    const structure = profiled.getStructureData();
+    if (!structure) throw new Error("Per-atom color decorator probe requires a loaded structure.");
+
+    await profiled.handleMessage({
+        op: "set_global_representation",
+        representation: "ball-and-stick",
+        params: { color_scheme: "element_cpk" },
+    } as any);
+    await profiled.handleMessage({
+        op: "set_atom_colors",
+        atom_indices: [options.coloredAtom],
+        colors: [options.color],
+        replace: true,
+    });
+
+    const globalRepresentationRefs = Array.from(((profiled.state as any).globalReprs ?? []) as Iterable<string>)
+        .filter((ref): ref is string => typeof ref === "string");
+    const representationRef = globalRepresentationRefs[0];
+    if (!representationRef) throw new Error("Per-atom color decorator probe found no global representation ref.");
+    const cell = profiled.plugin.state.data.cells.get(representationRef);
+    const colorTheme = cell?.transform?.params?.colorTheme;
+    const base = colorTheme?.params?.base;
+    const coloredLocation = atomLocation(structure, options.coloredAtom);
+    const uncoloredLocation = atomLocation(structure, options.uncoloredAtom);
+    if (!coloredLocation || !uncoloredLocation) throw new Error("Per-atom color decorator probe could not build atom locations.");
+    const theme = MsvPerAtomColorThemeProvider.factory(
+        { structure } as any,
+        { base: base ?? { name: "element-symbol", params: {} } } as any,
+    );
+    const coloredAtomColor = Number(theme.color(coloredLocation, false));
+    const uncoloredAtomColor = Number(theme.color(uncoloredLocation, false));
+    return {
+        representationRef,
+        themeName: colorTheme?.name ?? null,
+        baseThemeName: base?.name ?? null,
+        coloredAtomColor,
+        uncoloredAtomColor,
+        coloredAtomUsesLayer: coloredAtomColor === options.color,
+        uncoloredAtomFallsThrough: uncoloredAtomColor !== 0xaaaaaa && uncoloredAtomColor !== options.color,
+    };
+}
+
+export async function probeRegionOrderOwnership(
+    controller: MolSysViewerController,
+): Promise<{ cases: RegionOrderOwnershipCase[] }> {
+    const profiled = controller as ProfileController;
+    const structure = profiled.getStructureData();
+    if (!structure) throw new Error("Region order ownership probe requires a loaded structure.");
+
+    async function createRegion(tag: string, atomIndices: number[], order: number, alpha = 1) {
+        await profiled.handleMessage({ op: "create_region", tag, atom_indices: atomIndices, order });
+        await profiled.handleMessage({
+            op: "set_region_representation",
+            tag,
+            order,
+            representation: "ball-and-stick",
+            params: { alpha },
+        });
+    }
+
+    function regionComponents(tag: string) {
+        const ref = getRegionComponentRef(profiled, tag);
+        if (!ref) throw new Error(`Region order ownership probe could not find region component ${tag}.`);
+        return getWholeComponents(profiled).filter((component) => {
+            const [componentRef] = componentRefs([component]);
+            return componentRef === ref;
+        });
+    }
+
+    function recordCase(name: string, lowerTag: string, upperTag: string, expectedAtoms: number[]): RegionOrderOwnershipCase {
+        const lowerRecords = transparencyRecords(profiled.plugin, regionComponents(lowerTag), expectedAtoms);
+        const upperRecords = transparencyRecords(profiled.plugin, regionComponents(upperTag), expectedAtoms);
+        return {
+            case: name,
+            lowerTag,
+            upperTag,
+            lowerMaskedAtoms: sumRecordAtoms(lowerRecords),
+            upperMaskedAtoms: sumRecordAtoms(upperRecords),
+            lowerRecords,
+            upperRecords,
+        };
+    }
+
+    await createRegion("__order_a__", [0, 1], 1);
+    await createRegion("__order_b__", [1, 2], 2);
+    const initial = recordCase("higher-order-region-masks-lower-overlap", "__order_a__", "__order_b__", [1]);
+
+    await profiled.handleMessage({ op: "set_region_order", tag: "__order_a__", order: 3 });
+    const raised = recordCase("raise-to-front-inverts-region-owner", "__order_b__", "__order_a__", [1]);
+
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__order_b__",
+        order: 4,
+        representation: "ball-and-stick",
+        params: { alpha: 0.95 },
+    });
+    const translucent = recordCase("translucent-higher-region-does-not-mask-lower", "__order_a__", "__order_b__", [1]);
+
+    await profiled.handleMessage({
+        op: "set_region_representation",
+        tag: "__order_b__",
+        order: 5,
+        representation: "ball-and-stick",
+        params: { alpha: 1 },
+    });
+    await profiled.handleMessage({
+        op: "update_visibility",
+        options: { visible_atom_indices: atomRange(1, 12), version: 1 },
+    });
+    const composed = recordCase("user-mask-and-region-ownership-coexist", "__order_a__", "__order_b__", [0, 1]);
+
+    return { cases: [initial, raised, translucent, composed] };
+}
+
 if (typeof window !== "undefined") {
     (window as any).Harness = {
         createController,
@@ -938,5 +1094,7 @@ if (typeof window !== "undefined") {
         profileRegionVisibilityControl,
         probeExclusiveOwnershipPicking,
         probeGlobalRepresentationOwnershipMask,
+        probePerAtomColorDecorator,
+        probeRegionOrderOwnership,
     };
 }

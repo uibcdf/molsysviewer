@@ -425,6 +425,7 @@ export type CreateRegionMessage = {
     tag?: string;
     selection?: string;
     atom_indices?: number[];
+    order?: number;
     representation?: string;
     preset?: string;
     user_preset?: any;
@@ -434,10 +435,17 @@ export type CreateRegionMessage = {
 export type SetRegionRepresentationMessage = {
     op: "set_region_representation";
     tag?: string;
+    order?: number;
     representation?: string;
     preset?: string;
     user_preset?: any;
     params?: Record<string, unknown>;
+};
+
+export type SetRegionOrderMessage = {
+    op: "set_region_order";
+    tag?: string;
+    order?: number;
 };
 
 export type ShowRegionMessage = {
@@ -705,6 +713,8 @@ export type SetAtomColorsMessage = {
 
 export type ClearAtomColorsMessage = {
     op: "clear_atom_colors";
+    /** Optional model-level atom indices to clear. Absent clears every per-atom colour. */
+    atom_indices?: number[];
 };
 
 export type MovieKeyframe = {
@@ -791,6 +801,7 @@ export type ViewerMessage =
     HideRegionMessage |
     SetRegionsVisibilityMessage |
     SetRegionSummariesMessage |
+    SetRegionOrderMessage |
     BatchRegionOperationsMessage |
     DeleteRegionMessage |
     RenameRegionMessage |
