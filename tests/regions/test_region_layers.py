@@ -127,3 +127,14 @@ def test_set_layer_accepts_a_layer_object():
     r.set_layer(layer, skip_digestion=True)
     assert r.layer == "site"
     assert "A" in view.layers["site"].regions
+
+
+def test_region_summary_runtime_record_carries_layer():
+    view = _mute(demo["dialanine"])
+    sent = []
+    view._send_runtime_only = lambda m: sent.append(m)  # noqa: SLF001
+    r = _region(view, [0, 1, 2], "A", representation="cartoon")
+    r.set_layer("site", skip_digestion=True)
+    summaries = [m for m in sent if m.get("op") == "set_region_summaries"]
+    record = next(rec for rec in summaries[-1]["regions"] if rec["tag"] == "A")
+    assert record["layer"] == "site"

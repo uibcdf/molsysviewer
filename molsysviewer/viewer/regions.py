@@ -403,6 +403,9 @@ class RegionsMixin:
                     "atom_count": len(atom_indices),
                     "selection": region.selection if isinstance(region.selection, str) else None,
                     "hidden": bool(region._hidden),  # noqa: SLF001
+                    # Layer membership (Phase 9) so the Layers subpanel can group
+                    # regions under their layer; None for a region in no layer.
+                    "layer": region.layer,
                     "representation": region.representation,
                     "preset": region.preset,
                     "representation_params": dict(region.repr_params),

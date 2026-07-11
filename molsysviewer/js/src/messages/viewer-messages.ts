@@ -472,6 +472,8 @@ export type SetRegionSummariesMessage = {
         atom_count?: number;
         selection?: string;
         hidden?: boolean;
+        /** Tag of the layer this region belongs to, or null (Phase 9). */
+        layer?: string | null;
         representation?: string | null;
         preset?: string | null;
         representation_params?: Record<string, unknown>;
