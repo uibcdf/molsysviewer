@@ -302,6 +302,11 @@ export type ToggleFullscreenMessage = {
     enable?: boolean;
 };
 
+export type SetCanvasVisibilityMessage = {
+    op: "set_canvas_visibility";
+    visible?: boolean;
+};
+
 export type ToggleBackgroundMessage = {
     op: "toggle_background";
     mode?: "light" | "dark";
@@ -750,7 +755,7 @@ export type PartialCoordinatesUpdateMessage = {
     transaction_id?: string | number;
 };
 
-export type ViewerMessage =
+export type KnownViewerMessage =
     PartialCoordinatesUpdateMessage |
     SetAtomColorsMessage |
     ClearAtomColorsMessage |
@@ -786,6 +791,7 @@ export type ViewerMessage =
     SetFocusFadeMessage |
     SetTrajectoryPlotMessage |
     ClearSceneMessage |
+    SetCanvasVisibilityMessage |
     ClearAllMessage |
     ClearByTagMessage |
     ResetCameraMessage |
@@ -831,5 +837,9 @@ export type ViewerMessage =
     DeleteSelectionMessage |
     ClearSelectionsMessage |
     PlayMovieMessage |
-    StopMovieMessage |
-    Record<string, unknown>;
+    StopMovieMessage;
+
+// The runtime bridge also tolerates arbitrary/forward-compatible messages, but
+// that permissiveness must not poison `KnownViewerMessage["op"]` (the literal
+// union that types the dispatch), so the catch-all lives only here.
+export type ViewerMessage = KnownViewerMessage | Record<string, unknown>;

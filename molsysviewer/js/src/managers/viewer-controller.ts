@@ -12,7 +12,7 @@ import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
 import { ButtonsType } from "molstar/lib/mol-util/input/input-observer";
 
-import { ViewerMessage } from "../messages/viewer-messages";
+import { ViewerMessage, KnownViewerMessage } from "../messages/viewer-messages";
 import { LoadedStructure } from "../plugin/structure";
 import { LoaderHandlers } from "./handlers/loader-handlers";
 import { AnnotationHandlers } from "./handlers/annotation-handlers";
@@ -44,7 +44,7 @@ type PanelRefreshTarget = "navigate" | "addons";
 // A message is not a request to repaint every Studio surface. This map is the
 // audited bridge between protocol operations and the panels they invalidate.
 // Absent operations, including unknown ones, intentionally refresh nothing.
-const PANEL_REFRESH_BY_OPERATION: Partial<Record<ViewerMessage["op"], readonly PanelRefreshTarget[]>> = {
+const PANEL_REFRESH_BY_OPERATION: Partial<Record<KnownViewerMessage["op"], readonly PanelRefreshTarget[]>> = {
     set_region_summaries: ["navigate"],
     save_selection: ["navigate"],
     set_selection_tag: ["navigate"],
@@ -75,7 +75,6 @@ const PANEL_REFRESH_BY_OPERATION: Partial<Record<ViewerMessage["op"], readonly P
     clear_scene: ["addons"],
     clear_all: ["addons"],
     set_figure_spec: ["addons"],
-    set_user_preset: ["addons"],
     set_canvas_visibility: ["addons"],
     set_whole_representation: ["addons"],
     load_molsys_payload: ["addons"],
@@ -2465,7 +2464,7 @@ export class MolSysViewerController {
                     console.warn("[MolSysViewer] unknown op:", (msg as any).op, msg);
                     break;
             }
-            const refreshTargets = PANEL_REFRESH_BY_OPERATION[msg.op] ?? [];
+            const refreshTargets = PANEL_REFRESH_BY_OPERATION[msg.op as KnownViewerMessage["op"]] ?? [];
             if (refreshTargets.includes("addons")) this.applyWorkbenchMessage(msg);
             if (refreshTargets.includes("navigate")) this.refreshNavigatePanel(false);
             if (refreshTargets.includes("addons")) this.refreshAddonsPanel(false);
@@ -2979,7 +2978,7 @@ export class MolSysViewerController {
 
         const canvas3d = this.plugin.canvas3d;
         const fogName = canvas3d?.props.cameraFog?.name;
-        const fogIntensity = canvas3d?.props.cameraFog?.params?.intensity;
+        const fogIntensity = (canvas3d?.props.cameraFog?.params as { intensity?: number } | undefined)?.intensity;
         this.groupPanel.setScene({
             styleTag: this.addonsScene?.styleTag,
             preset: this.addonsScene?.preset,
@@ -3119,7 +3118,7 @@ export class MolSysViewerController {
                 exportHelperTitles: exportHelperSpecs
                     .filter((item: any) => item?.addon === rec.name && typeof item?.title === "string")
                     .map((item: any) => item.title as string),
-            })).sort((left, right) => left.name.localeCompare(right.name));
+            })).sort((left: { name: string }, right: { name: string }) => left.name.localeCompare(right.name));
         }
 
         const names: string[] = Array.isArray(msg?.addons)

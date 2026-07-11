@@ -59,7 +59,7 @@ const parseInitialTrajectoryInfo = (msgs: ViewerMessage[] | undefined) => {
             hasStructures = true;
             if (typeof (msg as any).n_structures === "number") {
                 frameCount = (msg as any).n_structures;
-                multipleStructures = frameCount > 1;
+                multipleStructures = (frameCount ?? 0) > 1;
             } else if ((msg as any).multiple_structures === true) {
                 multipleStructures = true;
             }

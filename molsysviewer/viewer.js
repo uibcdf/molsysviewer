@@ -155692,7 +155692,6 @@ var PANEL_REFRESH_BY_OPERATION = {
   clear_scene: ["addons"],
   clear_all: ["addons"],
   set_figure_spec: ["addons"],
-  set_user_preset: ["addons"],
   set_canvas_visibility: ["addons"],
   set_whole_representation: ["addons"],
   load_molsys_payload: ["addons"],
@@ -161042,7 +161041,7 @@ var parseInitialTrajectoryInfo = (msgs) => {
       hasStructures = true;
       if (typeof msg.n_structures === "number") {
         frameCount = msg.n_structures;
-        multipleStructures = frameCount > 1;
+        multipleStructures = (frameCount ?? 0) > 1;
       } else if (msg.multiple_structures === true) {
         multipleStructures = true;
       }

@@ -12,6 +12,7 @@ export type WorkspaceOption = {
     id: string;
     title: string;
     subtitle?: string;
+    addon?: string; // The add-on this workspace belongs to
     panelCount?: number;
     workbenchSectionCount?: number;
     workbenchSectionTitles?: string[];
@@ -26,6 +27,14 @@ export type WorkspacePanelOption = {
     description?: string;
     entry?: string;
     addon?: string;
+    active?: boolean;
+};
+
+// The stack of panels handed to the shell (structurally matches the shells'
+// own PanelOption). Declared here so setPanelStack is typed rather than `any`.
+export type PanelOption = {
+    id: string;
+    title: string;
     active?: boolean;
 };
 
