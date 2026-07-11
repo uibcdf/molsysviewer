@@ -31,7 +31,7 @@ class Region:
     ) -> None:
         self._view = view
         self.uid = uid or view._next_region_uid()  # noqa: SLF001
-        self.tag = tag
+        self._tag = tag
         self.selection = selection
         self._atom_indices = tuple(atom_indices) if atom_indices is not None else None
         self._provenance = deepcopy(provenance) if provenance is not None else {"kind": "imported", "state_version": None}
@@ -41,9 +41,9 @@ class Region:
             self._provenance.setdefault("frame_dependent", False)
         self._mode = "static"
         self._set_mode(mode)
-        self.representation = representation
-        self.preset: str | None = None
-        self.repr_params = repr_params or {}
+        self._representation = representation
+        self._preset: str | None = None
+        self._repr_params = repr_params or {}
         self.order: int = view._next_region_order()  # noqa: SLF001
         self._active = True
         self._hidden = False
@@ -134,6 +134,39 @@ class Region:
     def visible(self) -> bool:
         """Whether this region's own representation is currently shown."""
         return not self._hidden
+
+    @property
+    def tag(self) -> str:
+        """The region's tag. Read-only; use :meth:`rename` to change it."""
+        return self._tag
+
+    @property
+    def representation(self) -> str | None:
+        """The region's representation type. Read-only; use :meth:`set_representation`."""
+        return self._representation
+
+    @property
+    def preset(self) -> str | None:
+        """The region's preset. Read-only; use :meth:`set_representation`."""
+        return self._preset
+
+    @property
+    def repr_params(self) -> Dict[str, Any]:
+        """The region's representation params. Read-only; use :meth:`set_representation`."""
+        return self._repr_params
+
+    def _set_visual_fields(
+        self,
+        *,
+        representation: str | None,
+        preset: str | None,
+        repr_params: Dict[str, Any],
+    ) -> None:
+        """Internal: set the cached visual state. Public writes go through
+        :meth:`set_representation` / :meth:`reset_representation`."""
+        self._representation = representation
+        self._preset = preset
+        self._repr_params = repr_params
 
     @staticmethod
     def _dependency_uids_from_provenance(provenance: dict[str, Any]) -> list[str]:
@@ -785,9 +818,11 @@ class Region:
                     exclude_tag=self.tag,
                     stacklevel=3,
                 )
-        self.representation = normalized
-        self.preset = normalized_preset
-        self.repr_params = params or {}
+        self._set_visual_fields(
+            representation=normalized,
+            preset=normalized_preset,
+            repr_params=params or {},
+        )
         self._view._bump_region_order(self)  # noqa: SLF001
         self._send(
             "set_region_representation",
@@ -803,9 +838,7 @@ class Region:
     @digest()
     def reset_representation(self, skip_digestion: bool = False) -> None:
         """Revert this region to the viewer's base representation."""
-        self.representation = None
-        self.preset = None
-        self.repr_params = {}
+        self._set_visual_fields(representation=None, preset=None, repr_params={})
         self._view._bump_region_order(self)  # noqa: SLF001
         self._send(
             "set_region_representation",
@@ -1068,7 +1101,7 @@ class Region:
             return
         old_tag = self.tag
         self._send("rename_region", new_tag=new_tag)
-        self.tag = new_tag
+        self._tag = new_tag
         self._view._regions[new_tag] = self  # noqa: SLF001
         self._view._regions.pop(old_tag, None)  # noqa: SLF001
         self._view._rename_atom_color_layer(old_tag, new_tag)  # noqa: SLF001

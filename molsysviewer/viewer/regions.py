@@ -662,8 +662,7 @@ class RegionsMixin:
             user_preset=None,
             params=params,
         )
-        region.representation = "orientation"
-        region.repr_params = params
+        region._set_visual_fields(representation="orientation", preset=None, repr_params=params)  # noqa: SLF001
         return region
 
     @signal(tags=["region", "geometry"])
@@ -695,8 +694,7 @@ class RegionsMixin:
             user_preset=None,
             params=params,
         )
-        region.representation = "plane"
-        region.repr_params = params
+        region._set_visual_fields(representation="plane", preset=None, repr_params=params)  # noqa: SLF001
         return region
 
     _SPLIT_ELEMENT_ATTRIBUTES = {

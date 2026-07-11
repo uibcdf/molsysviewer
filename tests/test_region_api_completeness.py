@@ -121,3 +121,20 @@ def test_regions_manager_parity_methods():
     assert regions.tags() == ["A2"]
     regions.delete_all(skip_digestion=True)
     assert regions.count() == 0
+
+
+# ── Symmetry: Region visual state and tag are read-only ──────────────────────
+
+def test_region_visual_state_and_tag_are_read_only():
+    view = _mute(demo["dialanine"])
+    r = view.new_region(atom_indices=[0, 1], tag="A", skip_digestion=True)
+    r.set_representation("spacefill", skip_digestion=True)
+    assert r.representation == "spacefill"
+    for attr, value in [("representation", "cartoon"), ("preset", "auto"),
+                        ("tag", "X"), ("repr_params", {})]:
+        with pytest.raises(AttributeError):
+            setattr(r, attr, value)
+    # rename is the supported way to change the tag, and it keeps the registry key.
+    r.rename("A2", skip_digestion=True)
+    assert r.tag == "A2"
+    assert "A2" in view.regions and "A" not in view.regions
