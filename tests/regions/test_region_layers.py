@@ -138,3 +138,53 @@ def test_region_summary_runtime_record_carries_layer():
     summaries = [m for m in sent if m.get("op") == "set_region_summaries"]
     record = next(rec for rec in summaries[-1]["regions"] if rec["tag"] == "A")
     assert record["layer"] == "site"
+
+
+def _action(view, action, **content):
+    view._handle_frontend_event({  # noqa: SLF001
+        "event": "interaction_context_action", "action": action, **content,
+    })
+
+
+def test_context_action_assigns_and_detaches_region_layer():
+    view = _mute(demo["dialanine"])
+    _region(view, [0, 1, 2], "A", representation="cartoon")
+    _action(view, "set_region_layer", tag="A", layer="site")
+    assert view.regions["A"].layer == "site"
+    # An empty/null layer detaches.
+    _action(view, "set_region_layer", tag="A", layer="")
+    assert view.regions["A"].layer is None
+    assert "site" not in view.layers
+
+
+def test_context_action_set_layer_visibility_and_delete():
+    view = _mute(demo["dialanine"])
+    _region(view, [0, 1, 2], "A", representation="cartoon")
+    _action(view, "set_region_layer", tag="A", layer="site")
+
+    _action(view, "set_layer_visibility", tag="site", hidden=True)
+    assert view.regions["A"].visible is False
+    _action(view, "set_layer_visibility", tag="site")  # toggle back
+    assert view.regions["A"].visible is True
+
+    _action(view, "delete_layer_group", tag="site")
+    assert "A" not in view.regions
+    assert "site" not in view.layers
+
+
+def test_context_action_remove_region_from_layer():
+    view = _mute(demo["dialanine"])
+    _region(view, [0, 1, 2], "A", representation="cartoon")
+    _action(view, "set_region_layer", tag="A", layer="site")
+    _action(view, "remove_region_from_layer", tag="A")
+    assert view.regions["A"].layer is None
+
+
+def test_renaming_a_layer_keeps_its_regions():
+    view = _mute(demo["dialanine"])
+    r = _region(view, [0, 1, 2], "A", representation="cartoon")
+    r.set_layer("site", skip_digestion=True)
+    view.layers["site"].set_tag("pocket", skip_digestion=True)
+    assert r.layer == "pocket"
+    assert "pocket" in view.layers
+    assert "A" in view.layers["pocket"].regions

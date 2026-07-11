@@ -1101,6 +1101,52 @@ class MolSysView(
                     self.regions.show_all(skip_digestion=True)
                 elif action == "hide_all_regions":
                     self.regions.hide_all(skip_digestion=True)
+                elif action == "set_region_layer":
+                    # Layers subpanel (Phase 9): assign a region to a layer, or
+                    # detach it when `layer` is null/empty.
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("set_region_layer requires non-empty tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    layer = content.get("layer")
+                    layer_tag = layer.strip() if isinstance(layer, str) and layer.strip() else None
+                    if layer_tag is None:
+                        region.remove_from_layer(skip_digestion=True)
+                    else:
+                        region.set_layer(layer_tag, skip_digestion=True)
+                elif action == "remove_region_from_layer":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("remove_region_from_layer requires non-empty tag.")
+                    region = self._regions.get(tag.strip())
+                    if region is None:
+                        raise ValueError(f"No region found with tag {tag!r}.")
+                    region.remove_from_layer(skip_digestion=True)
+                elif action == "set_layer_visibility":
+                    # Toggle when `hidden` is omitted; otherwise honour the flag.
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("set_layer_visibility requires non-empty tag.")
+                    layer = self._layers.get(tag.strip())
+                    if layer is None:
+                        raise ValueError(f"No layer found with tag {tag!r}.")
+                    hidden = content.get("hidden")
+                    if hidden is None:
+                        hidden = not bool(getattr(layer, "_hidden", False))
+                    if bool(hidden):
+                        layer.hide(skip_digestion=True)
+                    else:
+                        layer.show(skip_digestion=True)
+                elif action == "delete_layer_group":
+                    tag = content.get("tag")
+                    if not isinstance(tag, str) or tag.strip() == "":
+                        raise ValueError("delete_layer_group requires non-empty tag.")
+                    layer = self._layers.get(tag.strip())
+                    if layer is None:
+                        raise ValueError(f"No layer found with tag {tag!r}.")
+                    layer.delete(skip_digestion=True)
                 elif action == "get_region_details":
                     tag = content.get("tag")
                     if not isinstance(tag, str) or tag.strip() not in self._regions:

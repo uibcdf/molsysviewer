@@ -294,7 +294,16 @@ class Layer(LayerHandle):
                 return
         super().set_tag(new_tag, skip_digestion=True)
         for member in members:
-            member.layer_tag = self.tag
+            if hasattr(member, "layer_tag"):
+                member.layer_tag = self.tag
+            else:
+                # A region tracks membership by the layer tag string; keep it in
+                # step with the rename so it is not orphaned.
+                member._layer = self.tag  # noqa: SLF001
+        if any(not hasattr(member, "layer_tag") for member in members):
+            sync = getattr(self._view, "_sync_region_summaries_runtime", None)
+            if callable(sync):
+                sync()
 
     @staticmethod
     def _member_has_nothing_to_render(member: Any) -> bool:
