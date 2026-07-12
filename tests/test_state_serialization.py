@@ -19,6 +19,19 @@ def test_export_state_returns_json_serializable_dict():
     assert restored["version"] == 2
 
 
+def test_tag_high_water_marks_round_trip_before_next_allocation():
+    source = MolSysView()
+    source.measurements.add_distance([0], [1], tag="measurement7")
+    state = source.export_state()
+
+    target = MolSysView()
+    target.import_state(state)
+    created = target.measurements.add_distance([1], [2])
+
+    assert created.tag == "measurement8"
+    assert target.measurements.count() == 2
+
+
 def test_export_state_captures_annotations():
     view = MolSysView()
     # Simulate annotation history directly (no structure needed)

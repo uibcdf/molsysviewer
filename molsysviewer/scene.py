@@ -292,8 +292,9 @@ class SceneManager:
         # ── Assign tag and register ────────────────────────────────────────
         view = self._view
         if tag is None:
-            view._section_counter += 1  # noqa: SLF001
-            tag = f"section{view._section_counter}"  # noqa: SLF001
+            tag = view._tag_managers["section"].allocate()  # noqa: SLF001
+        else:
+            tag = view._tag_managers["section"].validate(tag)  # noqa: SLF001
 
         record = {"tag": tag, "point": point_nm, "normal": normal_unit, "invert": bool(invert)}
         view._section_history.append(record)  # noqa: SLF001

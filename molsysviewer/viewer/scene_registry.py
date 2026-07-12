@@ -146,6 +146,7 @@ class SceneRegistryMixin:
         """Create a new layer (non-structural visual group)."""
         tag = tag or self._next_layer_tag()
         tag = self._assert_nonstructural_tag_available(tag)
+        tag = self._tag_managers["layer"].observe(tag)
         layer = Layer(self, tag, kind=kind, meta=meta)
         self._layers[tag] = layer
         layer._send_create()  # noqa: SLF001

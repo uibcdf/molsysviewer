@@ -393,6 +393,7 @@ class SelectionsManager:
         """Internal: build and send a save_selection message, return the Selection wrapper."""
         if self.contains(tag, skip_digestion=True):
             raise ValueError(f"A persistent selection with tag {tag!r} already exists.")
+        tag = self._view._tag_managers["selection"].observe(tag)  # noqa: SLF001
         msg = {
             "op": "save_selection",
             "tag": tag,

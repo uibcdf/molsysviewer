@@ -7,7 +7,10 @@ def normalize_new_shape_tag(view, tag: str) -> str:
     text = str(tag).strip()
     checker = getattr(view, "_assert_scene_object_tag_available", None)
     if callable(checker):
-        return checker(text)
+        text = checker(text)
+        managers = getattr(view, "_tag_managers", {})
+        manager = managers.get("shape")
+        return manager.observe(text) if manager is not None else text
     if text == "":
         raise ValueError("Shape tag must be a non-empty string.")
     objects = getattr(view, "_scene_objects", {})

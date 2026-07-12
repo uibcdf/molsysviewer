@@ -109,6 +109,11 @@ jobs:
         echo 'import molsysviewer; print("Version of the package: {}".format(molsysviewer.__version__))' | python
         echo "::endgroup::"
 
+    - name: Resolve documented Python API calls
+      if: matrix.cfg.os == 'ubuntu-latest' && matrix.cfg.python-version == '3.12'
+      shell: bash -l {0}
+      run: python scripts/api_resolver.py docs/
+
     - name: Run tests
       shell: bash -l {0}
       run: |

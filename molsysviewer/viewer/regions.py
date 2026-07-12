@@ -55,8 +55,7 @@ class RegionsMixin:
         return payload
 
     def _next_region_tag(self) -> str:
-        self._region_counter += 1
-        return f"region{self._region_counter}"
+        return self._tag_managers["region"].allocate()
 
     def _next_region_uid(self) -> str:
         self._region_uid_counter += 1
@@ -687,8 +686,7 @@ class RegionsMixin:
     ) -> Region:
         """Internal region constructor that may receive recipe metadata."""
         tag = tag or self._next_region_tag()
-        if tag in self._regions:
-            raise ValueError(f"A region with tag {tag!r} already exists.")
+        tag = self._tag_managers["region"].validate(tag)
         if isinstance(representation, str) and representation.strip().lower() == "inherit":
             representation = "inherit"
         else:

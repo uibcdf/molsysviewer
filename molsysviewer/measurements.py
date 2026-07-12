@@ -38,6 +38,7 @@ class MeasurementsManager:
 
     def _ensure_layer(self, tag: str, *, layer_tag: str | None = None) -> Layer:
         tag = self._view._assert_scene_object_tag_available(tag)  # noqa: SLF001
+        tag = self._view._tag_managers["measurement"].observe(tag)  # noqa: SLF001
         resolved_layer_tag = str(layer_tag).strip() if layer_tag is not None else tag
         self._view._ensure_layer_group(resolved_layer_tag, kind="measurement")  # noqa: SLF001
         measurement = Measurement(self._view, tag, layer_tag=resolved_layer_tag, meta={})

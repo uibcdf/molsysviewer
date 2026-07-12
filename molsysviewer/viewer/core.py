@@ -39,6 +39,7 @@ from ..shapes import ShapesManager
 from ..regions import Region, RegionsManager
 from ..whole import Whole
 from ..layers import Layer, SceneObject
+from ..tags import TagsManager
 from ..colors import colors as global_colors
 from .. import config
 
@@ -260,13 +261,48 @@ class MolSysView(
         self._layers: Dict[str, Layer] = {}
         self._scene_objects: Dict[str, SceneObject] = {}
         self._selections: Dict[str, Selection] = {}
-        self._region_counter = 0
+        self._tag_managers = {
+            "region": TagsManager("region", "region", lambda: self._regions.keys()),
+            "shape": TagsManager(
+                "shape",
+                "shape",
+                lambda: (
+                    item.tag
+                    for item in self._scene_objects.values()
+                    if getattr(item, "kind", None) == "shape"
+                ),
+            ),
+            "annotation": TagsManager(
+                "annotation",
+                "annotation",
+                lambda: (
+                    item.tag
+                    for item in self._scene_objects.values()
+                    if getattr(item, "kind", None) == "annotation"
+                ),
+            ),
+            "measurement": TagsManager(
+                "measurement",
+                "measurement",
+                lambda: (
+                    item.tag
+                    for item in self._scene_objects.values()
+                    if getattr(item, "kind", None) == "measurement"
+                ),
+            ),
+            "section": TagsManager(
+                "section",
+                "section",
+                lambda: (
+                    item.tag
+                    for item in self._scene_objects.values()
+                    if getattr(item, "kind", None) == "section"
+                ),
+            ),
+            "layer": TagsManager("layer", "layer", lambda: self._layers.keys()),
+            "selection": TagsManager("selection", "selection", lambda: self._selections.keys()),
+        }
         self._region_uid_counter = 0
-        self._annotation_counter = 0
-        self._layer_counter = 0
-        self._measurement_counter = 0
-        self._shape_counter = 0
-        self._section_counter = 0
         self._global_hidden = False
         self._box_visible = False
         self._box_record: dict | None = None  # params last passed to show_box
@@ -1763,27 +1799,50 @@ class MolSysView(
         return payload
 
     def _next_region_tag(self) -> str:
-        self._region_counter += 1
-        return f"region{self._region_counter}"
+        return self._tag_managers["region"].allocate()
 
     def _next_annotation_tag(self) -> str:
-        while True:
-            self._annotation_counter += 1
-            tag = f"annotation{self._annotation_counter}"
-            if tag not in self._scene_objects:
-                return tag
+        return self._tag_managers["annotation"].allocate()
 
     def _next_layer_tag(self) -> str:
-        self._layer_counter += 1
-        return f"layer{self._layer_counter}"
+        return self._tag_managers["layer"].allocate()
 
     def _next_measurement_tag(self) -> str:
-        self._measurement_counter += 1
-        return f"measurement{self._measurement_counter}"
+        return self._tag_managers["measurement"].allocate()
 
     def _next_shape_tag(self) -> str:
-        self._shape_counter += 1
-        return f"shape{self._shape_counter}"
+        return self._tag_managers["shape"].allocate()
+
+    def _get_tag_counter(self, domain: str) -> int:
+        return self._tag_managers[domain].high_water_mark
+
+    def _set_tag_counter(self, domain: str, value: int) -> None:
+        self._tag_managers[domain].restore(value)
+
+    _region_counter = property(
+        lambda self: self._get_tag_counter("region"),
+        lambda self, value: self._set_tag_counter("region", value),
+    )
+    _shape_counter = property(
+        lambda self: self._get_tag_counter("shape"),
+        lambda self, value: self._set_tag_counter("shape", value),
+    )
+    _annotation_counter = property(
+        lambda self: self._get_tag_counter("annotation"),
+        lambda self, value: self._set_tag_counter("annotation", value),
+    )
+    _measurement_counter = property(
+        lambda self: self._get_tag_counter("measurement"),
+        lambda self, value: self._set_tag_counter("measurement", value),
+    )
+    _layer_counter = property(
+        lambda self: self._get_tag_counter("layer"),
+        lambda self, value: self._set_tag_counter("layer", value),
+    )
+    _section_counter = property(
+        lambda self: self._get_tag_counter("section"),
+        lambda self, value: self._set_tag_counter("section", value),
+    )
 
     def _remap_indices(self, indices: Any, atom_index_map: dict[int, int] | None) -> list[int]:
         if atom_index_map is None:

@@ -13,7 +13,7 @@ def _scene(state):
     Undo restores the scene but never rolls the uid/order counters back (that
     would let a later create collide with a redo-able snapshot)."""
     return {k: v for k, v in state.items()
-            if k not in ("order_high_water_mark", "uid_high_water_mark")}
+            if k not in ("order_high_water_mark", "uid_high_water_mark", "tag_high_water_marks")}
 
 
 def test_undo_restores_prior_scene_compared_via_export_state():

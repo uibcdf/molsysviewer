@@ -396,13 +396,9 @@ class SceneMixin:
         self._layers.clear()
         self._scene_objects.clear()
         self._selections.clear()
-        self._region_counter = 0
+        for manager in self._tag_managers.values():
+            manager.reset()
         self._region_order_counter = 0
-        self._annotation_counter = 0
-        self._layer_counter = 0
-        self._measurement_counter = 0
-        self._shape_counter = 0
-        self._section_counter = 0
         self._global_hidden = False
         self._box_visible = False
         self._box_record = None

@@ -28,7 +28,7 @@ class StateMixin:
         dict
             Keys: ``version``, ``annotations``, ``measurements``,
             ``selections``, ``regions``, ``whole``, ``order_high_water_mark``,
-            ``uid_high_water_mark``.
+            ``uid_high_water_mark``, ``tag_high_water_marks``.
         """
         def _to_python(obj: Any) -> Any:
             if isinstance(obj, dict):
@@ -99,6 +99,10 @@ class StateMixin:
             # would silently invert the precedence of every overlap.
             "order_high_water_mark": int(self._region_order_counter),
             "uid_high_water_mark": int(self._region_uid_counter),
+            "tag_high_water_marks": {
+                domain: manager.high_water_mark
+                for domain, manager in self._tag_managers.items()
+            },
         })
 
     def _color_layer_record(self, owner: str) -> dict:
@@ -185,6 +189,12 @@ class StateMixin:
             int(state.get("uid_high_water_mark", self._region_uid_counter)),
             self._region_uid_counter,
         )
+        tag_high_water_marks = state.get("tag_high_water_marks", {})
+        if isinstance(tag_high_water_marks, dict):
+            for domain, high_water_mark in tag_high_water_marks.items():
+                manager = self._tag_managers.get(str(domain))
+                if manager is not None:
+                    manager.restore(int(high_water_mark))
 
         self._send_resolved_atom_colors(replay=True)
         self._sync_whole_summary_runtime()
