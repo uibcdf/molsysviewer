@@ -395,22 +395,52 @@ export class GroupPanel {
         });
         // Register the subpanels and build their tabs, mounting each into its
         // section. Adding a subpanel is a single registry entry.
-        const registry: Array<[TabKey, string, string, HTMLDivElement, StudioPanel]> = [
-            ["system", "System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel],
-            ["whole", "Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel],
-            ["selection", "Selection", "None", this.selectionSection, this.selectionPanel],
-            ["regions", "Regions", "0", this.regionsSection, this.regionsPanel],
-            ["measures", "Measures", "0", this.measuresSection, this.measuresPanel],
-            ["annotations", "Annotations", "0", this.annotationsSection, this.annotationsPanel],
-            ["shapes", "Shapes", "0", this.shapesSection, this.shapesPanel],
-            ["layers", "Layers", "0", this.layersSection, this.layersPanel],
-            ["viewport", "Viewport", "Dark", this.viewportSection, this.viewportPanel],
-            ["export", "Export", "None", this.exportSection, this.exportPanel],
+        const registryMap = new Map<TabKey, [string, string, HTMLDivElement, StudioPanel]>([
+            ["system", ["System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel]],
+            ["whole", ["Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel]],
+            ["selection", ["Selections", "None", this.selectionSection, this.selectionPanel]],
+            ["regions", ["Regions", "0", this.regionsSection, this.regionsPanel]],
+            ["measures", ["Measures", "0", this.measuresSection, this.measuresPanel]],
+            ["annotations", ["Annotations", "0", this.annotationsSection, this.annotationsPanel]],
+            ["shapes", ["Shapes", "0", this.shapesSection, this.shapesPanel]],
+            ["layers", ["Layers", "0", this.layersSection, this.layersPanel]],
+            ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
+            ["export", ["Export", "None", this.exportSection, this.exportPanel]],
+        ]);
+
+        const defaultOrder: TabKey[] = [
+            "system",
+            "whole",
+            "selection",
+            "regions",
+            "measures",
+            "annotations",
+            "shapes",
+            "layers",
+            "viewport",
+            "export",
         ];
-        for (const [key, title, badge, section, panel] of registry) {
-            this.addTab(key, title, badge);
-            panel.mount(section);
-            this.panels.set(key, { section, panel });
+        let tabOrder = [...defaultOrder];
+        const savedOrder = typeof window !== "undefined" && window.localStorage ? window.localStorage.getItem("molsysviewer-studio-tab-order") : null;
+        if (savedOrder) {
+            try {
+                const parsed = JSON.parse(savedOrder);
+                if (Array.isArray(parsed) && parsed.length === defaultOrder.length && parsed.every(k => defaultOrder.includes(k as TabKey))) {
+                    tabOrder = parsed as TabKey[];
+                }
+            } catch (e) {
+                // Ignore parsing errors
+            }
+        }
+
+        for (const key of tabOrder) {
+            const entry = registryMap.get(key);
+            if (entry) {
+                const [title, badge, section, panel] = entry;
+                this.addTab(key, title, badge);
+                panel.mount(section);
+                this.panels.set(key, { section, panel });
+            }
         }
 
         // Show the default tab.
@@ -465,6 +495,78 @@ export class GroupPanel {
             textAlign: "left",
             cursor: "pointer",
             transition: "all 0.15s ease-in-out",
+        });
+
+        // Enable Drag & Drop
+        button.draggable = true;
+
+        button.addEventListener("dragstart", (e) => {
+            if (e.dataTransfer) {
+                e.dataTransfer.setData("text/plain", key);
+                e.dataTransfer.effectAllowed = "move";
+            }
+            button.style.opacity = "0.4";
+        });
+
+        button.addEventListener("dragend", () => {
+            button.style.opacity = "1";
+            for (const tab of this.tabs.values()) {
+                tab.button.style.borderTop = "0";
+                tab.button.style.borderBottom = "0";
+            }
+        });
+
+        button.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            if (e.dataTransfer) {
+                e.dataTransfer.dropEffect = "move";
+            }
+            const rect = button.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+            if (e.clientY < midpoint) {
+                button.style.borderTop = "2px solid #6366f1";
+                button.style.borderBottom = "0";
+            } else {
+                button.style.borderBottom = "2px solid #6366f1";
+                button.style.borderTop = "0";
+            }
+        });
+
+        button.addEventListener("dragleave", () => {
+            button.style.borderTop = "0";
+            button.style.borderBottom = "0";
+        });
+
+        button.addEventListener("drop", (e) => {
+            e.preventDefault();
+            button.style.borderTop = "0";
+            button.style.borderBottom = "0";
+            
+            const draggedKey = e.dataTransfer ? e.dataTransfer.getData("text/plain") : "";
+            if (!draggedKey || draggedKey === key) return;
+            
+            const order = this.getTabOrder();
+            const draggedIdx = order.indexOf(draggedKey as TabKey);
+            let targetIdx = order.indexOf(key);
+            if (draggedIdx === -1 || targetIdx === -1) return;
+            
+            order.splice(draggedIdx, 1);
+            
+            const rect = button.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+            if (e.clientY >= midpoint) {
+                targetIdx = order.indexOf(key);
+                order.splice(targetIdx + 1, 0, draggedKey as TabKey);
+            } else {
+                targetIdx = order.indexOf(key);
+                order.splice(targetIdx, 0, draggedKey as TabKey);
+            }
+            
+            if (typeof window !== "undefined" && window.localStorage) {
+                window.localStorage.setItem("molsysviewer-studio-tab-order", JSON.stringify(order));
+            }
+            
+            this.reorderTabsDOM(order);
         });
 
         button.addEventListener("mouseenter", () => {
@@ -852,5 +954,26 @@ export class GroupPanel {
                 this.renderSettingsSection();
             }
         });
+    }
+
+    private getTabOrder(): TabKey[] {
+        const order: TabKey[] = [];
+        for (let i = 0; i < this.tabsContainer.children.length; i++) {
+            const child = this.tabsContainer.children[i];
+            const key = child.getAttribute("data-molsysviewer-group-panel-tab");
+            if (key) {
+                order.push(key as TabKey);
+            }
+        }
+        return order;
+    }
+
+    private reorderTabsDOM(order: TabKey[]): void {
+        for (const key of order) {
+            const tab = this.tabs.get(key);
+            if (tab) {
+                this.tabsContainer.appendChild(tab.button);
+            }
+        }
     }
 }

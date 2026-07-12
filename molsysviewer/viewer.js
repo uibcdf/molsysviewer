@@ -154690,22 +154690,49 @@ var GroupPanel = class {
         if (naturalVisible) this.applyExpandedState();
       }
     });
-    const registry = [
-      ["system", "System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel],
-      ["whole", "Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel],
-      ["selection", "Selection", "None", this.selectionSection, this.selectionPanel],
-      ["regions", "Regions", "0", this.regionsSection, this.regionsPanel],
-      ["measures", "Measures", "0", this.measuresSection, this.measuresPanel],
-      ["annotations", "Annotations", "0", this.annotationsSection, this.annotationsPanel],
-      ["shapes", "Shapes", "0", this.shapesSection, this.shapesPanel],
-      ["layers", "Layers", "0", this.layersSection, this.layersPanel],
-      ["viewport", "Viewport", "Dark", this.viewportSection, this.viewportPanel],
-      ["export", "Export", "None", this.exportSection, this.exportPanel]
+    const registryMap = /* @__PURE__ */ new Map([
+      ["system", ["System", "Molecular Hierarchy & Sequence", this.systemSection, this.systemPanel]],
+      ["whole", ["Whole", "Overall Representation & Presets", this.wholeSection, this.wholePanel]],
+      ["selection", ["Selections", "None", this.selectionSection, this.selectionPanel]],
+      ["regions", ["Regions", "0", this.regionsSection, this.regionsPanel]],
+      ["measures", ["Measures", "0", this.measuresSection, this.measuresPanel]],
+      ["annotations", ["Annotations", "0", this.annotationsSection, this.annotationsPanel]],
+      ["shapes", ["Shapes", "0", this.shapesSection, this.shapesPanel]],
+      ["layers", ["Layers", "0", this.layersSection, this.layersPanel]],
+      ["viewport", ["Viewport", "Dark", this.viewportSection, this.viewportPanel]],
+      ["export", ["Export", "None", this.exportSection, this.exportPanel]]
+    ]);
+    const defaultOrder = [
+      "system",
+      "whole",
+      "selection",
+      "regions",
+      "measures",
+      "annotations",
+      "shapes",
+      "layers",
+      "viewport",
+      "export"
     ];
-    for (const [key2, title, badge, section, panel] of registry) {
-      this.addTab(key2, title, badge);
-      panel.mount(section);
-      this.panels.set(key2, { section, panel });
+    let tabOrder = [...defaultOrder];
+    const savedOrder = typeof window !== "undefined" && window.localStorage ? window.localStorage.getItem("molsysviewer-studio-tab-order") : null;
+    if (savedOrder) {
+      try {
+        const parsed = JSON.parse(savedOrder);
+        if (Array.isArray(parsed) && parsed.length === defaultOrder.length && parsed.every((k) => defaultOrder.includes(k))) {
+          tabOrder = parsed;
+        }
+      } catch (e) {
+      }
+    }
+    for (const key2 of tabOrder) {
+      const entry = registryMap.get(key2);
+      if (entry) {
+        const [title, badge, section, panel] = entry;
+        this.addTab(key2, title, badge);
+        panel.mount(section);
+        this.panels.set(key2, { section, panel });
+      }
     }
     this.switchTab("system");
   }
@@ -154756,6 +154783,65 @@ var GroupPanel = class {
       textAlign: "left",
       cursor: "pointer",
       transition: "all 0.15s ease-in-out"
+    });
+    button.draggable = true;
+    button.addEventListener("dragstart", (e) => {
+      if (e.dataTransfer) {
+        e.dataTransfer.setData("text/plain", key2);
+        e.dataTransfer.effectAllowed = "move";
+      }
+      button.style.opacity = "0.4";
+    });
+    button.addEventListener("dragend", () => {
+      button.style.opacity = "1";
+      for (const tab of this.tabs.values()) {
+        tab.button.style.borderTop = "0";
+        tab.button.style.borderBottom = "0";
+      }
+    });
+    button.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "move";
+      }
+      const rect = button.getBoundingClientRect();
+      const midpoint = rect.top + rect.height / 2;
+      if (e.clientY < midpoint) {
+        button.style.borderTop = "2px solid #6366f1";
+        button.style.borderBottom = "0";
+      } else {
+        button.style.borderBottom = "2px solid #6366f1";
+        button.style.borderTop = "0";
+      }
+    });
+    button.addEventListener("dragleave", () => {
+      button.style.borderTop = "0";
+      button.style.borderBottom = "0";
+    });
+    button.addEventListener("drop", (e) => {
+      e.preventDefault();
+      button.style.borderTop = "0";
+      button.style.borderBottom = "0";
+      const draggedKey = e.dataTransfer ? e.dataTransfer.getData("text/plain") : "";
+      if (!draggedKey || draggedKey === key2) return;
+      const order = this.getTabOrder();
+      const draggedIdx = order.indexOf(draggedKey);
+      let targetIdx = order.indexOf(key2);
+      if (draggedIdx === -1 || targetIdx === -1) return;
+      order.splice(draggedIdx, 1);
+      const rect = button.getBoundingClientRect();
+      const midpoint = rect.top + rect.height / 2;
+      if (e.clientY >= midpoint) {
+        targetIdx = order.indexOf(key2);
+        order.splice(targetIdx + 1, 0, draggedKey);
+      } else {
+        targetIdx = order.indexOf(key2);
+        order.splice(targetIdx, 0, draggedKey);
+      }
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem("molsysviewer-studio-tab-order", JSON.stringify(order));
+      }
+      this.reorderTabsDOM(order);
     });
     button.addEventListener("mouseenter", () => {
       if (this.activeTab !== key2) {
@@ -155057,6 +155143,25 @@ var GroupPanel = class {
         this.renderSettingsSection();
       }
     });
+  }
+  getTabOrder() {
+    const order = [];
+    for (let i = 0; i < this.tabsContainer.children.length; i++) {
+      const child = this.tabsContainer.children[i];
+      const key2 = child.getAttribute("data-molsysviewer-group-panel-tab");
+      if (key2) {
+        order.push(key2);
+      }
+    }
+    return order;
+  }
+  reorderTabsDOM(order) {
+    for (const key2 of order) {
+      const tab = this.tabs.get(key2);
+      if (tab) {
+        this.tabsContainer.appendChild(tab.button);
+      }
+    }
   }
 };
 
